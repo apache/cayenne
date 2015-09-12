@@ -81,8 +81,8 @@ class StoppedDataSource implements DataSource {
 		return StoppedDataSource.class.equals(iface) ? (T) this : dataSource.unwrap(iface);
 	}
 
-	// JDBC 4.1 compatibility under Java pre 1.7
+	@Override
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-		throw new SQLFeatureNotSupportedException();
+		return dataSource.getParentLogger();
 	}
 }

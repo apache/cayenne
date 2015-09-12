@@ -29,8 +29,8 @@ import javax.sql.DataSource;
 import org.apache.cayenne.di.ScopeEventListener;
 
 /**
- * A wrapper for {@link UnmanagedPoolingDataSource} that automatically manages the underlying
- * connection pool size.
+ * A wrapper for {@link UnmanagedPoolingDataSource} that automatically manages
+ * the underlying connection pool size.
  * 
  * @since 4.0
  */
@@ -116,9 +116,9 @@ public class ManagedPoolingDataSource implements PoolingDataSource, ScopeEventLi
 		return ManagedPoolingDataSource.class.equals(iface) ? (T) this : dataSource.unwrap(iface);
 	}
 
-	// JDBC 4.1 compatibility under Java 1.6 and newer
+	@Override
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-		throw new SQLFeatureNotSupportedException();
+		return dataSource.getParentLogger();
 	}
 
 }

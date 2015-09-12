@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
-import java.io.Closeable;
-
 import javax.sql.DataSource;
 
 /**
@@ -28,6 +26,6 @@ import javax.sql.DataSource;
  * 
  * @since 4.0
  */
-public interface PoolingDataSource extends DataSource, Closeable {
+public interface PoolingDataSource extends DataSource, AutoCloseable {
 
 }

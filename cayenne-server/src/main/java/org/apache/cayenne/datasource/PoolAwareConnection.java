@@ -548,39 +548,37 @@ public class PoolAwareConnection implements Connection {
 
 	@Override
 	public void setClientInfo(Properties properties) throws SQLClientInfoException {
-		// TODO: we can implement that now.
-		throw new UnsupportedOperationException();
+		connection.setClientInfo(properties);
 	}
 
 	@Override
 	public void setClientInfo(String name, String value) throws SQLClientInfoException {
-		// TODO: we can implement that now.
-		throw new UnsupportedOperationException();
+		connection.setClientInfo(name, value);
 	}
 
-	// JDBC 4.1 compatibility pre Java 7
+	@Override
 	public void setSchema(String schema) throws SQLException {
-		throw new UnsupportedOperationException();
+		connection.setSchema(schema);
 	}
 
-	// JDBC 4.1 compatibility pre Java 7
+	@Override
 	public String getSchema() throws SQLException {
-		throw new UnsupportedOperationException();
+		return connection.getSchema();
 	}
 
-	// JDBC 4.1 compatibility pre Java 7
+	@Override
 	public void abort(Executor executor) throws SQLException {
-		throw new UnsupportedOperationException();
+		connection.abort(executor);
 	}
 
-	// JDBC 4.1 compatibility pre Java 7
+	@Override
 	public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
-		throw new UnsupportedOperationException();
+		connection.setNetworkTimeout(executor, milliseconds);
 	}
 
-	// JDBC 4.1 compatibility pre Java 7
+	@Override
 	public int getNetworkTimeout() throws SQLException {
-		throw new UnsupportedOperationException();
+		return connection.getNetworkTimeout();
 	}
 
 }

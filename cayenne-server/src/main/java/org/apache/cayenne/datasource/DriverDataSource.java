@@ -278,9 +278,8 @@ public class DriverDataSource implements DataSource {
 
 	/**
 	 * @since 3.1
-	 *
-	 *        JDBC 4.1 compatibility under Java 1.5
 	 */
+	@Override
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new UnsupportedOperationException();
 	}
