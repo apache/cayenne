@@ -19,15 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
@@ -53,6 +44,15 @@ import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.tx.TransactionalOperation;
 import org.apache.cayenne.util.ToStringBuilder;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * DataDomain performs query routing functions in Cayenne. DataDomain creates
@@ -120,6 +120,11 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @since 1.2
      */
     protected EventManager eventManager;
+
+    /**
+     * @since 4.0
+     */
+    protected DataRowStoreFactory dataRowStoreFactory;
 
     /**
      * @since 1.2
@@ -249,6 +254,14 @@ public class DataDomain implements QueryEngine, DataChannel {
         }
     }
 
+    public DataRowStoreFactory getDataRowStoreFactory() {
+        return dataRowStoreFactory;
+    }
+
+    public void setDataRowStoreFactory(DataRowStoreFactory dataRowStoreFactory) {
+        this.dataRowStoreFactory = dataRowStoreFactory;
+    }
+
     /**
      * Returns "name" property value.
      */
@@ -326,7 +339,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     synchronized DataRowStore nonNullSharedSnapshotCache() {
         if (sharedSnapshotCache == null) {
-            this.sharedSnapshotCache = new DataRowStore(name, properties, eventManager);
+            this.sharedSnapshotCache = dataRowStoreFactory.createDataRowStore(name);
         }
 
         return sharedSnapshotCache;

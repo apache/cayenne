@@ -30,7 +30,7 @@ import java.util.Map;
 public interface EventBridgeFactory {
 
     /**
-     * Creates an EventBridge with the specified parameters.
+     * Creates an {@link EventBridge} with the specified parameters.
      * 
      * @since 1.2
      */

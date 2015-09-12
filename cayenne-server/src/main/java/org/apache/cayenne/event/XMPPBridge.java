@@ -19,13 +19,9 @@
 
 package org.apache.cayenne.event;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Collection;
-import java.util.Collections;
-
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.util.Base64Codec;
+import org.apache.cayenne.util.Util;
 import org.jivesoftware.smack.GroupChat;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.SSLXMPPConnection;
@@ -33,9 +29,14 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.util.Base64Codec;
-import org.apache.cayenne.util.Util;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * An EventBridge implementation based on XMPP protocol and Smack XMPP client library.
@@ -51,6 +52,22 @@ import org.apache.cayenne.util.Util;
  * @since 1.2
  */
 public class XMPPBridge extends EventBridge {
+
+    public static final String XMPP_HOST_PROPERTY = "cayenne.XMPPBridge.xmppHost";
+
+    /**
+     * An optional property, port 5222 is used as default XMPP port.
+     */
+    public static final String XMPP_PORT_PROPERTY = "cayenne.XMPPBridge.xmppPort";
+
+    /**
+     * An optional property, "conference" is used as default chat service.
+     */
+    public static final String XMPP_CHAT_SERVICE_PROPERTY = "cayenne.XMPPBridge.xmppChatService";
+
+    public static final String XMPP_SECURE_CONNECTION_PROPERTY = "cayenne.XMPPBridge.xmppSecure";
+    public static final String XMPP_LOGIN_PROPERTY = "cayenne.XMPPBridge.xmppLogin";
+    public static final String XMPP_PASSWORD_PROPERTY = "cayenne.XMPPBridge.xmppPassword";
 
     static final String DEFAULT_CHAT_SERVICE = "conference";
     static final int DEFAULT_XMPP_PORT = 5222;
@@ -84,6 +101,31 @@ public class XMPPBridge extends EventBridge {
         // generate a unique session handle... users can override it to use a specific
         // handle...
         this.sessionHandle = "cayenne-xmpp-" + System.currentTimeMillis();
+    }
+
+    public XMPPBridge(Collection<EventSubject> localSubjects, String externalSubject, Map<String, String> properties) {
+        this(localSubjects, externalSubject);
+
+        this.chatService = properties.get(XMPP_CHAT_SERVICE_PROPERTY);
+        this.xmppHost = properties.get(XMPP_HOST_PROPERTY);
+
+        this.loginId = properties.get(XMPP_LOGIN_PROPERTY);
+        this.password = properties.get(XMPP_PASSWORD_PROPERTY);
+
+        String secureConnectionString = properties.get(XMPP_SECURE_CONNECTION_PROPERTY);
+        secureConnection = "true".equalsIgnoreCase(secureConnectionString);
+
+        String portString = properties.get(XMPP_PORT_PROPERTY);
+        int port = -1;
+        if (portString != null) {
+
+            try {
+                this.xmppPort = Integer.parseInt(portString);
+            }
+            catch (NumberFormatException e) {
+                throw new CayenneRuntimeException("Invalid port: " + portString);
+            }
+        }
     }
 
     public String getXmppHost() {
