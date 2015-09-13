@@ -91,7 +91,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
                 Iterator<DbAttribute> it = dbAttr.iterator();
                 if (dbAttr.size() > 0) {
-                    this.resolveJoin(true);
+                    resolveJoin();
                 }
 
                 String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context

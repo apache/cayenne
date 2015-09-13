@@ -253,7 +253,7 @@ TOKEN : /* literals */
 /* From the Java 1.0.2 specification */
 TOKEN : /* IDENTIFIERS */
 {
-  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* (["+"])? >
 	|
   < #LETTER:
 	  [

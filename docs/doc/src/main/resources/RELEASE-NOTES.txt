@@ -31,6 +31,7 @@ CAY-2013 In-memory evaluation of DB expressions - non-id attributes
 CAY-2023 Decouple the use of ResourceLocator
 CAY-2025 Support for DBCP2
 CAY-2026 Java 7
+CAY-2027 Support for Expression outer join syntax in EJBQL
 
 Bug Fixes:
 

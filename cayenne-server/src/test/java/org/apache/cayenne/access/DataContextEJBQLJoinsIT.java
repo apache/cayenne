@@ -179,6 +179,42 @@ public class DataContextEJBQLJoinsIT extends ServerCase {
 	}
 
 	@Test
+	public void testImplicitJoins_OUTER_LastComponent() throws Exception {
+
+		tArtist.insert(33001, "AA1");
+		tArtist.insert(33002, "AA2");
+		tPainting.insert(33005, 33001, null, "CC1", 5000);
+		tPainting.insert(33006, 33001, null, "CC2", 5000);
+
+		String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray+ is null";
+
+		EJBQLQuery query = new EJBQLQuery(ejbql);
+
+		List<?> artists = context.performQuery(query);
+		assertEquals(1, artists.size());
+		assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
+	}
+
+	@Test
+	public void testImplicitJoins_OUTER_InTheMiddle() throws Exception {
+
+		tGallery.insert(33001, "gallery1");
+		tGallery.insert(33002, "gallery2");
+		tArtist.insert(33001, "AA1");
+		tArtist.insert(33002, "AA2");
+		tPainting.insert(33005, 33001, 33001, "CC1", 5000);
+		tPainting.insert(33006, 33001, 33002, "CC2", 5000);
+
+		String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray+.toGallery is null";
+
+		EJBQLQuery query = new EJBQLQuery(ejbql);
+
+		List<?> artists = context.performQuery(query);
+		assertEquals(1, artists.size());
+		assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
+	}
+
+	@Test
 	public void testPartialImplicitJoins1() throws Exception {
 		createTwoArtistsTwoPaintingsTwoGalleries();
 

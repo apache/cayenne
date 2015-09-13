@@ -46,6 +46,13 @@ public class EJBQLParser_ParseTest {
 		assertNotNull(select);
 	}
 
+	@Test
+	public void testImplicitOuterJoin() {
+		EJBQLExpression select = parser
+				.parse("SELECT a FROM Artist a WHERE a.paintingArray+.toGallery.galleryName = 'gallery2'");
+		assertNotNull(select);
+	}
+
 	/**
 	 * This should not parse because there are multiple non-bracketed
 	 * parameters.
@@ -62,6 +69,5 @@ public class EJBQLParser_ParseTest {
 			fail("expected an instance of " + EJBQLException.class.getSimpleName() + " to be thrown, but; "
 					+ th.getClass().getSimpleName() + " was thrown");
 		}
-
 	}
 }

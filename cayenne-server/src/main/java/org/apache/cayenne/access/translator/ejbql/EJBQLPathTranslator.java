@@ -31,6 +31,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -48,6 +49,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 	private EJBQLTranslationContext context;
 	protected ObjEntity currentEntity;
 	protected String lastPathComponent;
+	protected boolean innerJoin;
 	protected String lastAlias;
 	protected String idPath;
 	protected String joinMarker;
@@ -98,14 +100,28 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 		// join will
 		// get lost...
 		if (lastPathComponent != null) {
-			resolveJoin(true);
+			resolveJoin();
 		}
 
-		this.lastPathComponent = expression.getText();
+		resolveLastPathComponent(expression.getText());
 		return true;
 	}
+	
+	/**
+	 * @since 4.0
+	 */
+	protected void resolveLastPathComponent(String pathComponent) {
+		
+		if (pathComponent.endsWith(Entity.OUTER_JOIN_INDICATOR)) {
+			this.lastPathComponent = pathComponent.substring(0, pathComponent.length() - 1);
+			this.innerJoin = false;
+		} else {
+			this.lastPathComponent = pathComponent;
+			this.innerJoin = true;
+		}
+	}
 
-	protected void resolveJoin(boolean inner) {
+	protected void resolveJoin() {
 
 		EJBQLJoinAppender joinAppender = context.getTranslatorFactory().getJoinAppender(context);
 
@@ -137,7 +153,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 			}
 
 			// register join
-			if (inner) {
+			if (innerJoin) {
 				joinAppender.appendInnerJoin(joinMarker, new EJBQLTableId(idPath), new EJBQLTableId(fullPath));
 			} else {
 				joinAppender.appendOuterJoin(joinMarker, new EJBQLTableId(idPath), new EJBQLTableId(fullPath));
@@ -213,7 +229,8 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 			// MEMBER OF and IS EMPTY operators. Outer join is needed for IS
 			// EMPTY... I
 			// guess MEMBER OF could've been done with an inner join though..
-			resolveJoin(false);
+			this.innerJoin = false;
+			resolveJoin();
 
 			DbRelationship dbRelationship = chooseDbRelationship(relationship);
 			DbEntity table = (DbEntity) dbRelationship.getTargetEntity();
