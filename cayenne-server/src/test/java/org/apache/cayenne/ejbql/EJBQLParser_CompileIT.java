@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class EJBQLCompiledExpressionIT extends ServerCase {
+public class EJBQLParser_CompileIT extends ServerCase {
 
 	@Inject
 	protected ServerRuntime runtime;

@@ -18,40 +18,40 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-public class EJBQLExpressionTest {
+import org.junit.Before;
+import org.junit.Test;
+
+public class EJBQLParser_ParseTest {
+
+	private EJBQLParser parser;
+
+	@Before
+	public void before() {
+		parser = EJBQLParserFactory.getParser();
+	}
 
 	@Test
 	public void testDbPath() {
-
-		EJBQLParser parser = EJBQLParserFactory.getParser();
-
 		EJBQLExpression select = parser.parse("select p from Painting p WHERE db:p.toArtist.ARTIST_NAME = 'a'");
 		assertNotNull(select);
 	}
 
 	@Test
 	public void testEnumPath() {
-		EJBQLParser parser = EJBQLParserFactory.getParser();
-
 		EJBQLExpression select = parser
 				.parse("select p from Painting p WHERE p.toArtist.ARTIST_NAME = enum:org.apache.cayenne.ejbql.EJBQLEnum1.X");
 		assertNotNull(select);
 	}
 
 	/**
-	 * <p>
 	 * This should not parse because there are multiple non-bracketed
 	 * parameters.
-	 * </p>
 	 */
 	@Test
 	public void testInWithMultipleStringPositionalParameter_withoutBrackets() {
-		EJBQLParser parser = EJBQLParserFactory.getParser();
 
 		try {
 			parser.parse("select p from Painting p WHERE p.toArtist IN ?1, ?2");
