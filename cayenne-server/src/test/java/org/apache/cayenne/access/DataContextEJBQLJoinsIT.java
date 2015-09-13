@@ -173,8 +173,6 @@ public class DataContextEJBQLJoinsIT extends ServerCase {
 
 		EJBQLQuery query = new EJBQLQuery(ejbql);
 
-		System.out.println("" + query.getExpression(context.getEntityResolver()).getExpression());
-
 		List<?> artists = context.performQuery(query);
 		assertEquals(1, artists.size());
 		assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
