@@ -34,6 +34,16 @@ public class ASTObjPathTest {
 	}
 
 	@Test
+	public void testToEJBQL() {
+		assertEquals("r.x.y", new ASTObjPath("x.y").toEJBQL("r"));
+	}
+	
+	@Test
+	public void testToEJBQL_OuterJoin() {
+		assertEquals("r.x+.y", new ASTObjPath("x+.y").toEJBQL("r"));
+	}
+
+	@Test
 	public void testAppendAsString() throws IOException {
 		StringBuilder buffer = new StringBuilder();
 		new ASTObjPath("x.y").appendAsString(buffer);
