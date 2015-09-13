@@ -18,105 +18,91 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class EJBQLCompiledExpressionIT extends ServerCase {
-    
-    @Inject
-    protected ServerRuntime runtime;
 
-    @Test
-    public void testGetSource() {
-        String source = "select a from Artist a";
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
-        EJBQLParser parser = EJBQLParserFactory.getParser();
+	@Inject
+	protected ServerRuntime runtime;
 
-        EJBQLCompiledExpression select = parser.compile(source, resolver);
-        assertEquals(source, select.getSource());
-    }
+	private EJBQLParser parser;
+	private EntityResolver resolver;
 
-    @Test
-    public void testGetExpression() {
-        String source = "select a from Artist a";
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
-        EJBQLParser parser = EJBQLParserFactory.getParser();
+	@Before
+	public void before() {
+		resolver = runtime.getDataDomain().getEntityResolver();
+		parser = EJBQLParserFactory.getParser();
+	}
 
-        EJBQLCompiledExpression select = parser.compile(source, resolver);
-        assertNotNull(select.getExpression());
-    }
+	@Test
+	public void testGetSource() {
+		String source = "select a from Artist a";
 
-    @Test
-    public void testGetEntityDescriptor() {
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
-        EJBQLParser parser = EJBQLParserFactory.getParser();
+		EJBQLCompiledExpression select = parser.compile(source, resolver);
+		assertEquals(source, select.getSource());
+	}
 
-        EJBQLCompiledExpression select = parser.compile(
-                "select a from Artist a",
-                resolver);
+	@Test
+	public void testGetExpression() {
+		String source = "select a from Artist a";
+		EJBQLCompiledExpression select = parser.compile(source, resolver);
+		assertNotNull(select.getExpression());
+	}
 
-        assertNotNull(select.getEntityDescriptor("a"));
-        assertSame(resolver.getClassDescriptor("Artist"), select.getEntityDescriptor("a"));
+	@Test
+	public void testGetEntityDescriptor() {
 
-        EJBQLCompiledExpression select1 = parser.compile(
-                "select p from Painting p WHERE p.toArtist.artistName = 'a'",
-                resolver);
-        assertNotNull(select1.getEntityDescriptor("p"));
-        assertSame(resolver.getClassDescriptor("Painting"), select1
-                .getEntityDescriptor("p"));
-        
-        assertNotNull(select1.getEntityDescriptor("p.toArtist"));
-        assertSame(resolver.getClassDescriptor("Artist"), select1
-                .getEntityDescriptor("p.toArtist"));
-    }
+		EJBQLCompiledExpression select = parser.compile("select a from Artist a", resolver);
 
-    @Test
-    public void testGetRootDescriptor() {
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
-        EJBQLParser parser = EJBQLParserFactory.getParser();
+		assertNotNull(select.getEntityDescriptor("a"));
+		assertSame(resolver.getClassDescriptor("Artist"), select.getEntityDescriptor("a"));
 
-        EJBQLCompiledExpression select = parser.compile(
-                "select a from Artist a",
-                resolver);
+		EJBQLCompiledExpression select1 = parser.compile("select p from Painting p WHERE p.toArtist.artistName = 'a'",
+				resolver);
+		assertNotNull(select1.getEntityDescriptor("p"));
+		assertSame(resolver.getClassDescriptor("Painting"), select1.getEntityDescriptor("p"));
 
-        assertSame("Root is not detected: " + select.getExpression(), resolver
-                .getClassDescriptor("Artist"), select.getRootDescriptor());
-    }
+		assertNotNull(select1.getEntityDescriptor("p.toArtist"));
+		assertSame(resolver.getClassDescriptor("Artist"), select1.getEntityDescriptor("p.toArtist"));
+	}
 
-    @Test
-    public void testGetEntityDescriptorCaseSensitivity() {
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
-        EJBQLParser parser = EJBQLParserFactory.getParser();
+	@Test
+	public void testGetRootDescriptor() {
 
-        EJBQLCompiledExpression select1 = parser.compile(
-                "select a from Artist a",
-                resolver);
+		EJBQLCompiledExpression select = parser.compile("select a from Artist a", resolver);
 
-        assertNotNull(select1.getEntityDescriptor("a"));
-        assertNotNull(select1.getEntityDescriptor("A"));
+		assertSame("Root is not detected: " + select.getExpression(), resolver.getClassDescriptor("Artist"),
+				select.getRootDescriptor());
+	}
 
-        EJBQLCompiledExpression select2 = parser.compile(
-                "select A from Artist A",
-                resolver);
+	@Test
+	public void testGetEntityDescriptorCaseSensitivity() {
 
-        assertNotNull(select2.getEntityDescriptor("a"));
-        assertNotNull(select2.getEntityDescriptor("A"));
+		EJBQLCompiledExpression select1 = parser.compile("select a from Artist a", resolver);
 
-        EJBQLCompiledExpression select3 = parser.compile(
-                "select a from Artist A",
-                resolver);
+		assertNotNull(select1.getEntityDescriptor("a"));
+		assertNotNull(select1.getEntityDescriptor("A"));
 
-        assertNotNull(select3.getEntityDescriptor("a"));
-        assertNotNull(select3.getEntityDescriptor("A"));
-    }
+		EJBQLCompiledExpression select2 = parser.compile("select A from Artist A", resolver);
+
+		assertNotNull(select2.getEntityDescriptor("a"));
+		assertNotNull(select2.getEntityDescriptor("A"));
+
+		EJBQLCompiledExpression select3 = parser.compile("select a from Artist A", resolver);
+
+		assertNotNull(select3.getEntityDescriptor("a"));
+		assertNotNull(select3.getEntityDescriptor("A"));
+	}
 }
