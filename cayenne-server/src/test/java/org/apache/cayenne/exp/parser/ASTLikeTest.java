@@ -18,14 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Test;
 
 public class ASTLikeTest {
+
+	@Test
+	public void testToEJBQL_likeEscape() throws IOException {
+		Expression like = new ASTLike(new ASTObjPath("mainName"), "|%|%?|_title|%", '|');
+		assertEquals("x.mainName like '|%|%?|_title|%' escape '|'", like.toEJBQL("x"));
+	}
 
 	@Test
 	public void testEvaluate_MultiCharMatch() {

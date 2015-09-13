@@ -18,9 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import org.apache.cayenne.exp.Expression;
@@ -28,6 +30,12 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.junit.Test;
 
 public class ASTInTest {
+
+	@Test
+	public void testToEJBQL_in() throws IOException {
+		ASTIn e = new ASTIn(new ASTObjPath("consignment.parts"), new ASTList(new Object[] { 91, 23 }));
+		assertEquals("x.consignment.parts in (91, 23)", e.toEJBQL("x"));
+	}
 
 	@Test
 	public void testEvaluate() {

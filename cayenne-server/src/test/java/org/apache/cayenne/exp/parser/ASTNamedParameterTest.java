@@ -22,47 +22,21 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.util.TstBean;
 import org.junit.Test;
 
-public class ASTObjPathTest {
+public class ASTNamedParameterTest {
 
 	@Test
-	public void testToString() {
-		assertEquals("x.y", new ASTObjPath("x.y").toString());
-	}
+	public void testAppendAsEJBQL() throws IOException {
 
-	@Test
-	public void testAppendAsString() throws IOException {
+		ASTNamedParameter e = new ASTNamedParameter("name");
+
 		StringBuilder buffer = new StringBuilder();
-		new ASTObjPath("x.y").appendAsString(buffer);
-		assertEquals("x.y", buffer.toString());
+
+		e.appendAsEJBQL(buffer, "x");
+		String ejbql = buffer.toString();
+
+		assertEquals(":name", ejbql);
 	}
 
-	@Test
-	public void testEvaluate_DataObject() {
-		ASTObjPath node = new ASTObjPath("artistName");
-
-		Artist a1 = new Artist();
-		a1.setArtistName("abc");
-		assertEquals("abc", node.evaluate(a1));
-
-		Artist a2 = new Artist();
-		a2.setArtistName("123");
-		assertEquals("123", node.evaluate(a2));
-	}
-
-	@Test
-	public void testEvaluate_JavaBean() {
-		ASTObjPath node = new ASTObjPath("property2");
-
-		TstBean b1 = new TstBean();
-		b1.setProperty2(1);
-		assertEquals(new Integer(1), node.evaluate(b1));
-
-		TstBean b2 = new TstBean();
-		b2.setProperty2(-3);
-		assertEquals(new Integer(-3), node.evaluate(b2));
-	}
 }

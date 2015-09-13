@@ -18,23 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.junit.Test;
+
 public class ASTLikeIgnoreCaseTest {
 
-    @Test
-    public void testToEJBQL() {
-        Expression like = ExpressionFactory.likeIgnoreCaseExp("a", "%b%");
-        assertEquals(like.toEJBQL("p"), "upper(p.a) like '%B%'");
-    }
-    
+	@Test
+	public void testToEJBQL() {
+		Expression like = new ASTLikeIgnoreCase(new ASTObjPath("a"), "%b%");
+		assertEquals(like.toEJBQL("p"), "upper(p.a) like '%B%'");
+	}
+
 	@Test
 	public void testEvaluate() {
 		Expression like = new ASTLikeIgnoreCase(new ASTObjPath("artistName"), "aBcD");

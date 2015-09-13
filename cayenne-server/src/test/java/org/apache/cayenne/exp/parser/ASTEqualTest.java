@@ -18,12 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.junit.Test;
@@ -31,8 +32,27 @@ import org.junit.Test;
 public class ASTEqualTest {
 
 	@Test
+	public void testToEJBQL() {
+		ASTEqual e = new ASTEqual(new ASTObjPath("artistName"), "bla");
+
+		// note single quotes - EJBQL does not support doublequotes...
+		assertEquals("x.artistName = 'bla'", e.toEJBQL("x"));
+	}
+
+	@Test
+	public void testAppendAsEJBQL() throws IOException {
+
+		ASTEqual e = new ASTEqual(new ASTObjPath("artistName"), "bla");
+
+		StringBuilder buffer = new StringBuilder();
+		e.appendAsEJBQL(buffer, "x");
+		String ejbql = buffer.toString();
+		assertEquals("x.artistName = 'bla'", ejbql);
+	}
+
+	@Test
 	public void testEvaluate() {
-		Expression equalTo = new ASTEqual(new ASTObjPath("artistName"), "abc");
+		ASTEqual equalTo = new ASTEqual(new ASTObjPath("artistName"), "abc");
 
 		Artist match = new Artist();
 		match.setArtistName("abc");
@@ -45,8 +65,8 @@ public class ASTEqualTest {
 
 	@Test
 	public void testEvaluate_Null() {
-		Expression equalToNull = new ASTEqual(new ASTObjPath("artistName"), null);
-		Expression equalToNotNull = new ASTEqual(new ASTObjPath("artistName"), "abc");
+		ASTEqual equalToNull = new ASTEqual(new ASTObjPath("artistName"), null);
+		ASTEqual equalToNotNull = new ASTEqual(new ASTObjPath("artistName"), "abc");
 
 		Artist match = new Artist();
 		assertTrue(equalToNull.match(match));
@@ -64,7 +84,7 @@ public class ASTEqualTest {
 		BigDecimal bd3 = new BigDecimal("2.00");
 		BigDecimal bd4 = new BigDecimal("2.01");
 
-		Expression equalTo = new ASTEqual(new ASTObjPath(Painting.ESTIMATED_PRICE.getName()), bd1);
+		ASTEqual equalTo = new ASTEqual(new ASTObjPath(Painting.ESTIMATED_PRICE.getName()), bd1);
 
 		Painting p = new Painting();
 		p.setEstimatedPrice(bd2);
