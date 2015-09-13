@@ -25,43 +25,43 @@ import static org.junit.Assert.fail;
 
 public class EJBQLExpressionTest {
 
-    @Test
-    public void testDbPath() {
+	@Test
+	public void testDbPath() {
 
-        EJBQLParser parser = EJBQLParserFactory.getParser();
+		EJBQLParser parser = EJBQLParserFactory.getParser();
 
-        EJBQLExpression select = parser
-                .parse("select p from Painting p WHERE db:p.toArtist.ARTIST_NAME = 'a'");
-        assertNotNull(select);
-    }
+		EJBQLExpression select = parser.parse("select p from Painting p WHERE db:p.toArtist.ARTIST_NAME = 'a'");
+		assertNotNull(select);
+	}
 
-    @Test
-    public void testEnumPath() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
+	@Test
+	public void testEnumPath() {
+		EJBQLParser parser = EJBQLParserFactory.getParser();
 
-        EJBQLExpression select = parser
-                .parse("select p from Painting p WHERE p.toArtist.ARTIST_NAME = enum:org.apache.cayenne.ejbql.EJBQLEnum1.X");
-        assertNotNull(select);
-    }
+		EJBQLExpression select = parser
+				.parse("select p from Painting p WHERE p.toArtist.ARTIST_NAME = enum:org.apache.cayenne.ejbql.EJBQLEnum1.X");
+		assertNotNull(select);
+	}
 
-    /**
-     * <p>This should not parse because there are multiple non-bracketed parameters.</p>
-     */
-    @Test
-    public void testInWithMultipleStringPositionalParameter_withoutBrackets() {
-        EJBQLParser parser = EJBQLParserFactory.getParser();
+	/**
+	 * <p>
+	 * This should not parse because there are multiple non-bracketed
+	 * parameters.
+	 * </p>
+	 */
+	@Test
+	public void testInWithMultipleStringPositionalParameter_withoutBrackets() {
+		EJBQLParser parser = EJBQLParserFactory.getParser();
 
-        try {
-            EJBQLExpression select = parser
-                    .parse("select p from Painting p WHERE p.toArtist IN ?1, ?2");
-            fail("a test in clause with multiple unbracketed parameters parsed; should not be possible");
-        }
-        catch(EJBQLException ejbqlE) {
-            //expected; should not have parsed
-        }
-        catch(Throwable th) {
-            fail("expected an instance of " + EJBQLException.class.getSimpleName()+" to be thrown, but; " + th.getClass().getSimpleName() + " was thrown");
-        }
+		try {
+			parser.parse("select p from Painting p WHERE p.toArtist IN ?1, ?2");
+			fail("a test in clause with multiple unbracketed parameters parsed; should not be possible");
+		} catch (EJBQLException ejbqlE) {
+			// expected; should not have parsed
+		} catch (Throwable th) {
+			fail("expected an instance of " + EJBQLException.class.getSimpleName() + " to be thrown, but; "
+					+ th.getClass().getSimpleName() + " was thrown");
+		}
 
-    }
+	}
 }
