@@ -19,9 +19,7 @@
 
 package org.apache.cayenne;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -162,5 +160,20 @@ public class CayenneDataObjectIT extends ServerCase {
 
 		List<Painting> rezult = exp.filterObjects(paintingList);
 		assertEquals(a1, rezult.get(0).getToArtist());
+	}
+	
+	@Test
+	public void testFilterObjectsResultIsMutable() {
+
+		List<Artist> artistList = new ArrayList<Artist>();
+		Artist a = context.newObject(Artist.class);
+		a.setArtistName("Pablo");
+
+		Expression exp = ExpressionFactory.matchExp("artistName", "Mismatch");
+
+		List<Artist> result = exp.filterObjects(artistList);
+		assertTrue(result.isEmpty());
+		result.add(a); // list should be mutable
+		assertTrue(!result.isEmpty());
 	}
 }
