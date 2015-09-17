@@ -20,7 +20,6 @@
 package org.apache.cayenne.dba;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -167,10 +166,17 @@ public class JdbcPkGenerator implements PkGenerator {
 	protected boolean autoPkTableExists(DataNode node) throws SQLException {
 
 		try (Connection con = node.getDataSource().getConnection();) {
-			DatabaseMetaData md = con.getMetaData();
-
-			try (ResultSet tables = md.getTables(null, null, "AUTO_PK_SUPPORT", null);) {
-				return tables.next();
+			// Need to use same schema as the insert/update queries will
+			// use. Could use md.getTables with con.getSchema, but that require
+			// up to date driver and pool.
+			String sql = "SELECT * from AUTO_PK_SUPPORT";
+			try (Statement stm = con.createStatement();) {
+				stm.setMaxRows(1);
+				try (ResultSet rs = stm.executeQuery(sql);) {
+					return true;
+				} catch (SQLException e) {
+					return false;
+				}
 			}
 		}
 	}
