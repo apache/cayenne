@@ -16,30 +16,25 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.audit;
+package org.apache.cayenne.lifecycle.changemap;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Map;
+
+import org.apache.cayenne.ObjectId;
 
 /**
- * An annotation that adds auditing behavior to DataObjects.
+ * Accumulates changes of a single object with a transaction.
  * 
- * @since 3.1
+ * @since 4.0
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-public @interface Auditable {
+public interface ObjectChange {
+	Map<String, ObjectPropertyChange> getChanges();
 
-    String[] ignoredProperties() default {};
-    
-    /**
-     * @since 4.0
-     */
-    String[] confidential() default {};
+	Map<String, Object> getSnapshot();
+
+	ObjectChangeType getChangeType();
+
+	ObjectId getPreCommitId();
+
+	ObjectId getFinalId();
 }

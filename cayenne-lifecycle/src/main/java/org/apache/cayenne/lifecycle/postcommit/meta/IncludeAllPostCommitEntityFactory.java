@@ -16,30 +16,36 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.audit;
+package org.apache.cayenne.lifecycle.postcommit.meta;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.cayenne.ObjectId;
 
 /**
- * An annotation that adds auditing behavior to DataObjects.
- * 
- * @since 3.1
+ * @since 4.0
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-public @interface Auditable {
+public class IncludeAllPostCommitEntityFactory implements PostCommitEntityFactory {
 
-    String[] ignoredProperties() default {};
-    
-    /**
-     * @since 4.0
-     */
-    String[] confidential() default {};
+	private static final PostCommitEntity ALLOWED_ENTITY = new PostCommitEntity() {
+
+		@Override
+		public boolean isIncluded(String property) {
+			return true;
+		}
+
+		@Override
+		public boolean isConfidential(String property) {
+			return false;
+		}
+
+		@Override
+		public boolean isAuditable() {
+			return true;
+		}
+	};
+
+	@Override
+	public PostCommitEntity getEntity(ObjectId id) {
+		return ALLOWED_ENTITY;
+
+	}
 }
