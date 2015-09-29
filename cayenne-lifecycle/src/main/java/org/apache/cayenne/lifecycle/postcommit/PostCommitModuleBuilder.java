@@ -90,6 +90,7 @@ public class PostCommitModuleBuilder {
 	public Module build() {
 		return new Module() {
 
+			@SuppressWarnings({ "rawtypes", "unchecked" })
 			@Override
 			public void configure(Binder binder) {
 
@@ -98,7 +99,12 @@ public class PostCommitModuleBuilder {
 						.addAll(listenerInstances);
 
 				// types have to be added one-by-one
-				for (Class<? extends PostCommitListener> type : listenerTypes) {
+				for (Class type : listenerTypes) {
+
+					// TODO: temp hack - need to bind each type before adding to
+					// collection...
+					binder.bind(type).to(type);
+
 					listeners.add(type);
 				}
 
