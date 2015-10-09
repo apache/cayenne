@@ -16,30 +16,27 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.audit;
+package org.apache.cayenne.lifecycle.changemap;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Collection;
+import java.util.Map;
+
+import org.apache.cayenne.ObjectId;
 
 /**
- * An annotation that adds auditing behavior to DataObjects.
+ * Represents a map of changes for a graph of persistent objects.
  * 
- * @since 3.1
+ * @since 4.0
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-public @interface Auditable {
+public interface ChangeMap {
 
-    String[] ignoredProperties() default {};
-    
-    /**
-     * @since 4.0
-     */
-    String[] confidential() default {};
+	/**
+	 * Returns a map of changes. Note the same change sometimes can be present
+	 * in the map twice. If ObjectId of an object has changed during the commit,
+	 * the change will be accessible by both pre-commit and post-commit ID. To
+	 * get unique changes, call {@link #getUniqueChanges()}.
+	 */
+	Map<ObjectId, ? extends ObjectChange> getChanges();
+
+	Collection<? extends ObjectChange> getUniqueChanges();
 }

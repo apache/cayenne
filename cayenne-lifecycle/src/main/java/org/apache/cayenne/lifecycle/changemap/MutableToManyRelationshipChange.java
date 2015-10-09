@@ -16,30 +16,49 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.audit;
+package org.apache.cayenne.lifecycle.changemap;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
+import org.apache.cayenne.ObjectId;
 
 /**
- * An annotation that adds auditing behavior to DataObjects.
- * 
- * @since 3.1
+ * @since 4.0
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-public @interface Auditable {
+public class MutableToManyRelationshipChange implements ToManyRelationshipChange {
 
-    String[] ignoredProperties() default {};
-    
-    /**
-     * @since 4.0
-     */
-    String[] confidential() default {};
+	private Collection<ObjectId> added;
+	private Collection<ObjectId> removed;
+
+	@Override
+	public Collection<ObjectId> getAdded() {
+		return added == null ? Collections.<ObjectId> emptyList() : added;
+	}
+
+	@Override
+	public Collection<ObjectId> getRemoved() {
+		return removed == null ? Collections.<ObjectId> emptyList() : removed;
+	}
+
+	public void connected(ObjectId o) {
+
+		// TODO: cancel previously removed ?
+		if (added == null) {
+			added = new ArrayList<>();
+		}
+
+		added.add(o);
+	}
+
+	public void disconnected(ObjectId o) {
+
+		// TODO: cancel previously added ?
+		if (removed == null) {
+			removed = new ArrayList<>();
+		}
+
+		removed.add(o);
+	}
 }

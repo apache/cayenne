@@ -16,30 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.audit;
+package org.apache.cayenne.lifecycle.changemap;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Collection;
+
+import org.apache.cayenne.ObjectId;
 
 /**
- * An annotation that adds auditing behavior to DataObjects.
+ * Represents a change in a to-many relationship property to another entity.
  * 
- * @since 3.1
+ * @since 4.0
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-public @interface Auditable {
+public interface ToManyRelationshipChange {
 
-    String[] ignoredProperties() default {};
-    
-    /**
-     * @since 4.0
-     */
-    String[] confidential() default {};
+	Collection<ObjectId> getAdded();
+
+	Collection<ObjectId> getRemoved();
 }
