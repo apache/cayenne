@@ -35,6 +35,8 @@ public interface ObjectChange {
 
 	ObjectId getPostCommitId();
 
+	Map<String, ? extends PropertyChange> getChanges();
+
 	Map<String, ? extends AttributeChange> getAttributeChanges();
 
 	Map<String, ? extends ToOneRelationshipChange> getToOneRelationshipChanges();

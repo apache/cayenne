@@ -24,7 +24,7 @@ package org.apache.cayenne.lifecycle.changemap;
  * 
  * @since 4.0
  */
-public interface AttributeChange {
+public interface AttributeChange extends PropertyChange {
 
 	Object getOldValue();
 

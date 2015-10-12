@@ -58,6 +58,25 @@ public class MutableObjectChange implements ObjectChange {
 	}
 
 	@Override
+	public Map<String, ? extends PropertyChange> getChanges() {
+		Map<String, PropertyChange> allChanges = new HashMap<>();
+
+		if (attributeChanges != null) {
+			allChanges.putAll(attributeChanges);
+		}
+
+		if (toOneRelationshipChanges != null) {
+			allChanges.putAll(toOneRelationshipChanges);
+		}
+
+		if (toManyRelationshipChanges != null) {
+			allChanges.putAll(toManyRelationshipChanges);
+		}
+
+		return allChanges;
+	}
+
+	@Override
 	public Map<String, ? extends AttributeChange> getAttributeChanges() {
 		return attributeChanges != null ? attributeChanges : Collections.<String, AttributeChange> emptyMap();
 	}
@@ -158,7 +177,7 @@ public class MutableObjectChange implements ObjectChange {
 
 		return pChange;
 	}
-	
+
 	private MutableToManyRelationshipChange getOrCreateToManyChange(String property) {
 		MutableToManyRelationshipChange pChange = toManyRelationshipChanges != null
 				? toManyRelationshipChanges.get(property) : null;
