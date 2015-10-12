@@ -18,36 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.changemap;
 
-import org.apache.cayenne.ObjectId;
-
 /**
+ * A base interface for various types of property changes.
+ * 
  * @since 4.0
  */
-public class MutableToOneRelationshipChange implements ToOneRelationshipChange {
+public interface PropertyChange {
 
-	private ObjectId oldValue;
-	private ObjectId newValue;
-
-	@Override
-	public void accept(PropertyChangeVisitor visitor) {
-		visitor.visitToOneRelationship(this);
-	}
-
-	@Override
-	public ObjectId getOldValue() {
-		return oldValue;
-	}
-
-	@Override
-	public ObjectId getNewValue() {
-		return newValue;
-	}
-
-	public void connected(ObjectId o) {
-		this.newValue = o;
-	}
-
-	public void disconnected(ObjectId o) {
-		this.oldValue = o;
-	}
+	void accept(PropertyChangeVisitor visitor);
 }

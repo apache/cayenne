@@ -27,7 +27,7 @@ import org.apache.cayenne.ObjectId;
  * 
  * @since 4.0
  */
-public interface ToManyRelationshipChange {
+public interface ToManyRelationshipChange extends PropertyChange {
 
 	Collection<ObjectId> getAdded();
 

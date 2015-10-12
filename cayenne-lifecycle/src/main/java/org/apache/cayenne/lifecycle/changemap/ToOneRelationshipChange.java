@@ -23,7 +23,7 @@ import org.apache.cayenne.ObjectId;
 /**
  * @since 4.0
  */
-public interface ToOneRelationshipChange {
+public interface ToOneRelationshipChange extends PropertyChange {
 
 	ObjectId getOldValue();
 
