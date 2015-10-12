@@ -27,8 +27,8 @@ public class MutableAttributeChange implements AttributeChange {
 	private Object newValue;
 
 	@Override
-	public void accept(PropertyChangeVisitor visitor) {
-		visitor.visitAttribute(this);
+	public <T> T accept(PropertyChangeVisitor<T> visitor) {
+		return visitor.visitAttribute(this);
 	}
 
 	public void setOldValue(Object oldValue) {

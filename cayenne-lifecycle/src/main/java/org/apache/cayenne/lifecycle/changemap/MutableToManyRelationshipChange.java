@@ -33,10 +33,10 @@ public class MutableToManyRelationshipChange implements ToManyRelationshipChange
 	private Collection<ObjectId> removed;
 
 	@Override
-	public void accept(PropertyChangeVisitor visitor) {
-		visitor.visitToManyRelationship(this);
+	public <T> T accept(PropertyChangeVisitor<T> visitor) {
+		return visitor.visitToManyRelationship(this);
 	}
-	
+
 	@Override
 	public Collection<ObjectId> getAdded() {
 		return added == null ? Collections.<ObjectId> emptyList() : added;

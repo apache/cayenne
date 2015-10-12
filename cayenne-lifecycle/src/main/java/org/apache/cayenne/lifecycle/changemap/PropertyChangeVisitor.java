@@ -21,11 +21,11 @@ package org.apache.cayenne.lifecycle.changemap;
 /**
  * @since 4.0
  */
-public interface PropertyChangeVisitor {
+public interface PropertyChangeVisitor<T> {
 
-	void visitAttribute(AttributeChange change);
+	T visitAttribute(AttributeChange change);
 
-	void visitToOneRelationship(ToOneRelationshipChange change);
+	T visitToOneRelationship(ToOneRelationshipChange change);
 
-	void visitToManyRelationship(ToManyRelationshipChange change);
+	T visitToManyRelationship(ToManyRelationshipChange change);
 }

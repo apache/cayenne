@@ -29,8 +29,8 @@ public class MutableToOneRelationshipChange implements ToOneRelationshipChange {
 	private ObjectId newValue;
 
 	@Override
-	public void accept(PropertyChangeVisitor visitor) {
-		visitor.visitToOneRelationship(this);
+	public <T> T accept(PropertyChangeVisitor<T> visitor) {
+		return visitor.visitToOneRelationship(this);
 	}
 
 	@Override

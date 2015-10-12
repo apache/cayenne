@@ -25,5 +25,5 @@ package org.apache.cayenne.lifecycle.changemap;
  */
 public interface PropertyChange {
 
-	void accept(PropertyChangeVisitor visitor);
+	<T> T accept(PropertyChangeVisitor<T> visitor);
 }
