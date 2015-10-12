@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one
+	or more contributor license agreements.  See the NOTICE file
+	distributed with this work for additional information
+	regarding copyright ownership.  The ASF licenses this file
+	to you under the Apache License, Version 2.0 (the
+	"License"); you may not use this file except in compliance
+	with the License.  You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing,
+	software distributed under the License is distributed on an
+	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+	KIND, either express or implied.  See the License for the
+	specific language governing permissions and limitations
+	under the License.
+-->
+<data-map xmlns="http://cayenne.apache.org/schema/7/modelMap"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://cayenne.apache.org/schema/7/modelMap http://cayenne.apache.org/schema/7/modelMap.xsd"
+          project-version="7">
+    <property name="defaultPackage" value="org.not.my.home"/>
+    <db-entity name="A" schema="APP">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+    </db-entity>
+    <db-entity name="A_A" schema="APP">
+        <db-attribute name="A1_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+        <db-attribute name="A2_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+    </db-entity>
+    <obj-entity name="A" className="org.not.my.home.A" dbEntityName="A">
+    </obj-entity>
+    <db-relationship name="aAArray" source="A" target="A_A" toDependentPK="true" toMany="true">
+        <db-attribute-pair source="ID" target="A2_ID"/>
+    </db-relationship>
+    <db-relationship name="aAArray1" source="A" target="A_A" toDependentPK="true" toMany="true">
+        <db-attribute-pair source="ID" target="A1_ID"/>
+    </db-relationship>
+    <db-relationship name="toA" source="A_A" target="A" toMany="false">
+        <db-attribute-pair source="A2_ID" target="ID"/>
+    </db-relationship>
+    <db-relationship name="toA1" source="A_A" target="A" toMany="false">
+        <db-attribute-pair source="A1_ID" target="ID"/>
+    </db-relationship>
+    <obj-relationship name="aArray" source="A" target="A" db-relationship-path="aAArray.toA1"/>
+    <obj-relationship name="aArray1" source="A" target="A" db-relationship-path="aAArray1.toA"/>
+</data-map>

@@ -33,6 +33,7 @@ import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
@@ -154,6 +155,7 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 		test("testSkipPrimaryKeyLoading");
 	}
 
+    @Test
 	public void testOneToOne() throws Exception {
 		test("testOneToOne");
 	}
@@ -178,6 +180,32 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     @Test
 	public void testUnFlattensManyToMany() throws Exception {
 		test("testUnFlattensManyToMany");
+	}
+
+    /**
+     * CREATE TABLE APP.A (
+     *      id INTEGER NOT NULL,
+     *
+     *      PRIMARY KEY (id)
+     * );
+     *
+     * CREATE TABLE APP.A_A (
+     *      A1_ID INTEGER NOT NULL,
+     *      A2_ID INTEGER NOT NULL,
+     *
+     *      PRIMARY KEY (A1_ID, A2_ID),
+     *      CONSTRAINT A_A1 FOREIGN KEY (A1_ID) REFERENCES APP.A (ID),
+     *      CONSTRAINT A_A2 FOREIGN KEY (A2_ID) REFERENCES APP.A (ID)
+     * );
+     *
+     * If one table has many-to-many relationship with it self ObjEntity should have two
+     *  collection attributes in both directions
+     *
+     * @throws Exception
+     */
+    @Test
+	public void testFlattensManyToManyWithRecursiveLink() throws Exception {
+		test("testFlattensManyToManyWithRecursiveLink");
 	}
 
     @Test
