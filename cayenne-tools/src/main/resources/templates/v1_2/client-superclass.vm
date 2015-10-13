@@ -36,8 +36,7 @@
 ${importUtils.setPackage($superPackageName)}##
 ${importUtils.addReservedType("${$superPackageName}.${superClassName}")}##
 ${importUtils.addType("${basePackageName}.${baseClassName}")}##
-#if((${object.DeclaredAttributes} and !${object.DeclaredAttributes.isEmpty()})
-or (${object.DeclaredRelationships} and !${object.DeclaredRelationships.isEmpty()}))
+#if((${object.DeclaredAttributes} && !${object.DeclaredAttributes.isEmpty()}) || (${object.DeclaredRelationships} && !${object.DeclaredRelationships.isEmpty()}))
 ${importUtils.addType('org.apache.cayenne.exp.Property')}##
 #end
 #foreach( $attr in ${object.DeclaredAttributes} )

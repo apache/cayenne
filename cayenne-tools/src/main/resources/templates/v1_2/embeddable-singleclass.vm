@@ -38,7 +38,7 @@ ${importUtils.setPackage($subPackageName)}##
 ${importUtils.addReservedType("${subPackageName}.${subClassName}")}##
 ${importUtils.addType("${basePackageName}.${baseClassName}")}##
 ${importUtils.addType("org.apache.cayenne.Persistent")}##
-#if(${object.Attributes} and !${object.Attributes.isEmpty()})
+#if(${object.Attributes} && !${object.Attributes.isEmpty()})
 ${importUtils.addType('org.apache.cayenne.exp.Property')}##
 #end
 #foreach( $attr in ${object.Attributes} )
