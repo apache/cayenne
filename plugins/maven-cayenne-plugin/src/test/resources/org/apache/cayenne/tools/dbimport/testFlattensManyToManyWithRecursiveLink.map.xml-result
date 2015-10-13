@@ -32,16 +32,16 @@
     <obj-entity name="A" className="org.not.my.home.A" dbEntityName="A">
     </obj-entity>
     <db-relationship name="aAArray" source="A" target="A_A" toDependentPK="true" toMany="true">
-        <db-attribute-pair source="ID" target="A2_ID"/>
-    </db-relationship>
-    <db-relationship name="aAArray1" source="A" target="A_A" toDependentPK="true" toMany="true">
         <db-attribute-pair source="ID" target="A1_ID"/>
     </db-relationship>
+    <db-relationship name="aAArray1" source="A" target="A_A" toDependentPK="true" toMany="true">
+        <db-attribute-pair source="ID" target="A2_ID"/>
+    </db-relationship>
     <db-relationship name="toA" source="A_A" target="A" toMany="false">
-        <db-attribute-pair source="A2_ID" target="ID"/>
+        <db-attribute-pair source="A1_ID" target="ID"/>
     </db-relationship>
     <db-relationship name="toA1" source="A_A" target="A" toMany="false">
-        <db-attribute-pair source="A1_ID" target="ID"/>
+        <db-attribute-pair source="A2_ID" target="ID"/>
     </db-relationship>
     <obj-relationship name="aArray" source="A" target="A" db-relationship-path="aAArray.toA1"/>
     <obj-relationship name="aArray1" source="A" target="A" db-relationship-path="aAArray1.toA"/>
