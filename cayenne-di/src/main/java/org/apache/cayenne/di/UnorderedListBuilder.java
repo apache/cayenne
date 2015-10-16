@@ -16,34 +16,27 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.di;
 
+import java.util.Collection;
+
 /**
- * A binding builder for list configurations.
- * 
+ * A binding builder for unordered list configurations.
+ *
  * @param <T> A type of list values.
- * @since 3.1
+ * @since 4.0.M3
  */
-public interface ListBuilder<T> extends UnorderedListBuilder<T> {
+public interface UnorderedListBuilder<T> {
 
-    /**
-     * @since 4.0.M3
-     */
-    UnorderedListBuilder<T> after(Class<?> type);
+    ListBuilder<T> add(Class<? extends T> interfaceType) throws DIRuntimeException;
 
-    /**
-     * @since 4.0.M3
-     */
-    UnorderedListBuilder<T> after(Key<?> key);
+    ListBuilder<T> add(T value) throws DIRuntimeException;
 
-    /**
-     * @since 4.0.M3
-     */
-    UnorderedListBuilder<T> before(Class<?> type);
+    ListBuilder<T> add(Key<T> key, T object) throws DIRuntimeException;
 
-    /**
-     * @since 4.0.M3
-     */
-    UnorderedListBuilder<T> before(Key<?> key);
+    ListBuilder<T> addAll(Collection<T> values) throws DIRuntimeException;
+
+    void in(Scope scope);
 
 }

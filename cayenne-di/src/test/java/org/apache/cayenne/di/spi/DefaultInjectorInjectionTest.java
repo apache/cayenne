@@ -272,6 +272,32 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
+    public void testListInjection_addOrderedValues() {
+        Module module = new Module() {
+            @Override
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(
+                        MockImplementation1_ListConfiguration.class);
+
+                binder.bindList("xyz")
+                        .add("1value")
+                        .add("2value")
+                        .add(Key.get(Object.class, "5value"), "5value")
+                        .after(Key.get(Object.class, "4value"))
+                        .add("3value")
+                        .before(Key.get(Object.class, "4value"))
+                        .add(Key.get(Object.class, "4value"), "4value");
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface1 service = injector.getInstance(MockInterface1.class);
+        assertNotNull(service);
+        assertEquals(";1value;2value;3value;4value;5value", service.getName());
+    }
+
+    @Test
     public void testListInjection_addType() {
         Module module = new Module() {
 
@@ -290,6 +316,37 @@ public class DefaultInjectorInjectionTest {
         MockInterface1 service = injector.getInstance(MockInterface1.class);
         assertNotNull(service);
         assertEquals(";xyz;yvalue", service.getName());
+    }
+
+    @Test
+    public void testListInjection_addOrderedTypes() {
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(
+                        MockImplementation1_ListConfiguration.class);
+
+                binder.bind(MockInterface5.class).to(MockImplementation5.class);
+
+                binder.bindList("xyz")
+                        .add("1value")
+                        .add("5value")
+                        .before(MockInterface5.class)
+                        .add("2value")
+                        .add(Key.get(Object.class, "4value"), "4value")
+                        .add("6value")
+                        .after(MockInterface5.class)
+                        .add("3value")
+                        .before(Key.get(Object.class, "4value"))
+                        .add(MockInterface5.class);
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface1 service = injector.getInstance(MockInterface1.class);
+        assertNotNull(service);
+        assertEquals(";1value;2value;3value;4value;5value;xyz;6value", service.getName());
     }
 
     @Test

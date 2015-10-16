@@ -18,36 +18,69 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.cayenne.di.DIGraph;
 import org.apache.cayenne.di.DIRuntimeException;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Provider;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @since 3.1
  */
 class ListProvider implements Provider<List<?>> {
 
-    private List<Provider<?>> providers;
+    private Map<Key<?>, Provider<?>> providers;
+    private DIGraph graph;
+    private Key<?> lastKey;
 
     public ListProvider() {
-        this.providers = new ArrayList<Provider<?>>();
+        this.providers = new HashMap<>();
+        this.graph = new DIGraph();
     }
 
     @Override
     public List<?> get() throws DIRuntimeException {
-        List<Object> list = new ArrayList<Object>(providers.size());
+        List<Key<?>> insertOrder = graph.topSort();
 
-        for (Provider<?> provider : providers) {
-            list.add(provider.get());
+        if (insertOrder == null)
+            throw new DIRuntimeException("Dependency cycle detected in DI container");
+
+        if (insertOrder.size() != providers.size()) {
+            List<Key<?>> emptyKeys = new ArrayList<>();
+
+            for (Key<?> key : insertOrder) {
+                if (!providers.containsKey(key)) {
+                    emptyKeys.add(key);
+                }
+            }
+
+            throw new DIRuntimeException("DI list has no providers for keys: %s", emptyKeys);
+        }
+
+        List<Object> list = new ArrayList<>(insertOrder.size());
+        for (Key<?> key : insertOrder) {
+            list.add(providers.get(key).get());
         }
 
         return list;
     }
 
-    void add(Provider<?> provider) {
-        providers.add(provider);
+    void add(Key<?> key, Provider<?> provider) {
+        providers.put(key, provider);
+        graph.add(key);
+        lastKey = key;
+    }
+
+    void after(Key<?> key) {
+        graph.add(lastKey, key);
+    }
+
+    void before(Key<?> key) {
+        graph.add(key, lastKey);
     }
 
 }

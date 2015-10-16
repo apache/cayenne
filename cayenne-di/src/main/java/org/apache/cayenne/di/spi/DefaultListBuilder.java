@@ -18,14 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.ListBuilder;
+import org.apache.cayenne.di.UnorderedListBuilder;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.Scope;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @since 3.1
@@ -47,30 +48,64 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
     @Override
     public ListBuilder<T> add(Class<? extends T> interfaceType)
             throws DIRuntimeException {
-        getListProvider().add(injector.getProvider(interfaceType));
+
+        Key key = Key.get(interfaceType);
+        getListProvider().add(key, injector.getProvider(key));
         return this;
     }
 
     @Override
-    public ListBuilder<T> add(T value) throws DIRuntimeException {
+    public ListBuilder<T> add(T object) throws DIRuntimeException {
 
-        Provider<T> provider0 = new InstanceProvider<T>(value);
+        Provider<T> provider0 = new InstanceProvider<T>(object);
         Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
 
-        getListProvider().add(provider1);
+        getListProvider().add(Key.get(object.getClass(), String.valueOf(object.hashCode())), provider1);
         return this;
     }
 
     @Override
-    public ListBuilder<T> addAll(Collection<T> values) throws DIRuntimeException {
+    public ListBuilder<T> add(Key<T> key, T object) throws DIRuntimeException {
+
+        Provider<T> provider0 = new InstanceProvider<T>(object);
+        Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
+
+        getListProvider().add(key, provider1);
+        return this;
+    }
+
+    @Override
+    public UnorderedListBuilder<T> after(Class<?> type) {
+        return after(Key.get(type));
+    }
+
+    @Override
+    public UnorderedListBuilder<T> after(Key<?> key) {
+        getListProvider().after(key);
+        return this;
+    }
+
+    @Override
+    public UnorderedListBuilder<T> before(Class<?> type) {
+        return before(Key.get(type));
+    }
+
+    @Override
+    public UnorderedListBuilder<T> before(Key<?> key) {
+        getListProvider().before(key);
+        return this;
+    }
+
+    @Override
+    public ListBuilder<T> addAll(Collection<T> objects) throws DIRuntimeException {
 
         ListProvider listProvider = getListProvider();
 
-        for (T value : values) {
-            Provider<T> provider0 = new InstanceProvider<T>(value);
+        for (T object : objects) {
+            Provider<T> provider0 = new InstanceProvider<T>(object);
             Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
 
-            listProvider.add(provider1);
+            listProvider.add(Key.get(object.getClass(), String.valueOf(object.hashCode())), provider1);
         }
 
         return this;
