@@ -25,7 +25,7 @@ import java.util.Collection;
  * A binding builder for unordered list configurations.
  *
  * @param <T> A type of list values.
- * @since 4.0.M3
+ * @since 4.0
  */
 public interface UnorderedListBuilder<T> {
 

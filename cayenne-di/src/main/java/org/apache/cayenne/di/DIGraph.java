@@ -32,7 +32,7 @@ import java.util.Map;
  * is used to map each vertex to its list of adjacent vertices.
  *
  * @param <V> A type of a vertex.
- * @since 4.0.M3
+ * @since 4.0
  */
 public class DIGraph<V> {
 

@@ -27,22 +27,22 @@ package org.apache.cayenne.di;
 public interface ListBuilder<T> extends UnorderedListBuilder<T> {
 
     /**
-     * @since 4.0.M3
+     * @since 4.0
      */
     UnorderedListBuilder<T> after(Class<?> type);
 
     /**
-     * @since 4.0.M3
+     * @since 4.0
      */
     UnorderedListBuilder<T> after(Key<?> key);
 
     /**
-     * @since 4.0.M3
+     * @since 4.0
      */
     UnorderedListBuilder<T> before(Class<?> type);
 
     /**
-     * @since 4.0.M3
+     * @since 4.0
      */
     UnorderedListBuilder<T> before(Key<?> key);
 
