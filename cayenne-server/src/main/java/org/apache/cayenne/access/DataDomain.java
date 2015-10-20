@@ -19,20 +19,10 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.DataChannelFilterChain;
-import org.apache.cayenne.DataChannelSyncCallbackAction;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.cache.QueryCache;
@@ -53,6 +43,15 @@ import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.tx.TransactionalOperation;
 import org.apache.cayenne.util.ToStringBuilder;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * DataDomain performs query routing functions in Cayenne. DataDomain creates
@@ -587,34 +586,21 @@ public class DataDomain implements QueryEngine, DataChannel {
 	}
 
 	GraphDiff onSyncNoFilters(final ObjectContext originatingContext, final GraphDiff changes, int syncType) {
-		DataChannelSyncCallbackAction callbackAction = DataChannelSyncCallbackAction.getCallbackAction(
-				getEntityResolver().getCallbackRegistry(), originatingContext.getGraphManager(), changes, syncType);
 
-		callbackAction.applyPreCommit();
-
-		GraphDiff result;
-		switch (syncType) {
+        GraphDiff result;
+        switch (syncType) {
 		case DataChannel.ROLLBACK_CASCADE_SYNC:
 			result = onSyncRollback(originatingContext);
 			break;
-		// "cascade" and "no_cascade" are the same from the DataDomain
-		// perspective,
-		// including transaction handling logic
+		// "cascade" and "no_cascade" are the same from the DataDomain perspective
 		case DataChannel.FLUSH_NOCASCADE_SYNC:
 		case DataChannel.FLUSH_CASCADE_SYNC:
-			result = transactionManager.performInTransaction(new TransactionalOperation<GraphDiff>() {
-				@Override
-				public GraphDiff perform() {
-					return onSyncFlush(originatingContext, changes);
-				}
-			});
-
+			result =  onSyncFlush(originatingContext, changes);
 			break;
 		default:
 			throw new CayenneRuntimeException("Invalid synchronization type: " + syncType);
 		}
 
-		callbackAction.applyPostCommit();
 		return result;
 	}
 

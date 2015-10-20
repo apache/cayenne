@@ -22,6 +22,7 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
+import org.apache.cayenne.tx.TransactionFilter;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
@@ -165,8 +166,11 @@ public class ServerModule implements Module {
 				.add(SQLServerSniffer.class).add(OracleSniffer.class).add(PostgresSniffer.class)
 				.add(MySQLSniffer.class);
 
-		// configure an empty filter chain
-		binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST);
+        binder.bind(TransactionFilter.class).to(TransactionFilter.class);
+
+		// configure a filter chain with only one TransactionFilter as default
+		binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST)
+                .add(TransactionFilter.class);
 
 		// configure extended types
 		binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST).add(new VoidType()).add(new BigDecimalType())
