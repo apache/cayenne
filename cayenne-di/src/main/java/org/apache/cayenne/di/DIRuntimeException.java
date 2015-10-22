@@ -24,7 +24,10 @@ package org.apache.cayenne.di;
  * @since 4.0
  */
 public class DIRuntimeException extends RuntimeException {
-    /**
+   
+	private static final long serialVersionUID = 396131653561690312L;
+
+	/**
      * Creates new <code>ConfigurationException</code> without detail message.
      */
     public DIRuntimeException() {

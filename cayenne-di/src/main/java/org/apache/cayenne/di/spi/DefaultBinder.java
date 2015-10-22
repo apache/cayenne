@@ -33,45 +33,43 @@ import org.apache.cayenne.di.MapBuilder;
  */
 class DefaultBinder implements Binder {
 
-    private DefaultInjector injector;
+	private DefaultInjector injector;
 
-    DefaultBinder(DefaultInjector injector) {
-        this.injector = injector;
-    }
+	DefaultBinder(DefaultInjector injector) {
+		this.injector = injector;
+	}
 
-    @Override
-    public <T> BindingBuilder<T> bind(Class<T> interfaceType) {
-        return new DefaultBindingBuilder<T>(Key.get(interfaceType), injector);
-    }
+	@Override
+	public <T> BindingBuilder<T> bind(Class<T> interfaceType) {
+		return new DefaultBindingBuilder<T>(Key.get(interfaceType), injector);
+	}
 
-    @Override
-    public <T> BindingBuilder<T> bind(Key<T> key) {
-        return new DefaultBindingBuilder<T>(key, injector);
-    }
+	@Override
+	public <T> BindingBuilder<T> bind(Key<T> key) {
+		return new DefaultBindingBuilder<T>(key, injector);
+	}
 
-    @Override
-    public <T> ListBuilder<T> bindList(String bindingName) {
-        Class<?> listClass = List.class;
-        return new DefaultListBuilder<T>(
-                Key.get((Class<List<?>>) listClass, bindingName),
-                injector);
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> ListBuilder<T> bindList(String bindingName) {
+		Class<?> listClass = List.class;
+		return new DefaultListBuilder<T>(Key.get((Class<List<?>>) listClass, bindingName), injector);
+	}
 
-    @Override
-    public <T> MapBuilder<T> bindMap(String bindingName) {
-        Class<?> mapClass = Map.class;
-        return new DefaultMapBuilder<T>(Key.get(
-                (Class<Map<String, ?>>) mapClass,
-                bindingName), injector);
-    }
-    
-    @Override
-    public <T> DecoratorBuilder<T> decorate(Class<T> interfaceType) {
-        return new DefaultDecoratorBuilder<T>(Key.get(interfaceType), injector);
-    }
-    
-    @Override
-    public <T> DecoratorBuilder<T> decorate(Key<T> key) {
-        return new DefaultDecoratorBuilder<T>(key, injector);
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> MapBuilder<T> bindMap(String bindingName) {
+		Class<?> mapClass = Map.class;
+		return new DefaultMapBuilder<T>(Key.get((Class<Map<String, ?>>) mapClass, bindingName), injector);
+	}
+
+	@Override
+	public <T> DecoratorBuilder<T> decorate(Class<T> interfaceType) {
+		return new DefaultDecoratorBuilder<T>(Key.get(interfaceType), injector);
+	}
+
+	@Override
+	public <T> DecoratorBuilder<T> decorate(Key<T> key) {
+		return new DefaultDecoratorBuilder<T>(key, injector);
+	}
 }

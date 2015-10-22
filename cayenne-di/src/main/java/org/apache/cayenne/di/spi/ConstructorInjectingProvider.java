@@ -51,7 +51,8 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
         this.injector = injector;
     }
 
-    private void initConstructor(Class<? extends T> implementation) {
+    @SuppressWarnings("unchecked")
+	private void initConstructor(Class<? extends T> implementation) {
 
         Constructor<?>[] constructors = implementation.getDeclaredConstructors();
         Constructor<?> lastMatch = null;

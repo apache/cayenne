@@ -44,7 +44,8 @@ public class DefaultScope implements Scope {
 
     private static final String SPECIAL_EVENT = AfterScopeEnd.class.getName();
 
-    public DefaultScope(Class<? extends Annotation>... customEventTypes) {
+    @SafeVarargs
+	public DefaultScope(Class<? extends Annotation>... customEventTypes) {
         this.listeners = new ConcurrentHashMap<>();
         this.eventTypes = new HashSet<Class<? extends Annotation>>();
 
