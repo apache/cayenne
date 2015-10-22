@@ -1,6 +1,7 @@
 package org.apache.cayenne.lifecycle.db.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.lifecycle.db.SortRoot;
 
 /**
@@ -11,16 +12,18 @@ import org.apache.cayenne.lifecycle.db.SortRoot;
  */
 public abstract class _SortDep extends CayenneDataObject {
 
-    public static final String ROOT_PROPERTY = "root";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<SortRoot> ROOT = new Property<SortRoot>("root");
+
     public void setRoot(SortRoot root) {
-        setToOneTarget(ROOT_PROPERTY, root, true);
+        setToOneTarget("root", root, true);
     }
 
     public SortRoot getRoot() {
-        return (SortRoot)readProperty(ROOT_PROPERTY);
+        return (SortRoot)readProperty("root");
     }
 
 

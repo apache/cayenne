@@ -3,6 +3,7 @@ package org.apache.cayenne.lifecycle.db.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.lifecycle.db.AuditableChild1;
 
 /**
@@ -13,27 +14,29 @@ import org.apache.cayenne.lifecycle.db.AuditableChild1;
  */
 public abstract class _Auditable1 extends CayenneDataObject {
 
-    public static final String CHAR_PROPERTY1_PROPERTY = "charProperty1";
-    public static final String CHILDREN1_PROPERTY = "children1";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<String> CHAR_PROPERTY1 = new Property<String>("charProperty1");
+    public static final Property<List<AuditableChild1>> CHILDREN1 = new Property<List<AuditableChild1>>("children1");
+
     public void setCharProperty1(String charProperty1) {
-        writeProperty(CHAR_PROPERTY1_PROPERTY, charProperty1);
+        writeProperty("charProperty1", charProperty1);
     }
     public String getCharProperty1() {
-        return (String)readProperty(CHAR_PROPERTY1_PROPERTY);
+        return (String)readProperty("charProperty1");
     }
 
     public void addToChildren1(AuditableChild1 obj) {
-        addToManyTarget(CHILDREN1_PROPERTY, obj, true);
+        addToManyTarget("children1", obj, true);
     }
     public void removeFromChildren1(AuditableChild1 obj) {
-        removeToManyTarget(CHILDREN1_PROPERTY, obj, true);
+        removeToManyTarget("children1", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<AuditableChild1> getChildren1() {
-        return (List<AuditableChild1>)readProperty(CHILDREN1_PROPERTY);
+        return (List<AuditableChild1>)readProperty("children1");
     }
 
 

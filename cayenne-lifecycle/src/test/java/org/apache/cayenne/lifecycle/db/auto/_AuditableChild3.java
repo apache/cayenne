@@ -1,6 +1,7 @@
 package org.apache.cayenne.lifecycle.db.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.lifecycle.db.Auditable2;
 
 /**
@@ -11,32 +12,34 @@ import org.apache.cayenne.lifecycle.db.Auditable2;
  */
 public abstract class _AuditableChild3 extends CayenneDataObject {
 
-    public static final String CHAR_PROPERTY1_PROPERTY = "charProperty1";
-    public static final String CHAR_PROPERTY2_PROPERTY = "charProperty2";
-    public static final String PARENT_PROPERTY = "parent";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<String> CHAR_PROPERTY1 = new Property<String>("charProperty1");
+    public static final Property<String> CHAR_PROPERTY2 = new Property<String>("charProperty2");
+    public static final Property<Auditable2> PARENT = new Property<Auditable2>("parent");
+
     public void setCharProperty1(String charProperty1) {
-        writeProperty(CHAR_PROPERTY1_PROPERTY, charProperty1);
+        writeProperty("charProperty1", charProperty1);
     }
     public String getCharProperty1() {
-        return (String)readProperty(CHAR_PROPERTY1_PROPERTY);
+        return (String)readProperty("charProperty1");
     }
 
     public void setCharProperty2(String charProperty2) {
-        writeProperty(CHAR_PROPERTY2_PROPERTY, charProperty2);
+        writeProperty("charProperty2", charProperty2);
     }
     public String getCharProperty2() {
-        return (String)readProperty(CHAR_PROPERTY2_PROPERTY);
+        return (String)readProperty("charProperty2");
     }
 
     public void setParent(Auditable2 parent) {
-        setToOneTarget(PARENT_PROPERTY, parent, true);
+        setToOneTarget("parent", parent, true);
     }
 
     public Auditable2 getParent() {
-        return (Auditable2)readProperty(PARENT_PROPERTY);
+        return (Auditable2)readProperty("parent");
     }
 
 

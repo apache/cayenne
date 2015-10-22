@@ -3,6 +3,7 @@ package org.apache.cayenne.lifecycle.db.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.lifecycle.db.SortDep;
 
 /**
@@ -13,19 +14,21 @@ import org.apache.cayenne.lifecycle.db.SortDep;
  */
 public abstract class _SortRoot extends CayenneDataObject {
 
-    public static final String DEPS_PROPERTY = "deps";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<List<SortDep>> DEPS = new Property<List<SortDep>>("deps");
+
     public void addToDeps(SortDep obj) {
-        addToManyTarget(DEPS_PROPERTY, obj, true);
+        addToManyTarget("deps", obj, true);
     }
     public void removeFromDeps(SortDep obj) {
-        removeToManyTarget(DEPS_PROPERTY, obj, true);
+        removeToManyTarget("deps", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<SortDep> getDeps() {
-        return (List<SortDep>)readProperty(DEPS_PROPERTY);
+        return (List<SortDep>)readProperty("deps");
     }
 
 
