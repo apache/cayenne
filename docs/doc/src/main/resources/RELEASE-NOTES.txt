@@ -32,6 +32,8 @@ CAY-2023 Decouple the use of ResourceLocator
 CAY-2025 Support for DBCP2
 CAY-2026 Java 7
 CAY-2027 Support for Expression outer join syntax in EJBQL
+CAY-2028 Wrap DataChannelFilter calls in the main transaction
+CAY-2029 Allow out-of-order insertion into DI lists
 CAY-2030 Capturing a stream of commit changes
 
 Bug Fixes:
