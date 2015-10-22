@@ -87,7 +87,7 @@ public class PostCommitFilter_AllIT extends LifecycleServerCase {
 				assertNotNull(c);
 				assertEquals(ObjectChangeType.INSERT, c.getType());
 				assertEquals(1, c.getAttributeChanges().size());
-				assertEquals("yy", c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1_PROPERTY).getNewValue());
+				assertEquals("yy", c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName()).getNewValue());
 
 				assertNotEquals(preCommitId, a1.getObjectId());
 				assertEquals(preCommitId, c.getPreCommitId());
@@ -104,7 +104,7 @@ public class PostCommitFilter_AllIT extends LifecycleServerCase {
 
 	@Test
 	public void testPostCommit_Update() throws SQLException {
-		
+
 		auditable1.insert(1, "xx");
 
 		final Auditable1 a1 = SelectById.query(Auditable1.class, 1).selectOne(context);
@@ -126,11 +126,11 @@ public class PostCommitFilter_AllIT extends LifecycleServerCase {
 				assertNotNull(c);
 				assertEquals(ObjectChangeType.UPDATE, c.getType());
 				assertEquals(1, c.getAttributeChanges().size());
-				AttributeChange pc = c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1_PROPERTY);
+				AttributeChange pc = c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName());
 				assertNotNull(pc);
 				assertEquals("xx", pc.getOldValue());
 				assertEquals("yy", pc.getNewValue());
-				
+
 				assertEquals(preCommitId, a1.getObjectId());
 				assertEquals(preCommitId, c.getPreCommitId());
 				assertEquals(preCommitId, c.getPostCommitId());
@@ -162,8 +162,8 @@ public class PostCommitFilter_AllIT extends LifecycleServerCase {
 				assertNotNull(c);
 				assertEquals(ObjectChangeType.DELETE, c.getType());
 				assertEquals(1, c.getAttributeChanges().size());
-				assertEquals("xx", c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1_PROPERTY).getOldValue());
-				assertNull(c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1_PROPERTY).getNewValue());
+				assertEquals("xx", c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName()).getOldValue());
+				assertNull(c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName()).getNewValue());
 
 				return null;
 			}
@@ -202,27 +202,30 @@ public class PostCommitFilter_AllIT extends LifecycleServerCase {
 				assertNotNull(changes);
 				assertEquals(4, changes.getUniqueChanges().size());
 
-				ObjectChange ac1c = changes.getChanges()
-						.get(new ObjectId("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 1));
+				ObjectChange ac1c = changes.getChanges().get(
+						new ObjectId("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 1));
 				assertNotNull(ac1c);
 				assertEquals(ObjectChangeType.UPDATE, ac1c.getType());
-				ToOneRelationshipChange ac1c1 = ac1c.getToOneRelationshipChanges().get(AuditableChild1.PARENT_PROPERTY);
+				ToOneRelationshipChange ac1c1 = ac1c.getToOneRelationshipChanges()
+						.get(AuditableChild1.PARENT.getName());
 				assertEquals(a1.getObjectId(), ac1c1.getOldValue());
 				assertEquals(null, ac1c1.getNewValue());
 
-				ObjectChange ac2c = changes.getChanges()
-						.get(new ObjectId("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 2));
+				ObjectChange ac2c = changes.getChanges().get(
+						new ObjectId("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 2));
 				assertNotNull(ac2c);
 				assertEquals(ObjectChangeType.UPDATE, ac2c.getType());
-				ToOneRelationshipChange ac2c1 = ac2c.getToOneRelationshipChanges().get(AuditableChild1.PARENT_PROPERTY);
+				ToOneRelationshipChange ac2c1 = ac2c.getToOneRelationshipChanges()
+						.get(AuditableChild1.PARENT.getName());
 				assertEquals(a2.getObjectId(), ac2c1.getOldValue());
 				assertEquals(a1.getObjectId(), ac2c1.getNewValue());
 
-				ObjectChange ac3c = changes.getChanges()
-						.get(new ObjectId("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 3));
+				ObjectChange ac3c = changes.getChanges().get(
+						new ObjectId("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 3));
 				assertNotNull(ac3c);
 				assertEquals(ObjectChangeType.UPDATE, ac3c.getType());
-				ToOneRelationshipChange ac3c1 = ac3c.getToOneRelationshipChanges().get(AuditableChild1.PARENT_PROPERTY);
+				ToOneRelationshipChange ac3c1 = ac3c.getToOneRelationshipChanges()
+						.get(AuditableChild1.PARENT.getName());
 				assertEquals(null, ac3c1.getOldValue());
 				assertEquals(a1.getObjectId(), ac3c1.getNewValue());
 
@@ -269,7 +272,7 @@ public class PostCommitFilter_AllIT extends LifecycleServerCase {
 
 				assertEquals(1, a1c.getToManyRelationshipChanges().size());
 
-				ToManyRelationshipChange a1c1 = a1c.getToManyRelationshipChanges().get(Auditable1.CHILDREN1_PROPERTY);
+				ToManyRelationshipChange a1c1 = a1c.getToManyRelationshipChanges().get(Auditable1.CHILDREN1.getName());
 				assertNotNull(a1c1);
 
 				assertEquals(2, a1c1.getAdded().size());

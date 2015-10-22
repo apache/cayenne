@@ -24,4 +24,6 @@ import org.apache.cayenne.lifecycle.db.auto._Auditable1;
 @Auditable
 public class Auditable1 extends _Auditable1 {
 
+	private static final long serialVersionUID = 8458581370578140962L;
+
 }

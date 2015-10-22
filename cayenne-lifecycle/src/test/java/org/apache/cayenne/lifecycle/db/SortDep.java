@@ -21,5 +21,5 @@ package org.apache.cayenne.lifecycle.db;
 import org.apache.cayenne.lifecycle.db.auto._SortDep;
 
 public class SortDep extends _SortDep {
-
+	private static final long serialVersionUID = 1L;
 }

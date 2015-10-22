@@ -51,8 +51,8 @@ public class PostCommitFilter_FilteredIT extends LifecycleServerCase {
 	@Override
 	protected ServerRuntimeBuilder configureCayenne() {
 		this.mockListener = mock(PostCommitListener.class);
-		return super.configureCayenne()
-				.addModule(PostCommitModuleBuilder.builder().auditableEntitiesOnly().listener(mockListener).build());
+		return super.configureCayenne().addModule(
+				PostCommitModuleBuilder.builder().auditableEntitiesOnly().listener(mockListener).build());
 	}
 
 	@Before
@@ -80,7 +80,7 @@ public class PostCommitFilter_FilteredIT extends LifecycleServerCase {
 				assertEquals(1, c.getAttributeChanges().size());
 
 				assertEquals(Confidential.getInstance(),
-						c.getAttributeChanges().get(Auditable2.CHAR_PROPERTY2_PROPERTY).getNewValue());
+						c.getAttributeChanges().get(Auditable2.CHAR_PROPERTY2.getName()).getNewValue());
 
 				return null;
 			}
@@ -112,7 +112,7 @@ public class PostCommitFilter_FilteredIT extends LifecycleServerCase {
 				assertNotNull(c);
 				assertEquals(ObjectChangeType.UPDATE, c.getType());
 				assertEquals(1, c.getAttributeChanges().size());
-				AttributeChange pc = c.getAttributeChanges().get(Auditable2.CHAR_PROPERTY2_PROPERTY);
+				AttributeChange pc = c.getAttributeChanges().get(Auditable2.CHAR_PROPERTY2.getName());
 				assertNotNull(pc);
 				assertEquals(Confidential.getInstance(), pc.getOldValue());
 				assertEquals(Confidential.getInstance(), pc.getNewValue());
@@ -148,7 +148,7 @@ public class PostCommitFilter_FilteredIT extends LifecycleServerCase {
 				assertEquals(ObjectChangeType.DELETE, c.getType());
 				assertEquals(1, c.getAttributeChanges().size());
 				assertEquals(Confidential.getInstance(),
-						c.getAttributeChanges().get(Auditable2.CHAR_PROPERTY2_PROPERTY).getOldValue());
+						c.getAttributeChanges().get(Auditable2.CHAR_PROPERTY2.getName()).getOldValue());
 
 				return null;
 			}

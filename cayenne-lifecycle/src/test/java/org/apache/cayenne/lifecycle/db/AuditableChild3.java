@@ -21,7 +21,7 @@ package org.apache.cayenne.lifecycle.db;
 import org.apache.cayenne.lifecycle.audit.AuditableChild;
 import org.apache.cayenne.lifecycle.db.auto._AuditableChild3;
 
-@AuditableChild(value = _AuditableChild3.PARENT_PROPERTY, ignoredProperties = _AuditableChild3.CHAR_PROPERTY1_PROPERTY)
+@AuditableChild(value = "parent", ignoredProperties = "charProperty1")
 public class AuditableChild3 extends _AuditableChild3 {
-
+	private static final long serialVersionUID = 1L;
 }
