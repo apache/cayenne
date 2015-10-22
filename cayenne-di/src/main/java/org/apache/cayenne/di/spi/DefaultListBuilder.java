@@ -49,7 +49,7 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
     public ListBuilder<T> add(Class<? extends T> interfaceType)
             throws DIRuntimeException {
 
-        Key key = Key.get(interfaceType);
+        Key<?> key = Key.get(interfaceType);
         getListProvider().add(key, injector.getProvider(key));
         return this;
     }

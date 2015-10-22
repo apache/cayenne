@@ -33,12 +33,12 @@ import java.util.Map;
 class ListProvider implements Provider<List<?>> {
 
     private Map<Key<?>, Provider<?>> providers;
-    private DIGraph graph;
+    private DIGraph<Key<?>> graph;
     private Key<?> lastKey;
 
     public ListProvider() {
         this.providers = new HashMap<>();
-        this.graph = new DIGraph();
+        this.graph = new DIGraph<>();
     }
 
     @Override
