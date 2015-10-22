@@ -25,20 +25,13 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.After;
 import org.junit.Before;
 
-/**
- * A superclass of integration tests for cayenne-lifecycle.
- */
-public abstract class LifecycleServerCase {
+public class FlattenedServerCase {
 
 	protected ServerRuntime runtime;
 
-	protected TableHelper auditable1;
-	protected TableHelper auditableChild1;
-	protected TableHelper auditableChild2;
-
-	protected TableHelper auditable2;
-	protected TableHelper auditableChild3;
-	protected TableHelper auditableChildUuid;
+	protected TableHelper e3;
+	protected TableHelper e4;
+	protected TableHelper e34;
 
 	@Before
 	public void startCayenne() throws Exception {
@@ -46,28 +39,13 @@ public abstract class LifecycleServerCase {
 
 		DBHelper dbHelper = new DBHelper(runtime.getDataSource());
 
-		this.auditable1 = new TableHelper(dbHelper, "AUDITABLE1").setColumns("ID", "CHAR_PROPERTY1");
+		this.e3 = new TableHelper(dbHelper, "E3").setColumns("ID");
+		this.e4 = new TableHelper(dbHelper, "E4").setColumns("ID");
+		this.e34 = new TableHelper(dbHelper, "E34").setColumns("E3_ID", "E4_ID");
 
-		this.auditableChild1 = new TableHelper(dbHelper, "AUDITABLE_CHILD1").setColumns("ID", "AUDITABLE1_ID",
-				"CHAR_PROPERTY1");
+		this.e34.deleteAll();
+		this.e3.deleteAll();
 
-		this.auditableChild2 = new TableHelper(dbHelper, "AUDITABLE_CHILD2").setColumns("ID", "AUDITABLE1_ID",
-				"CHAR_PROPERTY1");
-
-		this.auditable2 = new TableHelper(dbHelper, "AUDITABLE2").setColumns("ID", "CHAR_PROPERTY1", "CHAR_PROPERTY2");
-
-		this.auditableChild3 = new TableHelper(dbHelper, "AUDITABLE_CHILD3").setColumns("ID", "AUDITABLE2_ID",
-				"CHAR_PROPERTY1", "CHAR_PROPERTY2");
-
-		this.auditableChildUuid = new TableHelper(dbHelper, "AUDITABLE_CHILD_UUID").setColumns("ID", "UUID",
-				"CHAR_PROPERTY1", "CHAR_PROPERTY2");
-
-		this.auditableChild1.deleteAll();
-		this.auditableChild2.deleteAll();
-		this.auditable1.deleteAll();
-		this.auditableChild3.deleteAll();
-		this.auditable2.deleteAll();
-		this.auditableChildUuid.deleteAll();
 	}
 
 	protected ServerRuntimeBuilder configureCayenne() {
@@ -80,4 +58,5 @@ public abstract class LifecycleServerCase {
 			runtime.shutdown();
 		}
 	}
+
 }

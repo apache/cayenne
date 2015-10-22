@@ -42,14 +42,14 @@ import org.apache.cayenne.lifecycle.changemap.ToManyRelationshipChange;
 import org.apache.cayenne.lifecycle.changemap.ToOneRelationshipChange;
 import org.apache.cayenne.lifecycle.db.Auditable1;
 import org.apache.cayenne.lifecycle.db.AuditableChild1;
-import org.apache.cayenne.lifecycle.unit.LifecycleServerCase;
+import org.apache.cayenne.lifecycle.unit.AuditableServerCase;
 import org.apache.cayenne.query.SelectById;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-public class PostCommitFilter_AllIT extends LifecycleServerCase {
+public class PostCommitFilter_AllIT extends AuditableServerCase {
 
 	protected ObjectContext context;
 	protected PostCommitListener mockListener;
@@ -294,5 +294,4 @@ public class PostCommitFilter_AllIT extends LifecycleServerCase {
 
 		verify(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
 	}
-
 }

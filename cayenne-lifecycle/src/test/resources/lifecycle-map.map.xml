@@ -45,8 +45,8 @@
 		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="E34">
-		<db-attribute name="E3_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="E4_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="E3_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="E4_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="E4">
 		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>

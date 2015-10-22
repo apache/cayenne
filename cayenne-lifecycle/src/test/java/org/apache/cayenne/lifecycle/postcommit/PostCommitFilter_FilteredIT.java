@@ -36,14 +36,14 @@ import org.apache.cayenne.lifecycle.changemap.ObjectChange;
 import org.apache.cayenne.lifecycle.changemap.ObjectChangeType;
 import org.apache.cayenne.lifecycle.changemap.AttributeChange;
 import org.apache.cayenne.lifecycle.db.Auditable2;
-import org.apache.cayenne.lifecycle.unit.LifecycleServerCase;
+import org.apache.cayenne.lifecycle.unit.AuditableServerCase;
 import org.apache.cayenne.query.SelectById;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-public class PostCommitFilter_FilteredIT extends LifecycleServerCase {
+public class PostCommitFilter_FilteredIT extends AuditableServerCase {
 
 	protected ObjectContext context;
 	protected PostCommitListener mockListener;

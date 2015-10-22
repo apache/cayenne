@@ -40,10 +40,10 @@ import org.apache.cayenne.lifecycle.db.AuditableChild3;
 import org.apache.cayenne.lifecycle.db.AuditableChildUuid;
 import org.apache.cayenne.lifecycle.id.IdCoder;
 import org.apache.cayenne.lifecycle.relationship.ObjectIdRelationshipHandler;
-import org.apache.cayenne.lifecycle.unit.LifecycleServerCase;
+import org.apache.cayenne.lifecycle.unit.AuditableServerCase;
 import org.junit.Test;
 
-public class AuditableFilterIT extends LifecycleServerCase {
+public class AuditableFilterIT extends AuditableServerCase {
 
 	@Test
 	public void testAudit_IgnoreRuntimeRelationships() throws Exception {
