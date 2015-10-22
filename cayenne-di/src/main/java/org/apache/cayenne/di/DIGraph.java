@@ -103,10 +103,13 @@ public class DIGraph<V> {
     public Map<V, Integer> inDegree() {
         Map<V, Integer> result = new LinkedHashMap<>();
 
-        for (Map.Entry<V, List<V>> entry : neighbors.entrySet()) {
-            result.putIfAbsent(entry.getKey(), 0);
-            for (V to : entry.getValue()) {
-                result.put(to, result.getOrDefault(to, 0) + 1);
+        for (V v: neighbors.keySet()) {
+            result.put(v, 0);
+        }
+
+        for (V from: neighbors.keySet()) {
+            for (V to: neighbors.get(from)) {
+                result.put(to, result.get(to) + 1);
             }
         }
 
