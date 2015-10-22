@@ -41,6 +41,16 @@
 	<db-entity name="E2">
 		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
+	<db-entity name="E3">
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="E34">
+		<db-attribute name="E3_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="E4_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="E4">
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<db-entity name="SORT_DEP">
 		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="ROOT_ID" type="BIGINT" isMandatory="true"/>
@@ -78,6 +88,10 @@
 	</obj-entity>
 	<obj-entity name="E2" className="org.apache.cayenne.lifecycle.db.E2" dbEntityName="E2">
 	</obj-entity>
+	<obj-entity name="E3" className="org.apache.cayenne.lifecycle.db.E3" dbEntityName="E3">
+	</obj-entity>
+	<obj-entity name="E4" className="org.apache.cayenne.lifecycle.db.E4" dbEntityName="E4">
+	</obj-entity>
 	<obj-entity name="SortDep" className="org.apache.cayenne.lifecycle.db.SortDep" dbEntityName="SORT_DEP">
 	</obj-entity>
 	<obj-entity name="SortRoot" className="org.apache.cayenne.lifecycle.db.SortRoot" dbEntityName="SORT_ROOT">
@@ -103,6 +117,18 @@
 	<db-relationship name="parent" source="AUDITABLE_CHILD3" target="AUDITABLE2" toMany="false">
 		<db-attribute-pair source="AUDITABLE2_ID" target="ID"/>
 	</db-relationship>
+	<db-relationship name="e34s" source="E3" target="E34" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="ID" target="E3_ID"/>
+	</db-relationship>
+	<db-relationship name="e3" source="E34" target="E3" toMany="false">
+		<db-attribute-pair source="E3_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="e4" source="E34" target="E4" toMany="false">
+		<db-attribute-pair source="E4_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="e34s" source="E4" target="E34" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="ID" target="E4_ID"/>
+	</db-relationship>
 	<db-relationship name="root" source="SORT_DEP" target="SORT_ROOT" toMany="false">
 		<db-attribute-pair source="ROOT_ID" target="ID"/>
 	</db-relationship>
@@ -114,6 +140,8 @@
 	<obj-relationship name="parent" source="AuditableChild1" target="Auditable1" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="parent" source="AuditableChild2" target="Auditable1" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="parent" source="AuditableChild3" target="Auditable2" deleteRule="Nullify" db-relationship-path="parent"/>
+	<obj-relationship name="e4s" source="E3" target="E4" deleteRule="Deny" db-relationship-path="e34s.e4"/>
+	<obj-relationship name="e3s" source="E4" target="E3" deleteRule="Deny" db-relationship-path="e34s.e3"/>
 	<obj-relationship name="root" source="SortDep" target="SortRoot" deleteRule="Nullify" db-relationship-path="root"/>
 	<obj-relationship name="deps" source="SortRoot" target="SortDep" deleteRule="Deny" db-relationship-path="deps"/>
 </data-map>
