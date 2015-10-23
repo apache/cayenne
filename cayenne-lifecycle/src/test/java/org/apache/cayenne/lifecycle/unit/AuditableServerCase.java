@@ -43,11 +43,15 @@ public abstract class AuditableServerCase {
 	protected TableHelper auditable3;
 	protected TableHelper auditable4;
 
+	protected TableHelper auditLog;
+
 	@Before
 	public void startCayenne() throws Exception {
 		this.runtime = configureCayenne().build();
 
 		DBHelper dbHelper = new DBHelper(runtime.getDataSource());
+
+		this.auditLog = new TableHelper(dbHelper, "AUDIT_LOG").setColumns("ID", "LOG");
 
 		this.auditable1 = new TableHelper(dbHelper, "AUDITABLE1").setColumns("ID", "CHAR_PROPERTY1");
 
@@ -77,6 +81,8 @@ public abstract class AuditableServerCase {
 		this.auditableChildUuid.deleteAll();
 		this.auditable4.deleteAll();
 		this.auditable3.deleteAll();
+
+		this.auditLog.deleteAll();
 	}
 
 	protected ServerRuntimeBuilder configureCayenne() {

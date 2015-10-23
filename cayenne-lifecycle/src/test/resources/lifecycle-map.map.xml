@@ -46,6 +46,10 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="UUID" type="VARCHAR" length="200"/>
 	</db-entity>
+	<db-entity name="AUDIT_LOG">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="LOG" type="CLOB"/>
+	</db-entity>
 	<db-entity name="E1">
 		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
@@ -73,6 +77,9 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="UUID" type="VARCHAR" length="200"/>
 	</db-entity>
+	<obj-entity name="AuditLog" className="org.apache.cayenne.lifecycle.db.AuditLog" dbEntityName="AUDIT_LOG">
+		<obj-attribute name="log" type="java.lang.String" db-attribute-path="LOG"/>
+	</obj-entity>
 	<obj-entity name="Auditable1" className="org.apache.cayenne.lifecycle.db.Auditable1" dbEntityName="AUDITABLE1">
 		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
 	</obj-entity>

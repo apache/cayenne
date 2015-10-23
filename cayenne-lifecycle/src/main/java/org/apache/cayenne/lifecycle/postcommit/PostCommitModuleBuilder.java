@@ -30,6 +30,9 @@ import org.apache.cayenne.lifecycle.postcommit.meta.AuditablePostCommitEntityFac
 import org.apache.cayenne.lifecycle.postcommit.meta.IncludeAllPostCommitEntityFactory;
 import org.apache.cayenne.lifecycle.postcommit.meta.PostCommitEntity;
 import org.apache.cayenne.lifecycle.postcommit.meta.PostCommitEntityFactory;
+import org.apache.cayenne.tx.TransactionFilter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A builder of a module that integrates {@link PostCommitFilter} and
@@ -39,6 +42,8 @@ import org.apache.cayenne.lifecycle.postcommit.meta.PostCommitEntityFactory;
  */
 public class PostCommitModuleBuilder {
 
+	private static final Log LOGGER = LogFactory.getLog(PostCommitModuleBuilder.class);
+
 	public static PostCommitModuleBuilder builder() {
 		return new PostCommitModuleBuilder();
 	}
@@ -46,6 +51,7 @@ public class PostCommitModuleBuilder {
 	private Class<? extends PostCommitEntityFactory> entityFactoryType;
 	private Collection<Class<? extends PostCommitListener>> listenerTypes;
 	private Collection<PostCommitListener> listenerInstances;
+	private boolean excludeFromTransaction;
 
 	PostCommitModuleBuilder() {
 		this.entityFactoryType = IncludeAllPostCommitEntityFactory.class;
@@ -60,6 +66,16 @@ public class PostCommitModuleBuilder {
 
 	public PostCommitModuleBuilder listener(PostCommitListener instance) {
 		this.listenerInstances.add(instance);
+		return this;
+	}
+
+	/**
+	 * If called, events will be dispatched outside of the main commit
+	 * transaction. By default events are dispatched within the transaction, so
+	 * listeners can commit their code together with the main commit.
+	 */
+	public PostCommitModuleBuilder excludeFromTransaction() {
+		this.excludeFromTransaction = true;
 		return this;
 	}
 
@@ -94,9 +110,15 @@ public class PostCommitModuleBuilder {
 			@Override
 			public void configure(Binder binder) {
 
-				ListBuilder<PostCommitListener> listeners = binder
-						.<PostCommitListener> bindList(PostCommitFilter.POST_COMMIT_LISTENERS_LIST)
-						.addAll(listenerInstances);
+				if (listenerTypes.isEmpty() && listenerInstances.isEmpty()) {
+					LOGGER.info("No listeners configured. Skipping PostCommitFilter registration");
+					return;
+				}
+
+				binder.bind(PostCommitEntityFactory.class).to(entityFactoryType);
+
+				ListBuilder<PostCommitListener> listeners = binder.<PostCommitListener> bindList(
+						PostCommitFilter.POST_COMMIT_LISTENERS_LIST).addAll(listenerInstances);
 
 				// types have to be added one-by-one
 				for (Class type : listenerTypes) {
@@ -110,11 +132,13 @@ public class PostCommitModuleBuilder {
 
 				binder.bind(PostCommitFilter.class).to(PostCommitFilter.class);
 
-				// TODO: should be ordering the filter to go inside transaction
-				// once the corresponding Jiras are available in Cayenne
-				binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST).add(PostCommitFilter.class);
-
-				binder.bind(PostCommitEntityFactory.class).to(entityFactoryType);
+				if (excludeFromTransaction) {
+					binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST).add(PostCommitFilter.class)
+							.after(TransactionFilter.class);
+				} else {
+					binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST).add(PostCommitFilter.class)
+							.before(TransactionFilter.class);
+				}
 			}
 		};
 	}
