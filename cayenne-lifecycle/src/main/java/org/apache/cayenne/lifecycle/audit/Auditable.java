@@ -25,6 +25,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.apache.cayenne.lifecycle.postcommit.Confidential;
+
 /**
  * An annotation that adds auditing behavior to DataObjects.
  * 
@@ -36,10 +38,39 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Auditable {
 
-    String[] ignoredProperties() default {};
-    
-    /**
-     * @since 4.0
-     */
-    String[] confidential() default {};
+	/**
+	 * Returns an array of entity properties that should be excluded from audit.
+	 */
+	String[] ignoredProperties() default {};
+
+	/**
+	 * Returns whether all attributes should be excluded from audit.
+	 * 
+	 * @since 4.0
+	 */
+	boolean ignoreAttributes() default false;
+
+	/**
+	 * Returns whether all to-one relationships should be excluded from audit.
+	 * 
+	 * @since 4.0
+	 */
+	boolean ignoreToOneRelationships() default false;
+
+	/**
+	 * Returns whether all to-many relationships should be excluded from audit.
+	 * 
+	 * @since 4.0
+	 */
+	boolean ignoreToManyRelationships() default false;
+
+	/**
+	 * Returns an array of properties that should be treated as confidential.
+	 * I.e. their change should be recorded, but their values should be hidden
+	 * from listeners. In practice both old and new values will be set to an
+	 * instance of {@link Confidential}.
+	 * 
+	 * @since 4.0
+	 */
+	String[] confidential() default {};
 }

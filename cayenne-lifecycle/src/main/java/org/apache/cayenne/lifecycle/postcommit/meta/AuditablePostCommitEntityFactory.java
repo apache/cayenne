@@ -89,13 +89,16 @@ public class AuditablePostCommitEntityFactory implements PostCommitEntityFactory
 		EntityResolver entityResolver = getEntityResolver();
 		ClassDescriptor classDescriptor = entityResolver.getClassDescriptor(entityName);
 
-		Auditable annotation = classDescriptor.getObjectClass().getAnnotation(Auditable.class);
-		if (annotation == null) {
+		Auditable a = classDescriptor.getObjectClass().getAnnotation(Auditable.class);
+		if (a == null) {
 			return BLOCKED_ENTITY;
 		}
 
 		ObjEntity entity = entityResolver.getObjEntity(entityName);
-		return new DefaultPostCommitEntity(entity, annotation.ignoredProperties(), annotation.confidential());
+		return new MutablePostCommitEntity(entity).setConfidential(a.confidential())
+				.setIgnoreProperties(a.ignoredProperties()).setIgnoreAttributes(a.ignoreAttributes())
+				.setIgnoreToOneRelationships(a.ignoreToOneRelationships())
+				.setIgnoreToManyRelationships(a.ignoreToManyRelationships());
 	}
 
 }

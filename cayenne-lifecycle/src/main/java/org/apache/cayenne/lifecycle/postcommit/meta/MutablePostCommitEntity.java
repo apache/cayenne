@@ -21,43 +21,23 @@ package org.apache.cayenne.lifecycle.postcommit.meta;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 
 /**
  * @since 4.0
  */
-public class DefaultPostCommitEntity implements PostCommitEntity {
-	
+public class MutablePostCommitEntity implements PostCommitEntity {
+
 	private Collection<String> ignoredProperties;
 	private Collection<String> confidentialProperties;
+	private ObjEntity entity;
 
-	public DefaultPostCommitEntity(ObjEntity entity, String[] ignoredProperties, String[] confidentialProperties) {
-
+	public MutablePostCommitEntity(ObjEntity entity) {
+		this.entity = entity;
 		this.ignoredProperties = new HashSet<>();
 		this.confidentialProperties = new HashSet<>();
-
-		// ignoring to-many (presumably traced via changes to target entities)
-		// TODO: M:N relationships will not be tracked as a result...
-
-		for (ObjRelationship relationship : entity.getRelationships()) {
-			if (relationship.isToMany()) {
-				this.ignoredProperties.add(relationship.getName());
-			}
-		}
-
-		// ignore explicitly specified properties
-		if (ignoredProperties != null) {
-			for (String property : ignoredProperties) {
-				this.ignoredProperties.add(property);
-			}
-		}
-
-		if (confidentialProperties != null) {
-			for (String property : confidentialProperties) {
-				this.confidentialProperties.add(property);
-			}
-		}
 	}
 
 	@Override
@@ -75,4 +55,58 @@ public class DefaultPostCommitEntity implements PostCommitEntity {
 		return confidentialProperties.contains(property);
 	}
 
+	MutablePostCommitEntity setConfidential(String[] confidentialProperties) {
+
+		if (confidentialProperties != null) {
+			for (String property : confidentialProperties) {
+				this.confidentialProperties.add(property);
+			}
+		}
+
+		return this;
+	}
+	
+	MutablePostCommitEntity setIgnoreProperties(String[] properties) {
+		if (properties != null) {
+			for (String property : properties) {
+				this.ignoredProperties.add(property);
+			}
+		}
+
+		return this;
+	}
+
+	MutablePostCommitEntity setIgnoreAttributes(boolean ignore) {
+		if (ignore) {
+			for (ObjAttribute a : entity.getAttributes()) {
+				this.ignoredProperties.add(a.getName());
+			}
+		}
+
+		return this;
+	}
+
+	MutablePostCommitEntity setIgnoreToOneRelationships(boolean ignore) {
+		if (ignore) {
+			for (ObjRelationship r : entity.getRelationships()) {
+				if (!r.isToMany()) {
+					this.ignoredProperties.add(r.getName());
+				}
+			}
+		}
+
+		return this;
+	}
+
+	MutablePostCommitEntity setIgnoreToManyRelationships(boolean ignore) {
+		if (ignore) {
+			for (ObjRelationship r : entity.getRelationships()) {
+				if (r.isToMany()) {
+					this.ignoredProperties.add(r.getName());
+				}
+			}
+		}
+
+		return this;
+	}
 }
