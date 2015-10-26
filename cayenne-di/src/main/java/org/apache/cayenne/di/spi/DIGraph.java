@@ -21,6 +21,7 @@ package org.apache.cayenne.di.spi;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -55,6 +56,15 @@ class DIGraph<V> {
 
 		neighbors.put(vertex, new ArrayList<V>());
 	}
+
+    /**
+     * Add vertexes to the graph.
+     */
+    public void addAll(Collection<V> vertexes) {
+        for (V vertex : vertexes) {
+            this.add(vertex);
+        }
+    }
 
 	/**
 	 * Add an edge to the graph; if either vertex does not exist, it's added.

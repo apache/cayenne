@@ -43,6 +43,9 @@ import org.apache.cayenne.di.mock.MockInterface4;
 import org.apache.cayenne.di.mock.MockInterface5;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -295,6 +298,40 @@ public class DefaultInjectorInjectionTest {
         MockInterface1 service = injector.getInstance(MockInterface1.class);
         assertNotNull(service);
         assertEquals(";1value;2value;3value;4value;5value", service.getName());
+    }
+
+    @Test
+    public void testListInjection_addAllValues() {
+        Module module = new Module() {
+            @Override
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(
+                        MockImplementation1_ListConfiguration.class);
+
+                Collection firstList = new ArrayList<>();
+                firstList.add("1value");
+                firstList.add("2value");
+                firstList.add("3value");
+
+                Collection secondList = new ArrayList<>();
+                secondList.add("6value");
+                secondList.add("7value");
+                secondList.add("8value");
+                binder.bindList("xyz")
+                        .add(Key.get(Object.class, "4value"), "4value")
+                        .addAll(firstList)
+                        .before(Key.get(Object.class, "4value"))
+                        .addAll(secondList)
+                        .after(Key.get(Object.class, "5value"))
+                        .add(Key.get(Object.class, "5value"), "5value");
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface1 service = injector.getInstance(MockInterface1.class);
+        assertNotNull(service);
+        assertEquals(";1value;2value;3value;4value;5value;6value;7value;8value", service.getName());
     }
 
     @Test

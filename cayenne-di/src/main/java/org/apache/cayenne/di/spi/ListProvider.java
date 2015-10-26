@@ -23,6 +23,8 @@ import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Provider;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +37,12 @@ class ListProvider implements Provider<List<?>> {
     private Map<Key<?>, Provider<?>> providers;
     private DIGraph<Key<?>> graph;
     private Key<?> lastKey;
+    private Collection<Key<?>> lastKeys;
 
     public ListProvider() {
         this.providers = new HashMap<>();
         this.graph = new DIGraph<>();
+        this.lastKeys = Collections.emptySet();
     }
 
     @Override
@@ -72,14 +76,37 @@ class ListProvider implements Provider<List<?>> {
         providers.put(key, provider);
         graph.add(key);
         lastKey = key;
+        lastKeys.clear();
     }
 
-    void after(Key<?> key) {
-        graph.add(lastKey, key);
+    void addAll(Map<Key<?>, Provider<?>> keyProviderMap) {
+        providers.putAll(keyProviderMap);
+        graph.addAll(keyProviderMap.keySet());
+        lastKeys = keyProviderMap.keySet();
     }
 
-    void before(Key<?> key) {
-        graph.add(key, lastKey);
+    void after(Key<?> after) {
+        if (!lastKeys.isEmpty()) {
+            for (Key<?> key : lastKeys) {
+                graph.add(key, after);
+            }
+
+            return;
+        }
+
+        graph.add(lastKey, after);
+    }
+
+    void before(Key<?> before) {
+        if (!lastKeys.isEmpty()) {
+            for (Key<?> key: lastKeys) {
+                graph.add(before, key);
+            }
+
+            return;
+        }
+
+        graph.add(before, lastKey);
     }
 
 }
