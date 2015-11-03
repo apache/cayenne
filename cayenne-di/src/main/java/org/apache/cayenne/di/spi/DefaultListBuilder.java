@@ -52,6 +52,23 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
             throws DIRuntimeException {
 
         Key<?> key = Key.get(interfaceType);
+        Binding<?> binding = injector.getBinding(key);
+
+        if (binding == null) {
+            return addWithBinding(interfaceType);
+        }
+
+        getListProvider().add(key, binding.getScoped());
+        return this;
+    }
+
+    <K extends T> ListBuilder<T> addWithBinding(Class<K> interfaceType) {
+        Key<K> key = Key.get(interfaceType);
+
+        Provider<K> provider0 = new ConstructorInjectingProvider<>(interfaceType, injector);
+        Provider<K> provider1 = new FieldInjectingProvider<>(provider0, injector);
+        injector.putBinding(key, provider1);
+
         getListProvider().add(key, injector.getProvider(key));
         return this;
     }

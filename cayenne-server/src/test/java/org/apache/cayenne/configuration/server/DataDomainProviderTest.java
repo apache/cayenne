@@ -142,21 +142,6 @@ public class DataDomainProviderTest {
 
 				binder.bindMap(Constants.PROPERTIES_MAP);
 
-				binder.bind(FirebirdSniffer.class).to(FirebirdSniffer.class);
-				binder.bind(OpenBaseSniffer.class).to(OpenBaseSniffer.class);
-				binder.bind(FrontBaseSniffer.class).to(FrontBaseSniffer.class);
-				binder.bind(IngresSniffer.class).to(IngresSniffer.class);
-				binder.bind(SQLiteSniffer.class).to(SQLiteSniffer.class);
-				binder.bind(DB2Sniffer.class).to(DB2Sniffer.class);
-				binder.bind(H2Sniffer.class).to(H2Sniffer.class);
-				binder.bind(HSQLDBSniffer.class).to(HSQLDBSniffer.class);
-				binder.bind(SybaseSniffer.class).to(SybaseSniffer.class);
-				binder.bind(DerbySniffer.class).to(DerbySniffer.class);
-				binder.bind(SQLServerSniffer.class).to(SQLServerSniffer.class);
-				binder.bind(OracleSniffer.class).to(OracleSniffer.class);
-				binder.bind(PostgresSniffer.class).to(PostgresSniffer.class);
-				binder.bind(MySQLSniffer.class).to(MySQLSniffer.class);
-
 				binder.bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST).add(FirebirdSniffer.class)
 						.add(OpenBaseSniffer.class).add(FrontBaseSniffer.class).add(IngresSniffer.class)
 						.add(SQLiteSniffer.class).add(DB2Sniffer.class).add(H2Sniffer.class).add(HSQLDBSniffer.class)

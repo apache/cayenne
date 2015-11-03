@@ -387,6 +387,25 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
+    public void testListInjection_addTypeWithBinding() {
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(
+                        MockImplementation1_ListConfiguration.class);
+
+                binder.bindList("xyz").add(MockImplementation5.class).add("yvalue");
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface1 service = injector.getInstance(MockInterface1.class);
+        assertNotNull(service);
+        assertEquals(";xyz;yvalue", service.getName());
+    }
+
+    @Test
     public void testListInjection_empty() {
         Module module = new Module() {
 

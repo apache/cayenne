@@ -35,6 +35,7 @@ CAY-2027 Support for Expression outer join syntax in EJBQL
 CAY-2028 Wrap DataChannelFilter calls in the main transaction
 CAY-2029 Allow out-of-order insertion into DI lists
 CAY-2030 Capturing a stream of commit changes
+CAY-2035 Autobind items added to collections (Cayenne DI)
 
 Bug Fixes:
 
