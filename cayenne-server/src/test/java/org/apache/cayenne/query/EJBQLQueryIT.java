@@ -18,6 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -39,19 +52,6 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class EJBQLQueryIT extends ServerCase {
