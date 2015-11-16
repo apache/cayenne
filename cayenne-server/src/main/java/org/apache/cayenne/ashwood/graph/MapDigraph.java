@@ -70,338 +70,369 @@ import java.util.Map.Entry;
  */
 public class MapDigraph<E, V> implements Digraph<E, V> {
 
-    private Map<E, Map<E, V>> graph;
-    private int size;
-
-    public MapDigraph() {
-        graph = new HashMap<E, Map<E, V>>();
-    }
-
-    public boolean addVertex(E vertex) {
-        if (graph.containsKey(vertex)) {
-            return false;
-        }
-
-        graph.put(vertex, new HashMap<E, V>());
-        return true;
-    }
-
-    public boolean addAllVertices(Collection<? extends E> vertices) {
-        if (graph.keySet().containsAll(vertices)) {
-            return false;
-        }
-
-        for (E vertex : vertices) {
-            addVertex(vertex);
-        }
-
-        return true;
-    }
-
-    public V putArc(E origin, E destination, V arc) {
-        Map<E, V> destinations = graph.get(origin);
-        if (destinations == null) {
-            destinations = new HashMap<E, V>();
-            graph.put(origin, destinations);
-        }
-
-        addVertex(destination);
-        V oldArc = destinations.put(destination, arc);
-        if (oldArc == null) {
-            size++;
-        }
-
-        return oldArc;
-    }
-
-    public V getArc(Object origin, Object destination) {
-        Map<E, V> destinations = graph.get(origin);
-        if (destinations == null) {
-            return null;
-        }
-
-        return destinations.get(destination);
-    }
-
-    public boolean removeVertex(E vertex) {
-        Map<E, V> destination = graph.remove(vertex);
-        if (destination != null)
-            size -= destination.size();
-        else
-            return false;
-
-        removeIncoming(vertex);
-        return true;
-    }
-
-    public boolean removeAllVertices(Collection<? extends E> vertices) {
-        boolean modified = false;
-
-        for (E vertex : vertices) {
-            modified |= removeVertex(vertex);
-        }
-
-        return modified;
-    }
-
-    public Object removeArc(E origin, E destination) {
-        Map<E, V> destinations = graph.get(origin);
-        if (destinations == null) {
-            return null;
-        }
-
-        V arc = destinations.remove(destination);
-        if (arc != null)
-            size--;
-
-        return arc;
-    }
-
-    public boolean removeIncoming(E vertex) {
-        boolean modified = false;
-
-        for (Map<E, V> destinations : graph.values()) {
-            Object arc = destinations.remove(vertex);
-            if (arc != null)
-                size--;
-            modified |= (arc != null);
-        }
-
-        return modified;
-    }
-
-    public boolean removeOutgoing(E vertex) {
-
-        Map<E, V> destinations = graph.remove(vertex);
-        if (destinations != null)
-            size -= destinations.size();
-        else
-            return false;
-        boolean modified = !destinations.isEmpty();
-        destinations.clear();
-        return modified;
-    }
-
-    public Iterator<E> vertexIterator() {
-        return graph.keySet().iterator();
-    }
-
-    public ArcIterator<E, V> arcIterator() {
-        return new AllArcIterator();
-    }
-
-    public ArcIterator<E, V> outgoingIterator(E vertex) {
-        if (!containsVertex(vertex)) {
-            return ArcIterator.EMPTY_ITERATOR;
-        }
-
-        return new OutgoingArcIterator(vertex);
-    }
-
-    public ArcIterator<E, V> incomingIterator(E vertex) {
-        if (!containsVertex(vertex))
-            return ArcIterator.EMPTY_ITERATOR;
-        return new IncomingArcIterator(vertex);
-    }
-
-    public int order() {
-        return graph.size();
-    }
-
-    public int size() {
-        return size;
-    }
-
-    public int outgoingSize(E vertex) {
-        Map<E, V> destinations = graph.get(vertex);
-        if (destinations == null)
-            return 0;
-        else
-            return destinations.size();
-    }
-
-    public int incomingSize(E vertex) {
-        int count = 0;
-        if (!graph.containsKey(vertex))
-            return 0;
-
-        for (Map<E, V> destinations : graph.values()) {
-            count += (destinations.containsKey(vertex) ? 1 : 0);
-        }
-
-        return count;
-    }
-
-    public boolean containsVertex(E vertex) {
-        return graph.containsKey(vertex);
-    }
-
-    public boolean containsAllVertices(Collection<? extends E> vertices) {
-        return graph.keySet().containsAll(vertices);
-    }
-
-    public boolean hasArc(E origin, E destination) {
-        Map<E, V> destinations = graph.get(origin);
-        if (destinations == null)
-            return false;
-        return destinations.containsKey(destination);
-    }
-
-    public boolean isEmpty() {
-        return graph.isEmpty();
-    }
-
-    public boolean isOutgoingEmpty(E vertex) {
-        return outgoingSize(vertex) == 0;
-    }
-
-    public boolean isIncomingEmpty(E vertex) {
-        return incomingSize(vertex) == 0;
-    }
-
-    private class AllArcIterator implements ArcIterator<E, V> {
-
-        private Iterator<Entry<E, Map<E, V>>> originIterator;
-        private Iterator<Entry<E, V>> destinationIterator;
-        private E origin, nextOrigin;
-        private E destination, nextDst;
-        private V arc, nextArc;
-
-        private AllArcIterator() {
-            originIterator = graph.entrySet().iterator();
-            next();
-        }
-
-        public E getOrigin() {
-            return origin;
-        }
-
-        public E getDestination() {
-            return destination;
-        }
-
-        public boolean hasNext() {
-            return nextArc != null;
-        }
-
-        public V next() {
-            origin = nextOrigin;
-            destination = nextDst;
-            arc = nextArc;
-            if (destinationIterator == null || !destinationIterator.hasNext()) {
-                nextOrigin = null;
-                nextDst = null;
-                nextArc = null;
-
-                while (originIterator.hasNext()) {
-                    Entry<E, Map<E, V>> entry = originIterator.next();
-                    destinationIterator = entry.getValue().entrySet().iterator();
-                    if (destinationIterator.hasNext()) {
-                        nextOrigin = entry.getKey();
-                        Entry<E, V> entry1 = destinationIterator.next();
-                        nextDst = entry1.getKey();
-                        nextArc = entry1.getValue();
-                        break;
-                    }
-                }
-            }
-            else {
-                Entry<E, V> entry1 = destinationIterator.next();
-                nextDst = entry1.getKey();
-                nextArc = entry1.getValue();
-            }
-
-            return arc;
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException(
-                    "Method remove() not yet implemented.");
-        }
-    }
-
-    private class OutgoingArcIterator implements ArcIterator<E, V> {
-
-        private E origin;
-        private Iterator<Entry<E, V>> dstIt;
-        private Entry<E, V> entry;
-
-        private OutgoingArcIterator(E vertex) {
-            origin = vertex;
-            dstIt = graph.get(vertex).entrySet().iterator();
-        }
-
-        public E getOrigin() {
-            return origin;
-        }
-
-        public E getDestination() {
-            if (entry == null)
-                return null;
-            return entry.getKey();
-        }
-
-        public boolean hasNext() {
-            return dstIt.hasNext();
-        }
-
-        public V next() {
-            entry = dstIt.next();
-            return entry.getValue();
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException(
-                    "Method remove() not yet implemented.");
-        }
-    }
-
-    private class IncomingArcIterator implements ArcIterator<E, V> {
-
-        private E dst;
-        private E origin, nextOrigin;
-        private V arc, nextArc;
-        private Iterator<Entry<E, Map<E, V>>> graphIt;
-
-        private IncomingArcIterator(E vertex) {
-            dst = vertex;
-            graphIt = graph.entrySet().iterator();
-            next();
-        }
-
-        public E getOrigin() {
-            return origin;
-        }
-
-        public E getDestination() {
-            return dst;
-        }
-
-        public boolean hasNext() {
-            return (nextArc != null);
-        }
-
-        public V next() {
-            origin = nextOrigin;
-            arc = nextArc;
-            nextArc = null;
-            nextOrigin = null;
-            while (graphIt.hasNext()) {
-                Entry<E, Map<E, V>> entry = graphIt.next();
-                Map<E, V> destinations = entry.getValue();
-                nextArc = destinations.get(dst);
-                if (nextArc != null) {
-                    nextOrigin = entry.getKey();
-                    break;
-                }
-            }
-            return arc;
-        }
-
-        public void remove() {
-            throw new java.lang.UnsupportedOperationException(
-                    "Method remove() not yet implemented.");
-        }
-    }
+	private Map<E, Map<E, V>> graph;
+	private int size;
+
+	public MapDigraph() {
+		graph = new HashMap<E, Map<E, V>>();
+	}
+
+	@Override
+	public boolean addVertex(E vertex) {
+		if (graph.containsKey(vertex)) {
+			return false;
+		}
+
+		graph.put(vertex, new HashMap<E, V>());
+		return true;
+	}
+
+	@Override
+	public boolean addAllVertices(Collection<? extends E> vertices) {
+		if (graph.keySet().containsAll(vertices)) {
+			return false;
+		}
+
+		for (E vertex : vertices) {
+			addVertex(vertex);
+		}
+
+		return true;
+	}
+
+	@Override
+	public V putArc(E origin, E destination, V arc) {
+		Map<E, V> destinations = graph.get(origin);
+		if (destinations == null) {
+			destinations = new HashMap<E, V>();
+			graph.put(origin, destinations);
+		}
+
+		addVertex(destination);
+		V oldArc = destinations.put(destination, arc);
+		if (oldArc == null) {
+			size++;
+		}
+
+		return oldArc;
+	}
+
+	@Override
+	public V getArc(Object origin, Object destination) {
+		Map<E, V> destinations = graph.get(origin);
+		if (destinations == null) {
+			return null;
+		}
+
+		return destinations.get(destination);
+	}
+
+	@Override
+	public boolean removeVertex(E vertex) {
+		Map<E, V> destination = graph.remove(vertex);
+		if (destination != null)
+			size -= destination.size();
+		else
+			return false;
+
+		removeIncoming(vertex);
+		return true;
+	}
+
+	@Override
+	public boolean removeAllVertices(Collection<? extends E> vertices) {
+		boolean modified = false;
+
+		for (E vertex : vertices) {
+			modified |= removeVertex(vertex);
+		}
+
+		return modified;
+	}
+
+	@Override
+	public Object removeArc(E origin, E destination) {
+		Map<E, V> destinations = graph.get(origin);
+		if (destinations == null) {
+			return null;
+		}
+
+		V arc = destinations.remove(destination);
+		if (arc != null)
+			size--;
+
+		return arc;
+	}
+
+	@Override
+	public boolean removeIncoming(E vertex) {
+		boolean modified = false;
+
+		for (Map<E, V> destinations : graph.values()) {
+			Object arc = destinations.remove(vertex);
+			if (arc != null)
+				size--;
+			modified |= (arc != null);
+		}
+
+		return modified;
+	}
+
+	@Override
+	public boolean removeOutgoing(E vertex) {
+
+		Map<E, V> destinations = graph.remove(vertex);
+		if (destinations != null)
+			size -= destinations.size();
+		else
+			return false;
+		boolean modified = !destinations.isEmpty();
+		destinations.clear();
+		return modified;
+	}
+
+	@Override
+	public Iterator<E> vertexIterator() {
+		return graph.keySet().iterator();
+	}
+
+	@Override
+	public ArcIterator<E, V> arcIterator() {
+		return new AllArcIterator();
+	}
+
+	@Override
+	public ArcIterator<E, V> outgoingIterator(E vertex) {
+		if (!containsVertex(vertex)) {
+			return ArcIterator.EMPTY_ITERATOR;
+		}
+
+		return new OutgoingArcIterator(vertex);
+	}
+
+	@Override
+	public ArcIterator<E, V> incomingIterator(E vertex) {
+		if (!containsVertex(vertex)) {
+			return ArcIterator.EMPTY_ITERATOR;
+		}
+
+		return new IncomingArcIterator(vertex);
+	}
+
+	@Override
+	public int order() {
+		return graph.size();
+	}
+
+	@Override
+	public int size() {
+		return size;
+	}
+
+	@Override
+	public int outgoingSize(E vertex) {
+		Map<E, V> destinations = graph.get(vertex);
+		if (destinations == null)
+			return 0;
+		else
+			return destinations.size();
+	}
+
+	@Override
+	public int incomingSize(E vertex) {
+		int count = 0;
+		if (!graph.containsKey(vertex))
+			return 0;
+
+		for (Map<E, V> destinations : graph.values()) {
+			count += (destinations.containsKey(vertex) ? 1 : 0);
+		}
+
+		return count;
+	}
+
+	@Override
+	public boolean containsVertex(E vertex) {
+		return graph.containsKey(vertex);
+	}
+
+	@Override
+	public boolean containsAllVertices(Collection<? extends E> vertices) {
+		return graph.keySet().containsAll(vertices);
+	}
+
+	@Override
+	public boolean hasArc(E origin, E destination) {
+		Map<E, V> destinations = graph.get(origin);
+		if (destinations == null)
+			return false;
+		return destinations.containsKey(destination);
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return graph.isEmpty();
+	}
+
+	@Override
+	public boolean isOutgoingEmpty(E vertex) {
+		return outgoingSize(vertex) == 0;
+	}
+
+	@Override
+	public boolean isIncomingEmpty(E vertex) {
+		return incomingSize(vertex) == 0;
+	}
+
+	private class AllArcIterator implements ArcIterator<E, V> {
+
+		private Iterator<Entry<E, Map<E, V>>> originIterator;
+		private Iterator<Entry<E, V>> destinationIterator;
+		private E origin, nextOrigin;
+		private E destination, nextDst;
+		private V arc, nextArc;
+
+		private AllArcIterator() {
+			originIterator = graph.entrySet().iterator();
+			next();
+		}
+
+		@Override
+		public E getOrigin() {
+			return origin;
+		}
+
+		@Override
+		public E getDestination() {
+			return destination;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return nextArc != null;
+		}
+
+		@Override
+		public V next() {
+			origin = nextOrigin;
+			destination = nextDst;
+			arc = nextArc;
+			if (destinationIterator == null || !destinationIterator.hasNext()) {
+				nextOrigin = null;
+				nextDst = null;
+				nextArc = null;
+
+				while (originIterator.hasNext()) {
+					Entry<E, Map<E, V>> entry = originIterator.next();
+					destinationIterator = entry.getValue().entrySet().iterator();
+					if (destinationIterator.hasNext()) {
+						nextOrigin = entry.getKey();
+						Entry<E, V> entry1 = destinationIterator.next();
+						nextDst = entry1.getKey();
+						nextArc = entry1.getValue();
+						break;
+					}
+				}
+			} else {
+				Entry<E, V> entry1 = destinationIterator.next();
+				nextDst = entry1.getKey();
+				nextArc = entry1.getValue();
+			}
+
+			return arc;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("Method remove() not yet implemented.");
+		}
+	}
+
+	private class OutgoingArcIterator implements ArcIterator<E, V> {
+
+		private E origin;
+		private Iterator<Entry<E, V>> dstIt;
+		private Entry<E, V> entry;
+
+		private OutgoingArcIterator(E vertex) {
+			origin = vertex;
+			dstIt = graph.get(vertex).entrySet().iterator();
+		}
+
+		@Override
+		public E getOrigin() {
+			return origin;
+		}
+
+		@Override
+		public E getDestination() {
+			if (entry == null)
+				return null;
+			return entry.getKey();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return dstIt.hasNext();
+		}
+
+		@Override
+		public V next() {
+			entry = dstIt.next();
+			return entry.getValue();
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("Method remove() not yet implemented.");
+		}
+	}
+
+	private class IncomingArcIterator implements ArcIterator<E, V> {
+
+		private E dst;
+		private E origin, nextOrigin;
+		private V arc, nextArc;
+		private Iterator<Entry<E, Map<E, V>>> graphIt;
+
+		private IncomingArcIterator(E vertex) {
+			dst = vertex;
+			graphIt = graph.entrySet().iterator();
+			next();
+		}
+
+		public E getOrigin() {
+			return origin;
+		}
+
+		public E getDestination() {
+			return dst;
+		}
+
+		public boolean hasNext() {
+			return (nextArc != null);
+		}
+
+		public V next() {
+			origin = nextOrigin;
+			arc = nextArc;
+			nextArc = null;
+			nextOrigin = null;
+			while (graphIt.hasNext()) {
+				Entry<E, Map<E, V>> entry = graphIt.next();
+				Map<E, V> destinations = entry.getValue();
+				nextArc = destinations.get(dst);
+				if (nextArc != null) {
+					nextOrigin = entry.getKey();
+					break;
+				}
+			}
+			return arc;
+		}
+
+		public void remove() {
+			throw new java.lang.UnsupportedOperationException("Method remove() not yet implemented.");
+		}
+	}
 
 }

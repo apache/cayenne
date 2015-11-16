@@ -70,45 +70,51 @@ import org.apache.commons.collections.ArrayStack;
  */
 public class DepthFirstSearch<E> implements Iterator<E> {
 
-    protected DigraphIteration<E, ?> factory;
-    protected E firstVertex;
+	protected DigraphIteration<E, ?> factory;
+	protected E firstVertex;
+	protected ArrayStack stack;
+	protected Set<E> seen;
 
-    protected ArrayStack stack = new ArrayStack();
-    protected Set<E> seen = new HashSet<E>();
+	public DepthFirstSearch(DigraphIteration<E, ?> factory, E firstVertex) {
 
-    public DepthFirstSearch(DigraphIteration<E, ?> factory, E firstVertex) {
-        this.factory = factory;
-        this.firstVertex = firstVertex;
-        stack.push(factory.outgoingIterator(firstVertex));
-        seen.add(firstVertex);
-    }
+		this.stack = new ArrayStack();
+		this.seen = new HashSet<>();
+		this.factory = factory;
+		this.firstVertex = firstVertex;
 
-    public void reset(E newFirstVertex) {
-        stack.clear();
-        seen.clear();
-        firstVertex = newFirstVertex;
-        stack.push(factory.outgoingIterator(firstVertex));
-        seen.add(firstVertex);
-    }
+		stack.push(factory.outgoingIterator(firstVertex));
+		seen.add(firstVertex);
+	}
 
-    public boolean hasNext() {
-        return !stack.isEmpty();
-    }
+	public void reset(E newFirstVertex) {
+		stack.clear();
+		seen.clear();
+		firstVertex = newFirstVertex;
+		stack.push(factory.outgoingIterator(firstVertex));
+		seen.add(firstVertex);
+	}
 
-    public E next() {
-        ArcIterator<E, ?> i = (ArcIterator<E, ?>) stack.pop();
-        Object origin = i.getOrigin();
-        while (i.hasNext()) {
-            i.next();
-            E dst = i.getDestination();
-            if (seen.add(dst)) {
-                stack.push(factory.outgoingIterator(dst));
-            }
-        }
-        return (E) origin;
-    }
+	@Override
+	public boolean hasNext() {
+		return !stack.isEmpty();
+	}
 
-    public void remove() {
-        throw new UnsupportedOperationException("Method remove() not supported.");
-    }
+	@Override
+	public E next() {
+		ArcIterator<E, ?> i = (ArcIterator<E, ?>) stack.pop();
+		E origin = i.getOrigin();
+		while (i.hasNext()) {
+			i.next();
+			E dst = i.getDestination();
+			if (seen.add(dst)) {
+				stack.push(factory.outgoingIterator(dst));
+			}
+		}
+		return origin;
+	}
+
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException("Method remove() not supported.");
+	}
 }

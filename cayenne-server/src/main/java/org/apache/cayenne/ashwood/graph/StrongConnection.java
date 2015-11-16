@@ -78,164 +78,164 @@ import org.apache.commons.collections.functors.TruePredicate;
  */
 public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 
-    private DigraphIteration<E, V> digraph;
-    private DigraphIteration<E, V> reverseDigraph;
-    private DigraphIteration<E, V> filteredDigraph;
-    private DepthFirstStampSearch<E> directDfs;
-    private DepthFirstSearch<E> reverseDfs;
-    private Set<E> seen = new HashSet<E>();
-    private Iterator<E> vertexIterator;
-    private ArrayStack dfsStack = new ArrayStack();
-    private DFSSeenVerticesPredicate reverseDFSFilter = new DFSSeenVerticesPredicate();
+	private DigraphIteration<E, V> digraph;
+	private DigraphIteration<E, V> reverseDigraph;
+	private DigraphIteration<E, V> filteredDigraph;
+	private DepthFirstStampSearch<E> directDfs;
+	private DepthFirstSearch<E> reverseDfs;
+	private Set<E> seen = new HashSet<E>();
+	private Iterator<E> vertexIterator;
+	private ArrayStack dfsStack;
+	private DFSSeenVerticesPredicate reverseDFSFilter;
 
-    public StrongConnection(DigraphIteration<E, V> digraph) {
-        this.digraph = digraph;
-        filteredDigraph = new FilterIteration<E, V>(
-                digraph,
-                new NotSeenPredicate(),
-                TruePredicate.INSTANCE);
-        reverseDigraph = new FilterIteration<E, V>(
-                new ReversedIteration<E, V>(digraph),
-                reverseDFSFilter,
-                TruePredicate.INSTANCE);
-        vertexIterator = filteredDigraph.vertexIterator();
-        runDirectDFS();
-    }
+	public StrongConnection(DigraphIteration<E, V> digraph) {
 
-    public boolean hasNext() {
-        return !dfsStack.isEmpty();
-    }
+		this.dfsStack = new ArrayStack();
+		this.reverseDFSFilter = new DFSSeenVerticesPredicate();
+		this.digraph = digraph;
+		this.filteredDigraph = new FilterIteration<>(digraph, new NotSeenPredicate(), TruePredicate.INSTANCE);
+		this.reverseDigraph = new FilterIteration<>(new ReversedIteration<>(digraph), reverseDFSFilter,
+				TruePredicate.INSTANCE);
+		this.vertexIterator = filteredDigraph.vertexIterator();
 
-    public Collection<E> next() {
-        Collection<E> component = buildStronglyConnectedComponent();
-        if (dfsStack.isEmpty())
-            runDirectDFS();
-        return component;
-    }
+		runDirectDFS();
+	}
 
-    public void remove() {
-        throw new UnsupportedOperationException("Method remove() not supported.");
-    }
+	@Override
+	public boolean hasNext() {
+		return !dfsStack.isEmpty();
+	}
 
-    public Digraph<Collection<E>, Collection<V>> contract(
-            Digraph<Collection<E>, Collection<V>> contractedDigraph) {
+	@Override
+	public Collection<E> next() {
+		Collection<E> component = buildStronglyConnectedComponent();
+		if (dfsStack.isEmpty()) {
+			runDirectDFS();
+		}
+		return component;
+	}
 
-        Collection<Collection<E>> components = new ArrayList<Collection<E>>();
-        CollectionUtils.addAll(components, this);
+	@Override
+	public void remove() {
+		throw new UnsupportedOperationException("Method remove() not supported.");
+	}
 
-        Map<E, Collection<E>> memberToComponent = new HashMap<E, Collection<E>>();
+	public Digraph<Collection<E>, Collection<V>> contract(Digraph<Collection<E>, Collection<V>> contractedDigraph) {
 
-        for (Collection<E> c : components) {
-            for (E e : c) {
-                memberToComponent.put(e, c);
-            }
-        }
+		Collection<Collection<E>> components = new ArrayList<>();
+		CollectionUtils.addAll(components, this);
 
-        for (Collection<E> origin : components) {
+		Map<E, Collection<E>> memberToComponent = new HashMap<>();
 
-            contractedDigraph.addVertex(origin);
+		for (Collection<E> c : components) {
+			for (E e : c) {
+				memberToComponent.put(e, c);
+			}
+		}
 
-            for (E member : origin) {
+		for (Collection<E> origin : components) {
 
-                for (ArcIterator<E, V> k = digraph.outgoingIterator(member); k.hasNext();) {
-                    V arc = k.next();
-                    E dst = k.getDestination();
-                    if (origin.contains(dst))
-                        continue;
-                    Collection<E> destination = memberToComponent.get(dst);
+			contractedDigraph.addVertex(origin);
 
-                    Collection<V> contractedArc = contractedDigraph.getArc(
-                            origin,
-                            destination);
-                    if (contractedArc == null) {
-                        contractedArc = Collections.singletonList(arc);
-                        contractedDigraph.putArc(origin, destination, contractedArc);
-                    }
-                    else {
-                        if (contractedArc.size() == 1) {
-                            Collection<V> tmp = contractedArc;
-                            contractedArc = new ArrayList<V>();
-                            contractedArc.addAll(tmp);
-                            contractedDigraph.putArc(origin, destination, contractedArc);
-                        }
-                        contractedArc.add(arc);
-                    }
+			for (E member : origin) {
 
-                }
-            }
-        }
-        return contractedDigraph;
-    }
+				for (ArcIterator<E, V> k = digraph.outgoingIterator(member); k.hasNext();) {
+					V arc = k.next();
+					E dst = k.getDestination();
+					if (origin.contains(dst))
+						continue;
+					Collection<E> destination = memberToComponent.get(dst);
 
-    private E nextDFSRoot() {
-        return vertexIterator.hasNext() ? vertexIterator.next() : null;
-    }
+					Collection<V> contractedArc = contractedDigraph.getArc(origin, destination);
+					if (contractedArc == null) {
+						contractedArc = Collections.singletonList(arc);
+						contractedDigraph.putArc(origin, destination, contractedArc);
+					} else {
+						if (contractedArc.size() == 1) {
+							Collection<V> tmp = contractedArc;
+							contractedArc = new ArrayList<V>();
+							contractedArc.addAll(tmp);
+							contractedDigraph.putArc(origin, destination, contractedArc);
+						}
+						contractedArc.add(arc);
+					}
 
-    private boolean runDirectDFS() {
-        dfsStack.clear();
-        reverseDFSFilter.seenVertices.clear();
-        E root = nextDFSRoot();
-        if (root == null)
-            return false;
-        if (directDfs == null)
-            directDfs = new DepthFirstStampSearch<E>(filteredDigraph, root);
-        else
-            directDfs.reset(root);
-        int stamp;
-        E vertex;
-        while (directDfs.hasNext()) {
-            vertex = directDfs.next();
-            stamp = directDfs.getStamp();
-            if (stamp == DepthFirstStampSearch.SHRINK_STAMP
-                    || stamp == DepthFirstStampSearch.LEAF_STAMP) {
-                // if (seen.add(vertex)) {
-                dfsStack.push(vertex);
-                reverseDFSFilter.seenVertices.add(vertex);
-                // }
-            }
-        }
-        seen.addAll(dfsStack);
-        return true;
-    }
+				}
+			}
+		}
+		return contractedDigraph;
+	}
 
-    private Collection<E> buildStronglyConnectedComponent() {
-        E root = (E) dfsStack.pop();
-        Collection<E> component = Collections.singletonList(root);
-        boolean singleton = true;
-        if (reverseDfs == null)
-            reverseDfs = new DepthFirstSearch<E>(reverseDigraph, root);
-        else
-            reverseDfs.reset(root);
-        while (reverseDfs.hasNext()) {
-            E vertex = reverseDfs.next();
-            if (vertex != root) {
-                if (singleton) {
-                    Collection<E> tmp = component;
-                    component = new ArrayList<E>();
-                    component.addAll(tmp);
-                    singleton = false;
-                }
-                component.add(vertex);
-                dfsStack.remove(vertex);
-            }
-        }
-        reverseDFSFilter.seenVertices.removeAll(component);
-        return component;
-    }
+	private E nextDFSRoot() {
+		return vertexIterator.hasNext() ? vertexIterator.next() : null;
+	}
 
-    private class DFSSeenVerticesPredicate implements Predicate {
+	private boolean runDirectDFS() {
+		dfsStack.clear();
+		reverseDFSFilter.seenVertices.clear();
+		E root = nextDFSRoot();
+		if (root == null)
+			return false;
+		if (directDfs == null)
+			directDfs = new DepthFirstStampSearch<>(filteredDigraph, root);
+		else
+			directDfs.reset(root);
+		int stamp;
+		E vertex;
+		while (directDfs.hasNext()) {
+			vertex = directDfs.next();
+			stamp = directDfs.getStamp();
+			if (stamp == DepthFirstStampSearch.SHRINK_STAMP || stamp == DepthFirstStampSearch.LEAF_STAMP) {
+				// if (seen.add(vertex)) {
+				dfsStack.push(vertex);
+				reverseDFSFilter.seenVertices.add(vertex);
+				// }
+			}
+		}
+		seen.addAll(dfsStack);
+		return true;
+	}
 
-        private Set<E> seenVertices = new HashSet<E>();
+	private Collection<E> buildStronglyConnectedComponent() {
+		E root = (E) dfsStack.pop();
+		Collection<E> component = Collections.singletonList(root);
+		boolean singleton = true;
+		if (reverseDfs == null)
+			reverseDfs = new DepthFirstSearch<E>(reverseDigraph, root);
+		else
+			reverseDfs.reset(root);
+		while (reverseDfs.hasNext()) {
+			E vertex = reverseDfs.next();
+			if (vertex != root) {
+				if (singleton) {
+					Collection<E> tmp = component;
+					component = new ArrayList<E>();
+					component.addAll(tmp);
+					singleton = false;
+				}
+				component.add(vertex);
+				dfsStack.remove(vertex);
+			}
+		}
+		reverseDFSFilter.seenVertices.removeAll(component);
+		return component;
+	}
 
-        public boolean evaluate(Object vertex) {
-            return seenVertices.contains(vertex);
-        }
-    }
+	private class DFSSeenVerticesPredicate implements Predicate {
 
-    private class NotSeenPredicate implements Predicate {
+		private Set<E> seenVertices = new HashSet<E>();
 
-        public boolean evaluate(Object vertex) {
-            return !seen.contains(vertex);
-        }
-    }
+		@Override
+		public boolean evaluate(Object vertex) {
+			return seenVertices.contains(vertex);
+		}
+	}
+
+	private class NotSeenPredicate implements Predicate {
+
+		@Override
+		public boolean evaluate(Object vertex) {
+			return !seen.contains(vertex);
+		}
+	}
 }

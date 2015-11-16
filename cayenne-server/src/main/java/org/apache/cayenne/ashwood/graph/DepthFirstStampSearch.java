@@ -64,58 +64,55 @@ package org.apache.cayenne.ashwood.graph;
  */
 public class DepthFirstStampSearch<E> extends DepthFirstSearch<E> {
 
-    public static final int UNDEFINED_STAMP = -1;
-    public static final int GROW_DEPTH_STAMP = 0;
-    public static final int GROW_BREADTH_STAMP = 1;
-    public static final int SHRINK_STAMP = 2;
-    public static final int LEAF_STAMP = 3;
+	public static final int UNDEFINED_STAMP = -1;
+	public static final int GROW_DEPTH_STAMP = 0;
+	public static final int GROW_BREADTH_STAMP = 1;
+	public static final int SHRINK_STAMP = 2;
+	public static final int LEAF_STAMP = 3;
 
-    private int stamp = UNDEFINED_STAMP;
+	private int stamp = UNDEFINED_STAMP;
 
-    public DepthFirstStampSearch(DigraphIteration<E, ?> factory, E firstVertex) {
-        super(factory, firstVertex);
-    }
+	public DepthFirstStampSearch(DigraphIteration<E, ?> factory, E firstVertex) {
+		super(factory, firstVertex);
+	}
 
-    public int getStamp() {
-        return stamp;
-    }
+	public int getStamp() {
+		return stamp;
+	}
 
-    @Override
-    public E next() {
-        ArcIterator<E, ?> i = (ArcIterator<E, ?>) stack.peek();
-        E origin = i.getOrigin();
-        E dst = i.getDestination();
-        if (dst == null) {
-            if (i.hasNext()) {
-                i.next();
-                dst = i.getDestination();
-            }
-            else {
-                stack.pop();
-                // shrink
-                stamp = LEAF_STAMP;
-                return origin;
-            }
-        }
-        if (seen.add(dst)) {
-            stack.push(factory.outgoingIterator(dst));
-            // grow depth
-            stamp = GROW_DEPTH_STAMP;
-            if (i.hasNext())
-                i.next();
-        }
-        else {
-            if (i.hasNext()) {
-                i.next();
-                // grow breadth
-                stamp = GROW_BREADTH_STAMP;
-            }
-            else {
-                stack.pop();
-                // shrink
-                stamp = SHRINK_STAMP;
-            }
-        }
-        return origin;
-    }
+	@Override
+	public E next() {
+		ArcIterator<E, ?> i = (ArcIterator<E, ?>) stack.peek();
+		E origin = i.getOrigin();
+		E dst = i.getDestination();
+		if (dst == null) {
+			if (i.hasNext()) {
+				i.next();
+				dst = i.getDestination();
+			} else {
+				stack.pop();
+				// shrink
+				stamp = LEAF_STAMP;
+				return origin;
+			}
+		}
+		if (seen.add(dst)) {
+			stack.push(factory.outgoingIterator(dst));
+			// grow depth
+			stamp = GROW_DEPTH_STAMP;
+			if (i.hasNext())
+				i.next();
+		} else {
+			if (i.hasNext()) {
+				i.next();
+				// grow breadth
+				stamp = GROW_BREADTH_STAMP;
+			} else {
+				stack.pop();
+				// shrink
+				stamp = SHRINK_STAMP;
+			}
+		}
+		return origin;
+	}
 }
