@@ -95,7 +95,7 @@ public class FilterIteration<E, V> implements DigraphIteration<E, V> {
 
     public ArcIterator<E, V> outgoingIterator(E vertex) {
         if (!acceptVertex.evaluate(vertex))
-            return ArcIterator.EMPTY_ITERATOR;
+            return EmptyIterator.instance();
         return new FilterArcIterator<E, V>(
                 digraph.outgoingIterator(vertex),
                 TruePredicate.INSTANCE,
@@ -105,7 +105,7 @@ public class FilterIteration<E, V> implements DigraphIteration<E, V> {
 
     public ArcIterator<E, V> incomingIterator(E vertex) {
         if (!acceptVertex.evaluate(vertex))
-            return ArcIterator.EMPTY_ITERATOR;
+            return EmptyIterator.instance();
         return new FilterArcIterator<E, V>(
                 digraph.incomingIterator(vertex),
                 acceptVertex,

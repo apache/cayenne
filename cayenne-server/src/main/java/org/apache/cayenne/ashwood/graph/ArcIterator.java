@@ -60,40 +60,13 @@
 package org.apache.cayenne.ashwood.graph;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 /**
  * @since 3.1
  */
 public interface ArcIterator<E, V> extends Iterator<V> {
 
-    @SuppressWarnings("all")
-    static final ArcIterator EMPTY_ITERATOR = new ArcIterator.EmptyIterator();
+	E getOrigin();
 
-    E getOrigin();
-
-    E getDestination();
-
-    static class EmptyIterator<E, V> implements ArcIterator<E, V> {
-
-        public E getOrigin() {
-            return null;
-        }
-
-        public E getDestination() {
-            return null;
-        }
-
-        public boolean hasNext() {
-            return false;
-        }
-
-        public V next() {
-            throw new NoSuchElementException("Iterator contains no elements");
-        }
-
-        public void remove() {
-            throw new IllegalStateException("Iterator contains no elements");
-        }
-    }
+	E getDestination();
 }

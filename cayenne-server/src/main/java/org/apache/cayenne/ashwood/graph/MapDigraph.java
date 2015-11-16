@@ -204,7 +204,7 @@ public class MapDigraph<E, V> implements Digraph<E, V> {
 	@Override
 	public ArcIterator<E, V> outgoingIterator(E vertex) {
 		if (!containsVertex(vertex)) {
-			return ArcIterator.EMPTY_ITERATOR;
+			return EmptyIterator.instance();
 		}
 
 		return new OutgoingArcIterator(vertex);
@@ -213,7 +213,7 @@ public class MapDigraph<E, V> implements Digraph<E, V> {
 	@Override
 	public ArcIterator<E, V> incomingIterator(E vertex) {
 		if (!containsVertex(vertex)) {
-			return ArcIterator.EMPTY_ITERATOR;
+			return EmptyIterator.instance();
 		}
 
 		return new IncomingArcIterator(vertex);
