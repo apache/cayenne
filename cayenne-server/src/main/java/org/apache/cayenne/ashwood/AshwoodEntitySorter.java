@@ -101,20 +101,16 @@ public class AshwoodEntitySorter implements EntitySorter {
 	 */
 	protected void doIndexSorter() {
 
-		Map<DbEntity, List<DbRelationship>> reflexiveDbEntities = new HashMap<>(32);
-
+		Map<DbEntity, List<DbRelationship>> reflexiveDbEntities = new HashMap<>();
 		Digraph<DbEntity, List<DbAttribute>> referentialDigraph = new MapDigraph<>();
-
-		Map<String, DbEntity> tableMap = new HashMap<>();
 
 		if (entityResolver != null) {
 			for (DbEntity entity : entityResolver.getDbEntities()) {
-				tableMap.put(entity.getFullyQualifiedName(), entity);
 				referentialDigraph.addVertex(entity);
 			}
 		}
 
-		for (DbEntity destination : tableMap.values()) {
+		for (DbEntity destination : entityResolver.getDbEntities()) {
 			for (DbRelationship candidate : destination.getRelationships()) {
 				if ((!candidate.isToMany() && !candidate.isToDependentPK()) || candidate.isToMasterPK()) {
 					DbEntity origin = candidate.getTargetEntity();
@@ -367,7 +363,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 				ComponentRecord rec2 = components.get(t2);
 				int index1 = rec1.index;
 				int index2 = rec2.index;
-				
+
 				int result = index1 > index2 ? 1 : (index1 < index2 ? -1 : 0);
 
 				// TODO: is this check really needed?
