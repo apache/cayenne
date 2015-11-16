@@ -117,7 +117,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 		for (DbEntity destination : tableMap.values()) {
 			for (DbRelationship candidate : destination.getRelationships()) {
 				if ((!candidate.isToMany() && !candidate.isToDependentPK()) || candidate.isToMasterPK()) {
-					DbEntity origin = (DbEntity) candidate.getTargetEntity();
+					DbEntity origin = candidate.getTargetEntity();
 					boolean newReflexive = destination.equals(origin);
 
 					for (DbJoin join : candidate.getJoins()) {
@@ -127,7 +127,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 							if (newReflexive) {
 								List<DbRelationship> reflexiveRels = reflexiveDbEntities.get(destination);
 								if (reflexiveRels == null) {
-									reflexiveRels = new ArrayList<DbRelationship>(1);
+									reflexiveRels = new ArrayList<>(1);
 									reflexiveDbEntities.put(destination, reflexiveRels);
 								}
 								reflexiveRels.add(candidate);
@@ -136,7 +136,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 
 							List<DbAttribute> fks = referentialDigraph.getArc(origin, destination);
 							if (fks == null) {
-								fks = new ArrayList<DbAttribute>();
+								fks = new ArrayList<>();
 								referentialDigraph.putArc(origin, destination, fks);
 							}
 
@@ -148,17 +148,15 @@ public class AshwoodEntitySorter implements EntitySorter {
 
 		}
 
-		StrongConnection<DbEntity, List<DbAttribute>> contractor = new StrongConnection<DbEntity, List<DbAttribute>>(
-				referentialDigraph);
+		StrongConnection<DbEntity, List<DbAttribute>> contractor = new StrongConnection<>(referentialDigraph);
 
-		Digraph<Collection<DbEntity>, Collection<List<DbAttribute>>> contractedReferentialDigraph = new MapDigraph<Collection<DbEntity>, Collection<List<DbAttribute>>>();
+		Digraph<Collection<DbEntity>, Collection<List<DbAttribute>>> contractedReferentialDigraph = new MapDigraph<>();
 		contractor.contract(contractedReferentialDigraph);
 
-		IndegreeTopologicalSort<Collection<DbEntity>> sorter = new IndegreeTopologicalSort<Collection<DbEntity>>(
+		IndegreeTopologicalSort<Collection<DbEntity>> sorter = new IndegreeTopologicalSort<>(
 				contractedReferentialDigraph);
 
-		Map<DbEntity, ComponentRecord> components = new HashMap<DbEntity, ComponentRecord>(
-				contractedReferentialDigraph.order());
+		Map<DbEntity, ComponentRecord> components = new HashMap<>(contractedReferentialDigraph.order());
 		int componentIndex = 0;
 		while (sorter.hasNext()) {
 			Collection<DbEntity> component = sorter.next();
@@ -176,21 +174,25 @@ public class AshwoodEntitySorter implements EntitySorter {
 	/**
 	 * @since 3.1
 	 */
+	@Override
 	public void setEntityResolver(EntityResolver entityResolver) {
 		this.entityResolver = entityResolver;
 		this.dirty = true;
 	}
 
+	@Override
 	public void sortDbEntities(List<DbEntity> dbEntities, boolean deleteOrder) {
 		indexSorter();
 		Collections.sort(dbEntities, getDbEntityComparator(deleteOrder));
 	}
 
+	@Override
 	public void sortObjEntities(List<ObjEntity> objEntities, boolean deleteOrder) {
 		indexSorter();
 		Collections.sort(objEntities, getObjEntityComparator(deleteOrder));
 	}
 
+	@Override
 	public void sortObjectsForEntity(ObjEntity objEntity, List<?> objects, boolean deleteOrder) {
 
 		indexSorter();
@@ -222,7 +224,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 
 		List<Persistent> sorted = new ArrayList<Persistent>(size);
 
-		Digraph<Persistent, Boolean> objectDependencyGraph = new MapDigraph<Persistent, Boolean>();
+		Digraph<Persistent, Boolean> objectDependencyGraph = new MapDigraph<>();
 		Object[] masters = new Object[reflexiveRelNames.length];
 		for (int i = 0; i < size; i++) {
 			Persistent current = (Persistent) objects.get(i);
@@ -256,7 +258,6 @@ public class AshwoodEntitySorter implements EntitySorter {
 
 				Persistent masterCandidate = persistent.get(j);
 				for (Object master : masters) {
-					// if (masterCandidate.equals(master)) {
 					if (masterCandidate == master) {
 						objectDependencyGraph.putArc(masterCandidate, current, Boolean.TRUE);
 						mastersFound++;
@@ -265,7 +266,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 			}
 		}
 
-		IndegreeTopologicalSort<Persistent> sorter = new IndegreeTopologicalSort<Persistent>(objectDependencyGraph);
+		IndegreeTopologicalSort<Persistent> sorter = new IndegreeTopologicalSort<>(objectDependencyGraph);
 
 		while (sorter.hasNext()) {
 			Persistent o = sorter.next();
@@ -354,24 +355,28 @@ public class AshwoodEntitySorter implements EntitySorter {
 	private final class DbEntityComparator implements Comparator<DbEntity> {
 
 		public int compare(DbEntity t1, DbEntity t2) {
-			int result = 0;
 
 			if (t1 == t2)
 				return 0;
 			if (t1 == null)
-				result = -1;
+				return -1;
 			else if (t2 == null)
-				result = 1;
+				return 1;
 			else {
 				ComponentRecord rec1 = components.get(t1);
 				ComponentRecord rec2 = components.get(t2);
 				int index1 = rec1.index;
 				int index2 = rec2.index;
-				result = (index1 > index2 ? 1 : (index1 < index2 ? -1 : 0));
-				if (result != 0 && rec1.component == rec2.component)
+				
+				int result = index1 > index2 ? 1 : (index1 < index2 ? -1 : 0);
+
+				// TODO: is this check really needed?
+				if (result != 0 && rec1.component == rec2.component) {
 					result = 0;
+				}
+
+				return result;
 			}
-			return result;
 		}
 	}
 

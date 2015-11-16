@@ -73,7 +73,7 @@ public class AshwoodEntitySorterIT extends ServerCase {
 
         ObjEntity entity = context.getEntityResolver().getObjEntity(ReflexiveAndToOne.class);
 
-        List<?> objects = context.performQuery(new SelectQuery(ReflexiveAndToOne.class));
+        List<?> objects = context.performQuery(new SelectQuery<>(ReflexiveAndToOne.class));
         Collections.shuffle(objects);
         assertEquals(3, objects.size());
 
