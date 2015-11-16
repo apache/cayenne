@@ -16,71 +16,68 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.ashwood;
+
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.Types;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-
-@UseServerRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class AshwoodEntitySorterIT extends ServerCase {
 
-    @Inject
-    protected DBHelper dbHelper;
+	@Inject
+	protected ObjectContext context;
 
-    @Inject
-    protected ObjectContext context;
+	private EntityResolver resolver;
+	private AshwoodEntitySorter sorter;
 
-    protected TableHelper tRelationshipHelper;
-    protected TableHelper tReflexiveAndToOne;
+	private DbEntity artist;
+	private DbEntity artistExhibit;
+	private DbEntity exhibit;
+	private DbEntity gallery;
+	private DbEntity painting;
+	private DbEntity paintingInfo;
 
-    @Before
-    public void setUp() throws Exception {
-        tRelationshipHelper = new TableHelper(dbHelper, "RELATIONSHIP_HELPER");
-        tRelationshipHelper.setColumns("RELATIONSHIP_HELPER_ID", "NAME");
+	@Before
+	public void before() {
 
-        tReflexiveAndToOne = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE");
-        tReflexiveAndToOne.setColumns("REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID", "RELATIONSHIP_HELPER_ID", "NAME")
-                .setColumnTypes(Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.VARCHAR);
-    }
+		this.resolver = context.getEntityResolver();
+		this.sorter = new AshwoodEntitySorter();
+		sorter.setEntityResolver(resolver);
 
-    @Test
-    public void testSortObjectsForEntityReflexiveWithFaults() throws Exception {
+		this.artist = resolver.getDbEntity("ARTIST");
+		this.artistExhibit = resolver.getDbEntity("ARTIST_EXHIBIT");
+		this.exhibit = resolver.getDbEntity("EXHIBIT");
+		this.gallery = resolver.getDbEntity("GALLERY");
+		this.painting = resolver.getDbEntity("PAINTING");
+		this.paintingInfo = resolver.getDbEntity("PAINTING_INFO");
+	}
 
-        tRelationshipHelper.insert(1, "rh1");
-        tReflexiveAndToOne.insert(1, null, 1, "r1");
-        tReflexiveAndToOne.insert(2, 1, 1, "r2");
-        tReflexiveAndToOne.insert(3, 2, 1, "r3");
+	@Test
+	public void testSortDbEntities() {
 
-        AshwoodEntitySorter sorter = new AshwoodEntitySorter();
-        sorter.setEntityResolver(context.getEntityResolver());
+		List<DbEntity> entities = Arrays.asList(artist, artistExhibit, exhibit, gallery, painting, paintingInfo);
+		Collections.shuffle(entities);
 
-        ObjEntity entity = context.getEntityResolver().getObjEntity(ReflexiveAndToOne.class);
+		sorter.sortDbEntities(entities, false);
 
-        List<?> objects = context.performQuery(new SelectQuery<>(ReflexiveAndToOne.class));
-        Collections.shuffle(objects);
-        assertEquals(3, objects.size());
+		assertTrue(entities.indexOf(artist) < entities.indexOf(artistExhibit));
+		assertTrue(entities.indexOf(artist) < entities.indexOf(painting));
+		assertTrue(entities.indexOf(gallery) < entities.indexOf(exhibit));
+		assertTrue(entities.indexOf(exhibit) < entities.indexOf(artistExhibit));
+		assertTrue(entities.indexOf(painting) < entities.indexOf(paintingInfo));
+	}
 
-        sorter.sortObjectsForEntity(entity, objects, true);
-
-        assertEquals("r3", ((ReflexiveAndToOne) objects.get(0)).getName());
-        assertEquals("r2", ((ReflexiveAndToOne) objects.get(1)).getName());
-        assertEquals("r1", ((ReflexiveAndToOne) objects.get(2)).getName());
-    }
 }
