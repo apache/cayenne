@@ -24,6 +24,7 @@
 	<groupId>org.apache.cayenne</groupId>
 	<name>Cayenne</name>
 
+
 	<version>4.0.M3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
