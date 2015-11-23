@@ -153,7 +153,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
 
                 ObjRelationshipTableModel model = (ObjRelationshipTableModel) table
                         .getModel();
-                new ObjRelationshipInfo(mediator, model.getRelationship(row)).startupAction();
+                new ObjRelationshipInfo(mediator, table, row).startupAction();
 
                 /**
                  * This is required for a table to be updated properly

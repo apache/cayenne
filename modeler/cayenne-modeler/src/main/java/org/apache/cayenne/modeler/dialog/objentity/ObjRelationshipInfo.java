@@ -49,7 +49,15 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ResolveDbRelationshipDialog;
-import org.apache.cayenne.modeler.util.*;
+import org.apache.cayenne.modeler.dialog.ResolveDbRelationshipDialogNextPrev;
+import org.apache.cayenne.modeler.editor.ObjRelationshipTableModel;
+import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.CayenneTable;
+import org.apache.cayenne.modeler.util.Comparators;
+import org.apache.cayenne.modeler.util.EntityTreeFilter;
+import org.apache.cayenne.modeler.util.EntityTreeModel;
+import org.apache.cayenne.modeler.util.MultiColumnBrowser;
+import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 
@@ -75,6 +83,8 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     protected ObjRelationshipInfoView view;
     protected String currentPath;
     protected ProjectController mediator;
+    protected CayenneTable table;
+    protected int row;
 
     /**
      * Starts options dialog.
@@ -88,15 +98,17 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         view.setVisible(true);
     }
 
-    public ObjRelationshipInfo(ProjectController mediator, ObjRelationship relationship) {
+    public ObjRelationshipInfo(ProjectController mediator, CayenneTable table,int row) {
         super(mediator);
         this.view = new ObjRelationshipInfoView(mediator);
+        this.table = table;
+        this.relationship = ((ObjRelationshipTableModel)table.getModel()).getRelationship(row);
+        this.row = row;
         this.mediator = mediator;
         ObjEntity target = getObjectTarget();
         getPathBrowser().addTreeSelectionListener(this);
         setObjectTarget(target);
         view.sourceEntityLabel.setText(relationship.getSourceEntity().getName());
-        this.relationship = relationship;
         this.relationshipName = relationship.getName();
         view.relationshipName.setText(relationshipName);
         this.mapKey = relationship.getMapKey();
@@ -152,6 +164,18 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
                 saveMapping();
             }
         });
+        view.getNextButton().addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+            	takeNextRelationship();
+            }
+        });
+        view.getPrevButton().addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+            	takePrevRelationship();
+            }
+        });
         view.getNewRelButton().addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -176,6 +200,54 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
                 setMapKey();
             }
         });
+    }
+    
+    private void updateVariables(ObjRelationship relationship, int row){
+    	this.relationship = relationship;
+    	this.row = row;
+    	ObjEntity target = getObjectTarget();
+        getPathBrowser().addTreeSelectionListener(this);
+        setObjectTarget(target);
+        view.sourceEntityLabel.setText(relationship.getSourceEntity().getName());
+        this.relationshipName = relationship.getName();
+        view.relationshipName.setText(relationshipName);
+        this.mapKey = relationship.getMapKey();
+        this.targetCollection = relationship.getCollectionType();
+        if (targetCollection == null) {
+            targetCollection = ObjRelationship.DEFAULT_COLLECTION_TYPE;
+        }
+
+        this.objectTarget = (ObjEntity) relationship.getTargetEntity();
+        if (objectTarget != null) {
+            updateTargetCombo(objectTarget.getDbEntity());
+        }
+
+        // validate -
+        // current limitation is that an ObjRelationship must have source
+        // and target entities present, with DbEntities chosen.
+        validateCanMap();
+
+        this.targetCollections = new ArrayList<String>(4);
+        targetCollections.add(COLLECTION_TYPE_COLLECTION);
+        targetCollections.add(ObjRelationship.DEFAULT_COLLECTION_TYPE);
+        targetCollections.add(COLLECTION_TYPE_MAP);
+        targetCollections.add(COLLECTION_TYPE_SET);
+
+        for (String s : targetCollections) {
+            view.collectionTypeCombo.addItem(s);
+        }
+
+        this.mapKeys = new ArrayList<String>();
+        initMapKeys();
+
+        // setup path
+        dbRelationships = new ArrayList<DbRelationship>(relationship.getDbRelationships());
+        selectPath();
+        updateCollectionChoosers();
+
+        // add dummy last relationship if we are not connected
+        connectEnds();
+        initFromModel();
     }
 
     void initFromModel() {
@@ -210,6 +282,28 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         }
     }
 
+    void takeNextRelationship(){
+    	if((row+1)<table.getRowCount()){
+        	table.select(row+1);
+        	updateVariables(((ObjRelationshipTableModel)table.getModel()).getRelationship(row+1),row+1);
+    	}
+    	else{
+    		JOptionPane.showMessageDialog(view, "This is the last relationship.");
+    	}
+    	
+    }
+    
+    void takePrevRelationship(){
+    	if((row-1)>=0){
+        	table.select(row-1);
+        	updateVariables(((ObjRelationshipTableModel)table.getModel()).getRelationship(row-1),row-1);
+    	}
+    	else{
+    		JOptionPane.showMessageDialog(view, "This is the first relationship.");
+    	}
+    	
+    }
+    
     /**
      * Selects path in browser
      */
@@ -314,7 +408,6 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
                     getRelationship().getSourceEntity()));
         }
         view.sourceEntityLabel.setText(relationship.getSourceEntity().getName());
-        view.dispose();
     }
 
     /**
