@@ -19,6 +19,13 @@
 
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.cayenne.util.ToStringBuilder;
+import org.apache.cayenne.util.XMLSerializable;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,13 +34,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.cayenne.util.ToStringBuilder;
-import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * An Entity is an abstract descriptor for an entity mapping concept. Entity can represent
@@ -162,6 +162,15 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /** Removes an attribute named <code>attrName</code>. */
     public void removeAttribute(String attrName) {
         attributes.remove(attrName);
+    }
+
+    /**
+     *
+     * @since 4.0
+     */
+    public void updateAttribute(Attribute attribute) {
+        removeAttribute(attribute.getName());
+        addAttribute(attribute);
     }
 
     public void clearAttributes() {

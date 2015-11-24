@@ -16,23 +16,32 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.modeler.util;
 
 import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Relationship;
 
-/**
- * EntityTreeFilter is an interface for deciding which attributes or
- * relationships should appear in the tree
- */
-public interface EntityTreeFilter {
-    /**
-     * Checks if attribute should appear in the tree 
-     */
-    boolean attributeMatch(Object node, Attribute attr);
-    
-    /**
-     * Checks if relationship should appear in the tree 
-     */
-    boolean relationshipMatch(Object node, Relationship rel);
+public class EntityTreeAttributeRelationshipFilter implements EntityTreeFilter {
+
+    public boolean attributeMatch(Object node, Attribute attr) {
+        if (!(node instanceof Attribute)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean relationshipMatch(Object node, Relationship rel) {
+        if (!(node instanceof Relationship)) {
+            return true;
+        }
+
+        /**
+         * We do not allow A->B->A chains, where relationships
+         * are to-one
+         */
+        DbRelationship prev = (DbRelationship) node;
+        return !(!rel.isToMany() && prev.getReverseRelationship() == rel);
+    }
 }

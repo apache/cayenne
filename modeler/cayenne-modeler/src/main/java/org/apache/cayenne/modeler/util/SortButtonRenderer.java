@@ -18,51 +18,33 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.util;
 
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.border.Border;
+import javax.swing.table.TableCellRenderer;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Insets;
+import java.awt.Font;
 import java.util.Hashtable;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JTable;
-import javax.swing.border.MatteBorder;
-import javax.swing.table.TableCellRenderer;
-
-public class SortButtonRenderer extends JButton implements TableCellRenderer {
+public class SortButtonRenderer extends JLabel implements TableCellRenderer {
 
     public static final int NONE = 0;
     public static final int DOWN = 1;
     public static final int UP = 2;
 
-    private int pushedColumn;
     private Hashtable state;
-    private JButton downButton, upButton;
+    private JLabel downLabel , upLabel;
 
     public SortButtonRenderer() {
-        MatteBorder matteBorder = BorderFactory.createMatteBorder(0, 0, 1, 1, Color.gray);
-        setBorder(matteBorder);
-
-        pushedColumn = -1;
         state = new Hashtable();
 
-        setMargin(new Insets(0, 0, 0, 0));
-        setHorizontalTextPosition(CENTER);
-        setIcon(new BlankIcon());
+        downLabel = new JLabel();
+        downLabel.setIcon(new BevelArrowIcon(BevelArrowIcon.DOWN, false, false));
 
-        downButton = new JButton();
-
-        downButton.setBorder(matteBorder);
-        downButton.setMargin(new Insets(0, 0, 0, 0));
-        downButton.setHorizontalTextPosition(LEFT);
-        downButton.setIcon(new BevelArrowIcon(BevelArrowIcon.DOWN, false, false));
-        downButton.setPressedIcon(new BevelArrowIcon(BevelArrowIcon.DOWN, false, true));
-
-        upButton = new JButton();
-        upButton.setBorder(matteBorder);
-        upButton.setMargin(new Insets(0, 0, 0, 0));
-        upButton.setHorizontalTextPosition(LEFT);
-        upButton.setIcon(new BevelArrowIcon(BevelArrowIcon.UP, false, false));
+        upLabel = new JLabel();
+        upLabel.setIcon(new BevelArrowIcon(BevelArrowIcon.UP, false, false));
     }
 
     public Component getTableCellRendererComponent(
@@ -72,49 +54,51 @@ public class SortButtonRenderer extends JButton implements TableCellRenderer {
             boolean hasFocus,
             int row,
             int column) {
-        JButton button = this;
-        Object obj = state.get(new Integer(column));
+        JLabel  label = this;
+        Object obj = state.get(column);
 
         if (obj != null) {
-            if (((Integer) obj).intValue() == DOWN) {
-                button = downButton;
+            if ((Integer) obj == DOWN) {
+                label = downLabel;
             }
             else {
-                button = upButton;
+                label = upLabel;
             }
         }
-        button.setText((value == null) ? "" : value.toString());
-        return button;
-    }
-
-    public void setPressedColumn(int col) {
-        pushedColumn = col;
+        Border border = BorderFactory.createLineBorder(Color.GRAY, 1);
+        label.setText(' ' + ((value == null) ? "" : value.toString()));
+        label.setFont(new Font("Verdana", Font.BOLD , 13));
+        label.setHorizontalTextPosition(JLabel.LEFT);
+        label.setBorder(border);
+        label.setOpaque(true);
+        label.setBackground(new Color(204, 238, 255));
+        return label;
     }
 
     public void setSelectedColumn(int col, boolean isAscOrder) {
-        if (col < 0)
+        if (col < 0) {
             return;
+        }
         Integer value = null;
         //shows the direction of ordering
         if (isAscOrder) {
-            value = new Integer(DOWN);
-        }
-        else {
-            value = new Integer(UP);
+            value = DOWN;
+        } else {
+            value = UP;
         }
 
         state.clear();
-        state.put(new Integer(col), value);
+        state.put(col, value);
     }
 
     public int getState(int col) {
         int retValue;
-        Object obj = state.get(new Integer(col));
+        Object obj = state.get(col);
         if (obj == null) {
             retValue = NONE;
         }
         else {
-            if (((Integer) obj).intValue() == DOWN) {
+            if ((Integer) obj == DOWN) {
                 retValue = DOWN;
             }
             else {
