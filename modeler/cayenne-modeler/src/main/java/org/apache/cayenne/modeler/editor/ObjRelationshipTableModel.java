@@ -39,9 +39,14 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
     // Columns
     static final int REL_NAME = 0;
     static final int REL_TARGET = 1;
-    static final int REL_SEMANTICS = 2;
-    static final int REL_DELETERULE = 3;
-    static final int REL_LOCKING = 4;
+    static final int REL_TARGET_PATH = 2;
+    static final int REL_COLLECTION_TYPE = 3;
+    static final int REL_MAP_KEY = 4;
+    static final int REL_SEMANTICS = 5;
+    static final int REL_DELETE_RULE = 6;
+    static final int REL_LOCKING = 7;
+
+    static final int COLUMN_COUNT = 8;
 
     protected ObjEntity entity;
 
@@ -72,7 +77,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
     }
 
     public int getColumnCount() {
-        return 5;
+        return COLUMN_COUNT;
     }
 
     @Override
@@ -86,8 +91,14 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
                 return "Used for Locking";
             case REL_SEMANTICS:
                 return "Semantics";
-            case REL_DELETERULE:
+            case REL_DELETE_RULE:
                 return "Delete Rule";
+            case REL_COLLECTION_TYPE:
+                return "Collection Type";
+            case REL_MAP_KEY:
+                return "Map key";
+            case REL_TARGET_PATH:
+                return "DbRelationshipPath";
 
             default:
                 return null;
@@ -126,8 +137,16 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         else if (column == REL_SEMANTICS) {
             return getSemantics(relationship);
         }
-        else if (column == REL_DELETERULE) {
+        else if (column == REL_DELETE_RULE) {
             return DeleteRule.deleteRuleName(relationship.getDeleteRule());
+        } else if (column == REL_COLLECTION_TYPE) {
+            if (!relationship.isToMany())
+                return null;
+            return relationship.getCollectionType();
+        } else if (column == REL_MAP_KEY){
+            return relationship.getMapKey();
+        } else if (column == REL_TARGET_PATH){
+            return relationship.getDbRelationshipPath();
         }
         else {
             return null;
@@ -191,13 +210,24 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
 
             fireTableRowsUpdated(row, row);
         }
-        else if (column == REL_DELETERULE) {
+        else if (column == REL_DELETE_RULE) {
             relationship.setDeleteRule(DeleteRule.deleteRuleForName((String) value));
             fireTableCellUpdated(row, column);
         }
         else if (column == REL_LOCKING) {
             relationship.setUsedForLocking((value instanceof Boolean)
                     && ((Boolean) value).booleanValue());
+            fireTableCellUpdated(row, column);
+        }
+        else if (column == REL_COLLECTION_TYPE){
+            relationship.setCollectionType((String) value);
+            fireTableCellUpdated(row, column);
+        }else if (column == REL_MAP_KEY){
+            relationship.setMapKey((String) value);
+            fireTableCellUpdated(row, column);
+            }
+        else if (column == REL_TARGET_PATH){
+            relationship.setDbRelationshipPath((String) value);
             fireTableCellUpdated(row, column);
         }
 
@@ -223,7 +253,8 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
 
     @Override
     public boolean isCellEditable(int row, int col) {
-        return !isInherited(row) && col != REL_SEMANTICS;
+        return !isInherited(row) && col != REL_SEMANTICS
+                && col != REL_TARGET;
     }
 
     final class RelationshipComparator implements Comparator {
@@ -261,7 +292,10 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
                 sortByElementProperty("usedForLocking", isAscent);
                 break;
             case REL_SEMANTICS:
-            case REL_DELETERULE:
+            case REL_COLLECTION_TYPE:
+            case REL_MAP_KEY:
+            case REL_DELETE_RULE:
+            case REL_TARGET_PATH:
                 Collections.sort(objectList, new Comparator<ObjRelationship>() {
 
                     public int compare(ObjRelationship o1, ObjRelationship o2) {
@@ -278,14 +312,25 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
                         String valueToCompare1 = "";
                         String valueToCompare2 = "";
                         switch(sortCol){
+                            case REL_COLLECTION_TYPE:
+                                valueToCompare1 = o1.getCollectionType();
+                                valueToCompare2 = o2.getCollectionType();
+                                break;
+                            case REL_MAP_KEY:
+                                valueToCompare1 = o1.getMapKey();
+                                valueToCompare2 = o2.getMapKey();
+                                break;
                             case REL_SEMANTICS:
                                 valueToCompare1 = getSemantics(o1);
                                 valueToCompare2 = getSemantics(o2);
                                 break;
-                            case REL_DELETERULE:
+                            case REL_DELETE_RULE:
                                 valueToCompare1 = DeleteRule.deleteRuleName(o1.getDeleteRule());
                                 valueToCompare2 = DeleteRule.deleteRuleName(o2.getDeleteRule());
-                                
+                                break;
+                            case REL_TARGET_PATH:
+                                valueToCompare1 = o1.getDbRelationshipPath();
+                                valueToCompare2 = o2.getDbRelationshipPath();
                                 break;
                         }
                         return (valueToCompare1 == null) ? -1 : (valueToCompare2 == null)
@@ -298,7 +343,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
                     Collections.reverse(objectList);
                 }
                 break;
-            
+
         }
 
     }
