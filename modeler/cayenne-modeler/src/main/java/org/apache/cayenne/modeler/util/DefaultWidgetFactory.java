@@ -19,6 +19,7 @@
 package org.apache.cayenne.modeler.util;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -62,6 +63,7 @@ public class DefaultWidgetFactory implements WidgetFactory {
      */
     public JComboBox createComboBox() {
         JComboBox comboBox = new JComboBox();
+        comboBox.setFont(new Font("Verdana", Font.PLAIN , 12));
         comboBox.setBackground(Color.WHITE);
         comboBox.setMaximumRowCount(ModelerPreferences.COMBOBOX_MAX_VISIBLE_SIZE);
         return comboBox;
