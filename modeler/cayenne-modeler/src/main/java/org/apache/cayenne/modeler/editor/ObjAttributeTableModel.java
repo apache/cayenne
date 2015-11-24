@@ -19,17 +19,6 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
@@ -55,6 +44,16 @@ import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.CellEditorForAttributeTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.util.Util;
+
+import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Model for the Object Entity attributes and for Obj to DB Attribute Mapping tables.

@@ -103,11 +103,6 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
             DeleteRule.deleteRuleName(DeleteRule.DENY),
     };
 
- /*   static final String COLLECTION_TYPE_MAP = "java.util.Map";
-    static final String COLLECTION_TYPE_SET = "java.util.Set";
-    static final String COLLECTION_TYPE_COLLECTION = "java.util.Collection";
-    static final String DEFAULT_COLLECTION_TYPE = "java.util.List";*/
-
     protected ProjectController mediator;
     protected CayenneTable table;
     private TableColumnPreferences tablePreferences;
@@ -318,8 +313,6 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
 
         JComboBox combo = (JComboBox) editor.getComponent();
         combo.setRenderer(CellRenderers.entityListRendererWithIcons(entity.getDataMap()));
-        //combo.setModel(new DefaultComboBoxModel(createObjEntityComboModel()));
-        //combo.setEnabled(false);
 
         ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
         model.fireTableDataChanged();
@@ -545,8 +538,6 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
             }else{
                 JLabel labelIfToOneRelationship = new JLabel();
                 labelIfToOneRelationship.setEnabled(false);
-                //collectionTypeCombo.setEnabled(false);
-                //collectionTypeCombo.setSelectedItem( model.getRelationship(row).getCollectionType());
                 return labelIfToOneRelationship;
             }
             collectionTypeCombo.addActionListener(new ActionListener() {
@@ -792,21 +783,6 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
             dbRelationshipPathCombo.addActionListener(this);
             return;
         }
-
-        /*
-         * chech if potential child is child for father
-         * @param father
-         * @param potentialChild
-         * @return
-         */
-        /*private boolean isChild(Object father , Object potentialChild){
-            List<Object> fatherChildren = new ArrayList<>();
-            for(int j = 0 ; j <  treeModel.getChildCount(father) ; j++){
-                Object child = treeModel.getChild(father, j);
-                fatherChildren.add(child);
-            }
-            return fatherChildren.contains(potentialChild);
-        }*/
 
         private void parseDbRelationshipString(char lastEnteredCharacter){
             String dbRelationshipPath = ((JTextComponent) (dbRelationshipPathCombo).
