@@ -164,7 +164,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
             case OBJ_ATTRIBUTE_TYPE:
                 return "Java Type";
             case DB_ATTRIBUTE:
-                return "DbAttribute";
+                return "DbAttributePath";
             case DB_ATTRIBUTE_TYPE:
                 return "DB Type";
             case LOCKING:
@@ -281,9 +281,9 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
 
         return true;
     }
-    
+
+    @Override
     public void setUpdatedValueAt(Object value, int row, int column) {
-        
         ObjAttributeWrapper attribute = getAttribute(row);
         attribute.resetEdits();
         AttributeEvent event = new AttributeEvent(eventSource, attribute.getValue(), entity);
@@ -437,11 +437,6 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
                 // If name is erased, remove db attribute from obj attribute.
                 else if (attribute.getDbAttribute() != null) {
                     attribute.setDbAttributePath(null);
-                }
-
-                // If path is flattened attribute, update the JComboBox
-                if (path != null && path.split("\\.").length > 1 && dbEntity != null) {
-                    setComboBoxes(nameAttr, column);
                 }
             }
             fireTableRowsUpdated(row, row);

@@ -19,10 +19,16 @@
 package org.apache.cayenne.modeler.editor;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjAttributeListener;
@@ -44,36 +50,50 @@ import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
+import org.apache.cayenne.modeler.util.EntityTreeFilter;
+import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
+import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.commons.lang.StringUtils;
 
+import javax.swing.AbstractCellEditor;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.text.JTextComponent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Detail view of the ObjEntity attributes.
@@ -108,7 +128,16 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
         ActionManager actionManager = Application.getInstance().getActionManager();
 
-        table = new CayenneTable();
+        table = new CayenneTable(){
+            @Override
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component component = super.prepareRenderer(renderer, row, column);
+                int rendererWidth = component.getPreferredSize().width;
+                TableColumn tableColumn = getColumnModel().getColumn(column);
+                tableColumn.setPreferredWidth(Math.max(rendererWidth + getIntercellSpacing().width, tableColumn.getPreferredWidth()));
+                return component;
+            }
+        };
         table.setDefaultRenderer(String.class, new CellRenderer());
         tablePreferences = new TableColumnPreferences(
                 ObjAttributeTableModel.class,
@@ -205,16 +234,6 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         AutoCompletion.enable(javaTypesCombo, false, true);
         typeColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(
                 javaTypesCombo));
-
-        if (model.getEntity().getDbEntity() != null) {
-            Collection<String> nameAttr = ModelerUtil.getDbAttributeNames(mediator, model
-                    .getEntity()
-                    .getDbEntity());
-
-            model.setCellEditor(nameAttr, table);
-            model.setComboBoxes(nameAttr, ObjAttributeTableModel.DB_ATTRIBUTE);
-        }
-
     }
 
     /**
@@ -346,6 +365,9 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         maxSizes.put(ObjAttributeTableModel.INHERITED, inheritanceColumnWidth);
 
         initComboBoxes(model);
+
+        table.getColumnModel().getColumn(3).setCellRenderer(new JTableDbAttributeComboBoxRenderer());
+        table.getColumnModel().getColumn(3).setCellEditor(new JTableDbAttributeComboBoxEditor());
 
         tablePreferences.bind(
                 table,
@@ -501,5 +523,337 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
     public ActionListener getResolver() {
         return resolver;
+    }
+
+
+    private static final class JTableDbAttributeComboBoxRenderer extends DefaultTableCellRenderer {
+
+        public JTableDbAttributeComboBoxRenderer() {
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                       boolean hasFocus, int row, int column) {
+            if (value instanceof DbAttribute){
+                JLabel jLabel = new  JLabel(ModelerUtil.getObjectName(value));
+                jLabel.setFont(new Font("Verdana", Font.PLAIN , 12));
+                return jLabel;
+            }
+            if (value !=null){
+                JLabel jLabel = new JLabel(value.toString());
+                jLabel.setFont(new Font("Verdana", Font.PLAIN , 12));
+                return jLabel;
+            }
+            return new JLabel("");
+        }
+    }
+
+    private final static class JTableDbAttributeComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
+
+        private int row;
+        private int column;
+        private JComboBox dbAttributePathCombo;
+        private EntityTreeModel treeModel;
+        private int previousEmbededLevel = 0;
+        private ObjAttributeTableModel model;
+
+        private JTableDbAttributeComboBoxEditor() {
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+             return model.getValueAt(row,column);
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(final JTable table, Object o, boolean b, int i, int i1) {
+            this.model = (ObjAttributeTableModel) table.getModel();
+            row = i;
+            column = i1;
+            treeModel = createTreeModelForComboBoxBrowser(row);
+            if (treeModel == null)
+                return new JLabel("You need select table to this ObjectEntity");
+            initializeCombo(model , row);
+
+            String dbAttributePath = ((JTextComponent) (dbAttributePathCombo).
+                    getEditor().getEditorComponent()).getText();
+            previousEmbededLevel =  StringUtils.countMatches(dbAttributePath,".");
+
+            dbAttributePathCombo.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
+                private void enterPressed(){
+                    String dbAttributePath = ((JTextComponent) (dbAttributePathCombo).
+                            getEditor().getEditorComponent()).getText();
+                    Object currentNode = getCurrentNode(dbAttributePath);
+                    if (currentNode instanceof DbAttribute) {
+                        // in this case choose is made.. we save data
+
+                        if (table.getCellEditor() != null) {
+                            table.getCellEditor().stopCellEditing();
+                            model.getAttribute(row).setDbAttributePath(dbAttributePath);
+                            model.setUpdatedValueAt(dbAttributePath, row, column);
+                        }
+                    }else if (currentNode instanceof DbRelationship) {
+                        // in this case we add dot  to pathString (if it is missing) and show variants for currentNode
+
+                        if (dbAttributePath.charAt(dbAttributePath.length()-1) != '.') {
+                            dbAttributePath = dbAttributePath + ".";
+                            previousEmbededLevel =  StringUtils.countMatches(dbAttributePath,".");
+                            ((JTextComponent) (dbAttributePathCombo).
+                                    getEditor().getEditorComponent()).setText(dbAttributePath);
+                        }
+                        List<String> currentNodeChildren = new ArrayList<>();
+                        currentNodeChildren.add(dbAttributePath + "");
+                        currentNodeChildren.addAll(getChildren(getCurrentNode(dbAttributePath), dbAttributePath));
+                        dbAttributePathCombo.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
+                        dbAttributePathCombo.showPopup();
+                        dbAttributePathCombo.setPopupVisible(true);
+                    }
+                }
+
+                @Override
+                public void keyReleased(KeyEvent event) {
+                    if(event.getKeyCode() == KeyEvent.VK_ENTER){
+                        enterPressed();
+                        return;
+                    }
+                    parseDbAttributeString(event.getKeyChar());
+                }
+            });
+            return dbAttributePathCombo;
+        }
+
+        private void initializeCombo(ObjAttributeTableModel model , int row){
+            String dbAttributePath = model.getAttribute(row).getValue().getDbAttributePath();
+            Object currentNode;
+            if (dbAttributePath == null){
+                //case if it is new attribute or for some reason dbAttributePath is null
+                currentNode = getCurrentNode(dbAttributePath);
+                dbAttributePath = "";
+
+            }else{
+                //case if  dbAttributePath isn't null and we must change it to find auto completion list
+                String[] pathStrings = dbAttributePath.split(Pattern.quote("."));
+                String lastStringInPath = pathStrings[pathStrings.length - 1];
+                dbAttributePath = dbAttributePath.replaceAll(lastStringInPath + "$", "");
+                currentNode = getCurrentNode(dbAttributePath);
+            }
+            List<String> nodeChildren = getChildren(currentNode , dbAttributePath);
+            dbAttributePathCombo = Application.getWidgetFactory().createComboBox(
+                    nodeChildren,
+                    false);
+            AutoCompletion.enable(dbAttributePathCombo, false, true);
+            ((JTextComponent) (dbAttributePathCombo).
+                    getEditor().getEditorComponent()).setText(model.getAttribute(row).getValue().getDbAttributePath());
+            return;
+        }
+
+        private void parseDbAttributeString(char lastEnteredCharacter){
+            String dbAttributePath = ((JTextComponent) (dbAttributePathCombo).
+                    getEditor().getEditorComponent()).getText();
+
+            if (dbAttributePath.equals("")){
+                List<String> currentNodeChildren = new ArrayList<>();
+                currentNodeChildren.add("");
+                currentNodeChildren.addAll(getChildren(getCurrentNode(dbAttributePath),""));
+                dbAttributePathCombo.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
+                dbAttributePathCombo.showPopup();
+                dbAttributePathCombo.setPopupVisible(true);
+                return;
+            }
+
+            if (lastEnteredCharacter == '.') {
+                processDotEntered();
+                return;
+            }
+            int currentEmbededLevel =  StringUtils.countMatches(dbAttributePath,".");
+            if (previousEmbededLevel != currentEmbededLevel){
+                previousEmbededLevel = currentEmbededLevel;
+                List<String> currentNodeChildren = new ArrayList<>();
+                String[] pathStrings = dbAttributePath.split(Pattern.quote("."));
+                String lastStringInPath = pathStrings[pathStrings.length - 1];
+                String saveDbAttributePath = dbAttributePath;
+                dbAttributePath = dbAttributePath.replaceAll(lastStringInPath + "$", "");
+                currentNodeChildren.addAll(getChildren(getCurrentNode(dbAttributePath), dbAttributePath));
+
+                dbAttributePathCombo.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
+                ((JTextComponent) (dbAttributePathCombo).
+                        getEditor().getEditorComponent()).setText(saveDbAttributePath);
+                dbAttributePathCombo.showPopup();
+                dbAttributePathCombo.setPopupVisible(true);
+                return;
+            }
+        }
+
+            private void processDotEntered(){
+            String dbAttributePath = ((JTextComponent) (dbAttributePathCombo).
+                    getEditor().getEditorComponent()).getText();
+            if (dbAttributePath.equals(".")){
+                List<String> currentNodeChildren = new ArrayList<>();
+                currentNodeChildren.add("");
+                currentNodeChildren.addAll(getChildren(getCurrentNode(""),""));
+                dbAttributePathCombo.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
+                dbAttributePathCombo.showPopup();
+                dbAttributePathCombo.setPopupVisible(true);
+                return;
+            }else {
+                char secondFromEndCharacter = dbAttributePath.charAt(dbAttributePath.length()-2);
+                if(secondFromEndCharacter == '.') {
+                    // two dots entered one by one , we replace it by one dot
+                    ((JTextComponent) (dbAttributePathCombo).
+                            getEditor().getEditorComponent()).setText(dbAttributePath.substring(0,dbAttributePath.length()-1));
+                    return;
+                }else{
+                    String[] pathStrings = dbAttributePath.split(Pattern.quote("."));
+                    String lastStringInPath = pathStrings[pathStrings.length - 1];
+
+                    //we will check if lastStringInPath is correct name of DbAttribute or DbRelationship
+                    //for appropriate previous node in path. if it is not we won't add entered dot to dbAttributePath
+                    String dbAttributePathForPreviousNode;
+                    if (pathStrings.length == 1){
+                        //previous root is treeModel.getRoot()
+                        dbAttributePathForPreviousNode = null;
+                    }else {
+                        dbAttributePathForPreviousNode = dbAttributePath.replace("."+lastStringInPath,"");
+                    }
+                    List<String> potentialVariantsToChoose = getChildren(getCurrentNode(dbAttributePathForPreviousNode),"");
+                    if (potentialVariantsToChoose.contains(lastStringInPath)){
+                        List<String> currentNodeChildren = new ArrayList<>();
+                        currentNodeChildren.add(dbAttributePath + "");
+                        currentNodeChildren.addAll(getChildren(getCurrentNode(dbAttributePath), dbAttributePath));
+                        dbAttributePathCombo.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
+                        dbAttributePathCombo.showPopup();
+                        dbAttributePathCombo.setPopupVisible(true);
+                    }else{
+                        ((JTextComponent) (dbAttributePathCombo).
+                                getEditor().getEditorComponent()).setText(dbAttributePath.substring(0,dbAttributePath.length()-1));
+                    }
+                }
+            }
+            previousEmbededLevel =  StringUtils.countMatches(dbAttributePath,".");
+            return;
+        }
+
+        /**
+         * find current node by dbAttributePath
+         * @param dbAttributePath
+         * @return last node in dbAttributePath which matches DbRelationship or DbAttribute
+         */
+        private final Object getCurrentNode(String dbAttributePath) {
+            try {
+                //case for new attribute
+                if(dbAttributePath == null){
+                    return treeModel.getRoot();
+                }
+                String[] pathStrings = dbAttributePath.split(Pattern.quote("."));
+                Object root = treeModel.getRoot();
+                for (int  i = 0 ; i < pathStrings.length ; i ++) {
+                    String rootChildText = pathStrings[i];
+                    for (int j = 0; j < treeModel.getChildCount(root); j++) {
+                        Object child = treeModel.getChild(root, j);
+                        String objectName = ModelerUtil.getObjectName(child);
+                        if (objectName.equals(rootChildText)) {
+                            root = child;
+                            break;
+                        }
+                    }
+                }
+                return root;
+            }catch (Exception e){
+                return treeModel.getRoot();
+            }
+        }
+
+        /**
+         * @param node for which we will find children
+         * @param dbAttributePath string which will be added to each child to make right autocomplete
+         * @return list with children , which will be used to autocomplete
+         */
+        private final List<String> getChildren(Object node , String dbAttributePath){
+            List<String> currentNodeChildren = new ArrayList<>();
+            for(int j = 0 ; j <  treeModel.getChildCount(node) ; j++){
+                Object child = treeModel.getChild(node, j);
+                String objectName = ModelerUtil.getObjectName(child);
+                currentNodeChildren.add(dbAttributePath+objectName);
+            }
+            return currentNodeChildren;
+        }
+
+        /**
+         * @param attributeIndexInTable index of attribute for which now we will create cell editor
+         * @return treeModel for nessesary for us attribute
+         */
+        private EntityTreeModel createTreeModelForComboBoxBrowser(int attributeIndexInTable){
+            ObjAttribute attribute = model.getAttribute(attributeIndexInTable).getValue();
+            Entity firstEntity = null;
+            if (attribute.getDbAttribute() == null) {
+
+                if (attribute.getParent() instanceof ObjEntity) {
+                    DbEntity dbEnt = ((ObjEntity) attribute.getParent()).getDbEntity();
+
+                    if (dbEnt != null) {
+                        Collection<DbAttribute> attributes = dbEnt.getAttributes();
+                        Collection<DbRelationship> rel = dbEnt.getRelationships();
+
+                        if (attributes.size() > 0) {
+                            Iterator<DbAttribute> iterator = attributes.iterator();
+                            firstEntity = iterator.next().getEntity();
+                        } else if (rel.size() > 0) {
+                            Iterator<DbRelationship> iterator = rel.iterator();
+                            firstEntity = iterator.next().getSourceEntity();
+                        }
+                    }
+                }
+            } else {
+                firstEntity = getFirstEntity(attribute);
+            }
+
+            if (firstEntity != null) {
+                EntityTreeModel treeModel = new EntityTreeModel(firstEntity);
+                treeModel.setFilter(new EntityTreeFilter() {
+
+                    public boolean attributeMatch(Object node, Attribute attr) {
+                        if (!(node instanceof Attribute)) {
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    public boolean relationshipMatch(Object node, Relationship rel) {
+                        if (!(node instanceof Relationship)) {
+                            return true;
+                        }
+
+                        /**
+                         * We do not allow A->B->A chains, where relationships
+                         * are to-one
+                         */
+                        DbRelationship prev = (DbRelationship) node;
+                        return !(!rel.isToMany() && prev.getReverseRelationship() == rel);
+                    }
+                });
+                return treeModel;
+            }
+            return null;
+        }
+        private Entity getFirstEntity(ObjAttribute attribute) {
+            Iterator<CayenneMapEntry> it = attribute.getDbPathIterator();
+            Entity firstEnt = attribute.getDbAttribute().getEntity();
+            boolean setEnt = false;
+
+            while (it.hasNext()) {
+                Object ob = it.next();
+                if (ob instanceof DbRelationship) {
+                    if (!setEnt) {
+                        firstEnt = ((DbRelationship) ob).getSourceEntity();
+                        setEnt = true;
+                    }
+                } else if (ob instanceof DbAttribute) {
+                    if (!setEnt) {
+                        firstEnt = ((DbAttribute) ob).getEntity();
+                    }
+                }
+            }
+            return firstEnt;
+        }
     }
 }
