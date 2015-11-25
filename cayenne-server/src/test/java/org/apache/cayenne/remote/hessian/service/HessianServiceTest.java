@@ -19,13 +19,9 @@
 
 package org.apache.cayenne.remote.hessian.service;
 
-import static org.junit.Assert.assertSame;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpSession;
-
+import com.caucho.services.server.ServiceContext;
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpSession;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.Constants;
@@ -33,9 +29,11 @@ import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.event.MockEventBridgeFactory;
 import org.junit.Test;
 
-import com.caucho.services.server.ServiceContext;
-import com.mockrunner.mock.web.MockHttpServletRequest;
-import com.mockrunner.mock.web.MockHttpSession;
+import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertSame;
 
 public class HessianServiceTest {
 
@@ -66,7 +64,7 @@ public class HessianServiceTest {
 		request.getSession();
 
 		try {
-			ServiceContext.begin(request, null, null);
+			ServiceContext.begin(request, null, null, null);
 			assertSame(session, service.getSession(false));
 		} finally {
 			ServiceContext.end();

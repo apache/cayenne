@@ -19,43 +19,33 @@
 
 package org.apache.cayenne.remote.hessian;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-
 import org.apache.cayenne.remote.RemoteSession;
 
-/**
- * A proxy factory that handles HTTP sessions.
- * 
- * @since 1.2
- */
-class HessianProxyFactory extends com.caucho.hessian.client.HessianProxyFactory {
+import java.io.IOException;
+import java.net.URL;
+
+public class HessianURLConnectionFactory extends com.caucho.hessian.client.HessianURLConnectionFactory {
 
     static final String SESSION_COOKIE_NAME = "JSESSIONID";
 
     private HessianConnection clientConnection;
 
-    HessianProxyFactory(HessianConnection clientConnection) {
+    HessianURLConnectionFactory(HessianConnection clientConnection) {
         this.clientConnection = clientConnection;
     }
 
     @Override
-    protected URLConnection openConnection(URL url) throws IOException {
-        URLConnection connection = super.openConnection(url);
-
-        // unfortunately we can't read response cookies without completely reimplementing
-        // 'HessianProxy.invoke()'. Currently (3.0.13) it doesn't allow to cleanly
-        // intercept response... so extract session id from the RemoteSession....
+    public com.caucho.hessian.client.HessianConnection open(URL url) throws IOException {
+        com.caucho.hessian.client.HessianConnection hessianConnection = super.open(url);
 
         // add session cookie
         RemoteSession session = clientConnection.getSession();
         if (session != null && session.getSessionId() != null) {
-            connection.setRequestProperty("Cookie", SESSION_COOKIE_NAME
+            hessianConnection.addHeader("Cookie", SESSION_COOKIE_NAME
                     + "="
                     + session.getSessionId());
         }
 
-        return connection;
+        return hessianConnection;
     }
 }

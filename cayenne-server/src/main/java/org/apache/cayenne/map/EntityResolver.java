@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -40,6 +33,13 @@ import org.apache.cayenne.reflect.valueholder.ValueHolderDescriptorFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Represents a virtual shared namespace for zero or more DataMaps. Unlike
  * DataMap, EntityResolver is intended to work as a runtime container of
@@ -47,7 +47,7 @@ import org.apache.commons.logging.LogFactory;
  * <p>
  * EntityResolver is thread-safe.
  * </p>
- * 
+ *
  * @since 1.1
  */
 public class EntityResolver implements MappingNamespace, Serializable {
@@ -87,7 +87,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * Updates missing mapping artifacts that can be guessed from other mapping
      * information. This implementation creates missing reverse relationships,
      * marking newly created relationships as "runtime".
-     * 
+     *
      * @since 3.0
      */
     public void applyDBLayerDefaults() {
@@ -167,7 +167,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Returns a {@link LifecycleCallbackRegistry} for handling callbacks.
      * Registry is lazily initialized on first call.
-     * 
+     *
      * @since 3.0
      */
     public LifecycleCallbackRegistry getCallbackRegistry() {
@@ -182,7 +182,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * Sets a lifecycle callbacks registry of the EntityResolver. Users rarely
      * if ever need to call this method as Cayenne would instantiate a registry
      * itself as needed based on mapped configuration.
-     * 
+     *
      * @since 3.0
      */
     public void setCallbackRegistry(LifecycleCallbackRegistry callbackRegistry) {
@@ -192,7 +192,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Returns ClientEntityResolver with mapping information that only includes
      * entities available on CWS Client Tier.
-     * 
+     *
      * @since 1.2
      */
     public EntityResolver getClientEntityResolver() {
@@ -226,10 +226,12 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * Returns all DbEntities.
      */
     public Collection<DbEntity> getDbEntities() {
+        checkMappingCache();
         return mappingCache.getDbEntities();
     }
 
     public Collection<ObjEntity> getObjEntities() {
+        checkMappingCache();
         return mappingCache.getObjEntities();
     }
 
@@ -237,6 +239,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @since 3.0
      */
     public Collection<Embeddable> getEmbeddables() {
+        checkMappingCache();
         return mappingCache.getEmbeddables();
     }
 
@@ -252,18 +255,23 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @since 4.0
      */
     public Collection<SQLResult> getResults() {
+        checkMappingCache();
         return mappingCache.getResults();
     }
 
     public Collection<Procedure> getProcedures() {
+        checkMappingCache();
         return mappingCache.getProcedures();
     }
 
     public Collection<Query> getQueries() {
+        checkMappingCache();
         return mappingCache.getQueries();
     }
 
     public DbEntity getDbEntity(String name) {
+        checkMappingCache();
+
         DbEntity result = mappingCache.getDbEntity(name);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
@@ -276,6 +284,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     public ObjEntity getObjEntity(String name) {
+        checkMappingCache();
+
         ObjEntity result = mappingCache.getObjEntity(name);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
@@ -288,6 +298,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     public Procedure getProcedure(String procedureName) {
+        checkMappingCache();
+
         Procedure result = mappingCache.getProcedure(procedureName);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
@@ -303,8 +315,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * Returns a named query or null if no query exists for a given name.
      */
     public Query getQuery(String name) {
-        Query result = mappingCache.getQuery(name);
+        checkMappingCache();
 
+        Query result = mappingCache.getQuery(name);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
@@ -318,8 +331,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @since 3.0
      */
     public Embeddable getEmbeddable(String className) {
-        Embeddable result = mappingCache.getEmbeddable(className);
+        checkMappingCache();
 
+        Embeddable result = mappingCache.getEmbeddable(className);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
@@ -334,8 +348,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @since 3.0
      */
     public SQLResult getResult(String name) {
-        SQLResult result = mappingCache.getResult(name);
+        checkMappingCache();
 
+        SQLResult result = mappingCache.getResult(name);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
@@ -349,7 +364,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Returns ClassDescriptor for the ObjEntity matching the name. Returns null
      * if no matching entity exists.
-     * 
+     *
      * @since 1.2
      */
     public ClassDescriptor getClassDescriptor(String entityName) {
@@ -370,7 +385,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     /**
      * Removes all entity mappings from the cache.
-     * 
+     *
      * @deprecated since 4.0 in favor of {@link #refreshMappingCache()}.
      */
     @Deprecated
@@ -378,10 +393,16 @@ public class EntityResolver implements MappingNamespace, Serializable {
         refreshMappingCache();
     }
 
+    private void checkMappingCache() {
+        if (mappingCache == null) {
+            refreshMappingCache();
+        }
+    }
+
     /**
      * Refreshes entity cache to reflect the current state of the DataMaps in
      * the EntityResolver.
-     * 
+     *
      * @since 4.0
      */
     public void refreshMappingCache() {
@@ -430,9 +451,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @since 4.0
      */
     public EntityInheritanceTree getInheritanceTree(String entityName) {
+        checkMappingCache();
 
         EntityInheritanceTree tree = mappingCache.getInheritanceTree(entityName);
-
         if (tree == null) {
             // since we keep inheritance trees for all entities, null means
             // unknown entity...
@@ -458,13 +479,15 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Looks in the DataMap's that this object was created with for the
      * ObjEntity that maps to the services the specified class
-     * 
+     *
      * @return the required ObjEntity or null if there is none that matches the
      *         specifier
-     * 
+     *
      * @since 4.0
      */
     public ObjEntity getObjEntity(Class<?> entityClass) {
+        checkMappingCache();
+
         ObjEntity result = mappingCache.getObjEntity(entityClass);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
@@ -484,6 +507,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     public ObjEntity getObjEntity(Persistent object) {
+        checkMappingCache();
         return mappingCache.getObjEntity(object);
     }
 

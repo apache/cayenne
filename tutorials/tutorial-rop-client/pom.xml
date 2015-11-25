@@ -32,7 +32,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.caucho</groupId>
-			<artifactId>resin-hessian</artifactId>
+            <artifactId>hessian</artifactId>
 		</dependency>
 	</dependencies>
 	

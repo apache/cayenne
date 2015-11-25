@@ -19,6 +19,10 @@
 
 package org.apache.cayenne.remote.hessian;
 
+import com.caucho.hessian.client.HessianProxyFactory;
+import com.caucho.hessian.client.HessianRuntimeException;
+import com.caucho.hessian.io.HessianProtocolException;
+import com.caucho.hessian.io.SerializerFactory;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventBridgeFactory;
@@ -30,23 +34,19 @@ import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.caucho.hessian.client.HessianRuntimeException;
-import com.caucho.hessian.io.HessianProtocolException;
-import com.caucho.hessian.io.SerializerFactory;
-
 /**
  * An ClientConnection that passes messages to a remotely deployed HessianService. It
  * supports HTTP BASIC authentication. HessianConnection serializes messages using Hessian
  * binary web service protocol over HTTP. For more info on Hessian see Caucho site at <a
  * href="http://www.caucho.com/resin-3.0/protocols/hessian.xtp">http://www.caucho.com/resin-3.0/protocols/hessian.xtp</a>.
  * HessianConnection supports logging of message traffic via Jakarta commons-logging API.
- * 
+ *
  * @since 1.2
  */
 public class HessianConnection extends BaseConnection {
 
     private static Log logger = LogFactory.getLog(HessianConnection.class);
-    
+
     public static final String[] CLIENT_SERIALIZER_FACTORIES = new String[] {
             ClientSerializerFactory.class.getName()
     };
@@ -59,7 +59,7 @@ public class HessianConnection extends BaseConnection {
     protected RemoteSession session;
     protected RemoteService service;
     protected SerializerFactory serializerFactory;
-    
+
     /**
      * Creates HessianConnection that will establish dedicated session and will not use
      * HTTP basic authentication.
@@ -120,11 +120,11 @@ public class HessianConnection extends BaseConnection {
 
         return createServerEventBridge(session);
     }
-    
+
     /**
      * Creates an EventBridge that will listen for server events. Returns null if server
      * events support is not configured in the descriptor.
-     * 
+     *
      * @throws CayenneRuntimeException if EventBridge startup fails for any reason.
      */
     protected EventBridge createServerEventBridge(RemoteSession session) throws CayenneRuntimeException {
@@ -219,10 +219,11 @@ public class HessianConnection extends BaseConnection {
         }
 
         // init service proxy...
-        HessianProxyFactory factory = new HessianProxyFactory(this);
+        HessianProxyFactory factory = new HessianProxyFactory();
         factory.setSerializerFactory(HessianConfig.createFactory(
                 CLIENT_SERIALIZER_FACTORIES,
                 null));
+        factory.setConnectionFactory(new HessianURLConnectionFactory(this));
         factory.setUser(userName);
         factory.setPassword(password);
         factory.setReadTimeout(getReadTimeout());
