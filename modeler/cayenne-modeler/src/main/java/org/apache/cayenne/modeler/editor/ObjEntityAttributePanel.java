@@ -548,8 +548,9 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
     private final static class JTableDbAttributeComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
 
+        private static final int DB_ATTRIBUTE_PATH_COLUMN = 3;
+
         private int row;
-        private int column;
         private JComboBox dbAttributePathCombo;
         private EntityTreeModel treeModel;
         private int previousEmbededLevel = 0;
@@ -560,23 +561,43 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
         @Override
         public Object getCellEditorValue() {
-             return model.getValueAt(row,column);
+             return model.getValueAt(row,DB_ATTRIBUTE_PATH_COLUMN);
         }
 
         @Override
         public Component getTableCellEditorComponent(final JTable table, Object o, boolean b, int i, int i1) {
             this.model = (ObjAttributeTableModel) table.getModel();
             row = i;
-            column = i1;
             treeModel = createTreeModelForComboBoxBrowser(row);
             if (treeModel == null)
                 return new JLabel("You need select table to this ObjectEntity");
-            initializeCombo(model , row);
+            initializeCombo(model , row ,table);
 
             String dbAttributePath = ((JTextComponent) (dbAttributePathCombo).
                     getEditor().getEditorComponent()).getText();
             previousEmbededLevel =  StringUtils.countMatches(dbAttributePath,".");
+            return dbAttributePathCombo;
+        }
 
+        private void initializeCombo(final ObjAttributeTableModel model, final int row, final JTable table){
+            String dbAttributePath = model.getAttribute(row).getValue().getDbAttributePath();
+            Object currentNode;
+            if (dbAttributePath == null){
+                //case if it is new attribute or for some reason dbAttributePath is null
+                currentNode = getCurrentNode(dbAttributePath);
+                dbAttributePath = "";
+
+            }else{
+                //case if  dbAttributePath isn't null and we must change it to find auto completion list
+                String[] pathStrings = dbAttributePath.split(Pattern.quote("."));
+                String lastStringInPath = pathStrings[pathStrings.length - 1];
+                dbAttributePath = dbAttributePath.replaceAll(lastStringInPath + "$", "");
+                currentNode = getCurrentNode(dbAttributePath);
+            }
+            List<String> nodeChildren = getChildren(currentNode , dbAttributePath);
+            dbAttributePathCombo = Application.getWidgetFactory().createComboBox(
+                    nodeChildren,
+                    false);
             dbAttributePathCombo.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
                 private void enterPressed(){
                     String dbAttributePath = ((JTextComponent) (dbAttributePathCombo).
@@ -588,7 +609,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                         if (table.getCellEditor() != null) {
                             table.getCellEditor().stopCellEditing();
                             model.getAttribute(row).setDbAttributePath(dbAttributePath);
-                            model.setUpdatedValueAt(dbAttributePath, row, column);
+                            model.setUpdatedValueAt(dbAttributePath, row, DB_ATTRIBUTE_PATH_COLUMN);
                         }
                     }else if (currentNode instanceof DbRelationship) {
                         // in this case we add dot  to pathString (if it is missing) and show variants for currentNode
@@ -617,28 +638,6 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                     parseDbAttributeString(event.getKeyChar());
                 }
             });
-            return dbAttributePathCombo;
-        }
-
-        private void initializeCombo(ObjAttributeTableModel model , int row){
-            String dbAttributePath = model.getAttribute(row).getValue().getDbAttributePath();
-            Object currentNode;
-            if (dbAttributePath == null){
-                //case if it is new attribute or for some reason dbAttributePath is null
-                currentNode = getCurrentNode(dbAttributePath);
-                dbAttributePath = "";
-
-            }else{
-                //case if  dbAttributePath isn't null and we must change it to find auto completion list
-                String[] pathStrings = dbAttributePath.split(Pattern.quote("."));
-                String lastStringInPath = pathStrings[pathStrings.length - 1];
-                dbAttributePath = dbAttributePath.replaceAll(lastStringInPath + "$", "");
-                currentNode = getCurrentNode(dbAttributePath);
-            }
-            List<String> nodeChildren = getChildren(currentNode , dbAttributePath);
-            dbAttributePathCombo = Application.getWidgetFactory().createComboBox(
-                    nodeChildren,
-                    false);
             AutoCompletion.enable(dbAttributePathCombo, false, true);
             ((JTextComponent) (dbAttributePathCombo).
                     getEditor().getEditorComponent()).setText(model.getAttribute(row).getValue().getDbAttributePath());
@@ -654,8 +653,6 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 currentNodeChildren.add("");
                 currentNodeChildren.addAll(getChildren(getCurrentNode(dbAttributePath),""));
                 dbAttributePathCombo.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
-                dbAttributePathCombo.showPopup();
-                dbAttributePathCombo.setPopupVisible(true);
                 return;
             }
 
@@ -672,17 +669,14 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 String saveDbAttributePath = dbAttributePath;
                 dbAttributePath = dbAttributePath.replaceAll(lastStringInPath + "$", "");
                 currentNodeChildren.addAll(getChildren(getCurrentNode(dbAttributePath), dbAttributePath));
-
                 dbAttributePathCombo.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
                 ((JTextComponent) (dbAttributePathCombo).
                         getEditor().getEditorComponent()).setText(saveDbAttributePath);
-                dbAttributePathCombo.showPopup();
-                dbAttributePathCombo.setPopupVisible(true);
                 return;
             }
         }
 
-            private void processDotEntered(){
+        private void processDotEntered(){
             String dbAttributePath = ((JTextComponent) (dbAttributePathCombo).
                     getEditor().getEditorComponent()).getText();
             if (dbAttributePath.equals(".")){

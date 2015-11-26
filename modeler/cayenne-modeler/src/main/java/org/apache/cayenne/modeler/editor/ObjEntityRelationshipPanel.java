@@ -345,15 +345,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
 
         TableColumn col = table.getColumnModel().getColumn(
                 ObjRelationshipTableModel.REL_TARGET_PATH);
-        JComboBox targetCombo = Application.getWidgetFactory().createComboBox(
-                createObjEntityComboModel(),
-                false);
-        AutoCompletion.enable(targetCombo);
-
-        targetCombo.setRenderer(CellRenderers.entityListRendererWithIcons(entity
-                .getDataMap()));
-        targetCombo.setSelectedIndex(-1);
-        col.setCellEditor(new JTableTargetComboBoxEditor());
+        col.setCellEditor(new JTableTargetPathComboBoxEditor());
 
         col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_DELETE_RULE);
         JComboBox deleteRulesCombo = Application.getWidgetFactory().createComboBox(
@@ -370,6 +362,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         col.setCellRenderer(new JTableCollectionTypeComboBoxRenderer());
 
         col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_MAP_KEY);
+
         col.setCellEditor(new JTableMapKeyComboBoxEditor());
         col.setCellRenderer(new JTableMapKeyComboBoxRenderer());
 
@@ -510,10 +503,10 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         static final String COLLECTION_TYPE_SET = "java.util.Set";
         static final String COLLECTION_TYPE_COLLECTION = "java.util.Collection";
         static final String DEFAULT_COLLECTION_TYPE = "java.util.List";
+        private static final int REL_COLLECTION_TYPE_COLUMN = 3;
 
         private ObjRelationshipTableModel model;
         private int row;
-        private int column;
 
         public JTableCollectionTypeComboBoxEditor() {
         }
@@ -522,7 +515,6 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         public Component getTableCellEditorComponent(final JTable table, Object value, boolean isSelected, final int row, final int column) {
             this.model = (ObjRelationshipTableModel) table.getModel();
             this.row = row;
-            this.column = column;
 
             final JComboBox collectionTypeCombo = Application.getWidgetFactory().createComboBox(
                     new Object[]{
@@ -544,7 +536,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     Object selected = collectionTypeCombo.getSelectedItem();
-                    model.setUpdatedValueAt(selected,row,column);
+                    model.setUpdatedValueAt(selected,row,REL_COLLECTION_TYPE_COLUMN);
                     table.repaint();
                 }
             });
@@ -553,7 +545,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
 
         @Override
         public Object getCellEditorValue() {
-            return model.getValueAt(row,column);
+            return model.getValueAt(row,REL_COLLECTION_TYPE_COLUMN);
         }
     }
 
@@ -586,13 +578,13 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
 
     private final static class JTableMapKeyComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
 
-        static final String DEFAULT_MAP_KEY = "ID (default)";
-        static final String COLLECTION_TYPE_MAP = "java.util.Map";
+        private static final String DEFAULT_MAP_KEY = "ID (default)";
+        private static final String COLLECTION_TYPE_MAP = "java.util.Map";
+        private static final int REL_MAP_KEY_COLUMN = 4;
 
         private List<String> mapKeys = new ArrayList<>() ;
         private ObjRelationshipTableModel model;
         private int row;
-        private int column;
 
         private JTableMapKeyComboBoxEditor() {
         }
@@ -617,7 +609,6 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, final int row, final int column) {
             this.model = (ObjRelationshipTableModel) table.getModel();
             this.row = row;
-            this.column = column;
             initMapKeys();
             final JComboBox mapKeysComboBox =  Application.getWidgetFactory().createComboBox(
                   mapKeys,
@@ -636,7 +627,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     Object selected = mapKeysComboBox.getSelectedItem();
-                    model.setUpdatedValueAt(selected,row,column);
+                    model.setUpdatedValueAt(selected,row,REL_MAP_KEY_COLUMN);
                 }
             });
             mapKeysComboBox.setSelectedItem(model.getRelationship(row).getMapKey());
@@ -645,7 +636,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
 
         @Override
         public Object getCellEditorValue() {
-            return model.getValueAt(row,column);
+            return model.getValueAt(row,REL_MAP_KEY_COLUMN);
         }
     }
 
@@ -678,38 +669,59 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         }
     }
 
-    private static final class JTableTargetComboBoxEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+    private static final class JTableTargetPathComboBoxEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+
+        static final int REL_TARGET_PATH_COLUMN = 2;
 
         private ObjRelationshipTableModel model;
         private int row;
-        private int column;
         private JComboBox dbRelationshipPathCombo;
         private EntityTreeModel treeModel;
         private int previousEmbededLevel = 0;
         private static int enterPressedCount = 0;
 
-        public JTableTargetComboBoxEditor() {
+        public JTableTargetPathComboBoxEditor() {
         }
 
         @Override
         public Object getCellEditorValue() {
-            return model.getValueAt(row,column);
+            return model.getValueAt(row,REL_TARGET_PATH_COLUMN);
         }
 
         @Override
         public Component getTableCellEditorComponent(final JTable table, Object value, boolean isSelected, final int row, int column) {
             this.model = (ObjRelationshipTableModel) table.getModel();
             this.row = row;
-            this.column = column;
             treeModel = createTreeModelForComboBoxBrowser(row);
             if (treeModel == null)
                 return new JLabel("You need select table to this ObjectEntity");
-            initializeCombo(model , row);
+            initializeCombo(model , row , table);
 
             String dbRelationshipPath = ((JTextComponent) (dbRelationshipPathCombo).
                     getEditor().getEditorComponent()).getText();
             previousEmbededLevel =  dbRelationshipPath.split(Pattern.quote(".")).length;
+            return dbRelationshipPathCombo;
+        }
 
+        private void initializeCombo(final ObjRelationshipTableModel model, final int row, final JTable table){
+            String dbRelationshipPath = model.getRelationship(row).getDbRelationshipPath();
+            Object currentNode;
+            if (dbRelationshipPath == null){
+                //case if it is new attribute or for some reason dbRelationshipPath is null
+                currentNode = getCurrentNode(dbRelationshipPath);
+                dbRelationshipPath = "";
+
+            }else{
+                //case if  dbRelationshipPath isn't null and we must change it to find auto completion list
+                String[] pathStrings = dbRelationshipPath.split(Pattern.quote("."));
+                String lastStringInPath = pathStrings[pathStrings.length - 1];
+                dbRelationshipPath = dbRelationshipPath.replaceAll(lastStringInPath + "$", "");
+                currentNode = getCurrentNode(dbRelationshipPath);
+            }
+            List<String> nodeChildren = getChildren(currentNode , dbRelationshipPath);
+            dbRelationshipPathCombo = Application.getWidgetFactory().createComboBox(
+                    nodeChildren,
+                    false);
             dbRelationshipPathCombo.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
                 private void enterPressed(){
                     String dbRelationshipPath = ((JTextComponent) (dbRelationshipPathCombo).
@@ -753,28 +765,6 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
                     parseDbRelationshipString(event.getKeyChar());
                 }
             });
-            return dbRelationshipPathCombo;
-        }
-
-        private void initializeCombo(ObjRelationshipTableModel model , int row){
-            String dbRelationshipPath = model.getRelationship(row).getDbRelationshipPath();
-            Object currentNode;
-            if (dbRelationshipPath == null){
-                //case if it is new attribute or for some reason dbRelationshipPath is null
-                currentNode = getCurrentNode(dbRelationshipPath);
-                dbRelationshipPath = "";
-
-            }else{
-                //case if  dbRelationshipPath isn't null and we must change it to find auto completion list
-                String[] pathStrings = dbRelationshipPath.split(Pattern.quote("."));
-                String lastStringInPath = pathStrings[pathStrings.length - 1];
-                dbRelationshipPath = dbRelationshipPath.replaceAll(lastStringInPath + "$", "");
-                currentNode = getCurrentNode(dbRelationshipPath);
-            }
-            List<String> nodeChildren = getChildren(currentNode , dbRelationshipPath);
-            dbRelationshipPathCombo = Application.getWidgetFactory().createComboBox(
-                    nodeChildren,
-                    false);
             AutoCompletion.enable(dbRelationshipPathCombo, false, true);
             dbRelationshipPathCombo.setEditable(true);
             ((JTextComponent) (dbRelationshipPathCombo).
@@ -795,8 +785,6 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
                 currentNodeChildren.add("");
                 currentNodeChildren.addAll(getChildren(getCurrentNode(dbRelationshipPath),""));
                 dbRelationshipPathCombo.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
-                dbRelationshipPathCombo.showPopup();
-                dbRelationshipPathCombo.setPopupVisible(true);
                 return;
             }
 
@@ -819,9 +807,6 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
                 dbRelationshipPathCombo.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
                 ((JTextComponent) (dbRelationshipPathCombo).
                         getEditor().getEditorComponent()).setText(saveDbRelationshipPath);
-
-                dbRelationshipPathCombo.showPopup();
-                dbRelationshipPathCombo.setPopupVisible(true);
                 return;
             }
         }
