@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @since 3.1
@@ -79,7 +80,7 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
         Provider<T> provider0 = new InstanceProvider<T>(object);
         Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
 
-        getListProvider().add(Key.get(object.getClass(), String.valueOf(object.hashCode())), provider1);
+        getListProvider().add(Key.get(object.getClass(), UUID.randomUUID().toString()), provider1);
         return this;
     }
 
@@ -123,7 +124,7 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
             Provider<T> provider0 = new InstanceProvider<T>(object);
             Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
 
-            keyProviderMap.put(Key.get(object.getClass(), String.valueOf(object.hashCode())), provider1);
+            keyProviderMap.put(Key.get(object.getClass(), UUID.randomUUID().toString()), provider1);
         }
 
         getListProvider().addAll(keyProviderMap);
