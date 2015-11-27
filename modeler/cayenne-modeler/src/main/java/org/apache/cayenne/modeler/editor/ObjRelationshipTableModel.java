@@ -158,20 +158,6 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         if (relationship.isReadOnly()) {
             semantics += ", read-only";
         }
-
-        if (relationship.isToMany()) {
-            String collection = "list";
-            if (relationship.getCollectionType() != null) {
-                int dot = relationship.getCollectionType().lastIndexOf('.');
-                collection = relationship
-                        .getCollectionType()
-                        .substring(dot + 1)
-                        .toLowerCase();
-            }
-
-            semantics += ", " + collection;
-        }
-
         return semantics;
     }
 
