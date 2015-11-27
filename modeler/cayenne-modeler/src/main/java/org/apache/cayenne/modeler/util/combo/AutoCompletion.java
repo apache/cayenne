@@ -20,8 +20,12 @@
 package org.apache.cayenne.modeler.util.combo;
 
 import javax.swing.JComboBox;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -107,7 +111,8 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     }
 
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE ) {
+        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE ||
+                e.getKeyCode() == KeyEvent.VK_ENTER) {
 
             String text = textEditor.getText();
             if (comboBox.isShowing()) {
@@ -153,11 +158,11 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
             sel = comboBox.getSelectedIndex();
             max = comboBox.getItemCount() - 1;
         }
-        
+
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP:
             case KeyEvent.VK_NUMPAD8:
-                next = sel - 1; 
+                next = sel - 1;
                 break;
             case KeyEvent.VK_DOWN:
             case KeyEvent.VK_NUMPAD2:
@@ -235,7 +240,18 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
                    comboBox.setSelectedIndex(next);
                 }
             }
-            
+
+            //scroll doesn't work in suggestionList..so we will scroll manually
+            Component c = ((Container) suggestionList).getComponent(0);
+            if (c instanceof JScrollPane) {
+                double height = suggestionList.getPreferredSize().getHeight();
+                int itemCount = suggestionList.getItemCount();
+                int selectedIndex = suggestionList.getSelectedIndex();
+                double scrollValue = Math.ceil(height*selectedIndex/itemCount);
+                JScrollPane scrollPane = (JScrollPane) c;
+                JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
+                scrollBar.setValue((int) scrollValue);
+            }
             textEditor.requestFocus();
         }
     }
