@@ -61,10 +61,12 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -603,7 +605,11 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                     String dbAttributePath = ((JTextComponent) (dbAttributePathCombo).
                             getEditor().getEditorComponent()).getText();
                     Object currentNode = getCurrentNode(dbAttributePath);
-                    if (currentNode instanceof DbAttribute) {
+
+                    String[] pathStrings = dbAttributePath.split(Pattern.quote("."));
+                    String lastStringInPath = pathStrings[pathStrings.length - 1];
+                    if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
+                            currentNode instanceof DbAttribute) {
                         // in this case choose is made.. we save data
 
                         if (table.getCellEditor() != null) {
@@ -611,7 +617,8 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                             model.getAttribute(row).setDbAttributePath(dbAttributePath);
                             model.setUpdatedValueAt(dbAttributePath, row, DB_ATTRIBUTE_PATH_COLUMN);
                         }
-                    }else if (currentNode instanceof DbRelationship) {
+                    }else if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
+                            currentNode instanceof DbRelationship) {
                         // in this case we add dot  to pathString (if it is missing) and show variants for currentNode
 
                         if (dbAttributePath.charAt(dbAttributePath.length()-1) != '.') {
@@ -641,6 +648,25 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
             AutoCompletion.enable(dbAttributePathCombo, false, true);
             ((JTextComponent) (dbAttributePathCombo).
                     getEditor().getEditorComponent()).setText(model.getAttribute(row).getValue().getDbAttributePath());
+            dbAttributePathCombo.setRenderer(new DefaultListCellRenderer(){
+                @Override
+                public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                    Object currentNode = getCurrentNode((String) value);
+                    JLabel jLabel = new JLabel();
+                    jLabel.setFont(new Font("Verdana", Font.PLAIN , 13));
+                    if (isSelected) {
+                        jLabel.setOpaque(true);
+                        jLabel.setBackground(new Color(0xB4B4B4));
+                    }
+                    if (currentNode instanceof DbRelationship){
+                        if (((String) value).charAt(((String) value).length()-1) != '.')
+                            jLabel.setText(ModelerUtil.getObjectName(value)+" ->");
+                        return jLabel;
+                    }
+                    jLabel.setText(ModelerUtil.getObjectName(value));
+                    return jLabel;
+                }
+            });
             return;
         }
 
@@ -653,6 +679,8 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 currentNodeChildren.add("");
                 currentNodeChildren.addAll(getChildren(getCurrentNode(dbAttributePath),""));
                 dbAttributePathCombo.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
+                dbAttributePathCombo.showPopup();
+                dbAttributePathCombo.setPopupVisible(true);
                 return;
             }
 
