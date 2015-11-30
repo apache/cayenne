@@ -40,6 +40,7 @@ public class CayenneProjects {
     public static final String INHERITANCE_PROJECT = "cayenne-inheritance.xml";
     public static final String INHERITANCE_SINGLE_TABLE1_PROJECT = "cayenne-inheritance-single-table1.xml";
     public static final String INHERITANCE_VERTICAL_PROJECT = "cayenne-inheritance-vertical.xml";
+    public static final String LIFECYCLE_CALLBACKS_ORDER_PROJECT = "cayenne-lifecycle-callbacks-order.xml";
     public static final String LIFECYCLES_PROJECT = "cayenne-lifecycles.xml";
     public static final String LOB_PROJECT = "cayenne-lob.xml";
     public static final String LOCKING_PROJECT = "cayenne-locking.xml";

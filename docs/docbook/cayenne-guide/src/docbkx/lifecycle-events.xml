@@ -60,14 +60,14 @@
                         <td>PrePersist</td>
                         <td>right before a new object is committed, inside
                                 <code>ObjectContext.commitChanges()</code> and
-                                <code>ObjectContext.commitChangesToParent()</code> (and prior to
+                                <code>ObjectContext.commitChangesToParent()</code> (and after
                                 "<code>validateForInsert()</code>").</td>
                     </tr>
                     <tr>
                         <td>PreUpdate</td>
                         <td>right before a modified object is committed, inside
                                 <code>ObjectContext.commitChanges()</code> and
-                                <code>ObjectContext.commitChangesToParent()</code> (and prior to
+                                <code>ObjectContext.commitChangesToParent()</code> (and after
                                 "<code>validateForUpdate()</code>").</td>
                     </tr>
                     <tr>
