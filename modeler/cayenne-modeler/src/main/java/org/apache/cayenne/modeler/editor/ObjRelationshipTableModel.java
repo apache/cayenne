@@ -37,18 +37,17 @@ import java.util.Comparator;
 public class ObjRelationshipTableModel extends CayenneTableModel {
 
     // Columns
-    static final int REL_NAME = 0;
-    static final int REL_TARGET = 1;
-    static final int REL_TARGET_PATH = 2;
-    static final int REL_COLLECTION_TYPE = 3;
-    static final int REL_MAP_KEY = 4;
-    static final int REL_SEMANTICS = 5;
-    static final int REL_DELETE_RULE = 6;
-    static final int REL_LOCKING = 7;
+    public static final int REL_NAME = 0;
+    public static final int REL_TARGET = 1;
+    public static final int REL_TARGET_PATH = 2;
+    public static final int REL_COLLECTION_TYPE = 3;
+    public static final int REL_MAP_KEY = 4;
+    public static final int REL_SEMANTICS = 5;
+    public static final int REL_DELETE_RULE = 6;
+    public static final int REL_LOCKING = 7;
+    public static final int COLUMN_COUNT = 8;
 
-    static final int COLUMN_COUNT = 8;
-
-    protected ObjEntity entity;
+    private ObjEntity entity;
 
     public ObjRelationshipTableModel(ObjEntity entity, ProjectController mediator,
             Object eventSource) {
@@ -99,7 +98,6 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
                 return "Map key";
             case REL_TARGET_PATH:
                 return "DbRelationshipPath";
-
             default:
                 return null;
         }
@@ -140,8 +138,9 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         else if (column == REL_DELETE_RULE) {
             return DeleteRule.deleteRuleName(relationship.getDeleteRule());
         } else if (column == REL_COLLECTION_TYPE) {
-            if (!relationship.isToMany())
+            if (!relationship.isToMany()) {
                 return null;
+            }
             return relationship.getCollectionType();
         } else if (column == REL_MAP_KEY){
             return relationship.getMapKey();
@@ -153,12 +152,13 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         }
     }
 
-    private String getSemantics(ObjRelationship relationship) {
-        String semantics = relationship.isToMany() ? "to many" : "to one";
+    private static String getSemantics(ObjRelationship relationship) {
+        StringBuilder semantics =  new StringBuilder(20);
+        semantics.append(relationship.isToMany() ? "to many" : "to one");
         if (relationship.isReadOnly()) {
-            semantics += ", read-only";
+            semantics.append(", read-only");
         }
-        return semantics;
+        return semantics.toString();
     }
 
     @Override
@@ -183,7 +183,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
             
             // now try to connect DbEntities if we can do it in one step
             if (target != null) {
-                DbEntity srcDB = ((ObjEntity) relationship.getSourceEntity())
+                DbEntity srcDB = relationship.getSourceEntity()
                         .getDbEntity();
                 DbEntity targetDB = target.getDbEntity();
                 if (srcDB != null && targetDB != null) {
@@ -221,8 +221,9 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
     }
 
     public void removeRow(int row) {
-        if (row < 0)
+        if (row < 0) {
             return;
+        }
         Relationship rel = getRelationship(row);
         RelationshipEvent e;
         e = new RelationshipEvent(eventSource, rel, entity, RelationshipEvent.REMOVE);
@@ -282,55 +283,61 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
             case REL_MAP_KEY:
             case REL_DELETE_RULE:
             case REL_TARGET_PATH:
-                Collections.sort(objectList, new Comparator<ObjRelationship>() {
-
-                    public int compare(ObjRelationship o1, ObjRelationship o2) {
-                        if ((o1 == null && o2 == null) || o1 == o2) {
-                            return 0;
-                        }
-                        else if (o1 == null && o2 != null) {
-                            return -1;
-                        }
-                        else if (o1 != null && o2 == null) {
-                            return 1;
-                        }
-                        
-                        String valueToCompare1 = "";
-                        String valueToCompare2 = "";
-                        switch(sortCol){
-                            case REL_COLLECTION_TYPE:
-                                valueToCompare1 = o1.getCollectionType();
-                                valueToCompare2 = o2.getCollectionType();
-                                break;
-                            case REL_MAP_KEY:
-                                valueToCompare1 = o1.getMapKey();
-                                valueToCompare2 = o2.getMapKey();
-                                break;
-                            case REL_SEMANTICS:
-                                valueToCompare1 = getSemantics(o1);
-                                valueToCompare2 = getSemantics(o2);
-                                break;
-                            case REL_DELETE_RULE:
-                                valueToCompare1 = DeleteRule.deleteRuleName(o1.getDeleteRule());
-                                valueToCompare2 = DeleteRule.deleteRuleName(o2.getDeleteRule());
-                                break;
-                            case REL_TARGET_PATH:
-                                valueToCompare1 = o1.getDbRelationshipPath();
-                                valueToCompare2 = o2.getDbRelationshipPath();
-                                break;
-                        }
-                        return (valueToCompare1 == null) ? -1 : (valueToCompare2 == null)
-                                ? 1
-                                : valueToCompare1.compareTo(valueToCompare2);
-                    }
-
-                });
+                Collections.sort(objectList, new ObjRelationshipTableComparator(sortCol));
                 if (!isAscent) {
                     Collections.reverse(objectList);
                 }
                 break;
-
+            default:
+                break;
         }
 
+    }
+
+    private static class ObjRelationshipTableComparator implements Comparator<ObjRelationship>{
+
+        private int sortCol;
+
+        public ObjRelationshipTableComparator(int sortCol) {
+            this.sortCol = sortCol;
+        }
+
+        public int compare(ObjRelationship o1, ObjRelationship o2) {
+            if ((o1 == null && o2 == null) || o1 == o2) {
+                return 0;
+            }
+            else if (o1 == null && o2 != null) {
+                return -1;
+            }
+            else if (o1 != null && o2 == null) {
+                return 1;
+            }
+
+            switch(sortCol){
+                case REL_COLLECTION_TYPE:
+                    return compareColumnsData(o1.getCollectionType(), o2.getCollectionType());
+                case REL_MAP_KEY:
+                    return compareColumnsData(o1.getMapKey(), o2.getMapKey());
+                case REL_SEMANTICS:
+                    return compareColumnsData(getSemantics(o1), getSemantics(o2));
+                case REL_DELETE_RULE:
+                    return compareColumnsData(DeleteRule.deleteRuleName(o1.getDeleteRule()),
+                                    DeleteRule.deleteRuleName(o2.getDeleteRule()));
+                case REL_TARGET_PATH:
+                    return compareColumnsData(o1.getDbRelationshipPath(), o2.getDbRelationshipPath());
+                default:
+                    return compareColumnsData("", "");
+            }
+        }
+    }
+
+    private static int compareColumnsData(String value1, String value2) {
+        if (value1 == null) {
+            return -1;
+        } else if (value2 == null) {
+            return 1;
+        } else {
+            return value1.compareTo(value2);
+        }
     }
 }
