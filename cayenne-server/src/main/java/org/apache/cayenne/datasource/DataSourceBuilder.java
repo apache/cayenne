@@ -18,11 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
-import java.sql.Driver;
+import org.apache.cayenne.CayenneRuntimeException;
 
 import javax.sql.DataSource;
-
-import org.apache.cayenne.CayenneRuntimeException;
+import java.sql.Driver;
 
 /**
  * A builder class that allows to build a {@link DataSource} with optional
@@ -73,7 +72,9 @@ public class DataSourceBuilder {
 	 * Turns produced DataSource into a pooled DataSource.
 	 */
 	public PoolingDataSourceBuilder pool(int minConnection, int maxConnections) {
-		return new PoolingDataSourceBuilder(this);
+		return new PoolingDataSourceBuilder(this)
+				.minConnections(minConnection)
+				.maxConnections(maxConnections);
 	}
 
 	/**
