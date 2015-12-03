@@ -18,23 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Vector;
-
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreePath;
-
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
@@ -49,9 +33,28 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ResolveDbRelationshipDialog;
-import org.apache.cayenne.modeler.util.*;
+import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.Comparators;
+import org.apache.cayenne.modeler.util.EntityTreeModel;
+import org.apache.cayenne.modeler.util.EntityTreeRelationshipFilter;
+import org.apache.cayenne.modeler.util.MultiColumnBrowser;
+import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
+
+import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Vector;
 
 public class ObjRelationshipInfo extends CayenneController implements TreeSelectionListener {
 
@@ -182,27 +185,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
 
         if (view.pathBrowser.getModel() == null) {
             EntityTreeModel treeModel = new EntityTreeModel(getStartEntity());
-            treeModel.setFilter(new EntityTreeFilter() {
-
-                public boolean attributeMatch(Object node, Attribute attr) {
-                    // attrs not allowed here
-                    return false;
-                }
-
-                public boolean relationshipMatch(Object node, Relationship rel) {
-                    if (!(node instanceof Relationship)) {
-                        return true;
-                    }
-
-                    /**
-                     * We do not allow A->B->A chains, where relationships are
-                     * to-one
-                     */
-                    DbRelationship prev = (DbRelationship) node;
-                    return !(!rel.isToMany() && prev.getReverseRelationship() == rel);
-                }
-
-            });
+            treeModel.setFilter(new EntityTreeRelationshipFilter());
 
             view.pathBrowser.setModel(treeModel);
 
