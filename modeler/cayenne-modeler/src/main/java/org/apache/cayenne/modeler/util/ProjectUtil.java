@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
@@ -47,6 +42,11 @@ import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.Util;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Provides utility methods to perform various manipulations with project objects.
@@ -253,38 +253,7 @@ public class ProjectUtil {
                     if (pathSplit.length > 1) {
 
                         DbEntity currentEnt = dbEnt;
-                        StringBuilder pathBuf = new StringBuilder();
-                        boolean isTruePath = true;
-
-                        if (currentEnt != null) {
-
-                            for (int j = 0; j < pathSplit.length; j++) {
-
-                                if (j == pathSplit.length - 1 && isTruePath) {
-                                    DbAttribute dbAttribute = (DbAttribute) currentEnt
-                                            .getAttribute(pathSplit[j]);
-                                    if (dbAttribute != null) {
-                                        pathBuf.append(dbAttribute.getName());
-                                    }
-                                    else {
-                                        isTruePath = false;
-                                    }
-                                }
-                                else if (isTruePath) {
-                                    DbRelationship dbRelationship = (DbRelationship) currentEnt
-                                            .getRelationship(pathSplit[j]);
-                                    if (dbRelationship != null) {
-                                        currentEnt = (DbEntity) dbRelationship
-                                                .getTargetEntity();
-                                        pathBuf.append(dbRelationship.getName());
-                                        pathBuf.append(".");
-                                    }
-                                    else {
-                                        isTruePath = false;
-                                    }
-                                }
-                            }
-                        }
+                        boolean isTruePath = isDbAttributePathCorrect(currentEnt,att.getDbAttributePath());
 
                         if (!isTruePath) {
                             att.setDbAttributePath(null);
@@ -316,6 +285,34 @@ public class ProjectUtil {
                 }
             }
         }
+    }
+
+    /**
+     * check if path is correct. path is correct when he consist from <code>DbRelationship</code>
+     * objects, each <code>DbRelationship</code> object have  following <code>DbRelationship</code>
+     * object as a target, last component is <code>DbAttribute</code>
+     *
+     * @param currentEnt current db entity
+     * @param dbAttributePath path to check
+     * @return if path is correct return true
+     */
+    public static boolean isDbAttributePathCorrect(DbEntity currentEnt, String dbAttributePath) {
+        if (currentEnt == null) {
+            return true;
+        }
+
+        String[] pathSplit = dbAttributePath.split("\\.");
+
+        int size = pathSplit.length - 1;
+        for (int j = 0; j < size; j++) {
+            DbRelationship relationship = currentEnt.getRelationship(pathSplit[j]);
+            if (relationship == null) {
+                return false;
+            }
+            currentEnt = relationship.getTargetEntity();
+        }
+
+        return currentEnt.getAttribute(pathSplit[(size)]) != null;
     }
 
     /**
