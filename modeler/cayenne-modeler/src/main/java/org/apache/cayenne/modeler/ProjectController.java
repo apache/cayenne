@@ -121,8 +121,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.EventObject;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
@@ -1779,7 +1781,7 @@ public class ProjectController extends CayenneController {
     	
     }
 
-    public ArrayList<Embeddable> getEmbeddableNamesInCurRentDataDomain() {
+    public ArrayList<Embeddable> getEmbeddablesInCurrentDataDomain() {
         DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) getProject().getRootNode();
         Collection<DataMap> maps = dataChannelDescriptor.getDataMaps();
         Iterator<DataMap> it = maps.iterator();
@@ -1788,6 +1790,15 @@ public class ProjectController extends CayenneController {
             embs.addAll(it.next().getEmbeddables());
         }
         return embs;
+    }
+
+    public Set<String> getEmbeddableNamesInCurrentDataDomain() {
+        ArrayList<Embeddable> embs = getEmbeddablesInCurrentDataDomain();
+        Set<String> embNames = new HashSet<>(embs.size());
+        for (Embeddable emb : embs) {
+            embNames.add(emb.getClassName());
+        }
+        return embNames;
     }
 
     public void updateProjectControllerPreferences() {
