@@ -25,7 +25,6 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -58,8 +57,8 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     protected AutoCompletion(final JComboBox comboBox, boolean strict, boolean allowsUserValues) {
         this.comboBox = comboBox;
         textEditor = ((JTextComponent)comboBox.getEditor().getEditorComponent());
-        
-        this.allowsUserValues = allowsUserValues; 
+
+        this.allowsUserValues = allowsUserValues;
         
         suggestionList = new SuggestionList(comboBox, strict);
         
@@ -107,7 +106,7 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     }
 
     public void keyPressed(KeyEvent e) {
-        handleKeyPressed(comboBox, e);
+        handleKeyPressed(e);
     }
 
     public void keyReleased(KeyEvent e) {
@@ -145,20 +144,27 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
      * Calculates next selection row, according to a pressed key and selects it.
      * This might affect either suggestion list or original popup
      */
-    private void handleKeyPressed(JComboBox comboBox, KeyEvent e) {
+    private void handleKeyPressed(KeyEvent e) {
         boolean suggest = suggestionList.isVisible();
 
-        int sel, next, max;
-
         if (suggest) {
-            sel = suggestionList.getSelectedIndex();
-            max = suggestionList.getItemCount() - 1;
+            processKeyPressedWhenSuggestionListIsVisible(e);
         }
         else {
-            sel = comboBox.getSelectedIndex();
-            max = comboBox.getItemCount() - 1;
+            processKeyPressedWhenSuggestionListIsInvisible(e);
         }
 
+        //scroll doesn't work in suggestionList..so we will scroll manually
+        suggestionListScrolling();
+
+        textEditor.requestFocus();
+    }
+
+    private void   processKeyPressedWhenSuggestionListIsInvisible(KeyEvent e){
+        int sel = comboBox.getSelectedIndex();
+        int max = comboBox.getItemCount() - 1;
+
+        int next;
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP:
             case KeyEvent.VK_NUMPAD8:
@@ -181,42 +187,71 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
                 next = max;
                 break;
             case KeyEvent.VK_ENTER:
-                if (suggest) {
-                    Object value = suggestionList.getSelectedValue();
-                    if (!allowsUserValues && value == null && suggestionList.getItemCount() > 0) {
-                        value = suggestionList.getItemAt(0);
-                    }
-                    
-                    //reset the item (value == null) only if user values are not supported
-                    if (value != null || !allowsUserValues) {
-                        comboBox.setSelectedItem(value);
-                    }
-                    suggestionList.hide();
-                }
                 return;
-                
             case KeyEvent.VK_ESCAPE:
-                if (suggest) {
-                    suggestionList.hide();
-                }
                 return;
-                
-            case KeyEvent.VK_CONTROL:
-            case KeyEvent.VK_ALT:
-            case KeyEvent.VK_SHIFT:
-                return;
-                
             default:
                 //invoke in end of AWT thread so that information in textEditor would update
                 SwingUtilities.invokeLater(this);
                 return;
         }
-        
-        /**
-         * Handle navigation keys
-         */
-
         e.consume();
+        handleNavigationKeys(false,next,sel,max);
+    }
+
+    private void processKeyPressedWhenSuggestionListIsVisible(KeyEvent e){
+        int sel = suggestionList.getSelectedIndex();
+        int max = suggestionList.getItemCount() - 1;
+        int next;
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_UP:
+            case KeyEvent.VK_NUMPAD8:
+                next = sel - 1;
+                break;
+            case KeyEvent.VK_DOWN:
+            case KeyEvent.VK_NUMPAD2:
+                next = sel + 1;
+                break;
+            case KeyEvent.VK_PAGE_UP:
+                next = sel - comboBox.getMaximumRowCount();
+                break;
+            case KeyEvent.VK_PAGE_DOWN:
+                next = sel + comboBox.getMaximumRowCount();
+                break;
+            case KeyEvent.VK_HOME:
+                next = 0;
+                break;
+            case KeyEvent.VK_END:
+                next = max;
+                break;
+            case KeyEvent.VK_ENTER:
+                processEnterPressed();
+                return;
+            case KeyEvent.VK_ESCAPE:
+                suggestionList.hide();
+                return;
+            default:
+                //invoke in end of AWT thread so that information in textEditor would update
+                SwingUtilities.invokeLater(this);
+                return;
+        }
+        e.consume();
+        handleNavigationKeys(true,next,sel,max);
+    }
+
+    private void processEnterPressed(){
+        Object value = suggestionList.getSelectedValue();
+        if (!allowsUserValues && value == null && suggestionList.getItemCount() > 0) {
+            value = suggestionList.getItemAt(0);
+        }
+        //reset the item (value == null) only if user values are not supported
+        if (value != null || !allowsUserValues) {
+            comboBox.setSelectedItem(value);
+        }
+        suggestionList.hide();
+    }
+
+    private void handleNavigationKeys(boolean suggest, int next, int sel, int max){
         if (!suggest && !comboBox.isPopupVisible()) {
             comboBox.setPopupVisible(true);
             return;
@@ -226,33 +261,32 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
             if (next < 0) {
                 next = 0;
             }
-        
+
             if (next > max) {
                 next = max;
             }
-            
+
             if (next != sel) {
                 if (suggest) {
                     suggestionList.setSelectedIndex(next);
-                }
-                else {
-                   comboBox.setPopupVisible(true);
-                   comboBox.setSelectedIndex(next);
+                } else {
+                    comboBox.setPopupVisible(true);
+                    comboBox.setSelectedIndex(next);
                 }
             }
+        }
+    }
 
-            //scroll doesn't work in suggestionList..so we will scroll manually
-            Component c = ((Container) suggestionList).getComponent(0);
-            if (c instanceof JScrollPane) {
-                double height = suggestionList.getPreferredSize().getHeight();
-                int itemCount = suggestionList.getItemCount();
-                int selectedIndex = suggestionList.getSelectedIndex();
-                double scrollValue = Math.ceil(height*selectedIndex/itemCount);
-                JScrollPane scrollPane = (JScrollPane) c;
-                JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
-                scrollBar.setValue((int) scrollValue);
-            }
-            textEditor.requestFocus();
+    private void suggestionListScrolling(){
+        Component c = suggestionList.getComponent(0);
+        if (c instanceof JScrollPane) {
+            double height = suggestionList.getPreferredSize().getHeight();
+            int itemCount = suggestionList.getItemCount();
+            int selectedIndex = suggestionList.getSelectedIndex();
+            double scrollValue = Math.ceil(height*selectedIndex/itemCount);
+            JScrollPane scrollPane = (JScrollPane) c;
+            JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
+            scrollBar.setValue((int) scrollValue);
         }
     }
 }
