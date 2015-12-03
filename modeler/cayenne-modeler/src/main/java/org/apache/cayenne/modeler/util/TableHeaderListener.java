@@ -72,14 +72,12 @@ public class TableHeaderListener extends MouseAdapter {
     }
 
     public void mouseReleased(MouseEvent e) {
-        renderer.setPressedColumn(-1); // clear
         header.repaint();
     }
 
     public void sortByDefinedColumn(int col, int sortCol, boolean order) {
         CayenneTableModel model = (CayenneTableModel) table.getModel();
         if (model.isColumnSortable(sortCol)) {
-            renderer.setPressedColumn(col);
             renderer.setSelectedColumn(col, order);
             header.repaint();
 

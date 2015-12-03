@@ -34,12 +34,10 @@ public class SortButtonRenderer extends JLabel implements TableCellRenderer {
     public static final int DOWN = 1;
     public static final int UP = 2;
 
-    private int pushedColumn;
     private Hashtable state;
     private JLabel downLabel , upLabel;
 
     public SortButtonRenderer() {
-        pushedColumn = -1;
         state = new Hashtable();
 
         downLabel = new JLabel();
@@ -57,10 +55,10 @@ public class SortButtonRenderer extends JLabel implements TableCellRenderer {
             int row,
             int column) {
         JLabel  label = this;
-        Object obj = state.get(new Integer(column));
+        Object obj = state.get(column);
 
         if (obj != null) {
-            if (((Integer) obj).intValue() == DOWN) {
+            if ((Integer) obj == DOWN) {
                 label = downLabel;
             }
             else {
@@ -68,7 +66,7 @@ public class SortButtonRenderer extends JLabel implements TableCellRenderer {
             }
         }
         Border border = BorderFactory.createLineBorder(Color.GRAY, 1);
-        label.setText(" " + ((value == null) ? "" : value.toString()));
+        label.setText(' ' + ((value == null) ? "" : value.toString()));
         label.setFont(new Font("Verdana", Font.BOLD , 13));
         label.setHorizontalTextPosition(JLabel.LEFT);
         label.setBorder(border);
@@ -77,34 +75,30 @@ public class SortButtonRenderer extends JLabel implements TableCellRenderer {
         return label;
     }
 
-    public void setPressedColumn(int col) {
-        pushedColumn = col;
-    }
-
     public void setSelectedColumn(int col, boolean isAscOrder) {
-        if (col < 0)
+        if (col < 0) {
             return;
+        }
         Integer value = null;
         //shows the direction of ordering
         if (isAscOrder) {
-            value = new Integer(DOWN);
-        }
-        else {
-            value = new Integer(UP);
+            value = DOWN;
+        } else {
+            value = UP;
         }
 
         state.clear();
-        state.put(new Integer(col), value);
+        state.put(col, value);
     }
 
     public int getState(int col) {
         int retValue;
-        Object obj = state.get(new Integer(col));
+        Object obj = state.get(col);
         if (obj == null) {
             retValue = NONE;
         }
         else {
-            if (((Integer) obj).intValue() == DOWN) {
+            if ((Integer) obj == DOWN) {
                 retValue = DOWN;
             }
             else {
