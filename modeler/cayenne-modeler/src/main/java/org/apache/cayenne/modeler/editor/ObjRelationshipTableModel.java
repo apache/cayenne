@@ -125,29 +125,24 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
 
         if (column == REL_NAME) {
             return relationship.getName();
-        }
-        else if (column == REL_TARGET) {
+        } else if (column == REL_TARGET) {
             return relationship.getTargetEntity();
-        }
-        else if (column == REL_LOCKING) {
+        } else if (column == REL_LOCKING) {
             return relationship.isUsedForLocking() ? Boolean.TRUE : Boolean.FALSE;
-        }
-        else if (column == REL_SEMANTICS) {
+        } else if (column == REL_SEMANTICS) {
             return getSemantics(relationship);
-        }
-        else if (column == REL_DELETE_RULE) {
+        } else if (column == REL_DELETE_RULE) {
             return DeleteRule.deleteRuleName(relationship.getDeleteRule());
         } else if (column == REL_COLLECTION_TYPE) {
             if (!relationship.isToMany()) {
                 return null;
             }
             return relationship.getCollectionType();
-        } else if (column == REL_MAP_KEY){
+        } else if (column == REL_MAP_KEY) {
             return relationship.getMapKey();
-        } else if (column == REL_TARGET_PATH){
+        } else if (column == REL_TARGET_PATH) {
             return relationship.getDbRelationshipPath();
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -171,16 +166,15 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
             event.setOldName(relationship.getName());
             ProjectUtil.setRelationshipName(entity, relationship, text);
             fireTableCellUpdated(row, column);
-        }
-        else if (column == REL_TARGET) {
+        } else if (column == REL_TARGET) {
             ObjEntity target = (ObjEntity) value;
             relationship.setTargetEntityName(target);
-            
+
             /**
              * Clear existing relationships, otherwise addDbRelationship() might fail
              */
             relationship.clearDbRelationships();
-            
+
             // now try to connect DbEntities if we can do it in one step
             if (target != null) {
                 DbEntity srcDB = relationship.getSourceEntity()
@@ -195,24 +189,20 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
             }
 
             fireTableRowsUpdated(row, row);
-        }
-        else if (column == REL_DELETE_RULE) {
+        } else if (column == REL_DELETE_RULE) {
             relationship.setDeleteRule(DeleteRule.deleteRuleForName((String) value));
             fireTableCellUpdated(row, column);
-        }
-        else if (column == REL_LOCKING) {
+        } else if (column == REL_LOCKING) {
             relationship.setUsedForLocking((value instanceof Boolean)
                     && ((Boolean) value).booleanValue());
             fireTableCellUpdated(row, column);
-        }
-        else if (column == REL_COLLECTION_TYPE){
+        } else if (column == REL_COLLECTION_TYPE) {
             relationship.setCollectionType((String) value);
             fireTableCellUpdated(row, column);
-        }else if (column == REL_MAP_KEY){
+        } else if (column == REL_MAP_KEY) {
             relationship.setMapKey((String) value);
             fireTableCellUpdated(row, column);
-            }
-        else if (column == REL_TARGET_PATH){
+        } else if (column == REL_TARGET_PATH) {
             relationship.setDbRelationshipPath((String) value);
             fireTableCellUpdated(row, column);
         }
@@ -291,7 +281,6 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
             default:
                 break;
         }
-
     }
 
     private static class ObjRelationshipTableComparator implements Comparator<ObjRelationship>{

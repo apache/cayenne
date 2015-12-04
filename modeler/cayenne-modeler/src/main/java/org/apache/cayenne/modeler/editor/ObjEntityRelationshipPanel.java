@@ -326,8 +326,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         table.setRowHeight(25);
         table.setRowMargin(3);
 
-        TableColumn col = table.getColumnModel().getColumn(
-                ObjRelationshipTableModel.REL_TARGET_PATH);
+        TableColumn col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_TARGET_PATH);
         col.setCellEditor(new DbRelationshipPathComboBoxEditor());
 
         col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_DELETE_RULE);
@@ -481,7 +480,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         return resolver;
     }
 
-    private final static class JTableCollectionTypeComboBoxEditor extends AbstractCellEditor implements TableCellEditor{
+    private final static class JTableCollectionTypeComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
 
         private static final String COLLECTION_TYPE_MAP = "java.util.Map";
         private static final String COLLECTION_TYPE_SET = "java.util.Set";
@@ -508,10 +507,10 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
                             DEFAULT_COLLECTION_TYPE
                     },
                     false);
-            if(model.getRelationship(row).isToMany()){
+            if (model.getRelationship(row).isToMany()) {
                 collectionTypeCombo.setEnabled(true);
-                collectionTypeCombo.setSelectedItem( model.getRelationship(row).getCollectionType());
-            }else{
+                collectionTypeCombo.setSelectedItem(model.getRelationship(row).getCollectionType());
+            } else {
                 JLabel labelIfToOneRelationship = new JLabel();
                 labelIfToOneRelationship.setEnabled(false);
                 return labelIfToOneRelationship;
@@ -520,7 +519,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     Object selected = collectionTypeCombo.getSelectedItem();
-                    model.setUpdatedValueAt(selected,row,REL_COLLECTION_TYPE_COLUMN);
+                    model.setUpdatedValueAt(selected, row, REL_COLLECTION_TYPE_COLUMN);
                     table.repaint();
                 }
             });
@@ -529,7 +528,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
 
         @Override
         public Object getCellEditorValue() {
-            return model.getValueAt(row,REL_COLLECTION_TYPE_COLUMN);
+            return model.getValueAt(row, REL_COLLECTION_TYPE_COLUMN);
         }
     }
 
@@ -547,13 +546,13 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
             labelIfToOneRelationship.setEnabled(false);
             JLabel labelIfToManyRelationship = new JLabel((String) value);
             labelIfToManyRelationship.setEnabled(true);
-            labelIfToManyRelationship.setFont(new Font("Verdana", Font.PLAIN , 12));
+            labelIfToManyRelationship.setFont(new Font("Verdana", Font.PLAIN, 12));
             if (value == null) {
                 return labelIfToOneRelationship;
             }
             if (model.getRelationship(row).isToMany()) {
                 return labelIfToManyRelationship;
-            }else{
+            } else {
                 return labelIfToOneRelationship;
             }
 
@@ -566,7 +565,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         private static final String COLLECTION_TYPE_MAP = "java.util.Map";
         private static final int REL_MAP_KEY_COLUMN = 4;
 
-        private List<String> mapKeys = new ArrayList<>() ;
+        private List<String> mapKeys = new ArrayList<>();
         private ObjRelationshipTableModel model;
         private int row;
 
@@ -582,7 +581,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
              */
             ObjEntity objectTarget = model.getRelationship(row).getTargetEntity();
             if (objectTarget == null) {
-                return ;
+                return;
             }
             for (ObjAttribute attribute : objectTarget.getAttributes()) {
                 mapKeys.add(attribute.getName());
@@ -594,16 +593,16 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
             this.model = (ObjRelationshipTableModel) table.getModel();
             this.row = row;
             initMapKeys();
-            final JComboBox mapKeysComboBox =  Application.getWidgetFactory().createComboBox(
-                  mapKeys,
+            final JComboBox mapKeysComboBox = Application.getWidgetFactory().createComboBox(
+                    mapKeys,
                     false);
             if ((model.getRelationship(row).getCollectionType() == null)
-                    ||(!model.getRelationship(row).getCollectionType().equals(COLLECTION_TYPE_MAP))){
+                    || (!model.getRelationship(row).getCollectionType().equals(COLLECTION_TYPE_MAP))) {
                 JComboBox jComboBox = new JComboBox();
                 jComboBox.setFocusable(false);
                 jComboBox.setEnabled(false);
                 return jComboBox;
-            }else{
+            } else {
                 mapKeysComboBox.setFocusable(true);
                 mapKeysComboBox.setEnabled(true);
             }
@@ -611,7 +610,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     Object selected = mapKeysComboBox.getSelectedItem();
-                    model.setUpdatedValueAt(selected,row,REL_MAP_KEY_COLUMN);
+                    model.setUpdatedValueAt(selected, row, REL_MAP_KEY_COLUMN);
                 }
             });
             mapKeysComboBox.setSelectedItem(model.getRelationship(row).getMapKey());
@@ -620,11 +619,11 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
 
         @Override
         public Object getCellEditorValue() {
-            return model.getValueAt(row,REL_MAP_KEY_COLUMN);
+            return model.getValueAt(row, REL_MAP_KEY_COLUMN);
         }
     }
 
-    private final static class JTableMapKeyComboBoxRenderer implements TableCellRenderer{
+    private final static class JTableMapKeyComboBoxRenderer implements TableCellRenderer {
 
         private static final String DEFAULT_MAP_KEY = "ID (default)";
         private static final String COLLECTION_TYPE_MAP = "java.util.Map";
@@ -637,18 +636,18 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             this.model = (ObjRelationshipTableModel) table.getModel();
-            if ( (model.getRelationship(row).getCollectionType() == null)
-                ||(!model.getRelationship(row).getCollectionType().equals(COLLECTION_TYPE_MAP))){
+            if ((model.getRelationship(row).getCollectionType() == null)
+                    || (!model.getRelationship(row).getCollectionType().equals(COLLECTION_TYPE_MAP))) {
                 JComboBox jComboBox = new JComboBox();
                 jComboBox.setFocusable(false);
                 jComboBox.setEnabled(false);
                 return jComboBox;
             }
-            if (model.getRelationship(row).getMapKey() == null){
+            if (model.getRelationship(row).getMapKey() == null) {
                 model.getRelationship(row).setMapKey(DEFAULT_MAP_KEY);
             }
-            JLabel jLabel  = new JLabel(model.getRelationship(row).getMapKey());
-            jLabel.setFont(new Font("Verdana", Font.PLAIN , 12));
+            JLabel jLabel = new JLabel(model.getRelationship(row).getMapKey());
+            jLabel.setFont(new Font("Verdana", Font.PLAIN, 12));
             return jLabel;
         }
     }

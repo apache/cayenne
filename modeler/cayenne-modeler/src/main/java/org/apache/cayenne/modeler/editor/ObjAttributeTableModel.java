@@ -70,8 +70,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
     private CellEditorForAttributeTable cellEditor;
     private CayenneTable table;
 
-    public ObjAttributeTableModel(ObjEntity entity, ProjectController mediator,
-                                                              Object eventSource) {
+    public ObjAttributeTableModel(ObjEntity entity, ProjectController mediator, Object eventSource) {
         super(mediator, eventSource, wrapObjAttributes(entity.getAttributes()));
         // take a copy
         this.entity = entity;
@@ -198,16 +197,14 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
 
     private String getDBAttribute(ObjAttributeWrapper attribute, DbAttribute dbAttribute) {
         if (dbAttribute == null) {
-            if (!attribute.isInherited()
-                    && attribute.getEntity().isAbstract()) {
+            if (!attribute.isInherited() && attribute.getEntity().isAbstract()) {
                 return attribute.getDbAttributePath();
             }
             else {
                 return null;
             }
         }
-        else if (attribute.getDbAttributePath() != null
-                && attribute.getDbAttributePath().contains(".")) {
+        else if (attribute.getDbAttributePath() != null && attribute.getDbAttributePath().contains(".")) {
             return attribute.getDbAttributePath();
         }
         return dbAttribute.getName();
@@ -276,15 +273,14 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
         return true;
     }
 
-    private void setObjAttribute(ObjAttributeWrapper attribute,
-                                 Object value){
+    private void setObjAttribute(ObjAttributeWrapper attribute, Object value) {
         attribute.setName(value != null ? value.toString().trim() : null);
         if (attribute.isValid()) {
             attribute.commitEdits();
         }
     }
 
-    private void setObjAttributeType(ObjAttributeWrapper attribute, Object value){
+    private void setObjAttributeType(ObjAttributeWrapper attribute, Object value) {
         String oldType = attribute.getType();
         String newType = value != null ? value.toString() : null;
 
@@ -341,14 +337,14 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
                 (DataChannelDescriptor) mediator.getProject().getRootNode()));
     }
 
-    private void setColumnLocking(ObjAttributeWrapper attribute, Object value){
+    private void setColumnLocking(ObjAttributeWrapper attribute, Object value) {
         attribute.setUsedForLocking((value instanceof Boolean)
                 && ((Boolean) value).booleanValue());
     }
 
-    private void setDbAttribute(ObjAttributeWrapper attribute, Object value){
+    private void setDbAttribute(ObjAttributeWrapper attribute, Object value) {
 
-        // If db attrib exist, associate it with obj attribute
+        // If db attribute exist, associate it with obj attribute
         if (value != null) {
             String path = value.toString();
 
@@ -383,17 +379,17 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
 
         if (column == OBJ_ATTRIBUTE) {
             event.setOldName(attribute.getName());
-            setObjAttribute(attribute,value);
+            setObjAttribute(attribute, value);
             fireTableCellUpdated(row, column);
         } else if (column == OBJ_ATTRIBUTE_TYPE) {
-            setObjAttributeType(attribute,value);
+            setObjAttributeType(attribute, value);
             fireTableCellUpdated(row, column);
         } else if (column == LOCKING) {
-            setColumnLocking(attribute,value);
+            setColumnLocking(attribute, value);
             fireTableCellUpdated(row, column);
         } else {
             if (column == DB_ATTRIBUTE) {
-                setDbAttribute(attribute,value);
+                setDbAttribute(attribute, value);
             }
             fireTableRowsUpdated(row, row);
         }

@@ -1,20 +1,20 @@
 /*****************************************************************
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
  ****************************************************************/
 
 package org.apache.cayenne.modeler.util;
@@ -56,39 +56,38 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
         this.row = row;
         treeModel = createTreeModelForComboBox(row);
         if (treeModel == null) {
-            return new JLabel("You need select table to this ObjectEntity");
+            return new JLabel("You should select table to this ObjectEntity");
         }
-        initializeCombo(model , row ,table);
+        initializeCombo(model, row, table);
 
-        String dbAttributePath = ((JTextComponent) (comboBoxPathChooser).
-                getEditor().getEditorComponent()).getText();
-        previousEmbeddedLevel =  StringUtils.countMatches(dbAttributePath,".");
+        String dbAttributePath = ((JTextComponent) (comboBoxPathChooser).getEditor().getEditorComponent()).getText();
+        previousEmbeddedLevel = StringUtils.countMatches(dbAttributePath, ".");
         return comboBoxPathChooser;
     }
 
     @Override
     public Object getCellEditorValue() {
-        return model.getValueAt(row,DB_ATTRIBUTE_PATH_COLUMN);
+        return model.getValueAt(row, DB_ATTRIBUTE_PATH_COLUMN);
     }
 
     @Override
     protected void initializeCombo(CayenneTableModel model, int row, final JTable table) {
-        super.initializeCombo(model,row,table);
+        super.initializeCombo(model, row, table);
         ((JTextComponent) (comboBoxPathChooser).
                 getEditor().getEditorComponent()).
-                setText(((ObjAttributeTableModel)model).getAttribute(row).getValue().getDbAttributePath());
-        comboBoxPathChooser.setRenderer(new DefaultListCellRenderer(){
+                setText(((ObjAttributeTableModel) model).getAttribute(row).getValue().getDbAttributePath());
+        comboBoxPathChooser.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 Object currentNode = getCurrentNode((String) value);
                 JLabel jLabel = new JLabel();
-                jLabel.setFont(new Font("Verdana", Font.PLAIN , 13));
+                jLabel.setFont(new Font("Verdana", Font.PLAIN, 13));
                 if (isSelected) {
                     jLabel.setOpaque(true);
                     jLabel.setBackground(new Color(0xB4B4B4));
                 }
-                if (currentNode instanceof DbRelationship){
-                    if (((String) value).charAt(((String) value).length()-1) != '.') {
+                if (currentNode instanceof DbRelationship) {
+                    if (((String) value).charAt(((String) value).length() - 1) != '.') {
                         jLabel.setText(ModelerUtil.getObjectName(value) + " ->");
                     }
                     return jLabel;
@@ -102,13 +101,13 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
 
     @Override
     protected Object getCurrentNodeToInitializeCombo(CayenneTableModel model, int row) {
-        return getCurrentNode(getPathToInitializeCombo(model,row));
+        return getCurrentNode(getPathToInitializeCombo(model, row));
     }
 
     @Override
     protected String getPathToInitializeCombo(CayenneTableModel model, int row) {
-        String pathString = ((ObjAttributeTableModel)model).getAttribute(row).getValue().getDbAttributePath();
-        if (pathString == null){
+        String pathString = ((ObjAttributeTableModel) model).getAttribute(row).getValue().getDbAttributePath();
+        if (pathString == null) {
             return "";
         }
         String[] pathStrings = pathString.split(Pattern.quote("."));
@@ -116,10 +115,9 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
         return pathString.replaceAll(lastStringInPath + '$', "");
     }
 
-    // TODO: 30.11.15 нужен ли здесь StringBuilder
     @Override
-    protected void enterPressed(JTable table){
-        StringBuilder dbAttributePath =  new StringBuilder(
+    protected void enterPressed(JTable table) {
+        StringBuilder dbAttributePath = new StringBuilder(
                 ((JTextComponent) (comboBoxPathChooser).
                         getEditor().getEditorComponent()).getText());
         Object currentNode = getCurrentNode(dbAttributePath.toString());
@@ -135,13 +133,13 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
                 model.getAttribute(row).setDbAttributePath(dbAttributePath.toString());
                 model.setUpdatedValueAt(dbAttributePath, row, DB_ATTRIBUTE_PATH_COLUMN);
             }
-        }else if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
+        } else if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
                 currentNode instanceof DbRelationship) {
             // in this case we add dot  to pathString (if it is missing) and show variants for currentNode
 
-            if (dbAttributePath.charAt(dbAttributePath.length()-1) != '.') {
+            if (dbAttributePath.charAt(dbAttributePath.length() - 1) != '.') {
                 dbAttributePath = dbAttributePath.append('.');
-                previousEmbeddedLevel =  StringUtils.countMatches(dbAttributePath.toString(),".");
+                previousEmbeddedLevel = StringUtils.countMatches(dbAttributePath.toString(), ".");
                 ((JTextComponent) (comboBoxPathChooser).
                         getEditor().getEditorComponent()).setText(dbAttributePath.toString());
             }
