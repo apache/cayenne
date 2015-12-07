@@ -18,26 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-
-import org.apache.cayenne.map.Embeddable;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
@@ -47,10 +31,21 @@ import org.apache.cayenne.modeler.util.MultiColumnBrowser;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 
 public class ObjAttributeInfoDialogView extends JDialog {
 
@@ -209,13 +204,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
                     }
                 }
 
-                Iterator<Embeddable> embs = mediator.getEmbeddableNamesInCurRentDataDomain().iterator();
-                ArrayList<String> embNames = new ArrayList<String>();
-                while (embs.hasNext()) {
-                    embNames.add(embs.next().getClassName());
-                }
-
-                if (isType || !embNames.contains(typeComboBox.getSelectedItem())) {
+                if (isType || !mediator.getEmbeddableNamesInCurrentDataDomain().contains(typeComboBox.getSelectedItem())) {
                     ((CardLayout) typeManagerPane.getLayout()).show(typeManagerPane, FLATTENED_PANEL);
                 } else {
                     ((CardLayout) typeManagerPane.getLayout()).show(typeManagerPane, EMBEDDABLE_PANEL);

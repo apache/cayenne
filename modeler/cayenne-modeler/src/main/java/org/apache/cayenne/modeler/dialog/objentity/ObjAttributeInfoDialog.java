@@ -18,6 +18,39 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.objentity;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
+import org.apache.cayenne.map.EmbeddedAttribute;
+import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.event.AttributeEvent;
+import org.apache.cayenne.map.event.EntityEvent;
+import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.editor.ObjAttributeTableModel;
+import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.EntityTreeAttributeRelationshipFilter;
+import org.apache.cayenne.modeler.util.EntityTreeModel;
+import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.swing.BindingBuilder;
+import org.apache.cayenne.util.CayenneMapEntry;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.WindowConstants;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.tree.TreePath;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
@@ -30,42 +63,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.WindowConstants;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.tree.TreePath;
-
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.EmbeddableAttribute;
-import org.apache.cayenne.map.EmbeddedAttribute;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.map.event.AttributeEvent;
-import org.apache.cayenne.map.event.EntityEvent;
-import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.editor.ObjAttributeTableModel;
-import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.modeler.util.EntityTreeFilter;
-import org.apache.cayenne.modeler.util.EntityTreeModel;
-import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.util.CayenneMapEntry;
 
 public class ObjAttributeInfoDialog extends CayenneController implements TreeSelectionListener {
 
@@ -95,9 +92,9 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 		this.stringToEmbeddables = new HashMap<>();
 		this.embeddableNames = new ArrayList<String>();
 
-		Iterator<Embeddable> embs = mediator.getEmbeddableNamesInCurRentDataDomain().iterator();
+		Iterator<Embeddable> embs = mediator.getEmbeddablesInCurrentDataDomain().iterator();
 		while (embs.hasNext()) {
-			Embeddable emb = (Embeddable) embs.next();
+			Embeddable emb = embs.next();
 			stringToEmbeddables.put(emb.getClassName(), emb);
 			embeddableNames.add(emb.getClassName());
 		}
@@ -194,28 +191,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 
 			if (firstEntity != null) {
 				EntityTreeModel treeModel = new EntityTreeModel(firstEntity);
-				treeModel.setFilter(new EntityTreeFilter() {
-
-					public boolean attributeMatch(Object node, Attribute attr) {
-						if (!(node instanceof Attribute)) {
-							return true;
-						}
-						return false;
-					}
-
-					public boolean relationshipMatch(Object node, Relationship rel) {
-						if (!(node instanceof Relationship)) {
-							return true;
-						}
-
-						/**
-						 * We do not allow A->B->A chains, where relationships
-						 * are to-one
-						 */
-						DbRelationship prev = (DbRelationship) node;
-						return !(!rel.isToMany() && prev.getReverseRelationship() == rel);
-					}
-				});
+				treeModel.setFilter(new EntityTreeAttributeRelationshipFilter());
 				view.getPathBrowser().setModel(treeModel);
 			}
 		}
@@ -342,12 +318,11 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 		}
 		if (embeddableNames.contains(typeName)) {
 
-			Collection<EmbeddableAttribute> embAttrTemp = ((Embeddable) stringToEmbeddables.get(typeName))
-					.getAttributes();
+			Collection<EmbeddableAttribute> embAttrTemp = stringToEmbeddables.get(typeName).getAttributes();
 			Iterator<EmbeddableAttribute> it = embAttrTemp.iterator();
 
 			while (it.hasNext()) {
-				EmbeddableAttribute temp = (EmbeddableAttribute) it.next();
+				EmbeddableAttribute temp = it.next();
 				EmbeddableAttribute at = new EmbeddableAttribute();
 				at.setDbAttributeName(temp.getDbAttributeName());
 				at.setName(temp.getName());
@@ -387,7 +362,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 
 			StringBuilder attributePath = new StringBuilder();
 			StringBuilder pathStr = new StringBuilder();
-			if (((ObjEntity) attribute.getEntity()).getDbEntity() != null) {
+			if (attribute.getEntity().getDbEntity() != null) {
 				TreePath path = view.getPathBrowser().getSelectionPath();
 
 				if (path.getLastPathComponent() instanceof DbAttribute) {

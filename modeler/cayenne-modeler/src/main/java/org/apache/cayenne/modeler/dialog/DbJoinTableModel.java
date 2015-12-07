@@ -87,9 +87,9 @@ public class DbJoinTableModel extends CayenneTableModel {
 
     public String getColumnName(int column) {
         if (column == SOURCE)
-            return "Source";
+            return relationship.getSourceEntity().getName();
         else if (column == TARGET)
-            return "Target";
+            return relationship.getTargetEntity().getName();
         else
             return "";
     }

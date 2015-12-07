@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.editor;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -44,6 +45,7 @@ import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
+import org.apache.cayenne.modeler.util.DbAttributePathComboBoxEditor;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
@@ -52,6 +54,7 @@ import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -69,7 +72,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -81,8 +84,8 @@ import java.util.Map;
 public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayListener,
         ObjEntityListener, ObjAttributeListener, ProjectOnSaveListener {
 
-    protected ProjectController mediator;
-    protected CayenneTable table;
+    private ProjectController mediator;
+    private CayenneTable table;
     private TableColumnPreferences tablePreferences;
     private ObjEntityAttributeRelationshipTab parentPanel;
     private boolean enabledResolve;//for JBottom "resolve" in ObjEntityAttrRelationshipTab
@@ -93,7 +96,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
      * By now popup menu item is made similar to toolbar button. (i.e. all functionality
      * is here) This should be probably refactored as Action.
      */
-    protected JMenuItem resolveMenu;
+    private JMenuItem resolveMenu;
 
     public ObjEntityAttributePanel(ProjectController mediator, ObjEntityAttributeRelationshipTab parentPanel) {
         this.mediator = mediator;
@@ -101,6 +104,14 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
         initView();
         initController();
+    }
+
+    public CayenneTable getTable() {
+        return table;
+    }
+
+    public void setTable(CayenneTable table) {
+        this.table = table;
     }
 
     private void initView() {
@@ -174,7 +185,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 CopyAttributeRelationshipAction.class);
     }
 
-    public void initComboBoxes(ObjAttributeTableModel model) {
+    public void initComboBoxes() {
         List<String> embeddableNames = new ArrayList<String>();
         List<String> typeNames = new ArrayList<String>();
 
@@ -183,17 +194,13 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 .iterator();
         while (it.hasNext()) {
             DataMap dataMap = (DataMap) it.next();
-            Iterator<Embeddable> embs = dataMap.getEmbeddables().iterator();
-            while (embs.hasNext()) {
-                Embeddable emb = embs.next();
+            for (Embeddable emb : dataMap.getEmbeddables()) {
                 embeddableNames.add(emb.getClassName());
             }
         }
 
         String[] registeredTypes = ModelerUtil.getRegisteredTypeNames();
-        for (int i = 0; i < registeredTypes.length; i++) {
-            typeNames.add(registeredTypes[i]);
-        }
+        Collections.addAll(typeNames, registeredTypes);
         typeNames.addAll(embeddableNames);
 
         TableColumn typeColumn = table.getColumnModel().getColumn(
@@ -205,16 +212,6 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         AutoCompletion.enable(javaTypesCombo, false, true);
         typeColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(
                 javaTypesCombo));
-
-        if (model.getEntity().getDbEntity() != null) {
-            Collection<String> nameAttr = ModelerUtil.getDbAttributeNames(mediator, model
-                    .getEntity()
-                    .getDbEntity());
-
-            model.setCellEditor(nameAttr, table);
-            model.setComboBoxes(nameAttr, ObjAttributeTableModel.DB_ATTRIBUTE);
-        }
-
     }
 
     /**
@@ -333,10 +330,10 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         table.setModel(model);
         table.setRowHeight(25);
         table.setRowMargin(3);
-        setUpTableStructure(model);
+        setUpTableStructure();
     }
 
-    protected void setUpTableStructure(ObjAttributeTableModel model) {
+    protected void setUpTableStructure() {
         int inheritanceColumnWidth = 30;
 
         Map<Integer, Integer> minSizes = new HashMap<Integer, Integer>();
@@ -345,7 +342,10 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         minSizes.put(ObjAttributeTableModel.INHERITED, inheritanceColumnWidth);
         maxSizes.put(ObjAttributeTableModel.INHERITED, inheritanceColumnWidth);
 
-        initComboBoxes(model);
+        initComboBoxes();
+
+        table.getColumnModel().getColumn(3).setCellRenderer(new JTableDbAttributeComboBoxRenderer());
+        table.getColumnModel().getColumn(3).setCellEditor(new DbAttributePathComboBoxEditor());
 
         tablePreferences.bind(
                 table,
@@ -372,7 +372,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
         if (model.getDbEntity() != ((ObjEntity) e.getEntity()).getDbEntity()) {
             model.resetDbEntity();
-            setUpTableStructure(model);
+            setUpTableStructure();
         }
     }
 
@@ -457,9 +457,10 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
             if (!e.getValueIsAdjusting() && !((ListSelectionModel) e.getSource()).isSelectionEmpty()) {
 
-                parentPanel.getRelationshipPanel().table.getSelectionModel().clearSelection();
-                if (parentPanel.getRelationshipPanel().table.getCellEditor() != null)
-                    parentPanel.getRelationshipPanel().table.getCellEditor().stopCellEditing();
+                parentPanel.getRelationshipPanel().getTable().getSelectionModel().clearSelection();
+                if (parentPanel.getRelationshipPanel().getTable().getCellEditor() != null) {
+                    parentPanel.getRelationshipPanel().getTable().getCellEditor().stopCellEditing();
+                }
                 Application.getInstance().getActionManager().getAction(RemoveAttributeRelationshipAction.class).setCurrentSelectedPanel(parentPanel.getAttributePanel());
                 Application.getInstance().getActionManager().getAction(CutAttributeRelationshipAction.class).setCurrentSelectedPanel(parentPanel.getAttributePanel());
                 Application.getInstance().getActionManager().getAction(CopyAttributeRelationshipAction.class).setCurrentSelectedPanel(parentPanel.getAttributePanel());
@@ -501,5 +502,27 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
     public ActionListener getResolver() {
         return resolver;
+    }
+
+
+    private static final class JTableDbAttributeComboBoxRenderer extends DefaultTableCellRenderer {
+
+        public JTableDbAttributeComboBoxRenderer() {
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                       boolean hasFocus, int row, int column) {
+            JLabel jLabel = new JLabel("");
+            jLabel.setFont(new Font("Verdana", Font.PLAIN , 12));
+
+            if (value instanceof DbAttribute) {
+                jLabel.setText(ModelerUtil.getObjectName(value));
+            } else if (value != null) {
+                jLabel.setText(value.toString());
+            }
+
+            return jLabel;
+        }
     }
 }
