@@ -513,17 +513,16 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                        boolean hasFocus, int row, int column) {
-            if (value instanceof DbAttribute){
-                JLabel jLabel = new  JLabel(ModelerUtil.getObjectName(value));
-                jLabel.setFont(new Font("Verdana", Font.PLAIN , 12));
-                return jLabel;
+            JLabel jLabel = new JLabel("");
+            jLabel.setFont(new Font("Verdana", Font.PLAIN , 12));
+
+            if (value instanceof DbAttribute) {
+                jLabel.setText(ModelerUtil.getObjectName(value));
+            } else if (value != null) {
+                jLabel.setText(value.toString());
             }
-            if (value !=null){
-                JLabel jLabel = new JLabel(value.toString());
-                jLabel.setFont(new Font("Verdana", Font.PLAIN , 12));
-                return jLabel;
-            }
-            return new JLabel("");
+
+            return jLabel;
         }
     }
 }

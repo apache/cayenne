@@ -346,24 +346,12 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
 
         // If db attribute exist, associate it with obj attribute
         if (value != null) {
-            String path = value.toString();
 
-            String[] pathSplit = path.split("\\.");
-
-            // If flattened attribute
-            if (pathSplit.length > 1) {
-                boolean isTruePath = ProjectUtil.isDbAttributePathCorrect(dbEntity, value.toString());
-                path = isTruePath ? value.toString() : null;
-
+            if (ProjectUtil.isDbAttributePathCorrect(dbEntity,value.toString())) {
+                attribute.setDbAttributePath(value.toString());
             } else {
-
-                if (dbEntity != null) {
-                    DbAttribute dbAttribute = dbEntity.getAttribute(value.toString());
-                    path = dbAttribute != null ? dbAttribute.getName() : null;
-                }
+                attribute.setDbAttributePath(null);
             }
-            attribute.setDbAttributePath(path);
-
         }
         // If name is erased, remove db attribute from obj attribute.
         else if (attribute.getDbAttribute() != null) {

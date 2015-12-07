@@ -198,7 +198,7 @@ public class ProjectUtil {
         }
     }
 
-    
+
     /**
      * Changes the name of the embeddable attribute and all references to this embeddable attribute.
      */
@@ -207,7 +207,7 @@ public class ProjectUtil {
 
         attribute.setName(newName);
         Embeddable embeddable = attribute.getEmbeddable();
-        
+
         if (embeddable != null) {
             embeddable.removeAttribute(oldName);
             embeddable.addAttribute(attribute);
@@ -245,15 +245,15 @@ public class ProjectUtil {
             for (ObjAttribute att : entity.getAttributes()) {
 
                 // If flattenet atribute
-                if (att.getDbAttributePath() != null
-                        && att.getDbAttributePath().contains(".")) {
-                    String[] pathSplit = att.getDbAttributePath().split("\\.");
+                String dbAttributePath = att.getDbAttributePath();
+                if (dbAttributePath != null
+                        && dbAttributePath.contains(".")) {
+                    String[] pathSplit = dbAttributePath.split("\\.");
 
                     // If flattened attribute
                     if (pathSplit.length > 1) {
 
-                        DbEntity currentEnt = dbEnt;
-                        boolean isTruePath = isDbAttributePathCorrect(currentEnt,att.getDbAttributePath());
+                        boolean isTruePath = isDbAttributePathCorrect(dbEnt, dbAttributePath);
 
                         if (!isTruePath) {
                             att.setDbAttributePath(null);

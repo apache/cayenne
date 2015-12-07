@@ -46,7 +46,7 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
         this.row = row;
         treeModel = createTreeModelForComboBox(row);
         if (treeModel == null) {
-            return new JLabel("You need select table to this ObjectEntity");
+            return new JLabel("You should select table for this ObjectEntity");
         }
         initializeCombo(model, row, table);
 
@@ -103,6 +103,11 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
         }
     }
 
+    @Override
+    protected void parsePathString(char lastEnteredCharacter) {
+        super.parsePathString(lastEnteredCharacter);
+        enterPressedCount = 0;
+    }
 
     @Override
     protected EntityTreeModel createTreeModelForComboBox(int relationshipIndexInTable) {

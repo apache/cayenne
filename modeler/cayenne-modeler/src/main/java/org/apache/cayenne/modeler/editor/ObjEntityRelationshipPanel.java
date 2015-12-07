@@ -20,7 +20,6 @@ package org.apache.cayenne.modeler.editor;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DeleteRule;
-import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.event.EntityEvent;
@@ -42,13 +41,16 @@ import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.DbRelationshipPathComboBoxEditor;
+import org.apache.cayenne.modeler.util.JTableCollectionTypeComboBoxEditor;
+import org.apache.cayenne.modeler.util.JTableCollectionTypeComboBoxRenderer;
+import org.apache.cayenne.modeler.util.JTableMapKeyComboBoxEditor;
+import org.apache.cayenne.modeler.util.JTableMapKeyComboBoxRenderer;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.swing.AbstractCellEditor;
 import javax.swing.DefaultCellEditor;
 import javax.swing.Icon;
 import javax.swing.JComboBox;
@@ -63,16 +65,12 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -480,175 +478,4 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         return resolver;
     }
 
-    private final static class JTableCollectionTypeComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
-
-        private static final String COLLECTION_TYPE_MAP = "java.util.Map";
-        private static final String COLLECTION_TYPE_SET = "java.util.Set";
-        private static final String COLLECTION_TYPE_COLLECTION = "java.util.Collection";
-        private static final String DEFAULT_COLLECTION_TYPE = "java.util.List";
-        private static final int REL_COLLECTION_TYPE_COLUMN = 3;
-
-        private ObjRelationshipTableModel model;
-        private int row;
-
-        public JTableCollectionTypeComboBoxEditor() {
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(final JTable table, Object value, boolean isSelected, final int row, final int column) {
-            this.model = (ObjRelationshipTableModel) table.getModel();
-            this.row = row;
-
-            final JComboBox collectionTypeCombo = Application.getWidgetFactory().createComboBox(
-                    new Object[]{
-                            COLLECTION_TYPE_MAP,
-                            COLLECTION_TYPE_SET,
-                            COLLECTION_TYPE_COLLECTION,
-                            DEFAULT_COLLECTION_TYPE
-                    },
-                    false);
-            if (model.getRelationship(row).isToMany()) {
-                collectionTypeCombo.setEnabled(true);
-                collectionTypeCombo.setSelectedItem(model.getRelationship(row).getCollectionType());
-            } else {
-                JLabel labelIfToOneRelationship = new JLabel();
-                labelIfToOneRelationship.setEnabled(false);
-                return labelIfToOneRelationship;
-            }
-            collectionTypeCombo.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Object selected = collectionTypeCombo.getSelectedItem();
-                    model.setUpdatedValueAt(selected, row, REL_COLLECTION_TYPE_COLUMN);
-                    table.repaint();
-                }
-            });
-            return collectionTypeCombo;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return model.getValueAt(row, REL_COLLECTION_TYPE_COLUMN);
-        }
-    }
-
-    private final static class JTableCollectionTypeComboBoxRenderer implements TableCellRenderer {
-
-        private ObjRelationshipTableModel model;
-
-        public JTableCollectionTypeComboBoxRenderer() {
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            this.model = (ObjRelationshipTableModel) table.getModel();
-            JLabel labelIfToOneRelationship = new JLabel();
-            labelIfToOneRelationship.setEnabled(false);
-            JLabel labelIfToManyRelationship = new JLabel((String) value);
-            labelIfToManyRelationship.setEnabled(true);
-            labelIfToManyRelationship.setFont(new Font("Verdana", Font.PLAIN, 12));
-            if (value == null) {
-                return labelIfToOneRelationship;
-            }
-            if (model.getRelationship(row).isToMany()) {
-                return labelIfToManyRelationship;
-            } else {
-                return labelIfToOneRelationship;
-            }
-
-        }
-    }
-
-    private final static class JTableMapKeyComboBoxEditor extends AbstractCellEditor implements TableCellEditor {
-
-        private static final String DEFAULT_MAP_KEY = "ID (default)";
-        private static final String COLLECTION_TYPE_MAP = "java.util.Map";
-        private static final int REL_MAP_KEY_COLUMN = 4;
-
-        private List<String> mapKeys = new ArrayList<>();
-        private ObjRelationshipTableModel model;
-        private int row;
-
-        private JTableMapKeyComboBoxEditor() {
-        }
-
-        private void initMapKeys() {
-            mapKeys.clear();
-            mapKeys.add(DEFAULT_MAP_KEY);
-            /**
-             * Object target can be null when selected target DbEntity has no
-             * ObjEntities
-             */
-            ObjEntity objectTarget = model.getRelationship(row).getTargetEntity();
-            if (objectTarget == null) {
-                return;
-            }
-            for (ObjAttribute attribute : objectTarget.getAttributes()) {
-                mapKeys.add(attribute.getName());
-            }
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, final int row, final int column) {
-            this.model = (ObjRelationshipTableModel) table.getModel();
-            this.row = row;
-            initMapKeys();
-            final JComboBox mapKeysComboBox = Application.getWidgetFactory().createComboBox(
-                    mapKeys,
-                    false);
-            if ((model.getRelationship(row).getCollectionType() == null)
-                    || (!model.getRelationship(row).getCollectionType().equals(COLLECTION_TYPE_MAP))) {
-                JComboBox jComboBox = new JComboBox();
-                jComboBox.setFocusable(false);
-                jComboBox.setEnabled(false);
-                return jComboBox;
-            } else {
-                mapKeysComboBox.setFocusable(true);
-                mapKeysComboBox.setEnabled(true);
-            }
-            mapKeysComboBox.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Object selected = mapKeysComboBox.getSelectedItem();
-                    model.setUpdatedValueAt(selected, row, REL_MAP_KEY_COLUMN);
-                }
-            });
-            mapKeysComboBox.setSelectedItem(model.getRelationship(row).getMapKey());
-            return mapKeysComboBox;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return model.getValueAt(row, REL_MAP_KEY_COLUMN);
-        }
-    }
-
-    private final static class JTableMapKeyComboBoxRenderer implements TableCellRenderer {
-
-        private static final String DEFAULT_MAP_KEY = "ID (default)";
-        private static final String COLLECTION_TYPE_MAP = "java.util.Map";
-
-        private ObjRelationshipTableModel model;
-
-        public JTableMapKeyComboBoxRenderer() {
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            this.model = (ObjRelationshipTableModel) table.getModel();
-            if ((model.getRelationship(row).getCollectionType() == null)
-                    || (!model.getRelationship(row).getCollectionType().equals(COLLECTION_TYPE_MAP))) {
-                JComboBox jComboBox = new JComboBox();
-                jComboBox.setFocusable(false);
-                jComboBox.setEnabled(false);
-                return jComboBox;
-            }
-            if (model.getRelationship(row).getMapKey() == null) {
-                model.getRelationship(row).setMapKey(DEFAULT_MAP_KEY);
-            }
-            JLabel jLabel = new JLabel(model.getRelationship(row).getMapKey());
-            jLabel.setFont(new Font("Verdana", Font.PLAIN, 12));
-            return jLabel;
-        }
-    }
 }

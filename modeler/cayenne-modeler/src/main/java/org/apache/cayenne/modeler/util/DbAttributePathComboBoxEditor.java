@@ -56,7 +56,7 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
         this.row = row;
         treeModel = createTreeModelForComboBox(row);
         if (treeModel == null) {
-            return new JLabel("You should select table to this ObjectEntity");
+            return new JLabel("You should select table for this ObjectEntity");
         }
         initializeCombo(model, row, table);
 
@@ -116,13 +116,12 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
     }
 
     @Override
-    protected void enterPressed(JTable table) {
-        StringBuilder dbAttributePath = new StringBuilder(
-                ((JTextComponent) (comboBoxPathChooser).
-                        getEditor().getEditorComponent()).getText());
-        Object currentNode = getCurrentNode(dbAttributePath.toString());
+    protected void enterPressed(JTable table){
+        String dbAttributePath =((JTextComponent) comboBoxPathChooser.
+                getEditor().getEditorComponent()).getText();
+        Object currentNode = getCurrentNode(dbAttributePath);
 
-        String[] pathStrings = dbAttributePath.toString().split(Pattern.quote("."));
+        String[] pathStrings = dbAttributePath.split(Pattern.quote("."));
         String lastStringInPath = pathStrings[pathStrings.length - 1];
         if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
                 currentNode instanceof DbAttribute) {
@@ -130,22 +129,22 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
 
             if (table.getCellEditor() != null) {
                 table.getCellEditor().stopCellEditing();
-                model.getAttribute(row).setDbAttributePath(dbAttributePath.toString());
+                model.getAttribute(row).setDbAttributePath(dbAttributePath);
                 model.setUpdatedValueAt(dbAttributePath, row, DB_ATTRIBUTE_PATH_COLUMN);
             }
-        } else if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
+        }else if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
                 currentNode instanceof DbRelationship) {
             // in this case we add dot  to pathString (if it is missing) and show variants for currentNode
 
-            if (dbAttributePath.charAt(dbAttributePath.length() - 1) != '.') {
-                dbAttributePath = dbAttributePath.append('.');
-                previousEmbeddedLevel = StringUtils.countMatches(dbAttributePath.toString(), ".");
+            if (dbAttributePath.charAt(dbAttributePath.length()-1) != '.') {
+                dbAttributePath = dbAttributePath + '.';
+                previousEmbeddedLevel =  StringUtils.countMatches(dbAttributePath,".");
                 ((JTextComponent) (comboBoxPathChooser).
-                        getEditor().getEditorComponent()).setText(dbAttributePath.toString());
+                        getEditor().getEditorComponent()).setText(dbAttributePath);
             }
             List<String> currentNodeChildren = new ArrayList<>();
-            currentNodeChildren.add(dbAttributePath.toString());
-            currentNodeChildren.addAll(getChildren(getCurrentNode(dbAttributePath.toString()), dbAttributePath.toString()));
+            currentNodeChildren.add(dbAttributePath);
+            currentNodeChildren.addAll(getChildren(getCurrentNode(dbAttributePath), dbAttributePath));
             comboBoxPathChooser.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
             comboBoxPathChooser.showPopup();
             comboBoxPathChooser.setPopupVisible(true);
