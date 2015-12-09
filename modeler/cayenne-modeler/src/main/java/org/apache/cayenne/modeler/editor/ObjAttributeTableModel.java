@@ -64,6 +64,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
     public static final int DB_ATTRIBUTE = 3;
     public static final int DB_ATTRIBUTE_TYPE = 4;
     public static final int LOCKING = 5;
+    public static final int COLUMN_COUNT = 6;
 
     private ObjEntity entity;
     private DbEntity dbEntity;
@@ -145,7 +146,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
     }
 
     public int getColumnCount() {
-        return 6;
+        return COLUMN_COUNT;
     }
 
     public String getColumnName(int column) {

@@ -34,6 +34,7 @@ import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.util.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
@@ -81,6 +82,7 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
         tablePreferences = new TableColumnPreferences(
                 DbAttributeTableModel.class,
                 "attributeTable");
+        table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
 
         /**
          * Create and install a popup

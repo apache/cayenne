@@ -41,34 +41,24 @@ import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.DbRelationshipPathComboBoxEditor;
-import org.apache.cayenne.modeler.util.JTableCollectionTypeComboBoxEditor;
-import org.apache.cayenne.modeler.util.JTableCollectionTypeComboBoxRenderer;
-import org.apache.cayenne.modeler.util.JTableMapKeyComboBoxEditor;
-import org.apache.cayenne.modeler.util.JTableMapKeyComboBoxRenderer;
+import org.apache.cayenne.modeler.util.CollectionTypeComboBoxEditor;
+import org.apache.cayenne.modeler.util.CollectionTypeComboBoxRenderer;
+import org.apache.cayenne.modeler.util.MapKeyComboBoxEditor;
+import org.apache.cayenne.modeler.util.MapKeyComboBoxRenderer;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.swing.DefaultCellEditor;
-import javax.swing.Icon;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
@@ -326,25 +316,37 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
 
         TableColumn col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_TARGET_PATH);
         col.setCellEditor(new DbRelationshipPathComboBoxEditor());
+        col.setCellRenderer(new DefaultTableCellRenderer(){
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
+                setToolTipText("To choose relationship press enter two times. \n To choose next relationship press dot.");
+                return this;
+            }
+        });
 
         col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_DELETE_RULE);
         JComboBox deleteRulesCombo = Application.getWidgetFactory().createComboBox(
                 DELETE_RULES,
                 false);
-        deleteRulesCombo.setEditable(false);
+        deleteRulesCombo.setFocusable(false);
+        deleteRulesCombo.setEditable(true);
+        ((JComponent) deleteRulesCombo.getEditor().getEditorComponent()).setBorder(null);
+        deleteRulesCombo.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
         deleteRulesCombo.setSelectedIndex(0); // Default to the first value
         col.setCellEditor(Application.getWidgetFactory().createCellEditor(
                 deleteRulesCombo));
 
         col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_COLLECTION_TYPE);
 
-        col.setCellEditor(new JTableCollectionTypeComboBoxEditor());
-        col.setCellRenderer(new JTableCollectionTypeComboBoxRenderer());
+        col.setCellEditor(new CollectionTypeComboBoxEditor());
+        col.setCellRenderer(new CollectionTypeComboBoxRenderer());
 
         col = table.getColumnModel().getColumn(ObjRelationshipTableModel.REL_MAP_KEY);
 
-        col.setCellEditor(new JTableMapKeyComboBoxEditor());
-        col.setCellRenderer(new JTableMapKeyComboBoxRenderer());
+        col.setCellEditor(new MapKeyComboBoxEditor());
+        col.setCellRenderer(new MapKeyComboBoxRenderer());
 
         tablePreferences.bind(
                 table,
@@ -419,6 +421,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
                         ? table.getSelectionForeground()
                         : table.getForeground());
             }
+            setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
 
             return this;
         }

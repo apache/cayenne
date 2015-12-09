@@ -24,8 +24,10 @@ import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.AbstractCellEditor;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 import javax.swing.text.JTextComponent;
@@ -71,7 +73,9 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
                 parsePathString(event.getKeyChar());
             }
         });
-        AutoCompletion.enable(comboBoxPathChooser, false, true);
+        AutoCompletion.enable(comboBoxPathChooser, true, true);
+        ((JComponent) comboBoxPathChooser.getEditor().getEditorComponent()).setBorder(null);
+        comboBoxPathChooser.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
     }
 
     private void setComboModelAccordingToPath(String pathString) {

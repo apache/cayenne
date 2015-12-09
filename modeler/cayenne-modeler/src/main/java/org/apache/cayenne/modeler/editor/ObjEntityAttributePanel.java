@@ -20,7 +20,6 @@ package org.apache.cayenne.modeler.editor;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -45,16 +44,17 @@ import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
+import org.apache.cayenne.modeler.util.DbAttributePathComboBoxRenderer;
 import org.apache.cayenne.modeler.util.DbAttributePathComboBoxEditor;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -83,6 +83,8 @@ import java.util.Map;
  */
 public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayListener,
         ObjEntityListener, ObjAttributeListener, ProjectOnSaveListener {
+
+    private static final int INHERITANCE_COLUMN_WIDTH = 35;
 
     private ProjectController mediator;
     private CayenneTable table;
@@ -334,17 +336,15 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
     }
 
     protected void setUpTableStructure() {
-        int inheritanceColumnWidth = 30;
-
         Map<Integer, Integer> minSizes = new HashMap<Integer, Integer>();
         Map<Integer, Integer> maxSizes = new HashMap<Integer, Integer>();
 
-        minSizes.put(ObjAttributeTableModel.INHERITED, inheritanceColumnWidth);
-        maxSizes.put(ObjAttributeTableModel.INHERITED, inheritanceColumnWidth);
+        minSizes.put(ObjAttributeTableModel.INHERITED, INHERITANCE_COLUMN_WIDTH);
+        maxSizes.put(ObjAttributeTableModel.INHERITED, INHERITANCE_COLUMN_WIDTH);
 
         initComboBoxes();
 
-        table.getColumnModel().getColumn(3).setCellRenderer(new JTableDbAttributeComboBoxRenderer());
+        table.getColumnModel().getColumn(3).setCellRenderer(new DbAttributePathComboBoxRenderer());
         table.getColumnModel().getColumn(3).setCellEditor(new DbAttributePathComboBoxEditor());
 
         tablePreferences.bind(
@@ -432,6 +432,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 }
                 setText("");
             }
+            setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
 
             return this;
         }
@@ -505,24 +506,4 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
     }
 
 
-    private static final class JTableDbAttributeComboBoxRenderer extends DefaultTableCellRenderer {
-
-        public JTableDbAttributeComboBoxRenderer() {
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                       boolean hasFocus, int row, int column) {
-            JLabel jLabel = new JLabel("");
-            jLabel.setFont(new Font("Verdana", Font.PLAIN , 12));
-
-            if (value instanceof DbAttribute) {
-                jLabel.setText(ModelerUtil.getObjectName(value));
-            } else if (value != null) {
-                jLabel.setText(value.toString());
-            }
-
-            return jLabel;
-        }
-    }
 }

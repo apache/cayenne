@@ -280,12 +280,12 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     private void suggestionListScrolling(){
         Component c = suggestionList.getComponent(0);
         if (c instanceof JScrollPane) {
-            double height = suggestionList.getPreferredSize().getHeight();
             int itemCount = suggestionList.getItemCount();
             int selectedIndex = suggestionList.getSelectedIndex();
-            double scrollValue = Math.ceil(height*selectedIndex/itemCount);
             JScrollPane scrollPane = (JScrollPane) c;
             JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
+            double height = scrollBar.getMaximum();
+            double scrollValue = Math.ceil(height*selectedIndex/itemCount);
             scrollBar.setValue((int) scrollValue);
         }
     }

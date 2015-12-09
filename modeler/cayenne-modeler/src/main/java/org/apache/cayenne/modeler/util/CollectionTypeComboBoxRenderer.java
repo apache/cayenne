@@ -21,35 +21,33 @@ package org.apache.cayenne.modeler.util;
 
 import org.apache.cayenne.modeler.editor.ObjRelationshipTableModel;
 
-import javax.swing.JLabel;
+import javax.swing.BorderFactory;
 import javax.swing.JTable;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.Component;
 import java.awt.Font;
 
-public class JTableCollectionTypeComboBoxRenderer implements TableCellRenderer {
+public class CollectionTypeComboBoxRenderer extends DefaultTableCellRenderer {
 
-        private ObjRelationshipTableModel model;
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        super.getTableCellRendererComponent(table, value, isSelected,  hasFocus,  row, column);
 
-        public JTableCollectionTypeComboBoxRenderer() {
+        setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
+        if (value == null) {
+            setEnabled(false);
+            return this;
         }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            this.model = (ObjRelationshipTableModel) table.getModel();
-            JLabel labelIfToOneRelationship = new JLabel();
-            labelIfToOneRelationship.setEnabled(false);
-            JLabel labelIfToManyRelationship = new JLabel((String) value);
-            labelIfToManyRelationship.setEnabled(true);
-            labelIfToManyRelationship.setFont(new Font("Verdana", Font.PLAIN, 12));
-            if (value == null) {
-                return labelIfToOneRelationship;
-            }
-            if (model.getRelationship(row).isToMany()) {
-                return labelIfToManyRelationship;
-            } else {
-                return labelIfToOneRelationship;
-            }
-
+        if (((ObjRelationshipTableModel) table.getModel()).getRelationship(row).isToMany()) {
+            setFocusable(false);
+            setEnabled(true);
+            setText((String) value);
+            setFont(new Font("Verdana", Font.PLAIN, 12));
+            return this;
+        } else {
+            setEnabled(false);
+            return this;
         }
     }
+}
+

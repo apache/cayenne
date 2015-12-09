@@ -70,6 +70,7 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
 
         enterPressedCount = 0;
         comboBoxPathChooser.addActionListener(this);
+        comboBoxPathChooser.setToolTipText("To choose relationship press enter two times. \n To choose next relationship press dot.");
     }
 
     @Override

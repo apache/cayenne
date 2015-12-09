@@ -38,6 +38,7 @@ import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.util.BoardTableCellRenderer;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -103,6 +104,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
         table = new CayenneTable();
         table.setDefaultRenderer(DbEntity.class, CellRenderers
                 .entityTableRendererWithIcons(mediator));
+        table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
         tablePreferences = new TableColumnPreferences(
                 DbRelationshipTableModel.class,
                 "relationshipTable");
