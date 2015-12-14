@@ -30,14 +30,10 @@ import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.text.JTextComponent;
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -73,29 +69,7 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
     @Override
     protected void initializeCombo(CayenneTableModel model, int row, final JTable table) {
         super.initializeCombo(model, row, table);
-        ((JTextComponent) (comboBoxPathChooser).
-                getEditor().getEditorComponent()).
-                setText(((ObjAttributeTableModel) model).getAttribute(row).getValue().getDbAttributePath());
-        comboBoxPathChooser.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                Object currentNode = getCurrentNode((String) value);
-                JLabel jLabel = new JLabel();
-                jLabel.setFont(new Font("Verdana", Font.PLAIN, 13));
-                if (isSelected) {
-                    jLabel.setOpaque(true);
-                    jLabel.setBackground(new Color(0xB4B4B4));
-                }
-                if (currentNode instanceof DbRelationship) {
-                    if (((String) value).charAt(((String) value).length() - 1) != '.') {
-                        jLabel.setText(ModelerUtil.getObjectName(value) + " ->");
-                    }
-                    return jLabel;
-                }
-                jLabel.setText(ModelerUtil.getObjectName(value));
-                return jLabel;
-            }
-        });
+        comboBoxPathChooser.setSelectedItem(((ObjAttributeTableModel) model).getAttribute(row).getValue().getDbAttributePath());
     }
 
 
@@ -129,8 +103,8 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
 
             if (table.getCellEditor() != null) {
                 table.getCellEditor().stopCellEditing();
-                model.getAttribute(row).setDbAttributePath(dbAttributePath);
                 model.setUpdatedValueAt(dbAttributePath, row, DB_ATTRIBUTE_PATH_COLUMN);
+                model.getAttribute(row).getValue().setDbAttributePath(dbAttributePath);
             }
         }else if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
                 currentNode instanceof DbRelationship) {
@@ -143,9 +117,9 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
                         getEditor().getEditorComponent()).setText(dbAttributePath);
             }
             List<String> currentNodeChildren = new ArrayList<>();
-            currentNodeChildren.add(dbAttributePath);
             currentNodeChildren.addAll(getChildren(getCurrentNode(dbAttributePath), dbAttributePath));
             comboBoxPathChooser.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
+            comboBoxPathChooser.setSelectedItem(dbAttributePath);
             comboBoxPathChooser.showPopup();
             comboBoxPathChooser.setPopupVisible(true);
         }

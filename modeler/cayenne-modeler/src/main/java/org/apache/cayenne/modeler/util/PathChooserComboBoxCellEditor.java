@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.util;
 
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.commons.lang.StringUtils;
@@ -26,11 +27,20 @@ import org.apache.commons.lang.StringUtils;
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.text.JTextComponent;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -76,24 +86,24 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
         AutoCompletion.enable(comboBoxPathChooser, true, true);
         ((JComponent) comboBoxPathChooser.getEditor().getEditorComponent()).setBorder(null);
         comboBoxPathChooser.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
+        comboBoxPathChooser.setRenderer(new PathChooserComboBoxCellRenderer());
     }
 
     private void setComboModelAccordingToPath(String pathString) {
         List<String> currentNodeChildren = new ArrayList<>();
-        currentNodeChildren.add(pathString);
         currentNodeChildren.addAll(getChildren(getCurrentNode(pathString), pathString));
         comboBoxPathChooser.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
+        comboBoxPathChooser.setSelectedItem(pathString);
         comboBoxPathChooser.showPopup();
         comboBoxPathChooser.setPopupVisible(true);
     }
 
     protected void parsePathString(char lastEnteredCharacter) {
         JTextComponent editorComponent = (JTextComponent) (comboBoxPathChooser).getEditor().getEditorComponent();
-
         String pathString = editorComponent.getText();
         if (pathString != null && pathString.isEmpty()) {
             setComboModelAccordingToPath("");
-            previousEmbeddedLevel = StringUtils.countMatches(pathString, ".");
+            previousEmbeddedLevel = 0;
             return;
         }
 
@@ -106,19 +116,19 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
         int currentEmbeddedLevel = StringUtils.countMatches(pathString, ".");
         if (previousEmbeddedLevel != currentEmbeddedLevel) {
             previousEmbeddedLevel = currentEmbeddedLevel;
-            List<String> currentNodeChildren = new ArrayList<>();
             String[] pathStrings = pathString.split(Pattern.quote("."));
             String lastStringInPath = pathStrings[pathStrings.length - 1];
             String saveDbAttributePath = pathString;
             pathString = pathString.replaceAll(lastStringInPath + "$", "");
+            List<String> currentNodeChildren = new ArrayList<>();
             currentNodeChildren.addAll(getChildren(getCurrentNode(pathString), pathString));
             comboBoxPathChooser.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
-            editorComponent.setText(saveDbAttributePath);
+            comboBoxPathChooser.setSelectedItem(saveDbAttributePath);
             return;
         }
     }
 
-    private void processDotEntered() {
+    protected void processDotEntered() {
         JTextComponent editorComponent = (JTextComponent) (comboBoxPathChooser).getEditor().getEditorComponent();
 
         String dbAttributePath = editorComponent.getText();
@@ -142,22 +152,22 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
             //previous root is treeModel.getRoot()
             dbAttributePathForPreviousNode = "";
         } else {
-            dbAttributePathForPreviousNode = dbAttributePath.replace('.' + lastStringInPath, "");
+            dbAttributePathForPreviousNode = dbAttributePath.replaceAll('.' + lastStringInPath + ".$", "");
         }
         List<String> potentialVariantsToChoose = getChildren(getCurrentNode(dbAttributePathForPreviousNode), "");
-        if (potentialVariantsToChoose.contains(lastStringInPath)) {
+        if (potentialVariantsToChoose.contains(lastStringInPath) &&
+                !(getCurrentNode(dbAttributePath) instanceof DbAttribute)) {
             setComboModelAccordingToPath(dbAttributePath);
         } else {
             editorComponent.setText(dbAttributePath.substring(0, dbAttributePath.length() - 1));
         }
-        previousEmbeddedLevel = StringUtils.countMatches(dbAttributePath, ".");
     }
 
     /**
-     * find current node by dbAttributePath
+     * find current node by path
      *
      * @param pathString
-     * @return last node in dbAttributePath which matches DbRelationship or DbAttribute
+     * @return last node in path which matches DbRelationship or DbAttribute
      */
     protected Object getCurrentNode(String pathString) {
         //case for new attribute
@@ -192,5 +202,33 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
             currentNodeChildren.add(pathString + relationshipName);
         }
         return currentNodeChildren;
+    }
+
+    private final class PathChooserComboBoxCellRenderer extends DefaultListCellRenderer {
+
+        private  final ImageIcon rightArrow = ModelerUtil.buildIcon("scroll_right.gif");
+
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                      boolean isSelected, boolean cellHasFocus) {
+
+            JPanel panel = new JPanel(new BorderLayout());
+            JLabel label = new JLabel((String) value);
+            label.setFont(new Font("Verdana", Font.PLAIN , 12));
+            panel.add(label);
+
+            Object currentNode = getCurrentNode((String) value);
+            if (treeModel.isLeaf(currentNode)) {
+                ListCellRenderer leafRenderer = CellRenderers.listRenderer();
+                return leafRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            } else {
+                DefaultListCellRenderer nonLeafTextRenderer = new DefaultListCellRenderer();
+                Component text = nonLeafTextRenderer.getListCellRendererComponent(list, value, index, isSelected,
+                        cellHasFocus);
+                panel.setBackground(text.getBackground());
+                panel.add(new JLabel(rightArrow), BorderLayout.EAST);
+                return panel;
+            }
+        }
     }
 }

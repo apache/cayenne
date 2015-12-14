@@ -158,7 +158,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
             case OBJ_ATTRIBUTE_TYPE:
                 return "Java Type";
             case DB_ATTRIBUTE:
-                return "DbAttributePath";
+                return "DbAttribute Path";
             case DB_ATTRIBUTE_TYPE:
                 return "DB Type";
             case LOCKING:

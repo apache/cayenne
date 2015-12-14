@@ -95,9 +95,9 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
             case REL_COLLECTION_TYPE:
                 return "Collection Type";
             case REL_MAP_KEY:
-                return "Map key";
+                return "Map Key";
             case REL_TARGET_PATH:
-                return "DbRelationshipPath";
+                return "DbRelationship Path";
             default:
                 return null;
         }

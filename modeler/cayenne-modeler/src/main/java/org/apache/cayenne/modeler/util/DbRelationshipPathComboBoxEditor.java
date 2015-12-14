@@ -28,22 +28,24 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.text.JTextComponent;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
-public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor implements ActionListener {
+public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor implements  FocusListener {
 
     private static final int REL_TARGET_PATH_COLUMN = 2;
     private static int enterPressedCount = 0;
-
+    private JTable table;
+    private String savePath;
     private ObjRelationshipTableModel model;
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         this.model = (ObjRelationshipTableModel) table.getModel();
         this.row = row;
+        this.table = table;
         treeModel = createTreeModelForComboBox(row);
         if (treeModel == null) {
             return new JLabel("You should select table for this ObjectEntity");
@@ -64,19 +66,21 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
     @Override
     protected void initializeCombo(CayenneTableModel model, int row, final JTable table) {
         super.initializeCombo(model, row, table);
-        ((JTextComponent) (comboBoxPathChooser).
-                getEditor().getEditorComponent()).
-                setText(((ObjRelationshipTableModel) model).getRelationship(row).getDbRelationshipPath());
+        comboBoxPathChooser.setSelectedItem(((ObjRelationshipTableModel) model).getRelationship(row).getDbRelationshipPath());
 
         enterPressedCount = 0;
-        comboBoxPathChooser.addActionListener(this);
         comboBoxPathChooser.setToolTipText("To choose relationship press enter two times. \n To choose next relationship press dot.");
+        JTextComponent textEditor = (JTextComponent) (comboBoxPathChooser).
+                getEditor().getEditorComponent();
+        textEditor.addFocusListener(this);
+        savePath = this.model.getRelationship(row).getDbRelationshipPath();
     }
 
     @Override
     protected void enterPressed(JTable table) {
         String dbRelationshipPath = ((JTextComponent) (comboBoxPathChooser).
                 getEditor().getEditorComponent()).getText();
+        changeObjEntity(dbRelationshipPath);
         Object currentNode = getCurrentNode(dbRelationshipPath);
         String[] pathStrings = dbRelationshipPath.split(Pattern.quote("."));
         String lastStringInPath = pathStrings[pathStrings.length - 1];
@@ -88,7 +92,9 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
                 if (table.getCellEditor() != null) {
 
                     table.getCellEditor().stopCellEditing();
-                    model.getRelationship(row).setDbRelationshipPath(dbRelationshipPath);
+                    if (dbRelationshipPath.equals(savePath)) {
+                        return;
+                    }
 
                     //we need object target to save it in model
                     DbEntity lastEntity = ((DbRelationship) currentNode).getTargetEntity();
@@ -96,17 +102,27 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
                             getDataMap().getMappedEntities(lastEntity);
                     ObjEntity objectTarget = objEntities.isEmpty() ? null : objEntities.iterator().next();
                     model.getRelationship(row).setTargetEntityName(objectTarget);
+                    model.setUpdatedValueAt(dbRelationshipPath, row, REL_TARGET_PATH_COLUMN);
+                    model.getRelationship(row).setDbRelationshipPath(dbRelationshipPath);
+                    model.getRelationship(row).setMapKey(null);
                 }
                 table.repaint();
-            } else {
-                enterPressedCount = 1;
             }
+            enterPressedCount = 1;
         }
+    }
+
+    @Override
+    protected void processDotEntered() {
+        super.processDotEntered();
     }
 
     @Override
     protected void parsePathString(char lastEnteredCharacter) {
         super.parsePathString(lastEnteredCharacter);
+        String dbRelationshipPath = ((JTextComponent) (comboBoxPathChooser).
+                getEditor().getEditorComponent()).getText();
+        changeObjEntity(dbRelationshipPath);
         enterPressedCount = 0;
     }
 
@@ -138,14 +154,26 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
         return pathString.replaceAll(lastStringInPath + '$', "");
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        model.getRelationship(row).setMapKey(null);
-
-        //for some reason dbRelationshipPathCombo don't load selected item text, so we made it by hand
-        if (comboBoxPathChooser.getSelectedIndex() != (-1)) {
-            ((JTextComponent) (comboBoxPathChooser).
-                    getEditor().getEditorComponent()).setText(comboBoxPathChooser.getSelectedItem().toString());
+    private void changeObjEntity(String path){
+        Object currentNode = getCurrentNode(path);
+        if (currentNode instanceof DbEntity){
+            return;
         }
+        DbEntity lastEntity = ((DbRelationship) currentNode).getTargetEntity();
+        Collection<ObjEntity> objEntities = ((DbRelationship) currentNode).getTargetEntity().
+                getDataMap().getMappedEntities(lastEntity);
+        ObjEntity objectTarget = objEntities.isEmpty() ? null : objEntities.iterator().next();
+        model.getRelationship(row).setTargetEntityName(objectTarget);
+        table.repaint();
+    }
+
+    @Override
+    public void focusGained(FocusEvent focusEvent) {
+    }
+
+    @Override
+    public void focusLost(FocusEvent focusEvent) {
+        String path = model.getRelationship(row).getDbRelationshipPath();
+        changeObjEntity(path);
     }
 }
