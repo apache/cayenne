@@ -44,6 +44,7 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
 
     private static final int DB_ATTRIBUTE_PATH_COLUMN = 3;
 
+    private String savePath;
     private ObjAttributeTableModel model;
 
     @Override
@@ -70,6 +71,7 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
     protected void initializeCombo(CayenneTableModel model, int row, final JTable table) {
         super.initializeCombo(model, row, table);
         comboBoxPathChooser.setSelectedItem(((ObjAttributeTableModel) model).getAttribute(row).getValue().getDbAttributePath());
+        savePath = this.model.getAttribute(row).getValue().getDbAttributePath();
     }
 
 
@@ -103,6 +105,9 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
 
             if (table.getCellEditor() != null) {
                 table.getCellEditor().stopCellEditing();
+                if (dbAttributePath.equals(savePath)) {
+                    return;
+                }
                 model.setUpdatedValueAt(dbAttributePath, row, DB_ATTRIBUTE_PATH_COLUMN);
                 model.getAttribute(row).getValue().setDbAttributePath(dbAttributePath);
             }

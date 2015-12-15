@@ -40,12 +40,10 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
     public static final int REL_NAME = 0;
     public static final int REL_TARGET = 1;
     public static final int REL_TARGET_PATH = 2;
-    public static final int REL_COLLECTION_TYPE = 3;
-    public static final int REL_MAP_KEY = 4;
-    public static final int REL_SEMANTICS = 5;
-    public static final int REL_DELETE_RULE = 6;
-    public static final int REL_LOCKING = 7;
-    public static final int COLUMN_COUNT = 8;
+    public static final int REL_SEMANTICS = 3;
+    public static final int REL_DELETE_RULE = 4;
+    public static final int REL_LOCKING = 5;
+    public static final int COLUMN_COUNT = 6;
 
     private ObjEntity entity;
 
@@ -92,10 +90,6 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
                 return "Semantics";
             case REL_DELETE_RULE:
                 return "Delete Rule";
-            case REL_COLLECTION_TYPE:
-                return "Collection Type";
-            case REL_MAP_KEY:
-                return "Map Key";
             case REL_TARGET_PATH:
                 return "DbRelationship Path";
             default:
@@ -133,13 +127,6 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
             return getSemantics(relationship);
         } else if (column == REL_DELETE_RULE) {
             return DeleteRule.deleteRuleName(relationship.getDeleteRule());
-        } else if (column == REL_COLLECTION_TYPE) {
-            if (!relationship.isToMany()) {
-                return null;
-            }
-            return relationship.getCollectionType();
-        } else if (column == REL_MAP_KEY) {
-            return relationship.getMapKey();
         } else if (column == REL_TARGET_PATH) {
             return relationship.getDbRelationshipPath();
         } else {
@@ -152,6 +139,18 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         semantics.append(relationship.isToMany() ? "to many" : "to one");
         if (relationship.isReadOnly()) {
             semantics.append(", read-only");
+        }
+        if (relationship.isToMany()) {
+            String collection = "list";
+            if (relationship.getCollectionType() != null) {
+                int dot = relationship.getCollectionType().lastIndexOf('.');
+                collection = relationship
+                        .getCollectionType()
+                        .substring(dot + 1)
+                        .toLowerCase();
+            }
+
+            semantics.append(", " + collection);
         }
         return semantics.toString();
     }
@@ -195,12 +194,6 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
         } else if (column == REL_LOCKING) {
             relationship.setUsedForLocking((value instanceof Boolean)
                     && ((Boolean) value).booleanValue());
-            fireTableCellUpdated(row, column);
-        } else if (column == REL_COLLECTION_TYPE) {
-            relationship.setCollectionType((String) value);
-            fireTableCellUpdated(row, column);
-        } else if (column == REL_MAP_KEY) {
-            relationship.setMapKey((String) value);
             fireTableCellUpdated(row, column);
         } else if (column == REL_TARGET_PATH) {
             relationship.setDbRelationshipPath((String) value);
@@ -269,8 +262,6 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
                 sortByElementProperty("usedForLocking", isAscent);
                 break;
             case REL_SEMANTICS:
-            case REL_COLLECTION_TYPE:
-            case REL_MAP_KEY:
             case REL_DELETE_RULE:
             case REL_TARGET_PATH:
                 Collections.sort(objectList, new ObjRelationshipTableComparator(sortCol));
@@ -302,11 +293,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
                 return 1;
             }
 
-            switch(sortCol){
-                case REL_COLLECTION_TYPE:
-                    return compareColumnsData(o1.getCollectionType(), o2.getCollectionType());
-                case REL_MAP_KEY:
-                    return compareColumnsData(o1.getMapKey(), o2.getMapKey());
+            switch(sortCol) {
                 case REL_SEMANTICS:
                     return compareColumnsData(getSemantics(o1), getSemantics(o2));
                 case REL_DELETE_RULE:
