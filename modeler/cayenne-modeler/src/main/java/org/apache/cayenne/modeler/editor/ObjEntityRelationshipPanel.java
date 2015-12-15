@@ -321,7 +321,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
-                setToolTipText("To choose relationship press enter two times. \n To choose next relationship press dot.");
+                setToolTipText("To choose relationship press enter two times.To choose next relationship press dot.");
                 return this;
             }
         });

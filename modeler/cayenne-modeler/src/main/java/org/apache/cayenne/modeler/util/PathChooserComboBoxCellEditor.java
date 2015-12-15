@@ -41,6 +41,8 @@ import javax.swing.text.JTextComponent;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -51,7 +53,7 @@ import java.util.regex.Pattern;
  * This class used as cell editor, when you need to
  * choose path in comboBox and use autocompletion.
  */
-public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor implements TableCellEditor {
+public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 
     protected JComboBox comboBoxPathChooser;
     protected int previousEmbeddedLevel = 0;
@@ -87,6 +89,7 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
         ((JComponent) comboBoxPathChooser.getEditor().getEditorComponent()).setBorder(null);
         comboBoxPathChooser.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
         comboBoxPathChooser.setRenderer(new PathChooserComboBoxCellRenderer());
+        comboBoxPathChooser.addActionListener(this);
     }
 
     private void setComboModelAccordingToPath(String pathString) {
@@ -202,6 +205,15 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
             currentNodeChildren.add(pathString + relationshipName);
         }
         return currentNodeChildren;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        //for some reason comboBoxPathChooser don't load selected item text, so we made it by hand
+        if (comboBoxPathChooser.getSelectedIndex() != (-1)) {
+            ((JTextComponent) (comboBoxPathChooser).
+                    getEditor().getEditorComponent()).setText(comboBoxPathChooser.getSelectedItem().toString());
+        }
     }
 
     private final class PathChooserComboBoxCellRenderer extends DefaultListCellRenderer {

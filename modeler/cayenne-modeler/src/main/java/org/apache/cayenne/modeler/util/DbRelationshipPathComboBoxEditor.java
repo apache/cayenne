@@ -69,7 +69,7 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
         comboBoxPathChooser.setSelectedItem(((ObjRelationshipTableModel) model).getRelationship(row).getDbRelationshipPath());
 
         enterPressedCount = 0;
-        comboBoxPathChooser.setToolTipText("To choose relationship press enter two times. \n To choose next relationship press dot.");
+        comboBoxPathChooser.setToolTipText("To choose relationship press enter two times.To choose next relationship press dot.");
         JTextComponent textEditor = (JTextComponent) (comboBoxPathChooser).
                 getEditor().getEditorComponent();
         textEditor.addFocusListener(this);

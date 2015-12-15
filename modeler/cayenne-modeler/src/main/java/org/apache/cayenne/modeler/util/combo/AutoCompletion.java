@@ -20,11 +20,9 @@
 package org.apache.cayenne.modeler.util.combo;
 
 import javax.swing.JComboBox;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
+import javax.swing.JList;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
-import java.awt.Component;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -156,8 +154,6 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
 
         //scroll doesn't work in suggestionList..so we will scroll manually
         suggestionListScrolling();
-
-        textEditor.requestFocus();
     }
 
     private void   processKeyPressedWhenSuggestionListIsInvisible(KeyEvent e){
@@ -274,20 +270,14 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
                     comboBox.setSelectedIndex(next);
                 }
             }
+            textEditor.requestFocus();
         }
     }
 
     private void suggestionListScrolling(){
-        Component c = suggestionList.getComponent(0);
-        if (c instanceof JScrollPane) {
-            int itemCount = suggestionList.getItemCount();
-            int selectedIndex = suggestionList.getSelectedIndex();
-            JScrollPane scrollPane = (JScrollPane) c;
-            JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
-            double height = scrollBar.getMaximum();
-            double scrollValue = Math.ceil(height*selectedIndex/itemCount);
-            scrollBar.setValue((int) scrollValue);
-        }
+        JList list = suggestionList.getList();
+        int selectedIndex = suggestionList.getSelectedIndex();
+        list.ensureIndexIsVisible(selectedIndex);
     }
 }
 

@@ -20,7 +20,6 @@ package org.apache.cayenne.modeler.util;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.border.CompoundBorder;
@@ -58,12 +57,11 @@ public class SortButtonRenderer  extends DefaultTableCellRenderer {
         }
 
         setText( ((value == null) ? "" : value.toString()));
-        setFont(new Font("Verdana", Font.BOLD , 13));
+        setFont(new Font("Verdana", Font.BOLD, 12));
         setHorizontalTextPosition(JLabel.LEFT);
-        setOpaque(true);
-        setBackground(new JButton().getBackground());
-        CompoundBorder compoundBorder = BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.GRAY, 1),
-                BorderFactory.createEmptyBorder(0, 4, 0, 0));
+        CompoundBorder compoundBorder = BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(0, 0, 1, 1, Color.GRAY),
+                BorderFactory.createEmptyBorder(0, 5, 0, 0));
         setBorder(compoundBorder);
         return this;
     }
