@@ -19,16 +19,7 @@
 
 package org.apache.cayenne.remote;
 
-import java.util.List;
-import java.util.ListIterator;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.DataChannelSyncCallbackAction;
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.*;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
@@ -42,6 +33,9 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.DeepMergeOperation;
 import org.apache.cayenne.util.ToStringBuilder;
+
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * A {@link org.apache.cayenne.DataChannel} implementation that accesses a remote server
@@ -75,14 +69,11 @@ public class ClientChannel implements DataChannel {
 
         if (!remoteEventsOptional) {
             setupRemoteChannelListener();
-        }
-        else {
+        } else {
             try {
                 setupRemoteChannelListener();
             }
-            catch (CayenneRuntimeException e) {
-
-            }
+            catch (CayenneRuntimeException e) {}
         }
     }
 
@@ -106,9 +97,7 @@ public class ClientChannel implements DataChannel {
 
     public QueryResponse onQuery(ObjectContext context, Query query) {
 
-        QueryResponse response = (QueryResponse) send(
-                new QueryMessage(query),
-                QueryResponse.class);
+        QueryResponse response = send( new QueryMessage(query), QueryResponse.class);
 
         // if needed, register objects in provided context, rewriting the response
         // (assuming all lists are mutable)
@@ -132,21 +121,16 @@ public class ClientChannel implements DataChannel {
                             DeepMergeOperation merger = new DeepMergeOperation(context);
                             List<Object> rsMapping = info.getResultSetMapping();
                             if (rsMapping == null) {
-                                convertSingleObjects(resolver, objects, merger);
+                                convertSingleObjects(objects, merger);
                             }
                             else {
                                 if (rsMapping.size() == 1) {
                                     if (rsMapping.get(0) instanceof EntityResultSegment) {
-                                        convertSingleObjects(resolver, objects, merger);
+                                        convertSingleObjects(objects, merger);
                                     }
                                 }
                                 else {
-                                    processMixedResult(
-                                            resolver,
-                                            objects,
-                                            merger,
-                                            rsMapping);
-
+                                    processMixedResult(objects, merger, rsMapping);
                                 }
                             }
                         }
@@ -159,7 +143,6 @@ public class ClientChannel implements DataChannel {
     }
 
     private void processMixedResult(
-            EntityResolver resolver,
             List<Object[]> objects,
             DeepMergeOperation merger,
             List<Object> rsMapping) {
@@ -168,28 +151,22 @@ public class ClientChannel implements DataChannel {
         for (int i = 0; i < width; i++) {
             if (rsMapping.get(i) instanceof EntityResultSegment) {
                 for (Object[] object : objects) {
-                    object[i] = convertObject(resolver, merger, (Persistent) object[i]);
+                    object[i] = convertObject(merger, (Persistent) object[i]);
                 }
             }
         }
     }
 
-    private void convertSingleObjects(
-            EntityResolver resolver,
-            List objects,
-            DeepMergeOperation merger) {
+    private void convertSingleObjects(List objects, DeepMergeOperation merger) {
 
         ListIterator it = objects.listIterator();
         while (it.hasNext()) {
             Object next = it.next();
-            it.set(convertObject(resolver, merger, (Persistent) next));
+            it.set(convertObject( merger, (Persistent) next));
         }
     }
 
-    private Object convertObject(
-            EntityResolver resolver,
-            DeepMergeOperation merger,
-            Persistent object) {
+    private Object convertObject(DeepMergeOperation merger, Persistent object) {
 
         ObjectId id = object.getObjectId();
 
@@ -217,7 +194,7 @@ public class ClientChannel implements DataChannel {
 
         changes = diffCompressor.compress(changes);
 
-        GraphDiff replyDiff = (GraphDiff) send(new SyncMessage(
+        GraphDiff replyDiff = send(new SyncMessage(
                 originatingContext,
                 syncType,
                 changes), GraphDiff.class);
@@ -322,7 +299,7 @@ public class ClientChannel implements DataChannel {
      * @throws org.apache.cayenne.CayenneRuntimeException if an underlying connector
      *             exception occurred, or a result is not of expected type.
      */
-    protected Object send(ClientMessage message, Class<?> resultClass) {
+    protected <T extends Object> T send(ClientMessage message, Class<T> resultClass) {
         Object result = connection.sendMessage(message);
 
         if (result != null && !resultClass.isInstance(result)) {
@@ -333,6 +310,6 @@ public class ClientChannel implements DataChannel {
                     + resultString);
         }
 
-        return result;
+        return resultClass.cast(result);
     }
 }
