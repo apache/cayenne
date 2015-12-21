@@ -291,29 +291,34 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 	 * @return <code>List&lt;? extends DataObject&gt;</code> of unrelated
 	 *         DataObjects. If no relationship was removed an empty List is
 	 *         returned.
-	 * @throws NullPointerException
+	 * @throws IllegalArgumentException
 	 *             if no relationship could be read by relName, or if the passed
 	 *             <code>Collection</code> is null. To clear all relationships
 	 *             use an empty <code>Collection</code>
+	 * @throws UnsupportedOperationException
+	 *             if the relation Collection Type is neither
+	 *             <code>java.util.Collection</code> nor
+	 *             <code>java.util.Map</code>
 	 * @since 4.0.M3
 	 */
+	@SuppressWarnings("unchecked")
 	public List<? extends DataObject> setToManyTarget(String relName, Collection<? extends DataObject> values,
 			boolean setReverse) {
 		if (values == null) {
-			throw new NullPointerException();
+			throw new IllegalArgumentException("values Collection is null. To clear all relationships use an empty Collection");
 		}
 
 		Object property = readProperty(relName);
 		if(property == null) {
-			throw new NullPointerException("unknown relName " + relName);
+			throw new IllegalArgumentException("unknown relName " + relName);
 		}
 		Collection<DataObject> old = null;
 		if (property instanceof Map) {
 			old = ((Map) property).values();
-		} else if (dataObjects instanceof Collection) {
+		} else if (property instanceof Collection) {
 			old = (Collection) property;
 		} else {
-			throw new RuntimeException("setToManyTarget only operates with Map and Collection types");
+			throw new UnsupportedOperationException("setToManyTarget operates only with Map or Collection types");
 		}
 
 		// operate on a copy of passed collection
