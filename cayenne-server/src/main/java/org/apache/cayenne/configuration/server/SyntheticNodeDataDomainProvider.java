@@ -39,7 +39,7 @@ class SyntheticNodeDataDomainProvider extends DataDomainProvider {
 
 			DataChannelDescriptor channelDescriptor = new DataChannelDescriptor();
 
-			DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor(ServerRuntimeBuilder.DEFAULT_NAME);
+			DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor(createSyntheticDataNodeName(dataDomain));
 
 			for (DataMap map : dataDomain.getDataMaps()) {
 				nodeDescriptor.getDataMapNames().add(map.getName());
@@ -51,6 +51,15 @@ class SyntheticNodeDataDomainProvider extends DataDomainProvider {
 			dataDomain.setDefaultNode(node);
 		}
 		return dataDomain;
+	}
+
+	protected String createSyntheticDataNodeName(DataDomain domain) {
+
+		// using Domain's name for the node name.. distinguishing nodes by name
+		// may be useful in case of multiple stacks used in the same
+		// transaction...
+
+		return domain.getName() != null ? domain.getName() : ServerRuntimeBuilder.DEFAULT_NAME;
 	}
 
 }
