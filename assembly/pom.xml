@@ -260,20 +260,6 @@
 									</arguments>
 								</configuration>
 							</execution>
-							<execution>
-								<id>chmod-modeler-legacy</id>
-								<phase>package</phase>
-								<goals>
-									<goal>exec</goal>
-								</goals>
-								<configuration>
-									<executable>/bin/chmod</executable>
-									<arguments>
-										<argument>755</argument>
-										<argument>target/cayenne-${project.version}-macosx/CayenneModeler-Java6-legacy.app/Contents/MacOS/JavaApplicationStub</argument>
-									</arguments>
-								</configuration>
-							</execution>
 
 							<!-- Package into .dmg -->
 							<execution>
