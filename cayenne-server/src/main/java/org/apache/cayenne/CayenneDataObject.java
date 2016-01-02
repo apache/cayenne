@@ -299,7 +299,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 	 *             if the relation Collection Type is neither
 	 *             <code>java.util.Collection</code> nor
 	 *             <code>java.util.Map</code>
-	 * @since 4.0.M3
+	 * @since 4.0
 	 */
 	@SuppressWarnings("unchecked")
 	public List<? extends DataObject> setToManyTarget(String relName, Collection<? extends DataObject> values,
