@@ -37,6 +37,7 @@ CAY-2029 Allow out-of-order insertion into DI lists
 CAY-2030 Capturing a stream of commit changes
 CAY-2035 Autobind items added to collections (Cayenne DI)
 CAY-2043 ServerRuntimeBuilder: use DataDomain name for the default DataNode
+CAY-2044 Collection setter for to-many relationships
 
 Bug Fixes:
 
