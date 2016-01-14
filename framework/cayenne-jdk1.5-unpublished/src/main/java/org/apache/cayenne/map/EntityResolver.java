@@ -19,15 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -44,6 +35,16 @@ import org.apache.commons.collections.collection.CompositeCollection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * Represents a virtual shared namespace for zero or more DataMaps. Unlike DataMap,
  * EntityResolver is intended to work as a runtime container of mapping. DataMaps can be
@@ -59,6 +60,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     static final ObjEntity DUPLICATE_MARKER = new ObjEntity();
 
     protected static final Log logger = LogFactory.getLog(EntityResolver.class);
+    protected static AtomicLong incrementer = new AtomicLong();
 
     protected boolean indexedByClass;
 
@@ -137,7 +139,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
                         DbRelationship reverse = relationship.createReverseRelationship();
 
                         Entity targetEntity = reverse.getSourceEntity();
-                        reverse.setName(makeUniqueRelationshipName(targetEntity));
+                        reverse.setName(getUniqueRelationshipName(targetEntity));
                         reverse.setRuntime(true);
                         targetEntity.addRelationship(reverse);
 
@@ -176,7 +178,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
                                 .createReverseRelationship();
 
                         Entity targetEntity = reverse.getSourceEntity();
-                        reverse.setName(makeUniqueRelationshipName(targetEntity));
+                        reverse.setName(getUniqueRelationshipName(targetEntity));
                         reverse.setRuntime(true);
                         targetEntity.addRelationship(reverse);
 
@@ -190,16 +192,14 @@ public class EntityResolver implements MappingNamespace, Serializable {
         }
     }
 
-    private String makeUniqueRelationshipName(Entity entity) {
-        for (int i = 0; i < 1000; i++) {
-            String name = "runtimeRelationship" + i;
-            if (entity.getRelationship(name) == null) {
-                return name;
-            }
-        }
+    private String getUniqueRelationshipName(Entity entity) {
+        String name;
 
-        throw new CayenneRuntimeException(
-                "Could not come up with a unique relationship name");
+        do {
+            name = "runtimeRelationship" + incrementer.getAndIncrement();
+        } while(entity.getRelationship(name) != null);
+
+        return name;
     }
 
     /**

@@ -13,6 +13,8 @@ Date: not yet released
 ----------------------------------
 Changes/New Features Since 3.1
 
+CAY-2042 Remove an arbitrary limitation on 1000 runtime DbRelationships
+
 Bug Fixes Since 3.1:
 
 CAY-1964 Fix convertAdditionalDataMaps() in CayenneGeneratorMojo.java
