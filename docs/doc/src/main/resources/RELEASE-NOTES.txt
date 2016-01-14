@@ -36,6 +36,7 @@ CAY-2028 Wrap DataChannelFilter calls in the main transaction
 CAY-2029 Allow out-of-order insertion into DI lists
 CAY-2030 Capturing a stream of commit changes
 CAY-2035 Autobind items added to collections (Cayenne DI)
+CAY-2042 Remove an arbitrary limitation on 1000 runtime DbRelationships
 CAY-2043 ServerRuntimeBuilder: use DataDomain name for the default DataNode
 CAY-2044 Collection setter for to-many relationships
 
