@@ -16,23 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.rop.client;
+package org.apache.cayenne.rop.http;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.remote.ClientConnection;
-import org.apache.cayenne.remote.hessian.HessianConnection;
+import org.apache.cayenne.rop.ROPConnector;
 
-public class HessianConnectionProvider implements Provider<ClientConnection> {
+public class HttpROPConnectorProvider implements Provider<ROPConnector> {
 
     @Inject
     protected RuntimeProperties runtimeProperties;
 
-    public ClientConnection get() throws ConfigurationException {
-
+    @Override
+    public ROPConnector get() throws DIRuntimeException {
         String url = runtimeProperties.get(Constants.ROP_SERVICE_URL_PROPERTY);
         if (url == null) {
             throw new ConfigurationException(
@@ -42,17 +42,12 @@ public class HessianConnectionProvider implements Provider<ClientConnection> {
 
         String userName = runtimeProperties.get(Constants.ROP_SERVICE_USERNAME_PROPERTY);
         String password = runtimeProperties.get(Constants.ROP_SERVICE_PASSWORD_PROPERTY);
-        String sharedSession = runtimeProperties
-                .get(Constants.ROP_SERVICE_SHARED_SESSION_PROPERTY);
+
         long readTimeout = runtimeProperties.getLong(
                 Constants.ROP_SERVICE_TIMEOUT_PROPERTY,
-                -1l);
+                -1L);
 
-        HessianConnection result = new HessianConnection(
-                url,
-                userName,
-                password,
-                sharedSession);
+        HttpROPConnector result = new HttpROPConnector(url, userName, password);
 
         if (readTimeout > 0) {
             result.setReadTimeout(readTimeout);

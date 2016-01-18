@@ -226,7 +226,7 @@ public class HessianConnection extends BaseConnection {
         factory.setConnectionFactory(new HessianURLConnectionFactory(this));
         factory.setUser(userName);
         factory.setPassword(password);
-        factory.setReadTimeout(getReadTimeout());
+//        factory.setReadTimeout(getReadTimeout());
 
         this.serializerFactory = factory.getSerializerFactory();
 

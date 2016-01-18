@@ -34,7 +34,7 @@ import com.caucho.hessian.io.Serializer;
  * 
  * @since 1.2
  */
-class ServerSerializerFactory extends AbstractSerializerFactory {
+public class ServerSerializerFactory extends AbstractSerializerFactory {
     private ServerPersistentObjectListSerializer persistentObjectListSerializer;
     private ServerDataRowSerializer dataRowSerilaizer;
     private Serializer javaSerializer;
