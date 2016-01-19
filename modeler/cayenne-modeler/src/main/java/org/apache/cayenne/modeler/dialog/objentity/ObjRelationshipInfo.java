@@ -72,7 +72,6 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     protected List<ObjEntity> objectTargets;
     protected List<String> targetCollections;
     protected List<String> mapKeys;
-    protected String relationshipName;
     protected String targetCollection;
     protected String mapKey;
     protected ObjRelationshipInfoView view;
@@ -100,8 +99,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         setObjectTarget(target);
         view.sourceEntityLabel.setText(relationship.getSourceEntity().getName());
         this.relationship = relationship;
-        this.relationshipName = relationship.getName();
-        view.relationshipName.setText(relationshipName);
+        this.view.getRelationshipName().setText(relationship.getName());
         this.mapKey = relationship.getMapKey();
         this.targetCollection = relationship.getCollectionType();
         if (targetCollection == null) {
@@ -522,12 +520,11 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     }
 
     public String getRelationshipName() {
-        return relationshipName;
+        return view.getRelationshipName().getText();
     }
 
     public void setRelationshipName(String relationshipName) {
-        view.relationshipName.setText(relationshipName);
-        this.relationshipName = relationshipName;
+        view.getRelationshipName().setText(relationshipName);
     }
 
     /**
@@ -563,6 +560,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
 
         boolean oldToMany = relationship.isToMany();
 
+        String relationshipName = getRelationshipName();
         if (!Util.nullSafeEquals(relationship.getName(), relationshipName)) {
             hasChanges = true;
             relationship.setName(relationshipName);
