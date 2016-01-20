@@ -48,6 +48,8 @@ import javax.swing.tree.TreePath;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -93,10 +95,8 @@ public class ObjRelationshipInfo extends CayenneController implements
         super(mediator);
         this.view = new ObjRelationshipInfoView(mediator);
         this.mediator=mediator;
-        ObjEntity target = getObjectTarget();
         getPathBrowser().addTreeSelectionListener(this);
-        setObjectTarget(target);
-        view.sourceEntityLabel.setText(relationship.getSourceEntity().getName());    
+        view.sourceEntityLabel.setText(relationship.getSourceEntity().getName());
         this.relationship = relationship;
         this.view.getRelationshipName().setText(relationship.getName());
         this.mapKey = relationship.getMapKey();
@@ -108,6 +108,7 @@ public class ObjRelationshipInfo extends CayenneController implements
         this.objectTarget = (ObjEntity) relationship.getTargetEntity();
         if (objectTarget != null) {
             updateTargetCombo(objectTarget.getDbEntity());
+            view.targetCombo.setSelectedItem(objectTarget.getName());
         }
 
         // validate -
@@ -174,6 +175,19 @@ public class ObjRelationshipInfo extends CayenneController implements
             
             public void actionPerformed(ActionEvent e) {
                 setMapKey();
+            }
+        });
+        view.getTargetCombo().addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    Object targetName = e.getItem();
+                    for (ObjEntity target : objectTargets) {
+                        if (target.getName() != null && target.getName().equals(targetName)) {
+                            setObjectTarget(target);
+                            return;
+                        }
+                    }
+                }
             }
         });
     }
@@ -420,16 +434,12 @@ public class ObjRelationshipInfo extends CayenneController implements
             relPath.add((DbRelationship) selectedPath.getPathComponent(i));
         }
         setDbRelationships(relPath);
-        setObjectTarget(objEntities.size() == 0 ? null : objEntities
-                .iterator()
-                .next());
 
         updateCollectionChoosers();
     }
     public void setObjectTarget(ObjEntity objectTarget) {
         if (this.objectTarget != objectTarget) {
              this.objectTarget = objectTarget;
-             view.targetCombo.setSelectedItem(objectTarget);
 
             // init available map keys
             initMapKeys();
