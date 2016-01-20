@@ -28,32 +28,35 @@ import java.rmi.RemoteException;
 
 public class ProxyRemoteService implements RemoteService {
 
-	@Inject
-	protected ROPSerializationService serializationService;
-	
-	@Inject
-	protected ROPConnector ropConnector;
-	
-	@Override
-	public RemoteSession establishSession() throws RemoteException {
+    protected ROPSerializationService serializationService;
+
+    protected ROPConnector ropConnector;
+
+    public ProxyRemoteService(@Inject ROPSerializationService serializationService, @Inject ROPConnector ropConnector) {
+        this.serializationService = serializationService;
+        this.ropConnector = ropConnector;
+    }
+
+    @Override
+    public RemoteSession establishSession() throws RemoteException {
         try {
             return serializationService.deserialize(ropConnector.establishSession(), RemoteSession.class);
         } catch (IOException e) {
             throw new RemoteException(e.getMessage());
         }
-	}
+    }
 
-	@Override
-	public RemoteSession establishSharedSession(String name) throws RemoteException {
+    @Override
+    public RemoteSession establishSharedSession(String name) throws RemoteException {
         try {
             return serializationService.deserialize(ropConnector.establishSharedSession(name), RemoteSession.class);
         } catch (IOException e) {
             throw new RemoteException(e.getMessage());
         }
-	}
+    }
 
-	@Override
-	public Object processMessage(ClientMessage message) throws RemoteException, Throwable {
-		return serializationService.deserialize(ropConnector.sendMessage(serializationService.serialize(message)), Object.class);
-	}
+    @Override
+    public Object processMessage(ClientMessage message) throws RemoteException, Throwable {
+        return serializationService.deserialize(ropConnector.sendMessage(serializationService.serialize(message)), Object.class);
+    }
 }

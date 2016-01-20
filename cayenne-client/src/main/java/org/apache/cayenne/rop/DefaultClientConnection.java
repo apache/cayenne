@@ -38,6 +38,10 @@ public class DefaultClientConnection extends BaseConnection {
         this.sharedSessionName = sharedSession;
     }
 
+    public RemoteSession getSession() {
+        return session;
+    }
+
 	@Override
 	protected void beforeSendMessage(ClientMessage message) throws CayenneRuntimeException {
 		if (session == null) {

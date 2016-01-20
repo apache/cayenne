@@ -23,12 +23,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public interface ROPSerializationService {
-    
+
     byte[] serialize(Object object) throws IOException;
-	
-	void serialize(Object object, OutputStream outputStream) throws IOException;
-    
+
+    void serialize(Object object, OutputStream outputStream) throws IOException;
+
     <T> T deserialize(InputStream inputStream, Class<T> objectClass) throws IOException;
-	
-	<T> T deserialize(byte[] serializedObject, Class<T> objectClass) throws IOException;
+
+    <T> T deserialize(byte[] serializedObject, Class<T> objectClass) throws IOException;
 }

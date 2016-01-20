@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.rop.http;
 
+import org.apache.cayenne.remote.RemoteSession;
+import org.apache.cayenne.rop.DefaultClientConnection;
 import org.apache.cayenne.rop.ROPConnector;
 import org.apache.cayenne.rop.ROPConstants;
 import org.apache.commons.logging.Log;
@@ -36,6 +38,10 @@ public class HttpROPConnector implements ROPConnector {
 
     private static Log logger = LogFactory.getLog(HttpROPConnector.class);
 
+    public static final String SESSION_COOKIE_NAME = "JSESSIONID";
+
+    private DefaultClientConnection clientConnection;
+
     private String url;
 
     private String username;
@@ -47,6 +53,10 @@ public class HttpROPConnector implements ROPConnector {
         this.url = url;
         this.username = username;
         this.password = password;
+    }
+
+    public void setClientConnection(DefaultClientConnection clientConnection) {
+        this.clientConnection = clientConnection;
     }
     
     public void setReadTimeout(Long readTimeout) {
@@ -111,6 +121,7 @@ public class HttpROPConnector implements ROPConnector {
 
 		try (OutputStream output = connection.getOutputStream()) {
 			output.write(urlParams.toString().getBytes(StandardCharsets.UTF_8));
+            output.flush();
 		}
 
 		return connection.getInputStream();
@@ -124,11 +135,15 @@ public class HttpROPConnector implements ROPConnector {
         }
 
         addAuthHeader(connection);
+        addSessionCookie(connection);
         connection.setDoOutput(true);
+
+        connection.setRequestProperty("Content-Type", "application/octet-stream");
 
         if (data != null) {
             try (OutputStream output = connection.getOutputStream()) {
                 output.write(data);
+                output.flush();
             }
         }
 
@@ -140,6 +155,15 @@ public class HttpROPConnector implements ROPConnector {
 
         if (basicAuth != null) {
             connection.addRequestProperty("Authorization", basicAuth);
+        }
+    }
+
+    protected void addSessionCookie(URLConnection connection) {
+        RemoteSession session = clientConnection.getSession();
+        if (session != null && session.getSessionId() != null) {
+            connection.addRequestProperty("Cookie", SESSION_COOKIE_NAME
+                    + "="
+                    + session.getSessionId());
         }
     }
 

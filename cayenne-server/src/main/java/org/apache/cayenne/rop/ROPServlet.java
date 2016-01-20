@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.rop;
 
+import com.caucho.services.server.ServiceContext;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.rop.server.ROPServerModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -90,33 +91,43 @@ public class ROPServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		try {
-			String operation = req.getParameter(ROPConstants.OPERATION_PARAMETER);
+            String serviceId = req.getPathInfo();
+            String objectId = req.getParameter("id");
 
-			if (operation != null) {
-				switch (operation) {
-					case ROPConstants.ESTABLISH_SESSION_OPERATION:
-						RemoteSession session = remoteService.establishSession();
-						serializationService.serialize(session, resp.getOutputStream());
-						break;
-					case ROPConstants.ESTABLISH_SHARED_SESSION_OPERATION:
-						String sessionName = req.getParameter(ROPConstants.SESSION_NAME_PARAMETER);
-						RemoteSession sharedSession = remoteService.establishSharedSession(sessionName);
+            if (objectId == null) {
+                objectId = req.getParameter("ejbid");
+            }
 
-						serializationService.serialize(sharedSession, resp.getOutputStream());
-						break;
-					default:
-						throw new ServletException("Unknown operation: " + operation);
-				}
-			} else {
-					Object response = remoteService.processMessage(
-							serializationService.deserialize(req.getInputStream(), ClientMessage.class));
+            // TODO: need to untangle HttpRemoteService from dependence on Hessian's ServiceContext thread local setup
+            ServiceContext.begin(req, resp, serviceId, objectId);
 
-					serializationService.serialize(response, resp.getOutputStream());
-			}
-		} catch (RuntimeException | ServletException e) {
-			throw e;
-		} catch (Throwable e) {
-			throw new ServletException(e);
-		}
+            String operation = req.getParameter(ROPConstants.OPERATION_PARAMETER);
+
+            if (operation != null) {
+                switch (operation) {
+                    case ROPConstants.ESTABLISH_SESSION_OPERATION:
+                        RemoteSession session = remoteService.establishSession();
+                        serializationService.serialize(session, resp.getOutputStream());
+                        break;
+                    case ROPConstants.ESTABLISH_SHARED_SESSION_OPERATION:
+                        String sessionName = req.getParameter(ROPConstants.SESSION_NAME_PARAMETER);
+                        RemoteSession sharedSession = remoteService.establishSharedSession(sessionName);
+
+                        serializationService.serialize(sharedSession, resp.getOutputStream());
+                        break;
+                    default:
+                        throw new ServletException("Unknown operation: " + operation);
+                }
+            } else {
+                Object response = remoteService.processMessage(
+                        serializationService.deserialize(req.getInputStream(), ClientMessage.class));
+
+                serializationService.serialize(response, resp.getOutputStream());
+            }
+        } catch (RuntimeException | ServletException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw new ServletException(e);
+        }
     }
 }

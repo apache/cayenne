@@ -18,51 +18,48 @@
  ****************************************************************/
 package org.apache.cayenne.rop;
 
-import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.HessianInput;
 import com.caucho.hessian.io.HessianOutput;
 import com.caucho.hessian.io.SerializerFactory;
-import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.remote.hessian.HessianConfig;
-import org.apache.cayenne.remote.hessian.service.HessianService;
 
 import java.io.*;
 
 public class HessianROPSerializationService implements ROPSerializationService {
 
     protected SerializerFactory serializerFactory;
-    
+
     public HessianROPSerializationService(SerializerFactory serializerFactory) {
         this.serializerFactory = serializerFactory;
     }
-    
+
     @Override
     public byte[] serialize(Object object) throws IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         HessianOutput out = new HessianOutput(bytes);
         out.setSerializerFactory(serializerFactory);
         out.writeObject(object);
+        out.flush();
 
         return bytes.toByteArray();
     }
 
-	@Override
-	public void serialize(Object object, OutputStream outputStream) throws IOException {
-		Hessian2Output out = new Hessian2Output(outputStream);
-		out.setSerializerFactory(serializerFactory);
-		out.writeObject(object);
-	}
+    @Override
+    public void serialize(Object object, OutputStream outputStream) throws IOException {
+        HessianOutput out = new HessianOutput(outputStream);
+        out.setSerializerFactory(serializerFactory);
+        out.writeObject(object);
+        out.flush();
+    }
 
-	@Override
-	public <T> T deserialize(byte[] serializedObject, Class<T> objectClass) throws IOException {
+    @Override
+    public <T> T deserialize(byte[] serializedObject, Class<T> objectClass) throws IOException {
         HessianInput in = new HessianInput(new ByteArrayInputStream(serializedObject));
         in.setSerializerFactory(serializerFactory);
 
         return objectClass.cast(in.readObject());
-	}
+    }
 
-	@Override
+    @Override
     public <T> T deserialize(InputStream input, Class<T> objectClass) throws IOException {
         HessianInput in = new HessianInput(input);
         in.setSerializerFactory(serializerFactory);

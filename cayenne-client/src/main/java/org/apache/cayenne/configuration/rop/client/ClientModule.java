@@ -35,7 +35,6 @@ import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.RemoteService;
 import org.apache.cayenne.rop.*;
 import org.apache.cayenne.rop.http.ClientHessianSerializationServiceProvider;
-import org.apache.cayenne.rop.http.HttpROPConnectorProvider;
 
 /**
  * A DI module containing all Cayenne ROP client runtime configurations.
@@ -61,7 +60,6 @@ public class ClientModule implements Module {
 
         binder.bind(ObjectContextFactory.class).to(CayenneContextFactory.class);
         binder.bind(ROPSerializationService.class).toProvider(ClientHessianSerializationServiceProvider.class);
-        binder.bind(ROPConnector.class).toProvider(HttpROPConnectorProvider.class);
         binder.bind(RemoteService.class).to(ProxyRemoteService.class);
         binder.bind(ClientConnection.class).toProvider(DefaultClientConnectionProvider.class);
         binder.bind(EventManager.class).to(DefaultEventManager.class);
