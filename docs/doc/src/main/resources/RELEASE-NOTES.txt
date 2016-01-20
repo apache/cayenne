@@ -43,6 +43,7 @@ CAY-2045 Add autosuggestion fields to choose attributes and relationships
 
 Bug Fixes:
 
+CAY-1977 Cleanup Modeler reverse engineering functionality
 CAY-1987 Widen types before performing in-memory evaluation of qualifiers using j.l.Number subclasses
 CAY-1990 Incorrect display of the raw SQL query in Modeler
 CAY-1993 Reverse Engineering does not work with PostgreSQL database
