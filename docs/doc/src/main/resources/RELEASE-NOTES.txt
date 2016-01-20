@@ -54,6 +54,7 @@ CAY-2003 cdbimport doesn't work properly with several includeTable tags
 CAY-2015 Joint prefetches combined with DisjointById prefetches return null incorrectly
 CAY-2020 typo: correction to upper alpha range in Rot13PasswordEncoder
 CAY-2041 "cayenne.jdbc.max_connections" and "cayenne.jdbc.min_connections" command line options are ignored
+CAY-2047 Relationship mapping with target inheritance
 CAY-2049 Changing the Relationship name in ObjRelationship Inspector has no effect
 
 ----------------------------------
