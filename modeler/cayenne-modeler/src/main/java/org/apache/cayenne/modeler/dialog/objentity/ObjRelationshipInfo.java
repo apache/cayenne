@@ -18,21 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Vector;
-
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreePath;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbEntity;
@@ -55,6 +40,20 @@ import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.NamedObjectFactory;
 import org.apache.cayenne.util.Util;
 
+import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Vector;
+
 public class ObjRelationshipInfo extends CayenneController implements
     TreeSelectionListener {
     
@@ -72,7 +71,6 @@ public class ObjRelationshipInfo extends CayenneController implements
     protected List<ObjEntity> objectTargets;
     protected List<String> targetCollections;
     protected List<String> mapKeys;
-    protected String relationshipName;
     protected String targetCollection;
     protected String mapKey;
     protected ObjRelationshipInfoView view;
@@ -100,8 +98,7 @@ public class ObjRelationshipInfo extends CayenneController implements
         setObjectTarget(target);
         view.sourceEntityLabel.setText(relationship.getSourceEntity().getName());    
         this.relationship = relationship;
-        this.relationshipName = relationship.getName();
-        view.relationshipName.setText(relationshipName);
+        this.view.getRelationshipName().setText(relationship.getName());
         this.mapKey = relationship.getMapKey();
         this.targetCollection = relationship.getCollectionType();
         if (targetCollection == null) {
@@ -536,12 +533,11 @@ public class ObjRelationshipInfo extends CayenneController implements
     }
 
     public String getRelationshipName() {
-        return relationshipName;
+        return view.getRelationshipName().getText();
     }
 
     public void setRelationshipName(String relationshipName) {
-        view.relationshipName.setText(relationshipName);
-        this.relationshipName = relationshipName;
+        view.getRelationshipName().setText(relationshipName);
     }
 
     /**
@@ -576,6 +572,7 @@ public class ObjRelationshipInfo extends CayenneController implements
 
         boolean oldToMany = relationship.isToMany();
 
+        String relationshipName = getRelationshipName();
         if (!Util.nullSafeEquals(relationship.getName(), relationshipName)) {
             hasChanges = true;
             relationship.setName(relationshipName);
