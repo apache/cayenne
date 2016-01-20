@@ -55,8 +55,11 @@ public class HessianROPSerializationService implements ROPSerializationService {
 	}
 
 	@Override
-	public <T> T deserialize(byte[] serializedObject, Class<T> objectClass) {
-		return null;
+	public <T> T deserialize(byte[] serializedObject, Class<T> objectClass) throws IOException {
+        HessianInput in = new HessianInput(new ByteArrayInputStream(serializedObject));
+        in.setSerializerFactory(serializerFactory);
+
+        return objectClass.cast(in.readObject());
 	}
 
 	@Override
