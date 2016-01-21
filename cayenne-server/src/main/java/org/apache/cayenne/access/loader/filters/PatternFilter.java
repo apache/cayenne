@@ -58,7 +58,9 @@ public class PatternFilter {
     public static final Comparator<Pattern> PATTERN_COMPARATOR = new Comparator<Pattern>() {
         @Override
         public int compare(Pattern o1, Pattern o2) {
-            return o1.pattern().compareTo(o2.pattern());
+            if(o1 != null && o2 != null) {
+                return o1.pattern().compareTo(o2.pattern());
+            } else return -1;
         }
     };
 
@@ -66,8 +68,8 @@ public class PatternFilter {
     private final SortedSet<Pattern> excludes;
 
     public PatternFilter() {
-        this.includes = new TreeSet<Pattern>(PATTERN_COMPARATOR);
-        this.excludes = new TreeSet<Pattern>(PATTERN_COMPARATOR);
+        this.includes = new TreeSet<>(PATTERN_COMPARATOR);
+        this.excludes = new TreeSet<>(PATTERN_COMPARATOR);
     }
 
     public PatternFilter include(Pattern p) {
@@ -83,7 +85,7 @@ public class PatternFilter {
     }
 
     public static Pattern pattern(String pattern) {
-        if (pattern == null) {
+        if(pattern == null) {
             return null;
         }
         return Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
@@ -100,18 +102,20 @@ public class PatternFilter {
     public boolean isInclude(String obj) {
         boolean include = includes.isEmpty();
         for (Pattern p : includes) {
-            if (p.matcher(obj).matches()) {
-                include = true;
-                break;
+            if(p != null) {
+                if(p.matcher(obj).matches()) {
+                    include = true;
+                    break;
+                }
             }
         }
 
-        if (!include) {
+        if(!include) {
             return false;
         }
 
         for (Pattern p : excludes) {
-            if (p.matcher(obj).matches()) {
+            if(p.matcher(obj).matches()) {
                 return false;
             }
         }
@@ -121,11 +125,11 @@ public class PatternFilter {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
+        if(this == o) {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if(o == null || getClass() != o.getClass()) {
             return false;
         }
 
@@ -140,21 +144,16 @@ public class PatternFilter {
         return includes.hashCode();
     }
 
-    @Override
-    public String toString() {
-        return toString(new StringBuilder()).toString();
-    }
-
     public StringBuilder toString(StringBuilder res) {
-        if (includes.isEmpty()) {
+        if(includes.isEmpty()) {
             // Do nothing.
-        } else if (includes.size() > 1) {
+        } else if(includes.size() > 1) {
             res.append("(").append(StringUtils.join(includes, " OR ")).append(")");
         } else {
             res.append(includes.first().pattern());
         }
 
-        if (!excludes.isEmpty()) {
+        if(!excludes.isEmpty()) {
             res.append(" AND NOT (").append(StringUtils.join(includes, " OR ")).append(")");
         }
 

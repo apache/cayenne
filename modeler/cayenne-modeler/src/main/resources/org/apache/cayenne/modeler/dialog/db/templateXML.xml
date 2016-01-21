@@ -1,0 +1,16 @@
+<reverseEngineering>
+    <skipRelationshipsLoading>false</skipRelationshipsLoading>
+    <skipPrimaryKeyLoading>false</skipPrimaryKeyLoading>
+    <catalog/>
+    <catalog name=""/>
+    <catalog name="">
+        <includeTable/>
+        <includeTable pattern=""/>
+        <includeTable pattern="">
+            <includeColumn pattern=""/>
+            <excludeColumn pattern=""/>
+        </includeTable>
+        <excludeTable/>
+        <excludeTable pattern=""/>
+    </catalog>
+</reverseEngineering>

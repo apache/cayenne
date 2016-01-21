@@ -26,6 +26,7 @@ import java.net.URL;
  * 
  * @since 3.1
  */
+
 public interface Resource extends Serializable {
 
     /**

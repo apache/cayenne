@@ -145,7 +145,7 @@ public class OpenProjectAction extends ProjectAction {
             else if (UpgradeType.INTERMEDIATE_UPGRADE_NEEDED == md.getUpgradeType()) {
                 JOptionPane
                         .showMessageDialog(Application.getFrame(),
-                        // TODO: andrus 05/02/2010 - this message shows intermediate
+                                // TODO: andrus 05/02/2010 - this message shows intermediate
                                 // version of the project XML, not the Modeler code
                                 // version that
                                 // can be used for upgrade
@@ -201,7 +201,6 @@ public class OpenProjectAction extends ProjectAction {
                 .getInjector()
                 .getInstance(ProjectLoader.class)
                 .loadProject(resource);
-
         controller.projectOpenedAction(project);
 
         return project;

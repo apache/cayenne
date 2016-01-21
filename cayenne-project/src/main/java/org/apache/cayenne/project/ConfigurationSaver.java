@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -50,6 +51,13 @@ class ConfigurationSaver extends BaseConfigurationNodeVisitor<Void> {
     public Void visitDataMap(DataMap node) {
         XMLEncoder encoder = new XMLEncoder(printWriter, "\t", version);
         printXMLHeader(encoder);
+        node.encodeAsXML(encoder);
+        return null;
+    }
+
+    @Override
+    public Void visitReverseEngineering(ReverseEngineering node) {
+        XMLEncoder encoder = new XMLEncoder(printWriter);
         node.encodeAsXML(encoder);
         return null;
     }

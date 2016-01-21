@@ -220,12 +220,9 @@ public class ServerCaseModule implements Module {
         // test-scoped objects
         binder.bind(EntityResolver.class).toProvider(
                 ServerCaseEntityResolverProvider.class).in(testScope);
-        binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class).in(
-                testScope);
-        binder.bind(ServerCaseProperties.class).to(ServerCaseProperties.class).in(
-                testScope);
-        binder.bind(ServerRuntime.class).toProvider(ServerRuntimeProvider.class).in(
-                testScope);
+        binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class).in(testScope);
+        binder.bind(ServerCaseProperties.class).to(ServerCaseProperties.class).in(testScope);
+        binder.bind(ServerRuntime.class).toProvider(ServerRuntimeProvider.class).in(testScope);
         binder
                 .bind(ObjectContext.class)
                 .toProvider(ServerCaseObjectContextProvider.class)

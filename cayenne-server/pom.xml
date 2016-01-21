@@ -151,7 +151,13 @@
     		<artifactId>slf4j-simple</artifactId>
     		<scope>test</scope>
 		</dependency>
-    </dependencies>
+		<dependency>
+			<groupId>xmlunit</groupId>
+			<artifactId>xmlunit</artifactId>
+			<version>1.5</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 	<build>
 		<resources>
 			<resource>

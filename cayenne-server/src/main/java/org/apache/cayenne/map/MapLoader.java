@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.dbimport.*;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.util.Util;
@@ -44,6 +45,12 @@ public class MapLoader extends DefaultHandler {
 	final static String _2_0_PACKAGE_PREFIX = "org.apache.cayenne.";
 
 	public static final String DATA_MAP_TAG = "data-map";
+
+	/**
+	 * @since 4.0
+	 */
+	public static final String REVERSE_ENGINEERING = "reverseEngineering";
+
 	public static final String PROPERTY_TAG = "property";
 
 	/**
@@ -104,7 +111,6 @@ public class MapLoader extends DefaultHandler {
 	public static final String DB_GENERATOR_TYPE_TAG = "db-generator-type";
 	public static final String DB_GENERATOR_NAME_TAG = "db-generator-name";
 	public static final String DB_KEY_CACHE_SIZE_TAG = "db-key-cache-size";
-
 	/**
 	 * @since 3.0
 	 */
@@ -145,6 +151,7 @@ public class MapLoader extends DefaultHandler {
 	private Procedure procedure;
 	private QueryLoader queryBuilder;
 	private String sqlKey;
+	private ReverseEngineering reverseEngineering;
 
 	private String descending;
 	private String ignoreCase;
@@ -169,6 +176,15 @@ public class MapLoader extends DefaultHandler {
 			}
 		});
 
+		startTagOpMap.put(REVERSE_ENGINEERING, new StartClosure() {
+
+			@Override
+			void execute(Attributes attributes) throws SAXException {
+				processStartReverseEngineering(attributes);
+			}
+		});
+
+		
 		startTagOpMap.put(DB_ENTITY_TAG, new StartClosure() {
 
 			@Override
@@ -561,6 +577,14 @@ public class MapLoader extends DefaultHandler {
 		});
 	}
 
+	private void processStartReverseEngineering(Attributes attributes) {
+		reverseEngineering = new ReverseEngineering();
+		reverseEngineering.setName(attributes.getValue("", "name"));
+
+		dataMap.setReverseEngineering(reverseEngineering);
+	}
+
+
 	private void processStartDataMap(Attributes attributes) {
 		this.mapVersion = attributes.getValue("", "project-version");
 	}
@@ -880,7 +904,6 @@ public class MapLoader extends DefaultHandler {
 			throw new SAXException("MapLoader::processStartDbRelationship()," + " Unable to parse name. Attributes:\n"
 					+ printAttributes(atts));
 		}
-
 		String sourceName = atts.getValue("", "source");
 		if (sourceName == null) {
 			throw new SAXException("MapLoader::processStartDbRelationship() - null source entity");

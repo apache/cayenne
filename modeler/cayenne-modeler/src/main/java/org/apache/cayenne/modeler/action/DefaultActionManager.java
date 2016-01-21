@@ -95,7 +95,7 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new ObjEntitySyncAction(application));
         registerAction(new DbEntityCounterpartAction(application));
         registerAction(new ObjEntityCounterpartAction(application));
-        registerAction(new ImportDBAction(application));
+        registerAction(new ReverseEngineeringAction(application));
         registerAction(new InferRelationshipsAction(application));
         registerAction(new ImportEOModelAction(application));
         registerAction(new GenerateDBAction(application));
@@ -165,7 +165,7 @@ public class DefaultActionManager implements ActionManager {
                 CreateDataMapAction.class.getName(),
                 RemoveAction.class.getName(),
                 CreateNodeAction.class.getName(),
-                ImportDBAction.class.getName(),
+                ReverseEngineeringAction.class.getName(),
                 ImportEOModelAction.class.getName(),
                 GenerateCodeAction.class.getName(),
                 GenerateDBAction.class.getName(),

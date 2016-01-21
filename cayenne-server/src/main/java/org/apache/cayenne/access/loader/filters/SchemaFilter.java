@@ -32,11 +32,6 @@ public class SchemaFilter {
         this.procedures = procedures;
     }
 
-    @Override
-    public String toString() {
-        return toString(new StringBuilder(), "").toString();
-    }
-
     protected StringBuilder toString(StringBuilder res, String prefix) {
         res.append(prefix).append("Schema: ").append(name).append("\n");
         tables.toString(res, prefix + "  ");

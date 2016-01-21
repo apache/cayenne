@@ -107,7 +107,10 @@ public class DbAttributesPerSchemaLoader extends DbAttributesBaseLoader {
 	protected List<DbAttribute> loadDbAttributes(String tableName) {
 		Map<String, List<DbAttribute>> attributes = getAttributes();
 		if (attributes != null) {
-			return attributes.get(tableName);
+			List<DbAttribute> dbAttributes = attributes.get(tableName);
+			if (dbAttributes != null) {
+				return dbAttributes;
+			}
 		}
 
 		return new LinkedList<DbAttribute>();

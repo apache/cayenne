@@ -26,7 +26,7 @@ package org.apache.cayenne.pref;
  */
 public interface PreferenceEditor {
 
-    public void save();
+    void save();
 
-    public void revert();
+    void revert();
 }

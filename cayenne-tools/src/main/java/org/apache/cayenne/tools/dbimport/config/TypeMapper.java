@@ -21,18 +21,24 @@ package org.apache.cayenne.tools.dbimport.config;
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
 
+import javax.xml.bind.annotation.*;
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
  * @since 4.0.
  */
+@XmlRootElement(name = "typeMapper")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class TypeMapper {
 
+    @XmlElement(name = "mapperClassName")
     private String mapperClassName;
 
+    @XmlElement(name = "usePrimitives")
     private Boolean usePrimitives;
 
+    @XmlElement(name = "type")
     private Collection<Type> types = new LinkedList<Type>();
 
     public String getMapperClassName() {

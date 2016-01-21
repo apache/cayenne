@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<reverseEngineering>
+    <catalog name="catalog1">
+        <includeTable pattern="includedTable1"/>
+        <includeTable pattern="includedTable2"/>
+        <excludeTable pattern="excludedTable1"/>
+        <excludeTable pattern="excludedTable2"/>
+        <includeColumn pattern="includedColumn1"/>
+        <includeColumn pattern="includedColumn2"/>
+        <excludeColumn pattern="excludedColumn1"/>
+        <excludeColumn pattern="excludedColumn2"/>
+        <includeProcedure pattern="includedProcedure1"/>
+        <includeProcedure pattern="includedProcedure2"/>
+        <excludeProcedure pattern="excludedProcedure1"/>
+        <excludeProcedure pattern="excludedProcedure2"/>
+        <schema name="schema1"/>
+        <schema name="schema2"/>
+    </catalog>
+    <catalog name="catalog2"/>
+    <catalog name="catalog3"/>
+    <schema name="schema3"/>
+</reverseEngineering>

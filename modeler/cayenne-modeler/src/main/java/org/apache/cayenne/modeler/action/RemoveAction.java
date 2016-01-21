@@ -72,6 +72,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -448,7 +449,12 @@ public class RemoveAction extends CayenneAction {
         domain.getDataMaps().remove(map);
         if (map.getConfigurationSource() != null) {
             URL mapURL = map.getConfigurationSource().getURL();
-            getCurrentProject().getUnusedResources().add(mapURL);
+            Collection<URL> unusedResources = getCurrentProject().getUnusedResources();
+            unusedResources.add(mapURL);
+            if (map.getReverseEngineering() != null && map.getReverseEngineering().getConfigurationSource() != null) {
+                URL reverseEngineeringURL = map.getReverseEngineering().getConfigurationSource().getURL();
+                unusedResources.add(reverseEngineeringURL);
+            }
         }
         
         Iterator<DataNodeDescriptor> iterator = domain.getNodeDescriptors().iterator();

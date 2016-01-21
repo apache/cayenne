@@ -81,7 +81,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
     }
 
     public RemoveUndoableEdit(Application application, DataNodeDescriptor node,
-            DataMap map) {
+                              DataMap map) {
         this.map = map;
         this.dataNode = node;
         this.mode = REMOVE_MODE.MAP_FROM_NODE;
