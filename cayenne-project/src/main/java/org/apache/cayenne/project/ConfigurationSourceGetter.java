@@ -20,6 +20,7 @@ package org.apache.cayenne.project;
 
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 
@@ -38,5 +39,10 @@ class ConfigurationSourceGetter extends BaseConfigurationNodeVisitor<Resource> {
     @Override
     public Resource visitDataMap(DataMap dataMap) {
         return dataMap.getConfigurationSource();
+    }
+
+    @Override
+    public Resource visitReverseEngineering(ReverseEngineering reverseEngineering) {
+        return reverseEngineering.getConfigurationSource();
     }
 }

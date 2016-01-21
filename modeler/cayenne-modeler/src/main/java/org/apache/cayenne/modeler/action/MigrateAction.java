@@ -29,7 +29,7 @@ import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
+import org.apache.cayenne.modeler.dialog.db.DataSourceController;
 import org.apache.cayenne.modeler.dialog.db.DbMigrateOptionsDialog;
 import org.apache.cayenne.modeler.dialog.db.MergerOptions;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
@@ -52,7 +52,7 @@ public class MigrateAction extends DBWizardAction {
         DBConnectionInfo nodeInfo = preferredDataSource();
         String nodeKey = preferredDataSourceLabel(nodeInfo);
 
-        DataSourceWizard connectWizard = new DataSourceWizard(
+        DataSourceController connectWizard = new DataSourceController(
                 getProjectController(),
                 "Migrate DB Schema: Connect to Database",
                 nodeKey,
@@ -62,10 +62,10 @@ public class MigrateAction extends DBWizardAction {
             // canceled
             return;
         }
-        
+
         DataMap map = getProjectController().getCurrentDataMap();
         //migarte options
-        
+
         // sanity check
         if (map == null) {
             throw new IllegalStateException("No current DataMap selected.");
@@ -97,8 +97,8 @@ public class MigrateAction extends DBWizardAction {
                 connectWizard.getConnectionInfo(),
                 map, selectedSchema).startupAction();
     }
-    
-    private List<String> getSchemas(DataSourceWizard connectWizard) throws Exception {
+
+    private List<String> getSchemas(DataSourceController connectWizard) throws Exception {
     	DbAdapter dbAdapter = connectWizard.getConnectionInfo()
     			.makeAdapter(getApplication().getClassLoadingService());
     	DataSource dataSource = connectWizard.getConnectionInfo()

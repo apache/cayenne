@@ -69,8 +69,10 @@ public class TableFilter {
         }
 
         for (Pattern p : excludes) {
-            if (p.matcher(tableName).matches()) {
-                return null;
+            if (p != null) {
+                if (p.matcher(tableName).matches()) {
+                    return null;
+                }
             }
         }
 
@@ -89,11 +91,6 @@ public class TableFilter {
         includes.add(new IncludeTableFilter(null));
 
         return new TableFilter(includes, new TreeSet<Pattern>());
-    }
-
-    @Override
-    public String toString() {
-        return toString(new StringBuilder(), "").toString();
     }
 
     protected StringBuilder toString(StringBuilder res, String prefix) {

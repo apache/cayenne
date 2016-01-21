@@ -27,6 +27,9 @@ import java.net.URL;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.dbimport.DefaultReverseEngineeringLoader;
+import org.apache.cayenne.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbimport.ReverseEngineeringLoaderException;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
@@ -34,10 +37,9 @@ import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
+import org.xml.sax.*;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * @since 3.1
@@ -211,8 +213,25 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 				dataMap.setConfigurationSource(dataMapResource);
 				dataMap.setDataChannelDescriptor(descriptor);
 
-				descriptor.getDataMaps().add(dataMap);
-			} else if (localName.equals(NODE_TAG)) {
+                try {
+                    if (dataMap.getReverseEngineering() != null) {
+                        String reverseEngineeringName = dataMap.getReverseEngineering().getName();
+                        String reverseEngineeringLocation = nameMapper.configurationLocation(ReverseEngineering.class, reverseEngineeringName);
+                        Resource reverseEngineeringResource = baseResource.getRelativeResource(reverseEngineeringLocation);
+                        DefaultReverseEngineeringLoader reverseEngineeringLoader = new DefaultReverseEngineeringLoader();
+                        ReverseEngineering reverseEngineering = reverseEngineeringLoader.load(reverseEngineeringResource.getURL().openStream());
+                        reverseEngineering.setName(reverseEngineeringName);
+                        reverseEngineering.setConfigurationSource(reverseEngineeringResource);
+                        dataMap.setReverseEngineering(reverseEngineering);
+                    }
+                } catch (ReverseEngineeringLoaderException e) {
+                    logger.info(e.getMessage(), e);
+                } catch (IOException e) {
+                    logger.info(e.getMessage(), e);
+                }
+
+                descriptor.getDataMaps().add(dataMap);
+            } else if (localName.equals(NODE_TAG)) {
 
 				String nodeName = attributes.getValue("", "name");
 				if (nodeName == null) {

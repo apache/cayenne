@@ -25,6 +25,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.event.DbEntityListener;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
@@ -144,6 +145,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	private SortedMap<String, Procedure> procedureMap;
 	private SortedMap<String, QueryDescriptor> queryDescriptorMap;
 	private SortedMap<String, SQLResult> results;
+    private ReverseEngineering reverseEngineering;
 
 	/**
 	 * @deprecated since 4.0 unused as listeners are no longer tied to a
@@ -318,6 +320,12 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 
 		encoder.printProjectVersion();
 		encoder.println(">");
+
+        if (reverseEngineering != null) {
+            encoder.print("<reverseEngineering");
+            encoder.printAttribute("name", reverseEngineering.getName().trim());
+            encoder.println("/>");
+        }
 
 		// properties
 		if (defaultLockType == ObjEntity.LOCK_TYPE_OPTIMISTIC) {
@@ -1390,5 +1398,13 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
      */
     public String getNameWithDefaultClientPackage(String name) {
         return getNameWithPackage(defaultClientPackage, name);
+    }
+
+    public ReverseEngineering getReverseEngineering() {
+        return reverseEngineering;
+    }
+
+    public void setReverseEngineering(ReverseEngineering reverseEngineering) {
+        this.reverseEngineering = reverseEngineering;
     }
 }

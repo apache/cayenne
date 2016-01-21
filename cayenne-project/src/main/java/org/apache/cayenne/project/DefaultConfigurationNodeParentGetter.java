@@ -22,6 +22,7 @@ import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -112,6 +113,11 @@ public class DefaultConfigurationNodeParentGetter implements ConfigurationNodePa
         @Override
         public ConfigurationNode visitQuery(QueryDescriptor query) {
             return query.getDataMap();
+        }
+
+        @Override
+        public ConfigurationNode visitReverseEngineering(ReverseEngineering reverseEngineering) {
+            return reverseEngineering;
         }
     }
 }

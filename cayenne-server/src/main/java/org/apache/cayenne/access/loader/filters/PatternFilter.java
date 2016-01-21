@@ -58,7 +58,12 @@ public class PatternFilter {
     public static final Comparator<Pattern> PATTERN_COMPARATOR = new Comparator<Pattern>() {
         @Override
         public int compare(Pattern o1, Pattern o2) {
-            return o1.pattern().compareTo(o2.pattern());
+            if (o1 != null && o2 != null) {
+                return o1.pattern().compareTo(o2.pattern());
+            }
+            else {
+                return -1;
+            }
         }
     };
 
@@ -66,8 +71,8 @@ public class PatternFilter {
     private final SortedSet<Pattern> excludes;
 
     public PatternFilter() {
-        this.includes = new TreeSet<Pattern>(PATTERN_COMPARATOR);
-        this.excludes = new TreeSet<Pattern>(PATTERN_COMPARATOR);
+        this.includes = new TreeSet<>(PATTERN_COMPARATOR);
+        this.excludes = new TreeSet<>(PATTERN_COMPARATOR);
     }
 
     public PatternFilter include(Pattern p) {
@@ -100,9 +105,11 @@ public class PatternFilter {
     public boolean isInclude(String obj) {
         boolean include = includes.isEmpty();
         for (Pattern p : includes) {
-            if (p.matcher(obj).matches()) {
-                include = true;
-                break;
+            if (p != null) {
+                if (p.matcher(obj).matches()) {
+                    include = true;
+                    break;
+                }
             }
         }
 
@@ -138,11 +145,6 @@ public class PatternFilter {
     @Override
     public int hashCode() {
         return includes.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return toString(new StringBuilder()).toString();
     }
 
     public StringBuilder toString(StringBuilder res) {

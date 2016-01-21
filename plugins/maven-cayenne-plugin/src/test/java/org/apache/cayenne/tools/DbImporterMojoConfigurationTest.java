@@ -18,18 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.*;
+import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.*;
 
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.access.loader.filters.IncludeTableFilter;
 import org.apache.cayenne.access.loader.filters.PatternFilter;
 import org.apache.cayenne.access.loader.filters.TableFilter;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
-import org.apache.cayenne.tools.dbimport.config.Schema;
+import org.apache.cayenne.dbimport.Schema;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 

@@ -24,7 +24,23 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.map.*;
+import org.apache.cayenne.dbimport.ReverseEngineering;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EJBQLQueryDescriptor;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.ProcedureQueryDescriptor;
+import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
@@ -49,6 +65,7 @@ public class DefaultProjectValidator implements ProjectValidator {
     private ProcedureQueryValidator procedureQueryValidator;
     private EJBQLQueryValidator ejbqlQueryValidator;
     private SQLTemplateValidator sqlTemplateValidator;
+    private ReverseEngineeringValidator reverseEngineeringValidator;
 
     DefaultProjectValidator() {
         dataChannelValidator = new DataChannelValidator();
@@ -68,6 +85,7 @@ public class DefaultProjectValidator implements ProjectValidator {
         procedureQueryValidator = new ProcedureQueryValidator();
         ejbqlQueryValidator = new EJBQLQueryValidator();
         sqlTemplateValidator = new SQLTemplateValidator();
+        reverseEngineeringValidator = new ReverseEngineeringValidator();
     }
 
     public ValidationResult validate(ConfigurationNode node) {
@@ -253,6 +271,11 @@ public class DefaultProjectValidator implements ProjectValidator {
                     break;
             }
 
+            return validationResult;
+        }
+
+        public ValidationResult visitReverseEngineering(ReverseEngineering reverseEngineering) {
+            reverseEngineeringValidator.validate(reverseEngineering, validationResult);
             return validationResult;
         }
     }

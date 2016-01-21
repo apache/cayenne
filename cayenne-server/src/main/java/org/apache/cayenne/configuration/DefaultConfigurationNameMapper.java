@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 
@@ -30,6 +31,8 @@ public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
 	private static final String CAYENNE_SUFFIX = ".xml";
 
 	private static final String DATA_MAP_SUFFIX = ".map.xml";
+
+	private static final String REVERSE_ENGINEERING_SUFFIX = ".reverseEngineering.xml";
 
 	protected ConfigurationNodeVisitor<String> nameMapper;
 
@@ -48,6 +51,8 @@ public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
 			return getDataChannelName(name);
 		} else if (DataMap.class.isAssignableFrom(type)) {
 			return getDataMapName(name);
+		} else if (ReverseEngineering.class.isAssignableFrom(type)) {
+			return getReverseEngineeringName(name);
 		}
 
 		throw new IllegalArgumentException("Unrecognized configuration type: " + type.getName());
@@ -104,6 +109,14 @@ public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
 		return name + DATA_MAP_SUFFIX;
 	}
 
+	private String getReverseEngineeringName(String name) {
+		if (name == null) {
+			throw new NullPointerException("Null Reverse Engineering name");
+		}
+
+		return name + REVERSE_ENGINEERING_SUFFIX;
+	}
+
 	final class NameMapper extends BaseConfigurationNodeVisitor<String> {
 
 		@Override
@@ -114,6 +127,11 @@ public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
 		@Override
 		public String visitDataMap(DataMap dataMap) {
 			return getDataMapName(dataMap.getName());
+		}
+
+		@Override
+		public String visitReverseEngineering(ReverseEngineering reverseEngineering) {
+			return getReverseEngineeringName(reverseEngineering.getName());
 		}
 	}
 }

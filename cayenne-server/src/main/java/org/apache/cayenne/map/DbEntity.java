@@ -611,9 +611,11 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
     public Collection<ObjEntity> mappedObjEntities() {
         Collection<ObjEntity> objEntities = new HashSet<ObjEntity>();
         MappingNamespace mns = getDataMap().getNamespace();
-        for (ObjEntity objEntity : mns.getObjEntities()) {
-            if (equals(objEntity.getDbEntity())) {
-                objEntities.add(objEntity);
+        if (mns != null) {
+            for (ObjEntity objEntity : mns.getObjEntities()) {
+                if (equals(objEntity.getDbEntity())) {
+                    objEntities.add(objEntity);
+                }
             }
         }
         return objEntities;

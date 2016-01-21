@@ -249,7 +249,7 @@ public class DBGeneratorOptions extends CayenneController {
      */
     public void generateSchemaAction() {
 
-        DataSourceWizard connectWizard = new DataSourceWizard(
+        DataSourceController connectWizard = new DataSourceController(
                 this.getParent(),
                 "Generate DB Schema: Connect to Database",
                 null,

@@ -43,10 +43,11 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.modeler.dialog.db.model.*;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
@@ -67,6 +68,7 @@ public final class CellRenderers {
     protected static ImageIcon procedureIcon;
     protected static ImageIcon queryIcon;
     protected static ImageIcon embeddableIcon;
+    protected static ImageIcon catalogIcon;
 
     static {
         domainIcon = ModelerUtil.buildIcon("icon-dom.gif");
@@ -79,6 +81,7 @@ public final class CellRenderers {
         relationshipIcon = ModelerUtil.buildIcon("icon-relationship.gif");
         attributeIcon = ModelerUtil.buildIcon("icon-attribute.gif");
         embeddableIcon = ModelerUtil.buildIcon("icon-embeddable.gif");
+        catalogIcon = ModelerUtil.buildIcon("icon-open.gif");
     }
 
     public static ImageIcon iconForObject(Object object) {
@@ -119,7 +122,18 @@ public final class CellRenderers {
         else if (object instanceof Embeddable) {
             return embeddableIcon;
         }
-
+        else if (object instanceof DBColumn) {
+            return attributeIcon;
+        }
+        else if (object instanceof DBProcedure) {
+            return procedureIcon;
+        }
+        else if (object instanceof DBEntity) {
+            return dbEntityIcon;
+        }
+        else if (object instanceof DBCatalog) {
+            return catalogIcon;
+        }
         return null;
     }
 

@@ -18,12 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalog;
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalogAndSchema;
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertFlat;
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertSchema;
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertSkipRelationshipsLoading;
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertTableTypes;
+import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.*;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

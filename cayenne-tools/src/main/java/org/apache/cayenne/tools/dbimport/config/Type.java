@@ -20,17 +20,32 @@ package org.apache.cayenne.tools.dbimport.config;
 
 import org.apache.cayenne.util.ToStringBuilder;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  * @since 4.0.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Type {
 
+    @XmlElement(name = "jdbc")
     private String jdbc;
+
+    @XmlElement(name = "java")
     private String java;
 
+    @XmlElement(name = "length")
     private Integer length;
+
+    @XmlElement(name = "precision")
     private Integer precision;
+
+    @XmlElement(name = "scale")
     private Integer scale;
+
+    @XmlElement(name = "notNull")
     private Boolean notNull;
 
     public String getJdbc() {
