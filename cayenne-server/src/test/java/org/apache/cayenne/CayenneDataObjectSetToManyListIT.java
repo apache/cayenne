@@ -19,15 +19,6 @@
 
 package org.apache.cayenne;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
@@ -42,8 +33,17 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CayenneDataObjectSetToManyListTest extends ServerCase {
+public class CayenneDataObjectSetToManyListIT extends ServerCase {
 
 	@Inject
 	private ServerRuntime runtime;

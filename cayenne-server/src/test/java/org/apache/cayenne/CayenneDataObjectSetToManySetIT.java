@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 @UseServerRuntime(CayenneProjects.RELATIONSHIPS_SET_TO_MANY_PROJECT)
-public class CayenneDataObjectSetToManySetTest extends ServerCase {
+public class CayenneDataObjectSetToManySetIT extends ServerCase {
 
 	@Inject
 	protected ObjectContext context;
