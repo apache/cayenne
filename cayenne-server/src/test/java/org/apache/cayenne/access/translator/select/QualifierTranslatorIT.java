@@ -19,21 +19,11 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.TstBinaryExpSuite;
-import org.apache.cayenne.exp.TstExpressionCase;
-import org.apache.cayenne.exp.TstExpressionSuite;
-import org.apache.cayenne.exp.TstTernaryExpSuite;
-import org.apache.cayenne.exp.TstUnaryExpSuite;
+import org.apache.cayenne.exp.*;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.SelectQuery;
@@ -43,6 +33,8 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class QualifierTranslatorIT extends ServerCase {
