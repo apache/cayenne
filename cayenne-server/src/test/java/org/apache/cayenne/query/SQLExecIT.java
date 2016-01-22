@@ -58,7 +58,7 @@ public class SQLExecIT extends ServerCase {
                 .paramsArray("a3").update(context);
 
         assertEquals(1, inserted);
-        assertEquals("a3", dbHelper.getString("ARTIST", "ARTIST_NAME"));
+        assertEquals("a3", dbHelper.getString("ARTIST", "ARTIST_NAME").trim());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class SQLExecIT extends ServerCase {
                 .paramsArray(55, "a3").update(context);
 
         assertEquals(1, inserted);
-        assertArrayEquals(new Object[]{55l, "a3"},
-                dbHelper.select("ARTIST", new String[]{"ARTIST_ID", "ARTIST_NAME"}));
+        assertEquals(55l, dbHelper.getLong("ARTIST", "ARTIST_ID"));
+        assertEquals("a3", dbHelper.getString("ARTIST", "ARTIST_NAME").trim());
     }
 }
