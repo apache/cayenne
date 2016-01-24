@@ -19,15 +19,17 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.DeleteBatchQuery;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Translator for delete BatchQueries. Creates parameterized DELETE SQL
@@ -81,7 +83,10 @@ public class DeleteBatchTranslator extends DefaultBatchTranslator {
 
         for (int i = 0; i < len; i++) {
             DbAttribute a = attributes.get(i);
-            bindings[i] = new ParameterBinding(a);
+
+            String typeName = TypesMapping.getJavaBySqlType(a.getType());
+            ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
+            bindings[i] = new ParameterBinding(a, extendedType);
         }
 
         return bindings;

@@ -19,8 +19,10 @@
 package org.apache.cayenne.access.translator.batch;
 
 import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.DeleteBatchQuery;
@@ -63,7 +65,10 @@ public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
         ParameterBinding[] bindings = new ParameterBinding[slen + 1];
 
         DbAttribute deleteAttribute = query.getDbEntity().getAttribute(deletedFieldName);
-        bindings[0] = new ParameterBinding(deleteAttribute);
+        String typeName = TypesMapping.getJavaBySqlType(deleteAttribute.getType());
+        ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
+
+        bindings[0] = new ParameterBinding(deleteAttribute, extendedType);
         bindings[0].include(1, true);
         
         System.arraycopy(superBindings, 0, bindings, 1, slen);
