@@ -27,7 +27,7 @@ import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.rop.http.HttpROPConnector;
 
-public class DefaultClientConnectionProvider implements Provider<ClientConnection> {
+public class HttpClientConnectionProvider implements Provider<ClientConnection> {
 
     @Inject
     protected RuntimeProperties runtimeProperties;
@@ -43,7 +43,7 @@ public class DefaultClientConnectionProvider implements Provider<ClientConnectio
         HttpROPConnector ropConnector = createHttpRopConnector();
         ProxyRemoteService remoteService = new ProxyRemoteService(serializationService, ropConnector);
 
-        DefaultClientConnection clientConnection = new DefaultClientConnection(remoteService, sharedSession);
+        HttpClientConnection clientConnection = new HttpClientConnection(remoteService, sharedSession);
         ropConnector.setClientConnection(clientConnection);
 
         return clientConnection;

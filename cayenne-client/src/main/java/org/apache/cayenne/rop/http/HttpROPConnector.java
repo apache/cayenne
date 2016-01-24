@@ -19,7 +19,7 @@
 package org.apache.cayenne.rop.http;
 
 import org.apache.cayenne.remote.RemoteSession;
-import org.apache.cayenne.rop.DefaultClientConnection;
+import org.apache.cayenne.rop.HttpClientConnection;
 import org.apache.cayenne.rop.ROPConnector;
 import org.apache.cayenne.rop.ROPConstants;
 import org.apache.commons.logging.Log;
@@ -40,7 +40,7 @@ public class HttpROPConnector implements ROPConnector {
 
     public static final String SESSION_COOKIE_NAME = "JSESSIONID";
 
-    private DefaultClientConnection clientConnection;
+    private HttpClientConnection clientConnection;
 
     private String url;
 
@@ -55,7 +55,7 @@ public class HttpROPConnector implements ROPConnector {
         this.password = password;
     }
 
-    public void setClientConnection(DefaultClientConnection clientConnection) {
+    public void setClientConnection(HttpClientConnection clientConnection) {
         this.clientConnection = clientConnection;
     }
     

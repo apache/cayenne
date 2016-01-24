@@ -61,7 +61,7 @@ public class ClientModule implements Module {
         binder.bind(ObjectContextFactory.class).to(CayenneContextFactory.class);
         binder.bind(ROPSerializationService.class).toProvider(ClientHessianSerializationServiceProvider.class);
         binder.bind(RemoteService.class).to(ProxyRemoteService.class);
-        binder.bind(ClientConnection.class).toProvider(DefaultClientConnectionProvider.class);
+        binder.bind(ClientConnection.class).toProvider(HttpClientConnectionProvider.class);
         binder.bind(EventManager.class).to(DefaultEventManager.class);
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         binder.bind(DataChannel.class).toProvider(ClientChannelProvider.class);
