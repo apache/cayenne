@@ -40,8 +40,6 @@ import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class QualifierTranslatorIT extends ServerCase {
 

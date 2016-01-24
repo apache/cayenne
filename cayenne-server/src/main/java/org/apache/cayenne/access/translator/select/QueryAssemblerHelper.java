@@ -343,7 +343,7 @@ public abstract class QueryAssemblerHelper {
 				}
 			}
 
-			return new DbAttribute("null"); //Make tests passed. Should never happen in runtime.
+			return null;
 		}
 
 		// naive algorithm:
