@@ -19,14 +19,22 @@
 
 package org.apache.cayenne.exp;
 
-import org.apache.cayenne.TranslationCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-public class TstExpressionCase extends TranslationCase {
+public class TstExpressionCase {
+
 	protected int totalNodes;
 	protected int totalLeaves;
+	protected Expression cayenneExp;
+	protected String sqlExp;
+	protected String rootEntity;
 
 	public TstExpressionCase(String rootEntity, Expression cayenneExp, String sqlExp, int totalNodes, int totalLeaves) {
-		super(rootEntity, cayenneExp, sqlExp);
+		this.cayenneExp = cayenneExp;
+		this.rootEntity = rootEntity;
+		this.sqlExp = sqlExp;
 		this.totalNodes = totalNodes;
 		this.totalLeaves = totalLeaves;
 	}
@@ -40,6 +48,32 @@ public class TstExpressionCase extends TranslationCase {
 	}
 
 	public Expression getCayenneExp() {
-		return (Expression) tstObject;
+		return cayenneExp;
 	}
+
+	@Override
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(this.getClass().getName()).append(cayenneExp);
+		return buf.toString();
+	}
+
+	public void assertTranslatedWell(String translated) {
+		if (sqlExp == null) {
+			assertNull(translated);
+			return;
+		}
+
+		assertNotNull(translated);
+		assertEquals("Unexpected translation: " + translated + "....", sqlExp, translated);
+	}
+
+	public String getRootEntity() {
+		return rootEntity;
+	}
+
+	public String getSqlExp() {
+		return sqlExp;
+	}
+
 }
