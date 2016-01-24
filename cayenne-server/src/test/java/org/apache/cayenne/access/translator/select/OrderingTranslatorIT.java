@@ -20,7 +20,6 @@
 package org.apache.cayenne.access.translator.select;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
 
@@ -105,11 +104,8 @@ public class OrderingTranslatorIT extends ServerCase {
 
 		TstQueryAssembler assembler = new TstQueryAssembler(q, node.getAdapter(), node.getEntityResolver());
 		StringBuilder out = new StringBuilder();
-		new OrderingTranslator(assembler).appendPart(out);
+		String translated = new OrderingTranslator(assembler).appendPart(out).toString();
 
-		String translated = out.toString();
-
-		assertNotNull(translated);
-		assertEquals("Unexpected translation: " + translated + "....", expectedSQL, translated);
+		assertEquals(expectedSQL, translated);
 	}
 }
