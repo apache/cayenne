@@ -19,60 +19,44 @@
 
 package org.apache.cayenne;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import junit.framework.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class TranslationCase {
 
-    protected Object tstObject;
-    protected String sqlExp;
-    protected String rootEntity;
+	protected Object tstObject;
+	protected String sqlExp;
+	protected String rootEntity;
 
-    public TranslationCase(String rootEntity, Object tstObject, String sqlExp) {
-        this.tstObject = tstObject;
-        this.rootEntity = rootEntity;
-        this.sqlExp = trim("\\b\\w+\\.", sqlExp);
-    }
+	public TranslationCase(String rootEntity, Object tstObject, String sqlExp) {
+		this.tstObject = tstObject;
+		this.rootEntity = rootEntity;
+		this.sqlExp = sqlExp;
+	}
 
-    protected String trim(String pattern, String str) {
-        return trim(pattern, str, "");
-    }
+	@Override
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append(this.getClass().getName()).append(tstObject);
+		return buf.toString();
+	}
 
-    protected String trim(String pattern, String str, String subst) {
-        Matcher matcher = Pattern.compile(pattern).matcher(str);
-        return (matcher.find()) ? matcher.replaceFirst(subst) : str;
-    }
+	public void assertTranslatedWell(String translated) {
+		if (sqlExp == null) {
+			assertNull(translated);
+			return;
+		}
 
-    @Override
-    public String toString() {
-        StringBuffer buf = new StringBuffer();
-        buf.append(this.getClass().getName()).append(tstObject);
-        return buf.toString();
-    }
+		assertNotNull(translated);
+		assertEquals("Unexpected translation: " + translated + "....", sqlExp, translated);
+	}
 
-    public void assertTranslatedWell(String translated) {
-        if (sqlExp == null) {
-            Assert.assertNull(translated);
-            return;
-        }
+	public String getRootEntity() {
+		return rootEntity;
+	}
 
-        Assert.assertNotNull(translated);
-
-        // strip column aliases
-        String aliasSubstituted = trim("\\b\\w+\\.", translated);
-        Assert.assertEquals(
-                "Unexpected translation: " + translated + "....",
-                sqlExp,
-                aliasSubstituted);
-    }
-
-    public String getRootEntity() {
-        return rootEntity;
-    }
-
-    public String getSqlExp() {
-        return sqlExp;
-    }
+	public String getSqlExp() {
+		return sqlExp;
+	}
 }
