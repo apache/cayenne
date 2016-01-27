@@ -19,13 +19,7 @@
 
 package org.apache.cayenne.access.translator.procedure;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import org.apache.cayenne.access.translator.ProcedureParameterBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
@@ -33,6 +27,13 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.ProcedureQuery;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Stored procedure query translator.
@@ -230,8 +231,10 @@ public class ProcedureTranslator {
             Object val,
             int pos) throws Exception {
 
-        int type = param.getType();
-        adapter.bindParameter(stmt, val, pos, type, param.getPrecision());
+        ProcedureParameterBinding binding = new ProcedureParameterBinding(param);
+        binding.setValue(val);
+        binding.setStatementPosition(pos);
+        adapter.bindParameter(stmt, binding);
     }
 
     /**
