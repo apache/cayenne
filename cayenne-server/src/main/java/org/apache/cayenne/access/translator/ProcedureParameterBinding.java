@@ -19,31 +19,25 @@
 package org.apache.cayenne.access.translator;
 
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.ProcedureParameter;
 
 /**
- * Describes a PreparedStatement parameter binding mapped to a DbAttribute.
+ * Describes a PreparedStatement parameter binding mapped to a CallableStatment.
  * 
  * @since 4.0
  */
-public class ParameterBinding {
+public class ProcedureParameterBinding {
+	public ProcedureParameterBinding(ProcedureParameter param) {
+		this.param = param;
+	}
 
-	static final int EXCLUDED_POSITION = -1;
-
-	private DbAttribute attribute;
+	private final ProcedureParameter param;
 	private Object value;
 	private int statementPosition;
 	private ExtendedType extendedType;
-	private Integer type;
 
-	public ParameterBinding(DbAttribute attribute, ExtendedType extendedType) {
-		this.attribute = attribute;
-		this.statementPosition = EXCLUDED_POSITION;
-		this.extendedType = extendedType;
-	}
-
-	public DbAttribute getAttribute() {
-		return attribute;
+	public ProcedureParameter getParam() {
+		return param;
 	}
 
 	public Object getValue() {
@@ -62,36 +56,11 @@ public class ParameterBinding {
 		this.statementPosition = statementPosition;
 	}
 
-	public boolean isExcluded() {
-		return statementPosition == EXCLUDED_POSITION;
-	}
-
 	public ExtendedType getExtendedType() {
 		return extendedType;
 	}
 
-	/**
-	 * Marks the binding object as excluded for the current iteration.
-	 */
-	public void exclude() {
-		this.statementPosition = EXCLUDED_POSITION;
-		this.value = null;
-	}
-
-	/**
-	 * Sets the value of the binding and initializes statement position var,
-	 * thus "including" this binding in the current iteration.
-	 */
-	public void include(int statementPosition, Object value) {
-		this.statementPosition = statementPosition;
-		this.value = value;
-	}
-
-	public Integer getType() {
-		return type != null ? type : attribute.getType();
-	}
-
-	public void setType(Integer type) {
-		this.type = type;
+	public void setExtendedType(ExtendedType extendedType) {
+		this.extendedType = extendedType;
 	}
 }

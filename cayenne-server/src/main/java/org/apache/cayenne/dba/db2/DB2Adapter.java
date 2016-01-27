@@ -21,6 +21,7 @@ package org.apache.cayenne.dba.db2;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.types.BooleanType;
@@ -233,17 +234,13 @@ public class DB2Adapter extends JdbcAdapter {
 
     @Override
     public void bindParameter(
-            PreparedStatement statement,
-            Object object,
-            int pos,
-            int sqlType,
-            int precision) throws SQLException, Exception {
+            PreparedStatement statement, ParameterBinding binding) throws SQLException, Exception {
 
-        if (object == null && (sqlType == 0 || sqlType == Types.BOOLEAN)) {
-            statement.setNull(pos, Types.VARCHAR);
+        if (binding.getValue() == null && (binding.getAttribute().getType() == 0 || binding.getAttribute().getType() == Types.BOOLEAN)) {
+            statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
         }
         else {
-            super.bindParameter(statement, object, pos, sqlType, precision);
+            super.bindParameter(statement, binding);
         }
     }
     

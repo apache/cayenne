@@ -38,17 +38,14 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeThat;
+import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;
 
 /**
  * Test Types mapping for selected columns
  */
 @UseServerRuntime(CayenneProjects.RETURN_TYPES_PROJECT)
-public class ReturnTypesMappingIT extends ServerCase {
+public class    ReturnTypesMappingIT extends ServerCase {
 
     @Inject
     private DataContext context;
