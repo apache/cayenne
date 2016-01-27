@@ -21,6 +21,7 @@ package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
@@ -230,17 +231,18 @@ public class OracleAdapter extends JdbcAdapter {
 	}
 
 	@Override
-	public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale)
+	public void bindParameter(PreparedStatement statement, ParameterBinding binding)
 			throws SQLException, Exception {
 
 		// Oracle doesn't support BOOLEAN even when binding NULL, so have to
 		// intercept
 		// NULL Boolean here, as super doesn't pass it through ExtendedType...
-		if (object == null && sqlType == Types.BOOLEAN) {
+		if (binding.getValue() == null && binding.getAttribute().getType() == Types.BOOLEAN) {
 			ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(Boolean.class);
-			typeProcessor.setJdbcObject(statement, object, pos, sqlType, scale);
+			typeProcessor.setJdbcObject(statement, binding.getValue(), binding.getStatementPosition(), binding
+							.getAttribute().getType(),binding.getAttribute().getScale());
 		} else {
-			super.bindParameter(statement, object, pos, sqlType, scale);
+			super.bindParameter(statement, binding);
 		}
 	}
 

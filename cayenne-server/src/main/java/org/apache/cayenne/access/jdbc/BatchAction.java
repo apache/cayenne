@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.Collections;
-
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
@@ -44,6 +36,10 @@ import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
 
+import java.sql.*;
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * @since 1.2
  */
@@ -58,8 +54,7 @@ public class BatchAction extends BaseSQLAction {
 
 		for (ParameterBinding b : bindings) {
 			if (!b.isExcluded()) {
-				adapter.bindParameter(statement, b.getValue(), b.getStatementPosition(), b.getAttribute().getType(), b
-						.getAttribute().getScale());
+				adapter.bindParameter(statement, b);
 			}
 		}
 	}
