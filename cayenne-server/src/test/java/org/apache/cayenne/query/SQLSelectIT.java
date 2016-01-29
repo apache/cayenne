@@ -18,16 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.sql.Types;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
@@ -42,6 +32,16 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.sql.Types;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLSelectIT extends ServerCase {
@@ -211,7 +211,7 @@ public class SQLSelectIT extends ServerCase {
 	public void test_SelectFirst() throws Exception {
 		createPaintingsDataSet();
 
-		Painting p = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING ORDER BY PAINTING_TITLE").selectFirst(
+		Painting p = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING ORDER BY PAINTING_TITLE").columnNameCaps(CapsStrategy.UPPER).selectFirst(
 				context);
 
 		assertNotNull(p);
@@ -222,7 +222,7 @@ public class SQLSelectIT extends ServerCase {
 	public void test_SelectFirstByContext() throws Exception {
 		createPaintingsDataSet();
 
-		SQLSelect<Painting> q = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING ORDER BY PAINTING_TITLE");
+		SQLSelect<Painting> q = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING ORDER BY PAINTING_TITLE").columnNameCaps(CapsStrategy.UPPER);
 		Painting p = context.selectFirst(q);
 
 		assertNotNull(p);
