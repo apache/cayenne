@@ -19,27 +19,24 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.XMLDataMapLoader;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbimport.AntNestedElement;
-import org.apache.cayenne.dbimport.Catalog;
-import org.apache.cayenne.dbimport.ExcludeColumn;
-import org.apache.cayenne.dbimport.ExcludeProcedure;
-import org.apache.cayenne.dbimport.ExcludeTable;
-import org.apache.cayenne.dbimport.FiltersConfigBuilder;
-import org.apache.cayenne.dbimport.IncludeColumn;
-import org.apache.cayenne.dbimport.IncludeProcedure;
-import org.apache.cayenne.dbimport.IncludeTable;
-import org.apache.cayenne.dbimport.ReverseEngineering;
-import org.apache.cayenne.dbimport.Schema;
+import org.apache.cayenne.dbimport.*;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.naming.DefaultNameGenerator;
+import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.tools.dbimport.DbImportAction;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
@@ -57,6 +54,7 @@ public class DbImporterTask extends Task {
     private final DbImportConfiguration config;
 
     private final ReverseEngineering reverseEngineering = new ReverseEngineering();
+    private boolean isReverseEngineeringDefined = false;
 
     private final OldFilterConfigBridge filterBuilder = new OldFilterConfigBridge();
 
@@ -69,7 +67,7 @@ public class DbImporterTask extends Task {
 
     @Override
     public void execute() {
-
+        File dataMapFile = config.getDataMapFile();
         config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering)
                 .add(filterBuilder)
                 .filtersConfig());
@@ -82,26 +80,78 @@ public class DbImporterTask extends Task {
         config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
         config.setTableTypes(reverseEngineering.getTableTypes());
 
-        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
+        if (isReverseEngineeringDefined) {
+            Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
 
-        validateDbImportConfiguration(config, injector);
+            validateDbImportConfiguration(config, injector);
 
-        try {
-            injector.getInstance(DbImportAction.class).execute(config);
-        } catch (Exception ex) {
-            Throwable th = Util.unwindException(ex);
+            try {
+                injector.getInstance(DbImportAction.class).execute(config);
+            } catch (Exception ex) {
+                Throwable th = Util.unwindException(ex);
 
-            String message = "Error importing database schema";
+                String message = "Error importing database schema";
 
-            if (th.getLocalizedMessage() != null) {
-                message += ": " + th.getLocalizedMessage();
+                if (th.getLocalizedMessage() != null) {
+                    message += ": " + th.getLocalizedMessage();
+                }
+
+                log(message, Project.MSG_ERR);
+                throw new BuildException(message, th);
             }
-
-            log(message, Project.MSG_ERR);
-            throw new BuildException(message, th);
+            finally {
+                injector.shutdown();
+            }
         }
-        finally {
-            injector.shutdown();
+        else {
+            if (dataMapFile.exists()) {
+                try {
+                    URL url = dataMapFile.toURI().toURL();
+                    URLResource resource = new URLResource(url);
+
+                    XMLDataMapLoader xmlDataMapLoader = new XMLDataMapLoader();
+                    DataMap dataMap = xmlDataMapLoader.load(resource);
+                    if (dataMap.getReverseEngineering() != null) {
+                        Resource reverseEngineeringResource = new URLResource(dataMapFile.toURL()).getRelativeResource(dataMap.getReverseEngineering().getName() + ".reverseEngineering.xml");
+
+                        DefaultReverseEngineeringLoader reverseEngineeringLoader = new DefaultReverseEngineeringLoader();
+                        ReverseEngineering reverseEngineering = reverseEngineeringLoader.load(reverseEngineeringResource.getURL().openStream());
+                        reverseEngineering.setName(dataMap.getReverseEngineering().getName());
+                        reverseEngineering.setConfigurationSource(reverseEngineeringResource);
+                        dataMap.setReverseEngineering(reverseEngineering);
+
+                        FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(dataMap.getReverseEngineering());
+                        config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.filtersConfig());
+                        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
+
+                        validateDbImportConfiguration(config, injector);
+
+                        try {
+                            injector.getInstance(DbImportAction.class).execute(config);
+                        } catch (Exception ex) {
+                            Throwable th = Util.unwindException(ex);
+
+                            String message = "Error importing database schema";
+
+                            if (th.getLocalizedMessage() != null) {
+                                message += ": " + th.getLocalizedMessage();
+                            }
+
+                            log(message, Project.MSG_ERR);
+                            throw new BuildException(message, th);
+                        }
+                        finally {
+                            injector.shutdown();
+                        }
+                    }
+                } catch (MalformedURLException e) {
+                    log(e.getMessage(), Project.MSG_ERR);
+                    throw new BuildException(e.getMessage(), e);
+                } catch (IOException e) {
+                    log(e.getMessage(), Project.MSG_ERR);
+                    throw new BuildException(e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -163,6 +213,7 @@ public class DbImporterTask extends Task {
      */
     @Deprecated
     public void setSchemaName(String schemaName) {
+        isReverseEngineeringDefined = true;
         this.setSchema(schemaName);
     }
 
@@ -170,6 +221,7 @@ public class DbImporterTask extends Task {
      * @since 4.0
      */
     public void setSchema(String schema) {
+        isReverseEngineeringDefined = true;
         filterBuilder.schema(schema);
     }
 
@@ -181,14 +233,17 @@ public class DbImporterTask extends Task {
     }
 
     public void setTablePattern(String tablePattern) {
+        isReverseEngineeringDefined = true;
         filterBuilder.includeTables(tablePattern);
     }
 
     public void setImportProcedures(boolean importProcedures) {
+        isReverseEngineeringDefined = true;
         filterBuilder.setProceduresFilters(importProcedures);
     }
 
     public void setProcedurePattern(String procedurePattern) {
+        isReverseEngineeringDefined = true;
         filterBuilder.includeProcedures(procedurePattern);
     }
 
@@ -242,6 +297,7 @@ public class DbImporterTask extends Task {
      * @since 4.0
      */
     public void setIncludeTables(String includeTables) {
+        isReverseEngineeringDefined = true;
         filterBuilder.includeTables(includeTables);
     }
 
@@ -249,6 +305,7 @@ public class DbImporterTask extends Task {
      * @since 4.0
      */
     public void setExcludeTables(String excludeTables) {
+        isReverseEngineeringDefined = true;
         filterBuilder.excludeTables(excludeTables);
     }
 
@@ -264,26 +321,32 @@ public class DbImporterTask extends Task {
     }
 
     public void addConfiguredIncludeColumn(IncludeColumn includeColumn) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addIncludeColumn(includeColumn);
     }
 
     public void addConfiguredExcludeColumn(ExcludeColumn excludeColumn) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addExcludeColumn(excludeColumn);
     }
 
     public void addConfiguredIncludeTable(IncludeTable includeTable) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addIncludeTable(includeTable);
     }
 
     public void addConfiguredExcludeTable(ExcludeTable excludeTable) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addExcludeTable(excludeTable);
     }
 
     public void addConfiguredIncludeProcedure(IncludeProcedure includeProcedure) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addIncludeProcedure(includeProcedure);
     }
 
     public void addConfiguredExcludeProcedure(ExcludeProcedure excludeProcedure) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addExcludeProcedure(excludeProcedure);
     }
 
@@ -292,10 +355,12 @@ public class DbImporterTask extends Task {
     }
 
     public void addConfiguredCatalog(Catalog catalog) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addCatalog(catalog);
     }
 
     public void addConfiguredTableType(AntNestedElement type) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addTableType(type.getName());
     }
 

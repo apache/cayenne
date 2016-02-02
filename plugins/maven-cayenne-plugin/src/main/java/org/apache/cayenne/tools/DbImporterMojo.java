@@ -18,22 +18,27 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
+import org.apache.cayenne.access.loader.filters.*;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.XMLDataMapLoader;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.apache.cayenne.dbimport.*;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.tools.dbimport.DbImportAction;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.cayenne.tools.dbimport.DbImportModule;
-import org.apache.cayenne.dbimport.Catalog;
-import org.apache.cayenne.dbimport.FiltersConfigBuilder;
-import org.apache.cayenne.dbimport.ReverseEngineering;
-import org.apache.cayenne.dbimport.Schema;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;
@@ -51,7 +56,6 @@ import javax.sql.DataSource;
  * @goal cdbimport
  */
 public class DbImporterMojo extends AbstractMojo {
-
     /**
      * DataMap XML file to use as a base for DB importing.
      * 
@@ -153,6 +157,12 @@ public class DbImporterMojo extends AbstractMojo {
      */
     private ReverseEngineering reverseEngineering = new ReverseEngineering();
 
+    private boolean isReverseEngineeringDefined = false;
+
+    public void setIsReverseEngineeringDefined(boolean isReverseEngineeringDefined) {
+        this.isReverseEngineeringDefined = isReverseEngineeringDefined;
+    }
+
     /**
      * DB schema to use for DB importing.
      *
@@ -163,6 +173,7 @@ public class DbImporterMojo extends AbstractMojo {
     private DbImportConfiguration config;
 
     private void setSchemaName(String schemaName) {
+        isReverseEngineeringDefined = true;
         getLog().warn("'schemaName' property is deprecated. Use 'schema' instead");
 
         filterBuilder.schema(schemaName);
@@ -177,6 +188,7 @@ public class DbImporterMojo extends AbstractMojo {
     private Schema schema;
 
     public void setSchema(Schema schema) {
+        isReverseEngineeringDefined = true;
         if (schema.isEmptyContainer()) {
             filterBuilder.schema(schema.getName());
         } else {
@@ -194,6 +206,7 @@ public class DbImporterMojo extends AbstractMojo {
     private String tablePattern;
 
     public void setTablePattern(String tablePattern) {
+        isReverseEngineeringDefined = true;
         filterBuilder.includeTables(tablePattern);
     }
 
@@ -222,6 +235,7 @@ public class DbImporterMojo extends AbstractMojo {
     private String procedurePattern;
 
     public void setProcedurePattern(String procedurePattern) {
+        isReverseEngineeringDefined = true;
         filterBuilder.includeProcedures(procedurePattern);
     }
 
@@ -248,23 +262,74 @@ public class DbImporterMojo extends AbstractMojo {
 
         DbImportConfiguration config = toParameters();
         config.setLogger(logger);
-        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
+        File dataMapFile = config.getDataMapFile();
 
-        validateDbImportConfiguration(config, injector);
+        if (isReverseEngineeringDefined) {
+            Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
 
-        try {
-            injector.getInstance(DbImportAction.class).execute(config);
-        } catch (Exception ex) {
-            Throwable th = Util.unwindException(ex);
+            validateDbImportConfiguration(config, injector);
 
-            String message = "Error importing database schema";
+            try {
+                injector.getInstance(DbImportAction.class).execute(config);
+            } catch (Exception ex) {
+                Throwable th = Util.unwindException(ex);
 
-            if (th.getLocalizedMessage() != null) {
-                message += ": " + th.getLocalizedMessage();
+                String message = "Error importing database schema";
+
+                if (th.getLocalizedMessage() != null) {
+                    message += ": " + th.getLocalizedMessage();
+                }
+
+                getLog().error(message);
+                throw new MojoExecutionException(message, th);
             }
+        }
+        else {
+            if (dataMapFile.exists()) {
+                try {
+                    URL url = dataMapFile.toURI().toURL();
+                    URLResource resource = new URLResource(url);
 
-            getLog().error(message);
-            throw new MojoExecutionException(message, th);
+                    XMLDataMapLoader xmlDataMapLoader = new XMLDataMapLoader();
+                    DataMap dataMap = xmlDataMapLoader.load(resource);
+                    if (dataMap.getReverseEngineering() != null) {
+                        Resource reverseEngineeringResource = new URLResource(dataMapFile.toURI().toURL()).getRelativeResource(dataMap.getReverseEngineering().getName() + ".reverseEngineering.xml");
+
+                        DefaultReverseEngineeringLoader reverseEngineeringLoader = new DefaultReverseEngineeringLoader();
+                        ReverseEngineering reverseEngineering = reverseEngineeringLoader.load(reverseEngineeringResource.getURL().openStream());
+                        reverseEngineering.setName(dataMap.getReverseEngineering().getName());
+                        reverseEngineering.setConfigurationSource(reverseEngineeringResource);
+                        dataMap.setReverseEngineering(reverseEngineering);
+
+                        FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(dataMap.getReverseEngineering());
+                        config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.filtersConfig());
+                        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
+
+                        validateDbImportConfiguration(config, injector);
+
+                        try {
+                            injector.getInstance(DbImportAction.class).execute(config);
+                        } catch (Exception ex) {
+                            Throwable th = Util.unwindException(ex);
+
+                            String message = "Error importing database schema";
+
+                            if (th.getLocalizedMessage() != null) {
+                                message += ": " + th.getLocalizedMessage();
+                            }
+
+                            getLog().error(message);
+                            throw new MojoExecutionException(message, th);
+                        }
+                    }
+                } catch (MalformedURLException e) {
+                    getLog().error(e);
+                    throw new MojoExecutionException(e.getMessage(), e);
+                } catch (IOException e) {
+                    getLog().error(e);
+                    throw new MojoExecutionException(e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -349,6 +414,7 @@ public class DbImporterMojo extends AbstractMojo {
     private String includeTables;
 
     public void setIncludeTables(String includeTables) {
+        isReverseEngineeringDefined = true;
         filterBuilder.includeTables(includeTables);
     }
 
@@ -361,10 +427,12 @@ public class DbImporterMojo extends AbstractMojo {
     private String excludeTables;
 
     public void setExcludeTables(String excludeTables) {
+        isReverseEngineeringDefined = true;
         filterBuilder.excludeTables(excludeTables);
     }
 
     public void addSchema(Schema schema) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addSchema(schema);
     }
 
@@ -377,6 +445,8 @@ public class DbImporterMojo extends AbstractMojo {
     private Catalog catalog[];
 
     public void addCatalog(Catalog catalog) {
+        isReverseEngineeringDefined = true;
+
         if (catalog != null) {
             if (catalog.isEmptyContainer()) {
                 filterBuilder.catalog(catalog.getName());
@@ -391,6 +461,9 @@ public class DbImporterMojo extends AbstractMojo {
     }
 
     public void setReverseEngineering(ReverseEngineering reverseEngineering) {
+        isReverseEngineeringDefined = true;
         this.reverseEngineering = reverseEngineering;
     }
 }
+
+
