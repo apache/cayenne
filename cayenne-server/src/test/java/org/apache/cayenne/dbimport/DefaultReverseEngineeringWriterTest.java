@@ -1,47 +1,35 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- *    or more contributor license agreements.  See the NOTICE file
- *    distributed with this work for additional information
- *    regarding copyright ownership.  The ASF licenses this file
- *    to you under the Apache License, Version 2.0 (the
- *    "License"); you may not use this file except in compliance
- *    with the License.  You may obtain a copy of the License at
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing,
- *    software distributed under the License is distributed on an
- *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *    KIND, either express or implied.  See the License for the
- *    specific language governing permissions and limitations
- *    under the License.
- */
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+
 
 package org.apache.cayenne.dbimport;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.Difference;
 import org.junit.Test;
-import org.xml.sax.SAXException;
-import sun.security.util.Resources;
-
-import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
+import java.net.URLDecoder;
 
 import static org.junit.Assert.assertTrue;
-
-/*
- * @since 4.0
- */
 
 public class DefaultReverseEngineeringWriterTest {
 
@@ -49,8 +37,6 @@ public class DefaultReverseEngineeringWriterTest {
     public void testWriteReverseEngineering() throws Exception {
         ReverseEngineeringWriter engineering = new DefaultReverseEngineeringWriter();
         ReverseEngineering reverseEngineering = new ReverseEngineering();
-        Resource resource = getResource("reverseEngineering.xml");
-        reverseEngineering.setConfigurationSource(resource);
 
         Catalog catalog1 = new Catalog("catalog1");
         Catalog catalog2 = new Catalog("catalog2");
@@ -80,10 +66,13 @@ public class DefaultReverseEngineeringWriterTest {
 
         reverseEngineering.addSchema(new Schema("schema3"));
 
-        File file = new File(resource.getURL().getPath());
-        PrintWriter printWriter = new PrintWriter(new FileWriter(file));
+        URL url = getClass().getResource("reverseEngineering.xml");
+        String decodedURL = URLDecoder.decode(url.getPath(), "UTF-8");
+        Writer printWriter = new PrintWriter(decodedURL);
 
-        assertReverseEngineering(engineering.write(reverseEngineering, printWriter));
+        reverseEngineering.setConfigurationSource(new URLResource(url));
+        Resource reverseEngineeringResource = engineering.write(reverseEngineering, printWriter);
+        assertReverseEngineering(reverseEngineeringResource);
     }
 
     public void assertReverseEngineering(Resource resource) throws Exception {
@@ -92,8 +81,8 @@ public class DefaultReverseEngineeringWriterTest {
 
         FileReader writedXML;
         FileReader expectedXML;
-        writedXML = new FileReader(url1.getPath());
-        expectedXML = new FileReader(url2.getPath());
+        writedXML = new FileReader(URLDecoder.decode(url1.getPath(), "UTF-8"));
+        expectedXML = new FileReader(URLDecoder.decode(url2.getPath(), "UTF-8"));
         Diff diff = new Diff(writedXML, expectedXML);
         assertTrue(diff.identical());
     }
