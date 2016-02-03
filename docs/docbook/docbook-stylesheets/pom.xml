@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.cayenne.docs</groupId>
         <artifactId>cayenne-docbook</artifactId>
-        <version>4.0.M3-SNAPSHOT</version>
+        <version>4.0.M3</version>
     </parent>
 
     <artifactId>docbook-stylesheets</artifactId>
