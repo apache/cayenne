@@ -9,7 +9,7 @@
     <property name="defaultClientPackage" value="test.client"/>
     <property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
     <db-entity name="ARRAY_TEST">
-        <db-attribute name="DOUBLE_ARRAY" type="VARBINARY" length="2048"/>
+        <db-attribute name="DOUBLE_ARRAY" type="VARBINARY" length="1024"/>
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
     </db-entity>
     <obj-entity name="ArrayTestEntity" className="org.apache.cayenne.testdo.array_type.ArrayTestEntity" dbEntityName="ARRAY_TEST">
