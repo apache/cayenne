@@ -73,6 +73,7 @@
 		<dependencySet>
 			<outputDirectory>lib</outputDirectory>
 			<includes>
+				<include>org.apache.cayenne:cayenne-project</include>
 				<include>org.apache.cayenne:cayenne-server</include>
 				<include>org.apache.cayenne:cayenne-client</include>
 				<include>org.apache.cayenne:cayenne-tools</include>
