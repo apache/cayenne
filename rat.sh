@@ -64,6 +64,7 @@ java -jar $RAT -d $DIR \
 	-e '*.css' \
 	-e '*.jceks' \
 	-e 'plain.txt' \
-	-e 'derby.log'
+	-e 'derby.log' \
+	-e '*.iml'
 
 
