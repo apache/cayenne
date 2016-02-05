@@ -21,16 +21,15 @@ package org.apache.cayenne.cache;
 import java.util.List;
 import java.util.Objects;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
 
 public class EhCacheQueryCache implements QueryCache {
 
