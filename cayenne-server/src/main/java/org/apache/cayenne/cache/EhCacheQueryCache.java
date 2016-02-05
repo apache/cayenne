@@ -19,6 +19,7 @@
 package org.apache.cayenne.cache;
 
 import java.util.List;
+import java.util.Objects;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -142,19 +143,19 @@ public class EhCacheQueryCache implements QueryCache {
     /**
      * @since 4.0
      */
-    protected String cacheName(String key, String... cacheGroups) {
-        if (cacheGroups != null && cacheGroups.length > 0) {
+	protected String cacheName(String key, String... cacheGroups) {
+		if (cacheGroups != null && cacheGroups.length > 0) {
 
-            if (cacheGroups.length > 1) {
-                logger.warn("multiple cache groups per key '" + key + "', ignoring all but the first one: "
-                        + cacheGroups[0]);
-            }
+			if (cacheGroups.length > 1) {
+				logger.warn("multiple cache groups per key '" + key + "', ignoring all but the first one: "
+						+ cacheGroups[0]);
+			}
 
-            return cacheGroups[0];
-        }
+			return Objects.requireNonNull(cacheGroups[0], "Null cache group");
+		}
 
-        return DEFAULT_CACHE_NAME;
-    }
+		return DEFAULT_CACHE_NAME;
+	}
 
     @SuppressWarnings("rawtypes")
     public void put(QueryMetadata metadata, List results) {
