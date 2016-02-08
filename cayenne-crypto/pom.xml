@@ -14,7 +14,7 @@
 	<parent>
 		<artifactId>cayenne-parent</artifactId>
 		<groupId>org.apache.cayenne</groupId>
-		<version>4.0.M3-SNAPSHOT</version>
+		<version>4.0.M4-SNAPSHOT</version>
 	</parent>
 	<artifactId>cayenne-crypto</artifactId>
 	<name>Cayenne Cryptography Extensions</name>
