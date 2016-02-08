@@ -64,7 +64,6 @@
 		<module>plugins</module>
 		<module>tutorials</module>
 		<module>docs</module>
-		<module>assembly</module>
     </modules>
 	<issueManagement>
 		<system>jira</system>
@@ -1457,6 +1456,7 @@
 			</activation>
 			<modules>
 				<module>cayenne-java8</module>
+                <module>assembly</module>
 			</modules>
 		</profile>
 	</profiles>
