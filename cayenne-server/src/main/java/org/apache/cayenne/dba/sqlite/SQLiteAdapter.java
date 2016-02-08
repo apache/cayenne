@@ -19,6 +19,7 @@
 package org.apache.cayenne.dba.sqlite;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -102,8 +103,8 @@ public class SQLiteAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale) throws SQLException, Exception {
-        super.bindParameter(statement, object, pos, mapNTypes(sqlType), scale);
+    public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws SQLException, Exception {
+        super.bindParameter(statement, binding);
     }
 
     private int mapNTypes(int sqlType) {

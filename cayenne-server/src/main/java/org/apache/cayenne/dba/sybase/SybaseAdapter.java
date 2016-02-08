@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.sybase;
 
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
@@ -109,22 +110,22 @@ public class SybaseAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int precision)
+    public void bindParameter(PreparedStatement statement, ParameterBinding binding)
             throws SQLException, Exception {
 
         // Sybase driver doesn't like CLOBs and BLOBs as parameters
-        if (object == null) {
-            if (sqlType == Types.CLOB) {
-                sqlType = Types.VARCHAR;
-            } else if (sqlType == Types.BLOB) {
-                sqlType = Types.VARBINARY;
+        if (binding.getValue() == null) {
+            if (binding.getAttribute().getType() == Types.CLOB) {
+                binding.getAttribute().setType(Types.VARCHAR);
+            } else if (binding.getAttribute().getType() == Types.BLOB) {
+                binding.getAttribute().setType(Types.VARBINARY);
             }
         }
 
-        if (object == null && sqlType == 0) {
-            statement.setNull(pos, Types.VARCHAR);
+        if (binding.getValue() == null && binding.getAttribute().getType() == 0) {
+            statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
         } else {
-            super.bindParameter(statement, object, pos, sqlType, precision);
+            super.bindParameter(statement, binding);
         }
     }
 

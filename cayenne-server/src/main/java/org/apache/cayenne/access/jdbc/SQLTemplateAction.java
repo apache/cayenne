@@ -19,19 +19,6 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
@@ -50,6 +37,9 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.collections.IteratorUtils;
+
+import java.sql.*;
+import java.util.*;
 
 /**
  * Implements a strategy for execution of SQLTemplates.
@@ -349,8 +339,7 @@ public class SQLTemplateAction implements SQLAction {
 		if (bindings.length > 0) {
 			int len = bindings.length;
 			for (int i = 0; i < len; i++) {
-				dataNode.getAdapter().bindParameter(preparedStatement, bindings[i].getValue(), i + 1,
-						bindings[i].getJdbcType(), bindings[i].getScale());
+				dataNode.getAdapter().bindParameter(preparedStatement, bindings[i], i + 1);
 			}
 		}
 

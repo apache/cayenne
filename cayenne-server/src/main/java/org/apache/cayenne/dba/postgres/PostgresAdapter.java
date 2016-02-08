@@ -21,6 +21,7 @@ package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
@@ -130,9 +131,10 @@ public class PostgresAdapter extends JdbcAdapter {
 	}
 
 	@Override
-	public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale)
+	public void bindParameter(PreparedStatement statement, ParameterBinding binding)
 			throws SQLException, Exception {
-		super.bindParameter(statement, object, pos, mapNTypes(sqlType), scale);
+		binding.setType(mapNTypes(binding.getType()));
+		super.bindParameter(statement, binding);
 	}
 
 	private int mapNTypes(int sqlType) {

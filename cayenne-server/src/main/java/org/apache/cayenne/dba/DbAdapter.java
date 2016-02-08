@@ -19,6 +19,9 @@
 package org.apache.cayenne.dba;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.jdbc.SQLParameterBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.ProcedureParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
@@ -33,6 +36,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -167,7 +171,19 @@ public interface DbAdapter {
 	/**
 	 * Binds an object value to PreparedStatement's numbered parameter.
 	 */
-	void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale)
+	void bindParameter(PreparedStatement statement, ParameterBinding parameterBinding)
+			throws SQLException, Exception;
+
+	/**
+	 * Binds an object value to PreparedStatement's numbered parameter.
+	 */
+	void bindParameter(PreparedStatement statement, SQLParameterBinding parameterBinding, int position)
+			throws SQLException, Exception;
+
+	/**
+	 * Binds an object value to CallableStatement's numbered parameter.
+	 */
+	void bindParameter(CallableStatement statement, ProcedureParameterBinding binding)
 			throws SQLException, Exception;
 
 	/**
