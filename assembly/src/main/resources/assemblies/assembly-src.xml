@@ -31,7 +31,7 @@
 				<exclude>eclipse/**</exclude>
 				<exclude>**/target/**</exclude>
 				<exclude>**/derby.log</exclude>
-                <exclude>**/.idea</exclude>
+                <exclude>.idea/**</exclude>
                 <exclude>**/*.iml</exclude>
                 <exclude>**/.classpath</exclude>
                 <exclude>**/.project</exclude>
