@@ -150,7 +150,8 @@ public abstract class QueryAssembler {
 	 *            DbAttribute being processed.
 	 */
 	public void addToParamList(DbAttribute dbAttr, Object anObject) {
-		String typeName = TypesMapping.getJavaBySqlType(dbAttr.getType());
+		String typeName = TypesMapping.SQL_NULL;
+		if (dbAttr != null) typeName = TypesMapping.getJavaBySqlType(dbAttr.getType());
 		ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
 		
 		ParameterBinding binding = new ParameterBinding(dbAttr, extendedType);
