@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import org.apache.cayenne.util.GenericQueryResult;
+
 import java.util.List;
 
 /**
@@ -25,54 +27,20 @@ import java.util.List;
  *
  * @since 4.0
  */
-public class ProcedureResult<T> {
+public class ProcedureResult<T> extends GenericQueryResult<T> {
 
-    protected List<QueryResult> results;
-    protected Class<T> resultClass;
-
-    public ProcedureResult(List<QueryResult> results) {
-        this.results = results;
+    public ProcedureResult(List<QueryResultItem> resultItems) {
+        super(resultItems);
     }
 
-    public ProcedureResult(List<QueryResult> results, Class<T> resultClass) {
-        this(results);
-        this.resultClass = resultClass;
-    }
-
-    public List<QueryResult> getResults() {
-        return results;
-    }
-
-    /**
-     * Returns first list found in the procedure execution result.
-     */
-    public List<T> getSelectResult() {
-        for (QueryResult result : results) {
-            if (result.isSelectResult()) {
-                return (List<T>) result.getSelectResult();
-            }
-        }
-
-        throw new CayenneRuntimeException("This result is not a select result.");
-    }
-
-    /**
-     * Returns first batch update count found in the procedure execution result.
-     */
-    public int[] getUpdateResult() {
-        for (QueryResult result : results) {
-            if (result.isBatchUpdate()) {
-                return result.getBatchUpdateResult();
-            }
-        }
-
-        throw new CayenneRuntimeException("This result is not an update result.");
+    public ProcedureResult(List<QueryResultItem> resultItems, Class<T> resultClass) {
+        super(resultItems, resultClass);
     }
 
     /**
      * Returns procedure OUT parameter by its name defined in the mapping file.
      */
-    public Object getParam(String paramName) {
-        return ((DataRow) getSelectResult().get(0)).get(paramName);
+    public Object getOutParam(String paramName) {
+        return ((DataRow) firstList().get(0)).get(paramName);
     }
 }

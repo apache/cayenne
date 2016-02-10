@@ -117,7 +117,7 @@ public class ProcedureCallIT extends ServerCase {
                 ProcedureCall.query(SELECT_STORED_PROCEDURE)
                 .param("aName", "An Artist")
                 .param("paintingPrice", 3000)
-        ).getSelectResult();
+        ).firstList();
 
         // check the results
         assertNotNull("Null result from StoredProcedure.", artists);
@@ -147,7 +147,7 @@ public class ProcedureCallIT extends ServerCase {
                 .param("aName", "An Artist")
                 .param("paintingPrice", 3000)
                 .limit(2)
-        ).getSelectResult();
+        ).firstList();
 
         assertEquals(2, artists.size());
     }
@@ -168,7 +168,7 @@ public class ProcedureCallIT extends ServerCase {
                 .param("aName", "An Artist")
                 .param("paintingPrice", 3000)
                 .offset(2)
-        ).getSelectResult();
+        ).firstList();
 
         assertEquals(1, artists.size());
     }
@@ -186,12 +186,12 @@ public class ProcedureCallIT extends ServerCase {
                 ProcedureCall.query(SELECT_STORED_PROCEDURE)
                 .param("aName", "An Artist")
                 .capsStrategy(CapsStrategy.LOWER)
-        ).getSelectResult();
+        ).firstList();
 
         List<DataRow> artists1 = runProcedureSelect(ProcedureCall.query(SELECT_STORED_PROCEDURE)
                 .param("aName", "An Artist")
                 .capsStrategy(CapsStrategy.UPPER)
-        ).getSelectResult();
+        ).firstList();
 
         assertTrue(artists.get(0).containsKey("date_of_birth"));
         assertFalse(artists.get(0).containsKey("DATE_OF_BIRTH"));
@@ -212,7 +212,7 @@ public class ProcedureCallIT extends ServerCase {
                 .param("in_param", 20)
         );
 
-        Number price = (Number) result.getParam("out_param");
+        Number price = (Number) result.getOutParam("out_param");
         assertEquals(40, price.intValue());
     }
 
@@ -231,7 +231,7 @@ public class ProcedureCallIT extends ServerCase {
 
         List<Artist> artists = runProcedureSelect(ProcedureCall.query(SELECT_STORED_PROCEDURE, Artist.class)
                 .param("aName", "An Artist")
-        ).getSelectResult();
+        ).firstList();
 
         // check the results
         assertNotNull("Null result from StoredProcedure.", artists);
@@ -266,7 +266,7 @@ public class ProcedureCallIT extends ServerCase {
                 .param("aName", "An Artist")
                 .param("paintingPrice", 3000)
                 .resultDescriptor(columns)
-        ).getSelectResult();
+        ).firstList();
 
         // check the results
         assertNotNull("Null result from StoredProcedure.", rows);

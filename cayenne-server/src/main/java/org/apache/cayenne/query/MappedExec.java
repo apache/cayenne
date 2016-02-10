@@ -53,7 +53,7 @@ public class MappedExec extends AbstractMappedQuery {
     }
 
 
-    public List<QueryResult> execute(ObjectContext context) {
+    public QueryResult execute(ObjectContext context) {
         // TODO: switch ObjectContext to QueryResult instead of QueryResponse
         // and create its own 'exec' method
         QueryResponse response = context.performGenericQuery(this);

@@ -141,7 +141,7 @@ public class SQLExec extends IndirectQuery {
     }
 
     /**
-     * Returns a potentially immmutable map of named parameters that will be
+     * Returns a potentially immutable map of named parameters that will be
      * bound to SQL.
      */
     public Map<String, Object> getParams() {
@@ -149,14 +149,14 @@ public class SQLExec extends IndirectQuery {
     }
 
     /**
-     * Returns a potentially immmutable list of positional parameters that will
+     * Returns a potentially immutable list of positional parameters that will
      * be bound to SQL.
      */
     public List<Object> getPositionalParams() {
         return positionalParams != null ? positionalParams : Collections.emptyList();
     }
 
-    public List<QueryResult> execute(ObjectContext context) {
+    public QueryResult execute(ObjectContext context) {
 
         // TODO: switch ObjectContext to QueryResult instead of QueryResponse
         // and create its own 'exec' method
@@ -178,34 +178,24 @@ public class SQLExec extends IndirectQuery {
     public int update(ObjectContext context) {
 
         // TODO: create a corresponding method in ObjectContext
-        List<QueryResult> results = execute(context);
+        QueryResult results = execute(context);
 
         if (results.size() != 1) {
             throw new CayenneRuntimeException("Expected a single update result. Got a total of " + results.size());
         }
 
-        QueryResult result = results.get(0);
-        if (result.isSelectResult()) {
-            throw new CayenneRuntimeException("Expected a single update result. Got a select instead.");
-        }
-
-        return result.getUpdateResult();
+        return results.firstUpdateCount();
     }
 
     public int[] updateBatch(ObjectContext context) {
         // TODO: create a corresponding method in ObjectContext
-        List<QueryResult> results = execute(context);
+        QueryResult results = execute(context);
 
         if (results.size() != 1) {
             throw new CayenneRuntimeException("Expected a single update result. Got a total of " + results.size());
         }
 
-        QueryResult result = results.get(0);
-        if (result.isSelectResult()) {
-            throw new CayenneRuntimeException("Expected a single update result. Got a select instead.");
-        }
-
-        return result.getBatchUpdateResult();
+        return results.firstBatchUpdateCount();
     }
 
     @Override

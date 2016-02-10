@@ -25,7 +25,7 @@ import org.apache.cayenne.ProcedureResult;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.util.QueryResultBuilder;
+import org.apache.cayenne.util.ProcedureResultBuilder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -134,7 +134,7 @@ public class ProcedureCall<T> extends IndirectQuery {
     public ProcedureResult<T> call(ObjectContext context) {
         QueryResponse response = context.performGenericQuery(this);
 
-        QueryResultBuilder builder = QueryResultBuilder.builder(response.size());
+        ProcedureResultBuilder<T> builder = ProcedureResultBuilder.builder(response.size(), resultClass);
 
         for (response.reset(); response.next(); ) {
 
@@ -145,15 +145,19 @@ public class ProcedureCall<T> extends IndirectQuery {
             }
         }
 
-        return new ProcedureResult<>(builder.build(), resultClass);
+        return builder.build();
     }
 
     public List<T> select(ObjectContext context) {
-        return call(context).getSelectResult();
+        return call(context).firstList();
     }
 
-    public int[] update(ObjectContext context) {
-        return call(context).getUpdateResult();
+    public int[] batchUpdate(ObjectContext context) {
+        return call(context).firstBatchUpdateCount();
+    }
+
+    public int update(ObjectContext context) {
+        return call(context).firstUpdateCount();
     }
 
     @Override
