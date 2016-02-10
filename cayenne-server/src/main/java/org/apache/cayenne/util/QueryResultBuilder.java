@@ -24,13 +24,14 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.QueryResultItem;
 
 /**
  * @since 4.0
  */
 public class QueryResultBuilder {
 
-    private List<QueryResult> queryResult;
+    protected List<QueryResultItem> queryResult;
 
     public static QueryResultBuilder builder() {
         return new QueryResultBuilder(3);
@@ -40,25 +41,25 @@ public class QueryResultBuilder {
         return new QueryResultBuilder(expectedSize);
     }
 
-    public static List<QueryResult> empty() {
-        return Collections.emptyList();
+    public static QueryResult empty() {
+        return new GenericQueryResult(Collections.<QueryResultItem>emptyList());
     }
 
-    public static List<QueryResult> singleSelect(List<?> selectResult) {
-        return Collections.<QueryResult>singletonList(new SelectResult(selectResult));
+    public static QueryResult singleSelect(List<?> selectResult) {
+        return new GenericQueryResult(Collections.<QueryResultItem>singletonList(new SelectResult<>(selectResult)));
     }
 
-    public static List<QueryResult> singleObjectSelect(Object selectObject) {
+    public static QueryResult singleObjectSelect(Object selectObject) {
         List<Object> result = Collections.singletonList(selectObject);
-        return Collections.<QueryResult>singletonList(new SelectResult(result));
+        return new GenericQueryResult(Collections.<QueryResultItem>singletonList(new SelectResult<>(result)));
     }
 
     QueryResultBuilder(int expectedSize) {
-        this.queryResult = new ArrayList<QueryResult>(expectedSize);
+        this.queryResult = new ArrayList<>(expectedSize);
     }
 
     public QueryResultBuilder addSelectResult(List<?> result) {
-        queryResult.add(new SelectResult(result));
+        queryResult.add(new SelectResult<>(result));
         return this;
     }
 
@@ -67,15 +68,15 @@ public class QueryResultBuilder {
         return this;
     }
 
-    public List<QueryResult> build() {
-        return queryResult;
+    public QueryResult build() {
+        return new GenericQueryResult(queryResult);
     }
 
-    private static class SelectResult implements QueryResult {
+    private static class SelectResult<T> implements QueryResultItem<T> {
 
-        private List<?> result;
+        private List<T> result;
 
-        SelectResult(List<?> result) {
+        SelectResult(List<T> result) {
             this.result = result;
         }
 
@@ -90,7 +91,7 @@ public class QueryResultBuilder {
         }
 
         @Override
-        public List<?> getSelectResult() {
+        public List<T> getSelectResult() {
             return result;
         }
 
@@ -105,7 +106,7 @@ public class QueryResultBuilder {
         }
     }
 
-    private static class BatchUpdateResult implements QueryResult {
+    private static class BatchUpdateResult implements QueryResultItem {
 
         private int[] result;
 
@@ -145,6 +146,5 @@ public class QueryResultBuilder {
         public int[] getBatchUpdateResult() {
             return result;
         }
-
     }
 }
