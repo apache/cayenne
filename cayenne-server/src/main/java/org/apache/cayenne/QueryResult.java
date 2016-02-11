@@ -16,40 +16,41 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne;
 
-package org.apache.cayenne.exp;
+import java.util.List;
 
-import junit.framework.Assert;
+/**
+ * Represents a single item in a multipart query execution. Can be either an
+ * update count or a list of objects.
+ *
+ * @since 4.0
+ */
+public interface QueryResult {
 
-import org.apache.cayenne.TranslationCase;
+    /**
+     * Returns true if encapsulated result is a select result.
+     */
+    boolean isSelectResult();
 
-public class TstExpressionCase extends TranslationCase {    
-    protected int totalNodes;
-    protected int totalLeaves;
-    
-    public TstExpressionCase(String rootEntity, Expression cayenneExp, String sqlExp, int totalNodes, int totalLeaves) {
-        super(rootEntity, cayenneExp, sqlExp);
-        this.totalNodes = totalNodes;
-        this.totalLeaves = totalLeaves;
-    }
-    
-    
-    public int getTotalNodes() {
-        return totalNodes;
-    }
-    
-    
-    public int getTotalLeaves() {
-        return totalLeaves;
-    }
-    
-    
-    public Expression getCayenneExp() {
-        return (Expression)tstObject;
-    }
-    
-    public void assertParsedWell(int totalNodes, int totalLeaves) {
-        Assert.assertEquals(this.totalNodes, totalNodes);
-        Assert.assertEquals(this.totalLeaves, totalLeaves);
-    }
+    /**
+     * Returns true if encapsulated result is a batch update result.
+     */
+    boolean isBatchUpdate();
+
+    /**
+     * Returns a list of selected objects. Throws unless
+     * {@link #isSelectResult()} returns true.
+     */
+    List<?> getSelectResult();
+
+    /**
+     * Returns an update count.
+     */
+    int getUpdateResult();
+
+    /**
+     * Returns batch update result in a form of array of individual update counts.
+     */
+    int[] getBatchUpdateResult();
 }

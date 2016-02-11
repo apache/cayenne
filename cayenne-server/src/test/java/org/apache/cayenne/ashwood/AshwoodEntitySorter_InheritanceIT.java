@@ -18,24 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.ashwood;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.PeopleProjectCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+
 @UseServerRuntime(CayenneProjects.PEOPLE_PROJECT)
-public class AshwoodEntitySorter_InheritanceIT extends ServerCase {
+public class AshwoodEntitySorter_InheritanceIT extends PeopleProjectCase {
 
 	@Inject
 	protected ObjectContext context;

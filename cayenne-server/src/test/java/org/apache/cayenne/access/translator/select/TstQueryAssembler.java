@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class TstQueryAssembler extends QueryAssembler {
 
 	protected List<DbRelationship> dbRels;
 
-	public TstQueryAssembler(Query q, DbAdapter adapter, EntityResolver resolver) throws SQLException {
+	public TstQueryAssembler(Query q, DbAdapter adapter, EntityResolver resolver) {
 		super(q, adapter, resolver);
 		dbRels = new ArrayList<DbRelationship>();
 	}

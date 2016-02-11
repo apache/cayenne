@@ -54,7 +54,7 @@ public class TstTraversalHandler implements TraversalHandler {
 
 	}
 
-	public void assertConsistency() throws Exception {
+	public void assertConsistency() {
 		Assert.assertEquals(nodesStarted, nodes);
 	}
 

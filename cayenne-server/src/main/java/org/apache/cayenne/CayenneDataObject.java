@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -257,6 +258,96 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 		if (setReverse) {
 			setReverseRelationship(relName, value);
 		}
+	}
+
+	/**
+	 * Sets the relationships to the specified <code>DataObject</code> objects.
+	 * 
+	 * <p>
+	 * New relationships will be created with
+	 * {@link #addToManyTarget(String, org.apache.cayenne.DataObject, boolean)},
+	 * already established relationships stay untouched. Missing relationships
+	 * will be removed with
+	 * {@link #removeToManyTarget(String, org.apache.cayenne.DataObject, boolean)}
+	 * and returnd as List. You may delete them manually.
+	 * </p>
+	 * 
+	 * <p>
+	 * Notice: Moving an object relationship to another object, is still needing
+	 * an manually "unregister" from the first object by
+	 * {@link #removeToManyTarget(String, org.apache.cayenne.DataObject, boolean)}
+	 * </p>
+	 * 
+	 * @param relName
+	 *            name of the relation
+	 * @param values
+	 *            <code>DataObject</code> objects of this
+	 *            <code>Collection</code> are set to the object. No changes will
+	 *            be made to the the <code>Collection</code>, a copy is used. It
+	 *            is safe to pass a persisted <code>Collection</code> of another
+	 *            object.
+	 * @param setReverse
+	 *            update reverse relationships
+	 * @return <code>List&lt;? extends DataObject&gt;</code> of unrelated
+	 *         DataObjects. If no relationship was removed an empty List is
+	 *         returned.
+	 * @throws IllegalArgumentException
+	 *             if no relationship could be read by relName, or if the passed
+	 *             <code>Collection</code> is null. To clear all relationships
+	 *             use an empty <code>Collection</code>
+	 * @throws UnsupportedOperationException
+	 *             if the relation Collection Type is neither
+	 *             <code>java.util.Collection</code> nor
+	 *             <code>java.util.Map</code>
+	 * @since 4.0
+	 */
+	@SuppressWarnings("unchecked")
+	public List<? extends DataObject> setToManyTarget(String relName, Collection<? extends DataObject> values,
+			boolean setReverse) {
+		if (values == null) {
+			throw new IllegalArgumentException("values Collection is null. To clear all relationships use an empty Collection");
+		}
+
+		Object property = readProperty(relName);
+		if(property == null) {
+			throw new IllegalArgumentException("unknown relName " + relName);
+		}
+		Collection<DataObject> old = null;
+		if (property instanceof Map) {
+			old = ((Map) property).values();
+		} else if (property instanceof Collection) {
+			old = (Collection) property;
+		} else {
+			throw new UnsupportedOperationException("setToManyTarget operates only with Map or Collection types");
+		}
+
+		// operate on a copy of passed collection
+		values = new ArrayList<DataObject>(values);
+
+		List<DataObject> removedObjects = new ArrayList<DataObject>();
+
+		// remove all relationships, which are missing in passed collection
+		Object[] oldValues = old.toArray();
+		for (Object obj : oldValues) {
+			if (!values.contains(obj)) {
+				DataObject obj2 = (DataObject) obj;
+				removeToManyTarget(relName, obj2, setReverse);
+				// collect objects whose relationship was removed
+				removedObjects.add((DataObject) obj2);
+			}
+		}
+
+		// dont add elements which are already present
+		for (Object obj : old) {
+			values.remove(obj);
+		}
+
+		// add new elements
+		for (DataObject obj : values) {
+			addToManyTarget(relName, obj, setReverse);
+		}
+
+		return removedObjects;
 	}
 
 	public void setToOneTarget(String relationshipName, DataObject value, boolean setReverse) {

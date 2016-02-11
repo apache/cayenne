@@ -267,6 +267,76 @@ List&lt;DataRow> rows = ctxt.performQuery(query);</programlisting></para>
         </section>
         <section xml:id="query-result-caching">
             <title>Query Result Caching</title>
+            <para>Cayenne supports mostly transparent caching of the query results. There are two
+                levels of the cache: local (i.e. results cached by the ObjectContext) and shared
+                (i.e. the results cached at the stack level and shared between all contexts). Local
+                cache is much faster then the shared one, but is limited to a single context. It is
+                often used with a shared read-only ObjectContext. </para>
+            <para>To take advantage of query result caching, the first step is to mark your queries
+                appropriately. Here is an example for ObjectSelect query. Other types of queries
+                have similar
+                API:<programlisting>ObjectSelect.query(Artist.class).localCache("artists");</programlisting></para>
+            <para>This tells Cayenne that the query created here would like to use local cache of
+                the context it is executed against. A vararg parameter to <code>localCache()</code>
+                (or <code>sharedCache()</code>) method contains so called "cache groups". Those are
+                arbitrary names that allow to categorize queries for the purpose of setting cache
+                policies or explicit invalidation of the cache. More on that below.</para>
+            <para>The above API is enough for the caching to work, but by default your cache is an
+                unmanaged LRU map. You can't control its size, expiration policies, etc. For the
+                managed cache, you will need to explicitly use one of the more advanced cache
+                providers. One such provider available in Cayenne is a provider for <link
+                    xlink:href="http://www.ehcache.org/">EhCache</link>. It can be enabled on
+                ServerRuntime startup in a custom
+                Module:<programlisting>ServerRuntimeBuilder
+  .builder()
+  .addModule((binder) -> 
+     binder.bind(QueryCache.class).to(EhCacheQueryCache.class)
+  )
+  .build();</programlisting></para>
+            <para>By default EhCache reads a file called "ehcache.xml" located on classpath. You can
+                put your cache configuration in that file.
+                E.g.:<programlisting>&lt;ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="false"
+	monitoring="off" dynamicConfig="false">
+
+	&lt;defaultCache maxEntriesLocalHeap="1000" eternal="false"
+		overflowToDisk="false" timeToIdleSeconds="3600" timeToLiveSeconds="3600">
+	&lt;/defaultCache>
+	
+	&lt;cache name="artists" timeToLiveSeconds="20" maxEntriesLocalHeap="100" />
+&lt;/ehcache></programlisting></para>
+            <para>The example shows how to configure default cache settings ("defaultCache") as well
+                as settings for a named cache group ("artists"). For many other things you can put
+                in "ehcache.xml" refer to EhCache docs.</para>
+            <para>Often "passive" cache expiration policies similar to shown above are not
+                sufficient, and the users want real-time cache invalidation when the data changes.
+                So in addition to those policies, the app can invalidate individual cache groups
+                explicitly with
+                <code>RefreshQuery</code>:<programlisting>RefreshQuery refresh = new RefreshQuery("artist");
+context.performGenericQuery(refresh);</programlisting></para>
+            <para>The above can be used e.g. to build UI for manual cache invalidation. It is also
+                possible to automate cache refresh when certain entities are committed. This
+                requires including <code>cayenne-lifecycle.jar</code> deoendency. From that library
+                you will need two things: <code>@CacheGroups</code> annotation to mark entities that
+                generate cache invalidation events and  <code>CacheInvalidationFilter</code> that
+                catches the updates to the annotated objects and generates appropriate invalidation
+                events:<programlisting>// configure filter on startup
+ServerRuntimeBuilder
+  .builder()
+  .addModule((binder) -> 
+     binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST).add(CacheInvalidationFilter.class)
+  )
+  .build();</programlisting></para>
+            <para>Now you can associate entities with cache groups, so that commits to those
+                entities would atomatically invalidate the
+                groups:<programlisting>@CacheGroups("artists")
+public class Artist extends _Artist {
+}</programlisting></para>
+            <para>Finally you may cluster cache group events. They are very small and can be
+                efficiently sent over the wire to other JVMs running Cayenne. An example of Cayenne
+                setup with event clustering  is <link
+                    xlink:href="https://github.com/andrus/wowodc13/tree/master/services/src/main/java/demo/services/cayenne"
+                    >available on GitHub</link>.</para>
         </section>
     </section>
     <section xml:id="turning-off-synchronization-of-objectcontexts">

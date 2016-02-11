@@ -19,15 +19,17 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.UpdateBatchQuery;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A translator for UpdateBatchQueries that produces parameterized SQL.
@@ -92,12 +94,18 @@ public class UpdateBatchTranslator extends DefaultBatchTranslator {
 
         for (int i = 0; i < ul; i++) {
             DbAttribute a = updatedDbAttributes.get(i);
-            bindings[i] = new ParameterBinding(a);
+
+            String typeName = TypesMapping.getJavaBySqlType(a.getType());
+            ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
+            bindings[i] = new ParameterBinding(a, extendedType);
         }
 
         for (int i = 0; i < ql; i++) {
             DbAttribute a = qualifierAttributes.get(i);
-            bindings[ul + i] = new ParameterBinding(a);
+
+            String typeName = TypesMapping.getJavaBySqlType(a.getType());
+            ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
+            bindings[ul + i] = new ParameterBinding(a, extendedType);
         }
 
         return bindings;

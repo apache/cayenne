@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator;
 
+import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
@@ -32,10 +33,12 @@ public class ParameterBinding {
 	private DbAttribute attribute;
 	private Object value;
 	private int statementPosition;
+	private ExtendedType extendedType;
 
-	public ParameterBinding(DbAttribute attribute) {
+	public ParameterBinding(DbAttribute attribute, ExtendedType extendedType) {
 		this.attribute = attribute;
 		this.statementPosition = EXCLUDED_POSITION;
+		this.extendedType = extendedType;
 	}
 
 	public DbAttribute getAttribute() {
@@ -60,6 +63,10 @@ public class ParameterBinding {
 
 	public boolean isExcluded() {
 		return statementPosition == EXCLUDED_POSITION;
+	}
+
+	public ExtendedType getExtendedType() {
+		return extendedType;
 	}
 
 	/**
