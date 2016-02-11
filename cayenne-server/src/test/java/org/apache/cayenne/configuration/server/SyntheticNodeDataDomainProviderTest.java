@@ -16,22 +16,27 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.configuration.server;
 
-package org.apache.cayenne.exp;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.cayenne.access.DataDomain;
+import org.junit.Test;
 
-public abstract class TstExpressionSuite {
-    private List cases = new ArrayList();
-    
-    public TstExpressionCase[] cases() {
-        TstExpressionCase[] exps = new TstExpressionCase[cases.size()];
-        cases.toArray(exps);
-        return exps;
-    }
-    
-    public void addCase(TstExpressionCase expCase) {
-        cases.add(expCase);
-    }
+public class SyntheticNodeDataDomainProviderTest {
+
+	@Test
+	public void testCreateSyntheticDataNodeName() {
+
+		DataDomain ddMock = mock(DataDomain.class);
+
+		SyntheticNodeDataDomainProvider p = new SyntheticNodeDataDomainProvider();
+		assertEquals("cayenne", p.createSyntheticDataNodeName(ddMock));
+
+		when(ddMock.getName()).thenReturn("n");
+		assertEquals("n", p.createSyntheticDataNodeName(ddMock));
+	}
+
 }

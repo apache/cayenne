@@ -50,10 +50,13 @@ import javax.swing.tree.TreePath;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
 
 public class ObjRelationshipInfo extends CayenneController implements TreeSelectionListener {
@@ -72,7 +75,6 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     protected List<ObjEntity> objectTargets;
     protected List<String> targetCollections;
     protected List<String> mapKeys;
-    protected String relationshipName;
     protected String targetCollection;
     protected String mapKey;
     protected ObjRelationshipInfoView view;
@@ -95,13 +97,10 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         super(mediator);
         this.view = new ObjRelationshipInfoView(mediator);
         this.mediator = mediator;
-        ObjEntity target = getObjectTarget();
         getPathBrowser().addTreeSelectionListener(this);
-        setObjectTarget(target);
         view.sourceEntityLabel.setText(relationship.getSourceEntity().getName());
         this.relationship = relationship;
-        this.relationshipName = relationship.getName();
-        view.relationshipName.setText(relationshipName);
+        this.view.getRelationshipName().setText(relationship.getName());
         this.mapKey = relationship.getMapKey();
         this.targetCollection = relationship.getCollectionType();
         if (targetCollection == null) {
@@ -111,6 +110,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         this.objectTarget = (ObjEntity) relationship.getTargetEntity();
         if (objectTarget != null) {
             updateTargetCombo(objectTarget.getDbEntity());
+            view.targetCombo.setSelectedItem(objectTarget.getName());
         }
 
         // validate -
@@ -177,6 +177,20 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
 
             public void actionPerformed(ActionEvent e) {
                 setMapKey();
+            }
+        });
+        view.getTargetCombo().addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    Object targetName = e.getItem();
+                    for (ObjEntity target : objectTargets) {
+                        if (Objects.equals(target.getName(), targetName)) {
+                            setObjectTarget(target);
+                            return;
+                        }
+                    }
+                }
             }
         });
     }
@@ -410,7 +424,6 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
             relPath.add((DbRelationship) selectedPath.getPathComponent(i));
         }
         setDbRelationships(relPath);
-        setObjectTarget(objEntities.size() == 0 ? null : objEntities.iterator().next());
 
         updateCollectionChoosers();
     }
@@ -418,7 +431,6 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     public void setObjectTarget(ObjEntity objectTarget) {
         if (this.objectTarget != objectTarget) {
             this.objectTarget = objectTarget;
-            view.targetCombo.setSelectedItem(objectTarget);
 
             // init available map keys
             initMapKeys();
@@ -522,12 +534,11 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     }
 
     public String getRelationshipName() {
-        return relationshipName;
+        return view.getRelationshipName().getText();
     }
 
     public void setRelationshipName(String relationshipName) {
-        view.relationshipName.setText(relationshipName);
-        this.relationshipName = relationshipName;
+        view.getRelationshipName().setText(relationshipName);
     }
 
     /**
@@ -563,6 +574,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
 
         boolean oldToMany = relationship.isToMany();
 
+        String relationshipName = getRelationshipName();
         if (!Util.nullSafeEquals(relationship.getName(), relationshipName)) {
             hasChanges = true;
             relationship.setName(relationshipName);
