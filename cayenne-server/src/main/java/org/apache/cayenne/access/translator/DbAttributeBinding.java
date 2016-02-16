@@ -16,14 +16,36 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.crypto.transformer;
+package org.apache.cayenne.access.translator;
 
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.map.DbAttribute;
 
 /**
+ * Describes a PreparedStatement parameter binding mapped to a DbAttribute.
+ * 
  * @since 4.0
  */
-public interface BindingsTransformer {
+public class DbAttributeBinding extends Binding{
 
-    void transform(DbAttributeBinding[] bindings);
+	private final DbAttribute attribute;
+
+	public DbAttributeBinding(DbAttribute attribute, ExtendedType extendedType) {
+		super(extendedType);
+		this.attribute = attribute;
+	}
+
+	public DbAttribute getAttribute() {
+		return attribute;
+	}
+
+	@Override
+	public Integer getType() {
+		return super.getType() != null ? super.getType() : attribute.getType();
+	}
+
+	@Override
+ 	public int getScale() {
+		return getAttribute().getScale();
+	}
 }

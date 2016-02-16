@@ -19,7 +19,7 @@
 package org.apache.cayenne.crypto.transformer;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 
 /**
  * A factory that creates encryption transformers used for processing batch
@@ -29,7 +29,7 @@ import org.apache.cayenne.access.translator.ParameterBinding;
  */
 public interface TransformerFactory {
 
-    BindingsTransformer encryptor(ParameterBinding[] bindings);
+    BindingsTransformer encryptor(DbAttributeBinding[] bindings);
 
     MapTransformer decryptor(ColumnDescriptor[] columns, Object sampleRow);
 }

@@ -22,7 +22,7 @@ package org.apache.cayenne.dba.oracle;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
@@ -45,11 +45,11 @@ class Oracle8LOBBatchAction implements SQLAction {
 	private DbAdapter adapter;
 	private JdbcEventLogger logger;
 
-	private static void bind(DbAdapter adapter, PreparedStatement statement, ParameterBinding[] bindings)
+	private static void bind(DbAdapter adapter, PreparedStatement statement, DbAttributeBinding[] bindings)
 			throws SQLException, Exception {
 
-		for (ParameterBinding b : bindings) {
-			ParameterBinding binding = new ParameterBinding(b.getAttribute(), adapter.getExtendedTypes()
+		for (DbAttributeBinding b : bindings) {
+			DbAttributeBinding binding = new DbAttributeBinding(b.getAttribute(), adapter.getExtendedTypes()
 					.getRegisteredType(b.getValue().getClass()));
 			adapter.bindParameter(statement, binding);
 		}
@@ -97,7 +97,7 @@ class Oracle8LOBBatchAction implements SQLAction {
 
 			try (PreparedStatement statement = connection.prepareStatement(updateStr);) {
 
-				ParameterBinding[] bindings = translator.updateBindings(row);
+				DbAttributeBinding[] bindings = translator.updateBindings(row);
 				logger.logQueryParameters("bind", bindings);
 
 				bind(adapter, statement, bindings);
@@ -141,7 +141,7 @@ class Oracle8LOBBatchAction implements SQLAction {
 				Object value = qualifierValues.get(i);
 				DbAttribute attribute = qualifierAttributes.get(i);
 
-				ParameterBinding binding = new ParameterBinding(attribute, adapter.getExtendedTypes()
+				DbAttributeBinding binding = new DbAttributeBinding(attribute, adapter.getExtendedTypes()
 						.getRegisteredType(value.getClass()));
 				binding.setStatementPosition(i + 1);
 				binding.setValue(value);

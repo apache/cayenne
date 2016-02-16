@@ -21,9 +21,7 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.jdbc.SQLParameterBinding;
-import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.access.translator.ProcedureParameterBinding;
+import org.apache.cayenne.access.translator.Binding;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
@@ -38,11 +36,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
@@ -52,7 +46,6 @@ import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.util.Util;
 
 import java.net.URL;
-import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -543,7 +536,7 @@ public class JdbcAdapter implements DbAdapter {
 	}
 
 	@Override
-	public void bindParameter(PreparedStatement statement, ParameterBinding binding)
+	public void bindParameter(PreparedStatement statement, Binding binding)
 			throws SQLException, Exception {
 
 		if (binding.getValue() == null) {
@@ -554,36 +547,7 @@ public class JdbcAdapter implements DbAdapter {
 					, binding.getValue()
 					, binding.getStatementPosition()
 					, binding.getType()
-					, binding.getAttribute().getScale());
-		}
-	}
-
-	@Override
-	public void bindParameter(PreparedStatement statement, SQLParameterBinding binding, int position) throws
-			SQLException, Exception {
-		if (binding.getValue() == null) {
-			statement.setNull(position, binding.getJdbcType());
-		} else {
-			ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(binding.getValue().getClass());
-			typeProcessor.setJdbcObject(statement
-					, binding.getValue()
-					, position
-					, binding.getJdbcType()
 					, binding.getScale());
-		}
-	}
-
-	@Override
-	public void bindParameter(CallableStatement statement, ProcedureParameterBinding binding) throws SQLException, Exception {
-		if (binding.getValue() == null) {
-			statement.setNull(binding.getStatementPosition(), binding.getParam().getType());
-		} else {
-			ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(binding.getValue().getClass());
-			typeProcessor.setJdbcObject(statement
-					, binding.getValue()
-					, binding.getStatementPosition()
-					, binding.getParam().getType()
-					, binding.getParam().getPrecision());
 		}
 	}
 

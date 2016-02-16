@@ -22,7 +22,7 @@ package org.apache.cayenne.access.translator.select;
 import java.util.Map;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.SelectQuery;
 
@@ -35,7 +35,7 @@ public interface SelectTranslator {
 
 	String getSql() throws Exception;
 
-	ParameterBinding[] getBindings();
+	DbAttributeBinding[] getBindings();
 
 	Map<ObjAttribute, ColumnDescriptor> getAttributeOverrides();
 

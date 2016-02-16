@@ -25,6 +25,8 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
+import org.apache.cayenne.access.translator.Binding;
+import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
@@ -339,7 +341,14 @@ public class SQLTemplateAction implements SQLAction {
 		if (bindings.length > 0) {
 			int len = bindings.length;
 			for (int i = 0; i < len; i++) {
-				dataNode.getAdapter().bindParameter(preparedStatement, bindings[i], i + 1);
+				ExtendedType extendedType = getAdapter().getExtendedTypes().getDefaultType();
+				if (bindings[i].getValue() != null) getAdapter().getExtendedTypes().getRegisteredType(bindings[i]
+						.getValue().getClass());
+				Binding binding = new Binding(extendedType);
+				binding.setType(bindings[i].getJdbcType());
+				binding.setStatementPosition(i+1);
+				binding.setValue(bindings[i].getValue());
+				dataNode.getAdapter().bindParameter(preparedStatement, binding);
 			}
 		}
 

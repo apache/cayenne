@@ -18,12 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.crypto.transformer.bytes.BytesTransformerFactory;
 import org.apache.cayenne.crypto.transformer.value.ValueDecryptor;
@@ -31,6 +27,10 @@ import org.apache.cayenne.crypto.transformer.value.ValueEncryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @since 4.0
@@ -90,7 +90,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
     }
 
     @Override
-    public BindingsTransformer encryptor(ParameterBinding[] bindings) {
+    public BindingsTransformer encryptor(DbAttributeBinding[] bindings) {
         int len = bindings.length;
         List<Integer> cryptoColumns = null;
 
@@ -115,7 +115,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
 
             for (int i = 0; i < dlen; i++) {
                 int pos = cryptoColumns.get(i);
-                ParameterBinding b = bindings[pos];
+                DbAttributeBinding b = bindings[pos];
                 positions[i] = pos;
                 transformers[i] = transformerFactory.encryptor(b.getAttribute());
             }
