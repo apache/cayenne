@@ -43,6 +43,8 @@ import org.apache.cayenne.query.Query;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * A panel that supports editing the properties a query not based on ObjEntity, but still
@@ -122,12 +124,12 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
      * Updates the view from the current model state. Invoked when a currently displayed
      * query is changed.
      */
-    public void initFromModel(Query query) {
+    public void initFromModel(QueryDescriptor query) {
         super.initFromModel(query);
-        EntityResolver entRes = new EntityResolver(((DataChannelDescriptor) mediator
-                .getProject()
-                .getRootNode()).getDataMaps());
-        boolean fetchingDO = !query.getMetaData(entRes).isFetchingDataRows();
+//        EntityResolver entRes = new EntityResolver(((DataChannelDescriptor) mediator
+//                .getProject()
+//                .getRootNode()).getDataMaps());
+        boolean fetchingDO = !Boolean.valueOf(query.getProperties().get(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY));
         dataObjects.setSelected(fetchingDO);
 
         // TODO: now we only allow ObjEntities from the current map,
@@ -150,7 +152,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
     protected abstract void setEntity(ObjEntity selectedEntity);
 
-    protected abstract ObjEntity getEntity(Query query);
+    protected abstract ObjEntity getEntity(QueryDescriptor query);
 
     protected void setFetchingDataObjects(boolean dataObjects) {
         entities.setEnabled(dataObjects && isEnabled());
@@ -159,6 +161,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
             entities.getModel().setSelectedItem(null);
         }
 
-        setQueryProperty("fetchingDataRows", dataObjects ? Boolean.FALSE : Boolean.TRUE);
+        setQueryProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY,
+                dataObjects ? Boolean.FALSE.toString() : Boolean.TRUE.toString());
     }
 }

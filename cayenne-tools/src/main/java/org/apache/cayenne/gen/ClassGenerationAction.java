@@ -33,7 +33,7 @@ import org.apache.cayenne.access.loader.NamePatternMatcher;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.commons.logging.Log;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -535,7 +535,7 @@ public class ClassGenerationAction {
 		}
 	}
 
-	public void addQueries(Collection<Query> queries) {
+	public void addQueries(Collection<QueryDescriptor> queries) {
 		if (artifactsGenerationMode == ArtifactsGenerationMode.DATAMAP
 				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
 

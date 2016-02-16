@@ -36,6 +36,7 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 
 /**
  * A helper class that wraps a tree of project nodes into Swing tree nodes.
@@ -156,7 +157,7 @@ public class ProjectTreeFactory {
                 makeNode(procedure);
             }
 
-            for (Query query : dataMap.getQueries()) {
+            for (QueryDescriptor query : dataMap.getQueryDescriptors()) {
                 makeNode(query);
             }
 

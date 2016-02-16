@@ -23,8 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.MockQuery;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -155,18 +154,20 @@ public class EntityResolverIT extends ServerCase {
     public void testGetQuery() {
         // create a resolver with a single map
         DataMap m1 = new DataMap();
-        Query q = new MockQuery("query1");
-        m1.addQuery(q);
+        QueryDescriptor q = QueryDescriptor.selectQueryDescriptor();
+        q.setName("query1");
+        m1.addQueryDescriptor(q);
 
         EntityResolver resolver = new EntityResolver(Collections.singleton(m1));
-        assertSame(q, resolver.getQuery("query1"));
+        assertSame(q, resolver.getQueryDescriptor("query1"));
 
         // check that the query added on-the-fly will be recognized
-        assertNull(resolver.getQuery("query2"));
+        assertNull(resolver.getQueryDescriptor("query2"));
 
-        Query q2 = new MockQuery("query2");
-        m1.addQuery(q2);
-        assertSame(q2, resolver.getQuery("query2"));
+        QueryDescriptor q2 = QueryDescriptor.selectQueryDescriptor();
+        q2.setName("query2");
+        m1.addQueryDescriptor(q2);
+        assertSame(q2, resolver.getQueryDescriptor("query2"));
     }
 
     private void assertIsArtistObjEntity(ObjEntity ae) {

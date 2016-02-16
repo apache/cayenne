@@ -20,7 +20,6 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
@@ -43,14 +42,6 @@ public abstract class IndirectQuery implements Query {
 
 	protected transient Query replacementQuery;
 	protected transient EntityResolver lastResolver;
-
-	/**
-	 * @since 3.1
-	 */
-	@Override
-	public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-		return visitor.visitQuery(this);
-	}
 
 	/**
 	 * @since 3.1

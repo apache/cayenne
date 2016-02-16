@@ -230,7 +230,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			// attributes
 			generator.addEmbeddables(dataMap.getEmbeddables());
 			// TODO add the "includeQueries" and "excludeQueries" attributes
-			generator.addQueries(dataMap.getQueries());
+			generator.addQueries(dataMap.getQueryDescriptors());
 			generator.execute();
 		} catch (Exception e) {
 			throw new MojoExecutionException("Error generating classes: ", e);

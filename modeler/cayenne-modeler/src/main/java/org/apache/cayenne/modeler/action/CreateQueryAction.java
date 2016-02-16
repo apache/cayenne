@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.query.QueryType;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 
 /**
  * @since 1.1
@@ -62,8 +62,8 @@ public class CreateQueryAction extends CayenneAction {
         new QueryType(getProjectController(),getProjectController().getCurrentDataMap()).startupAction();
     }
     
-    public void createQuery(DataChannelDescriptor domain, DataMap dataMap, Query query) {
-        dataMap.addQuery(query);
+    public void createQuery(DataChannelDescriptor domain, DataMap dataMap, QueryDescriptor query) {
+        dataMap.addQueryDescriptor(query);
         // notify listeners
         fireQueryEvent(this, getProjectController(), domain, dataMap, query);
     }
@@ -72,7 +72,7 @@ public class CreateQueryAction extends CayenneAction {
      * Fires events when a query was added
      */
     public static void fireQueryEvent(Object src, ProjectController mediator, DataChannelDescriptor domain,
-            DataMap dataMap, Query query) {
+            DataMap dataMap, QueryDescriptor query) {
         mediator.fireQueryEvent(new QueryEvent(src, query, MapEvent.ADD, dataMap));
         mediator.fireQueryDisplayEvent(new QueryDisplayEvent(src, query, dataMap, domain));
     }

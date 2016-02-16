@@ -23,11 +23,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.*;
 import org.apache.cayenne.map.naming.NameConverter;
 import org.apache.velocity.VelocityContext;
 
@@ -41,19 +37,19 @@ public class DataMapArtifact implements Artifact {
     public static final String DATAMAP_UTILS_KEY = "dataMapUtils";
 
     protected DataMap dataMap;
-    protected Collection<SelectQuery> selectQueries;
-    protected Collection<SQLTemplate> sqlTemplateQueries;
-    protected Collection<ProcedureQuery> procedureQueries;
-    protected Collection<EJBQLQuery> ejbqlQueries;
+    protected Collection<QueryDescriptor> selectQueries;
+    protected Collection<QueryDescriptor> sqlTemplateQueries;
+    protected Collection<QueryDescriptor> procedureQueries;
+    protected Collection<QueryDescriptor> ejbqlQueries;
     protected Collection<String> queryNames;
 
-    public DataMapArtifact(DataMap dataMap, Collection<Query> queries) {
+    public DataMapArtifact(DataMap dataMap, Collection<QueryDescriptor> queries) {
         this.dataMap = dataMap;
-        selectQueries = new LinkedList<SelectQuery>();
-        sqlTemplateQueries = new LinkedList<SQLTemplate>();
-        procedureQueries = new LinkedList<ProcedureQuery>();
-        ejbqlQueries = new LinkedList<EJBQLQuery>();
-        queryNames = new LinkedList<String>();
+        selectQueries = new LinkedList<>();
+        sqlTemplateQueries = new LinkedList<>();
+        procedureQueries = new LinkedList<>();
+        ejbqlQueries = new LinkedList<>();
+        queryNames = new LinkedList<>();
         addQueries(queries);
     }
 
@@ -90,30 +86,37 @@ public class DataMapArtifact implements Artifact {
         }
     }
 
-    private void addQueries(Collection<Query> queries) {
+    private void addQueries(Collection<QueryDescriptor> queries) {
         if (queries != null) {
-            for (Query query : queries) {
+            for (QueryDescriptor query : queries) {
                 addQuery(query);
             }
         }
     }
 
-    private void addQuery(Query query) {
-        if (query instanceof SelectQuery) {
-            selectQueries.add((SelectQuery) query);
-        } else if (query instanceof ProcedureQuery) {
-            procedureQueries.add((ProcedureQuery) query);
-        } else if (query instanceof SQLTemplate) {
-            sqlTemplateQueries.add((SQLTemplate) query);
-        } else if (query instanceof EJBQLQuery) {
-            ejbqlQueries.add((EJBQLQuery) query);
+    private void addQuery(QueryDescriptor query) {
+
+        switch (query.getType()) {
+            case QueryDescriptor.SELECT_QUERY:
+                selectQueries.add(query);
+                break;
+            case QueryDescriptor.PROCEDURE_QUERY:
+                procedureQueries.add(query);
+                break;
+            case QueryDescriptor.SQL_TEMPLATE:
+                sqlTemplateQueries.add(query);
+                break;
+            case QueryDescriptor.EJBQL_QUERY:
+                ejbqlQueries.add(query);
+                break;
         }
+
         if (query.getName() != null && !"".equals(query.getName())) {
             queryNames.add(query.getName());
         }
     }
 
-    public Collection<SelectQuery> getSelectQueries() {
+    public Collection<QueryDescriptor> getSelectQueries() {
         return selectQueries;
     }
 

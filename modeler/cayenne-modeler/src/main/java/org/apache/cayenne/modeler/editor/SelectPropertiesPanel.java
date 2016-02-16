@@ -24,7 +24,6 @@ import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 import javax.swing.DefaultComboBoxModel;
@@ -39,11 +38,12 @@ import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.reflect.PropertyUtils;
+import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -128,7 +128,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
                 QueryCacheStrategy strategy = (QueryCacheStrategy) cacheStrategy
                         .getModel()
                         .getSelectedItem();
-                setQueryProperty("cacheStrategy", strategy);
+                setQueryProperty(QueryMetadata.CACHE_STRATEGY_PROPERTY, strategy.name());
                 setCacheGroupsEnabled(strategy != null
                         && strategy != QueryCacheStrategy.NO_CACHE);
             }
@@ -139,33 +139,30 @@ public abstract class SelectPropertiesPanel extends JPanel {
      * Updates the view from the current model state. Invoked when a currently displayed
      * query is changed.
      */
-    public void initFromModel(Query query) {
+    public void initFromModel(QueryDescriptor query) {
         DefaultComboBoxModel cacheModel = new DefaultComboBoxModel(CACHE_POLICIES);
 
-        // TODO (andrey, 15/12/09)
-        // do not use metadata, as it triggers CDO class loading (CAY-1334)
-        // to avoid this evil hack, we need some common interface for SelectQuery, EJBQL
-        // & SQLTemplate, but 3.0 API is frozen now
-        QueryCacheStrategy selectedStrategy = (QueryCacheStrategy) PropertyUtils
-                .getProperty(query, "cacheStrategy");
+        String selectedStrategyString = query.getProperty(QueryMetadata.CACHE_STRATEGY_PROPERTY);
 
-        cacheModel.setSelectedItem(selectedStrategy != null
-                ? selectedStrategy
-                : QueryCacheStrategy.getDefaultStrategy());
+        QueryCacheStrategy selectedStrategy = selectedStrategyString != null ?
+                QueryCacheStrategy.valueOf(selectedStrategyString) : null;
+
+        cacheModel.setSelectedItem(selectedStrategy != null ?
+                selectedStrategy : QueryCacheStrategy.getDefaultStrategy());
+
         cacheStrategy.setModel(cacheModel);
 
-        String[] cacheGroupsArray = (String[]) PropertyUtils.getProperty(
-                query,
-                "cacheGroups");
-        cacheGroups.setText(toCacheGroupsString(cacheGroupsArray));
+        cacheGroups.setText(query.getProperty(QueryMetadata.CACHE_GROUPS_PROPERTY));
         setCacheGroupsEnabled(selectedStrategy != null
                 && selectedStrategy != QueryCacheStrategy.NO_CACHE);
 
-        fetchOffset.setText(String.valueOf(PropertyUtils
-                .getProperty(query, "fetchOffset")));
-        fetchLimit
-                .setText(String.valueOf(PropertyUtils.getProperty(query, "fetchLimit")));
-        pageSize.setText(String.valueOf(PropertyUtils.getProperty(query, "pageSize")));
+        String fetchOffsetStr = query.getProperty(QueryMetadata.FETCH_OFFSET_PROPERTY);
+        String fetchLimitStr = query.getProperty(QueryMetadata.FETCH_LIMIT_PROPERTY);
+        String pageSizeStr = query.getProperty(QueryMetadata.PAGE_SIZE_PROPERTY);
+
+        fetchOffset.setText(fetchOffsetStr != null ? fetchOffsetStr : ZERO.toString());
+        fetchLimit.setText(fetchLimitStr != null ? fetchLimitStr : ZERO.toString());
+        pageSize.setText(pageSizeStr != null ? pageSizeStr : ZERO.toString());
     }
 
     protected String toCacheGroupsString(String[] groups) {
@@ -189,13 +186,13 @@ public abstract class SelectPropertiesPanel extends JPanel {
         string = (string == null) ? "" : string.trim();
 
         if (string.length() == 0) {
-            setQueryProperty("fetchOffset", ZERO);
+            setQueryProperty(QueryMetadata.FETCH_OFFSET_PROPERTY, ZERO.toString());
         }
         else {
-            try {
-                setQueryProperty("fetchOffset", new Integer(string));
+            if (StringUtils.isNumeric(string)) {
+                setQueryProperty(QueryMetadata.FETCH_OFFSET_PROPERTY, string);
             }
-            catch (NumberFormatException nfex) {
+            else {
                 throw new ValidationException("Fetch offset must be an integer: "
                         + string);
             }
@@ -206,13 +203,13 @@ public abstract class SelectPropertiesPanel extends JPanel {
         string = (string == null) ? "" : string.trim();
 
         if (string.length() == 0) {
-            setQueryProperty("fetchLimit", ZERO);
+            setQueryProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, ZERO.toString());
         }
         else {
-            try {
-                setQueryProperty("fetchLimit", new Integer(string));
+            if (StringUtils.isNumeric(string)) {
+                setQueryProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, string);
             }
-            catch (NumberFormatException nfex) {
+            else {
                 throw new ValidationException("Fetch limit must be an integer: " + string);
             }
         }
@@ -222,13 +219,13 @@ public abstract class SelectPropertiesPanel extends JPanel {
         string = (string == null) ? "" : string.trim();
 
         if (string.length() == 0) {
-            setQueryProperty("pageSize", ZERO);
+            setQueryProperty(QueryMetadata.PAGE_SIZE_PROPERTY, ZERO.toString());
         }
         else {
-            try {
-                setQueryProperty("pageSize", new Integer(string));
+            if (StringUtils.isNumeric(string)) {
+                setQueryProperty(QueryMetadata.PAGE_SIZE_PROPERTY, string);
             }
-            catch (NumberFormatException nfex) {
+            else {
                 throw new ValidationException("Page size must be an integer: " + string);
             }
         }
@@ -236,17 +233,10 @@ public abstract class SelectPropertiesPanel extends JPanel {
 
     void setCacheGroups(String string) {
         string = (string == null) ? "" : string.trim();
-
-        StringTokenizer toks = new StringTokenizer(string, ", \t");
-        String[] cacheGroups = new String[toks.countTokens()];
-        for (int i = 0; i < cacheGroups.length; i++) {
-            cacheGroups[i] = toks.nextToken();
-        }
-
-        setQueryProperty("cacheGroups", cacheGroups);
+        setQueryProperty(QueryMetadata.CACHE_GROUPS_PROPERTY, string);
     }
 
-    Query getQuery() {
+    QueryDescriptor getQuery() {
         return mediator.getCurrentQuery();
     }
 
@@ -266,15 +256,15 @@ public abstract class SelectPropertiesPanel extends JPanel {
         cacheGroupsLabel.setEnabled(enabled);
     }
 
-    void setQueryProperty(String property, Object value) {
-        Query query = getQuery();
+    void setQueryProperty(String property, String value) {
+        QueryDescriptor query = getQuery();
         if (query != null) {
             try {
-                Object old = PropertyUtils.getProperty(query, property);
+                Object old = query.getProperty(property);
                 if (Util.nullSafeEquals(value, old)) {
                     return;
                 }
-                PropertyUtils.setProperty(query, property, value);
+                query.setProperty(property, value);
                 mediator.fireQueryEvent(new QueryEvent(this, query));
             }
             catch (Exception ex) {

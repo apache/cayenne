@@ -35,11 +35,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.*;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
@@ -139,9 +135,9 @@ public class DefaultProjectValidator implements ProjectValidator {
                 visitProcedure(proc);
             }
 
-            Iterator<Query> itQuer = dataMap.getQueries().iterator();
+            Iterator<QueryDescriptor> itQuer = dataMap.getQueryDescriptors().iterator();
             while (itQuer.hasNext()) {
-                Query q = itQuer.next();
+                QueryDescriptor q = itQuer.next();
                 visitQuery(q);
             }
 
@@ -251,19 +247,21 @@ public class DefaultProjectValidator implements ProjectValidator {
             return validationResult;
         }
 
-        public ValidationResult visitQuery(Query query) {
-            if (query instanceof SelectQuery) {
-                selectQueryValidator.validate((SelectQuery) query, validationResult);
-            }
-            else if (query instanceof SQLTemplate) {
-                sqlTemplateValidator.validate((SQLTemplate) query, validationResult);
-            }
-            else if (query instanceof ProcedureQuery) {
-                procedureQueryValidator
-                        .validate((ProcedureQuery) query, validationResult);
-            }
-            else if (query instanceof EJBQLQuery) {
-                ejbqlQueryValidator.validate((EJBQLQuery) query, validationResult);
+        public ValidationResult visitQuery(QueryDescriptor query) {
+
+            switch (query.getType()) {
+                case QueryDescriptor.SELECT_QUERY:
+                    selectQueryValidator.validate((SelectQueryDescriptor) query, validationResult);
+                    break;
+                case QueryDescriptor.SQL_TEMPLATE:
+                    sqlTemplateValidator.validate((SQLTemplateDescriptor) query, validationResult);
+                    break;
+                case QueryDescriptor.PROCEDURE_QUERY:
+                    procedureQueryValidator.validate((ProcedureQueryDescriptor) query, validationResult);
+                    break;
+                case QueryDescriptor.EJBQL_QUERY:
+                    ejbqlQueryValidator.validate((EJBQLQueryDescriptor) query, validationResult);
+                    break;
             }
 
             return validationResult;

@@ -77,13 +77,6 @@ public class RefreshQuery implements Query {
     public RefreshQuery(String... groupKeys) {
         this.groupKeys = groupKeys;
     }
-    
-    /**
-     * @since 3.1
-     */
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-        return visitor.visitQuery(this);
-    }
 
     public QueryMetadata getMetaData(EntityResolver resolver) {
         return new BaseQueryMetadata();
@@ -127,10 +120,6 @@ public class RefreshQuery implements Query {
 
             public SQLAction createSQLAction(SQLActionVisitor visitor) {
                 throw new CayenneRuntimeException("Unsupported");
-            }
-            
-            public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-                return visitor.visitQuery(this);
             }
 
             public QueryMetadata getMetaData(EntityResolver resolver) {

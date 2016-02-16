@@ -23,24 +23,25 @@ package org.apache.cayenne.modeler.event;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 
 /**
  * @since 1.1
  */
 public class QueryDisplayEvent extends DataMapDisplayEvent {
-    protected Query query;
+    protected QueryDescriptor query;
     protected boolean queryChanged = true;
 
-    public QueryDisplayEvent(Object src, Query query, DataMap map, DataChannelDescriptor domain) {
+    public QueryDisplayEvent(Object src, QueryDescriptor query, DataMap map, DataChannelDescriptor domain) {
         super(src, map, domain);
         this.query = query;
     }
 
-    public Query getQuery() {
+    public QueryDescriptor getQuery() {
         return query;
     }
 
-    public void setQuery(Query query) {
+    public void setQuery(QueryDescriptor query) {
         this.query = query;
     }
 

@@ -20,12 +20,7 @@ package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
 
-import javax.swing.DefaultComboBoxModel;
-
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryCacheStrategy;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -64,33 +59,5 @@ public class EjbqlQueryPropertiesPanel extends SelectPropertiesPanel {
         super.initView();
         this.setLayout(new BorderLayout());
         this.add(createPanelBuilder().getPanel(), BorderLayout.CENTER);
-    }
-
-    /**
-     * Updates the view from the current model state. Invoked when a currently displayed
-     * query is changed.
-     */
-    public void initFromModel(Query query) {
-
-        // instead of metadata lookups, use EJBQLQuery getters to access fields to avoid
-        // unneeded EJBQL parsing...
-        EJBQLQuery ejbqlQuery = (EJBQLQuery) query;
-
-        DefaultComboBoxModel cacheModel = new DefaultComboBoxModel(CACHE_POLICIES);
-
-        QueryCacheStrategy selectedStrategy = ejbqlQuery.getCacheStrategy();
-
-        cacheModel.setSelectedItem(selectedStrategy != null
-                ? selectedStrategy
-                : QueryCacheStrategy.getDefaultStrategy());
-        cacheStrategy.setModel(cacheModel);
-        String[] cacheGroupsArray = ejbqlQuery.getCacheGroups();
-        cacheGroups.setText(toCacheGroupsString(cacheGroupsArray));
-        setCacheGroupsEnabled(selectedStrategy != null
-                && selectedStrategy != QueryCacheStrategy.NO_CACHE);
-
-        fetchOffset.setText(String.valueOf(ejbqlQuery.getFetchOffset()));
-        fetchLimit.setText(String.valueOf(ejbqlQuery.getFetchLimit()));
-        pageSize.setText(String.valueOf(ejbqlQuery.getPageSize()));
     }
 }

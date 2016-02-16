@@ -27,7 +27,7 @@ import javax.swing.event.ChangeListener;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.QueryDescriptor;
 
 /**
  * A tabbed view for configuring a select query.
@@ -79,13 +79,13 @@ public class SelectQueryTabbedView extends JTabbedPane {
     }
 
     void initFromModel() {
-        if (!(mediator.getCurrentQuery() instanceof SelectQuery)) {
+        if (!QueryDescriptor.SELECT_QUERY.equals(mediator.getCurrentQuery().getType())) {
             setVisible(false);
             return;
         }
 
         // if no root, reset tabs to show the first panel..
-        if (((SelectQuery) mediator.getCurrentQuery()).getRoot() == null) {
+        if (mediator.getCurrentQuery().getRoot() == null) {
             lastSelectionIndex = 0;
         }
 

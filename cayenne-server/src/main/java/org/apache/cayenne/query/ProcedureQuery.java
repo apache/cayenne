@@ -56,7 +56,7 @@ import org.apache.cayenne.util.XMLSerializable;
 public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
         XMLSerializable {
 
-    static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.ProcedureQuery.columnNameCapitalization";
+    public static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.ProcedureQuery.columnNameCapitalization";
 
     /**
      * @since 1.2

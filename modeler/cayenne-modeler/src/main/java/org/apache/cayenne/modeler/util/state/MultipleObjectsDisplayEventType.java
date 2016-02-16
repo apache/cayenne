@@ -135,8 +135,8 @@ class MultipleObjectsDisplayEventType extends DisplayEventType {
                 configurationNodeList.add(dataMap.getEmbeddable(objectName));
             } else if (dataMap.getProcedure(objectName) != null) {
                 configurationNodeList.add(dataMap.getProcedure(objectName));
-            } else if (dataMap.getQuery(objectName) != null) {
-                configurationNodeList.add(dataMap.getQuery(objectName));
+            } else if (dataMap.getQueryDescriptor(objectName) != null) {
+                configurationNodeList.add(dataMap.getQueryDescriptor(objectName));
             }
         }
 

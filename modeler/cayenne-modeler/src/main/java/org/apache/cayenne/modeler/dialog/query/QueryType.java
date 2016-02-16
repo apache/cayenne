@@ -34,12 +34,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateQueryUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.query.AbstractQuery;
-import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.*;
 
 
 public class QueryType extends CayenneController{
@@ -47,32 +42,18 @@ public class QueryType extends CayenneController{
     protected ProjectController mediator;
     protected DataMap dataMap;
     protected DataChannelDescriptor domain;
-    protected Query query;
-    
-    // query prototypes...
-    protected AbstractQuery objectSelectQuery;
-    protected AbstractQuery rawSQLQuery;
-    protected AbstractQuery procedureQuery;
-    protected EJBQLQuery ejbqlQuery;
+
     protected QueryTypeView view;
-    protected Query selectedQuery;
+    protected String type;
     
-    public QueryType(ProjectController mediator,DataMap root) {
+    public QueryType(ProjectController mediator, DataMap root) {
         super(mediator);
-        
-        // create query prototypes:
-        objectSelectQuery = new SelectQuery();
-        procedureQuery = new ProcedureQuery();
+
         view = new QueryTypeView();
         initController();
-        SQLTemplate rawSQLQuery = new SQLTemplate();
-        rawSQLQuery.setRoot(root);
-        rawSQLQuery.setFetchingDataRows(true);
-        this.rawSQLQuery = rawSQLQuery;
-        
-        ejbqlQuery = new EJBQLQuery();
+
         // by default use object query...
-        selectedQuery = objectSelectQuery;
+        this.type = QueryDescriptor.SELECT_QUERY;
         this.mediator = mediator;
         this.dataMap = mediator.getCurrentDataMap();
         this.domain = (DataChannelDescriptor)mediator.getProject().getRootNode();
@@ -135,22 +116,17 @@ public class QueryType extends CayenneController{
      * Action method that creates a query for the specified query type.
      */
     public void createQuery() {
-        Query query =getSelectedQuery();
-        if (query == null) {
-            return;
-        }
+        String queryType = getSelectedQuery();
 
         // update query...
         String queryName = DefaultUniqueNameGenerator.generate(NameCheckers.query, dataMap);
-        if (query instanceof EJBQLQuery) {
-            ((EJBQLQuery) query).setName(queryName);
-            ((EJBQLQuery) query).setDataMap(dataMap);
-        } else {
-            ((AbstractQuery) query).setName(queryName);
-            ((AbstractQuery) query).setDataMap(dataMap);
-        }
+
+        QueryDescriptor query = QueryDescriptor.descriptor(queryType);
+
+        query.setName(queryName);
+        query.setDataMap(dataMap);
         
-        dataMap.addQuery(query);
+        dataMap.addQueryDescriptor(query);
 
         mediator.getApplication().getUndoManager().addEdit(
                 new CreateQueryUndoableEdit(domain, dataMap, query));
@@ -164,38 +140,30 @@ public class QueryType extends CayenneController{
      * Fires events when a query was added
      */
     public static void fireQueryEvent(Object src, ProjectController mediator,
-            DataMap dataMap, Query query) {
+            DataMap dataMap, QueryDescriptor query) {
         mediator.fireQueryEvent(new QueryEvent(src, query, MapEvent.ADD,
                 dataMap));
         mediator.fireQueryDisplayEvent(new QueryDisplayEvent(src, query,
                 dataMap, (DataChannelDescriptor)mediator.getProject().getRootNode()));
     }
     
-    public Query getSelectedQuery() {
-        return selectedQuery;
-    }
-
-    public void setSelectedQuery(AbstractQuery selectedQuery) {
-        this.selectedQuery = selectedQuery;
+    public String getSelectedQuery() {
+        return type;
     }
 
     public void setObjectSelectQuery() {
-        selectedQuery = objectSelectQuery;   
+        this.type = QueryDescriptor.SELECT_QUERY;
     }
     
     public void setRawSQLQuery() {
-        selectedQuery = rawSQLQuery;
-    }
-
-    public boolean isProcedureQuery() {
-        return selectedQuery == procedureQuery;
+        this.type = QueryDescriptor.SQL_TEMPLATE;
     }
 
     public void setProcedureQuery() {
-        selectedQuery = procedureQuery;   
+        this.type = QueryDescriptor.PROCEDURE_QUERY;
     }
        
     public void setEjbqlQuery() {
-        selectedQuery = ejbqlQuery;
+        this.type = QueryDescriptor.EJBQL_QUERY;
     }
 }

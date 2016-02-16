@@ -70,10 +70,6 @@ public class EJBQLQuery implements Query, XMLSerializable {
     public void setDataMap(DataMap dataMap) {
         this.dataMap = dataMap;
     }
-    
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-        return visitor.visitQuery(this);
-    }
 
     public void initWithProperties(Map<String, ?> properties) {
 

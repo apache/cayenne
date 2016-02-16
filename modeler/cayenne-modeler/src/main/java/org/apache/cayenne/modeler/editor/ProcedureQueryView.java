@@ -45,10 +45,7 @@ import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.query.AbstractQuery;
-import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.*;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -127,7 +124,7 @@ public class ProcedureQueryView extends JPanel {
         queryRoot.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
-                AbstractQuery query = (AbstractQuery) mediator.getCurrentQuery();
+                QueryDescriptor query = mediator.getCurrentQuery();
                 if (query != null) {
                     query.setRoot(queryRoot.getModel().getSelectedItem());
                     mediator.fireQueryEvent(new QueryEvent(this, query));
@@ -148,17 +145,15 @@ public class ProcedureQueryView extends JPanel {
      * query is changed.
      */
     void initFromModel() {
-        Query query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getCurrentQuery();
 
-        if (!(query instanceof ProcedureQuery)) {
+        if (query == null || !QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
             setVisible(false);
             return;
         }
 
-        ProcedureQuery procedureQuery = (ProcedureQuery) query;
-
         properties.setEnabled(true);
-        name.setText(procedureQuery.getName());
+        name.setText(query.getName());
 
         // init root choices and title label..
 
@@ -176,10 +171,10 @@ public class ProcedureQueryView extends JPanel {
         }
 
         DefaultComboBoxModel model = new DefaultComboBoxModel(roots);
-        model.setSelectedItem(procedureQuery.getRoot());
+        model.setSelectedItem(query.getRoot());
         queryRoot.setModel(model);
 
-        properties.initFromModel(procedureQuery);
+        properties.initFromModel(query);
         setVisible(true);
     }
 
@@ -191,7 +186,7 @@ public class ProcedureQueryView extends JPanel {
             newName = null;
         }
 
-        AbstractQuery query = (AbstractQuery) mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getCurrentQuery();
         if (query == null) {
             return;
         }
@@ -206,7 +201,7 @@ public class ProcedureQueryView extends JPanel {
 
         DataMap map = mediator.getCurrentDataMap();
 
-        if (map.getQuery(newName) == null) {
+        if (map.getQueryDescriptor(newName) == null) {
             // completely new name, set new name for entity
             QueryEvent e = new QueryEvent(this, query, query.getName(), map);
             ProjectUtil.setQueryName(map, query, newName);
@@ -223,7 +218,7 @@ public class ProcedureQueryView extends JPanel {
     /**
      * Returns an entity that maps to a procedure query result class.
      */
-    ObjEntity getEntity(ProcedureQuery query) {
+    ObjEntity getEntity(ProcedureQueryDescriptor query) {
         String entityName = query.getResultEntityName();
         if (entityName == null) {
             return null;
@@ -238,12 +233,10 @@ public class ProcedureQueryView extends JPanel {
     }
 
     void setEntity(ObjEntity entity) {
-        Query query = mediator.getCurrentQuery();
-        if (query instanceof ProcedureQuery) {
-            ProcedureQuery procedureQuery = (ProcedureQuery) query;
-
-            procedureQuery.setResultEntityName(entity != null ? entity.getName() : null);
-            mediator.fireQueryEvent(new QueryEvent(this, procedureQuery));
+        QueryDescriptor query = mediator.getCurrentQuery();
+        if (query != null && QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
+            ((ProcedureQueryDescriptor) query).setResultEntityName(entity != null ? entity.getName() : null);
+            mediator.fireQueryEvent(new QueryEvent(this, query));
         }
     }
 
@@ -276,7 +269,7 @@ public class ProcedureQueryView extends JPanel {
 
                 public void actionPerformed(ActionEvent event) {
                     Object value = labelCase.getModel().getSelectedItem();
-                    setQueryProperty("columnNamesCapitalization", value);
+                    setQueryProperty(ProcedureQuery.COLUMN_NAME_CAPITALIZATION_PROPERTY, (String) value);
                 }
             });
 
@@ -294,15 +287,17 @@ public class ProcedureQueryView extends JPanel {
             return builder;
         }
 
-        public void initFromModel(Query query) {
+        public void initFromModel(QueryDescriptor query) {
             super.initFromModel(query);
 
-            if (query instanceof ProcedureQuery) {
-                ProcedureQuery template = (ProcedureQuery) query;
+            if (query != null && QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
                 DefaultComboBoxModel labelCaseModel = new DefaultComboBoxModel(
                         LABEL_CAPITALIZATION);
 
-                labelCaseModel.setSelectedItem(template.getColumnNamesCapitalization());
+                String columnNameCapitalization = query.getProperty(SQLTemplate.COLUMN_NAME_CAPITALIZATION_PROPERTY);
+
+                labelCaseModel.setSelectedItem(columnNameCapitalization != null ?
+                        CapsStrategy.valueOf(columnNameCapitalization) : CapsStrategy.DEFAULT);
                 labelCase.setModel(labelCaseModel);
             }
         }
@@ -311,12 +306,12 @@ public class ProcedureQueryView extends JPanel {
             ProcedureQueryView.this.setEntity(entity);
         }
 
-        public ObjEntity getEntity(Query query) {
-            if (query instanceof ProcedureQuery) {
-                return ProcedureQueryView.this.getEntity((ProcedureQuery) query);
+        public ObjEntity getEntity(QueryDescriptor query) {
+            if (query != null && QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
+                return ProcedureQueryView.this.getEntity((ProcedureQueryDescriptor) query);
             }
 
             return null;
         }
-    };
+    }
 }

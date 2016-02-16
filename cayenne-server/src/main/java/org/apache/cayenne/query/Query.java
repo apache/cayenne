@@ -29,7 +29,7 @@ import org.apache.cayenne.map.EntityResolver;
 /**
  * Defines minimal API of a query descriptor that is executable via Cayenne.
  */
-public interface Query extends Serializable, ConfigurationNode {
+public interface Query extends Serializable {
 
     /**
      * Returns query runtime parameters. The method is called at various stages of the

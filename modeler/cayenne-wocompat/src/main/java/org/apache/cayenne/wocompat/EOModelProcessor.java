@@ -41,12 +41,12 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
-import org.apache.cayenne.query.AbstractQuery;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.*;
 import org.apache.cayenne.wocompat.parser.Parser;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -238,7 +238,7 @@ public class EOModelProcessor {
 	 * 
 	 * @since 1.1
 	 */
-	protected Query makeQuery(EOModelHelper helper, EOObjEntity entity, String queryName) {
+	protected QueryDescriptor makeQuery(EOModelHelper helper, EOObjEntity entity, String queryName) {
 
 		DataMap dataMap = helper.getDataMap();
 		Map queryPlist = helper.queryPListMap(entity.getName(), queryName);
@@ -246,16 +246,104 @@ public class EOModelProcessor {
 			return null;
 		}
 
-		AbstractQuery query;
+		QueryDescriptor query;
 		if (queryPlist.containsKey("hints")) { // just a predefined SQL query
-			query = new EOSQLQuery(entity, queryPlist);
+			query = makeEOSQLQueryDescriptor(entity, queryPlist);
 		} else {
-			query = new EOQuery(entity, queryPlist);
+			query = makeEOQueryDescriptor(entity, queryPlist);
 		}
 		query.setName(entity.qualifiedQueryName(queryName));
-		dataMap.addQuery(query);
+		dataMap.addQueryDescriptor(query);
 
 		return query;
+	}
+
+	protected QueryDescriptor makeEOQueryDescriptor(ObjEntity root, Map plistMap) {
+		SelectQueryDescriptor descriptor = QueryDescriptor.selectQueryDescriptor();
+		descriptor.setRoot(root);
+
+		descriptor.setDistinct("YES".equalsIgnoreCase((String) plistMap.get("usesDistinct")));
+
+		Object fetchLimit = plistMap.get("fetchLimit");
+		if (fetchLimit != null) {
+			try {
+				if (fetchLimit instanceof Number) {
+					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY,
+							String.valueOf(((Number) fetchLimit).intValue()));
+				} else if (StringUtils.isNumeric(fetchLimit.toString())) {
+					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, fetchLimit.toString());
+				}
+			} catch (NumberFormatException nfex) {
+				// ignoring...
+			}
+		}
+
+		// sort orderings
+		List<Map<String, String>> orderings = (List<Map<String, String>>) plistMap.get("sortOrderings");
+		if (orderings != null && !orderings.isEmpty()) {
+			for (Map<String, String> ordering : orderings) {
+				boolean asc = !"compareDescending:".equals(ordering.get("selectorName"));
+				String key = ordering.get("key");
+				if (key != null) {
+					descriptor.addOrdering(new Ordering(key, asc ? SortOrder.ASCENDING : SortOrder.DESCENDING));
+				}
+			}
+		}
+
+		// qualifiers
+		Map<String, ?> qualifierMap = (Map<String, ?>) plistMap.get("qualifier");
+		if (qualifierMap != null && !qualifierMap.isEmpty()) {
+			descriptor.setQualifier(EOQuery.EOFetchSpecificationParser.makeQualifier((EOObjEntity) root, qualifierMap));
+		}
+
+		// prefetches
+		List prefetches = (List) plistMap.get("prefetchingRelationshipKeyPaths");
+		if (prefetches != null && !prefetches.isEmpty()) {
+			Iterator it = prefetches.iterator();
+			while (it.hasNext()) {
+				descriptor.addPrefetch((String) it.next());
+			}
+		}
+
+		// data rows - note that we do not support fetching individual columns
+		// in the
+		// modeler...
+		if (plistMap.containsKey("rawRowKeyPaths")) {
+			descriptor.setProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY, String.valueOf(true));
+		}
+
+		return descriptor;
+	}
+
+	protected QueryDescriptor makeEOSQLQueryDescriptor(ObjEntity root, Map plistMap) {
+		SQLTemplateDescriptor descriptor = QueryDescriptor.sqlTemplateDescriptor();
+		descriptor.setRoot(root);
+
+		Object fetchLimit = plistMap.get("fetchLimit");
+		if (fetchLimit != null) {
+			try {
+				if (fetchLimit instanceof Number) {
+					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY,
+							String.valueOf(((Number) fetchLimit).intValue()));
+				} else if (StringUtils.isNumeric(fetchLimit.toString())) {
+					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, fetchLimit.toString());
+				}
+			} catch (NumberFormatException nfex) {
+				// ignoring...
+			}
+		}
+
+		//query
+		// TODO: doesn't work with Stored Procedures.
+		Map hints = (Map) plistMap.get("hints");
+		if (hints != null && !hints.isEmpty()) {
+			String sqlExpression = (String) hints.get("EOCustomQueryExpressionHintKey");
+			if (sqlExpression != null) {
+				descriptor.setSql(sqlExpression);
+			}
+		}
+
+		return descriptor;
 	}
 
 	/**

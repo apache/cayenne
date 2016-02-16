@@ -88,16 +88,16 @@
 	<obj-relationship name="table2Array" source="MtTable3" target="MtTable2" deleteRule="Deny" db-relationship-path="table2Array"/>
 	<obj-relationship name="table5s" source="MtTable4" target="MtTable5" db-relationship-path="joins.toTable5"/>
 	<obj-relationship name="table4s" source="MtTable5" target="MtTable4" db-relationship-path="joins.toTable4"/>
-	<query name="AllMtTable1" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">
+	<query name="AllMtTable1" type="SelectQuery" root="obj-entity" root-name="MtTable1">
 	</query>
-	<query name="MtQueryWithLocalCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">
+	<query name="MtQueryWithLocalCache" type="SelectQuery" root="obj-entity" root-name="MtTable1">
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
 	</query>
-	<query name="ParameterizedEJBQLMtQuery" factory="org.apache.cayenne.map.EjbqlBuilder">
+	<query name="ParameterizedEJBQLMtQuery" type="EJBQLQuery">
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
 		<ejbql><![CDATA[select a from MtTable1 a where a.globalAttribute1 = :g]]></ejbql>
 	</query>
-	<query name="ParameterizedMtQueryWithLocalCache" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="MtTable1">
+	<query name="ParameterizedMtQueryWithLocalCache" type="SelectQuery" root="obj-entity" root-name="MtTable1">
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
 		<qualifier><![CDATA[globalAttribute1 = $g]]></qualifier>
 	</query>

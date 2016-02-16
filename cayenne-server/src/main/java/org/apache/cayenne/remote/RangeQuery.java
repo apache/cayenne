@@ -68,13 +68,6 @@ class RangeQuery implements Query {
         this.originatingQuery = originatingQuery;
     }
 
-    /**
-     * @since 3.1
-     */
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-        return visitor.visitQuery(this);
-    }
-
     public QueryMetadata getMetaData(EntityResolver resolver) {
         final QueryMetadata originatingMetadata = originatingQuery.getMetaData(resolver);
 

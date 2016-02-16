@@ -26,8 +26,8 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.query.SelectQueryDescriptor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.Before;
 import org.junit.Test;
@@ -130,21 +130,13 @@ public class EOModelProcessorTest {
     protected void assertLoadedQueries(DataMap map) throws Exception {
 
         // queries
-        Query query = map.getQuery("ExhibitType_TestQuery");
+        QueryDescriptor query = map.getQueryDescriptor("ExhibitType_TestQuery");
 
         assertNotNull(query);
-        assertTrue(query instanceof SelectQuery);
-        assertTrue(query instanceof EOQuery);
-        EOQuery eoQuery = (EOQuery) query;
+        assertEquals(QueryDescriptor.SELECT_QUERY, query.getType());
+        assertTrue(query instanceof SelectQueryDescriptor);
 
-        assertSame(map.getObjEntity("ExhibitType"), eoQuery.getRoot());
-
-        Collection<?> bindings = eoQuery.getBindingNames();
-        assertNotNull(bindings);
-        assertEquals(3, bindings.size());
-        assertEquals("java.lang.String", eoQuery.bindingClass("x"));
-        assertEquals("java.lang.String", eoQuery.bindingClass("y"));
-        assertEquals("java.lang.Object", eoQuery.bindingClass("z"));
+        assertSame(map.getObjEntity("ExhibitType"), query.getRoot());
     }
 
     protected void assertLoadedCustomTypes(DataMap map) throws Exception {

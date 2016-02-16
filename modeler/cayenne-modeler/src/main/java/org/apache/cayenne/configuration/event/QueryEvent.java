@@ -21,7 +21,7 @@ package org.apache.cayenne.configuration.event;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 
 /**
  * An event generated when a Query object is added to a DataMap, 
@@ -30,24 +30,24 @@ import org.apache.cayenne.query.Query;
  * @since 1.1
  */
 public class QueryEvent extends MapEvent {
-    protected Query query;
+    protected QueryDescriptor query;
     
     /**
      * Data map containing the query
      */
     protected DataMap map;
 
-    public QueryEvent(Object source, Query query) {
+    public QueryEvent(Object source, QueryDescriptor query) {
         super(source);
         setQuery(query);
     }
 
-    public QueryEvent(Object source, Query query, String oldName) {
+    public QueryEvent(Object source, QueryDescriptor query, String oldName) {
         this(source, query);
         setOldName(oldName);
     }
 
-    public QueryEvent(Object source, Query query, int type) {
+    public QueryEvent(Object source, QueryDescriptor query, int type) {
         this(source, query);
         setId(type);
     }
@@ -55,7 +55,7 @@ public class QueryEvent extends MapEvent {
     /**
      * Creates a query event, specifying DataMap, containing the query
      */
-    public QueryEvent(Object source, Query query, DataMap map) {
+    public QueryEvent(Object source, QueryDescriptor query, DataMap map) {
         this(source, query);
         setDataMap(map);
     }
@@ -63,7 +63,7 @@ public class QueryEvent extends MapEvent {
     /**
      * Creates a query event, specifying DataMap, containing the query
      */
-    public QueryEvent(Object source, Query query, String oldName, DataMap map) {
+    public QueryEvent(Object source, QueryDescriptor query, String oldName, DataMap map) {
         this(source, query, oldName);
         setDataMap(map);
     }
@@ -71,7 +71,7 @@ public class QueryEvent extends MapEvent {
     /**
      * Creates a query event, specifying DataMap, containing the query
      */
-    public QueryEvent(Object source, Query query, int type, DataMap map) {
+    public QueryEvent(Object source, QueryDescriptor query, int type, DataMap map) {
         this(source, query, type);
         setDataMap(map);
     }
@@ -81,11 +81,11 @@ public class QueryEvent extends MapEvent {
         return (query != null) ? query.getName() : null;
     }
 
-    public Query getQuery() {
+    public QueryDescriptor getQuery() {
         return query;
     }
 
-    public void setQuery(Query query) {
+    public void setQuery(QueryDescriptor query) {
         this.query = query;
     }
     

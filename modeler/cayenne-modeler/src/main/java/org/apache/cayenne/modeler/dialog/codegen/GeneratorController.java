@@ -181,7 +181,7 @@ public abstract class GeneratorController extends CayenneController {
             embeddables.retainAll(getParentController().getSelectedEmbeddables());
             generator.addEmbeddables(embeddables);
 
-            generator.addQueries(map.getQueries());
+            generator.addQueries(map.getQueryDescriptors());
 
             Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
 

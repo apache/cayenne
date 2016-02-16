@@ -50,6 +50,7 @@ import org.apache.cayenne.modeler.util.CayenneTransferable;
 import org.apache.cayenne.query.AbstractQuery;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 
 import javax.swing.KeyStroke;
 import javax.swing.undo.UndoableEdit;
@@ -215,8 +216,8 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             for (Procedure procedure : dataMap.getProcedures()) {
                 procedure.setName(DefaultUniqueNameGenerator.generate(NameCheckers.procedure, COPY_PATTERN, dataMap, procedure.getName()));
             }
-            for (Query query : dataMap.getQueries()) {
-                ((AbstractQuery) query).setName(DefaultUniqueNameGenerator.generate(NameCheckers.query, COPY_PATTERN, dataMap, query.getName()));
+            for (QueryDescriptor query : dataMap.getQueryDescriptors()) {
+                query.setName(DefaultUniqueNameGenerator.generate(NameCheckers.query, COPY_PATTERN, dataMap, query.getName()));
             }
 
             // if an entity was renamed, we rename all links to it too
@@ -287,23 +288,13 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                         dataMap,
                         embeddable);
             }
-            else if (content instanceof EJBQLQuery) {
-                EJBQLQuery query = (EJBQLQuery) content;
+            else if (content instanceof QueryDescriptor) {
+                QueryDescriptor query = (QueryDescriptor) content;
 
                 query.setName(DefaultUniqueNameGenerator.generate(NameCheckers.query, COPY_PATTERN, dataMap, query.getName()));
                 query.setDataMap(dataMap);
 
-                dataMap.addQuery(query);
-                QueryType.fireQueryEvent(this, mediator, dataMap, query);
-            }
-            else if (content instanceof Query) {
-                // paste Query to DataMap
-                AbstractQuery query = (AbstractQuery) content;
-
-                query.setName(DefaultUniqueNameGenerator.generate(NameCheckers.query, COPY_PATTERN, dataMap, query.getName()));
-                query.setDataMap(dataMap);
-
-                dataMap.addQuery(query);
+                dataMap.addQueryDescriptor(query);
                 QueryType.fireQueryEvent(this, mediator, dataMap, query);
             }
             else if (content instanceof Procedure) {

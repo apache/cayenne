@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -56,10 +55,6 @@ class ObjectsFromDataRowsQuery implements Query, QueryMetadata {
 
     public List<? extends DataRow> getDataRows() {
         return dataRows;
-    }
-
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-        return visitor.visitQuery(this);
     }
 
     public QueryMetadata getMetaData(EntityResolver resolver) {

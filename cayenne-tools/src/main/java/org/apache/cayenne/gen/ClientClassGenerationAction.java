@@ -22,6 +22,7 @@ import java.util.Collection;
 
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 
 /**
  * @since 3.0
@@ -68,7 +69,7 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
     }
     
     @Override
-    public void addQueries(Collection<Query> queries) {
+    public void addQueries(Collection<QueryDescriptor> queries) {
         if (queries != null) {
             artifacts.add(new ClientDataMapArtifact(dataMap, queries));
         }

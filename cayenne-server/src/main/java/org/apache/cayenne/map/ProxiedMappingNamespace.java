@@ -21,7 +21,7 @@ package org.apache.cayenne.map;
 import java.util.Collection;
 
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 
 /**
  * A proxy for lazy on-demand initialization of the mapping cache.
@@ -62,8 +62,8 @@ abstract class ProxiedMappingNamespace implements MappingNamespace {
         return getDelegate().getProcedure(procedureName);
     }
 
-    public Query getQuery(String queryName) {
-        return getDelegate().getQuery(queryName);
+    public QueryDescriptor getQueryDescriptor(String queryName) {
+        return getDelegate().getQueryDescriptor(queryName);
     }
 
     public DbEntity getDbEntity(String name) {
@@ -94,8 +94,8 @@ abstract class ProxiedMappingNamespace implements MappingNamespace {
         return getDelegate().getProcedures();
     }
 
-    public Collection<Query> getQueries() {
-        return getDelegate().getQueries();
+    public Collection<QueryDescriptor> getQueryDescriptors() {
+        return getDelegate().getQueryDescriptors();
     }
 
     public Collection<Embeddable> getEmbeddables() {

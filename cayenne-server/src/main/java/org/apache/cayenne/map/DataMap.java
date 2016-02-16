@@ -28,8 +28,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.event.DbEntityListener;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
-import org.apache.cayenne.query.NamedQuery;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
@@ -144,7 +143,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	private SortedMap<String, ObjEntity> objEntityMap;
 	private SortedMap<String, DbEntity> dbEntityMap;
 	private SortedMap<String, Procedure> procedureMap;
-	private SortedMap<String, Query> queryMap;
+	private SortedMap<String, QueryDescriptor> queryDescriptorMap;
 	private SortedMap<String, SQLResult> results;
 
 	/**
@@ -182,7 +181,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		objEntityMap = new TreeMap<String, ObjEntity>();
 		dbEntityMap = new TreeMap<String, DbEntity>();
 		procedureMap = new TreeMap<String, Procedure>();
-		queryMap = new TreeMap<String, Query>();
+		queryDescriptorMap = new TreeMap<>();
 		defaultEntityListeners = new ArrayList<EntityListener>(3);
 		results = new TreeMap<String, SQLResult>();
 		setName(mapName);
@@ -299,16 +298,8 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		}
 
 		// create proxies for named queries
-		for (Query q : getQueries()) {
-			NamedQuery proxy = new NamedQuery(q.getName());
-			proxy.setName(q.getName());
-			proxy.setDataMap(clientMap);
-
-			// resolve metadata so that client can have access to it without
-			// knowing about
-			// the server query.
-			proxy.initMetadata(q.getMetaData(serverResolver));
-			clientMap.addQuery(proxy);
+		for (QueryDescriptor q : getQueryDescriptors()) {
+			clientMap.addQueryDescriptor(q);
 		}
 
 		return clientMap;
@@ -385,7 +376,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		// since Queries are not XMLSerializable by default, check for
 		// non-serilaizable
 		// queries and throws if they are not..
-		for (Query query : getQueries()) {
+		for (QueryDescriptor query : getQueryDescriptors()) {
 			if (query instanceof XMLSerializable) {
 				((XMLSerializable) query).encodeAsXML(encoder);
 			} else {
@@ -459,9 +450,9 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 			this.addObjEntity(ent);
 		}
 
-		for (Query query : new ArrayList<Query>(map.getQueries())) {
-			this.removeQuery(query.getName());
-			this.addQuery(query);
+		for (QueryDescriptor query : new ArrayList<>(map.getQueryDescriptors())) {
+			this.removeQueryDescriptor(query.getName());
+			this.addQueryDescriptor(query);
 		}
 	}
 
@@ -500,53 +491,53 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	/**
 	 * Returns a named query associated with this DataMap.
 	 * 
-	 * @since 1.1
+	 * @since 4.0
 	 */
-	public Query getQuery(String queryName) {
-		Query query = queryMap.get(queryName);
-		if (query != null) {
-			return query;
+	public QueryDescriptor getQueryDescriptor(String queryName) {
+		QueryDescriptor queryDescriptor = queryDescriptorMap.get(queryName);
+		if (queryDescriptor != null) {
+			return queryDescriptor;
 		}
 
-		return namespace != null ? namespace.getQuery(queryName) : null;
+		return namespace != null ? namespace.getQueryDescriptor(queryName) : null;
 	}
 
 	/**
-	 * Stores a query under its name.
-	 * 
+	 * Stores a query descriptor under its name.
+	 *
 	 * @since 1.1
 	 */
-	public void addQuery(Query query) {
-		if (query == null) {
+	public void addQueryDescriptor(QueryDescriptor queryDescriptor) {
+		if (queryDescriptor == null) {
 			throw new NullPointerException("Can't add null query.");
 		}
 
-		if (query.getName() == null) {
+		if (queryDescriptor.getName() == null) {
 			throw new NullPointerException("Query name can't be null.");
 		}
 
 		// TODO: change method signature to return replaced procedure and make
 		// sure the
 		// Modeler handles it...
-		Object existingQuery = queryMap.get(query.getName());
-		if (existingQuery != null) {
-			if (existingQuery == query) {
+		QueryDescriptor existingQueryDescriptor = queryDescriptorMap.get(queryDescriptor.getName());
+		if (existingQueryDescriptor != null) {
+			if (existingQueryDescriptor == queryDescriptor) {
 				return;
 			} else {
-				throw new IllegalArgumentException("An attempt to override entity '" + query.getName());
+				throw new IllegalArgumentException("An attempt to override entity '" + queryDescriptor.getName());
 			}
 		}
 
-		queryMap.put(query.getName(), query);
+		queryDescriptorMap.put(queryDescriptor.getName(), queryDescriptor);
 	}
 
 	/**
 	 * Removes a named query from the DataMap.
 	 * 
-	 * @since 1.1
+	 * @since 4.0
 	 */
-	public void removeQuery(String queryName) {
-		queryMap.remove(queryName);
+	public void removeQueryDescriptor(String queryName) {
+		queryDescriptorMap.remove(queryName);
 	}
 
 	/**
@@ -569,7 +560,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * @since 1.1
 	 */
 	public void clearQueries() {
-		queryMap.clear();
+		queryDescriptorMap.clear();
 	}
 
 	/**
@@ -594,19 +585,19 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	}
 
 	/**
-	 * @since 1.1
-	 */
-	public SortedMap<String, Query> getQueryMap() {
-		return Collections.unmodifiableSortedMap(queryMap);
+	 * @since 4.0
+     */
+	public SortedMap<String, QueryDescriptor> getQueryDescriptorMap() {
+		return Collections.unmodifiableSortedMap(queryDescriptorMap);
 	}
 
 	/**
 	 * Returns an unmodifiable collection of mapped queries.
-	 * 
-	 * @since 1.1
-	 */
-	public Collection<Query> getQueries() {
-		return Collections.unmodifiableCollection(queryMap.values());
+	 *
+	 * @since 4.0
+     */
+	public Collection<QueryDescriptor> getQueryDescriptors() {
+		return Collections.unmodifiableCollection(queryDescriptorMap.values());
 	}
 
 	/**

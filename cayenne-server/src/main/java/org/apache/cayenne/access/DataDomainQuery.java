@@ -47,13 +47,6 @@ class DataDomainQuery implements Query, QueryMetadata {
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         throw new UnsupportedOperationException("Not an executable query.");
     }
-    
-    /**
-     * @since 3.1
-     */
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-        return visitor.visitQuery(this);
-    }
 
     public QueryMetadata getMetaData(EntityResolver resolver) {
         return this;

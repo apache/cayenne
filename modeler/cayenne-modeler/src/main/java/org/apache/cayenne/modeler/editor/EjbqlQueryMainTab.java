@@ -27,8 +27,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -79,22 +78,21 @@ public class EjbqlQueryMainTab extends JPanel{
      * query is changed.
      */
     void initFromModel() {
-        Query query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getCurrentQuery();
 
-        if (!(query instanceof EJBQLQuery)) {
+        if (query == null || !QueryDescriptor.EJBQL_QUERY.equals(query.getType())) {
             setVisible(false);
             return;
         }
 
-        EJBQLQuery ejbqlQuery = (EJBQLQuery) query;
-        name.setText(ejbqlQuery.getName());        
-        properties.initFromModel(ejbqlQuery);
+        name.setText(query.getName());
+        properties.initFromModel(query);
         setVisible(true);
     }
 
-    protected EJBQLQuery getQuery() {
-        Query query = mediator.getCurrentQuery();
-        return (query instanceof EJBQLQuery) ? (EJBQLQuery) query : null;
+    protected QueryDescriptor getQuery() {
+        QueryDescriptor query = mediator.getCurrentQuery();
+        return (query != null && QueryDescriptor.EJBQL_QUERY.equals(query.getType())) ? query : null;
     }
 
     /**
@@ -105,7 +103,7 @@ public class EjbqlQueryMainTab extends JPanel{
             newName = null;
         }
 
-        EJBQLQuery query = getQuery();
+        QueryDescriptor query = getQuery();
 
         if (query == null) {
             return;
@@ -121,7 +119,7 @@ public class EjbqlQueryMainTab extends JPanel{
 
         DataMap map = mediator.getCurrentDataMap();
 
-        if (map.getQuery(newName) == null) {
+        if (map.getQueryDescriptor(newName) == null) {
             // completely new name, set new name for entity
             QueryEvent e = new QueryEvent(this, query, query.getName());
             ProjectUtil.setQueryName(map, query, newName);

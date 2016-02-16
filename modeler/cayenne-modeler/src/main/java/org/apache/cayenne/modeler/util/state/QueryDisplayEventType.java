@@ -24,6 +24,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 
 class QueryDisplayEventType extends DisplayEventType {
 
@@ -43,7 +44,7 @@ class QueryDisplayEventType extends DisplayEventType {
             return;
         }
 
-        Query query = dataMap.getQuery(preferences.getQuery());
+        QueryDescriptor query = dataMap.getQueryDescriptor(preferences.getQuery());
         if (query == null) {
             return;
         }
