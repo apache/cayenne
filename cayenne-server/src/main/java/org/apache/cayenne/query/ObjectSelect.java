@@ -18,27 +18,31 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.ResultBatchIterator;
-import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.ResultIteratorCallback;
+import org.apache.cayenne.*;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 /**
- * A selecting query providing chainable API. Can be viewed as an alternative to
- * {@link SelectQuery}.
+ * A selecting query providing chainable API. This is an alternative to
+ * {@link SelectQuery} when you want to use a fluent API. For example, the following
+ * is a convenient way to return a record:
+ * <pre>
+ * {@code
+ * Artist a = ObjectSelect
+ * .query(Artist.class)
+ * .where(Artist.NAME.eq("Picasso"))
+ * .selectOne(context);
+ * }
+ * </pre>
  * 
  * @since 4.0
  */
@@ -329,9 +333,10 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Initializes ordering clause of this query with a single ascending
-	 * ordering on a given property.
+	 * Add an ascending ordering on the given property. If there is already an ordering
+	 * on this query then add this ordering with a lower priority.
 	 * 
+	 * @param property the property to sort on
 	 * @return this object
 	 */
 	public ObjectSelect<T> orderBy(String property) {
@@ -339,9 +344,11 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Initializes ordering clause of this query with a single ordering on a
-	 * given property.
+	 * Add an ordering on the given property. If there is already an ordering
+	 * on this query then add this ordering with a lower priority.
 	 * 
+	 * @param property the property to sort on
+	 * @param sortOrder the direction of the ordering
 	 * @return this object
 	 */
 	public ObjectSelect<T> orderBy(String property, SortOrder sortOrder) {
@@ -349,7 +356,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Adds a list of orderings of this query.
+	 * Add one or more orderings to this query.
 	 * 
 	 * @return this object
 	 */
@@ -371,7 +378,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Adds a list of orderings of this query.
+	 * Adds a list of orderings to this query.
 	 * 
 	 * @return this object
 	 */
