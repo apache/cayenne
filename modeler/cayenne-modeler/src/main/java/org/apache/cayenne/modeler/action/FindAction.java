@@ -31,7 +31,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.FindDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 
 import javax.swing.JTextField;
 import java.awt.Color;
@@ -75,10 +75,10 @@ public class FindAction extends CayenneAction {
                 
                   DataMap dm = it.next();
                  
-                  Iterator<Query> querIterator = dm.getQueries().iterator();
+                  Iterator<QueryDescriptor> querIterator = dm.getQueryDescriptors().iterator();
                   
                   while(querIterator.hasNext()) {
-                      Query q = querIterator.next();
+                      QueryDescriptor q = querIterator.next();
                       if(matchFound(q.getName(), pattern)){
                           paths.add(q);
                       }

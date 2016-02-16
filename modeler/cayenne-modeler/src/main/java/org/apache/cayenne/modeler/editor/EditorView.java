@@ -46,11 +46,7 @@ import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
-import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.*;
 import org.apache.commons.logging.LogFactory;
 
 import javax.swing.Action;
@@ -340,22 +336,23 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     }
 
     public void currentQueryChanged(QueryDisplayEvent e) {
-        Query query = e.getQuery();
+        QueryDescriptor query = e.getQuery();
 
-        if (query instanceof SelectQuery) {
-            detailLayout.show(detailPanel, SELECT_QUERY_VIEW);
-        }
-        else if (query instanceof SQLTemplate) {
-            detailLayout.show(detailPanel, SQL_TEMPLATE_VIEW);
-        }
-        else if (query instanceof ProcedureQuery) {
-            detailLayout.show(detailPanel, PROCEDURE_QUERY_VIEW);
-        }
-        else if (query instanceof EJBQLQuery) {
-            detailLayout.show(detailPanel, EJBQL_QUERY_VIEW);
-        }
-        else {
-            detailLayout.show(detailPanel, EMPTY_VIEW);
+        switch (query.getType()) {
+            case QueryDescriptor.SELECT_QUERY:
+                detailLayout.show(detailPanel, SELECT_QUERY_VIEW);
+                break;
+            case QueryDescriptor.SQL_TEMPLATE:
+                detailLayout.show(detailPanel, SQL_TEMPLATE_VIEW);
+                break;
+            case QueryDescriptor.PROCEDURE_QUERY:
+                detailLayout.show(detailPanel, PROCEDURE_QUERY_VIEW);
+                break;
+            case QueryDescriptor.EJBQL_QUERY:
+                detailLayout.show(detailPanel, EJBQL_QUERY_VIEW);
+                break;
+            default:
+                detailLayout.show(detailPanel, EMPTY_VIEW);
         }
     }
 

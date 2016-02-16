@@ -73,7 +73,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 
 	private static final long serialVersionUID = -3073521388289663641L;
 
-	static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.SQLTemplate.columnNameCapitalization";
+	public static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.SQLTemplate.columnNameCapitalization";
 
 	private static final Transformer nullMapTransformer = new Transformer() {
 

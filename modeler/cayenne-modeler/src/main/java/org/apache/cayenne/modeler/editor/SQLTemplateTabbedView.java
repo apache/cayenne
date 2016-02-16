@@ -28,7 +28,7 @@ import javax.swing.event.ChangeListener;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.QueryDescriptor;
 
 /**
  */
@@ -74,13 +74,13 @@ public class SQLTemplateTabbedView extends JTabbedPane {
     }
 
     void initFromModel() {
-        if (!(mediator.getCurrentQuery() instanceof SQLTemplate)) {
+        if (!QueryDescriptor.SQL_TEMPLATE.equals(mediator.getCurrentQuery().getType())) {
             setVisible(false);
             return;
         }
 
         // if no root, reset tabs to show the first panel..
-        if (((SQLTemplate) mediator.getCurrentQuery()).getRoot() == null) {
+        if (mediator.getCurrentQuery().getRoot() == null) {
             lastSelectionIndex = 0;
         }
 

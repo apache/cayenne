@@ -26,7 +26,7 @@
         <obj-attribute name="timeColumn" type="java.util.Date" db-attribute-path="TIME_COLUMN"/>
         <obj-attribute name="timestampColumn" type="java.util.Date" db-attribute-path="TIMESTAMP_COLUMN"/>
     </obj-entity>
-    <query name="SelectDateTest" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="date-time">
+    <query name="SelectDateTest" type="SQLTemplate" root="data-map" root-name="date-time">
         <property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
         <property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
         <sql><![CDATA[SELECT * FROM DATE_TEST]]></sql>

@@ -38,8 +38,8 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.JUndoableCayenneTextPane;
 import org.apache.cayenne.project.validation.EJBQLStatementValidator;
 import org.apache.cayenne.project.validation.EJBQLStatementValidator.PositionException;
-import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.EJBQLQueryDescriptor;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
 import org.apache.cayenne.swing.components.textpane.syntax.EJBQLSyntaxConstant;
 import org.apache.cayenne.util.Util;
@@ -57,8 +57,8 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     }
 
     void displayScript() {
-        EJBQLQuery query = getQuery();
-        scriptArea.setText(query.getEjbqlStatement());
+        EJBQLQueryDescriptor query = getQuery();
+        scriptArea.setText(query.getEjbql());
         updateDisabled = false;
     }
 
@@ -75,7 +75,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
                 try {
                     String text = scriptArea.getDocument().getText(e.getOffset(), 1).toString();
                     if (text.equals(" ") || text.equals("\n") || text.equals("\t")) {
-                        getQuery().setEjbqlStatement(scriptArea.getText());
+                        getQuery().setEjbql(scriptArea.getText());
                         validateEJBQL();
                     }
                 } catch (BadLocationException e1) {
@@ -84,7 +84,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
             }
 
             public void removeUpdate(DocumentEvent e) {
-                getQuery().setEjbqlStatement(scriptArea.getText());
+                getQuery().setEjbql(scriptArea.getText());
                 validateEJBQL();
             }
         });
@@ -111,7 +111,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
                 if (e.getKeyCode() == KeyEvent.VK_END || e.getKeyCode() == KeyEvent.VK_HOME
                         || e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT
                         || e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_UNDO) {
-                    getQuery().setEjbqlStatement(scriptArea.getText());
+                    getQuery().setEjbql(scriptArea.getText());
                     validateEJBQL();
                 }
                 if ((e.getKeyCode() == KeyEvent.VK_V || e.getKeyCode() == KeyEvent.VK_X) && e.isControlDown()) {
@@ -123,7 +123,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
                 if ((pasteOrCut && e.getKeyCode() == KeyEvent.VK_CONTROL) || e.getKeyCode() == KeyEvent.VK_DELETE) {
                     scriptArea.removeHighlightText();
-                    getQuery().setEjbqlStatement(scriptArea.getText());
+                    getQuery().setEjbql(scriptArea.getText());
                     validateEJBQL();
                     pasteOrCut = false;
                 }
@@ -140,9 +140,9 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     }
 
     public void initFromModel() {
-        Query query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getCurrentQuery();
 
-        if (!(query instanceof EJBQLQuery)) {
+        if (query == null || !QueryDescriptor.EJBQL_QUERY.equals(query.getType())) {
             setVisible(false);
             return;
         }
@@ -152,9 +152,10 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
         setVisible(true);
     }
 
-    EJBQLQuery getQuery() {
-        Query query = mediator.getCurrentQuery();
-        return (query instanceof EJBQLQuery) ? (EJBQLQuery) query : null;
+    EJBQLQueryDescriptor getQuery() {
+        QueryDescriptor query = mediator.getCurrentQuery();
+        return (query != null && QueryDescriptor.EJBQL_QUERY.equals(query.getType())) ?
+                (EJBQLQueryDescriptor) query : null;
     }
 
     void setEJBQL(DocumentEvent e) {
@@ -167,7 +168,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     }
 
     void setEJBQL(String text) {
-        EJBQLQuery query = getQuery();
+        EJBQLQueryDescriptor query = getQuery();
         if (query == null) {
             return;
         }
@@ -182,8 +183,8 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
         // Compare the value before modifying the query - text area
         // will call "verify" even if no changes have occured....
-        if (!Util.nullSafeEquals(text, query.getEjbqlStatement())) {
-            query.setEjbqlStatement(text);
+        if (!Util.nullSafeEquals(text, query.getEjbql())) {
+            query.setEjbql(text);
             mediator.fireQueryEvent(new QueryEvent(this, query));
         }
 

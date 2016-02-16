@@ -40,9 +40,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.*;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -116,24 +114,22 @@ public class SQLTemplateMainTab extends JPanel {
      * query is changed.
      */
     void initFromModel() {
-        Query query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getCurrentQuery();
 
-        if (!(query instanceof SQLTemplate)) {
+        if (query == null || !QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
             setVisible(false);
             return;
         }
 
-        SQLTemplate sqlQuery = (SQLTemplate) query;
-
-        name.setText(sqlQuery.getName());
-        properties.initFromModel(sqlQuery);
+        name.setText(query.getName());
+        properties.initFromModel(query);
 
         setVisible(true);
     }
 
-    protected SQLTemplate getQuery() {
-        Query query = mediator.getCurrentQuery();
-        return (query instanceof SQLTemplate) ? (SQLTemplate) query : null;
+    protected QueryDescriptor getQuery() {
+        QueryDescriptor query = mediator.getCurrentQuery();
+        return (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) ? query : null;
     }
 
     /**
@@ -144,7 +140,7 @@ public class SQLTemplateMainTab extends JPanel {
             newName = null;
         }
 
-        SQLTemplate query = getQuery();
+        QueryDescriptor query = getQuery();
 
         if (query == null) {
             return;
@@ -160,7 +156,7 @@ public class SQLTemplateMainTab extends JPanel {
 
         DataMap map = mediator.getCurrentDataMap();
 
-        if (map.getQuery(newName) == null) {
+        if (map.getQueryDescriptor(newName) == null) {
             // completely new name, set new name for entity
             QueryEvent e = new QueryEvent(this, query, query.getName());
             ProjectUtil.setQueryName(map, query, newName);
@@ -177,13 +173,13 @@ public class SQLTemplateMainTab extends JPanel {
     /**
      * Returns an entity that maps to a procedure query result class.
      */
-    ObjEntity getEntity(SQLTemplate query) {
+    ObjEntity getEntity(QueryDescriptor query) {
         return query != null && query.getRoot() instanceof ObjEntity ? (ObjEntity) query
                 .getRoot() : null;
     }
 
     void setEntity(ObjEntity entity) {
-        SQLTemplate template = getQuery();
+        QueryDescriptor template = getQuery();
         if (template != null) {
             // in case of null entity, set root to DataMap
             Object root = entity != null ? entity : mediator.getCurrentDataMap();
@@ -221,8 +217,8 @@ public class SQLTemplateMainTab extends JPanel {
             labelCase.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent event) {
-                    Object value = labelCase.getModel().getSelectedItem();
-                    setQueryProperty("columnNamesCapitalization", value);
+                    CapsStrategy value = (CapsStrategy) labelCase.getModel().getSelectedItem();
+                    setQueryProperty(SQLTemplate.COLUMN_NAME_CAPITALIZATION_PROPERTY, value.name());
                 }
             });
 
@@ -240,15 +236,17 @@ public class SQLTemplateMainTab extends JPanel {
             return builder;
         }
 
-        public void initFromModel(Query query) {
+        public void initFromModel(QueryDescriptor query) {
             super.initFromModel(query);
 
-            if (query instanceof SQLTemplate) {
-                SQLTemplate template = (SQLTemplate) query;
+            if (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
                 DefaultComboBoxModel labelCaseModel = new DefaultComboBoxModel(
                         LABEL_CAPITALIZATION);
 
-                labelCaseModel.setSelectedItem(template.getColumnNamesCapitalization());
+                String columnNameCapitalization = query.getProperty(SQLTemplate.COLUMN_NAME_CAPITALIZATION_PROPERTY);
+
+                labelCaseModel.setSelectedItem(columnNameCapitalization != null ?
+                        CapsStrategy.valueOf(columnNameCapitalization) : CapsStrategy.DEFAULT);
                 labelCase.setModel(labelCaseModel);
             }
         }
@@ -257,9 +255,9 @@ public class SQLTemplateMainTab extends JPanel {
             SQLTemplateMainTab.this.setEntity(entity);
         }
 
-        public ObjEntity getEntity(Query query) {
-            if (query instanceof SQLTemplate) {
-                return SQLTemplateMainTab.this.getEntity((SQLTemplate) query);
+        public ObjEntity getEntity(QueryDescriptor query) {
+            if (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
+                return SQLTemplateMainTab.this.getEntity(query);
             }
 
             return null;

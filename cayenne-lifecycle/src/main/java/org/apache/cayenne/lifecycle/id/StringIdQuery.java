@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DataMap;
@@ -139,10 +138,6 @@ public class StringIdQuery implements Query {
         }
 
         return this.idQueriesByEntity;
-    }
-
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-        return visitor.visitQuery(this);
     }
 
     public QueryMetadata getMetaData(EntityResolver resolver) {

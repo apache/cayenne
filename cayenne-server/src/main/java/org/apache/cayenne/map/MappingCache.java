@@ -27,6 +27,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.commons.collections.collection.CompositeCollection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,7 +42,7 @@ class MappingCache implements MappingNamespace {
     protected static final Log logger = LogFactory.getLog(MappingCache.class);
 
     protected Collection<DataMap> maps;
-    protected Map<String, Query> queries;
+    protected Map<String, QueryDescriptor> queryDesriptors;
     protected Map<String, Embeddable> embeddables;
     protected Map<String, SQLResult> results;
     protected Map<String, DbEntity> dbEntities;
@@ -55,7 +56,7 @@ class MappingCache implements MappingNamespace {
         this.maps = maps;
 
         this.embeddables = new HashMap<>();
-        this.queries = new HashMap<>();
+        this.queryDesriptors = new HashMap<>();
         this.dbEntities = new HashMap<>();
         this.objEntities = new HashMap<>();
         this.objEntitiesByClassName = new HashMap<>();
@@ -113,13 +114,13 @@ class MappingCache implements MappingNamespace {
             // index embeddables
             embeddables.putAll(map.getEmbeddableMap());
 
-            // index queries
-            for (Query query : map.getQueries()) {
-                String name = query.getName();
-                Object existingQuery = queries.put(name, query);
+            // index query descriptors
+            for (QueryDescriptor queryDescriptor : map.getQueryDescriptors()) {
+                String name = queryDescriptor.getName();
+                QueryDescriptor existingQueryDescriptor = queryDesriptors.put(name, queryDescriptor);
 
-                if (existingQuery != null && query != existingQuery) {
-                    throw new CayenneRuntimeException("More than one Query for name" + name);
+                if (existingQueryDescriptor != null && queryDescriptor != existingQueryDescriptor) {
+                    throw new CayenneRuntimeException("More than one QueryDescriptor for name: " + name);
                 }
             }
         }
@@ -178,8 +179,8 @@ class MappingCache implements MappingNamespace {
         return procedures.get(procedureName);
     }
 
-    public Query getQuery(String queryName) {
-        return queries.get(queryName);
+    public QueryDescriptor getQueryDescriptor(String queryName) {
+        return queryDesriptors.get(queryName);
     }
 
     public DbEntity getDbEntity(String name) {
@@ -255,7 +256,7 @@ class MappingCache implements MappingNamespace {
         return c;
     }
 
-    public Collection<Query> getQueries() {
+    public Collection<QueryDescriptor> getQueryDescriptors() {
         // TODO: LEGACY SUPPORT:
         // some downstream code (like Modeler and merge framework) expect
         // always fresh list here, so instead of doing the right thing of
@@ -264,14 +265,14 @@ class MappingCache implements MappingNamespace {
         if (maps.size() == 0) {
             return Collections.emptyList();
         }
-        
+
         if (maps.size() == 1) {
-            return maps.iterator().next().getQueries();
+            return maps.iterator().next().getQueryDescriptors();
         }
-        
+
         CompositeCollection c = new CompositeCollection();
         for (DataMap map : maps) {
-            c.addComposited(map.getQueries());
+            c.addComposited(map.getQueryDescriptors());
         }
 
         return c;

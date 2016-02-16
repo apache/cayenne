@@ -126,7 +126,7 @@ public enum NameCheckers implements NameChecker {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			DataMap map = (DataMap) namingContext;
-			return map.getQuery(name) != null;
+			return map.getQueryDescriptor(name) != null;
 		}
 	},
 

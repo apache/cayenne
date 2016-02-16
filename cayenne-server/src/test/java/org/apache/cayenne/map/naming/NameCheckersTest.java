@@ -35,7 +35,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -93,9 +93,9 @@ public class NameCheckersTest {
         map.addProcedure(new Procedure("name"));
         checkNameAndOther(map, NameCheckers.procedure, "name");
 
-        SelectQuery query = new SelectQuery("name");
+        QueryDescriptor query = QueryDescriptor.selectQueryDescriptor();
         query.setName("name");
-        map.addQuery(query);
+        map.addQueryDescriptor(query);
         checkNameAndOther(map, NameCheckers.query, "name");
     }
 

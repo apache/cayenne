@@ -26,7 +26,7 @@ import javax.swing.event.ChangeListener;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
-import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.QueryDescriptor;
 
 public class EjbqlTabbedView extends JTabbedPane {
 
@@ -69,7 +69,7 @@ public class EjbqlTabbedView extends JTabbedPane {
     }
 
     void initFromModel() {
-        if (!(mediator.getCurrentQuery() instanceof EJBQLQuery)) {
+        if (!QueryDescriptor.EJBQL_QUERY.equals(mediator.getCurrentQuery().getType())) {
             setVisible(false);
             return;
         }

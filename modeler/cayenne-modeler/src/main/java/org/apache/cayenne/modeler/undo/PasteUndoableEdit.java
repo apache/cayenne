@@ -40,7 +40,7 @@ import org.apache.cayenne.modeler.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.action.RemoveProcedureParameterAction;
 import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
 import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 
 public class PasteUndoableEdit extends CayenneUndoableEdit {
 
@@ -110,8 +110,8 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
             else if (content instanceof Embeddable) {
                 rAction.removeEmbeddable(map, (Embeddable) content);
             }
-            else if (content instanceof Query) {
-                rAction.removeQuery(map, (Query) content);
+            else if (content instanceof QueryDescriptor) {
+                rAction.removeQuery(map, (QueryDescriptor) content);
             }
             else if (content instanceof Procedure) {
                 rAction.removeProcedure(map, (Procedure) content);

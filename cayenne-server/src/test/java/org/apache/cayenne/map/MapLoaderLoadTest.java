@@ -19,11 +19,7 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.*;
 import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -135,13 +131,13 @@ public class MapLoaderLoadTest {
     }
 
     private void checkLoadedQueries(DataMap map) throws Exception {
-        SelectQuery<?> queryWithQualifier = (SelectQuery<?>) map.getQuery("QueryWithQualifier");
+        SelectQueryDescriptor queryWithQualifier = (SelectQueryDescriptor) map.getQueryDescriptor("QueryWithQualifier");
         assertNotNull(queryWithQualifier);
         assertTrue(queryWithQualifier.getRoot() instanceof ObjEntity);
         assertEquals("Artist", ((Entity) queryWithQualifier.getRoot()).getName());
         assertNotNull(queryWithQualifier.getQualifier());
 
-        SelectQuery<?> queryWithOrdering = (SelectQuery<?>) map.getQuery("QueryWithOrdering");
+        SelectQueryDescriptor queryWithOrdering = (SelectQueryDescriptor) map.getQueryDescriptor("QueryWithOrdering");
         assertNotNull(queryWithOrdering);
         assertTrue(queryWithOrdering.getRoot() instanceof ObjEntity);
         assertEquals("Artist", ((Entity) queryWithOrdering.getRoot()).getName());
@@ -157,24 +153,23 @@ public class MapLoaderLoadTest {
         assertTrue(dobOrdering.isAscending());
         assertFalse(dobOrdering.isCaseInsensitive());
 
-        SelectQuery<?> queryWithPrefetch = (SelectQuery<?>) map.getQuery("QueryWithPrefetch");
+        SelectQueryDescriptor queryWithPrefetch = (SelectQueryDescriptor) map.getQueryDescriptor("QueryWithPrefetch");
         assertNotNull(queryWithPrefetch);
         assertTrue(queryWithPrefetch.getRoot() instanceof ObjEntity);
         assertEquals("Gallery", ((Entity) queryWithPrefetch.getRoot()).getName());
-        assertNotNull(queryWithPrefetch.getPrefetchTree());
-        assertEquals(1, queryWithPrefetch.getPrefetchTree().nonPhantomNodes().size());
-        assertNotNull(queryWithPrefetch.getPrefetchTree().getNode(
-                Gallery.PAINTING_ARRAY_PROPERTY));
+        assertNotNull(queryWithPrefetch.getPrefetches());
+        assertEquals(1, queryWithPrefetch.getPrefetches().size());
+        assertTrue(queryWithPrefetch.getPrefetches().contains(Gallery.PAINTING_ARRAY.getName()));
 
-        SQLTemplate nonSelectingQuery = (SQLTemplate) map.getQuery("NonSelectingQuery");
+        QueryDescriptor nonSelectingQuery = map.getQueryDescriptor("NonSelectingQuery");
         assertNotNull(nonSelectingQuery);
         assertEquals("NonSelectingQuery", nonSelectingQuery.getName());
-        assertEquals(CapsStrategy.UPPER, nonSelectingQuery.getColumnNamesCapitalization());
+        assertEquals("UPPER", nonSelectingQuery.getProperties().get("cayenne.SQLTemplate.columnNameCapitalization"));
         
-        EJBQLQuery ejbqlQueryTest = (EJBQLQuery) map.getQuery("EjbqlQueryTest");      
+        EJBQLQueryDescriptor ejbqlQueryTest = (EJBQLQueryDescriptor) map.getQueryDescriptor("EjbqlQueryTest");
         assertNotNull(ejbqlQueryTest);
         assertEquals("EjbqlQueryTest", ejbqlQueryTest.getName());
-        assertNotNull(ejbqlQueryTest.getEjbqlStatement());        
-        assertEquals("SHARED_CACHE", ejbqlQueryTest.getCacheStrategy().toString());       
+        assertNotNull(ejbqlQueryTest.getEjbql());
+        assertEquals("SHARED_CACHE", ejbqlQueryTest.getProperties().get("cayenne.GenericSelectQuery.cacheStrategy"));
     }
 }

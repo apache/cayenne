@@ -73,11 +73,6 @@ public abstract class BatchQuery implements Query {
     }
 
     @Override
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-        return visitor.visitQuery(this);
-    }
-
-    @Override
     public String getName() {
         return name;
     }

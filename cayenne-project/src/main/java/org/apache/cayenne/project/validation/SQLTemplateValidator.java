@@ -19,26 +19,28 @@
 package org.apache.cayenne.project.validation;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.query.SQLTemplateDescriptor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
+import java.util.Map;
+
 class SQLTemplateValidator extends ConfigurationNodeValidator {
 
-    void validate(SQLTemplate query, ValidationResult validationResult) {
+    void validate(SQLTemplateDescriptor query, ValidationResult validationResult) {
         validateName(query, validationResult);
         validateRoot(query, validationResult);
         validateDefaultSQL(query, validationResult);
     }
 
-    void validateDefaultSQL(SQLTemplate query, ValidationResult validationResult) {
+    void validateDefaultSQL(SQLTemplateDescriptor query, ValidationResult validationResult) {
 
-        if (Util.isEmptyString(query.getDefaultTemplate())) {
+        if (Util.isEmptyString(query.getSql())) {
             // see if there is at least one adapter-specific template...
 
-            for (final String key : query.getTemplateKeys()) {
-                if (!Util.isEmptyString(query.getCustomTemplate(key))) {
+            for (Map.Entry<String, String> entry : query.getAdapterSql().entrySet()) {
+                if (!Util.isEmptyString(entry.getValue())) {
                     return;
                 }
             }
@@ -51,7 +53,7 @@ class SQLTemplateValidator extends ConfigurationNodeValidator {
         }
     }
 
-    void validateRoot(SQLTemplate query, ValidationResult validationResult) {
+    void validateRoot(QueryDescriptor query, ValidationResult validationResult) {
         DataMap map = query.getDataMap();
         if (query.getRoot() == null && map != null) {
             addFailure(
@@ -62,7 +64,7 @@ class SQLTemplateValidator extends ConfigurationNodeValidator {
         }
     }
 
-    void validateName(SQLTemplate query, ValidationResult validationResult) {
+    void validateName(QueryDescriptor query, ValidationResult validationResult) {
         String name = query.getName();
 
         // Must have name
@@ -77,7 +79,7 @@ class SQLTemplateValidator extends ConfigurationNodeValidator {
         }
 
         // check for duplicate names in the parent context
-        for (final Query otherQuery : map.getQueries()) {
+        for (final QueryDescriptor otherQuery : map.getQueryDescriptors()) {
             if (otherQuery == query) {
                 continue;
             }

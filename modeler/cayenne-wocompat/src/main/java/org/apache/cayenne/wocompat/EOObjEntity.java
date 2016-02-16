@@ -34,7 +34,6 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.query.Query;
 import org.apache.commons.collections.Transformer;
 
 /**
@@ -53,20 +52,6 @@ public class EOObjEntity extends ObjEntity {
 
     public EOObjEntity(String name) {
         super(name);
-    }
-
-    /**
-     * Returns stored EOQuery.
-     * 
-     * @since 1.1
-     */
-    public EOQuery getEOQuery(String queryName) {
-        Query query = getDataMap().getQuery(qualifiedQueryName(queryName));
-        if (query instanceof EOQuery) {
-            return (EOQuery) query;
-        }
-
-        return null;
     }
 
     /**
@@ -118,7 +103,7 @@ public class EOObjEntity extends ObjEntity {
      */
     public Collection getEOQueries() {
         if (filteredQueries == null) {
-            Collection queries = getDataMap().getQueries();
+            Collection queries = getDataMap().getQueryDescriptors();
             if (queries.isEmpty()) {
                 filteredQueries = Collections.EMPTY_LIST;
             }

@@ -24,17 +24,14 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.*;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
 class SelectQueryValidator extends ConfigurationNodeValidator {
 
-    <T> void validate(SelectQuery<T> query, ValidationResult validationResult) {
+    void validate(SelectQueryDescriptor query, ValidationResult validationResult) {
 
         validateName(query, validationResult);
 
@@ -49,11 +46,10 @@ class SelectQueryValidator extends ConfigurationNodeValidator {
                 validateOrdering(query, root, ordering, validationResult);
             }
 
-            if (query.getPrefetchTree() != null) {
-                for (PrefetchTreeNode prefetchTreeNode : query
-                        .getPrefetchTree()
-                        .nonPhantomNodes()) {
-                    validatePrefetch(root, prefetchTreeNode.getPath(), validationResult);
+            if (query.getPrefetches() != null) {
+                for (String prefetchPath : query
+                        .getPrefetches()) {
+                    validatePrefetch(root, prefetchPath, validationResult);
                 }
             }
       
@@ -64,8 +60,8 @@ class SelectQueryValidator extends ConfigurationNodeValidator {
         // TODO: andrus 03/10/2010 - should this be implemented?
     }
 
-    <T> void validateOrdering(
-            SelectQuery<T> query,
+    void validateOrdering(
+            QueryDescriptor query,
             Entity root,
             Ordering ordering,
             ValidationResult validationResult) {
@@ -89,7 +85,7 @@ class SelectQueryValidator extends ConfigurationNodeValidator {
         // TODO: andrus 03/10/2010 - should this be implemented?
     }
 
-    <T> Entity validateRoot(SelectQuery<T> query, ValidationResult validationResult) {
+    Entity validateRoot(QueryDescriptor query, ValidationResult validationResult) {
         DataMap map = query.getDataMap();
         if (query.getRoot() == null && map != null) {
             addFailure(validationResult, query, "Query '%s' has no root", query.getName());
@@ -128,7 +124,7 @@ class SelectQueryValidator extends ConfigurationNodeValidator {
         return null;
     }
 
-    <T> void validateName(SelectQuery<T> query, ValidationResult validationResult) {
+    void validateName(QueryDescriptor query, ValidationResult validationResult) {
         String name = query.getName();
 
         // Must have name
@@ -144,7 +140,7 @@ class SelectQueryValidator extends ConfigurationNodeValidator {
 
         // check for duplicate names in the parent context
 
-        for (final Query otherQuery : map.getQueries()) {
+        for (final QueryDescriptor otherQuery : map.getQueryDescriptors()) {
             if (otherQuery == query) {
                 continue;
             }

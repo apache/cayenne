@@ -19,9 +19,7 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.query.AbstractQuery;
-import org.apache.cayenne.query.MockAbstractQuery;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.Test;
@@ -306,30 +304,33 @@ public class DataMapTest {
     }
 
     @Test
-    public void testAddQuery() {
-        AbstractQuery q = new MockAbstractQuery("a");
+    public void testAddQueryDescriptor() {
+        QueryDescriptor q = QueryDescriptor.selectQueryDescriptor();
+        q.setName("a");
         DataMap map = new DataMap();
-        map.addQuery(q);
-        assertSame(q, map.getQuery("a"));
+        map.addQueryDescriptor(q);
+        assertSame(q, map.getQueryDescriptor("a"));
     }
 
     @Test
-    public void testRemoveQuery() {
-        AbstractQuery q = new MockAbstractQuery("a");
+    public void testRemoveQueryDescriptor() {
+        QueryDescriptor q = QueryDescriptor.selectQueryDescriptor();
+        q.setName("a");
 
         DataMap map = new DataMap();
-        map.addQuery(q);
-        assertSame(q, map.getQuery("a"));
-        map.removeQuery("a");
-        assertNull(map.getQuery("a"));
+        map.addQueryDescriptor(q);
+        assertSame(q, map.getQueryDescriptor("a"));
+        map.removeQueryDescriptor("a");
+        assertNull(map.getQueryDescriptor("a"));
     }
 
     @Test
     public void testGetQueryMap() {
-        AbstractQuery q = new MockAbstractQuery("a");
+        QueryDescriptor q = QueryDescriptor.selectQueryDescriptor();
+        q.setName("a");
         DataMap map = new DataMap();
-        map.addQuery(q);
-        Map<String, Query> queries = map.getQueryMap();
+        map.addQueryDescriptor(q);
+        Map<String, QueryDescriptor> queries = map.getQueryDescriptorMap();
         assertEquals(1, queries.size());
         assertSame(q, queries.get("a"));
     }

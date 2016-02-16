@@ -24,15 +24,16 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.EJBQLQueryDescriptor;
 
 public class EJBQLStatementValidator {
 
-    public PositionException validateEJBQL(EJBQLQuery query, EntityResolver er) {
-        if (query.getEjbqlStatement() != null) {
+    public PositionException validateEJBQL(EJBQLQueryDescriptor query, EntityResolver er) {
+        if (query.getEjbql() != null) {
             PositionException message = null;
 
             EJBQLQuery queryTemp = new EJBQLQuery();
-            queryTemp.setEjbqlStatement(query.getEjbqlStatement());
+            queryTemp.setEjbqlStatement(query.getEjbql());
 
             try {
                 queryTemp.getExpression(er);

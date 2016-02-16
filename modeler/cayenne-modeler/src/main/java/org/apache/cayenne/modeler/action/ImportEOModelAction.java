@@ -56,7 +56,7 @@ import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.cayenne.wocompat.EOModelProcessor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
@@ -222,7 +222,7 @@ public class ImportEOModelAction extends CayenneAction {
 
             Collection originalOE = new ArrayList(currentMap.getObjEntities());
             Collection originalDE = new ArrayList(currentMap.getDbEntities());
-            Collection originalQueries = new ArrayList(currentMap.getQueries());
+            Collection originalQueries = new ArrayList(currentMap.getQueryDescriptors());
 
             currentMap.mergeWithDataMap(map);
             map = currentMap;
@@ -230,7 +230,7 @@ public class ImportEOModelAction extends CayenneAction {
             // postprocess changes
             Collection newOE = new ArrayList(currentMap.getObjEntities());
             Collection newDE = new ArrayList(currentMap.getDbEntities());
-            Collection newQueries = new ArrayList(currentMap.getQueries());
+            Collection newQueries = new ArrayList(currentMap.getQueryDescriptors());
 
             EntityEvent entityEvent = new EntityEvent(Application.getFrame(), null);
             QueryEvent queryEvent = new QueryEvent(Application.getFrame(), null);
@@ -277,7 +277,7 @@ public class ImportEOModelAction extends CayenneAction {
                     originalQueries);
             it = addedQueries.iterator();
             while (it.hasNext()) {
-                Query q = (Query) it.next();
+                QueryDescriptor q = (QueryDescriptor) it.next();
                 queryEvent.setQuery(q);
                 queryEvent.setId(MapEvent.ADD);
                 mediator.fireQueryEvent(queryEvent);
@@ -288,7 +288,7 @@ public class ImportEOModelAction extends CayenneAction {
                     newQueries);
             it = removedQueries.iterator();
             while (it.hasNext()) {
-                Query q = (Query) it.next();
+                QueryDescriptor q = (QueryDescriptor) it.next();
                 queryEvent.setQuery(q);
                 queryEvent.setId(MapEvent.REMOVE);
                 mediator.fireQueryEvent(queryEvent);

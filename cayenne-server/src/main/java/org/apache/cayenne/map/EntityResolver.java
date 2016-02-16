@@ -22,6 +22,7 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.FaultFactory;
@@ -264,9 +265,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
         return mappingCache.getProcedures();
     }
 
-    public Collection<Query> getQueries() {
+    public Collection<QueryDescriptor> getQueryDescriptors() {
         checkMappingCache();
-        return mappingCache.getQueries();
+        return mappingCache.getQueryDescriptors();
     }
 
     public DbEntity getDbEntity(String name) {
@@ -314,15 +315,15 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Returns a named query or null if no query exists for a given name.
      */
-    public Query getQuery(String name) {
+    public QueryDescriptor getQueryDescriptor(String name) {
         checkMappingCache();
 
-        Query result = mappingCache.getQuery(name);
+        QueryDescriptor result = mappingCache.getQueryDescriptor(name);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
             refreshMappingCache();
-            result = mappingCache.getQuery(name);
+            result = mappingCache.getQueryDescriptor(name);
         }
         return result;
     }
@@ -550,14 +551,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
     @Deprecated
     public Procedure lookupProcedure(String procedureName) {
         return getProcedure(procedureName);
-    }
-
-    /**
-     * @deprecated since 4.0 use {@link #getQuery(String)}.
-     */
-    @Deprecated
-    public Query lookupQuery(String name) {
-        return getQuery(name);
     }
 
     public synchronized void removeDataMap(DataMap map) {

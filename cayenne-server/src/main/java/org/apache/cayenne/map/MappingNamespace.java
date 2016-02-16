@@ -23,6 +23,7 @@ import java.util.Collection;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 
 /**
  * Defines API of a container of DbEntities, ObjEntities, Procedures, Queries
@@ -79,7 +80,7 @@ public interface MappingNamespace {
      * Returns Query for a given name, or null if no such Query is found in the
      * MappingNamespace.
      */
-    Query getQuery(String name);
+    QueryDescriptor getQueryDescriptor(String name);
 
     /**
      * Returns all DbEntities in the namespace.
@@ -99,7 +100,7 @@ public interface MappingNamespace {
     /**
      * Returns all Queries in the namespace.
      */
-    Collection<Query> getQueries();
+    Collection<QueryDescriptor> getQueryDescriptors();
 
     /**
      * @since 4.0

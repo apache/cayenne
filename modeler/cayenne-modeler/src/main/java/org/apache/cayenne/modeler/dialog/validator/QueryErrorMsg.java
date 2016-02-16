@@ -25,7 +25,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.cayenne.validation.ValidationFailure;
 
 /**
@@ -42,7 +42,7 @@ public class QueryErrorMsg extends ValidationDisplayHandler {
         DataChannelDescriptor domain = (DataChannelDescriptor) mediator
                 .getProject()
                 .getRootNode();
-        Query query = (Query) object;
+        QueryDescriptor query = (QueryDescriptor) object;
         DataMap map = query.getDataMap();
 
         QueryDisplayEvent event = new QueryDisplayEvent(frame, query, map, domain);

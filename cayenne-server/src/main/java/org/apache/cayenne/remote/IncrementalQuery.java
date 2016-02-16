@@ -53,13 +53,6 @@ class IncrementalQuery implements Query {
         this.query = query;
         this.cacheKey = cacheKey;
     }
-    
-    /**
-     * @since 3.1
-     */
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-        return visitor.visitQuery(this);
-    }
 
     public QueryMetadata getMetaData(EntityResolver resolver) {
         final QueryMetadata metadata = query.getMetaData(resolver);

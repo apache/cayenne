@@ -111,6 +111,7 @@ import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.cayenne.util.IDUtil;
 
 import javax.swing.event.EventListenerList;
@@ -158,7 +159,7 @@ public class ProjectController extends CayenneController {
 
         private Procedure procedure;
         private ProcedureParameter[] procedureParameters;
-        private Query query;
+        private QueryDescriptor query;
 
         /**
          * Paths of multiple selection
@@ -556,7 +557,7 @@ public class ProjectController extends CayenneController {
         return currentState.dbRels;
     }
 
-    public Query getCurrentQuery() {
+    public QueryDescriptor getCurrentQuery() {
         return currentState.query;
     }
 

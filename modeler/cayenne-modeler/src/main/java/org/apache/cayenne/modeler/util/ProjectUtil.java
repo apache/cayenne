@@ -38,9 +38,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.query.AbstractQuery;
-import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.cayenne.util.Util;
 
 import java.util.ArrayList;
@@ -111,7 +109,7 @@ public class ProjectUtil {
         }
     }
 
-    public static void setQueryName(DataMap map, Query query, String newName) {
+    public static void setQueryName(DataMap map, QueryDescriptor query, String newName) {
 
         String oldName = query.getName();
 
@@ -120,16 +118,11 @@ public class ProjectUtil {
             return;
         }
 
-        if (query instanceof AbstractQuery) {
-            ((AbstractQuery) query).setName(newName);
-            ((AbstractQuery) query).setDataMap(map);
-        }
-        if (query instanceof EJBQLQuery) {
-            ((EJBQLQuery) query).setName(newName);
-            ((EJBQLQuery) query).setDataMap(map);
-        }
-        map.removeQuery(oldName);
-        map.addQuery(query);
+        query.setName(newName);
+        query.setDataMap(map);
+
+        map.removeQueryDescriptor(oldName);
+        map.addQueryDescriptor(query);
 
         // important - clear parent namespace:
         MappingNamespace ns = map.getNamespace();

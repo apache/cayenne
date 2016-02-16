@@ -23,7 +23,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.NamedQuery;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -172,16 +172,19 @@ public class ClassGenerationActionTest {
 	}
 
 	private void runDataMapTest(boolean client) throws Exception {
+		QueryDescriptor descriptor = QueryDescriptor.selectQueryDescriptor();
+        descriptor.setName("TestQuery");
+
 		DataMap map = new DataMap();
-		map.addQuery(new NamedQuery("TestQuery"));
+		map.addQueryDescriptor(descriptor);
 		map.setName("testmap");
 		List<String> generated;
 		if (client) {
 			map.setDefaultClientPackage("testpackage");
-			generated = execute(new ClientDataMapArtifact(map, map.getQueries()));
+			generated = execute(new ClientDataMapArtifact(map, map.getQueryDescriptors()));
 		} else {
 			map.setDefaultPackage("testpackage");
-			generated = execute(new DataMapArtifact(map, map.getQueries()));
+			generated = execute(new DataMapArtifact(map, map.getQueryDescriptors()));
 		}
 		assertEquals(2, generated.size());
 		assertTrue(generated.get(0).contains("public static final String TEST_QUERY_QUERYNAME = \"TestQuery\""));

@@ -21,8 +21,6 @@ package org.apache.cayenne.modeler.editor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collection;
-import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -43,7 +41,6 @@ import org.apache.cayenne.modeler.undo.AddPrefetchUndoableEdit;
 import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.query.PrefetchTreeNode;
 
 /**
  * Subclass of the SelectQueryOrderingTab configured to work with prefetches.
@@ -122,12 +119,8 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
     public void addPrefetch(String prefetch) {
         
         // check if such prefetch already exists
-        if (selectQuery.getPrefetchTree() != null) {
-
-            PrefetchTreeNode node = selectQuery.getPrefetchTree().getNode(prefetch);
-            if (node != null && !node.isPhantom()) {
-                return;
-            }
+        if (!selectQuery.getPrefetches().isEmpty() && selectQuery.getPrefetches().contains(prefetch)) {
+            return;
         }
 
         selectQuery.addPrefetch(prefetch);
@@ -178,20 +171,11 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
         PrefetchModel() {
             if (selectQuery != null) {
+                prefetches = new String[selectQuery.getPrefetches().size()];
 
-                if (selectQuery.getPrefetchTree() == null) {
-                    prefetches = new String[0];
+                for (int i = 0; i < prefetches.length; i++) {
+                    prefetches[i] = selectQuery.getPrefetches().get(i);
                 }
-                else {
-                    Collection c = selectQuery.getPrefetchTree().nonPhantomNodes();
-                    prefetches = new String[c.size()];
-
-                    Iterator it = c.iterator();
-                    for (int i = 0; i < prefetches.length; i++) {
-                        prefetches[i] = ((PrefetchTreeNode) it.next()).getPath();
-                    }
-                }
-
             }
         }
 

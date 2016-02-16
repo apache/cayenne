@@ -30,6 +30,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 
 /**
  * A {@link ConfigurationNodeVisitor} that does nothing, used as a convenience superclass
@@ -94,7 +95,7 @@ public abstract class BaseConfigurationNodeVisitor<T> implements
         throw new UnsupportedOperationException("Not implemented for ProcedureParameter");
     }
 
-    public T visitQuery(Query query) {
+    public T visitQuery(QueryDescriptor query) {
         throw new UnsupportedOperationException("Not implemented for Query");
     }
 

@@ -143,7 +143,7 @@ public class MapLoader extends DefaultHandler {
 	private ObjRelationship objRelationship;
 	private DbAttribute attrib;
 	private Procedure procedure;
-	private QueryLoader queryBuilder;
+	private QueryDescriptorLoader queryBuilder;
 	private String sqlKey;
 
 	private String descending;
@@ -1024,27 +1024,11 @@ public class MapLoader extends DefaultHandler {
 			throw new SAXException("MapLoader::processStartQuery(), no query name.");
 		}
 
-		String builder = attributes.getValue("", "factory");
+		this.queryBuilder = new QueryDescriptorLoader();
 
-		if (builder == null) {
-			builder = SelectQueryBuilder.class.getName();
-		} else {
-			// TODO: this is a hack to migrate between 1.1M6 and 1.1M7...
-			// remove this at some point
-			if (builder.equals("org.objectstyle.cayenne.query.SelectQueryBuilder")) {
-				builder = SelectQueryBuilder.class.getName();
-			}
-			// upgrade from v. <= 1.2
-			else {
-				builder = convertClassNameFromV1_2(builder);
-			}
-		}
+		String type = attributes.getValue("", "type");
 
-		try {
-			queryBuilder = (QueryLoader) Class.forName(builder).newInstance();
-		} catch (Exception ex) {
-			throw new SAXException("MapLoader::processStartQuery(), invalid query builder: " + builder);
-		}
+		queryBuilder.setQueryType(type);
 
 		String rootType = attributes.getValue("", "root");
 		String rootName = attributes.getValue("", "root-name");
@@ -1103,7 +1087,7 @@ public class MapLoader extends DefaultHandler {
 	}
 
 	private void processEndQuery() {
-		dataMap.addQuery(queryBuilder.getQuery());
+		dataMap.addQueryDescriptor(queryBuilder.buildQueryDescriptor());
 		queryBuilder = null;
 	}
 

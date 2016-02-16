@@ -20,19 +20,19 @@ package org.apache.cayenne.project.validation;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.ProcedureQueryDescriptor;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
 class ProcedureQueryValidator extends ConfigurationNodeValidator {
 
-    void validate(ProcedureQuery query, ValidationResult validationResult) {
+    void validate(ProcedureQueryDescriptor query, ValidationResult validationResult) {
         validateName(query, validationResult);
         validateRoot(query, validationResult);
     }
 
-    void validateRoot(ProcedureQuery query, ValidationResult validationResult) {
+    void validateRoot(ProcedureQueryDescriptor query, ValidationResult validationResult) {
 
         DataMap map = query.getDataMap();
         Object root = query.getRoot();
@@ -71,7 +71,7 @@ class ProcedureQueryValidator extends ConfigurationNodeValidator {
         }
     }
 
-    void validateName(ProcedureQuery query, ValidationResult validationResult) {
+    void validateName(QueryDescriptor query, ValidationResult validationResult) {
         String name = query.getName();
 
         // Must have name
@@ -86,7 +86,7 @@ class ProcedureQueryValidator extends ConfigurationNodeValidator {
         }
 
         // check for duplicate names in the parent context
-        for (final Query otherQuery : map.getQueries()) {
+        for (final QueryDescriptor otherQuery : map.getQueryDescriptors()) {
             if (otherQuery == query) {
                 continue;
             }

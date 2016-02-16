@@ -26,8 +26,8 @@ import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.query.SQLTemplateDescriptor;
 import org.apache.cayenne.util.Util;
 import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.KeywordMap;
@@ -162,9 +162,9 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
     }
 
     void initFromModel() {
-        Query query = mediator.getCurrentQuery();
+        QueryDescriptor query = mediator.getCurrentQuery();
 
-        if (!(query instanceof SQLTemplate)) {
+        if (query == null || !QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
             setVisible(false);
             return;
         }
@@ -187,18 +187,19 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
             return null;
         }
 
-        SQLTemplate query = getQuery();
+        SQLTemplateDescriptor query = getQuery();
         if (query == null) {
             return null;
         }
 
-        return (key.equals(DEFAULT_LABEL)) ? query.getDefaultTemplate() : query
-                .getCustomTemplate(key);
+        return (key.equals(DEFAULT_LABEL)) ? query.getSql() : query
+                .getAdapterSql().get(key);
     }
 
-    SQLTemplate getQuery() {
-        Query query = mediator.getCurrentQuery();
-        return (query instanceof SQLTemplate) ? (SQLTemplate) query : null;
+    SQLTemplateDescriptor getQuery() {
+        QueryDescriptor query = mediator.getCurrentQuery();
+        return (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) ?
+                (SQLTemplateDescriptor) query : null;
     }
 
     /**
@@ -206,7 +207,7 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
      */
     void displayScript() {
 
-        SQLTemplate query = getQuery();
+        SQLTemplateDescriptor query = getQuery();
         if (query == null) {
             disableEditor();
             return;
@@ -220,8 +221,8 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
 
         enableEditor();
 
-        String text = (key.equals(DEFAULT_LABEL)) ? query.getDefaultTemplate() : query
-                .getCustomTemplate(key);
+        String text = (key.equals(DEFAULT_LABEL)) ? query.getSql() : query
+                .getAdapterSql().get(key);
 
         updateDisabled = true;
         scriptArea.setText(text);
@@ -257,7 +258,7 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
      * Sets the value of SQL template for the currently selected script.
      */
     void setSQL(String text) {
-        SQLTemplate query = getQuery();
+        SQLTemplateDescriptor query = getQuery();
         if (query == null) {
             return;
         }
@@ -277,14 +278,14 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
         // Compare the value before modifying the query - text area
         // will call "verify" even if no changes have occured....
         if (key.equals(DEFAULT_LABEL)) {
-            if (!Util.nullSafeEquals(text, query.getDefaultTemplate())) {
-                query.setDefaultTemplate(text);
+            if (!Util.nullSafeEquals(text, query.getSql())) {
+                query.setSql(text);
                 mediator.fireQueryEvent(new QueryEvent(this, query));
             }
         }
         else {
-            if (!Util.nullSafeEquals(text, query.getTemplate(key))) {
-                query.setTemplate(key, text);
+            if (!Util.nullSafeEquals(text, query.getAdapterSql().get(key))) {
+                query.getAdapterSql().put(key, text);
                 mediator.fireQueryEvent(new QueryEvent(this, query));
             }
         }

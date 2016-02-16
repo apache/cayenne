@@ -43,9 +43,7 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.query.AbstractQuery;
-import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.*;
 
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -225,21 +223,16 @@ public class FindDialog extends CayenneController {
             if (path instanceof DbEntity)
                 editor.getDbDetailView().currentDbEntityChanged(event);
         }
-        else if (path instanceof Query) {
+        else if (path instanceof QueryDescriptor) {
 
             DataMap dmForQuery = null;
 
-            if (path instanceof EJBQLQuery) {
-                dmForQuery = ((EJBQLQuery) path).getDataMap();
-            }
-            if (path instanceof AbstractQuery) {
-                dmForQuery = ((AbstractQuery) path).getDataMap();
-            }
+            dmForQuery = ((QueryDescriptor) path).getDataMap();
 
             Object[] o = new Object[3];
             o[0] = domain;
             o[1] = dmForQuery;
-            o[2] = (Query) path;
+            o[2] = path;
 
             TreePath treePath = buildTreePath(o, editor);
             ProjectTreeView projectTreeView = editor.getProjectTreeView();
@@ -251,8 +244,8 @@ public class FindDialog extends CayenneController {
             editor.getProjectTreeView().getSelectionModel().setSelectionPath(treePath);
             QueryDisplayEvent event = new QueryDisplayEvent(
                     projectTreeView,
-                    (Query) path,
-                    (DataMap) dmForQuery,
+                    (QueryDescriptor) path,
+                    dmForQuery,
                     domain);
 
             editor.currentQueryChanged(event);

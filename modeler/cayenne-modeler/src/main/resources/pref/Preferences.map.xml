@@ -45,12 +45,12 @@
 	<obj-relationship name="preferences" source="Domain" target="DomainPreference" deleteRule="Cascade" db-relationship-path="preferences"/>
 	<obj-relationship name="subdomains" source="Domain" target="Domain" deleteRule="Cascade" db-relationship-path="subdomains"/>
 	<obj-relationship name="domain" source="DomainPreference" target="Domain" deleteRule="Nullify" db-relationship-path="domain"/>
-	<query name="DomainPreferenceForKey" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="DomainPreference">
+	<query name="DomainPreferenceForKey" type="SelectQuery" root="obj-entity" root-name="DomainPreference">
 		<property name="cayenne.GenericSelectQuery.fetchLimit" value="1"/>
 		<qualifier><![CDATA[(key = $key) and (domain = $domain)]]></qualifier>
 		<ordering descending="true"><![CDATA[domain.level]]></ordering>
 	</query>
-	<query name="TopLevelDomain" factory="org.apache.cayenne.map.SelectQueryBuilder" root="obj-entity" root-name="Domain">
+	<query name="TopLevelDomain" type="SelectQuery" root="obj-entity" root-name="Domain">
 		<qualifier><![CDATA[(name = $name) and (level = 0)]]></qualifier>
 	</query>
 </data-map>

@@ -75,16 +75,16 @@
         <obj-attribute name="clobColumn" type="java.lang.String" db-attribute-path="CLOB_COLUMN"/>
         <obj-attribute name="nclobColumn" type="java.lang.String" db-attribute-path="NCLOB_COLUMN"/>
     </obj-entity>
-    <query name="SelectReturnTypesLobsMap1" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="return-types">
+    <query name="SelectReturnTypesLobsMap1" type="SQLTemplate" root="data-map" root-name="return-types">
         <property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
         <sql><![CDATA[SELECT * FROM TYPES_MAPPING_LOBS_TEST1]]></sql>
     </query>
-    <query name="SelectReturnTypesMap1" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="return-types">
+    <query name="SelectReturnTypesMap1" type="SQLTemplate" root="data-map" root-name="return-types">
         <property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
         <property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
         <sql><![CDATA[SELECT * FROM TYPES_MAPPING_TEST1]]></sql>
     </query>
-    <query name="SelectReturnTypesMap2" factory="org.apache.cayenne.map.SQLTemplateBuilder" root="data-map" root-name="return-types">
+    <query name="SelectReturnTypesMap2" type="SQLTemplate" root="data-map" root-name="return-types">
         <property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
         <property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
         <sql><![CDATA[SELECT * FROM TYPES_MAPPING_TEST2]]></sql>

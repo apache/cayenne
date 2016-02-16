@@ -26,8 +26,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
 
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.query.QueryMetadata;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -85,7 +85,7 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
 
             public void actionPerformed(ActionEvent event) {
                 Boolean b = dataRows.isSelected() ? Boolean.TRUE : Boolean.FALSE;
-                setQueryProperty("fetchingDataRows", b);
+                setQueryProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY, String.valueOf(b));
             }
         });
     }
@@ -94,9 +94,9 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
      * Updates the view from the current model state. Invoked when a currently displayed
      * query is changed.
      */
-    public void initFromModel(Query query) {
+    public void initFromModel(QueryDescriptor query) {
         super.initFromModel(query);
 
-        dataRows.setSelected(((SelectQuery) query).isFetchingDataRows());
+        dataRows.setSelected(Boolean.valueOf(query.getProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY)));
     }
 }

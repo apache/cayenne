@@ -77,7 +77,7 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.resource.Resource;
 import org.apache.commons.logging.Log;
@@ -455,7 +455,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             return;
         }
 
-        Query query = e.getQuery();
+        QueryDescriptor query = e.getQuery();
         DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(query, false);
         positionNode(node, currentNode, Comparators.getDataMapChildrenComparator());
         showNode(currentNode);
@@ -944,10 +944,10 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                     (DataChannelDescriptor) mediator.getProject().getRootNode());
             mediator.fireProcedureDisplayEvent(e);
         }
-        else if (obj instanceof Query) {
+        else if (obj instanceof QueryDescriptor) {
             QueryDisplayEvent e = new QueryDisplayEvent(
                     this,
-                    (Query) obj,
+                    (QueryDescriptor) obj,
                     (DataMap) data[data.length - 2],
                     (DataChannelDescriptor) mediator.getProject().getRootNode());
             mediator.fireQueryDisplayEvent(e);

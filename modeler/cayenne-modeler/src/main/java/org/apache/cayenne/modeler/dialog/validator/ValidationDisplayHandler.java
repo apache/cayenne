@@ -33,6 +33,7 @@ import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -86,7 +87,7 @@ public abstract class ValidationDisplayHandler {
         else if (validatedObj instanceof ProcedureParameter) {
             msg = new ProcedureParameterErrorMsg(result);
         }
-        else if (validatedObj instanceof Query) {
+        else if (validatedObj instanceof QueryDescriptor) {
             msg = new QueryErrorMsg(result);
         }
         else {
