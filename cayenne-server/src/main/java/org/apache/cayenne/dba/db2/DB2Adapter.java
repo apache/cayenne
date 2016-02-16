@@ -21,15 +21,10 @@ package org.apache.cayenne.dba.db2;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.Binding;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
-import org.apache.cayenne.access.types.BooleanType;
-import org.apache.cayenne.access.types.ByteArrayType;
-import org.apache.cayenne.access.types.CharType;
-import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.access.types.ExtendedTypeFactory;
-import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.*;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -234,9 +229,9 @@ public class DB2Adapter extends JdbcAdapter {
 
     @Override
     public void bindParameter(
-            PreparedStatement statement, ParameterBinding binding) throws SQLException, Exception {
+            PreparedStatement statement, Binding binding) throws SQLException, Exception {
 
-        if (binding.getValue() == null && (binding.getAttribute().getType() == 0 || binding.getAttribute().getType() == Types.BOOLEAN)) {
+        if (binding.getValue() == null && (binding.getType() == 0 || binding.getType() == Types.BOOLEAN)) {
             statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
         }
         else {

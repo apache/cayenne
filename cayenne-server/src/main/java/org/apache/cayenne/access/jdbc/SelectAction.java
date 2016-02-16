@@ -24,7 +24,7 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -46,10 +46,10 @@ import java.util.List;
  */
 public class SelectAction extends BaseSQLAction {
 
-	private static void bind(DbAdapter adapter, PreparedStatement statement, ParameterBinding[] bindings)
+	private static void bind(DbAdapter adapter, PreparedStatement statement, DbAttributeBinding[] bindings)
 			throws SQLException, Exception {
 
-		for (ParameterBinding b : bindings) {
+		for (DbAttributeBinding b : bindings) {
 
 			if (b.isExcluded()) {
 				continue;
@@ -90,7 +90,7 @@ public class SelectAction extends BaseSQLAction {
 		SelectTranslator translator = dataNode.selectTranslator(query);
 		final String sql = translator.getSql();
 
-		ParameterBinding[] bindings = translator.getBindings();
+		DbAttributeBinding[] bindings = translator.getBindings();
 		PreparedStatement statement = connection.prepareStatement(sql);
 		bind(dataNode.getAdapter(), statement, bindings);
 

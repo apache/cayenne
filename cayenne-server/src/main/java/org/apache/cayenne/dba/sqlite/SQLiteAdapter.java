@@ -19,7 +19,6 @@
 package org.apache.cayenne.dba.sqlite;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -34,8 +33,6 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Calendar;
 import java.util.Collection;
@@ -100,11 +97,6 @@ public class SQLiteAdapter extends JdbcAdapter {
     @Override
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new SQLiteActionBuilder(node));
-    }
-
-    @Override
-    public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws SQLException, Exception {
-        super.bindParameter(statement, binding);
     }
 
     private int mapNTypes(int sqlType) {

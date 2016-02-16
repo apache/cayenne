@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.batch;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.crypto.transformer.BindingsTransformer;
@@ -65,16 +65,16 @@ public class CryptoBatchTranslatorFactoryDecorator implements BatchTranslatorFac
             }
 
             @Override
-            public ParameterBinding[] getBindings() {
+            public DbAttributeBinding[] getBindings() {
                 return delegateTranslator.getBindings();
             }
 
             @Override
-            public ParameterBinding[] updateBindings(BatchQueryRow row) {
+            public DbAttributeBinding[] updateBindings(BatchQueryRow row) {
 
                 ensureEncryptorCompiled();
 
-                ParameterBinding[] bindings = delegateTranslator.updateBindings(row);
+                DbAttributeBinding[] bindings = delegateTranslator.updateBindings(row);
 
                 if (encryptor != null) {
                     encryptor.transform(bindings);

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -74,26 +74,26 @@ public class DeleteBatchTranslator extends DefaultBatchTranslator {
     }
 
     @Override
-    protected ParameterBinding[] createBindings() {
+    protected DbAttributeBinding[] createBindings() {
         DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
         List<DbAttribute> attributes = deleteBatch.getDbAttributes();
         int len = attributes.size();
 
-        ParameterBinding[] bindings = new ParameterBinding[len];
+        DbAttributeBinding[] bindings = new DbAttributeBinding[len];
 
         for (int i = 0; i < len; i++) {
             DbAttribute a = attributes.get(i);
 
             String typeName = TypesMapping.getJavaBySqlType(a.getType());
             ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
-            bindings[i] = new ParameterBinding(a, extendedType);
+            bindings[i] = new DbAttributeBinding(a, extendedType);
         }
 
         return bindings;
     }
 
     @Override
-    protected ParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+    protected DbAttributeBinding[] doUpdateBindings(BatchQueryRow row) {
 
         int len = bindings.length;
 
@@ -101,7 +101,7 @@ public class DeleteBatchTranslator extends DefaultBatchTranslator {
 
         for (int i = 0, j = 1; i < len; i++) {
 
-            ParameterBinding b = bindings[i];
+            DbAttributeBinding b = bindings[i];
 
             // skip null attributes... they are translated as "IS NULL"
             if (deleteBatch.isNull(b.getAttribute())) {

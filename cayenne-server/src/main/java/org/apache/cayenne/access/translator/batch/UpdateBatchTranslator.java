@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -81,7 +81,7 @@ public class UpdateBatchTranslator extends DefaultBatchTranslator {
     }
 
     @Override
-    protected ParameterBinding[] createBindings() {
+    protected DbAttributeBinding[] createBindings() {
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
 
         List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
@@ -90,14 +90,14 @@ public class UpdateBatchTranslator extends DefaultBatchTranslator {
         int ul = updatedDbAttributes.size();
         int ql = qualifierAttributes.size();
 
-        ParameterBinding[] bindings = new ParameterBinding[ul + ql];
+        DbAttributeBinding[] bindings = new DbAttributeBinding[ul + ql];
 
         for (int i = 0; i < ul; i++) {
             DbAttribute a = updatedDbAttributes.get(i);
 
             String typeName = TypesMapping.getJavaBySqlType(a.getType());
             ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
-            bindings[i] = new ParameterBinding(a, extendedType);
+            bindings[i] = new DbAttributeBinding(a, extendedType);
         }
 
         for (int i = 0; i < ql; i++) {
@@ -105,14 +105,14 @@ public class UpdateBatchTranslator extends DefaultBatchTranslator {
 
             String typeName = TypesMapping.getJavaBySqlType(a.getType());
             ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
-            bindings[ul + i] = new ParameterBinding(a, extendedType);
+            bindings[ul + i] = new DbAttributeBinding(a, extendedType);
         }
 
         return bindings;
     }
 
     @Override
-    protected ParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+    protected DbAttributeBinding[] doUpdateBindings(BatchQueryRow row) {
 
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
 

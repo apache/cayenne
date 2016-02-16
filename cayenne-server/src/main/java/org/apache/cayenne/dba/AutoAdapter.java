@@ -21,9 +21,7 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.jdbc.SQLParameterBinding;
-import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.access.translator.ProcedureParameterBinding;
+import org.apache.cayenne.access.translator.Binding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
@@ -40,7 +38,6 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
 
-import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -203,19 +200,9 @@ public class AutoAdapter implements DbAdapter {
 	}
 
 	@Override
-	public void bindParameter(PreparedStatement statement, ParameterBinding parameterBinding)
+	public void bindParameter(PreparedStatement statement, Binding parameterBinding)
 			throws SQLException, Exception {
 		getAdapter().bindParameter(statement, parameterBinding);
-	}
-
-	@Override
-	public void bindParameter(PreparedStatement statement, SQLParameterBinding parameterBinding, int position) throws SQLException, Exception {
-		getAdapter().bindParameter(statement, parameterBinding, position);
-	}
-
-	@Override
-	public void bindParameter(CallableStatement statement, ProcedureParameterBinding binding) throws SQLException, Exception {
-		getAdapter().bindParameter(statement, binding);
 	}
 
 	@Override

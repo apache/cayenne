@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueEncryptor;
 
@@ -38,12 +38,12 @@ public class DefaultBindingsTransformer implements BindingsTransformer {
     }
 
     @Override
-    public void transform(ParameterBinding[] bindings) {
+    public void transform(DbAttributeBinding[] bindings) {
 
         int len = positions.length;
 
         for (int i = 0; i < len; i++) {
-            ParameterBinding b = bindings[positions[i]];
+            DbAttributeBinding b = bindings[positions[i]];
             Object transformed = transformers[i].encrypt(encryptor, b.getValue());
             b.setValue(transformed);
         }
