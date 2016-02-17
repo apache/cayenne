@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.query.Query;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,19 +26,13 @@ import static org.junit.Assert.*;
 
 /**
  */
-public class QueryLoaderTest {
+public class QueryDescriptorLoaderTest {
 
-    protected QueryLoader builder;
+    protected QueryDescriptorLoader builder;
 
     @Before
     public void setUp() throws Exception {
-        builder = new QueryLoader() {
-
-            @Override
-            public Query getQuery() {
-                return null;
-            }
-        };
+        builder = new QueryDescriptorLoader();
     }
 
     @Test

@@ -28,6 +28,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * A builder that constructs Cayenne queries from abstract configuration information
+ * defined in cayenne-data-map*.dtd. This abstract builder supports values declared in the
+ * DTD, allowing subclasses to define their own Query creation logic.
+ *
  * @since 4.0
  */
 public class QueryDescriptorLoader {
