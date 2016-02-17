@@ -21,6 +21,7 @@ package org.apache.cayenne.map.naming;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
@@ -46,18 +47,35 @@ public enum NameCheckers implements NameChecker {
 		public boolean isNameInUse(Object namingContext, String name) {
 			// null context is a situation when DataMap is a
 			// top level object of the project
-			if (namingContext == null) {
+			if(namingContext == null) {
 				return false;
 			}
 
-			if (namingContext instanceof DataDomain) {
+			if(namingContext instanceof DataDomain) {
 				DataDomain domain = (DataDomain) namingContext;
 				return domain.getDataMap(name) != null;
 			}
 
-			if (namingContext instanceof DataChannelDescriptor) {
+			if(namingContext instanceof DataChannelDescriptor) {
 				DataChannelDescriptor domain = (DataChannelDescriptor) namingContext;
 				return domain.getDataMap(name) != null;
+			}
+			return false;
+		}
+	},
+
+	reverseEngineering("reverseEngineering") {
+		@Override
+		public boolean isNameInUse(Object namingContext, String name) {
+			if(namingContext == null) {
+				return false;
+			}
+
+			for (DataMap dataMap : ((DataChannelDescriptor) namingContext).getDataMaps()) {
+                if(dataMap!= null && dataMap.getReverseEngineering() != null &&
+                        dataMap.getReverseEngineering().getName()!=null && dataMap.getReverseEngineering().getName().equals(name)) {
+                    return true;
+                }
 			}
 			return false;
 		}
@@ -75,7 +93,7 @@ public enum NameCheckers implements NameChecker {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			DataMap map = (DataMap) namingContext;
-            return map.getEmbeddable(map.getNameWithDefaultPackage(name)) != null;
+			return map.getEmbeddable(map.getNameWithDefaultPackage(name)) != null;
 		}
 	},
 
@@ -105,7 +123,7 @@ public enum NameCheckers implements NameChecker {
 			Procedure procedure = (Procedure) namingContext;
 			for (final ProcedureParameter parameter : procedure
 					.getCallParameters()) {
-				if (name.equals(parameter.getName())) {
+				if(name.equals(parameter.getName())) {
 					return true;
 				}
 			}
@@ -150,9 +168,9 @@ public enum NameCheckers implements NameChecker {
 		@Override
 		public boolean isNameInUse(Object namingContext, String name) {
 			DataChannelDescriptor domain = (DataChannelDescriptor) namingContext;
-			for (org.apache.cayenne.configuration.DataNodeDescriptor dataNodeDescriptor : domain
+			for (DataNodeDescriptor dataNodeDescriptor : domain
 					.getNodeDescriptors()) {
-				if (dataNodeDescriptor.getName().equals(name)) {
+				if(dataNodeDescriptor.getName().equals(name)) {
 					return true;
 				}
 			}
@@ -166,7 +184,7 @@ public enum NameCheckers implements NameChecker {
 			ObjEntity ent = (ObjEntity) namingContext;
 			return dbAttribute.isNameInUse(namingContext, name)
 					|| ent.getCallbackMethods().contains(
-							"get" + StringUtils.capitalize(name));
+					"get" + StringUtils.capitalize(name));
 		}
 	},
 
@@ -184,7 +202,7 @@ public enum NameCheckers implements NameChecker {
 
 			return name.startsWith("get")
 					&& dbAttribute.isNameInUse(namingContext,
-							StringUtils.uncapitalize(name.substring(3)))
+					StringUtils.uncapitalize(name.substring(3)))
 					|| ent.getCallbackMethods().contains(name);
 		}
 	};

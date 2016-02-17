@@ -25,6 +25,7 @@ import java.util.Collections;
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 
 /**
@@ -42,6 +43,9 @@ class SaveableNodesGetter extends
 
         for (DataMap map : descriptor.getDataMaps()) {
             nodes.add(map);
+            if (map.getReverseEngineering() != null) {
+                nodes.add(map.getReverseEngineering());
+            }
         }
 
         return nodes;
@@ -50,5 +54,10 @@ class SaveableNodesGetter extends
     @Override
     public Collection<ConfigurationNode> visitDataMap(DataMap dataMap) {
         return Collections.<ConfigurationNode> singletonList(dataMap);
+    }
+
+    @Override
+    public Collection<ConfigurationNode> visitReverseEngineering(ReverseEngineering reverseEngineering) {
+        return null;
     }
 }

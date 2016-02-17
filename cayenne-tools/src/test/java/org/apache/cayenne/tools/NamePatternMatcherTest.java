@@ -27,48 +27,48 @@ import org.junit.Test;
 
 public class NamePatternMatcherTest {
 
-	/**
-	 * Test pattern expansion.
-	 */
-	@Test
-	public void testReplaceWildcardInStringWithString() throws Exception {
-		assertEquals(null, replaceWildcardInStringWithString("*", null, "Entity"));
-		assertEquals("*.java", replaceWildcardInStringWithString(null, "*.java", "Entity"));
-		assertEquals("Entity.java", replaceWildcardInStringWithString("*", "*.java", "Entity"));
-		assertEquals("java.Entity", replaceWildcardInStringWithString("*", "java.*", "Entity"));
-		assertEquals("Entity.Entity", replaceWildcardInStringWithString("*", "*.*", "Entity"));
-		assertEquals("EntityEntity", replaceWildcardInStringWithString("*", "**", "Entity"));
-		assertEquals("EditEntityReport.vm", replaceWildcardInStringWithString("*", "Edit*Report.vm", "Entity"));
-		assertEquals("Entity", replaceWildcardInStringWithString("*", "*", "Entity"));
-	}
+    /**
+     * Test pattern expansion.
+     */
+    @Test
+    public void testReplaceWildcardInStringWithString() throws Exception {
+        assertEquals(null, replaceWildcardInStringWithString("*", null, "Entity"));
+        assertEquals("*.java", replaceWildcardInStringWithString(null, "*.java", "Entity"));
+        assertEquals("Entity.java", replaceWildcardInStringWithString("*", "*.java", "Entity"));
+        assertEquals("java.Entity", replaceWildcardInStringWithString("*", "java.*", "Entity"));
+        assertEquals("Entity.Entity", replaceWildcardInStringWithString("*", "*.*", "Entity"));
+        assertEquals("EntityEntity", replaceWildcardInStringWithString("*", "**", "Entity"));
+        assertEquals("EditEntityReport.vm", replaceWildcardInStringWithString("*", "Edit*Report.vm", "Entity"));
+        assertEquals("Entity", replaceWildcardInStringWithString("*", "*", "Entity"));
+    }
 
-	/**
-	 * Test tokenizing
-	 */
-	@Test
-	public void testTokenizer() {
+    /**
+     * Test tokenizing
+     */
+    @Test
+    public void testTokenizer() {
 
-		String[] nullFilters = NamePatternMatcher.tokenizePattern(null);
-		assertEquals(0, nullFilters.length);
+        String[] nullFilters = NamePatternMatcher.tokenizePattern(null);
+        assertEquals(0, nullFilters.length);
 
-		String[] filters = NamePatternMatcher.tokenizePattern("billing_*,user?");
-		assertEquals(2, filters.length);
-		assertEquals("^billing_.*$", filters[0]);
-		assertEquals("^user.?$", filters[1]);
-	}
+        String[] filters = NamePatternMatcher.tokenizePattern("billing_*,user?");
+        assertEquals(2, filters.length);
+        assertEquals("^billing_.*$", filters[0]);
+        assertEquals("^user.?$", filters[1]);
+    }
 
-	/**
-	 * Test tokenizing
-	 */
-	@Test
-	public void testTokenizerEntities() {
+    /**
+     * Test tokenizing
+     */
+    @Test
+    public void testTokenizerEntities() {
 
-		String includePattern = "Organization,SecGroup,SecIndividual";
+        String includePattern = "Organization,SecGroup,SecIndividual";
 
-		String[] filters = NamePatternMatcher.tokenizePattern(includePattern);
-		assertEquals(3, filters.length);
-		assertEquals("^Organization$", filters[0]);
-		assertEquals("^SecGroup$", filters[1]);
-		assertEquals("^SecIndividual$", filters[2]);
-	}
+        String[] filters = NamePatternMatcher.tokenizePattern(includePattern);
+        assertEquals(3, filters.length);
+        assertEquals("^Organization$", filters[0]);
+        assertEquals("^SecGroup$", filters[1]);
+        assertEquals("^SecIndividual$", filters[2]);
+    }
 }

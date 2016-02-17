@@ -43,7 +43,7 @@ public class AntDataPortDelegateTest {
         assertTrue(delegate.passedDataMapFilter(map));
 
         delegate.mapFilters = new Pattern[] {
-            Pattern.compile("B")
+                Pattern.compile("B")
         };
         assertFalse(delegate.passedDataMapFilter(map));
 

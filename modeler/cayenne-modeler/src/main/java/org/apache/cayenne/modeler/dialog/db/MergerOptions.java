@@ -68,15 +68,11 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
-import org.apache.cayenne.tools.dbimport.config.FiltersConfigBuilder;
-import org.apache.cayenne.tools.dbimport.config.ReverseEngineering;
-import org.apache.cayenne.tools.dbimport.config.Schema;
 import org.apache.cayenne.validation.ValidationResult;
 
 public class MergerOptions extends CayenneController {
 
     protected MergerOptionsView view;
-    // protected ObjectBinding[] optionBindings;
     protected ObjectBinding sqlBinding;
 
     protected DBConnectionInfo connectionInfo;

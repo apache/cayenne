@@ -18,35 +18,6 @@
  */
 package org.apache.cayenne.tools.dbimport;
 
-import static java.util.Arrays.asList;
-import static org.apache.cayenne.merge.builders.ObjectMother.dbAttr;
-import static org.apache.cayenne.merge.builders.ObjectMother.dbEntity;
-import static org.apache.cayenne.merge.builders.ObjectMother.objAttr;
-import static org.apache.cayenne.merge.builders.ObjectMother.objEntity;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.stub;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.DbLoaderDelegate;
@@ -77,266 +48,301 @@ import org.apache.commons.logging.Log;
 import org.junit.Test;
 import org.xml.sax.InputSource;
 
+import javax.sql.DataSource;
+import java.io.File;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.apache.cayenne.merge.builders.ObjectMother.dbAttr;
+import static org.apache.cayenne.merge.builders.ObjectMother.dbEntity;
+import static org.apache.cayenne.merge.builders.ObjectMother.objAttr;
+import static org.apache.cayenne.merge.builders.ObjectMother.objEntity;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 public class DbImportActionTest {
 
-	public static final File FILE_STUB = new File("") {
+    public static final File FILE_STUB = new File("") {
+        @Override
+        public boolean exists() {
+            return true;
+        }
 
-		private static final long serialVersionUID = -7513956717393115824L;
+        @Override
+        public boolean canRead() {
+            return true;
+        }
+    };
 
-		@Override
-		public boolean exists() {
-			return true;
-		}
+    @Test
+    public void testNewDataMapImport() throws Exception {
 
-		@Override
-		public boolean canRead() {
-			return true;
-		}
-	};
+        DbLoader dbLoader = new DbLoader(null, null, null) {
+            @Override
+            public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
+                new DataMapBuilder(dataMap).withDbEntities(2).build();
+            }
 
-	@Test
-	public void testNewDataMapImport() throws Exception {
+            @Override
+            public String[] getDefaultTableTypes() {
+                return null;
+            }
+        };
 
-		DbLoader dbLoader = new DbLoader(null, null, null) {
-			@Override
-			public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
-				new DataMapBuilder(dataMap).withDbEntities(2).build();
-			}
+        DbImportConfiguration params = mock(DbImportConfiguration.class);
+        when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
+                .thenReturn(dbLoader);
 
-			@Override
-			public String[] getDefaultTableTypes() {
-				return null;
-			}
-		};
+        when(params.createDataMap()).thenReturn(new DataMap("testImport"));
+        when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
+        when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
 
-		DbImportConfiguration params = mock(DbImportConfiguration.class);
-		when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class))).thenReturn(
-				dbLoader);
+        final DataMap DATA_MAP = new DataMap();
+        when(params.initializeDataMap(any(DataMap.class))).thenReturn(DATA_MAP);
 
-		when(params.createDataMap()).thenReturn(new DataMap("testImport"));
-		when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
-		when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
+        final boolean[] haveWeTriedToSave = {false};
+        DbImportActionDefault action = buildDbImportAction(new FileProjectSaver() {
+            @Override
+            public void save(Project project) {
+                haveWeTriedToSave[0] = true;
 
-		final DataMap DATA_MAP = new DataMap();
-		when(params.initializeDataMap(any(DataMap.class))).thenReturn(DATA_MAP);
+                // Validation phase
+                assertEquals(DATA_MAP, project.getRootNode());
+            }
+        }, null);
 
-		final boolean[] haveWeTriedToSave = { false };
-		DbImportAction action = buildDbImportAction(new FileProjectSaver() {
-			@Override
-			public void save(Project project) {
-				haveWeTriedToSave[0] = true;
+        action.execute(params);
 
-				// Validation phase
-				assertEquals(DATA_MAP, project.getRootNode());
-			}
-		}, null);
+        assertTrue("We should try to save.", haveWeTriedToSave[0]);
+    }
 
-		action.execute(params);
+    @Test
+    public void testImportWithFieldChanged() throws Exception {
+        DbLoader dbLoader = new DbLoader(null, null, null) {
+            @Override
+            public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
+                new DataMapBuilder(dataMap).with(
+                        dbEntity("ARTGROUP").attributes(
+                                dbAttr("GROUP_ID").typeInt().primaryKey(),
+                                dbAttr("NAME").typeVarchar(100).mandatory(),
+                                dbAttr("NAME_01").typeVarchar(100).mandatory(),
+                                dbAttr("PARENT_GROUP_ID").typeInt()
+                        )).with(
+                        objEntity("org.apache.cayenne.testdo.testmap", "ArtGroup", "ARTGROUP").attributes(
+                                objAttr("name").type(String.class).dbPath("NAME")
+                        ));
+            }
 
-		assertTrue("We should try to save.", haveWeTriedToSave[0]);
-	}
+            @Override
+            public String[] getDefaultTableTypes() {
+                return null;
+            }
+        };
 
-	@Test
-	public void testImportWithFieldChanged() throws Exception {
-		DbLoader dbLoader = new DbLoader(null, null, null) {
-			@Override
-			public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
-				new DataMapBuilder(dataMap).with(
-						dbEntity("ARTGROUP").attributes(dbAttr("GROUP_ID").typeInt().primaryKey(),
-								dbAttr("NAME").typeVarchar(100).mandatory(),
-								dbAttr("NAME_01").typeVarchar(100).mandatory(), dbAttr("PARENT_GROUP_ID").typeInt()))
-						.with(objEntity("org.apache.cayenne.testdo.testmap", "ArtGroup", "ARTGROUP").attributes(
-								objAttr("name").type(String.class).dbPath("NAME")));
-			}
+        DbImportConfiguration params = mock(DbImportConfiguration.class);
+        when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
+                .thenReturn(dbLoader);
 
-			@Override
-			public String[] getDefaultTableTypes() {
-				return null;
-			}
-		};
+        when(params.createDataMap()).thenReturn(new DataMap("testImport"));
+        when(params.getDataMapFile()).thenReturn(FILE_STUB);
+        when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
+        when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
 
-		DbImportConfiguration params = mock(DbImportConfiguration.class);
-		when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class))).thenReturn(
-				dbLoader);
+        final boolean[] haveWeTriedToSave = {false};
+        DbImportActionDefault action = buildDbImportAction(new FileProjectSaver() {
+            @Override
+            public void save(Project project) {
+                haveWeTriedToSave[0] = true;
 
-		when(params.createDataMap()).thenReturn(new DataMap("testImport"));
-		when(params.getDataMapFile()).thenReturn(FILE_STUB);
-		when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
-		when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
+                // Validation phase
+                DataMap rootNode = (DataMap) project.getRootNode();
+                assertEquals(1, rootNode.getObjEntities().size());
+                assertEquals(1, rootNode.getDbEntityMap().size());
 
-		final boolean[] haveWeTriedToSave = { false };
-		DbImportAction action = buildDbImportAction(new FileProjectSaver() {
-			@Override
-			public void save(Project project) {
-				haveWeTriedToSave[0] = true;
+                DbEntity entity = rootNode.getDbEntity("ARTGROUP");
+                assertNotNull(entity);
+                assertEquals(4, entity.getAttributes().size());
+                assertNotNull(entity.getAttribute("NAME_01"));
+            }
+        }, new MapLoader() {
 
-				// Validation phase
-				DataMap rootNode = (DataMap) project.getRootNode();
-				assertEquals(1, rootNode.getObjEntities().size());
-				assertEquals(1, rootNode.getDbEntityMap().size());
+            @Override
+            public synchronized DataMap loadDataMap(InputSource src) throws CayenneRuntimeException {
+                return new DataMapBuilder().with(
+                        dbEntity("ARTGROUP").attributes(
+                                dbAttr("GROUP_ID").typeInt().primaryKey(),
+                                dbAttr("NAME").typeVarchar(100).mandatory(),
+                                dbAttr("PARENT_GROUP_ID").typeInt()
+                        )).with(
+                        objEntity("org.apache.cayenne.testdo.testmap", "ArtGroup", "ARTGROUP").attributes(
+                                objAttr("name").type(String.class).dbPath("NAME")
+                        )).build();
+            }
+        });
 
-				DbEntity entity = rootNode.getDbEntity("ARTGROUP");
-				assertNotNull(entity);
-				assertEquals(4, entity.getAttributes().size());
-				assertNotNull(entity.getAttribute("NAME_01"));
-			}
-		}, new MapLoader() {
+        action.execute(params);
 
-			@Override
-			public synchronized DataMap loadDataMap(InputSource src) throws CayenneRuntimeException {
-				return new DataMapBuilder()
-						.with(dbEntity("ARTGROUP").attributes(dbAttr("GROUP_ID").typeInt().primaryKey(),
-								dbAttr("NAME").typeVarchar(100).mandatory(), dbAttr("PARENT_GROUP_ID").typeInt()))
-						.with(objEntity("org.apache.cayenne.testdo.testmap", "ArtGroup", "ARTGROUP").attributes(
-								objAttr("name").type(String.class).dbPath("NAME"))).build();
-			}
-		});
+        assertTrue("We should try to save.", haveWeTriedToSave[0]);
+    }
 
-		action.execute(params);
+    @Test
+    public void testImportWithoutChanges() throws Exception {
+        DbLoader dbLoader = new DbLoader(null, null, null) {
+            @Override
+            public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
+                new DataMapBuilder(dataMap).with(
+                        dbEntity("ARTGROUP").attributes(
+                                dbAttr("NAME").typeVarchar(100).mandatory()
+                        ));
+            }
 
-		assertTrue("We should try to save.", haveWeTriedToSave[0]);
-	}
+            @Override
+            public String[] getDefaultTableTypes() {
+                return null;
+            }
+        };
 
-	@Test
-	public void testImportWithoutChanges() throws Exception {
-		DbLoader dbLoader = new DbLoader(null, null, null) {
-			@Override
-			public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
-				new DataMapBuilder(dataMap).with(dbEntity("ARTGROUP").attributes(
-						dbAttr("NAME").typeVarchar(100).mandatory()));
-			}
+        DbImportConfiguration params = mock(DbImportConfiguration.class);
+        when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
+                .thenReturn(dbLoader);
 
-			@Override
-			public String[] getDefaultTableTypes() {
-				return null;
-			}
-		};
+        when(params.createDataMap()).thenReturn(new DataMap("testImport"));
+        when(params.getDataMapFile()).thenReturn(FILE_STUB);
+        when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
+        when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
 
-		DbImportConfiguration params = mock(DbImportConfiguration.class);
-		when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class))).thenReturn(
-				dbLoader);
+        Log log = mock(Log.class);
+        when(log.isDebugEnabled()).thenReturn(false);
+        when(log.isInfoEnabled()).thenReturn(false);
 
-		when(params.createDataMap()).thenReturn(new DataMap("testImport"));
-		when(params.getDataMapFile()).thenReturn(FILE_STUB);
-		when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
-		when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
+        FileProjectSaver projectSaver = mock(FileProjectSaver.class);
+        doNothing().when(projectSaver).save(any(Project.class));
 
-		Log log = mock(Log.class);
-		when(log.isDebugEnabled()).thenReturn(false);
-		when(log.isInfoEnabled()).thenReturn(false);
+        MapLoader mapLoader = mock(MapLoader.class);
+        stub(mapLoader.loadDataMap(any(InputSource.class))).toReturn(new DataMapBuilder().with(
+                dbEntity("ARTGROUP").attributes(
+                        dbAttr("NAME").typeVarchar(100).mandatory()
+                )).build());
 
-		FileProjectSaver projectSaver = mock(FileProjectSaver.class);
-		doNothing().when(projectSaver).save(any(Project.class));
+        DbImportActionDefault action = buildDbImportAction(log, projectSaver, mapLoader);
 
-		MapLoader mapLoader = mock(MapLoader.class);
-		stub(mapLoader.loadDataMap(any(InputSource.class))).toReturn(
-				new DataMapBuilder().with(dbEntity("ARTGROUP").attributes(dbAttr("NAME").typeVarchar(100).mandatory()))
-						.build());
+        action.execute(params);
 
-		DbImportAction action = buildDbImportAction(log, projectSaver, mapLoader);
+        verify(projectSaver, never()).save(any(Project.class));
+        verify(mapLoader, times(1)).loadDataMap(any(InputSource.class));
+    }
 
-		action.execute(params);
+    @Test
+    public void testImportWithDbError() throws Exception {
+        DbLoader dbLoader = mock(DbLoader.class);
+        when(dbLoader.getDefaultTableTypes()).thenReturn(null);
+        doThrow(new SQLException()).when(dbLoader).load(any(DataMap.class), any(DbLoaderConfiguration.class));
 
-		verify(projectSaver, never()).save(any(Project.class));
-		verify(mapLoader, times(1)).loadDataMap(any(InputSource.class));
-	}
+        DbImportConfiguration params = mock(DbImportConfiguration.class);
+        when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
+                .thenReturn(dbLoader);
 
-	@Test
-	public void testImportWithDbError() throws Exception {
-		DbLoader dbLoader = mock(DbLoader.class);
-		when(dbLoader.getDefaultTableTypes()).thenReturn(null);
-		doThrow(new SQLException()).when(dbLoader).load(any(DataMap.class), any(DbLoaderConfiguration.class));
+        FileProjectSaver projectSaver = mock(FileProjectSaver.class);
+        doNothing().when(projectSaver).save(any(Project.class));
 
-		DbImportConfiguration params = mock(DbImportConfiguration.class);
-		when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class))).thenReturn(
-				dbLoader);
+        MapLoader mapLoader = mock(MapLoader.class);
+        when(mapLoader.loadDataMap(any(InputSource.class))).thenReturn(null);
 
-		FileProjectSaver projectSaver = mock(FileProjectSaver.class);
-		doNothing().when(projectSaver).save(any(Project.class));
+        DbImportActionDefault action = buildDbImportAction(projectSaver, mapLoader);
 
-		MapLoader mapLoader = mock(MapLoader.class);
-		when(mapLoader.loadDataMap(any(InputSource.class))).thenReturn(null);
+        try {
+            action.execute(params);
+            fail();
+        } catch (SQLException e) {
+            // expected
+        }
 
-		DbImportAction action = buildDbImportAction(projectSaver, mapLoader);
+        verify(projectSaver, never()).save(any(Project.class));
+        verify(mapLoader, never()).loadDataMap(any(InputSource.class));
+    }
 
-		try {
-			action.execute(params);
-			fail();
-		} catch (SQLException e) {
-			// expected
-		}
+    private DbImportActionDefault buildDbImportAction(FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
+        Log log = mock(Log.class);
+        when(log.isDebugEnabled()).thenReturn(true);
+        when(log.isInfoEnabled()).thenReturn(true);
 
-		verify(projectSaver, never()).save(any(Project.class));
-		verify(mapLoader, never()).loadDataMap(any(InputSource.class));
-	}
+        return buildDbImportAction(log, projectSaver, mapLoader);
+    }
 
-	private DbImportAction buildDbImportAction(FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
-		Log log = mock(Log.class);
-		when(log.isDebugEnabled()).thenReturn(true);
-		when(log.isInfoEnabled()).thenReturn(true);
+    private DbImportActionDefault buildDbImportAction(Log log, FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
+        DbAdapter dbAdapter = mock(DbAdapter.class);
+        when(dbAdapter.mergerFactory()).thenReturn(new MergerFactory());
 
-		return buildDbImportAction(log, projectSaver, mapLoader);
-	}
+        DbAdapterFactory adapterFactory = mock(DbAdapterFactory.class);
+        when(adapterFactory.createAdapter(any(DataNodeDescriptor.class), any(DataSource.class))).thenReturn(dbAdapter);
 
-	private DbImportAction buildDbImportAction(Log log, FileProjectSaver projectSaver, MapLoader mapLoader)
-			throws Exception {
-		DbAdapter dbAdapter = mock(DbAdapter.class);
-		when(dbAdapter.mergerFactory()).thenReturn(new MergerFactory());
+        DataSourceFactory dataSourceFactory = mock(DataSourceFactory.class);
+        DataSource mock = mock(DataSource.class);
+        when(dataSourceFactory.getDataSource(any(DataNodeDescriptor.class))).thenReturn(mock);
 
-		DbAdapterFactory adapterFactory = mock(DbAdapterFactory.class);
-		when(adapterFactory.createAdapter(any(DataNodeDescriptor.class), any(DataSource.class))).thenReturn(dbAdapter);
+        return new DbImportActionDefault(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader);
+    }
 
-		DataSourceFactory dataSourceFactory = mock(DataSourceFactory.class);
-		DataSource mock = mock(DataSource.class);
-		when(dataSourceFactory.getDataSource(any(DataNodeDescriptor.class))).thenReturn(mock);
+    @Test
+    public void testSaveLoaded() throws Exception {
+        Log log = mock(Log.class);
+        Injector i = DIBootstrap.createInjector(new ToolsModule(log), new DbImportModule());
 
-		return new DbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader);
-	}
+        DbImportActionDefault action = (DbImportActionDefault) i.getInstance(DbImportAction.class);
 
-	@Test
-	public void testSaveLoaded() throws Exception {
-		Log log = mock(Log.class);
-		Injector i = DIBootstrap.createInjector(new ToolsModule(log), new DbImportModule());
+        String packagePath = getClass().getPackage().getName().replace('.', '/');
+        URL packageUrl = getClass().getClassLoader().getResource(packagePath);
+        assertNotNull(packageUrl);
+        URL outUrl = new URL(packageUrl, "dbimport/testSaveLoaded1.map.xml");
 
-		DbImportAction action = i.getInstance(DbImportAction.class);
+        File out = new File(outUrl.toURI());
+        out.delete();
+        assertFalse(out.isFile());
 
-		String packagePath = getClass().getPackage().getName().replace('.', '/');
-		URL packageUrl = getClass().getClassLoader().getResource(packagePath);
-		assertNotNull(packageUrl);
-		URL outUrl = new URL(packageUrl, "dbimport/testSaveLoaded1.map.xml");
+        DataMap map = new DataMap("testSaveLoaded1");
+        map.setConfigurationSource(new URLResource(outUrl));
 
-		File out = new File(outUrl.toURI());
-		out.delete();
-		assertFalse(out.isFile());
+        action.saveLoaded(map);
 
-		DataMap map = new DataMap("testSaveLoaded1");
-		map.setConfigurationSource(new URLResource(outUrl));
+        assertTrue(out.isFile());
 
-		action.saveLoaded(map);
+        String contents = Util.stringFromFile(out);
+        assertTrue("Has no project version saved", contents.contains("project-version=\""));
+    }
 
-		assertTrue(out.isFile());
+    @Test
+    public void testMergeTokensSorting() {
+        LinkedList<MergerToken> tokens = new LinkedList<MergerToken>();
+        tokens.add(new AddColumnToDb(null, null));
+        tokens.add(new AddRelationshipToDb(null, null));
+        tokens.add(new CreateTableToDb(null));
+        tokens.add(new CreateTableToModel(null));
 
-		String contents = Util.stringFromFile(out);
-		assertTrue("Has no project version saved", contents.contains("project-version=\""));
-	}
+        assertEquals(asList("AddColumnToDb", "CreateTableToDb", "CreateTableToModel", "AddRelationshipToDb"),
+                toClasses(DbImportActionDefault.sort(tokens)));
+    }
 
-	@Test
-	public void testMergeTokensSorting() {
-		LinkedList<MergerToken> tokens = new LinkedList<MergerToken>();
-		tokens.add(new AddColumnToDb(null, null));
-		tokens.add(new AddRelationshipToDb(null, null));
-		tokens.add(new CreateTableToDb(null));
-		tokens.add(new CreateTableToModel(null));
-
-		assertEquals(asList("AddColumnToDb", "CreateTableToDb", "CreateTableToModel", "AddRelationshipToDb"),
-				toClasses(DbImportAction.sort(tokens)));
-	}
-
-	private List<String> toClasses(List<MergerToken> sort) {
-		LinkedList<String> res = new LinkedList<String>();
-		for (MergerToken mergerToken : sort) {
-			res.add(mergerToken.getClass().getSimpleName());
-		}
-		return res;
-	}
+    private List<String> toClasses(List<MergerToken> sort) {
+        LinkedList<String> res = new LinkedList<String>();
+        for (MergerToken mergerToken : sort) {
+            res.add(mergerToken.getClass().getSimpleName());
+        }
+        return res;
+    }
 }
