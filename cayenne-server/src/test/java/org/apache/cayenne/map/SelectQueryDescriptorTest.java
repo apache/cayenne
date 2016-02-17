@@ -20,9 +20,7 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.*;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -31,20 +29,22 @@ import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class SelectQueryBuilderTest {
+public class SelectQueryDescriptorTest {
 
     @Test
     public void testGetQueryType() throws Exception {
-        SelectQueryBuilder builder = new MockupRootQueryBuilder();
-        assertTrue(builder.getQuery() instanceof SelectQuery);
+        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        builder.setRoot("FakeRoot");
+        assertTrue(builder.buildQuery() instanceof SelectQuery);
     }
 
     @Test
     public void testGetQueryName() throws Exception {
-        SelectQueryBuilder builder = new MockupRootQueryBuilder();
+        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        builder.setRoot("FakeRoot");
         builder.setName("xyz");
 
-        assertEquals("xyz", builder.getQuery().getName());
+        assertEquals("xyz", builder.buildQuery().getName());
     }
 
     @Test
@@ -53,43 +53,37 @@ public class SelectQueryBuilderTest {
         ObjEntity entity = new ObjEntity("A");
         map.addObjEntity(entity);
 
-        SelectQueryBuilder builder = new SelectQueryBuilder();
-        builder.setRoot(map, MapLoader.OBJ_ENTITY_ROOT, "A");
+        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        builder.setRoot(entity);
 
-        assertTrue(builder.getQuery() instanceof SelectQuery);
-        assertSame(entity, ((SelectQuery) builder.getQuery()).getRoot());
+        assertTrue(builder.buildQuery() instanceof SelectQuery);
+        assertSame(entity, ((SelectQuery) builder.buildQuery()).getRoot());
     }
 
     @Test
     public void testGetQueryQualifier() throws Exception {
-        SelectQueryBuilder builder = new MockupRootQueryBuilder();
-        builder.setQualifier("abc = 5");
+        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        builder.setRoot("FakeRoot");
+        builder.setQualifier(Expression.fromString("abc = 5"));
 
-        SelectQuery query = (SelectQuery) builder.getQuery();
+        SelectQuery query = (SelectQuery) builder.buildQuery();
 
         assertEquals(Expression.fromString("abc = 5"), query.getQualifier());
     }
 
     @Test
     public void testGetQueryProperties() throws Exception {
-        SelectQueryBuilder builder = new MockupRootQueryBuilder();
-        builder.addProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, "5");
-        builder.addProperty(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY, "6");
+        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
+        builder.setRoot("FakeRoot");
+        builder.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, "5");
+        builder.setProperty(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY, "6");
 
-        Query query = builder.getQuery();
+        Query query = builder.buildQuery();
         assertTrue(query instanceof SelectQuery);
         assertEquals(5, ((SelectQuery) query).getFetchLimit());
         
         assertEquals(6, ((SelectQuery) query).getStatementFetchSize());
 
         // TODO: test other properties...
-    }
-
-    class MockupRootQueryBuilder extends SelectQueryBuilder {
-
-        @Override
-        public Object getRoot() {
-            return "FakeRoot";
-        }
     }
 }

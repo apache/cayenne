@@ -19,9 +19,7 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.*;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -31,20 +29,20 @@ import static org.junit.Assert.assertTrue;
 
 /**
  */
-public class SQLTemplateBuilderTest {
+public class SQLTemplateDescriptorTest {
 
     @Test
     public void testGetQueryType() throws Exception {
-        SQLTemplateBuilder builder = new MockupRootQueryBuilder();
-        assertTrue(builder.getQuery() instanceof SQLTemplate);
+        SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
+        assertTrue(builder.buildQuery() instanceof SQLTemplate);
     }
 
     @Test
     public void testGetQueryName() throws Exception {
-        SQLTemplateBuilder builder = new MockupRootQueryBuilder();
+        SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
         builder.setName("xyz");
 
-        assertEquals("xyz", builder.getQuery().getName());
+        assertEquals("xyz", builder.buildQuery().getName());
     }
 
     @Test
@@ -53,21 +51,21 @@ public class SQLTemplateBuilderTest {
         ObjEntity entity = new ObjEntity("A");
         map.addObjEntity(entity);
 
-        SQLTemplateBuilder builder = new SQLTemplateBuilder();
-        builder.setRoot(map, MapLoader.OBJ_ENTITY_ROOT, "A");
+        SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
+        builder.setRoot(entity);
 
-        Query query = builder.getQuery();
+        Query query = builder.buildQuery();
         assertTrue(query instanceof SQLTemplate);
         assertSame(entity, ((SQLTemplate) query).getRoot());
     }
 
     @Test
     public void testGetQueryProperties() throws Exception {
-        SQLTemplateBuilder builder = new MockupRootQueryBuilder();
-        builder.addProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, "5");
-        builder.addProperty(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY, "6");
+        SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
+        builder.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, "5");
+        builder.setProperty(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY, "6");
 
-        Query query = builder.getQuery();
+        Query query = builder.buildQuery();
         assertTrue(query instanceof SQLTemplate);
         assertEquals(5, ((SQLTemplate) query).getFetchLimit());
         
@@ -78,28 +76,20 @@ public class SQLTemplateBuilderTest {
 
     @Test
     public void testGetQuerySql() throws Exception {
-        SQLTemplateBuilder builder = new MockupRootQueryBuilder();
-        builder.addSql("abc", null);
+        SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
+        builder.setSql("abc");
 
-        SQLTemplate query = (SQLTemplate) builder.getQuery();
+        SQLTemplate query = builder.buildQuery();
         assertEquals("abc", query.getDefaultTemplate());
     }
 
     @Test
     public void testGetQueryAdapterSql() throws Exception {
-        SQLTemplateBuilder builder = new MockupRootQueryBuilder();
-        builder.addSql("abc", "adapter");
+        SQLTemplateDescriptor builder = QueryDescriptor.sqlTemplateDescriptor();
+        builder.getAdapterSql().put("adapter", "abc");
 
-        SQLTemplate query = (SQLTemplate) builder.getQuery();
+        SQLTemplate query = builder.buildQuery();
         assertNull(query.getDefaultTemplate());
         assertEquals("abc", query.getTemplate("adapter"));
-    }
-
-    class MockupRootQueryBuilder extends SQLTemplateBuilder {
-
-        @Override
-        public Object getRoot() {
-            return "FakeRoot";
-        }
     }
 }
