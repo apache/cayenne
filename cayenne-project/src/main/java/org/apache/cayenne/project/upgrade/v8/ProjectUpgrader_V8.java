@@ -16,29 +16,27 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project;
+package org.apache.cayenne.project.upgrade.v8;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.project.upgrade.ProjectUpgrader;
-import org.apache.cayenne.project.upgrade.v8.ProjectUpgrader_V8;
-import org.apache.cayenne.project.validation.DefaultProjectValidator;
-import org.apache.cayenne.project.validation.ProjectValidator;
+import org.apache.cayenne.project.upgrade.UpgradeHandler;
+import org.apache.cayenne.resource.Resource;
 
 /**
- * A dependency injection (DI) module contributing configuration related to Cayenne
- * mapping project manipulation to a DI container.
- * 
- * @since 3.1
+ * A ProjectUpgrader that handles project upgrades from version 4.0.M3 and 7
+ * to version 8.
  */
-public class CayenneProjectModule implements Module {
+public class ProjectUpgrader_V8 implements ProjectUpgrader {
 
-    public void configure(Binder binder) {
-        binder.bind(ProjectLoader.class).to(DataChannelProjectLoader.class);
-        binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
-        binder.bind(ProjectUpgrader.class).to(ProjectUpgrader_V8.class);
-        binder.bind(ProjectValidator.class).to(DefaultProjectValidator.class);
-        binder.bind(ConfigurationNodeParentGetter.class).to(
-                DefaultConfigurationNodeParentGetter.class);
+    @Inject
+    protected Injector injector;
+
+    @Override
+    public UpgradeHandler getUpgradeHandler(Resource projectSource) {
+        UpgradeHandler_V8 handler = new UpgradeHandler_V8(projectSource);
+        injector.injectMembers(handler);
+        return handler;
     }
 }
