@@ -25,9 +25,9 @@
 	are usually combined in one shared namespace, so the elements of the DataMap
 	may reference objects from other DataMaps.
 --> 
-<xs:schema targetNamespace="http://cayenne.apache.org/schema/7/modelMap"
-	xmlns:cay="http://cayenne.apache.org/schema/7/modelMap"
-	xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="7">
+<xs:schema targetNamespace="http://cayenne.apache.org/schema/8/modelMap"
+	xmlns:cay="http://cayenne.apache.org/schema/8/modelMap"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="8">
 	<xs:element name="data-map">
 		<xs:complexType>
 			<xs:sequence>
@@ -172,7 +172,7 @@
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:ordering"/>
 				<xs:element name="prefetch" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
 			</xs:sequence>
-			<xs:attribute name="factory" use="required"/>
+			<xs:attribute name="type" use="required" type="xs:string"/>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="root" use="optional" type="xs:string"/>
 			<xs:attribute name="root-name" use="optional" type="xs:string"/>
