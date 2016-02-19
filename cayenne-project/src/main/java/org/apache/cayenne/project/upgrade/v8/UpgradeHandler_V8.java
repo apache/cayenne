@@ -139,7 +139,8 @@ public class UpgradeHandler_V8 extends BaseUpgradeHandler {
                 }
 
                 DOMSource domSource = new DOMSource(datamapDoc);
-                StreamResult result = new StreamResult(new FileOutputStream(new File(mapResource.getURL().toURI())));
+                StreamResult result = new StreamResult(
+                        new FileOutputStream(new File(mapResource.getURL().getPath())));
                 transformer.transform(domSource, result);
             }
 
