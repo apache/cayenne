@@ -22,7 +22,6 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.FaultFactory;

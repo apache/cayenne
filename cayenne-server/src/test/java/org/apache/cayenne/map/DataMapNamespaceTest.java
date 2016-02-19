@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.query.QueryDescriptor;
 import org.junit.Before;
 import org.junit.Test;
 

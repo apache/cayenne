@@ -16,14 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.query;
+package org.apache.cayenne.map;
 
-import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.Map;
 
+/**
+ * @since 4.0
+ */
 public class ProcedureQueryDescriptor extends QueryDescriptor {
 
     protected String resultEntityName;

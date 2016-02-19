@@ -22,8 +22,6 @@ package org.apache.cayenne.map;
 import java.util.Collection;
 
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryDescriptor;
 
 /**
  * Defines API of a container of DbEntities, ObjEntities, Procedures, Queries

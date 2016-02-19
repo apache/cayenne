@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.query.QueryDescriptor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.Test;

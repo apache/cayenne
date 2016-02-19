@@ -21,8 +21,7 @@ package org.apache.cayenne.gen;
 import java.util.Collection;
 
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.map.QueryDescriptor;
 
 /**
  * @since 3.0

@@ -27,7 +27,7 @@ import javax.swing.event.ChangeListener;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
-import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.map.QueryDescriptor;
 
 /**
  * A tabbed view for configuring a select query.

@@ -16,19 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.query;
+package org.apache.cayenne.map;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.query.PrefetchTreeNode;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @since 4.0
+ */
 public class SelectQueryDescriptor extends QueryDescriptor {
 
     protected Expression qualifier;

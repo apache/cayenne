@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.query.*;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.naming.NameConverter;
 import org.apache.velocity.VelocityContext;
 

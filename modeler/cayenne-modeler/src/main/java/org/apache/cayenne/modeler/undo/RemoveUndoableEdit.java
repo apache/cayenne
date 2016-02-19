@@ -50,8 +50,7 @@ import org.apache.cayenne.modeler.action.CreateProcedureAction;
 import org.apache.cayenne.modeler.action.CreateQueryAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.map.QueryDescriptor;
 
 public class RemoveUndoableEdit extends CayenneUndoableEdit {
 

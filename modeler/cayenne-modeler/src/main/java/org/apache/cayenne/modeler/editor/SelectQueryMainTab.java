@@ -39,6 +39,8 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CellRenderers;

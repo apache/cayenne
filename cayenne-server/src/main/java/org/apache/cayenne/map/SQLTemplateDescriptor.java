@@ -16,15 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.query;
+package org.apache.cayenne.map;
 
-import org.apache.cayenne.map.*;
+import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 
+/**
+ * @since 4.0
+ */
 public class SQLTemplateDescriptor extends QueryDescriptor {
 
     protected String sql;

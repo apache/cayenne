@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.query.QueryType;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.map.QueryDescriptor;
 
 /**
  * @since 1.1

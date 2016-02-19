@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.editor;
 
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeView;
@@ -46,7 +47,6 @@ import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
-import org.apache.cayenne.query.*;
 import org.apache.commons.logging.LogFactory;
 
 import javax.swing.Action;

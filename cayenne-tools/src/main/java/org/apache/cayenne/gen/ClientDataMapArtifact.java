@@ -23,7 +23,7 @@ import java.util.Collection;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.naming.NameConverter;
-import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.util.Util;
 
 public class ClientDataMapArtifact extends DataMapArtifact {
