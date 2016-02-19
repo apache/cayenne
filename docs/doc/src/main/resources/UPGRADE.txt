@@ -4,6 +4,11 @@ Apache Cayenne Upgrade Information
 IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
+UPGRADING TO 4.0.M4
+
+* 4.0.M4 changes the way queries are stored in the mapping files, so all existing *.map.xml files should be upgraded.
+  To do that open each of your existing projects in the new CayenneModeler. Agree to perform an upgrade when asked.
+
 UPGRADING TO 4.0.M3
 
 * Per CAY-2026 minimal Java version is now 1.7. If you are still need Java 1.6, you can use Cayenne 3.1 or 4.0.M2 until your
