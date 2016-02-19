@@ -31,7 +31,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.FindDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.map.QueryDescriptor;
 
 import javax.swing.JTextField;
 import java.awt.Color;

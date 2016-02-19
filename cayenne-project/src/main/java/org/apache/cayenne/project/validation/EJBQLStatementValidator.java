@@ -24,7 +24,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.EJBQLQueryDescriptor;
+import org.apache.cayenne.map.EJBQLQueryDescriptor;
 
 public class EJBQLStatementValidator {
 

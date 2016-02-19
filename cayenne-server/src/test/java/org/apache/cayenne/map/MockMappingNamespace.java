@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryDescriptor;
 
 public class MockMappingNamespace implements MappingNamespace {
 

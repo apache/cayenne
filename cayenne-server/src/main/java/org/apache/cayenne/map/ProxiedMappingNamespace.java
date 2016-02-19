@@ -21,7 +21,6 @@ package org.apache.cayenne.map;
 import java.util.Collection;
 
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.query.QueryDescriptor;
 
 /**
  * A proxy for lazy on-demand initialization of the mapping cache.

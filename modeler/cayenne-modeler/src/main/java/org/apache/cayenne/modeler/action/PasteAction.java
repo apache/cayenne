@@ -47,10 +47,8 @@ import org.apache.cayenne.modeler.undo.PasteCompoundUndoableEdit;
 import org.apache.cayenne.modeler.undo.PasteUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTransferable;
-import org.apache.cayenne.query.AbstractQuery;
-import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.map.QueryDescriptor;
 
 import javax.swing.KeyStroke;
 import javax.swing.undo.UndoableEdit;

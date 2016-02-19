@@ -26,7 +26,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
 
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.query.QueryMetadata;
 
 import com.jgoodies.forms.builder.PanelBuilder;

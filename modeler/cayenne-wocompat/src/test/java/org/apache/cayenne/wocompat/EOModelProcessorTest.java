@@ -26,15 +26,14 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.QueryDescriptor;
-import org.apache.cayenne.query.SelectQueryDescriptor;
+import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

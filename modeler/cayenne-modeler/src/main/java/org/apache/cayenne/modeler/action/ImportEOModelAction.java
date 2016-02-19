@@ -56,7 +56,7 @@ import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;
-import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.wocompat.EOModelProcessor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;

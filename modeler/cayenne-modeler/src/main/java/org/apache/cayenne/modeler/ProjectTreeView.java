@@ -77,7 +77,7 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.resource.Resource;
 import org.apache.commons.logging.Log;

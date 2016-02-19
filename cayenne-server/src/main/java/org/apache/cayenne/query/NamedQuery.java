@@ -24,6 +24,7 @@ import java.util.*;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.Util;

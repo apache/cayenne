@@ -16,12 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.query;
+package org.apache.cayenne.map;
 
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.Map;
 
+/**
+ * @since 4.0
+ */
 public class EJBQLQueryDescriptor extends QueryDescriptor {
 
     protected String ejbql;

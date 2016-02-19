@@ -20,9 +20,7 @@ package org.apache.cayenne.project.validation;
 
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.project.validation.EJBQLStatementValidator.PositionException;
-import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.EJBQLQueryDescriptor;
-import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.validation.ValidationResult;
 
 class EJBQLQueryValidator extends ConfigurationNodeValidator {

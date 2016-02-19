@@ -20,8 +20,8 @@ package org.apache.cayenne.project.validation;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.query.ProcedureQueryDescriptor;
-import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.map.ProcedureQueryDescriptor;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 

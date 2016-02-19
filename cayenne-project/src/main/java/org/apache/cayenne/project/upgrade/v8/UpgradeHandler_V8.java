@@ -32,7 +32,7 @@ import org.apache.cayenne.project.upgrade.UpgradeHandler;
 import org.apache.cayenne.project.upgrade.UpgradeMetaData;
 import org.apache.cayenne.project.upgrade.UpgradeType;
 import org.apache.cayenne.project.upgrade.v7.ProjectUpgrader_V7;
-import org.apache.cayenne.query.QueryDescriptor;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.resource.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
