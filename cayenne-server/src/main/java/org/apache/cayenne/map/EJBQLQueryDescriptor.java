@@ -31,7 +31,7 @@ public class EJBQLQueryDescriptor extends QueryDescriptor {
     protected String ejbql;
 
     public EJBQLQueryDescriptor() {
-        this.type = EJBQL_QUERY;
+        super(EJBQL_QUERY);
     }
 
     /**

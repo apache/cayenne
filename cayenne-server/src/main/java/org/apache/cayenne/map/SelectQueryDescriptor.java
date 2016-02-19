@@ -39,7 +39,7 @@ public class SelectQueryDescriptor extends QueryDescriptor {
     protected List<String> prefetches = new ArrayList<>();
 
     public SelectQueryDescriptor() {
-        this.type = SELECT_QUERY;
+        super(SELECT_QUERY);
     }
 
     public void setDistinct(boolean value) {

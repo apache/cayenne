@@ -35,7 +35,7 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
     protected Map<String, String> adapterSql = new HashMap<>();
 
     public SQLTemplateDescriptor() {
-        this.type = SQL_TEMPLATE;
+        super(SQL_TEMPLATE);
     }
 
     /**
