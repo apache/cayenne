@@ -31,7 +31,7 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
     protected String resultEntityName;
 
     public ProcedureQueryDescriptor() {
-        this.type = PROCEDURE_QUERY;
+        super(PROCEDURE_QUERY);
     }
 
     /**

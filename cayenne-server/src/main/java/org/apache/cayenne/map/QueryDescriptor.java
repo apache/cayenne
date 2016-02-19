@@ -83,8 +83,7 @@ public class QueryDescriptor implements Serializable, ConfigurationNode, XMLSeri
             case PROCEDURE_QUERY:
                 return procedureQueryDescriptor();
             default:
-                QueryDescriptor descriptor = new QueryDescriptor();
-                descriptor.setType(type);
+                QueryDescriptor descriptor = new QueryDescriptor(type);
                 return descriptor;
         }
     }
@@ -96,8 +95,8 @@ public class QueryDescriptor implements Serializable, ConfigurationNode, XMLSeri
 
     protected Map<String, String> properties = new HashMap<>();
 
-    protected QueryDescriptor() {
-
+    protected QueryDescriptor(String type) {
+        this.type = type;
     }
 
     /**
