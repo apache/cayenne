@@ -30,15 +30,12 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.query.Query;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -126,9 +123,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
      */
     public void initFromModel(QueryDescriptor query) {
         super.initFromModel(query);
-//        EntityResolver entRes = new EntityResolver(((DataChannelDescriptor) mediator
-//                .getProject()
-//                .getRootNode()).getDataMaps());
+
         boolean fetchingDO = !Boolean.valueOf(query.getProperties().get(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY));
         dataObjects.setSelected(fetchingDO);
 
