@@ -53,10 +53,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.NamedQuery;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.Select;
+import org.apache.cayenne.query.*;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
@@ -1003,7 +1000,7 @@ public class DataContext extends BaseContext {
      * @since 1.1
      */
     public int[] performNonSelectingQuery(String queryName) {
-        return performNonSelectingQuery(new NamedQuery(queryName));
+        return performNonSelectingQuery(MappedExec.query(queryName));
     }
 
     /**
@@ -1013,7 +1010,7 @@ public class DataContext extends BaseContext {
      * @since 1.1
      */
     public int[] performNonSelectingQuery(String queryName, Map<String, ?> parameters) {
-        return performNonSelectingQuery(new NamedQuery(queryName, parameters));
+        return performNonSelectingQuery(MappedExec.query(queryName).params(parameters));
     }
 
     /**
@@ -1053,9 +1050,9 @@ public class DataContext extends BaseContext {
      * @since 1.1
      */
     public List<?> performQuery(String queryName, Map parameters, boolean expireCachedLists) {
-        NamedQuery query = new NamedQuery(queryName, parameters);
-        query.setForceNoCache(expireCachedLists);
-        return performQuery(query);
+        return performQuery(expireCachedLists ?
+                MappedSelect.query(queryName).params(parameters).forceNoCache() :
+                MappedSelect.query(queryName).params(parameters));
     }
 
     /**

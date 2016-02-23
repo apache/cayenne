@@ -24,7 +24,7 @@ import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.query.NamedQuery;
+import org.apache.cayenne.query.MappedSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -39,7 +39,6 @@ import org.apache.cayenne.util.PersistentObjectList;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -114,9 +113,7 @@ public class ClientServerChannelQueryIT extends ClientCase {
     public void testParameterizedMappedToEJBQLQueries() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        NamedQuery query = new NamedQuery("ParameterizedEJBQLMtQuery", Collections.singletonMap("g", "g1"));
-        
-        List<?> r1 = context.performQuery(query);
+        List<?> r1 = context.performQuery(MappedSelect.query("ParameterizedEJBQLMtQuery").param("g", "g1"));
         assertEquals(1, r1.size());
         assertTrue(r1.get(0) instanceof ClientMtTable1);
     }
@@ -125,8 +122,7 @@ public class ClientServerChannelQueryIT extends ClientCase {
     public void testNamedQuery() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        NamedQuery q = new NamedQuery("AllMtTable1");
-        List<?> results = context.performQuery(q);
+        List<?> results = context.performQuery(MappedSelect.query("AllMtTable1"));
 
         assertEquals(2, results.size());
         assertTrue(results.get(0) instanceof ClientMtTable1);

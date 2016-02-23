@@ -20,7 +20,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.NamedQuery;
+import org.apache.cayenne.query.MappedSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
@@ -31,7 +31,6 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -68,7 +67,7 @@ public class CayenneContextNamedQueryCachingIT extends ClientCase {
     public void testLocalCache() throws Exception {
         createThreeMtTable1sDataSet();
 
-        final NamedQuery q1 = new NamedQuery("MtQueryWithLocalCache");
+        final MappedSelect q1 = MappedSelect.query("MtQueryWithLocalCache");
 
         final List<?> result1 = context.performQuery(q1);
         assertEquals(3, result1.size());
@@ -82,7 +81,7 @@ public class CayenneContextNamedQueryCachingIT extends ClientCase {
         });
 
         // refresh
-        q1.setForceNoCache(true);
+        q1.forceNoCache();
         List<?> result3 = context.performQuery(q1);
         assertNotSame(result1, result3);
         assertEquals(3, result3.size());
@@ -92,13 +91,8 @@ public class CayenneContextNamedQueryCachingIT extends ClientCase {
     public void testLocalCacheParameterized() throws Exception {
         createThreeMtTable1sDataSet();
 
-        final NamedQuery q1 = new NamedQuery(
-                "ParameterizedMtQueryWithLocalCache",
-                Collections.singletonMap("g", "g1"));
-
-        final NamedQuery q2 = new NamedQuery(
-                "ParameterizedMtQueryWithLocalCache",
-                Collections.singletonMap("g", "g2"));
+        final MappedSelect q1 = MappedSelect.query("ParameterizedMtQueryWithLocalCache").param("g", "g1");
+        final MappedSelect q2 = MappedSelect.query("ParameterizedMtQueryWithLocalCache").param("g", "g2");
 
         final List<?> result1 = context.performQuery(q1);
         assertEquals(1, result1.size());
@@ -132,9 +126,8 @@ public class CayenneContextNamedQueryCachingIT extends ClientCase {
     public void testParameterizedMappedToEJBQLQueries() throws Exception {
         
         createThreeMtTable1sDataSet();
-        NamedQuery query = new NamedQuery("ParameterizedEJBQLMtQuery", Collections.singletonMap("g", "g1"));
-        
-        List<?> r1 = context.performQuery(query);
+
+        List<?> r1 = context.performQuery(MappedSelect.query("ParameterizedEJBQLMtQuery").param("g", "g1"));
         assertEquals(1, r1.size());
     }
 }

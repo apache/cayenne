@@ -34,6 +34,7 @@ import org.apache.cayenne.util.Util;
  * actual query is resolved during execution.
  * 
  * @since 1.2
+ * @deprecated since 4.0 you should use {@link MappedQuery} instead
  */
 public class NamedQuery extends IndirectQuery {
 

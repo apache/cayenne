@@ -21,7 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.NamedQuery;
+import org.apache.cayenne.query.MappedSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.date_time.CalendarEntity;
 import org.apache.cayenne.testdo.date_time.DateTestEntity;
@@ -146,9 +146,8 @@ public class DateTimeTypesIT extends ServerCase {
         Date now = cal.getTime();
         test.setTimestampColumn(now);
         context.commitChanges();
-
-        NamedQuery q = new NamedQuery("SelectDateTest");
-        DataRow testRead = (DataRow) context.performQuery(q).get(0);
+		
+        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectDateTest")).get(0);
         Date columnValue = (Date) testRead.get("TIMESTAMP_COLUMN");
         assertNotNull(columnValue);
         assertEquals(now, columnValue);
@@ -168,9 +167,8 @@ public class DateTimeTypesIT extends ServerCase {
         java.sql.Date now = new java.sql.Date(cal.getTime().getTime());
         test.setDateColumn(now);
         context.commitChanges();
-
-        NamedQuery q = new NamedQuery("SelectDateTest");
-        DataRow testRead = (DataRow) context.performQuery(q).get(0);
+		
+        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectDateTest")).get(0);
         Date columnValue = (Date) testRead.get("DATE_COLUMN");
         assertNotNull(columnValue);
         assertEquals(now.toString(), new java.sql.Date(columnValue.getTime()).toString());
@@ -190,9 +188,8 @@ public class DateTimeTypesIT extends ServerCase {
         Time now = new Time(cal.getTime().getTime());
         test.setTimeColumn(now);
         context.commitChanges();
-
-        NamedQuery q = new NamedQuery("SelectDateTest");
-        DataRow testRead = (DataRow) context.performQuery(q).get(0);
+		
+        DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectDateTest")).get(0);
         Date columnValue = (Date) testRead.get("TIME_COLUMN");
         assertNotNull(testRead.toString(), columnValue);
         assertNotNull(columnValue);
