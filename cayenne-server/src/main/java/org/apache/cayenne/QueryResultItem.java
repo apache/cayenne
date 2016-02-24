@@ -21,35 +21,37 @@ package org.apache.cayenne;
 import java.util.List;
 
 /**
- * Represents a collection of items which are results of a multipart query execution.
+ * Represents a single item in a multipart query execution. Can be either an
+ * update count or a list of objects.
  *
  * @since 4.0
  */
-public interface QueryResult<T> extends Iterable<QueryResultItem> {
+public interface QueryResultItem<T> {
 
     /**
-     * Returns a number of results in the response.
+     * Returns true if encapsulated result is a select result.
      */
-    int size();
+    boolean isSelectResult();
 
     /**
-     * Returns whether current iteration result is a list or an update count.
+     * Returns true if encapsulated result is a batch update result.
      */
-    boolean isList();
+    boolean isBatchUpdate();
 
     /**
-     * A utility method for quickly retrieving the first list in the response. Returns
-     * null if the query has no lists.
+     * Returns a list of selected objects. Throws unless
+     * {@link #isSelectResult()} returns true.
      */
-    List<T> firstList();
+    List<T> getSelectResult();
 
     /**
-     * A utility method for quickly retrieving the first batch update count array from the response.
+     * Returns an update count.
      */
-    int[] firstBatchUpdateCount();
+    int getUpdateResult();
 
     /**
-     * A utility method for quick retrieval of the first update count from the response.
+     * Returns batch update result in a form of array of individual update counts.
      */
-    int firstUpdateCount();
+    int[] getBatchUpdateResult();
+
 }

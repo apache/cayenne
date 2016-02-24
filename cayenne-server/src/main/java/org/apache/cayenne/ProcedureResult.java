@@ -18,38 +18,29 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import org.apache.cayenne.util.GenericQueryResult;
+
 import java.util.List;
 
 /**
- * Represents a collection of items which are results of a multipart query execution.
+ * Result of procedure call.
  *
  * @since 4.0
  */
-public interface QueryResult<T> extends Iterable<QueryResultItem> {
+public class ProcedureResult<T> extends GenericQueryResult<T> {
+
+    public ProcedureResult(List<QueryResultItem> resultItems) {
+        super(resultItems);
+    }
+
+    public ProcedureResult(List<QueryResultItem> resultItems, Class<T> resultClass) {
+        super(resultItems, resultClass);
+    }
 
     /**
-     * Returns a number of results in the response.
+     * Returns procedure OUT parameter by its name defined in the mapping file.
      */
-    int size();
-
-    /**
-     * Returns whether current iteration result is a list or an update count.
-     */
-    boolean isList();
-
-    /**
-     * A utility method for quickly retrieving the first list in the response. Returns
-     * null if the query has no lists.
-     */
-    List<T> firstList();
-
-    /**
-     * A utility method for quickly retrieving the first batch update count array from the response.
-     */
-    int[] firstBatchUpdateCount();
-
-    /**
-     * A utility method for quick retrieval of the first update count from the response.
-     */
-    int firstUpdateCount();
+    public Object getOutParam(String paramName) {
+        return ((DataRow) firstList().get(0)).get(paramName);
+    }
 }
