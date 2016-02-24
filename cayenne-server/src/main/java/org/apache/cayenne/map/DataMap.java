@@ -332,7 +332,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		encoder.println(">");
 
         if (reverseEngineering != null) {
-            encoder.print("<reverseEngineering");
+			encoder.print("<reverse-engineering-config");
             encoder.printAttribute("name", reverseEngineering.getName().trim());
             encoder.println("/>");
         }
