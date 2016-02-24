@@ -94,7 +94,7 @@ public class MappedQueryIT extends ServerCase {
 
         Painting painting = ObjectSelect.query(Painting.class).selectOne(context);
         assertEquals("No Painting Like This", painting.getPaintingTitle());
-        assertEquals(BigDecimal.valueOf(12.5), painting.getEstimatedPrice());
+        assertEquals(12.5, painting.getEstimatedPrice().doubleValue(), 0);
     }
 
     @Test
