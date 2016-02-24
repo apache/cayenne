@@ -18,14 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.access.loader.filters.*;
+import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.XMLDataMapLoader;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
+
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -49,16 +50,16 @@ import javax.sql.DataSource;
 
 /**
  * Maven mojo to reverse engineer datamap from DB.
- * 
+ *
  * @since 3.0
- * 
+ *
  * @phase generate-sources
  * @goal cdbimport
  */
 public class DbImporterMojo extends AbstractMojo {
     /**
      * DataMap XML file to use as a base for DB importing.
-     * 
+     *
      * @parameter map="map"
      * @required
      */
@@ -68,7 +69,7 @@ public class DbImporterMojo extends AbstractMojo {
      * A default package for ObjEntity Java classes. If not specified, and the
      * existing DataMap already has the default package, the existing package
      * will be used.
-     * 
+     *
      * @parameter defaultPackage="defaultPackage"
      * @since 4.0
      */
@@ -78,7 +79,7 @@ public class DbImporterMojo extends AbstractMojo {
      * Indicates that the old mapping should be completely removed and replaced
      * with the new data based on reverse engineering. Default is
      * <code>true</code>.
-     * 
+     *
      * @parameter overwrite="overwrite" default-value="true"
      */
     private boolean overwrite;
@@ -93,9 +94,9 @@ public class DbImporterMojo extends AbstractMojo {
      * Java class implementing org.apache.cayenne.map.naming.NamingStrategy.
      * This is used to specify how ObjEntities will be mapped from the imported
      * DB schema.
-     * 
+     *
      * The default is a basic naming strategy.
-     * 
+     *
      * @parameter namingStrategy="namingStrategy"
      *            default-value="org.apache.cayenne.map.naming.DefaultNameGenerator"
      */
@@ -105,7 +106,7 @@ public class DbImporterMojo extends AbstractMojo {
      * Java class implementing org.apache.cayenne.dba.DbAdapter. This attribute
      * is optional, the default is AutoAdapter, i.e. Cayenne would try to guess
      * the DB type.
-     * 
+     *
      * @parameter adapter="adapter"
      *            default-value="org.apache.cayenne.dba.AutoAdapter"
      */
@@ -113,7 +114,7 @@ public class DbImporterMojo extends AbstractMojo {
 
     /**
      * A class of JDBC driver to use for the target database.
-     * 
+     *
      * @parameter driver="driver"
      * @required
      */
@@ -121,7 +122,7 @@ public class DbImporterMojo extends AbstractMojo {
 
     /**
      * JDBC connection URL of a target database.
-     * 
+     *
      * @parameter url="url"
      * @required
      */
@@ -129,21 +130,21 @@ public class DbImporterMojo extends AbstractMojo {
 
     /**
      * Database user name.
-     * 
+     *
      * @parameter username="username"
      */
     private String username;
 
     /**
      * Database user password.
-     * 
+     *
      * @parameter password="password"
      */
     private String password;
 
     /**
      * If true, would use primitives instead of numeric and boolean classes.
-     * 
+     *
      * @parameter usePrimitives="usePrimitives" default-value="true"
      */
     private boolean usePrimitives;
@@ -157,6 +158,16 @@ public class DbImporterMojo extends AbstractMojo {
      */
     private ReverseEngineering reverseEngineering = new ReverseEngineering();
 
+    /**
+     * Flag which defines from where to take the configuration of cdbImport.
+     * If we define the config of cdbImport in pom.xml
+     * we should set it to true or it will be setted to true automatically
+     * if we will define some configuration parameters in pom.xml
+     * Else it remains default(false) and for cdbImport
+     * we use the configuration defined in signed dataMap
+     *
+     *  @parameter isReverseEngineeringDefined="isReverseEngineeringDefined" default-value="false"
+     */
     private boolean isReverseEngineeringDefined = false;
 
     public void setIsReverseEngineeringDefined(boolean isReverseEngineeringDefined) {
@@ -283,8 +294,7 @@ public class DbImporterMojo extends AbstractMojo {
                 getLog().error(message);
                 throw new MojoExecutionException(message, th);
             }
-        }
-        else {
+        } else {
             if (dataMapFile.exists()) {
                 try {
                     URL url = dataMapFile.toURI().toURL();
@@ -293,21 +303,21 @@ public class DbImporterMojo extends AbstractMojo {
                     XMLDataMapLoader xmlDataMapLoader = new XMLDataMapLoader();
                     DataMap dataMap = xmlDataMapLoader.load(resource);
                     if (dataMap.getReverseEngineering() != null) {
-                        Resource reverseEngineeringResource = new URLResource(dataMapFile.toURI().toURL()).getRelativeResource(dataMap.getReverseEngineering().getName() + ".reverseEngineering.xml");
-
-                        DefaultReverseEngineeringLoader reverseEngineeringLoader = new DefaultReverseEngineeringLoader();
-                        ReverseEngineering reverseEngineering = reverseEngineeringLoader.load(reverseEngineeringResource.getURL().openStream());
-                        reverseEngineering.setName(dataMap.getReverseEngineering().getName());
-                        reverseEngineering.setConfigurationSource(reverseEngineeringResource);
-                        dataMap.setReverseEngineering(reverseEngineering);
-
-                        FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(dataMap.getReverseEngineering());
-                        config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.filtersConfig());
-                        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
-
-                        validateDbImportConfiguration(config, injector);
-
                         try {
+                            Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
+                            ConfigurationNameMapper nameMapper = injector.getInstance(ConfigurationNameMapper.class);
+                            String reverseEngineeringLocation = nameMapper.configurationLocation(ReverseEngineering.class, dataMap.getReverseEngineering().getName());
+                            Resource reverseEngineeringResource = new URLResource(dataMapFile.toURI().toURL()).getRelativeResource(reverseEngineeringLocation);
+
+                            DefaultReverseEngineeringLoader reverseEngineeringLoader = new DefaultReverseEngineeringLoader();
+                            ReverseEngineering reverseEngineering = reverseEngineeringLoader.load(reverseEngineeringResource.getURL().openStream());
+                            reverseEngineering.setName(dataMap.getReverseEngineering().getName());
+                            reverseEngineering.setConfigurationSource(reverseEngineeringResource);
+                            dataMap.setReverseEngineering(reverseEngineering);
+
+                            FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(dataMap.getReverseEngineering());
+                            config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.filtersConfig());
+                            validateDbImportConfiguration(config, injector);
                             injector.getInstance(DbImportAction.class).execute(config);
                         } catch (Exception ex) {
                             Throwable th = Util.unwindException(ex);
@@ -323,9 +333,6 @@ public class DbImporterMojo extends AbstractMojo {
                         }
                     }
                 } catch (MalformedURLException e) {
-                    getLog().error(e);
-                    throw new MojoExecutionException(e.getMessage(), e);
-                } catch (IOException e) {
                     getLog().error(e);
                     throw new MojoExecutionException(e.getMessage(), e);
                 }

@@ -31,6 +31,7 @@ import java.net.URL;
  */
 public interface ReverseEngineeringLoader {
 
-    ReverseEngineering load(InputStream inputStream) throws CayenneRuntimeException, SAXException, ParserConfigurationException, IOException, ReverseEngineeringLoaderException;
+    ReverseEngineering load(InputStream inputStream) throws CayenneRuntimeException, SAXException, 
+            ParserConfigurationException, IOException, ReverseEngineeringLoaderException;
 
 }

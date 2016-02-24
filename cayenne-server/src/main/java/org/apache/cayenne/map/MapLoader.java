@@ -49,7 +49,7 @@ public class MapLoader extends DefaultHandler {
 	/**
 	 * @since 4.0
 	 */
-	public static final String REVERSE_ENGINEERING = "reverseEngineering";
+	public static final String REVERSE_ENGINEERING = "reverse-engineering-config";
 
 	public static final String PROPERTY_TAG = "property";
 

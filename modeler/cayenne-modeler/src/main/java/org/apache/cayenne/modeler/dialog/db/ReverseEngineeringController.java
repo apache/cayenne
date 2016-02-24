@@ -1,22 +1,21 @@
 /*****************************************************************
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.access.DbLoader;
@@ -27,7 +26,6 @@ import org.apache.cayenne.access.loader.filters.SchemaFilter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbimport.FiltersConfigBuilder;
 import org.apache.cayenne.dbimport.ReverseEngineering;
-import org.apache.cayenne.dbimport.ReverseEngineeringLoaderException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -117,25 +115,61 @@ public class ReverseEngineeringController extends CayenneController {
         try {
             buildDBProperties();
 
-            DbLoader dbLoader = new DbLoader(connection, adapter, new DefaultDbLoaderDelegate()) {
+            final DbLoader dbLoader = new DbLoader(connection, adapter, new DefaultDbLoaderDelegate()) {
                 @Override
                 public DataMap load(DbLoaderConfiguration config) throws SQLException {
                     DataMap dataMap = new DataMap();
                     Map<String, Procedure> procedureMap = loadProcedures(dataMap, config);
-                    load(dataMap, config, procedureMap);
+                    load(dataMap, config);
+                    addProcedures(procedureMap);
                     return dataMap;
                 }
 
-                public void load(DataMap dataMap, DbLoaderConfiguration config, Map<String, Procedure> procedureMap
-                )
-                        throws SQLException {
-                    LOGGER.info("Schema loading...");
-
-                    String[] types = config.getTableTypes();
-                    if (types == null || types.length == 0) {
-                        types = getDefaultTableTypes();
+                private void addProcedures(Map<String, Procedure> procedureMap) throws SQLException {
+                    DBElement currentDBCatalog;
+                    DBElement currentDBSchema;
+                    for (Map.Entry<String, Procedure> procedure : procedureMap.entrySet()) {
+                        if (supportCatalogs()) {
+                            String dbCatalogName = procedure.getValue().getCatalog();
+                            DBElement dbCatalog = dbModel.getExistingElement(dbCatalogName);
+                            if (dbCatalog != null) {
+                                currentDBCatalog = dbCatalog;
+                            } else {
+                                currentDBCatalog = new DBCatalog(dbCatalogName);
+                                dbModel.addElement(currentDBCatalog);
+                            }
+                            if (supportSchemas()) {
+                                String dbSchemaName = procedure.getValue().getSchema();
+                                DBElement dbSchema = currentDBCatalog.getExistingElement(dbSchemaName);
+                                if (dbSchema != null) {
+                                    currentDBSchema = dbSchema;
+                                } else {
+                                    currentDBSchema = new DBSchema(dbSchemaName);
+                                    currentDBCatalog.addElement(currentDBSchema);
+                                }
+                                DBProcedure currentProcedure = new DBProcedure(procedure.getValue().getName());
+                                currentDBSchema.addElement(currentProcedure);
+                            } else {
+                                DBProcedure currentProcedure = new DBProcedure(procedure.getValue().getName());
+                                currentDBCatalog.addElement(currentProcedure);
+                            }
+                        } else if (supportSchemas()) {
+                            String dbSchemaName = procedure.getValue().getSchema();
+                            DBElement dbSchema = dbModel.getExistingElement(dbSchemaName);
+                            if (dbSchema != null) {
+                                currentDBSchema = dbSchema;
+                            } else {
+                                currentDBSchema = new DBSchema(dbSchemaName);
+                                dbModel.addElement(currentDBSchema);
+                            }
+                            DBProcedure currentProcedure = new DBProcedure(procedure.getValue().getName());
+                            currentDBSchema.addElement(currentProcedure);
+                        }
                     }
+                }
 
+                private void createIfNotNull(DataMap dataMap, DbLoaderConfiguration config, 
+                                             String[] types) throws SQLException {
                     treeEditor.setRoot(dataSourceKey);
                     dbModel = new DBModel(dataSourceKey);
                     boolean catalogSetted = false;
@@ -144,13 +178,13 @@ public class ReverseEngineeringController extends CayenneController {
 
                     for (CatalogFilter catalog : config.getFiltersConfig().catalogs) {
                         for (SchemaFilter schema : catalog.schemas) {
-                            boolean entityChecked = false;
-                            List<DbEntity> entityList = createTableLoader(catalog.name, schema.name, schema.tables).loadDbEntities(
-                                    dataMap, config, types);
+                            List<DbEntity> entityList = 
+                                    createTableLoader(catalog.name, schema.name, schema.tables)
+                                            .loadDbEntities(dataMap, config, types);
                             DbEntity entityFromLoader = entityList.get(0);
 
                             if (entityFromLoader != null) {
-                                if (catalogSetted == false && entityFromLoader.getCatalog() != null) {
+                                if (!catalogSetted && entityFromLoader.getCatalog() != null) {
                                     currentDBCatalog = new DBCatalog(entityFromLoader.getCatalog());
                                     dbModel.addElement(currentDBCatalog);
                                     catalogSetted = true;
@@ -158,28 +192,7 @@ public class ReverseEngineeringController extends CayenneController {
 
                                 if (entityFromLoader.getSchema() != null) {
                                     currentDBSchema = new DBSchema(entityFromLoader.getSchema());
-                                    if(currentDBCatalog != null) {
-                                        currentDBCatalog.addElement(currentDBSchema);
-                                    } else {
-                                        dbModel.addElement(currentDBSchema);
-                                    }
-                                }
-                                entityChecked = true;
-                            }
-
-                            if (!entityChecked && !procedureMap.isEmpty()) {
-                                Map.Entry<String, Procedure> entry = procedureMap.entrySet().iterator().next();
-                                Procedure procedure = entry.getValue();
-
-                                if (catalogSetted && procedure.getCatalog() != null) {
-                                    currentDBCatalog = new DBCatalog(procedure.getCatalog());
-                                    dbModel.addElement(currentDBCatalog);
-                                    catalogSetted = true;
-                                }
-
-                                if (procedure.getSchema() != null) {
-                                    currentDBSchema = new DBSchema(procedure.getSchema());
-                                    if(currentDBCatalog != null) {
+                                    if (currentDBCatalog != null) {
                                         currentDBCatalog.addElement(currentDBSchema);
                                     } else {
                                         dbModel.addElement(currentDBSchema);
@@ -205,20 +218,101 @@ public class ReverseEngineeringController extends CayenneController {
                                     currentDBCatalog.addElement(currentDBEntity);
                                 }
                             }
-
-                            if (currentDBSchema != null) {
-                                for (Map.Entry<String, Procedure> entry : procedureMap.entrySet()) {
-                                    currentDBSchema.addElement(new DBProcedure(entry.getValue().getName()));
-                                }
-                            } else {
-                                for (Map.Entry<String, Procedure> entry : procedureMap.entrySet()) {
-                                    currentDBCatalog.addElement(new DBProcedure(entry.getValue().getName()));
-                                }
-                            }
                             currentDBSchema = null;
                         }
                         catalogSetted = false;
                         currentDBCatalog = null;
+                    }
+                }
+
+                private void createIfNull(DataMap dataMap, DbLoaderConfiguration config, 
+                                          String[] types) throws SQLException {
+                    
+                    treeEditor.setRoot(dataSourceKey);
+                    dbModel = new DBModel(dataSourceKey);
+                    DBElement currentDBCatalog;
+                    DBElement currentDBSchema;
+
+                    for (CatalogFilter catalog : config.getFiltersConfig().catalogs) {
+                        for (SchemaFilter schema : catalog.schemas) {
+                            List<DbEntity> entityList = 
+                                    createTableLoader(catalog.name, schema.name, schema.tables)
+                                            .loadDbEntities(dataMap, config, types);
+
+                            for (DbEntity dbEntity : entityList) {
+                                if (supportCatalogs()) {
+                                    String dbCatalogName = dbEntity.getCatalog();
+                                    DBElement dbCatalog = dbModel.getExistingElement(dbCatalogName);
+                                    if (dbCatalog != null) {
+                                        currentDBCatalog = dbCatalog;
+                                    } else {
+                                        currentDBCatalog = new DBCatalog(dbCatalogName);
+                                        dbModel.addElement(currentDBCatalog);
+                                    }
+                                    if (supportSchemas()) {
+                                        String dbSchemaName = dbEntity.getSchema();
+                                        DBElement dbSchema = currentDBCatalog.getExistingElement(dbSchemaName);
+                                        if (dbSchema != null) {
+                                            currentDBSchema = dbSchema;
+                                        } else {
+                                            currentDBSchema = new DBSchema(dbSchemaName);
+                                            currentDBCatalog.addElement(currentDBSchema);
+                                        }
+                                        DBEntity currentDBEntity = new DBEntity(dbEntity.getName());
+                                        currentDBSchema.addElement(currentDBEntity);
+                                        for (DbAttribute dbColumn : dbEntity.getAttributes()) {
+                                            currentDBEntity.addElement(new DBColumn(dbColumn.getName()));
+                                        }
+                                    } else {
+                                        DBEntity currentDBEntity = new DBEntity(dbEntity.getName());
+                                        currentDBCatalog.addElement(currentDBEntity);
+                                        for (DbAttribute dbColumn : dbEntity.getAttributes()) {
+                                            currentDBEntity.addElement(new DBColumn(dbColumn.getName()));
+                                        }
+                                    }
+                                } else {
+                                    if (supportSchemas()) {
+                                        String dbSchemaName = dbEntity.getSchema();
+                                        DBElement dbSchema = dbModel.getExistingElement(dbSchemaName);
+                                        if (dbSchema != null) {
+                                            currentDBSchema = dbSchema;
+                                        } else {
+                                            currentDBSchema = new DBSchema(dbSchemaName);
+                                            dbModel.addElement(currentDBSchema);
+                                        }
+                                        DBEntity currentDBEntity = new DBEntity(dbEntity.getName());
+                                        currentDBSchema.addElement(currentDBEntity);
+                                        for (DbAttribute dbColumn : dbEntity.getAttributes()) {
+                                            currentDBEntity.addElement(new DBColumn(dbColumn.getName()));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                public void load(DataMap dataMap, DbLoaderConfiguration config
+                )
+                        throws SQLException {
+                    LOGGER.info("Schema loading...");
+
+                    String[] types = config.getTableTypes();
+                    if (types == null || types.length == 0) {
+                        types = getDefaultTableTypes();
+                    }
+                    boolean isNullDetected = false;
+                    for (CatalogFilter catalog : config.getFiltersConfig().catalogs) {
+                        for (SchemaFilter schema : catalog.schemas) {
+                            if (schema.name == null && catalog.name == null) {
+                                isNullDetected = true;
+                            }
+                        }
+                    }
+                    if (isNullDetected) {
+                        createIfNull(dataMap, config, types);
+                    } else {
+                        createIfNotNull(dataMap, config, types);
                     }
                 }
             };
@@ -238,8 +332,6 @@ public class ReverseEngineeringController extends CayenneController {
             dataMapViewModel.setReverseEngineeringText(xmlFileEditor.getView().getEditorPane().getText());
             reverseEngineeringMap.put(mapName, dataMapViewModel);
             treeEditor.convertTreeViewIntoTreeNode(dbModel);
-        } catch (ReverseEngineeringLoaderException e) {
-            xmlFileEditor.addAlertMessage(e.getMessage());
         } catch (Exception e) {
             xmlFileEditor.addAlertMessage(e.getMessage());
         }
@@ -274,8 +366,6 @@ public class ReverseEngineeringController extends CayenneController {
 
             th.start();
             view.setTempDataMap(projectController.getCurrentDataMap());
-        } catch (ReverseEngineeringLoaderException e) {
-            xmlFileEditor.addAlertMessage(e.getMessage());
         } catch (Exception e) {
             xmlFileEditor.addAlertMessage(e.getMessage());
         }

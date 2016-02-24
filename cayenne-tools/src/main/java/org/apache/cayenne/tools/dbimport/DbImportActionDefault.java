@@ -210,7 +210,9 @@ public class DbImportActionDefault implements DbImportAction {
         return null;
     }
 
-    private List<MergerToken> reverse(MergerFactory mergerFactory, Iterable<MergerToken> mergeTokens) throws IOException {
+    private List<MergerToken> reverse(
+            MergerFactory mergerFactory, 
+            Iterable<MergerToken> mergeTokens) throws IOException {
         List<MergerToken> tokens = new LinkedList<>();
         for (MergerToken token : mergeTokens) {
             if (token instanceof AbstractToModelToken) {
@@ -254,7 +256,8 @@ public class DbImportActionDefault implements DbImportAction {
         return dataMap;
     }
 
-    private DbLoader getLoader(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    private DbLoader getLoader(DbImportConfiguration config, DbAdapter adapter, Connection connection) 
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         return config.createLoader(adapter, connection, config.createLoaderDelegate());
     }
 

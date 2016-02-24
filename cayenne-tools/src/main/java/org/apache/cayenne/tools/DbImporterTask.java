@@ -19,11 +19,11 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.XMLDataMapLoader;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
@@ -98,12 +98,10 @@ public class DbImporterTask extends Task {
 
                 log(message, Project.MSG_ERR);
                 throw new BuildException(message, th);
-            }
-            finally {
+            } finally {
                 injector.shutdown();
             }
-        }
-        else {
+        } else {
             if (dataMapFile.exists()) {
                 try {
                     URL url = dataMapFile.toURI().toURL();
@@ -112,21 +110,21 @@ public class DbImporterTask extends Task {
                     XMLDataMapLoader xmlDataMapLoader = new XMLDataMapLoader();
                     DataMap dataMap = xmlDataMapLoader.load(resource);
                     if (dataMap.getReverseEngineering() != null) {
-                        Resource reverseEngineeringResource = new URLResource(dataMapFile.toURL()).getRelativeResource(dataMap.getReverseEngineering().getName() + ".reverseEngineering.xml");
-
-                        DefaultReverseEngineeringLoader reverseEngineeringLoader = new DefaultReverseEngineeringLoader();
-                        ReverseEngineering reverseEngineering = reverseEngineeringLoader.load(reverseEngineeringResource.getURL().openStream());
-                        reverseEngineering.setName(dataMap.getReverseEngineering().getName());
-                        reverseEngineering.setConfigurationSource(reverseEngineeringResource);
-                        dataMap.setReverseEngineering(reverseEngineering);
-
-                        FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(dataMap.getReverseEngineering());
-                        config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.filtersConfig());
                         Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
-
-                        validateDbImportConfiguration(config, injector);
-
                         try {
+                            ConfigurationNameMapper nameMapper = injector.getInstance(ConfigurationNameMapper.class);
+                            String reverseEngineeringLocation = nameMapper.configurationLocation(ReverseEngineering.class, dataMap.getReverseEngineering().getName());
+                            Resource reverseEngineeringResource = new URLResource(dataMapFile.toURI().toURL()).getRelativeResource(reverseEngineeringLocation);
+
+                            DefaultReverseEngineeringLoader reverseEngineeringLoader = new DefaultReverseEngineeringLoader();
+                            ReverseEngineering reverseEngineering = reverseEngineeringLoader.load(reverseEngineeringResource.getURL().openStream());
+                            reverseEngineering.setName(dataMap.getReverseEngineering().getName());
+                            reverseEngineering.setConfigurationSource(reverseEngineeringResource);
+                            dataMap.setReverseEngineering(reverseEngineering);
+
+                            FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(dataMap.getReverseEngineering());
+                            config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.filtersConfig());
+                            validateDbImportConfiguration(config, injector);
                             injector.getInstance(DbImportAction.class).execute(config);
                         } catch (Exception ex) {
                             Throwable th = Util.unwindException(ex);
@@ -139,15 +137,11 @@ public class DbImporterTask extends Task {
 
                             log(message, Project.MSG_ERR);
                             throw new BuildException(message, th);
-                        }
-                        finally {
+                        } finally {
                             injector.shutdown();
                         }
                     }
                 } catch (MalformedURLException e) {
-                    log(e.getMessage(), Project.MSG_ERR);
-                    throw new BuildException(e.getMessage(), e);
-                } catch (IOException e) {
                     log(e.getMessage(), Project.MSG_ERR);
                     throw new BuildException(e.getMessage(), e);
                 }

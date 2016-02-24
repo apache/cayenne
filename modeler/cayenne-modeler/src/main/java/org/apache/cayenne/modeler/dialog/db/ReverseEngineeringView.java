@@ -40,7 +40,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -52,7 +51,7 @@ import java.util.Map;
  */
 public class ReverseEngineeringView extends JPanel {
     protected ProjectController controller;
-    public ReverseEngineeringController reverseEngineeringController;
+    protected ReverseEngineeringController reverseEngineeringController;
     protected JPanel reverseEngineering;
 
     protected JComboBox dataSources;
@@ -61,7 +60,6 @@ public class ReverseEngineeringView extends JPanel {
     protected JButton executeButton;
 
     protected PanelBuilder builder;
-    protected JSeparator separator;
     protected JSplitPane splitPane;
     protected JLabel xmlLabel;
     protected JLabel treeLabel;
@@ -199,7 +197,8 @@ public class ReverseEngineeringView extends JPanel {
             if (dataMap != null) {
                 String reverseEngineeringText = null;
                 if (reverseEngineeringViewMap.containsKey(dataMap.getName())) {
-                    reverseEngineeringText = reverseEngineeringViewMap.get(dataMap.getName()).getReverseEngineeringText();
+                    reverseEngineeringText = reverseEngineeringViewMap
+                            .get(dataMap.getName()).getReverseEngineeringText();
                 }
                 if (reverseEngineeringText != null) {
                     xmlFileEditor.getView().getEditorPane().setText(reverseEngineeringText);
@@ -209,14 +208,16 @@ public class ReverseEngineeringView extends JPanel {
                     } else {
                         ReverseEngineering reverseEngineering = dataMap.getReverseEngineering();
                         if (reverseEngineering.getConfigurationSource() != null) {
-                            xmlFileEditor.getView().getEditorPane().setPage(reverseEngineering.getConfigurationSource().getURL());
+                            xmlFileEditor.getView().getEditorPane()
+                                    .setPage(reverseEngineering.getConfigurationSource().getURL());
                         }
                     }
                 }
 
                 if (reverseEngineeringViewMap.containsKey(dataMap.getName())) {
                     if (reverseEngineeringViewMap.get(dataMap.getName()).getReverseEngineeringTree() != null) {
-                        DBModel loadedPreviousTree = reverseEngineeringViewMap.get(dataMap.getName()).getReverseEngineeringTree();
+                        DBModel loadedPreviousTree = reverseEngineeringViewMap
+                                .get(dataMap.getName()).getReverseEngineeringTree();
                         treeEditor.convertTreeViewIntoTreeNode(loadedPreviousTree);
                     } else {
                         treeEditor.setRoot("");

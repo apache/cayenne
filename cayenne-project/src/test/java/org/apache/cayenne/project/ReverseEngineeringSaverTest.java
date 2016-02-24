@@ -53,7 +53,7 @@ public class ReverseEngineeringSaverTest extends Project2Case {
         DataMap dataMap1 = dataMapLoader.load(dataMap.getConfigurationSource());
         String reverseEngineeringName = dataMap1.getReverseEngineering().getName();
 
-        File reFile = new File(testFolder, reverseEngineeringName + ".reverseEngineering.xml");
+        File reFile = new File(testFolder, reverseEngineeringName + ".xml");
         assertTrue(reFile.exists());
         assertTrue(reFile.length() > 0);
     }

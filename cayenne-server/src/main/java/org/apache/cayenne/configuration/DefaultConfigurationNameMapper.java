@@ -32,7 +32,7 @@ public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
 
 	private static final String DATA_MAP_SUFFIX = ".map.xml";
 
-	private static final String REVERSE_ENGINEERING_SUFFIX = ".reverseEngineering.xml";
+	private static final String REVERSE_ENGINEERING_SUFFIX = ".xml";
 
 	protected ConfigurationNodeVisitor<String> nameMapper;
 

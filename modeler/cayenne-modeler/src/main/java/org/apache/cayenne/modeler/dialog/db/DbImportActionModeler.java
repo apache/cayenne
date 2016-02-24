@@ -29,7 +29,6 @@ import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.tools.dbimport.DbImportAction;
@@ -38,8 +37,6 @@ import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.commons.logging.Log;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.Connection;
 
 public class DbImportActionModeler implements DbImportAction {
@@ -102,7 +99,8 @@ public class DbImportActionModeler implements DbImportAction {
             }
 
             @Override
-            protected DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
+            protected DataMap load(DbImportConfiguration config, 
+                                   DbAdapter adapter, Connection connection) throws Exception {
                 DataMap dataMap;
 
                 try {
