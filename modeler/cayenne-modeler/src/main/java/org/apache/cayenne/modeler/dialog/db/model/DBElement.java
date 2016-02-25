@@ -37,6 +37,15 @@ public abstract class DBElement {
         return dbElements;
     }
 
+    public DBElement getExistingElement(String name) {
+        for (DBElement dbElement : dbElements) {
+            if (dbElement.name.equals(name)) {
+                return dbElement;
+            }
+        }
+        return null;
+    }
+
     public abstract void addElement(DBElement dbElement);
 
     public String getName() {
