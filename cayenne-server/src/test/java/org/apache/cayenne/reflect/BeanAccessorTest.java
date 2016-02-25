@@ -81,4 +81,20 @@ public class BeanAccessorTest {
         assertEquals("Incorrectly set null default", 0, o1.getIntField());
     }
 
+    @Test
+    public void testInheritedCovariantProperty() {
+
+    	BeanAccessor accessor = new BeanAccessor(
+    			TstJavaBeanChild.class,
+    			"related",
+    			null);
+
+    	TstJavaBeanChild o1 = new TstJavaBeanChild();
+
+    	assertNull(o1.getRelated());
+    	accessor.setValue(o1, o1);
+    	assertSame(o1, o1.getRelated());
+    	assertSame(o1, accessor.getValue(o1));
+    }
+
 }
