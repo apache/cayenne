@@ -57,7 +57,8 @@ class ConfigurationSaver extends BaseConfigurationNodeVisitor<Void> {
 
     @Override
     public Void visitReverseEngineering(ReverseEngineering node) {
-        XMLEncoder encoder = new XMLEncoder(printWriter);
+        XMLEncoder encoder = new XMLEncoder(printWriter, "\t", version);
+        printXMLHeader(encoder);
         node.encodeAsXML(encoder);
         return null;
     }

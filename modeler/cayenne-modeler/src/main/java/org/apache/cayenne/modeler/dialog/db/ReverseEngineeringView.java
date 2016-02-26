@@ -72,9 +72,11 @@ public class ReverseEngineeringView extends JPanel {
 
     protected Map<String, DataMapViewModel> reverseEngineeringViewMap;
 
-
     private String template =
-            "<reverseEngineering>\n" +
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<reverseEngineering xmlns=\"http://cayenne.apache.org/schema/8/reverseEngineering\"\n" +
+                    "                    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                    "                    xsi:schemaLocation=\"http://cayenne.apache.org/schema/8/reverseEngineering http://cayenne.apache.org/schema/8/reverseEngineering.xsd\">\n" +
                     "    <skipRelationshipsLoading>false</skipRelationshipsLoading>\n" +
                     "    <skipPrimaryKeyLoading>false</skipPrimaryKeyLoading>\n" +
                     "\n" +

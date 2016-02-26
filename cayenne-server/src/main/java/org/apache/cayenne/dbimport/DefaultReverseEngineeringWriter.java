@@ -42,15 +42,13 @@ public class DefaultReverseEngineeringWriter implements ReverseEngineeringWriter
             JAXBContext context = JAXBContext.newInstance(reverseEngineering.getClass());
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             marshaller.marshal(reverseEngineering, writer);
             writer.close();
             return reverseEngineering.getConfigurationSource();
-        } catch (JAXBException e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new CayenneRuntimeException(e);
-        } catch (IOException e) {
+        } catch (JAXBException | IOException e) {
             LOGGER.error(e.getMessage(), e);
             throw new CayenneRuntimeException(e);
         }
