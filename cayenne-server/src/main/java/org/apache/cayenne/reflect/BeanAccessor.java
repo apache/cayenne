@@ -53,30 +53,61 @@ public class BeanAccessor implements Accessor {
 		this.nullValue = PropertyUtils.defaultNullValueForType(propertyType);
 
 		String capitalized = Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
+		String isGetterName = "is" + capitalized;
+		String getGetterName = "get" + capitalized;
+		String setterName = "set" + capitalized;
 
-		try {
-			this.readMethod = objectClass.getMethod("get" + capitalized);
-		} catch (NoSuchMethodException e) {
+		Method[] publicMethods = objectClass.getMethods();
 
-			// try boolean
-			try {
-				Method readMethod = objectClass.getMethod("is" + capitalized);
-				this.readMethod = (readMethod.getReturnType().equals(Boolean.TYPE)) ? readMethod : null;
-			} catch (NoSuchMethodException e1) {
-				// not readable...
+		Method getter = null;
+		for (Method method : publicMethods) {
+			Class<?> returnType = method.getReturnType();
+			// following Java Bean naming conventions, "is" methods are preferred over "get" methods
+			if (method.getName().equals(isGetterName) && returnType.equals(Boolean.TYPE) && method.getParameterTypes().length == 0) {
+				getter = method;
+				break;
+			}
+			// Find the method with the most specific return type.
+			// This is the same behavior as Class.getMethod(String, Class...) except that
+			// Class.getMethod prefers synthetic methods generated for interfaces
+			// over methods with more specific return types in a super class.
+			if (method.getName().equals(getGetterName) && method.getParameterTypes().length == 0) {
+				if (returnType.isPrimitive()) {
+					getter = returnType.equals(Void.TYPE) ? null : method;
+					if (returnType.equals(Boolean.TYPE)) {
+						// keep looking for the "is" method
+						continue;
+					} else {
+						// nothing more specific than a primitive, so stop here
+						break;
+					}
+				}
+				if (getter == null || getter.getReturnType().isAssignableFrom(returnType)) {
+					getter = method;
+				}
 			}
 		}
 
-		if (readMethod == null) {
-			throw new IllegalArgumentException("Property '" + propertyName + "' is not readbale");
+		if (getter == null) {
+			throw new IllegalArgumentException("Property '" + propertyName + "' is not readable");
 		}
+
+		this.readMethod = getter;
 
 		// TODO: compare 'propertyType' arg with readMethod.getReturnType()
 
-		try {
-			this.writeMethod = objectClass.getMethod("set" + capitalized, readMethod.getReturnType());
-		} catch (NoSuchMethodException e) {
-			// read-only is supported...
+		for (Method method : publicMethods) {
+			if (!method.getName().equals(setterName) || !method.getReturnType().equals(Void.TYPE)) {
+				continue;
+			}
+			Class<?>[] parameterTypes = method.getParameterTypes();
+			if (parameterTypes.length != 1) {
+				continue;
+			}
+			if (getter.getReturnType().isAssignableFrom(parameterTypes[0])) {
+				this.writeMethod = method;
+				break;
+			}
 		}
 	}
 
@@ -118,7 +149,7 @@ public class BeanAccessor implements Accessor {
 		try {
 			writeMethod.invoke(object, newValue);
 		} catch (Throwable th) {
-			throw new PropertyException("Error reading property: " + propertyName, this, object, th);
+			throw new PropertyException("Error writing property: " + propertyName, this, object, th);
 		}
 	}
 }
