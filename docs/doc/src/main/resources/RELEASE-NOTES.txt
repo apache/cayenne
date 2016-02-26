@@ -18,6 +18,10 @@ CAY-2060 Replace Query objects in DataMap with query descriptors
 CAY-2062 MappedSelect and MappedExec fluent query API
 CAY-2063 ProcedureCall fluent query API
 
+Bug Fixes:
+
+CAY-2064 Issue with BeanAccessor for classes with complex inheritance
+
 ----------------------------------
 Release: 4.0.M3
 Date:
