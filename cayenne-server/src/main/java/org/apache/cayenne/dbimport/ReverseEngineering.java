@@ -39,16 +39,6 @@ public class ReverseEngineering extends FilterContainer implements Configuration
 
     private static final Log LOG = LogFactory.getLog(ReverseEngineering.class);
 
-    @XmlAttribute(name="xmlns")
-    private static final String xmlns = "http://cayenne.apache.org/schema/8/reverseEngineering";
-
-    @XmlAttribute(name="xmlns:xsi")
-    private static final String xmlns_xsi = "http://www.w3.org/2001/XMLSchema-instance";
-
-    @XmlAttribute(name="xsi:schemaLocation")
-    private static final String xsi_schemaLocation =
-            "http://cayenne.apache.org/schema/8/reverseEngineering http://cayenne.apache.org/schema/8/reverseEngineering.xsd";
-
     public ReverseEngineering(String name) {
         this.name = name;
     }

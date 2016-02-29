@@ -43,6 +43,8 @@ public class DefaultReverseEngineeringWriter implements ReverseEngineeringWriter
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION,
+                    "http://cayenne.apache.org/schema/8/reverseEngineering http://cayenne.apache.org/schema/8/reverseEngineering.xsd");
 
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             marshaller.marshal(reverseEngineering, writer);

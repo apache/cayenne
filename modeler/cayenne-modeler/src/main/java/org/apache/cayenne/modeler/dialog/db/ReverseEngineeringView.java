@@ -50,6 +50,27 @@ import java.util.Map;
 /**
  */
 public class ReverseEngineeringView extends JPanel {
+
+    private static final String CONFIGURATION_TEMPLATE =
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "<reverseEngineering\n" +
+                    "       xmlns=\"http://cayenne.apache.org/schema/8/reverseEngineering\"\n" +
+                    "       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                    "       xsi:schemaLocation=\"http://cayenne.apache.org/schema/8/reverseEngineering " +
+                    "http://cayenne.apache.org/schema/8/reverseEngineering.xsd\">\n" +
+                    "\n" +
+                    "    <skipRelationshipsLoading>false</skipRelationshipsLoading>\n" +
+                    "    <skipPrimaryKeyLoading>false</skipPrimaryKeyLoading>\n" +
+                    "\n" +
+                    "    <catalog>\n" +
+                    "        <schema>\n" +
+                    "            <includeTable>\n" +
+                    "            </includeTable>\n" +
+                    "        </schema>\n" +
+                    "    </catalog>\n" +
+                    "    <includeProcedure pattern=\".*\"/>\n" +
+                    "</reverseEngineering>";
+
     protected ProjectController controller;
     protected ReverseEngineeringController reverseEngineeringController;
     protected JPanel reverseEngineering;
@@ -71,23 +92,6 @@ public class ReverseEngineeringView extends JPanel {
     protected DataMap tempDataMap;
 
     protected Map<String, DataMapViewModel> reverseEngineeringViewMap;
-
-    private String template =
-            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                    "<reverseEngineering xmlns=\"http://cayenne.apache.org/schema/8/reverseEngineering\"\n" +
-                    "                    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                    "                    xsi:schemaLocation=\"http://cayenne.apache.org/schema/8/reverseEngineering http://cayenne.apache.org/schema/8/reverseEngineering.xsd\">\n" +
-                    "    <skipRelationshipsLoading>false</skipRelationshipsLoading>\n" +
-                    "    <skipPrimaryKeyLoading>false</skipPrimaryKeyLoading>\n" +
-                    "\n" +
-                    "    <catalog>\n" +
-                    "        <schema>\n" +
-                    "            <includeTable>\n" +
-                    "            </includeTable>\n" +
-                    "        </schema>\n" +
-                    "    </catalog>\n" +
-                    "    <includeProcedure pattern=\".*\"/>\n" +
-                    "</reverseEngineering>";
 
     public ReverseEngineeringView(ProjectController controller) {
         this.controller = controller;
@@ -206,7 +210,7 @@ public class ReverseEngineeringView extends JPanel {
                     xmlFileEditor.getView().getEditorPane().setText(reverseEngineeringText);
                 } else {
                     if (dataMap.getReverseEngineering() == null) {
-                        getXmlFileEditor().getView().getEditorPane().setText(template);
+                        getXmlFileEditor().getView().getEditorPane().setText(CONFIGURATION_TEMPLATE);
                     } else {
                         ReverseEngineering reverseEngineering = dataMap.getReverseEngineering();
                         if (reverseEngineering.getConfigurationSource() != null) {
