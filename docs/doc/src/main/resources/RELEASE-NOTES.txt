@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-2051 Applying new Reverse Engineering to the Modeler
 CAY-2053 SQLExec fluent query API
 CAY-2060 Replace Query objects in DataMap with query descriptors
 CAY-2062 MappedSelect and MappedExec fluent query API
