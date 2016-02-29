@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<reverseEngineering>
+<reverseEngineering xmlns="http://cayenne.apache.org/schema/8/reverseEngineering"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://cayenne.apache.org/schema/8/reverseEngineering http://cayenne.apache.org/schema/8/reverseEngineering.xsd">
     <catalog name="catalog1">
         <includeTable pattern="includedTable1"/>
         <includeTable pattern="includedTable2"/>
