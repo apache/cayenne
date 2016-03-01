@@ -24,7 +24,7 @@
 	<display-name>Cayenne Tutorial</display-name>
 	<servlet>
 		<servlet-name>cayenne-project</servlet-name>
-		<servlet-class>org.apache.cayenne.configuration.rop.server.ROPHessianServlet</servlet-class>
+		<servlet-class>org.apache.cayenne.rop.ROPServlet</servlet-class>
 		<load-on-startup>0</load-on-startup>
 	</servlet>
 	<servlet-mapping>
