@@ -27,6 +27,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 
 public class Main {
@@ -75,20 +76,16 @@ public class Main {
     }
 
     static void selectTutorial(ObjectContext context) {
-        // SelectQuery examples
-        SelectQuery<Painting> select1 = SelectQuery.query(Painting.class);
-        List<Painting> paintings1 = context.select(select1);
+        // ObjectSelect examples
+        List<Painting> paintings1 = ObjectSelect.query(Painting.class).select(context);
 
-        Expression qualifier2 = Painting.NAME.likeIgnoreCase("gi%");
-        SelectQuery<Painting> select2 = SelectQuery.query(Painting.class, qualifier2);
-        List<Painting> paintings2 = context.select(select2);
+        List<Painting> paintings2 = ObjectSelect.query(Painting.class)
+                .where(Painting.NAME.likeIgnoreCase("gi%")).select(context);
     }
 
     static void deleteTutorial(ObjectContext context) {
-        // Delete object examples
-        Expression qualifier = Artist.NAME.eq("Pablo Picasso");
-        SelectQuery<Artist> selectToDelete = SelectQuery.query(Artist.class, qualifier);
-        Artist picasso = (Artist) Cayenne.objectForQuery(context, selectToDelete);
+        // Delete object example
+        Artist picasso = ObjectSelect.query(Artist.class).where(Artist.NAME.eq("Pablo Picasso")).selectOne(context);
 
         if (picasso != null) {
             context.deleteObjects(picasso);
