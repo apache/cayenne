@@ -33,6 +33,7 @@
 		<dependency>
 			<groupId>com.caucho</groupId>
             <artifactId>hessian</artifactId>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	
