@@ -36,10 +36,14 @@ public class Main {
 }</programlisting>
         <para>Now the part that is actually different from regular Cayenne - establishing the server
             connection and obtaining the ObjectContext:</para>
-        <programlisting language="java">ClientConnection connection = new HessianConnection("http://localhost:8080/tutorial/cayenne-service");
-DataChannel channel = new ClientChannel(connection, false, new DefaultEventManager(), false);
-ObjectContext context = new CayenneContext(channel);</programlisting>
-        <para>Note that the "channel" can be used to create as many peer ObjectContexts as needed
+        <programlisting language="java">Map&lt;String, String> properties = new HashMap&lt;>();
+properties.put(Constants.ROP_SERVICE_URL_PROPERTY, "http://localhost:8080/tutorial-rop-server/cayenne-service");
+properties.put(Constants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
+properties.put(Constants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
+
+ClientRuntime runtime = new ClientRuntime(properties);
+ObjectContext context = runtime.newContext(); </programlisting>
+        <para>Note that the "runtime" can be used to create as many peer ObjectContexts as needed
             over the same connection, while ObjectContext is a kind of isolated "persistence
             session", similar to the server-side context. A few more notes. Since we are using
             HTTP(S) to communicate with ROP server, there's no need to explicitly close the
@@ -70,20 +74,14 @@ stein.setGallery(metropolitan);
 // saving all the changes above
 context.commitChanges();</programlisting>
         <para>Now let's select them back:</para>
-        <programlisting language="java">// SelectQuery examples
-SelectQuery select1 = new SelectQuery(Painting.class);
-List&lt;Painting&gt; paintings1 = context.performQuery(select1);
+        <programlisting language="java">// ObjectSelect examples
+List&lt;Painting> paintings1 = ObjectSelect.query(Painting.class).select(context);
 
-Expression qualifier2 = ExpressionFactory.likeIgnoreCaseExp(
-        Painting.NAME_PROPERTY, "gi%");
-SelectQuery select2 = new SelectQuery(Painting.class, qualifier2);
-List&lt;Painting&gt; paintings2 = context.performQuery(select2);</programlisting>
+List&lt;Painting> paintings2 = ObjectSelect.query(Painting.class)
+        .where(Painting.NAME.likeIgnoreCase("gi%")).select(context); </programlisting>
         <para>Now, delete:</para>
-        <programlisting language="java">Expression qualifier = ExpressionFactory.matchExp(Artist.NAME_PROPERTY,
-                "Pablo Picasso");
-SelectQuery selectToDelete = new SelectQuery(Artist.class, qualifier);
-Artist picasso = (Artist) DataObjectUtils.objectForQuery(context,
-        selectToDelete);
+        <programlisting language="java">// Delete object example
+Artist picasso = ObjectSelect.query(Artist.class).where(Artist.NAME.eq("Pablo Picasso")).selectOne(context); 
 
 if (picasso != null) {
     context.deleteObject(picasso);

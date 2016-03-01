@@ -96,12 +96,12 @@
             &lt;groupId&gt;org.apache.cayenne&lt;/groupId&gt;
             &lt;artifactId&gt;cayenne-client&lt;/artifactId&gt;
             &lt;!-- Here specify the version of Cayenne you are actually using --&gt;
-            &lt;version&gt;3.1M3&lt;/version&gt;
+            &lt;version&gt;4.0.M3&lt;/version&gt;
         &lt;/dependency&gt;
         &lt;dependency&gt;
         &lt;groupId&gt;com.caucho&lt;/groupId&gt;
-            &lt;artifactId&gt;resin-hessian&lt;/artifactId&gt;
-            &lt;version&gt;3.1.6&lt;/version&gt;
+            &lt;artifactId&gt;hessian&lt;/artifactId&gt;
+            &lt;version&gt;4.0.38&lt;/version&gt;
         &lt;/dependency&gt;
     &lt;/dependencies&gt;
 

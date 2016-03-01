@@ -29,8 +29,8 @@
         ...
         &lt;dependency&gt;
             &lt;groupId&gt;com.caucho&lt;/groupId&gt;
-            &lt;artifactId&gt;resin-hessian&lt;/artifactId&gt;
-            &lt;version&gt;3.1.6&lt;/version&gt;
+            &lt;artifactId&gt;hessian&lt;/artifactId&gt;
+            &lt;version&gt;4.0.38&lt;/version&gt;
         &lt;/dependency&gt;
     &lt;/dependencies&gt;
 
@@ -83,7 +83,7 @@
     &lt;display-name>Cayenne Tutorial&lt;/display-name>
     &lt;servlet>
         &lt;servlet-name>cayenne-project&lt;/servlet-name>
-        &lt;servlet-class>org.apache.cayenne.configuration.rop.server.ROPHessianServlet&lt;/servlet-class>
+        &lt;servlet-class>org.apache.cayenne.rop.ROPServlet&lt;/servlet-class>
         &lt;load-on-startup>0&lt;/load-on-startup>
     &lt;/servlet>
     &lt;servlet-mapping>
