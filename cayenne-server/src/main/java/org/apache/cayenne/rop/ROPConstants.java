@@ -16,33 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.rop;
 
-package org.apache.cayenne.remote;
+public class ROPConstants {
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+    public static final String OPERATION_PARAMETER = "operation";
+    public static final String SESSION_NAME_PARAMETER = "session_name";
 
-/**
- * Interface of a Cayenne remote service.
- * 
- * @since 1.2
- * @see org.apache.cayenne.rop.ROPServlet
- */
-public interface RemoteService extends Remote {
-
-    /**
-     * Establishes a dedicated session with Cayenne DataChannel, returning session id.
-     */
-    RemoteSession establishSession() throws RemoteException;
-
-    /**
-     * Creates a new session with the specified or joins an existing one. This method is
-     * used to bootstrap collaborating clients of a single "group chat".
-     */
-    RemoteSession establishSharedSession(String name) throws RemoteException;
-
-    /**
-     * Processes message on a remote server, returning the result of such processing.
-     */
-    Object processMessage(ClientMessage message) throws RemoteException, Throwable;
+    public static final String ESTABLISH_SESSION_OPERATION = "establish_session";
+    public static final String ESTABLISH_SHARED_SESSION_OPERATION = "establish_shared_session";
 }

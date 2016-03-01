@@ -16,33 +16,32 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.rop;
 
-package org.apache.cayenne.remote;
-
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * Interface of a Cayenne remote service.
+ * ROP network connectivity interface.
  * 
- * @since 1.2
- * @see org.apache.cayenne.rop.ROPServlet
+ * @since 4.0
  */
-public interface RemoteService extends Remote {
+public interface ROPConnector {
 
-    /**
-     * Establishes a dedicated session with Cayenne DataChannel, returning session id.
-     */
-    RemoteSession establishSession() throws RemoteException;
+	/**
+	 * Establishes a dedicated session with Cayenne DataChannel, returning session id.
+	 */
+    InputStream establishSession() throws IOException;
 
-    /**
-     * Creates a new session with the specified or joins an existing one. This method is
-     * used to bootstrap collaborating clients of a single "group chat".
-     */
-    RemoteSession establishSharedSession(String name) throws RemoteException;
+	/**
+	 * Creates a new session with the specified or joins an existing one. This method is
+	 * used to bootstrap collaborating clients of a single "group chat".
+	 */
+    InputStream establishSharedSession(String name) throws IOException;
 
-    /**
-     * Processes message on a remote server, returning the result of such processing.
-     */
-    Object processMessage(ClientMessage message) throws RemoteException, Throwable;
+	/**
+	 * Processes message on a remote server, returning the result of such processing.
+	 */
+    InputStream sendMessage(byte[] message) throws IOException;
+    
 }

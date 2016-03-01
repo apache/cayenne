@@ -28,7 +28,7 @@ import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.MockClientConnection;
-import org.apache.cayenne.remote.hessian.HessianConnection;
+import org.apache.cayenne.rop.HttpClientConnection;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -52,7 +52,7 @@ public class ClientModuleTest {
 
         ClientConnection connection = injector.getInstance(ClientConnection.class);
         assertNotNull(connection);
-        assertTrue(connection instanceof HessianConnection);
+        assertTrue(connection instanceof HttpClientConnection);
 
         assertSame("Connection must be a singleton", connection, injector
                 .getInstance(ClientConnection.class));

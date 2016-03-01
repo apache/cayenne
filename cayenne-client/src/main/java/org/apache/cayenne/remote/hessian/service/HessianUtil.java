@@ -25,10 +25,11 @@ import java.io.Serializable;
 
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.HessianConfig;
-import org.apache.cayenne.remote.hessian.HessianConnection;
 
 import com.caucho.hessian.io.HessianInput;
 import com.caucho.hessian.io.HessianOutput;
+import org.apache.cayenne.rop.ServerHessianSerializationServiceProvider;
+import org.apache.cayenne.rop.http.ClientHessianSerializationServiceProvider;
 
 /**
  * Hessian related utilities.
@@ -47,7 +48,7 @@ public class HessianUtil {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         HessianOutput out = new HessianOutput(bytes);
         out.setSerializerFactory(HessianConfig.createFactory(
-                HessianConnection.CLIENT_SERIALIZER_FACTORIES,
+                ClientHessianSerializationServiceProvider.CLIENT_SERIALIZER_FACTORIES,
                 null));
         out.writeObject(object);
 
@@ -55,7 +56,7 @@ public class HessianUtil {
 
         HessianInput in = new HessianInput(new ByteArrayInputStream(data));
         in.setSerializerFactory(HessianConfig.createFactory(
-                HessianService.SERVER_SERIALIZER_FACTORIES,
+                ServerHessianSerializationServiceProvider.SERVER_SERIALIZER_FACTORIES,
                 serverResolver));
 
         return in.readObject();
@@ -67,7 +68,7 @@ public class HessianUtil {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         HessianOutput out = new HessianOutput(bytes);
         out.setSerializerFactory(HessianConfig.createFactory(
-                HessianService.SERVER_SERIALIZER_FACTORIES,
+				ServerHessianSerializationServiceProvider.SERVER_SERIALIZER_FACTORIES,
                 serverResolver));
         out.writeObject(object);
 
@@ -75,7 +76,7 @@ public class HessianUtil {
 
         HessianInput in = new HessianInput(new ByteArrayInputStream(data));
         in.setSerializerFactory(HessianConfig.createFactory(
-                HessianConnection.CLIENT_SERIALIZER_FACTORIES,
+                ClientHessianSerializationServiceProvider.CLIENT_SERIALIZER_FACTORIES,
                 null));
         return in.readObject();
     }

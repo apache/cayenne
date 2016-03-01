@@ -16,33 +16,24 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.rop.http;
 
-package org.apache.cayenne.remote;
+import org.apache.cayenne.di.DIRuntimeException;
+import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.remote.hessian.ClientSerializerFactory;
+import org.apache.cayenne.remote.hessian.HessianConfig;
+import org.apache.cayenne.rop.HessianROPSerializationService;
+import org.apache.cayenne.rop.ROPSerializationService;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+public class ClientHessianSerializationServiceProvider implements Provider<ROPSerializationService> {
 
-/**
- * Interface of a Cayenne remote service.
- * 
- * @since 1.2
- * @see org.apache.cayenne.rop.ROPServlet
- */
-public interface RemoteService extends Remote {
+    public static final String[] CLIENT_SERIALIZER_FACTORIES = new String[] {
+            ClientSerializerFactory.class.getName()
+    };
 
-    /**
-     * Establishes a dedicated session with Cayenne DataChannel, returning session id.
-     */
-    RemoteSession establishSession() throws RemoteException;
-
-    /**
-     * Creates a new session with the specified or joins an existing one. This method is
-     * used to bootstrap collaborating clients of a single "group chat".
-     */
-    RemoteSession establishSharedSession(String name) throws RemoteException;
-
-    /**
-     * Processes message on a remote server, returning the result of such processing.
-     */
-    Object processMessage(ClientMessage message) throws RemoteException, Throwable;
+    @Override
+    public ROPSerializationService get() throws DIRuntimeException {
+        return new HessianROPSerializationService(
+                HessianConfig.createFactory(CLIENT_SERIALIZER_FACTORIES, null));
+    }
 }

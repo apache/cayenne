@@ -21,12 +21,11 @@ package org.apache.cayenne.configuration.web;
 import javax.servlet.ServletContext;
 
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.rop.server.ROPHessianServlet;
 
 /**
  * A helper class to retrieve and store {@link CayenneRuntime} in the
  * {@link ServletContext}. All Cayenne web configuration objects, such as
- * {@link CayenneFilter} and {@link ROPHessianServlet}, are using this class to access
+ * {@link CayenneFilter} and {@link org.apache.cayenne.rop.ROPServlet}, are using this class to access
  * runtime.
  * 
  * @since 3.1

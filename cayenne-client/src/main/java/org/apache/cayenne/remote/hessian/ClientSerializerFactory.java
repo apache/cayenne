@@ -34,7 +34,7 @@ import com.caucho.hessian.io.Serializer;
  * 
  * @since 1.2
  */
-class ClientSerializerFactory extends AbstractSerializerFactory {
+public class ClientSerializerFactory extends AbstractSerializerFactory {
 
     private Deserializer dataRowDeserializer;
     private Deserializer listDeserializer;

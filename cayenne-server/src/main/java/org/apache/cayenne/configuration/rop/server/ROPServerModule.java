@@ -25,7 +25,9 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.RemoteService;
-import org.apache.cayenne.remote.hessian.service.HessianService;
+import org.apache.cayenne.rop.ServerHessianSerializationServiceProvider;
+import org.apache.cayenne.rop.ServerHttpRemoteService;
+import org.apache.cayenne.rop.ROPSerializationService;
 
 /**
  * A DI module that defines services for the server-side of an ROP application based on
@@ -47,7 +49,8 @@ public class ROPServerModule implements Module {
                 .bindMap(Constants.SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP);
         mapBuilder.putAll(eventBridgeProperties);
 
-        binder.bind(RemoteService.class).to(HessianService.class);
+        binder.bind(RemoteService.class).to(ServerHttpRemoteService.class);
+		binder.bind(ROPSerializationService.class).toProvider(ServerHessianSerializationServiceProvider.class);
     }
 
 }

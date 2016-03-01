@@ -38,13 +38,13 @@ import org.apache.cayenne.configuration.web.RequestHandler;
 import org.apache.cayenne.configuration.web.WebUtil;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.remote.RemoteService;
+import org.apache.cayenne.rop.ROPServlet;
 import org.junit.Test;
 
 import com.mockrunner.mock.web.MockServletConfig;
 import com.mockrunner.mock.web.MockServletContext;
 
-public class ROPHessianServletTest {
+public class ROPServletTest {
 
 	@Test
 	public void testInitWithServletName() throws Exception {
@@ -55,7 +55,7 @@ public class ROPHessianServletTest {
 		MockServletContext context = new MockServletContext();
 		config.setServletContext(context);
 
-		ROPHessianServlet servlet = new ROPHessianServlet();
+		ROPServlet servlet = new ROPServlet();
 
 		assertNull(WebUtil.getCayenneRuntime(context));
 		servlet.init(config);
@@ -79,7 +79,7 @@ public class ROPHessianServletTest {
 		MockServletContext context = new MockServletContext();
 		config.setServletContext(context);
 
-		ROPHessianServlet servlet = new ROPHessianServlet();
+		ROPServlet servlet = new ROPServlet();
 		servlet.init(config);
 
 		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
@@ -101,7 +101,7 @@ public class ROPHessianServletTest {
 		MockServletContext context = new MockServletContext();
 		config.setServletContext(context);
 
-		ROPHessianServlet servlet = new ROPHessianServlet();
+		ROPServlet servlet = new ROPServlet();
 		servlet.init(config);
 
 		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
@@ -118,8 +118,6 @@ public class ROPHessianServletTest {
 
 		assertTrue(marray[0] instanceof ServerModule);
 		assertTrue(marray[1] instanceof ROPServerModule);
-
-		assertTrue(RemoteService.class.equals(servlet.getAPIClass()));
 	}
 
 	@Test
@@ -134,7 +132,7 @@ public class ROPHessianServletTest {
 		MockServletContext context = new MockServletContext();
 		config.setServletContext(context);
 
-		ROPHessianServlet servlet = new ROPHessianServlet();
+		ROPServlet servlet = new ROPServlet();
 		servlet.init(config);
 
 		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
@@ -164,7 +162,7 @@ public class ROPHessianServletTest {
 		config.setServletContext(context);
 		config.setInitParameter("extra-modules", ROPHessianServlet_ConfigModule.class.getName());
 
-		ROPHessianServlet servlet = new ROPHessianServlet();
+		ROPServlet servlet = new ROPServlet();
 
 		servlet.init(config);
 		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
@@ -174,8 +172,6 @@ public class ROPHessianServletTest {
 		Object[] marray = modules.toArray();
 
 		assertTrue(marray[2] instanceof ROPHessianServlet_ConfigModule);
-
-		assertTrue(RemoteService.class.equals(servlet.getAPIClass()));
 
 		// TODO: mock servlet request to check that the right service instance
 		// is invoked

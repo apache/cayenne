@@ -32,6 +32,9 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.remote.ClientConnection;
+import org.apache.cayenne.remote.RemoteService;
+import org.apache.cayenne.rop.*;
+import org.apache.cayenne.rop.http.ClientHessianSerializationServiceProvider;
 
 /**
  * A DI module containing all Cayenne ROP client runtime configurations.
@@ -56,7 +59,9 @@ public class ClientModule implements Module {
         binder.<String> bindMap(Constants.PROPERTIES_MAP).putAll(properties);
 
         binder.bind(ObjectContextFactory.class).to(CayenneContextFactory.class);
-        binder.bind(ClientConnection.class).toProvider(HessianConnectionProvider.class);
+        binder.bind(ROPSerializationService.class).toProvider(ClientHessianSerializationServiceProvider.class);
+        binder.bind(RemoteService.class).to(ProxyRemoteService.class);
+        binder.bind(ClientConnection.class).toProvider(HttpClientConnectionProvider.class);
         binder.bind(EventManager.class).to(DefaultEventManager.class);
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         binder.bind(DataChannel.class).toProvider(ClientChannelProvider.class);
