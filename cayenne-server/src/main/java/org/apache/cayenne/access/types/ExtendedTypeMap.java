@@ -122,17 +122,27 @@ public class ExtendedTypeMap {
 	}
 
 	/**
+	 * Converts class name to type name. 
+	 */
+	protected String classToTypeName(String className) {
+		if (className == null) {
+			throw new NullPointerException("Null className");
+		}
+		return className.replace('$', '.');
+	}
+	
+	/**
 	 * Adds a new type to the list of registered types. If there is another type
 	 * registered for a class described by the <code>type</code> argument, the
 	 * old handler is overridden by the new one.
 	 */
 	public void registerType(ExtendedType type) {
-		typeMap.put(type.getClassName(), type);
+		typeMap.put(classToTypeName(type.getClassName()), type);
 
 		// factory to handle subclasses of type.className
 		addFactory(new SubclassTypeFactory(type));
 	}
-
+	
 	/**
 	 * Returns a default ExtendedType that is used to handle unmapped types.
 	 */
@@ -195,7 +205,7 @@ public class ExtendedTypeMap {
 		if (className == null) {
 			throw new NullPointerException("Null className");
 		}
-		return typeMap.get(className);
+		return typeMap.get(classToTypeName(className));
 	}
 
 	/**
@@ -212,7 +222,7 @@ public class ExtendedTypeMap {
 	 * <code>javaClassName</code> parameter.
 	 */
 	public void unregisterType(String javaClassName) {
-		typeMap.remove(javaClassName);
+		typeMap.remove(classToTypeName(javaClassName));
 	}
 
 	/**
