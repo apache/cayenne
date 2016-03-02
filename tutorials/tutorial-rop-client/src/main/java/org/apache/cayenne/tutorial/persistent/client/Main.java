@@ -22,13 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 
 public class Main {
 
