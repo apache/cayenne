@@ -82,4 +82,32 @@ public class ExtendedTypeMapEnumsTest {
         assertNotNull(type);
         assertTrue(type instanceof EnumType);
     }
+
+    @Test
+    public void testGetType1_5InnerEnum() {
+        ExtendedTypeMap map = new ExtendedTypeMap();
+        String innerEnumClassName = InnerEnumHolder.class.getName() + "$InnerEnum";
+        String innerEnumClassDotName = InnerEnumHolder.class.getName() + ".InnerEnum";
+
+        // register inner enum type using "$" name notation
+        ExtendedType type = map.getRegisteredType(innerEnumClassName);
+        assertNotNull(type);
+        assertTrue(type instanceof EnumType);
+        // register same inner enum type using "." name notation
+        ExtendedType type1 = map.getRegisteredType(innerEnumClassDotName);
+        assertNotNull(type1);
+        assertSame(type, type1);
+
+        // check type is registered
+        type1 = map.getExplictlyRegisteredType(innerEnumClassName);
+        assertNotNull(type1);
+        assertSame(type, type1);
+        type1 = map.getExplictlyRegisteredType(innerEnumClassDotName);
+        assertNotNull(type1);
+        assertSame(type, type1);
+
+        // check registries size
+        assertEquals(1, map.getRegisteredTypeNames().length);
+        assertEquals(1, map.extendedTypeFactories.size());
+    }
 }
