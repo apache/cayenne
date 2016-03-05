@@ -19,12 +19,9 @@
 
 package org.apache.cayenne.dba;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collection;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.Binding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
@@ -40,6 +37,10 @@ import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * A DbAdapter that automatically detects the kind of database it is running on
@@ -199,9 +200,9 @@ public class AutoAdapter implements DbAdapter {
 	}
 
 	@Override
-	public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int precision)
+	public void bindParameter(PreparedStatement statement, Binding parameterBinding)
 			throws SQLException, Exception {
-		getAdapter().bindParameter(statement, object, pos, sqlType, precision);
+		getAdapter().bindParameter(statement, parameterBinding);
 	}
 
 	@Override

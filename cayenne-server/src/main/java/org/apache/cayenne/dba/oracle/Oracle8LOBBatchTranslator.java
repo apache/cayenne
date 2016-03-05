@@ -20,7 +20,7 @@
 package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
@@ -111,31 +111,31 @@ abstract class Oracle8LOBBatchTranslator extends DefaultBatchTranslator {
     }
     
     @Override
-    protected ParameterBinding[] createBindings() {
+    protected DbAttributeBinding[] createBindings() {
         List<DbAttribute> dbAttributes = query.getDbAttributes();
         int len = dbAttributes.size();
 
-        ParameterBinding[] bindings = new ParameterBinding[len];
+        DbAttributeBinding[] bindings = new DbAttributeBinding[len];
 
         for (int i = 0; i < len; i++) {
             DbAttribute attribute = dbAttributes.get(i);
 
             String typeName = TypesMapping.getJavaBySqlType(attribute.getType());
             ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
-            bindings[i] = new ParameterBinding(attribute, extendedType);
+            bindings[i] = new DbAttributeBinding(attribute, extendedType);
         }
 
         return bindings;
     }
     
     @Override
-    protected ParameterBinding[] doUpdateBindings(BatchQueryRow row) {
+    protected DbAttributeBinding[] doUpdateBindings(BatchQueryRow row) {
 
         int len = bindings.length;
 
         for (int i = 0, j = 1; i < len; i++) {
 
-            ParameterBinding b = bindings[i];
+            DbAttributeBinding b = bindings[i];
 
             Object value = row.getValue(i);
             DbAttribute attribute = b.getAttribute();

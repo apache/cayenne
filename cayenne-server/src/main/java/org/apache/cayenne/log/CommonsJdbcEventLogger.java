@@ -26,7 +26,7 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ExtendedEnumeration;
 import org.apache.cayenne.access.jdbc.SQLParameterBinding;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.conn.DataSourceInfo;
@@ -227,7 +227,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 
 	/**
 	 * @deprecated since 4.0 use
-	 *             {@link #logQuery(String, ParameterBinding[], long)}.
+	 *             {@link #logQuery(String, DbAttributeBinding[], long)}.
 	 */
 	@Deprecated
 	@Override
@@ -295,7 +295,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 	}
 
 	@Override
-	public void logQuery(String sql, ParameterBinding[] bindings, long translatedIn) {
+	public void logQuery(String sql, DbAttributeBinding[] bindings, long translatedIn) {
 		if (isLoggable()) {
 
 			StringBuilder buffer = new StringBuilder(sql).append(" ");
@@ -335,7 +335,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 	}
 
 	@Override
-	public void logQueryParameters(String label, ParameterBinding[] bindings) {
+	public void logQueryParameters(String label, DbAttributeBinding[] bindings) {
 
 		if (isLoggable() && bindings.length > 0) {
 
@@ -348,7 +348,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 		}
 	}
 
-	private void appendParameters(StringBuilder buffer, String label, ParameterBinding[] bindings) {
+	private void appendParameters(StringBuilder buffer, String label, DbAttributeBinding[] bindings) {
 
 		int len = bindings.length;
 		if (len > 0) {
@@ -356,7 +356,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 			boolean hasIncluded = false;
 
 			for (int i = 0, j = 1; i < len; i++) {
-				ParameterBinding b = bindings[i];
+				DbAttributeBinding b = bindings[i];
 
 				if (b.isExcluded()) {
 					continue;

@@ -19,14 +19,9 @@
 
 package org.apache.cayenne.dba.sybase;
 
+import org.apache.cayenne.access.translator.Binding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
-import org.apache.cayenne.access.types.ByteArrayType;
-import org.apache.cayenne.access.types.ByteType;
-import org.apache.cayenne.access.types.CharType;
-import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.access.types.ExtendedTypeFactory;
-import org.apache.cayenne.access.types.ExtendedTypeMap;
-import org.apache.cayenne.access.types.ShortType;
+import org.apache.cayenne.access.types.*;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DefaultQuotingStrategy;
@@ -109,22 +104,22 @@ public class SybaseAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int precision)
+    public void bindParameter(PreparedStatement statement, Binding binding)
             throws SQLException, Exception {
 
         // Sybase driver doesn't like CLOBs and BLOBs as parameters
-        if (object == null) {
-            if (sqlType == Types.CLOB) {
-                sqlType = Types.VARCHAR;
-            } else if (sqlType == Types.BLOB) {
-                sqlType = Types.VARBINARY;
+        if (binding.getValue() == null) {
+            if (binding.getType() == Types.CLOB) {
+                binding.setType(Types.VARCHAR);
+            } else if (binding.getType() == Types.BLOB) {
+                binding.setType(Types.VARBINARY);
             }
         }
 
-        if (object == null && sqlType == 0) {
-            statement.setNull(pos, Types.VARCHAR);
+        if (binding.getValue() == null && binding.getType() == 0) {
+            statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
         } else {
-            super.bindParameter(statement, object, pos, sqlType, precision);
+            super.bindParameter(statement, binding);
         }
     }
 

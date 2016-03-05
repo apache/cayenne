@@ -21,6 +21,7 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.Binding;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
@@ -35,11 +36,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
@@ -79,7 +76,7 @@ public class JdbcAdapter implements DbAdapter {
 	/**
 	 * @since 3.1
 	 * @deprecated since 4.0 BatchQueryBuilderfactory is attached to the
-	 *             DataNode.
+	 * DataNode.
 	 */
 	@Inject
 	protected BatchTranslatorFactory batchQueryBuilderFactory;
@@ -91,10 +88,10 @@ public class JdbcAdapter implements DbAdapter {
 	 * Creates new JdbcAdapter with a set of default parameters.
 	 */
 	public JdbcAdapter(@Inject RuntimeProperties runtimeProperties,
-			@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
-			@Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
-			@Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-			@Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator) {
+	                   @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+	                   @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+	                   @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+	                   @Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator) {
 
 		// init defaults
 		this.setSupportsBatchUpdates(false);
@@ -113,7 +110,7 @@ public class JdbcAdapter implements DbAdapter {
 
 	/**
 	 * Returns default separator - a semicolon.
-	 * 
+	 *
 	 * @since 1.0.4
 	 */
 	@Override
@@ -137,7 +134,7 @@ public class JdbcAdapter implements DbAdapter {
 	 * well. Resource lookup is recursive, so that if DbAdapter is a subclass of
 	 * another adapter, parent adapter package is searched as a failover.
 	 * </p>
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	protected URL findResource(String name) {
@@ -172,7 +169,7 @@ public class JdbcAdapter implements DbAdapter {
 	 * @since 3.1
 	 */
 	protected void initExtendedTypes(List<ExtendedType> defaultExtendedTypes, List<ExtendedType> userExtendedTypes,
-			List<ExtendedTypeFactory> extendedTypeFactories) {
+	                                 List<ExtendedTypeFactory> extendedTypeFactories) {
 		for (ExtendedType type : defaultExtendedTypes) {
 			extendedTypes.registerType(type);
 		}
@@ -201,7 +198,7 @@ public class JdbcAdapter implements DbAdapter {
 	 * Creates and returns an {@link EJBQLTranslatorFactory} used to generate
 	 * visitors for EJBQL to SQL translations. This method should be overriden
 	 * by subclasses that need to customize EJBQL generation.
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
@@ -220,7 +217,7 @@ public class JdbcAdapter implements DbAdapter {
 
 	/**
 	 * Sets new primary key generator.
-	 * 
+	 *
 	 * @since 1.1
 	 */
 	public void setPkGenerator(PkGenerator pkGenerator) {
@@ -229,7 +226,7 @@ public class JdbcAdapter implements DbAdapter {
 
 	/**
 	 * Returns true.
-	 * 
+	 *
 	 * @since 1.1
 	 */
 	@Override
@@ -257,7 +254,7 @@ public class JdbcAdapter implements DbAdapter {
 	/**
 	 * Returns true if supplied type can have a length attribute as a part of
 	 * column definition
-	 * 
+	 *
 	 * @since 4.0
 	 */
 	public boolean typeSupportsLength(int type) {
@@ -267,11 +264,11 @@ public class JdbcAdapter implements DbAdapter {
 	/**
 	 * Returns true if supplied type can have a length attribute as a part of
 	 * column definition
-	 * 
+	 * <p/>
 	 * TODO: this is a static method only to support the deprecated method
 	 * {@link TypesMapping#supportsLength(int)} When the deprecated method is
 	 * removed this body should be moved in to {@link #typeSupportsLength(int)}
-	 * 
+	 *
 	 * @deprecated
 	 */
 	static boolean supportsLength(int type) {
@@ -360,7 +357,7 @@ public class JdbcAdapter implements DbAdapter {
 
 	/**
 	 * Appends SQL for column creation to CREATE TABLE buffer.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	@Override
@@ -405,7 +402,7 @@ public class JdbcAdapter implements DbAdapter {
 
 	/**
 	 * Returns a DDL string to create a unique constraint over a set of columns.
-	 * 
+	 *
 	 * @since 1.1
 	 */
 	@Override
@@ -525,7 +522,7 @@ public class JdbcAdapter implements DbAdapter {
 
 	/**
 	 * Uses JdbcActionBuilder to create the right action.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	@Override
@@ -539,14 +536,18 @@ public class JdbcAdapter implements DbAdapter {
 	}
 
 	@Override
-	public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale)
+	public void bindParameter(PreparedStatement statement, Binding binding)
 			throws SQLException, Exception {
 
-		if (object == null) {
-			statement.setNull(pos, sqlType);
+		if (binding.getValue() == null) {
+			statement.setNull(binding.getStatementPosition(), binding.getType());
 		} else {
-			ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(object.getClass());
-			typeProcessor.setJdbcObject(statement, object, pos, sqlType, scale);
+			ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(binding.getValue().getClass());
+			typeProcessor.setJdbcObject(statement
+					, binding.getValue()
+					, binding.getStatementPosition()
+					, binding.getType()
+					, binding.getScale());
 		}
 	}
 
@@ -579,7 +580,7 @@ public class JdbcAdapter implements DbAdapter {
 	 * normally initialized in constructor by calling
 	 * {@link #createEJBQLTranslatorFactory()}, and can be changed later by
 	 * calling {@link #setEjbqlTranslatorFactory(EJBQLTranslatorFactory)}.
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public EJBQLTranslatorFactory getEjbqlTranslatorFactory() {
@@ -591,7 +592,7 @@ public class JdbcAdapter implements DbAdapter {
 	 * normally initialized in constructor by calling
 	 * {@link #createEJBQLTranslatorFactory()}, so users would only override it
 	 * if they need to customize EJBQL translation.
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	public void setEjbqlTranslatorFactory(EJBQLTranslatorFactory ejbqlTranslatorFactory) {
@@ -606,8 +607,8 @@ public class JdbcAdapter implements DbAdapter {
 	}
 
 	/**
-	 * @since 4.0
 	 * @return
+	 * @since 4.0
 	 */
 	protected QuotingStrategy createQuotingStrategy() {
 		return new DefaultQuotingStrategy("\"", "\"");
@@ -632,7 +633,7 @@ public class JdbcAdapter implements DbAdapter {
 	/**
 	 * @since 3.1
 	 * @deprecated since 4.0 BatchQueryBuilderfactory is attached to the
-	 *             DataNode.
+	 * DataNode.
 	 */
 	@Deprecated
 	public BatchTranslatorFactory getBatchQueryBuilderFactory() {
@@ -642,7 +643,7 @@ public class JdbcAdapter implements DbAdapter {
 	/**
 	 * @since 3.1
 	 * @deprecated since 4.0 BatchQueryBuilderfactory is attached to the
-	 *             DataNode.
+	 * DataNode.
 	 */
 	@Deprecated
 	public void setBatchQueryBuilderFactory(BatchTranslatorFactory batchQueryBuilderFactory) {
@@ -651,7 +652,7 @@ public class JdbcAdapter implements DbAdapter {
 
 	/**
 	 * Simply returns this, as JdbcAdapter is not a wrapper.
-	 * 
+	 *
 	 * @since 4.0
 	 */
 	@Override

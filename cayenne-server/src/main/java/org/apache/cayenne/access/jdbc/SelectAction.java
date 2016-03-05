@@ -19,18 +19,12 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -39,6 +33,12 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
 /**
  * A SQLAction that handles SelectQuery execution.
  * 
@@ -46,10 +46,10 @@ import org.apache.cayenne.query.SelectQuery;
  */
 public class SelectAction extends BaseSQLAction {
 
-	private static void bind(DbAdapter adapter, PreparedStatement statement, ParameterBinding[] bindings)
+	private static void bind(DbAdapter adapter, PreparedStatement statement, DbAttributeBinding[] bindings)
 			throws SQLException, Exception {
 
-		for (ParameterBinding b : bindings) {
+		for (DbAttributeBinding b : bindings) {
 
 			if (b.isExcluded()) {
 				continue;
@@ -62,8 +62,7 @@ public class SelectAction extends BaseSQLAction {
 			if (b.getAttribute() == null) {
 				statement.setObject(b.getStatementPosition(), b.getValue());
 			} else {
-				adapter.bindParameter(statement, b.getValue(), b.getStatementPosition(), b.getAttribute().getType(), b
-						.getAttribute().getScale());
+				adapter.bindParameter(statement, b);
 			}
 		}
 
@@ -91,7 +90,7 @@ public class SelectAction extends BaseSQLAction {
 		SelectTranslator translator = dataNode.selectTranslator(query);
 		final String sql = translator.getSql();
 
-		ParameterBinding[] bindings = translator.getBindings();
+		DbAttributeBinding[] bindings = translator.getBindings();
 		PreparedStatement statement = connection.prepareStatement(sql);
 		bind(dataNode.getAdapter(), statement, bindings);
 

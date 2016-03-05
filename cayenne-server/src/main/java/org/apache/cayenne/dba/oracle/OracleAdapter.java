@@ -21,15 +21,12 @@ package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.Binding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
-import org.apache.cayenne.access.types.ByteType;
-import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.access.types.ExtendedTypeFactory;
-import org.apache.cayenne.access.types.ExtendedTypeMap;
-import org.apache.cayenne.access.types.ShortType;
+import org.apache.cayenne.access.types.*;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -39,20 +36,11 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.merge.MergerFactory;
-import org.apache.cayenne.query.BatchQuery;
-import org.apache.cayenne.query.InsertBatchQuery;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.UpdateBatchQuery;
+import org.apache.cayenne.query.*;
 import org.apache.cayenne.resource.ResourceLocator;
 
 import java.lang.reflect.Field;
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -230,17 +218,18 @@ public class OracleAdapter extends JdbcAdapter {
 	}
 
 	@Override
-	public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale)
+	public void bindParameter(PreparedStatement statement, Binding binding)
 			throws SQLException, Exception {
 
 		// Oracle doesn't support BOOLEAN even when binding NULL, so have to
 		// intercept
 		// NULL Boolean here, as super doesn't pass it through ExtendedType...
-		if (object == null && sqlType == Types.BOOLEAN) {
+		if (binding.getValue() == null && binding.getType() == Types.BOOLEAN) {
 			ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(Boolean.class);
-			typeProcessor.setJdbcObject(statement, object, pos, sqlType, scale);
+			typeProcessor.setJdbcObject(statement, binding.getValue(), binding.getStatementPosition(), binding
+							.getType(),binding.getScale());
 		} else {
-			super.bindParameter(statement, object, pos, sqlType, scale);
+			super.bindParameter(statement, binding);
 		}
 	}
 

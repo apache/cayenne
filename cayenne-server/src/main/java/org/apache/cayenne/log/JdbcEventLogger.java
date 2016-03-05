@@ -20,7 +20,7 @@ package org.apache.cayenne.log;
 
 import java.util.List;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DbAttribute;
 
@@ -77,14 +77,14 @@ public interface JdbcEventLogger {
 
 	/**
 	 * @deprecated since 4.0 use
-	 *             {@link #logQuery(String, ParameterBinding[], long)}.
+	 *             {@link #logQuery(String, DbAttributeBinding[], long)}.
 	 */
 	@Deprecated
 	void logQuery(String sql, List<?> params);
 
 	/**
 	 * @deprecated since 4.0 use
-	 *             {@link #logQuery(String, ParameterBinding[], long)}.
+	 *             {@link #logQuery(String, DbAttributeBinding[], long)}.
 	 */
 	@Deprecated
 	void logQuery(String sql, List<DbAttribute> attrs, List<?> params, long time);
@@ -92,16 +92,16 @@ public interface JdbcEventLogger {
 	/**
 	 * @since 4.0
 	 */
-	void logQuery(String sql, ParameterBinding[] bindings, long translatedIn);
+	void logQuery(String sql, DbAttributeBinding[] bindings, long translatedIn);
 
 	/**
 	 * @since 4.0
 	 */
-	void logQueryParameters(String label, ParameterBinding[] bindings);
+	void logQueryParameters(String label, DbAttributeBinding[] bindings);
 
 	/**
 	 * @deprecated since 4.0 in favor of
-	 *             {@link #logQueryParameters(String, ParameterBinding[])}
+	 *             {@link #logQueryParameters(String, DbAttributeBinding[])}
 	 */
 	@Deprecated
 	void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting);

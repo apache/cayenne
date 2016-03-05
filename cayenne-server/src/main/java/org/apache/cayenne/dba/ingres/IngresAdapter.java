@@ -1,26 +1,27 @@
 /*****************************************************************
- *   Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  ****************************************************************/
 
 package org.apache.cayenne.dba.ingres;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.Binding;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
@@ -51,7 +52,7 @@ import java.util.List;
  * DbAdapter implementation for <a
  * href="http://opensource.ca.com/projects/ingres/">Ingres</a>. Sample
  * connection settings to use with Ingres are shown below:
- * 
+ *
  * <pre>
  *  ingres.jdbc.username = test
  *  ingres.jdbc.password = secret
@@ -64,10 +65,10 @@ public class IngresAdapter extends JdbcAdapter {
 	public static final String TRIM_FUNCTION = "TRIM";
 
 	public IngresAdapter(@Inject RuntimeProperties runtimeProperties,
-			@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
-			@Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
-			@Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-			@Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator) {
+	                     @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+	                     @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+	                     @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+	                     @Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator) {
 		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator);
 		setSupportsUniqueConstraints(true);
 		setSupportsGeneratedKeys(true);
@@ -109,13 +110,13 @@ public class IngresAdapter extends JdbcAdapter {
 	}
 
 	@Override
-	public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale)
+	public void bindParameter(PreparedStatement statement, Binding binding)
 			throws SQLException, Exception {
 
-		if (object == null && (sqlType == Types.BOOLEAN || sqlType == Types.BIT)) {
-			statement.setNull(pos, Types.VARCHAR);
+		if (binding.getValue() == null && (binding.getType() == Types.BOOLEAN || binding.getType() == Types.BIT)) {
+			statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
 		} else {
-			super.bindParameter(statement, object, pos, sqlType, scale);
+			super.bindParameter(statement, binding);
 		}
 	}
 

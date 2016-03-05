@@ -19,21 +19,13 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.Collections;
-
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
@@ -44,6 +36,10 @@ import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
 
+import java.sql.*;
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * @since 1.2
  */
@@ -53,13 +49,12 @@ public class BatchAction extends BaseSQLAction {
 	protected BatchQuery query;
 	protected RowDescriptor keyRowDescriptor;
 
-	private static void bind(DbAdapter adapter, PreparedStatement statement, ParameterBinding[] bindings)
+	private static void bind(DbAdapter adapter, PreparedStatement statement, DbAttributeBinding[] bindings)
 			throws SQLException, Exception {
 
-		for (ParameterBinding b : bindings) {
+		for (DbAttributeBinding b : bindings) {
 			if (!b.isExcluded()) {
-				adapter.bindParameter(statement, b.getValue(), b.getStatementPosition(), b.getAttribute().getType(), b
-						.getAttribute().getScale());
+				adapter.bindParameter(statement, b);
 			}
 		}
 	}
@@ -114,7 +109,7 @@ public class BatchAction extends BaseSQLAction {
 		try (PreparedStatement statement = con.prepareStatement(sql);) {
 			for (BatchQueryRow row : query.getRows()) {
 
-				ParameterBinding[] bindings = translator.updateBindings(row);
+				DbAttributeBinding[] bindings = translator.updateBindings(row);
 				logger.logQueryParameters("batch bind", bindings);
 				bind(adapter, statement, bindings);
 
@@ -166,7 +161,7 @@ public class BatchAction extends BaseSQLAction {
 				Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(queryStr);) {
 			for (BatchQueryRow row : query.getRows()) {
 
-				ParameterBinding[] bindings = translator.updateBindings(row);
+				DbAttributeBinding[] bindings = translator.updateBindings(row);
 				logger.logQueryParameters("bind", bindings);
 
 				bind(adapter, statement, bindings);

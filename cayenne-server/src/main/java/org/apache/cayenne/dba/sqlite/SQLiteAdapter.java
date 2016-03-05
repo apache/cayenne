@@ -33,8 +33,6 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Calendar;
 import java.util.Collection;
@@ -99,11 +97,6 @@ public class SQLiteAdapter extends JdbcAdapter {
     @Override
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new SQLiteActionBuilder(node));
-    }
-
-    @Override
-    public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale) throws SQLException, Exception {
-        super.bindParameter(statement, object, pos, mapNTypes(sqlType), scale);
     }
 
     private int mapNTypes(int sqlType) {

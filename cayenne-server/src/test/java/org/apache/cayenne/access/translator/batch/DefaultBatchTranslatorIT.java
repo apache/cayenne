@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -55,13 +55,13 @@ public class DefaultBatchTranslatorIT extends ServerCase {
             }
 
             @Override
-            protected ParameterBinding[] createBindings() {
-                return new ParameterBinding[0];
+            protected DbAttributeBinding[] createBindings() {
+                return new DbAttributeBinding[0];
             }
 
             @Override
-            protected ParameterBinding[] doUpdateBindings(BatchQueryRow row) {
-                return new ParameterBinding[0];
+            protected DbAttributeBinding[] doUpdateBindings(BatchQueryRow row) {
+                return new DbAttributeBinding[0];
             }
         };
 
@@ -81,13 +81,13 @@ public class DefaultBatchTranslatorIT extends ServerCase {
             }
 
             @Override
-            protected ParameterBinding[] createBindings() {
-                return new ParameterBinding[0];
+            protected DbAttributeBinding[] createBindings() {
+                return new DbAttributeBinding[0];
             }
 
             @Override
-            protected ParameterBinding[] doUpdateBindings(BatchQueryRow row) {
-                return new ParameterBinding[0];
+            protected DbAttributeBinding[] doUpdateBindings(BatchQueryRow row) {
+                return new DbAttributeBinding[0];
             }
         };
 
@@ -116,13 +116,13 @@ public class DefaultBatchTranslatorIT extends ServerCase {
             }
 
             @Override
-            protected ParameterBinding[] createBindings() {
-                return new ParameterBinding[0];
+            protected DbAttributeBinding[] createBindings() {
+                return new DbAttributeBinding[0];
             }
 
             @Override
-            protected ParameterBinding[] doUpdateBindings(BatchQueryRow row) {
-                return new ParameterBinding[0];
+            protected DbAttributeBinding[] doUpdateBindings(BatchQueryRow row) {
+                return new DbAttributeBinding[0];
             }
         };
 

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
@@ -45,7 +45,7 @@ public abstract class QueryAssembler {
 	protected String sql;
 	protected DbAdapter adapter;
 	protected EntityResolver entityResolver;
-	protected List<ParameterBinding> bindings;
+	protected List<DbAttributeBinding> bindings;
 
 	/**
 	 * @since 4.0
@@ -55,7 +55,7 @@ public abstract class QueryAssembler {
 		this.adapter = adapter;
 		this.query = query;
 		this.queryMetadata = query.getMetaData(entityResolver);
-		this.bindings = new ArrayList<ParameterBinding>();
+		this.bindings = new ArrayList<DbAttributeBinding>();
 	}
 
 	/**
@@ -150,10 +150,11 @@ public abstract class QueryAssembler {
 	 *            DbAttribute being processed.
 	 */
 	public void addToParamList(DbAttribute dbAttr, Object anObject) {
-		String typeName = TypesMapping.getJavaBySqlType(dbAttr.getType());
+		String typeName = TypesMapping.SQL_NULL;
+		if (dbAttr != null) typeName = TypesMapping.getJavaBySqlType(dbAttr.getType());
 		ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
 		
-		ParameterBinding binding = new ParameterBinding(dbAttr, extendedType);
+		DbAttributeBinding binding = new DbAttributeBinding(dbAttr, extendedType);
 		binding.setValue(anObject);
 		binding.setStatementPosition(bindings.size() + 1);
 		bindings.add(binding);
@@ -162,7 +163,7 @@ public abstract class QueryAssembler {
 	/**
 	 * @since 4.0
 	 */
-	public ParameterBinding[] getBindings() {
-		return bindings.toArray(new ParameterBinding[bindings.size()]);
+	public DbAttributeBinding[] getBindings() {
+		return bindings.toArray(new DbAttributeBinding[bindings.size()]);
 	}
 }

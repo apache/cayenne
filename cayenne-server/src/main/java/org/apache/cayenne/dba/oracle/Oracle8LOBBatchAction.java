@@ -19,32 +19,22 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import java.io.OutputStream;
-import java.io.Writer;
-import java.lang.reflect.Method;
-import java.sql.Blob;
-import java.sql.Clob;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQuery;
-import org.apache.cayenne.query.BatchQueryRow;
-import org.apache.cayenne.query.InsertBatchQuery;
-import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.UpdateBatchQuery;
+import org.apache.cayenne.query.*;
 import org.apache.cayenne.util.Util;
+
+import java.io.OutputStream;
+import java.io.Writer;
+import java.lang.reflect.Method;
+import java.sql.*;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @since 3.0
@@ -55,12 +45,13 @@ class Oracle8LOBBatchAction implements SQLAction {
 	private DbAdapter adapter;
 	private JdbcEventLogger logger;
 
-	private static void bind(DbAdapter adapter, PreparedStatement statement, ParameterBinding[] bindings)
+	private static void bind(DbAdapter adapter, PreparedStatement statement, DbAttributeBinding[] bindings)
 			throws SQLException, Exception {
 
-		for (ParameterBinding b : bindings) {
-			adapter.bindParameter(statement, b.getValue(), b.getStatementPosition(), b.getAttribute().getType(), b
-					.getAttribute().getScale());
+		for (DbAttributeBinding b : bindings) {
+			DbAttributeBinding binding = new DbAttributeBinding(b.getAttribute(), adapter.getExtendedTypes()
+					.getRegisteredType(b.getValue().getClass()));
+			adapter.bindParameter(statement, binding);
 		}
 	}
 
@@ -106,7 +97,7 @@ class Oracle8LOBBatchAction implements SQLAction {
 
 			try (PreparedStatement statement = connection.prepareStatement(updateStr);) {
 
-				ParameterBinding[] bindings = translator.updateBindings(row);
+				DbAttributeBinding[] bindings = translator.updateBindings(row);
 				logger.logQueryParameters("bind", bindings);
 
 				bind(adapter, statement, bindings);
@@ -150,7 +141,11 @@ class Oracle8LOBBatchAction implements SQLAction {
 				Object value = qualifierValues.get(i);
 				DbAttribute attribute = qualifierAttributes.get(i);
 
-				adapter.bindParameter(selectStatement, value, i + 1, attribute.getType(), attribute.getScale());
+				DbAttributeBinding binding = new DbAttributeBinding(attribute, adapter.getExtendedTypes()
+						.getRegisteredType(value.getClass()));
+				binding.setStatementPosition(i + 1);
+				binding.setValue(value);
+				adapter.bindParameter(selectStatement,binding);
 			}
 
 			try (ResultSet result = selectStatement.executeQuery();) {

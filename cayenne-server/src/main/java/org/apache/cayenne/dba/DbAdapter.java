@@ -1,24 +1,25 @@
 /*****************************************************************
- *   Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  ****************************************************************/
 package org.apache.cayenne.dba;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.Binding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
@@ -48,14 +49,14 @@ public interface DbAdapter {
 	/**
 	 * Returns a String used to terminate a batch in command-line tools. E.g.
 	 * ";" on Oracle or "go" on Sybase.
-	 * 
+	 *
 	 * @since 1.0.4
 	 */
 	String getBatchTerminator();
 
 	/**
 	 * Returns a SelectTranslator that works with the adapter target database.
-	 * 
+	 *
 	 * @since 4.0
 	 */
 	SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver);
@@ -64,7 +65,7 @@ public interface DbAdapter {
 
 	/**
 	 * Returns an instance of SQLAction that should handle the query.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	SQLAction getAction(Query query, DataNode node);
@@ -87,7 +88,7 @@ public interface DbAdapter {
 	/**
 	 * Returns true if a target database supports key autogeneration. This
 	 * feature also requires JDBC3-compliant driver.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	boolean supportsGeneratedKeys();
@@ -101,7 +102,7 @@ public interface DbAdapter {
 
 	/**
 	 * Returns a collection of SQL statements needed to drop a database table.
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	Collection<String> dropTableStatements(DbEntity table);
@@ -115,7 +116,7 @@ public interface DbAdapter {
 	/**
 	 * Returns a DDL string to create a unique constraint over a set of columns,
 	 * or null if the unique constraints are not supported.
-	 * 
+	 *
 	 * @since 1.1
 	 */
 	String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns);
@@ -146,7 +147,7 @@ public interface DbAdapter {
 	/**
 	 * Creates and returns a DbAttribute based on supplied parameters (usually
 	 * obtained from database meta data).
-	 * 
+	 *
 	 * @param name
 	 *            database column name
 	 * @param typeName
@@ -165,10 +166,9 @@ public interface DbAdapter {
 	DbAttribute buildAttribute(String name, String typeName, int type, int size, int scale, boolean allowNulls);
 
 	/**
-	 * Binds an object value to PreparedStatement's numbered parameter.
+	 * Binds an object value to PreparedStatement's parameter.
 	 */
-	void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale)
-			throws SQLException, Exception;
+	void bindParameter(PreparedStatement statement, Binding parameterBinding) throws SQLException, Exception;
 
 	/**
 	 * Returns the name of the table type (as returned by
@@ -190,7 +190,7 @@ public interface DbAdapter {
 	/**
 	 * Append the column type part of a "create table" to the given
 	 * {@link StringBuffer}
-	 * 
+	 *
 	 * @param sqlBuffer
 	 *            the {@link StringBuffer} to append the column type to
 	 * @param column
@@ -208,7 +208,7 @@ public interface DbAdapter {
 
 	/**
 	 * Returns SQL identifier quoting strategy object
-	 * 
+	 *
 	 * @since 4.0
 	 */
 	QuotingStrategy getQuotingStrategy();
@@ -216,14 +216,14 @@ public interface DbAdapter {
 	/**
 	 * Allows the users to get access to the adapter decorated by a given
 	 * adapter.
-	 * 
+	 *
 	 * @since 4.0
 	 */
 	DbAdapter unwrap();
 
 	/**
 	 * Returns a translator factory for EJBQL to SQL translation.
-	 * 
+	 *
 	 * @since 4.0
 	 */
 	EJBQLTranslatorFactory getEjbqlTranslatorFactory();
