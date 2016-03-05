@@ -19,13 +19,26 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.translator.Binding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
@@ -39,9 +52,6 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.collections.IteratorUtils;
-
-import java.sql.*;
-import java.util.*;
 
 /**
  * Implements a strategy for execution of SQLTemplates.
@@ -141,8 +151,8 @@ public class SQLTemplateAction implements SQLAction {
 
 		// for now supporting deprecated batch parameters...
 		@SuppressWarnings("unchecked")
-		Iterator<Map<String, ?>> it = (size > 0) ? query.parametersIterator() : IteratorUtils
-				.singletonIterator(Collections.emptyMap());
+		Iterator<Map<String, ?>> it = (size > 0) ? query.parametersIterator()
+				: IteratorUtils.singletonIterator(Collections.emptyMap());
 		for (int i = 0; i < batchSize; i++) {
 			Map<String, ?> nextParameters = it.next();
 
@@ -335,18 +345,19 @@ public class SQLTemplateAction implements SQLAction {
 	/**
 	 * Binds parameters to the PreparedStatement.
 	 */
-	protected void bind(PreparedStatement preparedStatement, SQLParameterBinding[] bindings) throws SQLException,
-			Exception {
+	protected void bind(PreparedStatement preparedStatement, SQLParameterBinding[] bindings)
+			throws SQLException, Exception {
 		// bind parameters
 		if (bindings.length > 0) {
 			int len = bindings.length;
 			for (int i = 0; i < len; i++) {
 				ExtendedType extendedType = getAdapter().getExtendedTypes().getDefaultType();
-				if (bindings[i].getValue() != null) getAdapter().getExtendedTypes().getRegisteredType(bindings[i]
-						.getValue().getClass());
-				Binding binding = new Binding(extendedType);
+				if (bindings[i].getValue() != null) {
+					getAdapter().getExtendedTypes().getRegisteredType(bindings[i].getValue().getClass());
+				}
+				ParameterBinding binding = new ParameterBinding(extendedType);
 				binding.setType(bindings[i].getJdbcType());
-				binding.setStatementPosition(i+1);
+				binding.setStatementPosition(i + 1);
 				binding.setValue(bindings[i].getValue());
 				dataNode.getAdapter().bindParameter(preparedStatement, binding);
 			}

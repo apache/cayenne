@@ -25,7 +25,7 @@ import org.apache.cayenne.access.types.ExtendedType;
  * 
  * @since 4.0
  */
-public class Binding {
+public class ParameterBinding {
 
 	static final int EXCLUDED_POSITION = -1;
 
@@ -35,7 +35,7 @@ public class Binding {
 	private Integer type;
 	private int scale;
 
-	public Binding(ExtendedType extendedType) {
+	public ParameterBinding(ExtendedType extendedType) {
 		this.statementPosition = EXCLUDED_POSITION;
 		this.extendedType = extendedType;
 	}

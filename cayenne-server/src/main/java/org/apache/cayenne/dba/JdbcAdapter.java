@@ -21,7 +21,7 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.Binding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
@@ -536,7 +536,7 @@ public class JdbcAdapter implements DbAdapter {
 	}
 
 	@Override
-	public void bindParameter(PreparedStatement statement, Binding binding)
+	public void bindParameter(PreparedStatement statement, ParameterBinding binding)
 			throws SQLException, Exception {
 
 		if (binding.getValue() == null) {

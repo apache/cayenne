@@ -26,7 +26,7 @@ import org.apache.cayenne.map.ProcedureParameter;
  *
  * @since 4.0
  */
-public class ProcedureParameterBinding extends Binding {
+public class ProcedureParameterBinding extends ParameterBinding {
 
 	private final ProcedureParameter parameter;
 

@@ -19,7 +19,7 @@
 package org.apache.cayenne.dba;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.Binding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
@@ -168,7 +168,7 @@ public interface DbAdapter {
 	/**
 	 * Binds an object value to PreparedStatement's parameter.
 	 */
-	void bindParameter(PreparedStatement statement, Binding parameterBinding) throws SQLException, Exception;
+	void bindParameter(PreparedStatement statement, ParameterBinding parameterBinding) throws SQLException, Exception;
 
 	/**
 	 * Returns the name of the table type (as returned by

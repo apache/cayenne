@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DbAttribute;
  * 
  * @since 4.0
  */
-public class DbAttributeBinding extends Binding{
+public class DbAttributeBinding extends ParameterBinding {
 
 	private final DbAttribute attribute;
 
@@ -45,7 +45,7 @@ public class DbAttributeBinding extends Binding{
 	}
 
 	@Override
- 	public int getScale() {
+	public int getScale() {
 		return getAttribute().getScale();
 	}
 }

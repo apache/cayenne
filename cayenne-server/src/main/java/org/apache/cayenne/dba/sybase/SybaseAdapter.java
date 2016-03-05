@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dba.sybase;
 
-import org.apache.cayenne.access.translator.Binding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.types.*;
 import org.apache.cayenne.configuration.Constants;
@@ -104,7 +104,7 @@ public class SybaseAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(PreparedStatement statement, Binding binding)
+    public void bindParameter(PreparedStatement statement, ParameterBinding binding)
             throws SQLException, Exception {
 
         // Sybase driver doesn't like CLOBs and BLOBs as parameters

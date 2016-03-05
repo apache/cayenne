@@ -21,7 +21,7 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.Binding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
@@ -200,7 +200,7 @@ public class AutoAdapter implements DbAdapter {
 	}
 
 	@Override
-	public void bindParameter(PreparedStatement statement, Binding parameterBinding)
+	public void bindParameter(PreparedStatement statement, ParameterBinding parameterBinding)
 			throws SQLException, Exception {
 		getAdapter().bindParameter(statement, parameterBinding);
 	}

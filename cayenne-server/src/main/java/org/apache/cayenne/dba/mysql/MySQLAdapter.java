@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.mysql;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.Binding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
@@ -202,7 +202,7 @@ public class MySQLAdapter extends JdbcAdapter {
 	}
 
 	@Override
-	public void bindParameter(PreparedStatement statement, Binding binding)
+	public void bindParameter(PreparedStatement statement, ParameterBinding binding)
 			throws SQLException, Exception {
 		binding.setType(mapNTypes(binding.getType()));
 		super.bindParameter(statement, binding);

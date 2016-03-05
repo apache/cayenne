@@ -20,7 +20,7 @@
 package org.apache.cayenne.dba.derby;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.translator.Binding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
@@ -187,7 +187,7 @@ public class DerbyAdapter extends JdbcAdapter {
     @Override
     public void bindParameter(
             PreparedStatement statement,
-            Binding binding) throws SQLException, Exception {
+            ParameterBinding binding) throws SQLException, Exception {
 
         if (binding.getValue() == null && binding.getType() == 0) {
             statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
