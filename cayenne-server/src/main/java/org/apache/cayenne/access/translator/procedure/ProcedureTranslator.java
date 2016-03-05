@@ -229,8 +229,8 @@ public class ProcedureTranslator {
 			ProcedureParameter param,
 			Object val,
 			int pos) throws Exception {
-		ExtendedType extendedType = adapter.getExtendedTypes().getDefaultType();
-		if (val != null) adapter.getExtendedTypes().getRegisteredType(val.getClass());
+		ExtendedType extendedType = val != null ? adapter.getExtendedTypes().getRegisteredType(val.getClass())
+				: adapter.getExtendedTypes().getDefaultType();
 		ProcedureParameterBinding binding = new ProcedureParameterBinding(param, extendedType);
 		binding.setValue(val);
 		binding.setStatementPosition(pos);

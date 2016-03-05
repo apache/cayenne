@@ -351,15 +351,16 @@ public class SQLTemplateAction implements SQLAction {
 		if (bindings.length > 0) {
 			int len = bindings.length;
 			for (int i = 0; i < len; i++) {
-				ExtendedType extendedType = getAdapter().getExtendedTypes().getDefaultType();
-				if (bindings[i].getValue() != null) {
-					extendedType = getAdapter().getExtendedTypes().getRegisteredType(bindings[i].getValue().getClass());
-				}
+
+				Object value = bindings[i].getValue();
+				ExtendedType extendedType = value != null
+						? getAdapter().getExtendedTypes().getRegisteredType(value.getClass())
+						: getAdapter().getExtendedTypes().getDefaultType();
 
 				ParameterBinding binding = new ParameterBinding(extendedType);
 				binding.setType(bindings[i].getJdbcType());
 				binding.setStatementPosition(i + 1);
-				binding.setValue(bindings[i].getValue());
+				binding.setValue(value);
 				dataNode.getAdapter().bindParameter(preparedStatement, binding);
 			}
 		}
