@@ -353,8 +353,9 @@ public class SQLTemplateAction implements SQLAction {
 			for (int i = 0; i < len; i++) {
 				ExtendedType extendedType = getAdapter().getExtendedTypes().getDefaultType();
 				if (bindings[i].getValue() != null) {
-					getAdapter().getExtendedTypes().getRegisteredType(bindings[i].getValue().getClass());
+					extendedType = getAdapter().getExtendedTypes().getRegisteredType(bindings[i].getValue().getClass());
 				}
+
 				ParameterBinding binding = new ParameterBinding(extendedType);
 				binding.setType(bindings[i].getJdbcType());
 				binding.setStatementPosition(i + 1);
