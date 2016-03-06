@@ -23,6 +23,7 @@ CAY-1978 ESCAPE clause should be included in LIKE parenthesis
 CAY-1979 Prefetches on Many-to-Many Relationships with Longvarchar
 CAY-2047 Relationship mapping with target inheritance
 CAY-2049 Changing the Relationship name in ObjRelationship Inspector has no effect
+CAY-2066 Memory leak in ExtendedTypeMap for inner classes
 
 ----------------------------------
 Release: 3.1-final

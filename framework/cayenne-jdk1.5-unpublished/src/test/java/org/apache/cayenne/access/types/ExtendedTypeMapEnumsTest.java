@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.access.types.InnerEnumHolder.InnerEnum;
+
 import junit.framework.TestCase;
 
 public class ExtendedTypeMapEnumsTest extends TestCase {
@@ -47,13 +49,13 @@ public class ExtendedTypeMapEnumsTest extends TestCase {
         ExtendedType type1 = map.createType(InnerEnumHolder.class.getName()
                 + "$InnerEnum");
         assertNotNull(type1);
-        assertSame(type.getClassName(), type1.getClassName());
+        assertEquals(type.getClassName(), type1.getClassName());
 
         // use a string name with .
         ExtendedType type2 = map.createType(InnerEnumHolder.class.getName()
                 + ".InnerEnum");
         assertNotNull(type2);
-        assertSame(type.getClassName(), type2.getClassName());
+        assertEquals(type.getClassName(), type2.getClassName());
     }
 
     public void testGetDefaultType1_4() {
@@ -71,4 +73,24 @@ public class ExtendedTypeMapEnumsTest extends TestCase {
         assertNotNull(type);
         assertTrue(type instanceof EnumType);
     }
+    
+	public void testGetRegisteredType_InnerEnum() {
+		ExtendedTypeMap map = new ExtendedTypeMap();
+		assertEquals(0, map.extendedTypeFactories.size());
+
+		ExtendedType byType = map.getRegisteredType(InnerEnum.class);
+
+		// this and subsequent tests verify that no memory leak occurs per
+		// CAY-2066
+		assertEquals(1, map.extendedTypeFactories.size());
+
+		assertSame(byType, map.getRegisteredType(InnerEnum.class));
+		assertEquals(1, map.extendedTypeFactories.size());
+
+		assertSame(byType, map.getRegisteredType(InnerEnumHolder.class.getName() + "$InnerEnum"));
+		assertEquals(1, map.extendedTypeFactories.size());
+
+		assertSame(byType, map.getRegisteredType(InnerEnumHolder.class.getName() + ".InnerEnum"));
+		assertEquals(1, map.extendedTypeFactories.size());
+	}
 }

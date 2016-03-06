@@ -49,6 +49,7 @@ public class ExtendedTypeMap {
         classesForPrimitives.put("int", Integer.class.getName());
     }
 
+    protected Map<String, String> typeAliases;
     protected final Map<String, ExtendedType> typeMap;
     protected ExtendedType defaultType;
 
@@ -65,6 +66,7 @@ public class ExtendedTypeMap {
     public ExtendedTypeMap() {
         this.defaultType = new ObjectType();
         this.typeMap = new ConcurrentHashMap<String, ExtendedType>();
+        this.typeAliases = new ConcurrentHashMap<String, String>(classesForPrimitives);
         this.extendedTypeFactories = new CopyOnWriteArrayList<ExtendedTypeFactory>();
         this.internalTypeFactories = new CopyOnWriteArrayList<ExtendedTypeFactory>();
 
@@ -161,10 +163,7 @@ public class ExtendedTypeMap {
             return getDefaultType();
         }
 
-        String nonPrimitive = classesForPrimitives.get(javaClassName);
-        if (nonPrimitive != null) {
-            javaClassName = nonPrimitive;
-        }
+        javaClassName = canonicalizedTypeName(javaClassName);
 
         ExtendedType type = getExplictlyRegisteredType(javaClassName);
 
@@ -280,4 +279,29 @@ public class ExtendedTypeMap {
 
         return null;
     }
+       
+	/**
+	 * For the class name returns a name "canonicalized" for the purpose of
+	 * ExtendedType lookup.
+	 * 
+	 * @since 3.1.1
+	 */
+	protected String canonicalizedTypeName(String className) {
+
+		String canonicalized = typeAliases.get(className);
+		if (canonicalized == null) {
+
+			int index = className.indexOf('$');
+			if (index >= 0) {
+				canonicalized = className.replace('$', '.');
+			} else {
+				canonicalized = className;
+			}
+
+			typeAliases.put(className, canonicalized);
+
+		}
+
+		return canonicalized;
+	}
 }
