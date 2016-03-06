@@ -40,6 +40,7 @@ public class EnumType<T extends Enum<T>> implements ExtendedType {
 
     protected Class<T> enumClass;
     protected Object[] values;
+    protected String canonicalName;
 
     public EnumType(Class<T> enumClass) {
         if (enumClass == null) {
@@ -47,6 +48,7 @@ public class EnumType<T extends Enum<T>> implements ExtendedType {
         }
 
         this.enumClass = enumClass;
+        this.canonicalName = enumClass.getCanonicalName();
 
         try {
             Method m = enumClass.getMethod("values");
@@ -61,7 +63,7 @@ public class EnumType<T extends Enum<T>> implements ExtendedType {
 
     @Override
     public String getClassName() {
-        return enumClass.getName();
+        return canonicalName;
     }
 
     @Override
