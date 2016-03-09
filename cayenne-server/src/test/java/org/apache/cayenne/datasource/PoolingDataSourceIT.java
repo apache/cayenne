@@ -174,8 +174,8 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 		ExecutorService executor = Executors.newFixedThreadPool(tasks.length);
 
 		for (int j = 0; j < 100; j++) {
-			for (int i = 0; i < tasks.length; i++) {
-				executor.submit(tasks[i]);
+			for (PoolTask task : tasks) {
+				executor.submit(task);
 			}
 		}
 
@@ -192,8 +192,8 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 			throw new RuntimeException(e);
 		}
 
-		for (int i = 0; i < tasks.length; i++) {
-			assertEquals(100, tasks[i].i.get());
+		for (PoolTask task : tasks) {
+			assertEquals(100, task.i.get());
 		}
 	}
 
@@ -204,7 +204,6 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 		@Override
 		public void run() {
 
-			i.incrementAndGet();
 			try {
 				Connection c = dataSource.getConnection();
 				try {
@@ -220,6 +219,7 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 						} finally {
 							rs.close();
 						}
+
 					} finally {
 						st.close();
 					}
@@ -227,6 +227,9 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 				} finally {
 					c.close();
 				}
+
+				// increment only after success
+				i.incrementAndGet();
 
 			} catch (SQLException e) {
 				e.printStackTrace();
