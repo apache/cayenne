@@ -55,6 +55,14 @@ public class ManagedPoolingDataSource implements PoolingDataSource, ScopeEventLi
 		return dataSourceManager;
 	}
 
+	int poolSize() {
+		return dataSourceManager.getDataSource().poolSize();
+	}
+
+	int availableSize() {
+		return dataSourceManager.getDataSource().availableSize();
+	}
+
 	/**
 	 * Calls {@link #shutdown()} to drain the underlying pool, close open
 	 * connections and block the DataSource from creating any new connections.
