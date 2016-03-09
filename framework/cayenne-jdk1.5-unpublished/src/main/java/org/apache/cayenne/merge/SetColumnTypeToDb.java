@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * An {@link MergerToken} to use to set type, length and precision.
@@ -79,7 +79,7 @@ public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
         sqlBuffer.append(type);
 
         // append size and precision (if applicable)
-        if (TypesMapping.supportsLength(columnNew.getType())) {
+        if (adapter.typeSupportsLength(columnNew.getType())) {
             int len = columnNew.getMaxLength();
             int scale = TypesMapping.isDecimal(columnNew.getType()) ? columnNew.getScale() : -1;
 

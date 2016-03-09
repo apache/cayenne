@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+
+import java.util.Collections;
+import java.util.List;
 
 public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
 
@@ -71,7 +71,7 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
         sqlBuffer.append(type);
 
         // append size and precision (if applicable)
-        if (TypesMapping.supportsLength(getColumn().getType())) {
+        if (adapter.typeSupportsLength(getColumn().getType())) {
             int len = getColumn().getMaxLength();
             int scale = TypesMapping.isDecimal(getColumn().getType()) ? getColumn()
                     .getScale() : -1;

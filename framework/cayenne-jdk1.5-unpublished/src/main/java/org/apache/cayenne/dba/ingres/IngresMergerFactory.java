@@ -18,12 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.dba.ingres;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -36,6 +32,9 @@ import org.apache.cayenne.merge.MergerToken;
 import org.apache.cayenne.merge.SetAllowNullToDb;
 import org.apache.cayenne.merge.SetColumnTypeToDb;
 import org.apache.cayenne.merge.SetNotNullToDb;
+
+import java.util.Collections;
+import java.util.List;
 
 
 public class IngresMergerFactory extends MergerFactory {
@@ -166,7 +165,7 @@ public class IngresMergerFactory extends MergerFactory {
                 sqlBuffer.append(" ");
                 sqlBuffer.append(adapter.externalTypesForJdbcType(getColumn().getType())[0]);
               
-                if (TypesMapping.supportsLength(getColumn().getType()) && getColumn().getMaxLength() > 0) {
+                if (adapter.typeSupportsLength(getColumn().getType()) && getColumn().getMaxLength() > 0) {
                     sqlBuffer.append("(");
                     sqlBuffer.append(getColumn().getMaxLength());
                     sqlBuffer.append(")");
@@ -197,7 +196,7 @@ public class IngresMergerFactory extends MergerFactory {
                 sqlBuffer.append(" ");
                 sqlBuffer.append(adapter.externalTypesForJdbcType(getColumn().getType())[0]);
               
-                if (TypesMapping.supportsLength(getColumn().getType()) && getColumn().getMaxLength() > 0) {
+                if (adapter.typeSupportsLength(getColumn().getType()) && getColumn().getMaxLength() > 0) {
                     sqlBuffer.append("(");
                     sqlBuffer.append(getColumn().getMaxLength());
                     sqlBuffer.append(")");

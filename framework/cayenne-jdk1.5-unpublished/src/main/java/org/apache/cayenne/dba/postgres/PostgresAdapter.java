@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.dba.postgres;
 
-import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.QualifierTranslator;
@@ -35,9 +29,9 @@ import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
@@ -45,6 +39,12 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+
+import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * DbAdapter implementation for <a href="http://www.postgresql.org">PostgreSQL RDBMS </a>.
@@ -241,7 +241,7 @@ public class PostgresAdapter extends JdbcAdapter {
         return buf.toString();
     }
 
-    private boolean typeSupportsLength(int type) {
+    public boolean typeSupportsLength(int type) {
         // "bytea" type does not support length
         String[] externalTypes = externalTypesForJdbcType(type);
         if (externalTypes != null && externalTypes.length > 0) {
@@ -252,7 +252,7 @@ public class PostgresAdapter extends JdbcAdapter {
             }
         }
 
-        return TypesMapping.supportsLength(type);
+        return super.typeSupportsLength(type);
     }
 
     /**

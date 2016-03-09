@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dba;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collection;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
@@ -32,6 +28,10 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * A Cayenne extension point that abstracts the differences between specifics of JDBC
@@ -77,6 +77,12 @@ public interface DbAdapter {
      * Returns <code>true</code> if the target database supports batch updates.
      */
     boolean supportsBatchUpdates();
+
+    /**
+     * Returns <code>true</code> if supplied type can have a length attribute as a part of column
+     * definition.
+     */
+    boolean typeSupportsLength(int type);
 
     /**
      * Returns a collection of SQL statements needed to drop a database table.

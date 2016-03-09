@@ -19,15 +19,6 @@
 
 package org.apache.cayenne.dba;
 
-import java.net.URL;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.BatchQueryBuilderFactory;
@@ -53,6 +44,15 @@ import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.util.Util;
+
+import java.net.URL;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A generic DbAdapter implementation. Can be used as a default adapter or as a superclass
@@ -261,6 +261,37 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
+     * Returns true if supplied type can have a length attribute as a part of column
+     * definition
+     *
+     * @since 3.1
+     */
+    public boolean typeSupportsLength(int type) {
+        return JdbcAdapter.supportsLength(type);
+    }
+
+    /**
+     * Returns true if supplied type can have a length attribute as a part of column
+     * definition
+     *
+     * This is a static method only to support the deprecated method {@link TypesMapping#supportsLength(int)}
+     * When the deprecated method is removed this body should be moved in to {@link #typeSupportsLength(int)}
+     *
+     * @deprecated
+     */
+    static boolean supportsLength(int type) {
+        return type == Types.BINARY
+                || type == Types.CHAR
+                || type == Types.DECIMAL
+                || type == Types.DOUBLE
+                || type == Types.FLOAT
+                || type == Types.NUMERIC
+                || type == Types.REAL
+                || type == Types.VARBINARY
+                || type == Types.VARCHAR;
+    }
+
+    /**
      * @since 3.0
      */
     public Collection<String> dropTableStatements(DbEntity table) {
@@ -369,7 +400,7 @@ public class JdbcAdapter implements DbAdapter {
         sqlBuffer.append(' ').append(type);
 
         // append size and precision (if applicable)s
-        if (TypesMapping.supportsLength(column.getType())) {
+        if (typeSupportsLength(column.getType())) {
             int len = column.getMaxLength();
 
             int scale = (TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT)

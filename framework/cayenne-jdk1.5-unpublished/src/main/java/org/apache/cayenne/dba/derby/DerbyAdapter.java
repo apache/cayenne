@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.dba.derby;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.trans.QualifierTranslator;
 import org.apache.cayenne.access.trans.QueryAssembler;
@@ -43,6 +38,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.merge.MergerFactory;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.List;
 
 /**
  * DbAdapter implementation for the <a href="http://db.apache.org/derby/"> Derby RDBMS
@@ -181,14 +181,14 @@ public class DerbyAdapter extends JdbcAdapter {
         }
     }
 
-    private boolean typeSupportsLength(int type) {
+    public boolean typeSupportsLength(int type) {
         // "BLOB" and "CLOB" type support length. default length is 1M.
         switch (type) {
             case Types.BLOB:
             case Types.CLOB:
                 return true;
             default:
-                return TypesMapping.supportsLength(type);
+                return super.typeSupportsLength(type);
         }
     }
 

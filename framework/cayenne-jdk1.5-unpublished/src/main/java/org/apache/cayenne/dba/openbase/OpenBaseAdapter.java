@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.dba.openbase;
 
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Types;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.trans.QualifierTranslator;
@@ -49,6 +42,13 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Types;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * DbAdapter implementation for <a href="http://www.openbase.com">OpenBase</a>. Sample
@@ -206,7 +206,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
             buf.append(context.quoteString(at.getName())).append(' ').append(type);
 
             // append size and precision (if applicable)
-            if (TypesMapping.supportsLength(at.getType())) {
+            if (typeSupportsLength(at.getType())) {
                 int len = at.getMaxLength();
                 int scale = TypesMapping.isDecimal(at.getType()) ? at.getScale() : -1;
 

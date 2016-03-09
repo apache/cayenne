@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.dba;
 
+import org.apache.cayenne.util.Util;
+
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.sql.DatabaseMetaData;
@@ -31,8 +33,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.util.Util;
 
 /**
  * A utility class that handles mappings of JDBC data types to the database types and Java
@@ -219,17 +219,11 @@ public class TypesMapping {
     /**
      * Returns true if supplied type can have a length attribute as a part of column
      * definition.
+     *
+     * @deprecated
      */
     public static boolean supportsLength(int type) {
-        return type == Types.BINARY
-                || type == Types.CHAR
-                || type == Types.DECIMAL
-                || type == Types.DOUBLE
-                || type == Types.FLOAT
-                || type == Types.NUMERIC
-                || type == Types.REAL
-                || type == Types.VARBINARY
-                || type == Types.VARCHAR;
+        return JdbcAdapter.supportsLength(type);
     }
 
     /**

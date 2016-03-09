@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.dba.db2;
 
-import java.io.IOException;
-import java.sql.Types;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.trans.QueryAssembler;
 import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
@@ -31,6 +28,9 @@ import org.apache.cayenne.exp.parser.ASTEqual;
 import org.apache.cayenne.exp.parser.ASTNotEqual;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.map.DbAttribute;
+
+import java.io.IOException;
+import java.sql.Types;
 
 /**
  */
@@ -91,7 +91,7 @@ public class DB2QualifierTranslator extends TrimmingQualifierTranslator {
             }
 
             out.append(types[0]);
-            if (len > 0 && TypesMapping.supportsLength(jdbcType)) {
+            if (len > 0 && queryAssembler.getAdapter().typeSupportsLength(jdbcType)) {
                 out.append("(");
                 out.append(String.valueOf(len));
                 out.append(")");

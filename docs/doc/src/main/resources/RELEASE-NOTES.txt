@@ -18,6 +18,7 @@ CAY-2042 Remove an arbitrary limitation on 1000 runtime DbRelationships
 
 Bug Fixes Since 3.1:
 
+CAY-1863 Make determining whether a particular database type supports length adapter-specific not universal
 CAY-1964 Fix convertAdditionalDataMaps() in CayenneGeneratorMojo.java
 CAY-1973 error while generating classes
 CAY-1978 ESCAPE clause should be included in LIKE parenthesis

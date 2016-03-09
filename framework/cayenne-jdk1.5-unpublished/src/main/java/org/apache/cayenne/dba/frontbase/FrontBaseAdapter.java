@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.dba.frontbase;
 
-import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -41,6 +35,12 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+
+import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * DbAdapter implementation for <a href="http://www.frontbase.com/">FrontBase RDBMS</a>.
@@ -165,7 +165,7 @@ public class FrontBaseAdapter extends JdbcAdapter {
                 len *= 8;
                 buf.append("(").append(len).append(")");
             }
-            else if (TypesMapping.supportsLength(at.getType())) {
+            else if (typeSupportsLength(at.getType())) {
                 int len = at.getMaxLength();
                 int scale = TypesMapping.isDecimal(at.getType()) ? at.getScale() : -1;
 
