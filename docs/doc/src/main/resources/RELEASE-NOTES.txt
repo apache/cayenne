@@ -13,6 +13,7 @@ Date: not yet released
 ----------------------------------
 Changes/New Features Since 3.1
 
+CAY-1862 MySQL - allow specifying a length for TIMESTAMP and TIME columns
 CAY-2042 Remove an arbitrary limitation on 1000 runtime DbRelationships
 
 Bug Fixes Since 3.1:
@@ -60,7 +61,7 @@ CAY-1818 Fix copyright year in the Modeler "about" panel
 CAY-1827 EhCache region corresponding to a cache group loses its settings after 'removeGroup'
 CAY-1845 Upgrade javadoc plugin to 2.9.1 
 CAY-1854 driver.xsd schema shouldn't be in 3.1 - it is no longer applicable 
-CAY-1856 Expression.expWithParameters does not work when parameters are placed in the inline collection 
+CAY-1856 Expression.expWithParameters does not work when parameters are placed in the inline collection
 CAY-1866 Change in General Modeler Preferences reverts old settings to default value
 CAY-1868 Select contention with multiple contexts 
 CAY-1874 DB2 Procedure action ignores the first result set
