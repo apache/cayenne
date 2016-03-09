@@ -62,6 +62,10 @@ public class ManagedPoolingDataSource implements PoolingDataSource, ScopeEventLi
 	int availableSize() {
 		return dataSourceManager.getDataSource().availableSize();
 	}
+	
+	int canExpandSize() {
+		return dataSourceManager.getDataSource().canExpandSize();
+	}
 
 	/**
 	 * Calls {@link #shutdown()} to drain the underlying pool, close open

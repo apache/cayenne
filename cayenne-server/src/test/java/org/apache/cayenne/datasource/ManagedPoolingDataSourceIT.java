@@ -1,7 +1,6 @@
 package org.apache.cayenne.datasource;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -10,14 +9,18 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.sql.DataSource;
 
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,40 +31,26 @@ import org.mockito.stubbing.OngoingStubbing;
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ManagedPoolingDataSourceIT {
 
+	private static final Log LOGGER = LogFactory.getLog(ManagedPoolingDataSourceIT.class);
+
 	private int poolSize;
-	private Map<ExpiringConnection, Object> connections;
+	private OnOffDataSourceManager dataSourceManager;
 	private UnmanagedPoolingDataSource unmanagedPool;
 	private ManagedPoolingDataSource managedPool;
 
 	@Before
 	public void before() throws SQLException {
 
-		this.poolSize = 3;
-		this.connections = new ConcurrentHashMap<>();
-
-		DataSource mockDataSource = mock(DataSource.class);
-		when(mockDataSource.getConnection()).thenAnswer(new Answer<Connection>() {
-
-			@Override
-			public Connection answer(InvocationOnMock invocation) throws Throwable {
-				return createMockConnection();
-			}
-		});
+		this.poolSize = 4;
+		this.dataSourceManager = new OnOffDataSourceManager();
 
 		PoolingDataSourceParameters parameters = new PoolingDataSourceParameters();
 		parameters.setMaxConnections(poolSize);
-		parameters.setMinConnections(poolSize - 1);
-		parameters.setMaxQueueWaitTime(500);
+		parameters.setMinConnections(poolSize / 2);
+		parameters.setMaxQueueWaitTime(1000);
 		parameters.setValidationQuery("SELECT 1");
-		this.unmanagedPool = new UnmanagedPoolingDataSource(mockDataSource, parameters);
-
+		this.unmanagedPool = new UnmanagedPoolingDataSource(dataSourceManager.mockDataSource, parameters);
 		this.managedPool = new ManagedPoolingDataSource(unmanagedPool, 10000);
-	}
-
-	private Connection createMockConnection() throws SQLException {
-		ExpiringConnection connectionWrapper = new ExpiringConnection();
-		connections.put(connectionWrapper, 1);
-		return connectionWrapper.mockConnection;
 	}
 
 	@After
@@ -71,53 +60,122 @@ public class ManagedPoolingDataSourceIT {
 		}
 	}
 
-	private void expireConnections() throws SQLException {
-		Iterator<ExpiringConnection> it = connections.keySet().iterator();
-		while (it.hasNext()) {
-			ExpiringConnection c = it.next();
-			it.remove();
-			c.expire();
+	private Collection<PoolTask> createTasks(int size) {
+		Collection<PoolTask> tasks = new ArrayList<>();
+
+		for (int i = 0; i < size; i++) {
+			tasks.add(new PoolTask());
 		}
+		return tasks;
 	}
 
 	@Test
-	public void testAbruptReset() throws SQLException {
+	public void testGetConnection_OnBackendShutdown() throws SQLException, InterruptedException {
 
-		assertTrue(managedPool.poolSize() > 0);
-		assertTrue(managedPool.availableSize() > 0);
+		// note that this assertion can only work reliably when the pool is inactive...
+		assertEquals(poolSize, managedPool.poolSize() + managedPool.canExpandSize());
 
-		// make sure conn
-		expireConnections();
+		Collection<PoolTask> tasks = createTasks(4);
+		ExecutorService executor = Executors.newFixedThreadPool(4);
 
-		// CAY-2067 ... this should work on an invalid pool
-		assertNotNull(managedPool.getConnection());
+		for (int j = 0; j < 10; j++) {
+			for (PoolTask task : tasks) {
+				executor.submit(task);
+			}
+		}
+
+		dataSourceManager.off();
+		Thread.sleep(500);
+
+		for (int j = 0; j < 10; j++) {
+			for (PoolTask task : tasks) {
+				executor.submit(task);
+			}
+		}
+
+		Thread.sleep(100);
+
+		dataSourceManager.on();
+
+		for (int j = 0; j < 10; j++) {
+			for (PoolTask task : tasks) {
+				executor.submit(task);
+			}
+		}
+
+		executor.shutdown();
+		executor.awaitTermination(2, TimeUnit.SECONDS);
+
+		// note that this assertion can only work reliably when the pool is inactive...
+		assertEquals(poolSize, managedPool.poolSize() + managedPool.canExpandSize());
 	}
 
-	static class ExpiringConnection {
+	class PoolTask implements Runnable {
 
-		private Connection mockConnection;
-		private OngoingStubbing<Statement> createStatementMock;
+		@Override
+		public void run() {
 
-		ExpiringConnection() throws SQLException {
-			this.mockConnection = mock(Connection.class);
-			this.createStatementMock = when(mockConnection.createStatement());
+			try (Connection c = managedPool.getConnection();) {
+				try (Statement s = c.createStatement()) {
+					try {
+						Thread.sleep(40);
+					} catch (InterruptedException e) {
+						// ignore
+					}
+				}
+			} catch (SQLException e) {
+				if (OnOffDataSourceManager.NO_CONNECTIONS_MESSAGE.equals(e.getMessage())) {
+					LOGGER.info("db down...");
+				} else {
+					LOGGER.warn("error getting connection", e);
+				}
+			}
+		}
+	}
 
-			createStatementMock.thenAnswer(new Answer<Statement>() {
+	static class OnOffDataSourceManager {
+
+		static final String NO_CONNECTIONS_MESSAGE = "no connections at the moment";
+
+		private DataSource mockDataSource;
+		private OngoingStubbing<Connection> createConnectionMock;
+
+		OnOffDataSourceManager() throws SQLException {
+			this.mockDataSource = mock(DataSource.class);
+			this.createConnectionMock = when(mockDataSource.getConnection());
+			on();
+		}
+
+		void off() throws SQLException {
+			createConnectionMock.thenAnswer(new Answer<Connection>() {
 				@Override
-				public Statement answer(InvocationOnMock invocation) throws Throwable {
-
-					ResultSet mockRs = mock(ResultSet.class);
-					when(mockRs.next()).thenReturn(true, false, false, false);
-
-					Statement mockStatement = mock(Statement.class);
-					when(mockStatement.executeQuery(anyString())).thenReturn(mockRs);
-					return mockStatement;
+				public Connection answer(InvocationOnMock invocation) throws Throwable {
+					throw new SQLException(NO_CONNECTIONS_MESSAGE);
 				}
 			});
 		}
 
-		void expire() throws SQLException {
-			createStatementMock.thenThrow(new SQLException("Expired"));
+		void on() throws SQLException {
+			createConnectionMock.thenAnswer(new Answer<Connection>() {
+				@Override
+				public Connection answer(InvocationOnMock invocation) throws Throwable {
+					Connection c = mock(Connection.class);
+					when(c.createStatement()).thenAnswer(new Answer<Statement>() {
+						@Override
+						public Statement answer(InvocationOnMock invocation) throws Throwable {
+
+							ResultSet mockRs = mock(ResultSet.class);
+							when(mockRs.next()).thenReturn(true, false, false, false);
+
+							Statement mockStatement = mock(Statement.class);
+							when(mockStatement.executeQuery(anyString())).thenReturn(mockRs);
+							return mockStatement;
+						}
+					});
+
+					return c;
+				}
+			});
 		}
 	}
 }
