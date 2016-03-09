@@ -136,7 +136,7 @@ public class UnmanagedPoolingDataSource implements PoolingDataSource {
 		this.poolCap = new Semaphore(maxConnections);
 		this.maxIdleConnections = maxIdleConnections(minConnections, maxConnections);
 
-		// grow pull to min connections
+		// grow pool to min connections
 		try {
 			for (int i = 0; i < minConnections; i++) {
 				PoolAwareConnection c = createUnchecked();
