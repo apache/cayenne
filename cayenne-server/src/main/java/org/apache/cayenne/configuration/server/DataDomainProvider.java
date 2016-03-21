@@ -92,7 +92,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
 		} catch (ConfigurationException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new DataDomainLoadException("Error loading DataChannel: '%s'", e, e.getMessage());
+			String causeMessage = e.getMessage();
+			String message = causeMessage != null && causeMessage.length() > 0 ? causeMessage : e.getClass().getName();
+			throw new DataDomainLoadException("DataDomain startup failed: %s", e, message);
 		}
 	}
 
