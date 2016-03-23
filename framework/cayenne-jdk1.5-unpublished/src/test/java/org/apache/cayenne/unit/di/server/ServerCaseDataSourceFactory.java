@@ -18,21 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
+import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.conn.PoolDataSource;
+import org.apache.cayenne.conn.PoolManager;
+import org.apache.cayenne.di.Inject;
+
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import javax.sql.DataSource;
-
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.server.DataSourceFactory;
-import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.conn.PoolDataSource;
-import org.apache.cayenne.conn.PoolManager;
-import org.apache.cayenne.di.Inject;
 
 public class ServerCaseDataSourceFactory  {
 
@@ -77,8 +74,8 @@ public class ServerCaseDataSourceFactory  {
                     dataSourceInfo.getDataSourceUrl());
             return new PoolManager(
                     poolDS,
-                    1,
-                    1,
+                    dataSourceInfo.getMinConnections(),
+                    dataSourceInfo.getMaxConnections(),
                     dataSourceInfo.getUserName(),
                     dataSourceInfo.getPassword()) {
 
