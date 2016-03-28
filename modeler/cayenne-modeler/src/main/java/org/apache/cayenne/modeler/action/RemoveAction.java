@@ -19,14 +19,11 @@
 
 package org.apache.cayenne.modeler.action;
 
+import org.apache.cayenne.map.template.ClassTemplate;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.event.DataMapEvent;
-import org.apache.cayenne.configuration.event.DataNodeEvent;
-import org.apache.cayenne.configuration.event.ProcedureEvent;
-import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
-import org.apache.cayenne.configuration.event.QueryEvent;
+import org.apache.cayenne.configuration.event.*;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.DataMap;
@@ -42,12 +39,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.map.event.AttributeEvent;
-import org.apache.cayenne.map.event.EmbeddableAttributeEvent;
-import org.apache.cayenne.map.event.EmbeddableEvent;
-import org.apache.cayenne.map.event.EntityEvent;
-import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.event.RelationshipEvent;
+import org.apache.cayenne.map.event.*;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ConfirmRemoveDialog;
@@ -188,6 +180,19 @@ public class RemoveAction extends CayenneAction {
 
                 removeProcedure(mediator.getCurrentDataMap(), mediator
                         .getCurrentProcedure());
+
+            }
+        }
+        else if (mediator.getCurrentTemplate() != null) {
+            if (dialog
+                    .shouldDelete("template", mediator.getCurrentTemplate().getName())) {
+
+                application.getUndoManager().addEdit(
+                        new RemoveUndoableEdit(mediator.getCurrentDataMap(), mediator
+                                .getCurrentTemplate()));
+
+                removeTemplate(mediator.getCurrentDataMap(), mediator
+                        .getCurrentTemplate());
 
             }
         }
@@ -455,6 +460,11 @@ public class RemoveAction extends CayenneAction {
                 URL reverseEngineeringURL = map.getReverseEngineering().getConfigurationSource().getURL();
                 unusedResources.add(reverseEngineeringURL);
             }
+           for (ClassTemplate template: map.getClassGenerationDescriptor().getTemplates().values()) {
+               if (template.getConfigurationSource() != null) {
+                   unusedResources.add(template.getConfigurationSource().getURL());
+               }
+           }
         }
         
         Iterator<DataNodeDescriptor> iterator = domain.getNodeDescriptors().iterator();
@@ -491,6 +501,24 @@ public class RemoveAction extends CayenneAction {
 
         map.removeDbEntity(ent.getName(), true);
         mediator.fireDbEntityEvent(e);
+    }
+
+    /**
+     * Removes current Template from its DataMap and fires "remove" TemplateEvent.
+     */
+    public void removeTemplate(DataMap map, ClassTemplate template) {
+        ProjectController mediator = getProjectController();
+
+        TemplateEvent e = new TemplateEvent(Application.getFrame(), template, MapEvent.REMOVE);
+        e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
+
+        if (template.getConfigurationSource() != null) {
+            Collection<URL> unusedResources = getCurrentProject().getUnusedResources();
+            unusedResources.add(template.getConfigurationSource().getURL());
+        }
+
+        map.removeTemplate(template.getName());
+        mediator.fireTemplateEvent(e);
     }
 
     /**
@@ -615,6 +643,9 @@ public class RemoveAction extends CayenneAction {
         else if (object instanceof EmbeddableAttribute) {
             return true;
         }
+        else if(object instanceof ClassTemplate) {
+            return  true;
+        }
         else {
             return false;
         }
@@ -673,6 +704,10 @@ public class RemoveAction extends CayenneAction {
                     ((Embeddable) object).getDataMap(),
                     (Embeddable) object);
             removeEmbeddable(((Embeddable) object).getDataMap(), (Embeddable) object);
+        }
+        else if (object instanceof ClassTemplate) {
+            undo = new RemoveUndoableEdit(getProjectController().getCurrentDataMap(), (ClassTemplate) object);
+            removeTemplate(getProjectController().getCurrentDataMap(), (ClassTemplate) object);
         }
 
         return undo;

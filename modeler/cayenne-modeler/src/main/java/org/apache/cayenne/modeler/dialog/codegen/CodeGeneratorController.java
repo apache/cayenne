@@ -117,7 +117,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         }
 
         label = label.concat("; ");
-        
+
         int sizeEmb = getSelectedEmbeddablesSize();
 
         if (sizeEmb == 0) {
@@ -129,7 +129,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         else {
             label =label + sizeEmb + " embeddables selected";
         }
-        
+
         view.getClassesCount().setText(label);
     }
 

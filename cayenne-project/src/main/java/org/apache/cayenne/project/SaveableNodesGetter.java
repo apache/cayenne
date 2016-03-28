@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.apache.cayenne.map.template.ClassGenerationDescriptor;
+import org.apache.cayenne.map.template.ClassTemplate;
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -43,6 +45,12 @@ class SaveableNodesGetter extends
 
         for (DataMap map : descriptor.getDataMaps()) {
             nodes.add(map);
+            if (map.getClassGenerationDescriptor() != null) {
+                ClassGenerationDescriptor classGenerationDescriptor = map.getClassGenerationDescriptor();
+                for(ClassTemplate template: classGenerationDescriptor.getTemplates().values()) {
+                    nodes.add(template);
+                }
+            }
             if (map.getReverseEngineering() != null) {
                 nodes.add(map.getReverseEngineering());
             }
@@ -58,6 +66,11 @@ class SaveableNodesGetter extends
 
     @Override
     public Collection<ConfigurationNode> visitReverseEngineering(ReverseEngineering reverseEngineering) {
+        return null;
+    }
+
+    @Override
+    public Collection<ConfigurationNode> visitClassTemplate(ClassTemplate node) {
         return null;
     }
 }

@@ -16,25 +16,41 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.gen;
+package org.apache.cayenne.modeler.event;
+
+import org.apache.cayenne.map.template.ClassTemplate;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.map.DataMap;
 
 /**
- * Code generator execution mode for a collection of artifacts.
- * 
- * @since 3.0
+ * @since 4.0
  */
-public enum ArtifactsGenerationMode {
+public class TemplateDisplayEvent extends DataMapDisplayEvent {
+    protected ClassTemplate template;
+    protected boolean templateChanged = true;
 
-    // TODO: andrus 12/9/2007 - label names are old... need to call it something else...
-    DATAMAP("datamap"), ENTITY("entity"), ALL("all");
-
-    private String label;
-
-    private ArtifactsGenerationMode(String label) {
-        this.label = label;
+    /**
+     * Creates a new TemplateDisplayEvent
+     */
+    public TemplateDisplayEvent(Object src, ClassTemplate template, DataMap map, DataChannelDescriptor domain) {
+        super(src, map, domain);
+        this.template = template;
     }
 
-    public String getLabel() {
-        return label;
+    public ClassTemplate getTemplate() {
+        return template;
     }
+
+    public void setTemplate(ClassTemplate template) {
+        this.template = template;
+    }
+
+    public boolean isTemplateChanged() {
+        return templateChanged;
+    }
+
+    public void setTemplateChanged(boolean b) {
+        templateChanged = b;
+    }
+
 }

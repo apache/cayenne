@@ -188,16 +188,21 @@ public class CustomModeController extends GeneratorController {
 	protected void updateTemplates() {
 		this.templateManager = getApplication().getCodeTemplateManager();
 
+		List<String> modelTemplates = new ArrayList<String>(templateManager.getModelTemplates().keySet());
+		Collections.sort(modelTemplates);
+
 		List<String> customTemplates = new ArrayList<String>(templateManager.getCustomTemplates().keySet());
 		Collections.sort(customTemplates);
 
 		List<String> superTemplates = new ArrayList<String>(templateManager.getStandardSuperclassTemplates());
 		Collections.sort(superTemplates);
 		superTemplates.addAll(customTemplates);
+		superTemplates.addAll(modelTemplates);
 
 		List<String> subTemplates = new ArrayList<String>(templateManager.getStandardSubclassTemplates());
 		Collections.sort(subTemplates);
 		subTemplates.addAll(customTemplates);
+		subTemplates.addAll(modelTemplates);
 
 		this.view.getSubclassTemplate().setModel(new DefaultComboBoxModel(subTemplates.toArray()));
 		this.view.getSuperclassTemplate().setModel(new DefaultComboBoxModel(superTemplates.toArray()));

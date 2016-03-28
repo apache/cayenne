@@ -20,6 +20,7 @@
 package org.apache.cayenne.map.naming;
 
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.map.template.ClassTemplate;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -59,6 +60,24 @@ public enum NameCheckers implements NameChecker {
 			if (namingContext instanceof DataChannelDescriptor) {
 				DataChannelDescriptor domain = (DataChannelDescriptor) namingContext;
 				return domain.getDataMap(name) != null;
+			}
+			return false;
+		}
+	},
+	
+	template("template") {
+		@Override
+		public boolean isNameInUse(Object namingContext, String name) {
+			if (namingContext == null) {
+				return false;
+			}
+
+			for (DataMap dataMap : ((DataChannelDescriptor) namingContext).getDataMaps()) {
+				for (ClassTemplate classTemplate : dataMap.getClassGenerationDescriptor().getTemplates().values()) {
+					if(name.equals(classTemplate.getName())) {
+						return true;
+					}
+				}
 			}
 			return false;
 		}

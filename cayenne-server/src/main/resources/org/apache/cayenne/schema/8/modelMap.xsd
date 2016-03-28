@@ -31,8 +31,9 @@
 	<xs:element name="data-map">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="1" ref="cay:reverse-engineering-config"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:property"/>
+				<xs:element minOccurs="0" maxOccurs="1" ref="cay:reverse-engineering-config"/>
+				<xs:element minOccurs="0" maxOccurs="1" ref="cay:class-generator-template"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:embeddable"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:procedure"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:db-entity"/>
@@ -44,6 +45,28 @@
 			<xs:attribute name="project-version" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="reverse-engineering-config">
+		<xs:complexType>
+			<xs:attribute name="name" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="class-generator-template">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:template"/>
+			</xs:sequence>
+			<xs:attribute name="mode" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="template">
+		<xs:complexType>
+			<xs:attribute name="type" type="xs:string"/>
+			<xs:attribute name="file" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+
 	<xs:element name="db-entity">
 		<xs:complexType>
 			<xs:sequence>
@@ -206,12 +229,6 @@
 	</xs:element>
 
 	<xs:element name="ejbql" type="xs:string"/>
-
-	<xs:element name="reverse-engineering-config">
-		<xs:complexType>
-			<xs:attribute name="name" use="required" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
 
 	<xs:element name="property">
 		<xs:annotation>

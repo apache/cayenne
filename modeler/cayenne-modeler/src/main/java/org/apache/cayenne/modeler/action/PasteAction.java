@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
+import org.apache.cayenne.map.template.ClassTemplate;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -214,6 +215,12 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             for (Procedure procedure : dataMap.getProcedures()) {
                 procedure.setName(DefaultUniqueNameGenerator.generate(NameCheckers.procedure, COPY_PATTERN, dataMap, procedure.getName()));
             }
+
+            for (ClassTemplate template: dataMap.getClassGenerationDescriptor().getTemplates().values()) {
+                DataChannelDescriptor descriptor = getProjectController().getCurrentDataChanel();
+                template.setName(DefaultUniqueNameGenerator.generate(NameCheckers.template, COPY_PATTERN, descriptor, template.getName()));
+            }
+
             for (QueryDescriptor query : dataMap.getQueryDescriptors()) {
                 query.setName(DefaultUniqueNameGenerator.generate(NameCheckers.query, COPY_PATTERN, dataMap, query.getName()));
             }
@@ -306,6 +313,19 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                         mediator,
                         dataMap,
                         procedure);
+            }
+            else if (content instanceof ClassTemplate) {
+                //paste Template to DataMap
+                ClassTemplate template = (ClassTemplate) content;
+                DataChannelDescriptor dataChannelDescriptor = getProjectController().getCurrentDataChanel();
+                template.setName(DefaultUniqueNameGenerator.generate(NameCheckers.template, COPY_PATTERN, dataChannelDescriptor, template.getName()));
+
+                dataMap.addTemplate(template);
+                CreateTemplateAction.fireTemplateEvent(
+                        this,
+                        mediator,
+                        dataMap,
+                        template);
             }
         }
         else if (where instanceof DbEntity) {
@@ -476,7 +496,9 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                     (currentObject instanceof Procedure
                             && (content instanceof ProcedureParameter || isTreeLeaf(content)) ||
 
-                    (currentObject instanceof Query && isTreeLeaf(content)));
+                    (currentObject instanceof Query && isTreeLeaf(content)))
+
+                    || currentObject instanceof ClassTemplate;
         }
         catch (Exception ex) {
             return false;
@@ -491,7 +513,8 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                 || content instanceof ObjEntity
                 || content instanceof Embeddable
                 || content instanceof Procedure
-                || content instanceof Query;
+                || content instanceof Query
+                || content instanceof ClassTemplate;
     }
 
     public void flavorsChanged(FlavorEvent e) {

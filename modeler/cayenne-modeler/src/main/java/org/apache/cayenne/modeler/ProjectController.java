@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.map.template.ClassTemplate;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -35,6 +36,8 @@ import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
 import org.apache.cayenne.configuration.event.ProcedureParameterListener;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.configuration.event.QueryListener;
+import org.apache.cayenne.configuration.event.TemplateEvent;
+import org.apache.cayenne.configuration.event.TemplateListener;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -102,6 +105,8 @@ import org.apache.cayenne.modeler.event.ProjectOnSaveListener;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.TemplateDisplayListener;
+import org.apache.cayenne.modeler.event.TemplateDisplayEvent;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
@@ -155,6 +160,8 @@ public class ProjectController extends CayenneController {
         private DbAttribute[] dbAttrs;
         private ObjRelationship[] objRels;
         private DbRelationship[] dbRels;
+
+        private ClassTemplate template;
 
         private Procedure procedure;
         private ProcedureParameter[] procedureParameters;
@@ -219,6 +226,8 @@ public class ProjectController extends CayenneController {
                 return query == val.query;
             } else if (event instanceof EmbeddableDisplayEvent && val.event instanceof EmbeddableDisplayEvent) {
                 return embeddable == val.embeddable;
+            } else if (event.getClass() == TemplateDisplayEvent.class && event.getClass() == val.event.getClass()) {
+                return template == val.template;
             } else if (event.getClass() == DataMapDisplayEvent.class && event.getClass() == val.event.getClass()) {
                 return map == val.map;
             } else if (event.getClass() == DataNodeDisplayEvent.class && event.getClass() == val.event.getClass()) {
@@ -408,6 +417,7 @@ public class ProjectController extends CayenneController {
         addProcedureDisplayListener(frame);
         addMultipleObjectsDisplayListener(frame);
         addEmbeddableDisplayListener(frame);
+        addTemplateDisplayListener(frame);
     }
 
     public void reset() {
@@ -489,6 +499,10 @@ public class ProjectController extends CayenneController {
                 if (((DomainEvent) e).getDomain() == ((DomainDisplayEvent) csEvent).getDomain()) {
                     removeList.add(cs);
                 }
+            } else if (e instanceof TemplateEvent && csEvent instanceof TemplateDisplayEvent) {
+                if (((TemplateEvent) e).getTemplate() == ((TemplateDisplayEvent) csEvent).getTemplate()) {
+                    removeList.add(cs);
+                }
             }
         }
 
@@ -520,6 +534,8 @@ public class ProjectController extends CayenneController {
     public DbEntity getCurrentDbEntity() {
         return currentState.dbEntity;
     }
+
+    public ClassTemplate getCurrentTemplate() { return currentState.template; }
 
     /**
      * @return Array of selected ObjAttributes
@@ -628,6 +644,14 @@ public class ProjectController extends CayenneController {
     	listenerList.remove(ProjectOnSaveListener.class, listener);
     }
 
+    public void addTemplateListener(TemplateListener listener) {
+        listenerList.add(TemplateListener.class, listener);
+    }
+
+    public void addTemplateDisplayListener(TemplateDisplayListener listener) {
+        listenerList.add(TemplateDisplayListener.class, listener);
+    }
+
     public void addObjEntityListener(ObjEntityListener listener) {
         listenerList.add(ObjEntityListener.class, listener);
     }
@@ -733,7 +757,7 @@ public class ProjectController extends CayenneController {
         if (!changed) {
             changed = currentState.node != null || currentState.map != null || currentState.dbEntity != null
                     || currentState.objEntity != null || currentState.procedure != null || currentState.query != null
-                    || currentState.embeddable != null;
+                    || currentState.embeddable != null || currentState.template != null;
         }
 
         if (!e.isRefired()) {
@@ -790,7 +814,8 @@ public class ProjectController extends CayenneController {
 
         if (!changed) {
             changed = currentState.map != null || currentState.dbEntity != null || currentState.objEntity != null
-                    || currentState.procedure != null || currentState.query != null || currentState.embeddable != null;
+                    || currentState.procedure != null || currentState.query != null || currentState.embeddable != null
+                    || currentState.template != null;
         }
 
         if (!e.isRefired()) {
@@ -846,7 +871,7 @@ public class ProjectController extends CayenneController {
         boolean changed = e.getDataMap() != currentState.map;
         if (!changed) {
             changed = currentState.dbEntity != null || currentState.objEntity != null || currentState.procedure != null
-                    || currentState.query != null || currentState.embeddable != null;
+                    || currentState.query != null || currentState.embeddable != null || currentState.template != null;
         }
 
         if (!e.isRefired()) {
@@ -929,6 +954,35 @@ public class ProjectController extends CayenneController {
                 break;
             default:
                 throw new IllegalArgumentException("Invalid EntityEvent type: " + e.getId());
+            }
+        }
+    }
+
+    /**
+     * Informs all listeners of the TemplateEvent. Does not send the event to its
+     * originator.
+     */
+    public void fireTemplateEvent(TemplateEvent e) {
+        setDirty(true);
+
+        if (e.getId() == MapEvent.REMOVE) {
+            removeFromHistory(e);
+        }
+
+        for (EventListener listener : listenerList.getListeners(TemplateListener.class)) {
+            TemplateListener temp = (TemplateListener) listener;
+            switch (e.getId()) {
+                case MapEvent.ADD:
+                    temp.templateAdded(e);
+                    break;
+                case MapEvent.CHANGE:
+                    temp.templateChanged(e);
+                    break;
+                case MapEvent.REMOVE:
+                    temp.templateRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid TemplateEvent type: " + e.getId());
             }
         }
     }
@@ -1152,6 +1206,10 @@ public class ProjectController extends CayenneController {
             QueryDisplayEvent qde = (QueryDisplayEvent) de;
             qde.setQueryChanged(true);
             fireQueryDisplayEvent(qde);
+        } else if (de instanceof TemplateDisplayEvent) {
+            TemplateDisplayEvent tde = (TemplateDisplayEvent) de;
+            tde.setTemplateChanged(true);
+            fireTemplateDisplayEvent(tde);
         } else if (de instanceof DataMapDisplayEvent) {
             DataMapDisplayEvent dmde = (DataMapDisplayEvent) de;
             dmde.setDataMapChanged(true);
@@ -1241,6 +1299,30 @@ public class ProjectController extends CayenneController {
         for (EventListener eventListener : listenerList.getListeners(QueryDisplayListener.class)) {
             QueryDisplayListener listener = (QueryDisplayListener) eventListener;
             listener.currentQueryChanged(e);
+        }
+    }
+
+    public void fireTemplateDisplayEvent(TemplateDisplayEvent e) {
+        boolean changed = e.getTemplate() != currentState.template;
+
+        if (!e.isRefired()) {
+            e.setTemplateChanged(changed);
+
+            if (changed) {
+                clearState();
+                currentState.domain = e.getDomain();
+                currentState.map = e.getDataMap();
+                currentState.template = e.getTemplate();
+            }
+        }
+
+        if (changed) {
+            saveState(e);
+        }
+
+        for (EventListener eventListener : listenerList.getListeners(TemplateDisplayListener.class)) {
+            TemplateDisplayListener listener = (TemplateDisplayListener) eventListener;
+            listener.currentTemplateChanged(e);
         }
     }
 
@@ -1690,6 +1772,8 @@ public class ProjectController extends CayenneController {
             return getCurrentQuery();
         } else if (getCurrentProcedure() != null) {
             return getCurrentProcedure();
+        } else if (getCurrentTemplate() != null) {
+            return getCurrentTemplate();
         } else if (getCurrentDataMap() != null) {
             return getCurrentDataMap();
         } else if (getCurrentDataNode() != null) {

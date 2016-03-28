@@ -157,6 +157,13 @@ public enum DisplayEventTypes {
         }
     },
 
+    TemplateDisplayEvent {
+        @Override
+        DisplayEventType createDisplayEventType(ProjectController controller) {
+            return new TemplateDisplayEventType(controller);
+        }
+    },
+
     ProcedureParameterDisplayEvent {
         @Override
         DisplayEventType createDisplayEventType(ProjectController controller) {

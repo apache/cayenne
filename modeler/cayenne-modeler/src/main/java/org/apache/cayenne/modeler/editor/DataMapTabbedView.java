@@ -28,6 +28,8 @@ import org.apache.cayenne.modeler.dialog.db.ReverseEngineeringScrollPane;
 import org.apache.cayenne.modeler.dialog.db.ReverseEngineeringView;
 
 import java.awt.event.ActionEvent;
+import org.apache.cayenne.modeler.dialog.template.TemplateScrollPane;
+import org.apache.cayenne.modeler.dialog.template.TemplateView;
 
 
 /**
@@ -37,6 +39,7 @@ import java.awt.event.ActionEvent;
 public class DataMapTabbedView extends JTabbedPane implements ChangeListener {
     ProjectController mediator;
     private ReverseEngineeringScrollPane reverseEngineeringScrollPane;
+    private TemplateScrollPane templateScrollPane;
 
     /**
      * constructor
@@ -66,10 +69,19 @@ public class DataMapTabbedView extends JTabbedPane implements ChangeListener {
         reverseEngineeringScrollPane = new ReverseEngineeringScrollPane(reverseEngineeringView);
         addTab("Reverse Engineering", reverseEngineeringScrollPane);
         addChangeListener(this);
+
+        TemplateView templateView = new TemplateView(mediator);
+        templateScrollPane = new TemplateScrollPane(templateView);
+        addTab("Template", templateScrollPane);
     }
 
     @Override
     public void stateChanged(ChangeEvent changeEvent) {
+        if (getSelectedComponent().equals(templateScrollPane)) {
+            ActionEvent actionEvent = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "");
+            actionEvent.setSource(templateScrollPane);
+        }
+
         if (getSelectedComponent().equals(reverseEngineeringScrollPane)) {
             ActionEvent actionEvent = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "");
             actionEvent.setSource(reverseEngineeringScrollPane);

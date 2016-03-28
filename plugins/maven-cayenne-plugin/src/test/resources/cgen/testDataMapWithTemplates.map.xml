@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
+          project-version="6">
+    <property name="defaultPackage" value="pack"/>
+    <class-generator-template mode="ENTITY">
+        <template file="singleclass" type="ENTITY_SINGLE_CLASS"/>
+    </class-generator-template>
+    <embeddable className="pack.Embeddable1">
+        <embeddable-attribute name="embAttr" type="java.lang.String" db-attribute-name="EMB_ATTR"/>
+    </embeddable>
+    <db-entity name="TestEntity1">
+        <db-attribute name="id" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+        <db-attribute name="testAttr" type="VARCHAR" length="255"/>
+        <db-attribute name="TestRelEntity_ID" type="INTEGER"/>
+    </db-entity>
+    <obj-entity name="TestEntity1" className="pack.TestEntity1" dbEntityName="TestEntity">
+        <embedded-attribute name="embeddedAtr" type="pack.Embeddable"/>
+        <obj-attribute name="testAttr" type="java.lang.String" db-attribute-path="testAttr"/>
+    </obj-entity>
+    <db-relationship name="childrenRel1" source="TestEntity1" target="TestEntity1" toMany="true">
+        <db-attribute-pair source="id" target="id"/>
+    </db-relationship>
+    <db-relationship name="parentRel1" source="TestEntity1" target="TestEntity1" toMany="false">
+        <db-attribute-pair source="id" target="id"/>
+    </db-relationship>
+    <db-relationship name="additionalRel1" source="TestEntity1" target="TestRelEntity1" toMany="true">
+        <db-attribute-pair source="TestRelEntity_ID" target="ID"/>
+    </db-relationship>
+    <obj-relationship name="childrenRel1" source="TestEntity1" target="TestEntity1" deleteRule="Deny" db-relationship-path="childrenRel1"/>
+    <obj-relationship name="parentRel1" source="TestEntity1" target="TestEntity1" deleteRule="Nullify" db-relationship-path="parentRel1"/>
+    <obj-relationship name="additionalRel1" source="TestEntity1" target="TestRelEntity1" deleteRule="Deny" db-relationship-path="additionalRel1"/>
+</data-map>

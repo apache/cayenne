@@ -20,19 +20,37 @@ package org.apache.cayenne.tools;
 
 import foundrylogic.vpp.VPPConfig;
 import org.apache.cayenne.access.loader.NamePatternMatcher;
-import org.apache.cayenne.gen.ArtifactsGenerationMode;
+import org.apache.cayenne.map.template.ArtifactsGenerationMode;
+import org.apache.cayenne.map.template.ClassTemplate;
+import org.apache.cayenne.map.template.TemplateType;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.map.template.ClassGenerationDescriptor;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.resource.URLResource;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
 import org.apache.velocity.VelocityContext;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.apache.cayenne.map.template.TemplateType.*;
+import static org.apache.cayenne.map.template.TemplateType.DATAMAP_SUBCLASS;
+import static org.apache.cayenne.map.template.TemplateType.DATAMAP_SUPERCLASS;
 
 /**
  * An Ant task to perform class generation based on CayenneDataMap.
- * 
+ *
  * @since 3.0
  */
 public class CayenneGeneratorTask extends CayenneTask {
@@ -59,6 +77,8 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected String querysupertemplate;
     protected boolean usepkgpath;
     protected boolean createpropertynames;
+    protected boolean isClassGenerationDefined;
+
 
     public CayenneGeneratorTask() {
         this.makepairs = true;
@@ -70,29 +90,6 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected VelocityContext getVppContext() {
         initializeVppConfig();
         return vppConfig.getVelocityContext();
-    }
-
-    protected ClassGenerationAction createGeneratorAction() {
-        ClassGenerationAction action = client ? new ClientClassGenerationAction() : new ClassGenerationAction();
-
-        action.setContext(getVppContext());
-        action.setDestDir(destDir);
-        action.setEncoding(encoding);
-        action.setMakePairs(makepairs);
-        action.setArtifactsGenerationMode(mode);
-        action.setOutputPattern(outputPattern);
-        action.setOverwrite(overwrite);
-        action.setSuperPkg(superpkg);
-        action.setSuperTemplate(supertemplate);
-        action.setTemplate(template);
-        action.setEmbeddableSuperTemplate(embeddablesupertemplate);
-        action.setEmbeddableTemplate(embeddabletemplate);
-        action.setQueryTemplate(querytemplate);
-        action.setQuerySuperTemplate(querysupertemplate);
-        action.setUsePkgPath(usepkgpath);
-        action.setCreatePropertyNames(createpropertynames);
-
-        return action;
     }
 
     /**
@@ -116,7 +113,7 @@ public class CayenneGeneratorTask extends CayenneTask {
 
             DataMap dataMap = loadAction.getMainDataMap();
 
-            ClassGenerationAction generatorAction = createGeneratorAction();
+            ClassGenerationAction generatorAction = createGeneratorAction(dataMap);
             generatorAction.setLogger(logger);
             generatorAction.setTimestamp(map.lastModified());
             generatorAction.setDataMap(dataMap);
@@ -124,8 +121,7 @@ public class CayenneGeneratorTask extends CayenneTask {
             generatorAction.addEmbeddables(filterAction.getFilteredEmbeddables(dataMap));
             generatorAction.addQueries(dataMap.getQueryDescriptors());
             generatorAction.execute();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new BuildException(e);
         }
     }
@@ -142,7 +138,7 @@ public class CayenneGeneratorTask extends CayenneTask {
 
     /**
      * Sets the map.
-     * 
+     *
      * @param map The map to set
      */
     public void setMap(File map) {
@@ -151,7 +147,7 @@ public class CayenneGeneratorTask extends CayenneTask {
 
     /**
      * Sets the additional DataMaps.
-     * 
+     *
      * @param additionalMapsPath The additional DataMaps to set
      */
     public void setAdditionalMaps(Path additionalMapsPath) {
@@ -188,6 +184,7 @@ public class CayenneGeneratorTask extends CayenneTask {
      * Sets <code>template</code> property.
      */
     public void setTemplate(String template) {
+        isClassGenerationDefined = true;
         this.template = template;
     }
 
@@ -195,6 +192,7 @@ public class CayenneGeneratorTask extends CayenneTask {
      * Sets <code>supertemplate</code> property.
      */
     public void setSupertemplate(String supertemplate) {
+        isClassGenerationDefined = true;
         this.supertemplate = supertemplate;
     }
 
@@ -202,6 +200,7 @@ public class CayenneGeneratorTask extends CayenneTask {
      * Sets <code>querytemplate</code> property.
      */
     public void setQueryTemplate(String querytemplate) {
+        isClassGenerationDefined = true;
         this.querytemplate = querytemplate;
     }
 
@@ -209,6 +208,7 @@ public class CayenneGeneratorTask extends CayenneTask {
      * Sets <code>querysupertemplate</code> property.
      */
     public void setQuerySupertemplate(String querysupertemplate) {
+        isClassGenerationDefined = true;
         this.querysupertemplate = querysupertemplate;
     }
 
@@ -299,6 +299,203 @@ public class CayenneGeneratorTask extends CayenneTask {
     private void initializeVppConfig() {
         if (vppConfig == null) {
             vppConfig = VPPConfig.getDefaultConfig(getProject());
+        }
+    }
+
+    protected ClassGenerationAction createGeneratorAction(DataMap dataMap)
+            throws UnsupportedEncodingException, MalformedURLException {
+
+        ClassGenerationAction action;
+        if (client) {
+            action = new ClientClassGenerationAction();
+        } else {
+            action = new ClassGenerationAction();
+        }
+
+        if (isClassGenerationDefined) {
+            createGenerator(action);
+        } else {
+            if (dataMap.getClassGenerationDescriptor() != null) {
+                createGeneratorFromMap(action, dataMap.getClassGenerationDescriptor());
+            }
+        }
+
+        action.setDestDir(destDir);
+        action.setEncoding(encoding);
+        action.setMakePairs(makepairs);
+        action.setOutputPattern(outputPattern);
+        action.setOverwrite(overwrite);
+        action.setSuperPkg(superpkg);
+        action.setUsePkgPath(usepkgpath);
+        action.setCreatePropertyNames(createpropertynames);
+
+        return action;
+    }
+
+    protected void createGenerator(ClassGenerationAction action) {
+        action.setArtifactsGenerationMode(mode);
+        action.setSuperTemplate(supertemplate);
+        action.setTemplate(template);
+        action.setEmbeddableSuperTemplate(embeddablesupertemplate);
+        action.setEmbeddableTemplate(embeddabletemplate);
+    }
+
+    abstract static class GeneratorByTemplate {
+
+        public static Map<TemplateType, GeneratorByTemplate> GENERATORS = new HashMap<>();
+
+        public static void setTemplate_(ClassGenerationAction action, ClassTemplate template, File map)
+                throws UnsupportedEncodingException, MalformedURLException {
+
+            GeneratorByTemplate generator = GENERATORS.get(template.getType());
+            if (generator == null) {
+                throw new IllegalArgumentException("Invalid template type: " + template.getType());
+            }
+            Injector injector = DIBootstrap.createInjector(new ServerModule());
+            ConfigurationNameMapper nameMapper = injector.getInstance(ConfigurationNameMapper.class);
+            String templateLocation = nameMapper.configurationLocation(ClassTemplate.class, template.getName());
+            Resource templateResource = new URLResource(map.toURI().toURL()).getRelativeResource(templateLocation);
+            template.setConfigurationSource(templateResource);
+            generator.setTemplate(action, template);
+        }
+
+        static {
+            GENERATORS.put(ENTITY_SINGLE_CLASS, new GeneratorByTemplate() {
+                @Override
+                void setTemplate(ClassGenerationAction action, ClassTemplate template) throws UnsupportedEncodingException {
+                    if (!isTemplateDefined) {
+                        String path = URLDecoder.decode(template.getConfigurationSource().getURL().getPath(), "UTF-8");
+                        action.setTemplate(path);
+                        isTemplateDefined = true;
+                    } else {
+                        throw new IllegalStateException("Entity template defined more than one time in datamap. " +
+                                "Delete redundant ones or use mvn plugin");
+                    }
+                }
+            });
+
+            GENERATORS.put(ENTITY_SUPERCLASS, new GeneratorByTemplate() {
+                @Override
+                void setTemplate(ClassGenerationAction action, ClassTemplate template) throws UnsupportedEncodingException {
+                    if (!isTemplateDefined) {
+                        String path = URLDecoder.decode(template.getConfigurationSource().getURL().getPath(), "UTF-8");
+                        action.setSuperTemplate(path);
+                        isTemplateDefined = true;
+                    } else {
+                        throw new IllegalStateException("Entity super template defined more than one time in datamap. " +
+                                "Delete redundant ones or use mvn plugin");
+                    }
+                }
+            });
+
+            GENERATORS.put(ENTITY_SUBCLASS, new GeneratorByTemplate() {
+                @Override
+                void setTemplate(ClassGenerationAction action, ClassTemplate template) {
+                    if (!isTemplateDefined) {
+                        isTemplateDefined = true;
+                    } else {
+                        throw new IllegalStateException("Entity sub template defined more than one time in datamap. " +
+                                "Delete redundant ones or use mvn plugin");
+                    }
+                }
+            });
+
+            GENERATORS.put(EMBEDDABLE_SINGLE_CLASS, new GeneratorByTemplate() {
+                @Override
+                void setTemplate(ClassGenerationAction action, ClassTemplate template) throws UnsupportedEncodingException {
+                    if (!isTemplateDefined) {
+                        String path = URLDecoder.decode(template.getConfigurationSource().getURL().getPath(), "UTF-8");
+                        action.setEmbeddableTemplate(path);
+                        isTemplateDefined = true;
+                    } else {
+                        throw new IllegalStateException("Embeddable template defined more than one time in datamap. " +
+                                "Delete redundant ones or use mvn plugin");
+                    }
+                }
+            });
+
+            GENERATORS.put(EMBEDDABLE_SUPERCLASS, new GeneratorByTemplate() {
+                @Override
+                void setTemplate(ClassGenerationAction action, ClassTemplate template) throws UnsupportedEncodingException {
+                    if (!isTemplateDefined) {
+                        String path = URLDecoder.decode(template.getConfigurationSource().getURL().getPath(), "UTF-8");
+                        action.setEmbeddableSuperTemplate(path);
+                        isTemplateDefined = true;
+                    } else {
+                        throw new IllegalStateException("Embeddable super template defined more than one time in datamap. " +
+                                "Delete redundant ones or use mvn plugin");
+                    }
+                }
+            });
+
+            GENERATORS.put(EMBEDDABLE_SUBCLASS, new GeneratorByTemplate() {
+                @Override
+                void setTemplate(ClassGenerationAction action, ClassTemplate template) {
+                    if (!isTemplateDefined) {
+                        isTemplateDefined = true;
+                    } else {
+                        throw new IllegalStateException("Embeddable sub template defined more than one time in datamap. " +
+                                "Delete redundant ones or use mvn plugin");
+                    }
+                }
+            });
+
+            GENERATORS.put(DATAMAP_SINGLE_CLASS, new GeneratorByTemplate() {
+                @Override
+                void setTemplate(ClassGenerationAction action, ClassTemplate template) throws UnsupportedEncodingException {
+                    if (!isTemplateDefined) {
+                        String path = URLDecoder.decode(template.getConfigurationSource().getURL().getPath(), "UTF-8");
+                        action.setQueryTemplate(path);
+                        isTemplateDefined = true;
+                    } else {
+                        throw new IllegalStateException("Query template defined more than one time in datamap. " +
+                                "Delete redundant ones or use mvn plugin");
+                    }
+                }
+            });
+
+            GENERATORS.put(DATAMAP_SUPERCLASS, new GeneratorByTemplate() {
+                @Override
+                void setTemplate(ClassGenerationAction action, ClassTemplate template) throws UnsupportedEncodingException {
+                    if (!isTemplateDefined) {
+                        String path = URLDecoder.decode(template.getConfigurationSource().getURL().getPath(), "UTF-8");
+                        action.setQuerySuperTemplate(path);
+                        isTemplateDefined = true;
+                    } else {
+                        throw new IllegalStateException("Query super template defined more than one time in datamap. " +
+                                "Delete redundant ones or use mvn plugin");
+                    }
+                }
+            });
+
+            GENERATORS.put(DATAMAP_SUBCLASS, new GeneratorByTemplate() {
+                @Override
+                void setTemplate(ClassGenerationAction action, ClassTemplate template) {
+                    if (!isTemplateDefined) {
+                        isTemplateDefined = true;
+                    } else {
+                        throw new IllegalStateException("Query sub template defined more than one time in datamap. " +
+                                "Delete redundant ones or use mvn plugin");
+                    }
+                }
+            });
+        }
+
+        boolean isTemplateDefined = false;
+
+        abstract void setTemplate(ClassGenerationAction action, ClassTemplate template) throws UnsupportedEncodingException;
+
+    }
+
+    protected void createGeneratorFromMap(ClassGenerationAction action, ClassGenerationDescriptor descriptor)
+            throws UnsupportedEncodingException, MalformedURLException {
+        if (descriptor.getArtifactsGenerationMode() != null) {
+            action.setArtifactsGenerationMode(descriptor.getArtifactsGenerationMode().getLabel());
+        } else {
+            action.setArtifactsGenerationMode(mode);
+        }
+        for (ClassTemplate template : descriptor.getTemplates().values()) {
+            GeneratorByTemplate.setTemplate_(action, template, map);
         }
     }
 }

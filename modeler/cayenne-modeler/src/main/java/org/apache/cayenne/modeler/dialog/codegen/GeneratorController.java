@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import org.apache.cayenne.gen.ArtifactsGenerationMode;
+import org.apache.cayenne.map.template.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
@@ -57,7 +57,6 @@ import java.util.prefs.Preferences;
 
 /**
  * A mode-specific part of the code generation dialog.
- * 
  */
 public abstract class GeneratorController extends CayenneController {
 

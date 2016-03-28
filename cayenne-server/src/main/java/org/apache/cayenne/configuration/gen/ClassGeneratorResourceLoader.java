@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.gen;
+package org.apache.cayenne.configuration.gen;
 
 import java.io.BufferedInputStream;
 import java.io.File;

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
+import org.apache.cayenne.map.template.TemplateType;
 import org.apache.velocity.VelocityContext;
 
 /**

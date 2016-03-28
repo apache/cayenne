@@ -52,6 +52,7 @@ public class DefaultActionManager implements ActionManager {
     private Collection<String> EMBEDDABLE_ACTIONS;
     private Collection<String> PROCEDURE_ACTIONS;
     private Collection<String> MULTIPLE_OBJECTS_ACTIONS;
+    private Collection<String> TEMPLATE_ACTIONS;
 
     protected Map<String, Action> actionMap;
 
@@ -82,6 +83,7 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new CreateRelationshipAction(application));
         registerAction(new RemoveRelationshipAction(application));
         registerAction(new RemoveAttributeRelationshipAction(application));
+        registerAction(new CreateTemplateAction(application));
         // start callback-related actions
         registerAction(new CreateCallbackMethodAction(application)).setAlwaysOn(true);
         registerAction(new RemoveCallbackMethodAction(application));
@@ -205,6 +207,8 @@ public class DefaultActionManager implements ActionManager {
                 DbEntityCounterpartAction.class.getName(),
                 ShowGraphEntityAction.class.getName()));
 
+
+
         EMBEDDABLE_ACTIONS = new HashSet<String>(DATA_MAP_ACTIONS);
 
         EMBEDDABLE_ACTIONS.addAll(Arrays.asList(CreateAttributeAction.class.getName()));
@@ -213,6 +217,10 @@ public class DefaultActionManager implements ActionManager {
 
         PROCEDURE_ACTIONS.addAll(Arrays.asList(CreateProcedureParameterAction.class
                 .getName()));
+
+        TEMPLATE_ACTIONS = new HashSet<>(DATA_MAP_ACTIONS);
+
+        TEMPLATE_ACTIONS.addAll(Arrays.asList(CreateTemplateAction.class.getName()));
 
         MULTIPLE_OBJECTS_ACTIONS = new HashSet<String>(PROJECT_ACTIONS);
 
@@ -307,6 +315,11 @@ public class DefaultActionManager implements ActionManager {
     public void embeddableSelected() {
         processActionsState(EMBEDDABLE_ACTIONS);
         updateActions("Embeddable");
+    }
+
+    public void templateSelected() {
+        processActionsState(TEMPLATE_ACTIONS);
+        updateActions("Template");
     }
 
     /**

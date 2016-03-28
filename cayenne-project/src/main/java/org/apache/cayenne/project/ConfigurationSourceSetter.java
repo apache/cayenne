@@ -22,6 +22,7 @@ import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dbimport.ReverseEngineering;
+import org.apache.cayenne.map.template.ClassTemplate;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 
@@ -52,6 +53,12 @@ class ConfigurationSourceSetter extends BaseConfigurationNodeVisitor<Void> {
 
     @Override
     public Void visitDataMap(DataMap node) {
+        node.setConfigurationSource(configurationSource);
+        return null;
+    }
+
+    @Override
+    public Void visitClassTemplate(ClassTemplate node) {
         node.setConfigurationSource(configurationSource);
         return null;
     }

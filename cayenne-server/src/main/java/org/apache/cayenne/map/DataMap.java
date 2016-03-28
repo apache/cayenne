@@ -22,6 +22,8 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.map.template.ClassGenerationDescriptor;
+import org.apache.cayenne.map.template.ClassTemplate;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -145,6 +147,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	private SortedMap<String, Procedure> procedureMap;
 	private SortedMap<String, QueryDescriptor> queryDescriptorMap;
 	private SortedMap<String, SQLResult> results;
+	private ClassGenerationDescriptor classGenerationDescriptor;
     private ReverseEngineering reverseEngineering;
 
 	/**
@@ -174,10 +177,11 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * Creates a new named DataMap.
 	 */
 	public DataMap(String mapName) {
-		this(mapName, Collections.<String, Object> emptyMap());
+		this(mapName, Collections.<String, Object>emptyMap());
 	}
 
 	public DataMap(String mapName, Map<String, Object> properties) {
+		classGenerationDescriptor = new ClassGenerationDescriptor();
 		embeddablesMap = new TreeMap<String, Embeddable>();
 		objEntityMap = new TreeMap<String, ObjEntity>();
 		dbEntityMap = new TreeMap<String, DbEntity>();
@@ -321,7 +325,25 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		encoder.printProjectVersion();
 		encoder.println(">");
 
-        if (reverseEngineering != null) {
+		if (classGenerationDescriptor.getTemplates().size() > 0) {
+			encoder.print("<class-generator-template");
+			if (classGenerationDescriptor.getArtifactsGenerationMode() != null) {
+				encoder.printAttribute("mode", classGenerationDescriptor.getArtifactsGenerationMode().getLabel());
+			}
+			encoder.println(">");
+			encoder.indent(1);
+			for (ClassTemplate template : classGenerationDescriptor.getTemplates().values()) {
+				encoder.print("<template");
+				if (template.getType() != null) {
+					encoder.printAttribute("type", template.getType().toString());
+				}
+				encoder.printAttribute("file", template.getName());
+				encoder.println("/>");
+			}
+			encoder.indent(-1);
+			encoder.println("</class-generator-template>");
+		}
+		if (reverseEngineering != null) {
 			encoder.print("<reverse-engineering-config");
             encoder.printAttribute("name", reverseEngineering.getName().trim());
             encoder.println("/>");
@@ -545,6 +567,15 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 */
 	public void removeQueryDescriptor(String queryName) {
 		queryDescriptorMap.remove(queryName);
+	}
+
+	/**
+	 * Removes a named template from the DataMap.
+	 *
+	 * @since 4.0
+	 */
+	public void removeTemplate(String templateName) {
+		classGenerationDescriptor.getTemplates().remove(templateName);
 	}
 
 	/**
@@ -1071,6 +1102,24 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		procedure.setDataMap(this);
 	}
 
+	public void addTemplate(ClassTemplate template) {
+		if (template.getName() == null) {
+			throw new NullPointerException("Attempt to add template with no name.");
+		}
+
+		Object existingTemplate = classGenerationDescriptor.getTemplates().get(template.getName());
+		if (existingTemplate != null) {
+			if (existingTemplate == template) {
+				return;
+			} else {
+				throw new IllegalArgumentException("An attempt to override procedure '" + template.getName());
+			}
+		}
+
+		classGenerationDescriptor.getTemplates().put(template.getName(), template);
+		template.setDataMap(this);
+	}
+
 	public void removeProcedure(String name) {
 		procedureMap.remove(name);
 	}
@@ -1407,4 +1456,12 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
     public void setReverseEngineering(ReverseEngineering reverseEngineering) {
         this.reverseEngineering = reverseEngineering;
     }
+
+	public ClassGenerationDescriptor getClassGenerationDescriptor() {
+		return classGenerationDescriptor;
+	}
+
+	public void setClassGenerationDescriptor(ClassGenerationDescriptor classGenerationDescriptor) {
+		this.classGenerationDescriptor = classGenerationDescriptor;
+	}
 }

@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
 
+import org.apache.cayenne.map.template.ClassTemplate;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -134,7 +135,8 @@ public class CopyAction extends CayenneAction {
                 || object instanceof ObjRelationship
                 || object instanceof ObjCallbackMethod
                 || object instanceof Procedure
-                || object instanceof ProcedureParameter) {
+                || object instanceof ProcedureParameter
+                || object instanceof ClassTemplate) {
             return true;
         }
 

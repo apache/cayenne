@@ -20,6 +20,7 @@ package org.apache.cayenne.gen;
 
 import java.util.Collection;
 
+import org.apache.cayenne.map.template.TemplateType;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 
@@ -30,11 +31,11 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
 
     public static final String SUBCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "client-subclass.vm";
     public static final String SUPERCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "client-superclass.vm";
-    
+
     public static final String DMAP_SINGLE_CLASS_TEMPLATE = TEMPLATES_DIR_NAME + "client-datamap-singleclass.vm";
     public static final String DMAP_SUBCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "client-datamap-subclass.vm";
     public static final String DMAP_SUPERCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "client-datamap-superclass.vm";
-    
+
     public static final String CLIENT_SUPERCLASS_PREFIX = "_Client";
 
     @Override
@@ -48,7 +49,7 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
                 return ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE;
             case EMBEDDABLE_SUPERCLASS:
                 return ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE;
-            
+
             case DATAMAP_SUPERCLASS:
                 return ClientClassGenerationAction.DMAP_SUPERCLASS_TEMPLATE;
             case DATAMAP_SUBCLASS:
@@ -66,7 +67,7 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
             }
         }
     }
-    
+
     @Override
     public void addQueries(Collection<QueryDescriptor> queries) {
         if (queries != null) {

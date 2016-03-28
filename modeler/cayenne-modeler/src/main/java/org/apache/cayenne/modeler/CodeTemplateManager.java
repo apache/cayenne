@@ -26,8 +26,12 @@ import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import org.apache.cayenne.map.template.ClassGenerationDescriptor;
+import org.apache.cayenne.map.template.ClassTemplate;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,12 +51,17 @@ public class CodeTemplateManager {
 	protected List<String> standardSubclassTemplates;
 	protected List<String> standardSuperclassTemplates;
 	protected Map<String, String> customTemplates;
+	protected Map<String, String> modelTemplates;
 	protected Map<String, String> standardTemplates;
 
 	private static Log logger = LogFactory.getLog(CodeTemplateManager.class);
 
 	public Preferences getTemplatePreferences(Application application) {
 		return application.getPreferencesNode(this.getClass(), NODE_NAME);
+	}
+
+	private DataChannelDescriptor getDataChannel(Application application) {
+		return application.getFrameController().projectController.getCurrentDataChanel();
 	}
 
 	public CodeTemplateManager(Application application) {
@@ -66,6 +75,7 @@ public class CodeTemplateManager {
 		standardSubclassTemplates.add(STANDARD_CLIENT_SUBCLASS);
 
 		updateCustomTemplates(getTemplatePreferences(application));
+		updateFromModel(getDataChannel(application));
 
 		standardTemplates = new HashMap<>();
 		standardTemplates.put(STANDARD_SERVER_SUPERCLASS, ClassGenerationAction.SUPERCLASS_TEMPLATE);
@@ -92,6 +102,19 @@ public class CodeTemplateManager {
 		}
 	}
 
+	 public void updateFromModel(DataChannelDescriptor descriptor) {
+		 modelTemplates = new HashMap<>(5);
+
+		 for (DataMap dataMap : descriptor.getDataMaps()) {
+			 ClassGenerationDescriptor classGenerator = dataMap.getClassGenerationDescriptor();
+			 for (ClassTemplate template : classGenerator.getTemplates().values()) {
+				 if (template.getConfigurationSource() != null) {
+					 modelTemplates.put(template.getName(), template.getConfigurationSource().getURL().getPath());
+				 }
+			 }
+		 }
+	 }
+
 	// TODO: andrus, 12/5/2007 - this should also take a "pairs" parameter to
 	// correctly
 	// assign standard templates
@@ -107,6 +130,10 @@ public class CodeTemplateManager {
 
 	public Map<String, String> getCustomTemplates() {
 		return customTemplates;
+	}
+
+	public Map<String, String> getModelTemplates() {
+		return modelTemplates;
 	}
 
 	public List<String> getStandardSubclassTemplates() {

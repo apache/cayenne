@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import org.apache.cayenne.map.template.ClassTemplate;
 import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -101,5 +102,9 @@ public abstract class BaseConfigurationNodeVisitor<T> implements
 
     public T visitReverseEngineering(ReverseEngineering reverseEngineering) {
         throw new UnsupportedOperationException("Not implemented for ReverseEngineering");
+    }
+
+    public T visitClassTemplate(ClassTemplate classTemplate) {
+        throw new UnsupportedOperationException("Not implemented for ClassTemplate");
     }
 }

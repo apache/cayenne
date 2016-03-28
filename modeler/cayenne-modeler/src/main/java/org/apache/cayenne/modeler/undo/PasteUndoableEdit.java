@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.undo;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
+import org.apache.cayenne.map.template.ClassTemplate;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -116,6 +117,9 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
             else if (content instanceof Procedure) {
                 rAction.removeProcedure(map, (Procedure) content);
             }
+            else if (content instanceof ClassTemplate) {
+                rAction.removeTemplate(map, (ClassTemplate) content);
+            }
         }
         else if (where instanceof DbEntity) {
             if (content instanceof DbEntity) {
@@ -174,6 +178,9 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
                             (ProcedureParameter) content
                         });
             }
+        }
+        else if (content instanceof ClassTemplate) {
+            rAction.removeTemplate(map, (ClassTemplate) content);
         }
         else if (content instanceof Embeddable) {
             rAction.removeEmbeddable(map, (Embeddable) content);

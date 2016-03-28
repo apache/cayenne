@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import org.apache.cayenne.map.template.ClassTemplate;
 import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -67,6 +68,8 @@ public interface ConfigurationNodeVisitor<T> {
     T visitProcedureParameter(ProcedureParameter parameter);
 
     T visitQuery(QueryDescriptor query);
+
+    T visitClassTemplate(ClassTemplate classTemplate);
 
     T visitReverseEngineering(ReverseEngineering reverseEngineering);
 }

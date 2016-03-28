@@ -81,6 +81,7 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest {
 		task.setDestDir(destDir);
 		task.setSuperpkg("org.apache.cayenne.testdo.cgen2.auto");
 		task.setUsepkgpath(true);
+		task.isClassGenerationDefined = true;
 
 		// run task
 		task.execute();

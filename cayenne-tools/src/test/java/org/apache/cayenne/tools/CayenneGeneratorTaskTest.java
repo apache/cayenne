@@ -67,6 +67,7 @@ public class CayenneGeneratorTaskTest {
 		task.setProject(project);
 		task.setTaskName("Test");
 		task.setLocation(Location.UNKNOWN_LOCATION);
+		task.isClassGenerationDefined = true;
 	}
 
 	/**

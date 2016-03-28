@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
+import org.apache.cayenne.map.template.ClassTemplate;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
@@ -50,6 +51,7 @@ import org.apache.cayenne.modeler.action.CreateProcedureAction;
 import org.apache.cayenne.modeler.action.CreateQueryAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
+import org.apache.cayenne.modeler.action.CreateTemplateAction;
 import org.apache.cayenne.map.QueryDescriptor;
 
 public class RemoveUndoableEdit extends CayenneUndoableEdit {
@@ -65,11 +67,13 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
 
     private Embeddable embeddable;
 
+    private ClassTemplate template;
+
     private Map<DbEntity, List<DbRelationship>> dbRelationshipMap = new HashMap<DbEntity, List<DbRelationship>>();
     private Map<ObjEntity, List<ObjRelationship>> objRelationshipMap = new HashMap<ObjEntity, List<ObjRelationship>>();
 
     private static enum REMOVE_MODE {
-        OBJECT_ENTITY, DB_ENTITY, QUERY, PROCEDURE, MAP_FROM_NODE, MAP_FROM_DOMAIN, NODE, DOMAIN, EMBEDDABLE
+        OBJECT_ENTITY, DB_ENTITY, QUERY, PROCEDURE, MAP_FROM_NODE, MAP_FROM_DOMAIN, NODE, DOMAIN, EMBEDDABLE, TEMPLATE
     };
 
     private REMOVE_MODE mode;
@@ -89,14 +93,12 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
 
     public RemoveUndoableEdit(Application application, DataMap map) {
         this.domain = (DataChannelDescriptor) application.getProject().getRootNode();
-        ;
         this.map = map;
         this.mode = REMOVE_MODE.MAP_FROM_DOMAIN;
     }
 
     public RemoveUndoableEdit(Application application, DataNodeDescriptor node) {
         this.domain = (DataChannelDescriptor) application.getProject().getRootNode();
-        ;
         this.dataNode = node;
         this.mode = REMOVE_MODE.NODE;
     }
@@ -169,6 +171,12 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
         this.mode = REMOVE_MODE.EMBEDDABLE;
     }
 
+    public RemoveUndoableEdit(DataMap map, ClassTemplate template) {
+        this.map = map;
+        this.template = template;
+        this.mode = REMOVE_MODE.TEMPLATE;
+    }
+
     @Override
     public String getPresentationName() {
         switch (this.mode) {
@@ -190,6 +198,8 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                 return "Remove DataDomain";
             case EMBEDDABLE:
                 return "Remove Embeddable";
+            case TEMPLATE:
+                return "Remove Template";
             default:
                 return "Remove";
 
@@ -223,6 +233,10 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                 break;
             case EMBEDDABLE:
                 action.removeEmbeddable(map, embeddable);
+                break;
+            case TEMPLATE:
+                action.removeTemplate(map, template);
+                break;
         }
     }
 
@@ -233,6 +247,13 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                 .getAction(CreateRelationshipAction.class);
 
         switch (this.mode) {
+            case TEMPLATE: {
+                CreateTemplateAction action = actionManager
+                        .getAction(CreateTemplateAction.class);
+                action.createTemplate(map, template);
+
+                break;
+            }
             case OBJECT_ENTITY: {
                 for (Entry<ObjEntity, List<ObjRelationship>> entry : objRelationshipMap
                         .entrySet()) {

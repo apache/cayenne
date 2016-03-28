@@ -21,12 +21,13 @@ package org.apache.cayenne.dbimport;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import java.io.Serializable;
 
 /**
  * @since 4.0.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Schema extends FilterContainer {
+public class Schema extends FilterContainer implements Serializable {
 
     @XmlAttribute(name = "name")
     private String name;

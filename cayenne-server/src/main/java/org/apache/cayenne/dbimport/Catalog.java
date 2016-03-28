@@ -19,6 +19,7 @@
 package org.apache.cayenne.dbimport;
 
 import javax.xml.bind.annotation.*;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -26,7 +27,7 @@ import java.util.LinkedList;
  * @since 4.0.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Catalog extends FilterContainer {
+public class Catalog extends FilterContainer implements Serializable {
 
     @XmlAttribute(name = "name")
     private String name;

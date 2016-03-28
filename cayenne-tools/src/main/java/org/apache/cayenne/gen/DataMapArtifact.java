@@ -22,6 +22,7 @@ package org.apache.cayenne.gen;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import org.apache.cayenne.map.template.TemplateType;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.naming.NameConverter;

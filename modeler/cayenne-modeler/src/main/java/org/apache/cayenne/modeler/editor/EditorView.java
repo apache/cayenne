@@ -46,6 +46,8 @@ import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
+import org.apache.cayenne.modeler.event.TemplateDisplayEvent;
+import org.apache.cayenne.modeler.event.TemplateDisplayListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.commons.logging.LogFactory;
 
@@ -72,7 +74,7 @@ import java.awt.Dimension;
 public class EditorView extends JPanel implements ObjEntityDisplayListener,
         DbEntityDisplayListener, DomainDisplayListener, DataMapDisplayListener,
         DataNodeDisplayListener, ProcedureDisplayListener, QueryDisplayListener,
-        MultipleObjectsDisplayListener, EmbeddableDisplayListener {
+        MultipleObjectsDisplayListener, EmbeddableDisplayListener, TemplateDisplayListener {
 
     private static final String EMPTY_VIEW = "Empty";
     private static final String DOMAIN_VIEW = "Domain";
@@ -276,6 +278,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         eventController.addQueryDisplayListener(this);
         eventController.addMultipleObjectsDisplayListener(this);
         eventController.addEmbeddableDisplayListener(this);
+        eventController.addTemplateDisplayListener(this);
           
         /**
          * Moving this to try-catch block per CAY-940. Exception will be stack-traced
@@ -367,5 +370,9 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
             detailLayout.show(detailPanel, EMPTY_VIEW);
         else
             detailLayout.show(detailPanel, EMBEDDABLE_VIEW);
+    }
+
+    public void currentTemplateChanged(TemplateDisplayEvent e) {
+
     }
 }

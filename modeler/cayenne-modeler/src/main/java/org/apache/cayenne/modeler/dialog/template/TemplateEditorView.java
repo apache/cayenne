@@ -16,40 +16,43 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.gen;
+
+package org.apache.cayenne.modeler.dialog.template;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
- * Defines class generation template types.
- * 
- * @since 3.0
+ * @since 4.0
  */
-public enum TemplateType {
+public class TemplateEditorView extends JPanel {
+    protected JEditorPane editorPane;
+    protected JScrollPane scrollPane;
+    protected JLabel label;
 
-    ENTITY_SINGLE_CLASS(false),
+    public TemplateEditorView() {
+        this.editorPane = new JEditorPane();
+        this.scrollPane = new JScrollPane(editorPane);
+        this.label = new JLabel();
+        this.label.setVisible(false);
 
-    ENTITY_SUPERCLASS(true),
-
-    ENTITY_SUBCLASS(false),
-
-    EMBEDDABLE_SINGLE_CLASS(false),
-
-    EMBEDDABLE_SUPERCLASS(true),
-
-    EMBEDDABLE_SUBCLASS(false),
-
-    DATAMAP_SINGLE_CLASS(false),
-
-    DATAMAP_SUPERCLASS(true),
-
-    DATAMAP_SUBCLASS(false);
-
-    private boolean superclass;
-
-    private TemplateType(boolean superclass) {
-        this.superclass = superclass;
+        scrollPane = new JScrollPane(editorPane);
+        scrollPane.setPreferredSize(new Dimension(210, 300));
     }
 
-    public boolean isSuperclass() {
-        return superclass;
+    public JEditorPane getEditorPane() {
+        return editorPane;
+    }
+
+    public JScrollPane getScrollPane() {
+        return scrollPane;
+    }
+
+    public JLabel getLabel() {
+        return label;
+    }
+
+    public void setLabel(JLabel label) {
+        this.label = label;
     }
 }

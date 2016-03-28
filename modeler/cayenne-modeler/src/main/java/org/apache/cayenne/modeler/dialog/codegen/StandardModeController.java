@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import org.apache.cayenne.gen.ArtifactsGenerationMode;
+import org.apache.cayenne.map.template.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;

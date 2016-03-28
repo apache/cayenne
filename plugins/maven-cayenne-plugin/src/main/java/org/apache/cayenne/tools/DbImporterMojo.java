@@ -294,48 +294,46 @@ public class DbImporterMojo extends AbstractMojo {
                 getLog().error(message);
                 throw new MojoExecutionException(message, th);
             }
-        } else {
-            if (dataMapFile.exists()) {
-                try {
-                    URL url = dataMapFile.toURI().toURL();
-                    URLResource resource = new URLResource(url);
+        } else if (dataMapFile.exists()) {
+            try {
+                URL url = dataMapFile.toURI().toURL();
+                URLResource resource = new URLResource(url);
 
-                    XMLDataMapLoader xmlDataMapLoader = new XMLDataMapLoader();
-                    DataMap dataMap = xmlDataMapLoader.load(resource);
-                    if (dataMap.getReverseEngineering() != null) {
-                        try {
-                            Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
-                            ConfigurationNameMapper nameMapper = injector.getInstance(ConfigurationNameMapper.class);
-                            String reverseEngineeringLocation = nameMapper.configurationLocation(ReverseEngineering.class, dataMap.getReverseEngineering().getName());
-                            Resource reverseEngineeringResource = new URLResource(dataMapFile.toURI().toURL()).getRelativeResource(reverseEngineeringLocation);
+                XMLDataMapLoader xmlDataMapLoader = new XMLDataMapLoader();
+                DataMap dataMap = xmlDataMapLoader.load(resource);
+                if (dataMap.getReverseEngineering() != null) {
+                    try {
+                        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
+                        ConfigurationNameMapper nameMapper = injector.getInstance(ConfigurationNameMapper.class);
+                        String reverseEngineeringLocation = nameMapper.configurationLocation(ReverseEngineering.class, dataMap.getReverseEngineering().getName());
+                        Resource reverseEngineeringResource = new URLResource(dataMapFile.toURI().toURL()).getRelativeResource(reverseEngineeringLocation);
 
-                            DefaultReverseEngineeringLoader reverseEngineeringLoader = new DefaultReverseEngineeringLoader();
-                            ReverseEngineering reverseEngineering = reverseEngineeringLoader.load(reverseEngineeringResource.getURL().openStream());
-                            reverseEngineering.setName(dataMap.getReverseEngineering().getName());
-                            reverseEngineering.setConfigurationSource(reverseEngineeringResource);
-                            dataMap.setReverseEngineering(reverseEngineering);
+                        DefaultReverseEngineeringLoader reverseEngineeringLoader = new DefaultReverseEngineeringLoader();
+                        ReverseEngineering reverseEngineering = reverseEngineeringLoader.load(reverseEngineeringResource.getURL().openStream());
+                        reverseEngineering.setName(dataMap.getReverseEngineering().getName());
+                        reverseEngineering.setConfigurationSource(reverseEngineeringResource);
+                        dataMap.setReverseEngineering(reverseEngineering);
 
-                            FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(dataMap.getReverseEngineering());
-                            config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.filtersConfig());
-                            validateDbImportConfiguration(config, injector);
-                            injector.getInstance(DbImportAction.class).execute(config);
-                        } catch (Exception ex) {
-                            Throwable th = Util.unwindException(ex);
+                        FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(dataMap.getReverseEngineering());
+                        config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.filtersConfig());
+                        validateDbImportConfiguration(config, injector);
+                        injector.getInstance(DbImportAction.class).execute(config);
+                    } catch (Exception ex) {
+                        Throwable th = Util.unwindException(ex);
 
-                            String message = "Error importing database schema";
+                        String message = "Error importing database schema";
 
-                            if (th.getLocalizedMessage() != null) {
-                                message += ": " + th.getLocalizedMessage();
-                            }
-
-                            getLog().error(message);
-                            throw new MojoExecutionException(message, th);
+                        if (th.getLocalizedMessage() != null) {
+                            message += ": " + th.getLocalizedMessage();
                         }
+
+                        getLog().error(message);
+                        throw new MojoExecutionException(message, th);
                     }
-                } catch (MalformedURLException e) {
-                    getLog().error(e);
-                    throw new MojoExecutionException(e.getMessage(), e);
                 }
+            } catch (MalformedURLException e) {
+                getLog().error(e);
+                throw new MojoExecutionException(e.getMessage(), e);
             }
         }
     }

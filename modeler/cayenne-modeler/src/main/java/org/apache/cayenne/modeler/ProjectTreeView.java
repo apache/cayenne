@@ -32,12 +32,15 @@ import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.configuration.event.ProcedureListener;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.configuration.event.QueryListener;
+import org.apache.cayenne.configuration.event.TemplateEvent;
+import org.apache.cayenne.configuration.event.TemplateListener;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.template.ClassTemplate;
 import org.apache.cayenne.map.event.DbEntityListener;
 import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.map.event.EmbeddableListener;
@@ -73,6 +76,7 @@ import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
+import org.apache.cayenne.modeler.event.TemplateDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
@@ -112,7 +116,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         DataNodeListener, ObjEntityListener, ObjEntityDisplayListener, DbEntityListener,
         DbEntityDisplayListener, QueryListener, QueryDisplayListener, ProcedureListener,
         ProcedureDisplayListener, MultipleObjectsDisplayListener,
-        EmbeddableDisplayListener, EmbeddableListener {
+        EmbeddableDisplayListener, EmbeddableListener, TemplateListener {
 
     private static final Log logObj = LogFactory.getLog(ProjectTreeView.class);
 
@@ -220,6 +224,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         mediator.addDbEntityDisplayListener(this);
         mediator.addEmbeddableDisplayListener(this);
         mediator.addEmbeddableListener(this);
+        mediator.addTemplateListener(this);
         mediator.addProcedureListener(this);
         mediator.addProcedureDisplayListener(this);
         mediator.addQueryListener(this);
@@ -953,6 +958,15 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             mediator.fireQueryDisplayEvent(e);
         }
 
+        else if (obj instanceof ClassTemplate) {
+            TemplateDisplayEvent e = new TemplateDisplayEvent(
+                    this,
+                    (ClassTemplate) obj,
+                    (DataMap) data[data.length - 2],
+                    (DataChannelDescriptor) mediator.getProject().getRootNode());
+            mediator.fireTemplateDisplayEvent(e);
+        }
+
         this.scrollPathToVisible(path);
     }
 
@@ -1032,7 +1046,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     /**
      * Creates and returns an menu item associated with the key.
      * 
-     * @param key action key
+     * @param actionType action key
      */
     private JMenuItem buildMenu(Class<? extends Action> actionType) {
         CayenneAction action = (CayenneAction) mediator
@@ -1040,6 +1054,21 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 .getActionManager()
                 .getAction(actionType);
         return action.buildMenu();
+    }
+
+    @Override
+    public void templateChanged(TemplateEvent e) {
+
+    }
+
+    @Override
+    public void templateAdded(TemplateEvent e) {
+
+    }
+
+    @Override
+    public void templateRemoved(TemplateEvent e) {
+
     }
 
     /**

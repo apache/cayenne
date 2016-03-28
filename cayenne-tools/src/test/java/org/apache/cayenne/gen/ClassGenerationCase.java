@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.gen;
 
+import org.apache.cayenne.configuration.gen.ClassGeneratorResourceLoader;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;

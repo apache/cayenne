@@ -62,6 +62,8 @@ public interface ActionManager {
 
     void embeddableSelected();
 
+    void templateSelected();
+
     /**
      * Invoked when several objects were selected in ProjectTree at time
      */

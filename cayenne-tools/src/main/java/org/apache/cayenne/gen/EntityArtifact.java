@@ -19,6 +19,7 @@
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.map.template.TemplateType;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.velocity.VelocityContext;
 

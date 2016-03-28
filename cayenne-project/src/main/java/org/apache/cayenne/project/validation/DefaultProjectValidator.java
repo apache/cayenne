@@ -20,6 +20,7 @@ package org.apache.cayenne.project.validation;
 
 import java.util.Iterator;
 
+import org.apache.cayenne.map.template.ClassTemplate;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -65,6 +66,7 @@ public class DefaultProjectValidator implements ProjectValidator {
     private ProcedureQueryValidator procedureQueryValidator;
     private EJBQLQueryValidator ejbqlQueryValidator;
     private SQLTemplateValidator sqlTemplateValidator;
+    private TemplateValidator templateValidator;
     private ReverseEngineeringValidator reverseEngineeringValidator;
 
     DefaultProjectValidator() {
@@ -85,6 +87,7 @@ public class DefaultProjectValidator implements ProjectValidator {
         procedureQueryValidator = new ProcedureQueryValidator();
         ejbqlQueryValidator = new EJBQLQueryValidator();
         sqlTemplateValidator = new SQLTemplateValidator();
+        templateValidator = new TemplateValidator();
         reverseEngineeringValidator = new ReverseEngineeringValidator();
     }
 
@@ -271,6 +274,12 @@ public class DefaultProjectValidator implements ProjectValidator {
                     break;
             }
 
+            return validationResult;
+        }
+
+        @Override
+        public ValidationResult visitClassTemplate(ClassTemplate classTemplate) {
+            templateValidator.validate(classTemplate, validationResult);
             return validationResult;
         }
 

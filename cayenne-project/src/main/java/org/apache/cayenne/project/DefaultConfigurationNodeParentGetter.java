@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
+import org.apache.cayenne.map.template.ClassTemplate;
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
@@ -113,6 +114,11 @@ public class DefaultConfigurationNodeParentGetter implements ConfigurationNodePa
         @Override
         public ConfigurationNode visitQuery(QueryDescriptor query) {
             return query.getDataMap();
+        }
+
+        @Override
+        public ConfigurationNode visitClassTemplate(ClassTemplate classTemplate) {
+            return classTemplate;
         }
 
         @Override

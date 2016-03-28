@@ -75,4 +75,26 @@ public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
         assertTrue(content.contains("public void removeFromAdditionalRel(TestRelEntity obj)"));
 
     }
+
+    public void testCgenExecutionUsingTemplateFromDataMap() throws Exception {
+        File pom = getTestFile("src/test/resources/cgen/project-to-test/pom1.xml");
+        assertNotNull(pom);
+        assertTrue(pom.exists());
+
+        CayenneGeneratorMojo myMojo = (CayenneGeneratorMojo) lookupMojo("cgen",
+                pom);
+        assertNotNull(myMojo);
+
+        myMojo.execute();
+
+        File testEntity = new File(
+                "target/cayenneGeneratedClasses/pack/TestEntity1.txt");
+
+        File embeddable = new File(
+                "target/cayenneGeneratedClasses/pack/Embeddable1.txt");
+
+        assertTrue(testEntity.exists());
+
+        assertTrue(embeddable.exists());
+    }
 }
