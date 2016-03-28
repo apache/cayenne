@@ -19,7 +19,7 @@
     <title>Orderings</title>
         <para>An Ordering object defines how a list of objects should be ordered. Orderings are
             essentially path expressions combined with a sorting strategy. Creating an Ordering:
-            <programlisting language="java">Ordering o = new Ordering(Painting.NAME_PROPERTY, SortOrder.ASENDING);</programlisting></para>
+            <programlisting language="java">Ordering o = new Ordering(Painting.NAME_PROPERTY, SortOrder.ASCENDING);</programlisting></para>
         <para>Like expressions, orderings are translated into SQL as parts of queries (and the sorting
         occurs in the database). Also like expressions, orderings can be used in memory, naturally -
         to sort
