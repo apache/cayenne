@@ -1,1 +1,10 @@
 language: java
+
+env:
+  - cayenneTestConnection=hsql
+  - cayenneTestConnection=h2
+  - cayenneTestConnection=derby
+
+jdk:
+  - oraclejdk8
+  - oraclejdk7
