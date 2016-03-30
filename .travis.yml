@@ -1,13 +1,13 @@
 language: java
 
 env:
-  - cayenneTestConnection=hsql
-  - cayenneTestConnection=h2
-  - cayenneTestConnection=derby
+  - DB_PROFILE=hsql
+  - DB_PROFILE=h2
+  - DB_PROFILE=derby
 
 jdk:
   - oraclejdk8
   - oraclejdk7
 
 script:
-  - mvn verify
+  - mvn verify -DcayenneTestConnection=$DB_PROFILE
