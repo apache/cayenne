@@ -39,9 +39,9 @@
 		<project.build.datetime>${maven.build.timestamp}</project.build.datetime>
         <jacoco.version>0.7.1.201405082137</jacoco.version>
 
-        <pmd.skip>false</pmd.skip>
-        <checkstyle.skip>false</checkstyle.skip>
-        <findbugs.skip>false</findbugs.skip>
+        <pmd.skip>true</pmd.skip>
+        <checkstyle.skip>true</checkstyle.skip>
+        <findbugs.skip>true</findbugs.skip>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
