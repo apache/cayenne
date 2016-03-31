@@ -180,29 +180,59 @@ public class EntityMergeSupport {
                     createObjRelationship(entity, dr, mappedTarget.getName());
                 }
             } else {
-                LOG.warn("Can't find ObjEntity for " + dr.getTargetEntityName());
-                LOG.warn("Db Relationship (" + dr + ") will have GUESSED Obj Relationship reflection. ");
-
                 if (targetEntity == null) {
                     targetEntity = new DbEntity(dr.getTargetEntityName());
                 }
-                createObjRelationship(entity, dr, nameGenerator.createObjEntityName(targetEntity));
+                if (dr.getTargetEntityName() != null) {
+                    boolean needGeneratedEntity = createObjRelationship(entity, dr, nameGenerator.createObjEntityName(targetEntity));
+                    if (needGeneratedEntity) {
+                        LOG.warn("Can't find ObjEntity for " + dr.getTargetEntityName());
+                        LOG.warn("Db Relationship (" + dr + ") will have GUESSED Obj Relationship reflection. ");
+                    }
+                }
             }
         }
         return true;
     }
 
-    private void createObjRelationship(ObjEntity entity, DbRelationship dr, String targetEntityName) {
+    private boolean createObjRelationship(ObjEntity entity, DbRelationship dr, String targetEntityName) {
         String relationshipName = nameGenerator.createObjRelationshipName(dr);
         relationshipName = DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, entity, relationshipName);
 
         ObjRelationship or = new ObjRelationship(relationshipName);
         or.addDbRelationship(dr);
-        or.setSourceEntity(entity);
-        or.setTargetEntityName(targetEntityName);
-        entity.addRelationship(or);
+        Map<String, ObjEntity> objEntities = entity.getDataMap().getSubclassesForObjEntity(entity);
 
-        fireRelationshipAdded(or);
+        boolean hasFlattingAttributes = false;
+        boolean needGeneratedEntity = true;
+
+        if (objEntities.containsKey(targetEntityName)) {
+            needGeneratedEntity = false;
+        }
+
+        for (ObjEntity subObjEntity : objEntities.values()) {
+            for (ObjAttribute objAttribute : subObjEntity.getAttributes()) {
+                String path = objAttribute.getDbAttributePath();
+                if (path != null) {
+                    if (path.startsWith(or.getDbRelationshipPath())) {
+                        hasFlattingAttributes = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!hasFlattingAttributes) {
+            if (needGeneratedEntity) {
+                or.setTargetEntityName(targetEntityName);
+                or.setSourceEntity(entity);
+            }
+
+            entity.addRelationship(or);
+            fireRelationshipAdded(or);
+        }
+
+        return needGeneratedEntity;
     }
 
     private boolean addMissingAttributes(ObjEntity entity) {

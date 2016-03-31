@@ -225,6 +225,13 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         if (e.isUnselectAttributes()) {
             table.clearSelection();
         }
+
+        ObjEntity objEntity = (ObjEntity) e.getEntity();
+        if (objEntity.getSuperEntity() != null) {
+            parentPanel.getToolBar().getComponentAtIndex(2).setEnabled(false);
+        } else {
+            parentPanel.getToolBar().getComponentAtIndex(2).setEnabled(true);
+        }
     }
 
     /**
