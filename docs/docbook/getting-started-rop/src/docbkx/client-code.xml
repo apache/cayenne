@@ -37,7 +37,7 @@ public class Main {
         <para>Now the part that is actually different from regular Cayenne - establishing the server
             connection and obtaining the ObjectContext:</para>
         <programlisting language="java">Map&lt;String, String> properties = new HashMap&lt;>();
-properties.put(Constants.ROP_SERVICE_URL_PROPERTY, "http://localhost:8080/tutorial-rop-server/cayenne-service");
+properties.put(Constants.ROP_SERVICE_URL_PROPERTY, "http://localhost:8080/tutorial/cayenne-service");
 properties.put(Constants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
 properties.put(Constants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
 

@@ -115,14 +115,14 @@ java.rmi.RemoteException: Server returned HTTP response code: 401 for URL: http:
         <para>Which is exactly what you'd expect, as the client is not authenticating itself. So
             change the line in Main.java where we obtained an ROP connection to this:</para>
         <programlisting language="java">Map&lt;String,String> properties = new HashMap&lt;>();
-properties.put(Constants.ROP_SERVICE_URL_PROPERTY, "http://localhost:8080/tutorial-rop-server/cayenne-service");
+properties.put(Constants.ROP_SERVICE_URL_PROPERTY, "http://localhost:8080/tutorial/cayenne-service");
 properties.put(Constants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
 properties.put(Constants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
 
 ClientRuntime runtime = new ClientRuntime(properties);</programlisting>
         <para>Try running again, and everything should work as before. Obviously in production
             environment, in addition to authentication you'll need to use HTTPS to access the server
-            to prevent third-party evesdropping on your password and data.</para>
+            to prevent third-party eavesdropping on your password and data.</para>
         <para>Congratulations, you are done with the ROP tutorial!</para>
     </section>
 </chapter>

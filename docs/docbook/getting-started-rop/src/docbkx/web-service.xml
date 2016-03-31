@@ -73,7 +73,7 @@
     <section xml:id="configuring-web-xml">
         <title>Configuring web.xml</title>
         <para>Cayenne web service is declared in the web.xml. It is implemented as a servlet
-            "org.apache.cayenne.configuration.rop.server.ROPHessianServlet". Open
+            "org.apache.cayenne.rop.ROPServlet". Open
             tutorial/src/main/webapp/WEB-INF/web.xml in Eclipse and add a service declaration: </para>
         <programlisting>&lt;?xml version="1.0" encoding="utf-8"?>
  &lt;!DOCTYPE web-app
