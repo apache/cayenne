@@ -69,16 +69,18 @@ public class ObjEntityCounterpartAction extends CayenneAction {
         }
         
         DbEntity entity = objEntity.getDbEntity();
-        
-        TreePath path = DbEntityCounterpartAction.buildTreePath(entity);
-        DbEntityCounterpartAction.editor().getProjectTreeView().getSelectionModel().setSelectionPath(path);
-        
-        EntityDisplayEvent event = new EntityDisplayEvent(
-                DbEntityCounterpartAction.editor().getProjectTreeView(),
-                entity,
-                entity.getDataMap(),
-                (DataChannelDescriptor) getProjectController().getProject().getRootNode());
-        getProjectController().fireDbEntityDisplayEvent(event);
+
+        if (entity != null) {
+            TreePath path = DbEntityCounterpartAction.buildTreePath(entity);
+            DbEntityCounterpartAction.editor().getProjectTreeView().getSelectionModel().setSelectionPath(path);
+
+            EntityDisplayEvent event = new EntityDisplayEvent(
+                    DbEntityCounterpartAction.editor().getProjectTreeView(),
+                    entity,
+                    entity.getDataMap(),
+                    (DataChannelDescriptor) getProjectController().getProject().getRootNode());
+            getProjectController().fireDbEntityDisplayEvent(event);
+        }
     }
     
 }
