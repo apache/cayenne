@@ -68,6 +68,8 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 * according the default iteration order of the Orderings list. I.e. each
 	 * Ordering with lower index is more significant than any other Ordering
 	 * with higher index. List being ordered is modified in place.
+	 * 
+	 * @since 4.0
 	 */
 	public static <E> List<E> orderedList(List<E> objects, List<? extends Ordering> orderings) {
 		List<E> newList = new ArrayList<E>(objects);
@@ -327,6 +329,9 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 		Collections.sort(objects, this);
 	}
 
+	/**
+	 * @since 4.0
+	 */
 	public <E> List<E> orderedList(List<E> objects) {
 		List<E> newList = new ArrayList<E>(objects);
 		

@@ -19,6 +19,7 @@ CAY-2060 Replace Query objects in DataMap with query descriptors
 CAY-2062 MappedSelect and MappedExec fluent query API
 CAY-2063 ProcedureCall fluent query API
 CAY-2065 Pluggable serialization and connectivity layers for ROP
+CAY-2073 Ordering.orderedList methods
 
 Bug Fixes:
 
