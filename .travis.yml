@@ -10,7 +10,7 @@ jdk:
   - oraclejdk7
 
 script:
-  - mvn verify -DcayenneTestConnection=$DB_PROFILE
+  - mvn verify -q -DcayenneTestConnection=$DB_PROFILE
 
 # prevent Travis from uneeded "mvn install" run
 install: /bin/true
