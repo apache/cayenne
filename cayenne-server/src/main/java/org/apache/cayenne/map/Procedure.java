@@ -121,10 +121,12 @@ public class Procedure implements ConfigurationNode, CayenneMapEntry, XMLSeriali
     }
 
     /**
-     * Returns procedure name including schema, if present.
+     * Returns procedure name including schema and catalog, if present.
      */
     public String getFullyQualifiedName() {
-        return (schema != null) ? schema + '.' + getName() : getName();
+        return (catalog != null ? catalog + '.' : "")
+                + (schema != null ? schema + '.' : "")
+                + name;
     }
 
     /**

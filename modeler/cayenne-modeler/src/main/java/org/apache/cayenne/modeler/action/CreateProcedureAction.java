@@ -71,6 +71,7 @@ public class CreateProcedureAction extends CayenneAction {
 	public void createProcedure(DataMap map, Procedure procedure) {
 		ProjectController mediator = getProjectController();
 		procedure.setSchema(map.getDefaultSchema());
+		procedure.setCatalog(map.getDefaultCatalog());
 		map.addProcedure(procedure);
 		fireProcedureEvent(this, mediator, map, procedure);
 	}
