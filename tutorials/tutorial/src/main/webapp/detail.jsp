@@ -21,7 +21,6 @@
 <%@ page language="java" contentType="text/html" %>
 <%@ page import="org.apache.cayenne.tutorial.persistent.*" %>
 <%@ page import="org.apache.cayenne.*" %>
-<%@ page import="java.util.*" %>
 <%@ page import="java.text.*" %>
 
 <% 

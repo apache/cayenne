@@ -90,7 +90,7 @@
 
 &lt;% 
     SelectQuery query = new SelectQuery(Artist.class);
-    query.addOrdering(Artist.NAME_PROPERTY, SortOrder.ASCENDING);
+    query.addOrdering(Artist.NAME.getName(), SortOrder.ASCENDING);
 
     ObjectContext context = BaseContext.getThreadObjectContext();
     List&lt;Artist&gt; artists = context.performQuery(query);
@@ -192,9 +192,17 @@
     </section>
     <section xml:id="running-webapp">
         <title>Running Web Application</title>
-        <para>To run the web application we'll use "maven-jetty-plugin". To activate it, let's add
-            the following piece of code to the "pom.xml" file, following the "dependencies" section
-            and save the POM:</para>
+        <para>We need to provide javax servlet-api for our application.</para>
+        <programlisting>&lt;dependency&gt;
+        &lt;groupId>javax.servlet&lt;/groupId&gt;
+        &lt;artifactId>javax.servlet-api&lt;/artifactId&gt;
+        &lt;version>3.1.0&lt;/version&gt;
+        &lt;scope>provided&lt;/scope&gt;
+&lt;/dependency&gt;</programlisting>
+
+        <para>Also to run the web application we'll use "maven-jetty-plugin". To activate it,
+            let's add the following piece of code to the "pom.xml" file, following the "dependencies"
+            section and save the POM:</para>
         <programlisting>&lt;build&gt;
     &lt;plugins&gt;
         &lt;plugin&gt;
