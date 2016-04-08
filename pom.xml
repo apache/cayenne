@@ -1456,6 +1456,7 @@
 				<jdk>[1.8,)</jdk>
 			</activation>
 			<modules>
+				<module>cayenne-client-http2</module>
 				<module>cayenne-java8</module>
                 <module>assembly</module>
 			</modules>

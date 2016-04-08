@@ -152,6 +152,8 @@ public interface Constants {
 
 	public static final String ROP_SERVICE_PASSWORD_PROPERTY = "cayenne.rop.service_password";
 
+	public static final String ROP_SERVICE_REALM_PROPERTY = "cayenne.rop.service_realm";
+
 	public static final String ROP_SERVICE_SHARED_SESSION_PROPERTY = "cayenne.rop.shared_session_name";
 
 	public static final String ROP_SERVICE_TIMEOUT_PROPERTY = "cayenne.rop.service_timeout";

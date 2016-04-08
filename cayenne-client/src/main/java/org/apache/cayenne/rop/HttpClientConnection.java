@@ -19,6 +19,7 @@
 package org.apache.cayenne.rop;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventBridgeFactory;
 import org.apache.cayenne.remote.BaseConnection;
@@ -122,5 +123,10 @@ public class HttpClientConnection extends BaseConnection {
         } catch (Exception ex) {
             throw new CayenneRuntimeException("Error creating EventBridge.", ex);
         }
+    }
+
+    @BeforeScopeEnd
+    public void shutdown() {
+        remoteService.close();
     }
 }

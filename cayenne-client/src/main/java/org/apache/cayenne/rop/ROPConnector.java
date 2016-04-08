@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.rop;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -31,17 +30,19 @@ public interface ROPConnector {
 	/**
 	 * Establishes a dedicated session with Cayenne DataChannel, returning session id.
 	 */
-    InputStream establishSession() throws IOException;
+    InputStream establishSession();
 
 	/**
 	 * Creates a new session with the specified or joins an existing one. This method is
 	 * used to bootstrap collaborating clients of a single "group chat".
 	 */
-    InputStream establishSharedSession(String name) throws IOException;
+    InputStream establishSharedSession(String name);
 
 	/**
 	 * Processes message on a remote server, returning the result of such processing.
 	 */
-    InputStream sendMessage(byte[] message) throws IOException;
+    InputStream sendMessage(byte[] message);
+
+	void close();
     
 }

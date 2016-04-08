@@ -48,7 +48,7 @@ public class HttpROPConnector implements ROPConnector {
     private String password;
 
     private Long readTimeout;
-    
+
     public HttpROPConnector(String url, String username, String password) {
         this.url = url;
         this.username = username;
@@ -58,25 +58,25 @@ public class HttpROPConnector implements ROPConnector {
     public void setClientConnection(HttpClientConnection clientConnection) {
         this.clientConnection = clientConnection;
     }
-    
+
     public void setReadTimeout(Long readTimeout) {
         this.readTimeout = readTimeout;
     }
 
     @Override
-    public InputStream establishSession() throws IOException {
+    public InputStream establishSession() {
         if (logger.isInfoEnabled()) {
             logConnect(null);
         }
-		
+
 		Map<String, String> requestParams = new HashMap<>();
 		requestParams.put(ROPConstants.OPERATION_PARAMETER, ROPConstants.ESTABLISH_SESSION_OPERATION);
-		
+
         return doRequest(requestParams);
     }
 
     @Override
-    public InputStream establishSharedSession(String name) throws IOException {
+    public InputStream establishSharedSession(String name) {
         if (logger.isInfoEnabled()) {
             logConnect(name);
         }
@@ -89,65 +89,80 @@ public class HttpROPConnector implements ROPConnector {
     }
 
     @Override
-    public InputStream sendMessage(byte[] message) throws IOException {
+    public InputStream sendMessage(byte[] message) {
         return doRequest(message);
     }
-	
-	protected InputStream doRequest(Map<String, String> params) throws IOException {
-		URLConnection connection = new URL(url).openConnection();
 
-		StringBuilder urlParams = new StringBuilder();
+    protected InputStream doRequest(Map<String, String> params) {
+        try {
+            URLConnection connection = new URL(url).openConnection();
 
-		for (Map.Entry<String, String> entry : params.entrySet()) {
-			if (urlParams.length() > 0) {
-				urlParams.append('&');
-			}
 
-			urlParams.append(entry.getKey());
-			urlParams.append('=');
-			urlParams.append(entry.getValue());
-		}
+            StringBuilder urlParams = new StringBuilder();
 
-		if (readTimeout != null) {
-			connection.setReadTimeout(readTimeout.intValue());
-		}
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                if (urlParams.length() > 0) {
+                    urlParams.append('&');
+                }
 
-		addAuthHeader(connection);
+                urlParams.append(entry.getKey());
+                urlParams.append('=');
+                urlParams.append(entry.getValue());
+            }
 
-		connection.setDoOutput(true);
-		
-		connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-		connection.setRequestProperty("charset", "utf-8");
+            if (readTimeout != null) {
+                connection.setReadTimeout(readTimeout.intValue());
+            }
 
-		try (OutputStream output = connection.getOutputStream()) {
-			output.write(urlParams.toString().getBytes(StandardCharsets.UTF_8));
-            output.flush();
-		}
+            addAuthHeader(connection);
 
-		return connection.getInputStream();
-	} 
+            connection.setDoOutput(true);
 
-    protected InputStream doRequest(byte[] data) throws IOException {
-        URLConnection connection = new URL(url).openConnection();
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("charset", "utf-8");
 
-        if (readTimeout != null) {
-            connection.setReadTimeout(readTimeout.intValue());
-        }
-
-        addAuthHeader(connection);
-        addSessionCookie(connection);
-        connection.setDoOutput(true);
-
-        connection.setRequestProperty("Content-Type", "application/octet-stream");
-
-        if (data != null) {
             try (OutputStream output = connection.getOutputStream()) {
-                output.write(data);
+                output.write(urlParams.toString().getBytes(StandardCharsets.UTF_8));
                 output.flush();
             }
-        }
 
-        return connection.getInputStream();
+            return connection.getInputStream();
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void close() {
+    }
+
+    protected InputStream doRequest(byte[] data) {
+        try {
+            URLConnection connection = null;
+
+            connection = new URL(url).openConnection();
+
+            if (readTimeout != null) {
+                connection.setReadTimeout(readTimeout.intValue());
+            }
+
+            addAuthHeader(connection);
+            addSessionCookie(connection);
+            connection.setDoOutput(true);
+
+            connection.setRequestProperty("Content-Type", "application/octet-stream");
+
+            if (data != null) {
+                try (OutputStream output = connection.getOutputStream()) {
+                    output.write(data);
+                    output.flush();
+                }
+            }
+
+            return connection.getInputStream();
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     protected void addAuthHeader(URLConnection connection) {

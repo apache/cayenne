@@ -45,4 +45,11 @@ public interface RemoteService extends Remote {
      * Processes message on a remote server, returning the result of such processing.
      */
     Object processMessage(ClientMessage message) throws RemoteException, Throwable;
+
+    /**
+     * Close remote service resources.
+     *
+     * @sine 4.0
+     */
+    void close();
 }
