@@ -54,8 +54,9 @@ public class DataContextLocalObjectTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING_INFO");
+    	dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("PAINTING1");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");

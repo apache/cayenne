@@ -50,15 +50,16 @@ public class DataDomainCallbacksTest extends ServerCase {
     private DBHelper dbHelper;
 
     @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("EXHIBIT");
-        dbHelper.deleteAll("GALLERY");
-    }
+	protected void setUpAfterInjection() throws Exception {
+		dbHelper.deleteAll("PAINTING_INFO");
+		dbHelper.deleteAll("PAINTING");
+		dbHelper.deleteAll("PAINTING1");
+		dbHelper.deleteAll("ARTIST_EXHIBIT");
+		dbHelper.deleteAll("ARTIST_GROUP");
+		dbHelper.deleteAll("ARTIST");
+		dbHelper.deleteAll("EXHIBIT");
+		dbHelper.deleteAll("GALLERY");
+	}
 
     public void testPostLoad() throws Exception {
         LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
