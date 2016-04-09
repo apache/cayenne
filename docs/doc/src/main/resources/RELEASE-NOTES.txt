@@ -29,7 +29,7 @@ CAY-2066 Memory leak in ExtendedTypeMap for inner classes
 
 ----------------------------------
 Release: 3.1-final
-Date: not yet released
+Date: 29 September 2014
 ----------------------------------
 Changes/New Features Since 3.1RC1:
 
