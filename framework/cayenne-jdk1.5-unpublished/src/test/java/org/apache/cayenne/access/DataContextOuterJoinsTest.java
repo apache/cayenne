@@ -69,11 +69,15 @@ public class DataContextOuterJoinsTest extends ServerCase {
                 "ARTIST_GROUP",
                 "GROUP_ID",
                 "ARTIST_ID");
-
-        artistGroupHelper.deleteAll();
-        artgroupHelper.deleteAll();
-        paintingHelper.deleteAll();
-        artistHelper.deleteAll();
+        
+        dbHelper.deleteAll("PAINTING_INFO");
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST_EXHIBIT");
+        dbHelper.deleteAll("ARTIST_GROUP");
+        dbHelper.deleteAll("ARTIST");
+        dbHelper.deleteAll("ARTGROUP");
+        dbHelper.deleteAll("EXHIBIT");
+        dbHelper.deleteAll("GALLERY");
     }
 
     public void testSelectWithOuterJoinFlattened() throws Exception {

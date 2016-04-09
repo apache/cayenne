@@ -50,6 +50,7 @@ public class DataContextClobTest extends ServerCase {
     @Override
     protected void setUpAfterInjection() throws Exception {
         if (accessStackAdapter.supportsLobs()) {
+        	dbHelper.deleteAll("CLOB_TEST_RELATION");
             dbHelper.deleteAll("CLOB_TEST");
         }
     }

@@ -41,8 +41,8 @@ public class CDOOneToManyFKTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
+    	dbHelper.deleteAll("TO_ONEFK1");
         dbHelper.deleteAll("TO_ONEFK2");
-        dbHelper.deleteAll("TO_ONEFK1");
     }
 
     public void testReadRelationship() throws Exception {

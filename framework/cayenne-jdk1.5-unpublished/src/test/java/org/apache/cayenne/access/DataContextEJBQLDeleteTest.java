@@ -50,27 +50,26 @@ public class DataContextEJBQLDeleteTest extends ServerCase {
     protected TableHelper tMeaningfulPKTest1Table;
 
     @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
+	protected void setUpAfterInjection() throws Exception {
+		dbHelper.deleteAll("PAINTING_INFO");
+		dbHelper.deleteAll("PAINTING");
+		dbHelper.deleteAll("ARTIST_EXHIBIT");
+		dbHelper.deleteAll("ARTIST_GROUP");
+		dbHelper.deleteAll("ARTIST");
+		dbHelper.deleteAll("ARTGROUP");
+		dbHelper.deleteAll("EXHIBIT");
+		dbHelper.deleteAll("GALLERY");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
-        tPainting.setColumns(
-                "PAINTING_ID",
-                "ARTIST_ID",
-                "PAINTING_TITLE",
-                "ESTIMATED_PRICE").setColumnTypes(
-                Types.INTEGER,
-                Types.BIGINT,
-                Types.VARCHAR,
-                Types.DECIMAL);
+		dbHelper.deleteAll("MEANINGFUL_PK_DEP");
+		dbHelper.deleteAll("MEANINGFUL_PK_TEST1");
 
-        tMeaningfulPKTest1Table = new TableHelper(dbHelper, "MEANINGFUL_PK_TEST1");
-        tMeaningfulPKTest1Table.setColumns("PK_ATTRIBUTE", "DESCR");
-    }
+		tPainting = new TableHelper(dbHelper, "PAINTING");
+		tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE")
+				.setColumnTypes(Types.INTEGER, Types.BIGINT, Types.VARCHAR, Types.DECIMAL);
+
+		tMeaningfulPKTest1Table = new TableHelper(dbHelper, "MEANINGFUL_PK_TEST1");
+		tMeaningfulPKTest1Table.setColumns("PK_ATTRIBUTE", "DESCR");
+	}
 
     protected void createPaintingsDataSet() throws Exception {
         tPainting.insert(33001, null, "P1", 3000);

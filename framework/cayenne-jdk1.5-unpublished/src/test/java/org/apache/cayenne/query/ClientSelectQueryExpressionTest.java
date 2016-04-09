@@ -42,12 +42,13 @@ public class ClientSelectQueryExpressionTest extends ClientCase {
     private TableHelper tMtTable1;
 
     @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("MT_TABLE1");
+	protected void setUpAfterInjection() throws Exception {
+		dbHelper.deleteAll("MT_TABLE2");
+		dbHelper.deleteAll("MT_TABLE1");
 
-        tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
-        tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
-    }
+		tMtTable1 = new TableHelper(dbHelper, "MT_TABLE1");
+		tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
+	}
 
     protected void createMtTable1DataSet() throws Exception {
         for (int i = 1; i <= 20; i++) {

@@ -58,27 +58,32 @@ public class CayenneTest extends ServerCase {
     protected TableHelper tCharPKTest;
 
     @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING_INFO");
-        dbHelper.deleteAll("PAINTING");
-        dbHelper.deleteAll("ARTIST_EXHIBIT");
-        dbHelper.deleteAll("ARTIST_GROUP");
-        dbHelper.deleteAll("ARTIST");
-        dbHelper.deleteAll("COMPOUND_PK_TEST");
-        dbHelper.deleteAll("CHAR_PK_TEST");
+	protected void setUpAfterInjection() throws Exception {
+		dbHelper.deleteAll("PAINTING_INFO");
+		dbHelper.deleteAll("PAINTING");
+		dbHelper.deleteAll("ARTIST_EXHIBIT");
+		dbHelper.deleteAll("ARTIST_GROUP");
+		dbHelper.deleteAll("ARTIST");
+		dbHelper.deleteAll("ARTGROUP");
+		dbHelper.deleteAll("EXHIBIT");
+		dbHelper.deleteAll("GALLERY");
 
-        tArtist = new TableHelper(dbHelper, "ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+		dbHelper.deleteAll("COMPOUND_FK_TEST");
+		dbHelper.deleteAll("COMPOUND_PK_TEST");
+		dbHelper.deleteAll("CHAR_PK_TEST");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
-        tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
+		tArtist = new TableHelper(dbHelper, "ARTIST");
+		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tCompoundPKTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
-        tCompoundPKTest.setColumns("KEY1", "KEY2", "NAME");
+		tPainting = new TableHelper(dbHelper, "PAINTING");
+		tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
 
-        tCharPKTest = new TableHelper(dbHelper, "CHAR_PK_TEST");
-        tCharPKTest.setColumns("PK_COL", "OTHER_COL");
-    }
+		tCompoundPKTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
+		tCompoundPKTest.setColumns("KEY1", "KEY2", "NAME");
+
+		tCharPKTest = new TableHelper(dbHelper, "CHAR_PK_TEST");
+		tCharPKTest.setColumns("PK_COL", "OTHER_COL");
+	}
 
     private void createOneCompoundPK() throws Exception {
         tCompoundPKTest.insert("PK1", "PK2", "BBB");
