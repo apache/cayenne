@@ -95,8 +95,9 @@ class ClientServerChannelQueryAction {
                 }
 
                 if (cachedList == null) {
-                    throw new CayenneRuntimeException("No cached list for "
-                            + serverMetadata.getCacheKey());
+                    String message = "No cached list for " + serverMetadata.getCacheKey();
+                    message = message.replace("%", "%%");
+                    throw new CayenneRuntimeException(message);
                 }
             }
 
