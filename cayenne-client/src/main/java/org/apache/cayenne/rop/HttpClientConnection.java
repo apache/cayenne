@@ -27,6 +27,8 @@ import org.apache.cayenne.remote.ClientMessage;
 import org.apache.cayenne.remote.RemoteService;
 import org.apache.cayenne.remote.RemoteSession;
 
+import java.rmi.RemoteException;
+
 public class HttpClientConnection extends BaseConnection {
 
 	private RemoteService remoteService;
@@ -126,7 +128,7 @@ public class HttpClientConnection extends BaseConnection {
     }
 
     @BeforeScopeEnd
-    public void shutdown() {
+    public void shutdown() throws RemoteException {
         remoteService.close();
     }
 }

@@ -39,12 +39,12 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-public class Http2ROPConnectorIT {
+public class Http2ROPConnectorALPN_IT {
 
     private static final String MESSAGE = "test message";
     private static final String SEND_MESSAGE_SESSION = "send message session";
 
-    private static Http2ROPConnector ropConnector;
+    private static Http2ROPConnectorALPN ropConnector;
     private static Http2Server server;
 
     @BeforeClass
@@ -66,11 +66,11 @@ public class Http2ROPConnectorIT {
         }
 
         server = Http2Server.servlet(new TestServlet()).start();
-        ropConnector = new Http2ROPConnector(server.getBasePath(), null, null, null);
+        ropConnector = new Http2ROPConnectorALPN(server.getBasePath(), null, null, null);
     }
 
     @AfterClass
-    public static void tearDownClass() {
+    public static void tearDownClass() throws Exception {
         server.stop();
         ropConnector.close();
     }
@@ -103,15 +103,16 @@ public class Http2ROPConnectorIT {
     }
 
     private static byte[] toByteArray(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
 
-        int reads = inputStream.read();
-        while (reads != -1) {
-            baos.write(reads);
-            reads = inputStream.read();
+            int reads = inputStream.read();
+            while (reads != -1) {
+                baos.write(reads);
+                reads = inputStream.read();
+            }
+
+            return baos.toByteArray();
         }
-
-        return baos.toByteArray();
     }
 
 }

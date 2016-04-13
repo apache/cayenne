@@ -60,7 +60,11 @@ public class ProxyRemoteService implements RemoteService {
     }
 
     @Override
-    public void close() {
-        ropConnector.close();
+    public void close() throws RemoteException {
+        try {
+            ropConnector.close();
+        } catch (Exception e) {
+            throw new RemoteException(e.getMessage());
+        }
     }
 }

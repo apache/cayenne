@@ -35,9 +35,10 @@ import java.util.Map;
 
 public class Http2Client {
 
-    // In order to run this, you need the alpn-boot-XXX.jar in the bootstrap classpath.
+    // In order to run this with ALPN, you need the alpn-boot-XXX.jar in the bootstrap classpath.
     public static void main(String[] args) throws Exception {
         HttpsURLConnection.setDefaultHostnameVerifier((hostname, sslSession) -> hostname.equals("localhost"));
+        System.setProperty("javax.net.ssl.trustStore", Http2Client.class.getResource("/keystore").getPath());
 
         Map<String, String> properties = new HashMap<>();
         properties.put(Constants.ROP_SERVICE_URL_PROPERTY, "https://localhost:8443/");
@@ -46,6 +47,7 @@ public class Http2Client {
         properties.put(Constants.ROP_SERVICE_REALM_PROPERTY, "Cayenne Realm");
         properties.put(Constants.ROP_SERVICE_TIMEOUT_PROPERTY, "5");
 
+        // In order to run this with ALPN, you need the Http2ALPNClientModule instead of Http2ClientModule
         ClientRuntime runtime = new ClientRuntime(properties, new Http2ClientModule());
 
         ObjectContext context = runtime.newContext();

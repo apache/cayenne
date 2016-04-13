@@ -30,19 +30,19 @@ public interface ROPConnector {
 	/**
 	 * Establishes a dedicated session with Cayenne DataChannel, returning session id.
 	 */
-    InputStream establishSession();
+    InputStream establishSession() throws Exception;
 
 	/**
 	 * Creates a new session with the specified or joins an existing one. This method is
 	 * used to bootstrap collaborating clients of a single "group chat".
 	 */
-    InputStream establishSharedSession(String name);
+    InputStream establishSharedSession(String name) throws Exception;
 
 	/**
 	 * Processes message on a remote server, returning the result of such processing.
 	 */
-    InputStream sendMessage(byte[] message);
+    InputStream sendMessage(byte[] message) throws Exception;
 
-	void close();
+	void close() throws Exception;
     
 }

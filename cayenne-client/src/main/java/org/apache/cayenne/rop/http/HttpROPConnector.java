@@ -22,6 +22,7 @@ import org.apache.cayenne.remote.RemoteSession;
 import org.apache.cayenne.rop.HttpClientConnection;
 import org.apache.cayenne.rop.ROPConnector;
 import org.apache.cayenne.rop.ROPConstants;
+import org.apache.cayenne.rop.ROPUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -64,9 +65,9 @@ public class HttpROPConnector implements ROPConnector {
     }
 
     @Override
-    public InputStream establishSession() {
+    public InputStream establishSession() throws Exception {
         if (logger.isInfoEnabled()) {
-            logConnect(null);
+            logger.info(ROPUtil.getLogConnect(url, username, password, null));
         }
 
 		Map<String, String> requestParams = new HashMap<>();
@@ -76,9 +77,9 @@ public class HttpROPConnector implements ROPConnector {
     }
 
     @Override
-    public InputStream establishSharedSession(String name) {
+    public InputStream establishSharedSession(String name) throws Exception {
         if (logger.isInfoEnabled()) {
-            logConnect(name);
+            logger.info(ROPUtil.getLogConnect(url, username, password, name));
         }
 
 		Map<String, String> requestParams = new HashMap<>();
@@ -89,84 +90,66 @@ public class HttpROPConnector implements ROPConnector {
     }
 
     @Override
-    public InputStream sendMessage(byte[] message) {
+    public InputStream sendMessage(byte[] message) throws Exception {
         return doRequest(message);
     }
 
-    protected InputStream doRequest(Map<String, String> params) {
-        try {
-            URLConnection connection = new URL(url).openConnection();
+    protected InputStream doRequest(Map<String, String> params) throws IOException {
+        URLConnection connection = new URL(url).openConnection();
 
-
-            StringBuilder urlParams = new StringBuilder();
-
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                if (urlParams.length() > 0) {
-                    urlParams.append('&');
-                }
-
-                urlParams.append(entry.getKey());
-                urlParams.append('=');
-                urlParams.append(entry.getValue());
-            }
-
-            if (readTimeout != null) {
-                connection.setReadTimeout(readTimeout.intValue());
-            }
-
-            addAuthHeader(connection);
-
-            connection.setDoOutput(true);
-
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("charset", "utf-8");
-
-            try (OutputStream output = connection.getOutputStream()) {
-                output.write(urlParams.toString().getBytes(StandardCharsets.UTF_8));
-                output.flush();
-            }
-
-            return connection.getInputStream();
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
+        if (readTimeout != null) {
+            connection.setReadTimeout(readTimeout.intValue());
         }
+
+        addAuthHeader(connection);
+
+        connection.setDoOutput(true);
+
+        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        connection.setRequestProperty("charset", "utf-8");
+
+        try (OutputStream output = connection.getOutputStream()) {
+            output.write(ROPUtil.getParamsAsString(params).getBytes(StandardCharsets.UTF_8));
+            output.flush();
+        }
+
+        return connection.getInputStream();
     }
 
     @Override
-    public void close() {
-    }
-
-    protected InputStream doRequest(byte[] data) {
-        try {
-            URLConnection connection = null;
-
-            connection = new URL(url).openConnection();
-
-            if (readTimeout != null) {
-                connection.setReadTimeout(readTimeout.intValue());
-            }
-
-            addAuthHeader(connection);
-            addSessionCookie(connection);
-            connection.setDoOutput(true);
-
-            connection.setRequestProperty("Content-Type", "application/octet-stream");
-
-            if (data != null) {
-                try (OutputStream output = connection.getOutputStream()) {
-                    output.write(data);
-                    output.flush();
-                }
-            }
-
-            return connection.getInputStream();
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
+    public void close() throws Exception {
+        if (logger.isInfoEnabled()) {
+            logger.info(ROPUtil.getLogDisconnect(url, username, password));
         }
     }
 
+    protected InputStream doRequest(byte[] data) throws IOException {
+        URLConnection connection = null;
+
+        connection = new URL(url).openConnection();
+
+        if (readTimeout != null) {
+            connection.setReadTimeout(readTimeout.intValue());
+        }
+
+        addAuthHeader(connection);
+        addSessionCookie(connection);
+        connection.setDoOutput(true);
+
+        connection.setRequestProperty("Content-Type", "application/octet-stream");
+
+        if (data != null) {
+            try (OutputStream output = connection.getOutputStream()) {
+                output.write(data);
+                output.flush();
+            }
+        }
+
+        return connection.getInputStream();
+    }
+
     protected void addAuthHeader(URLConnection connection) {
-        String basicAuth = getBasicAuth(username, password);
+        String basicAuth = ROPUtil.getBasicAuth(username, password);
 
         if (basicAuth != null) {
             connection.addRequestProperty("Authorization", basicAuth);
@@ -182,91 +165,4 @@ public class HttpROPConnector implements ROPConnector {
         }
     }
 
-    public String getBasicAuth(String user, String password) {
-        if (user != null && password != null) {
-            return "Basic " + base64(user + ":" + password);
-        }
-
-        return null;
-    }
-
-    /**
-     * Creates the Base64 value.
-     */
-    private String base64(String value) {
-        StringBuffer cb = new StringBuffer();
-
-        int i = 0;
-        for (i = 0; i + 2 < value.length(); i += 3) {
-            long chunk = (int) value.charAt(i);
-            chunk = (chunk << 8) + (int) value.charAt(i + 1);
-            chunk = (chunk << 8) + (int) value.charAt(i + 2);
-
-            cb.append(encode(chunk >> 18));
-            cb.append(encode(chunk >> 12));
-            cb.append(encode(chunk >> 6));
-            cb.append(encode(chunk));
-        }
-
-        if (i + 1 < value.length()) {
-            long chunk = (int) value.charAt(i);
-            chunk = (chunk << 8) + (int) value.charAt(i + 1);
-            chunk <<= 8;
-
-            cb.append(encode(chunk >> 18));
-            cb.append(encode(chunk >> 12));
-            cb.append(encode(chunk >> 6));
-            cb.append('=');
-        }
-        else if (i < value.length()) {
-            long chunk = (int) value.charAt(i);
-            chunk <<= 16;
-
-            cb.append(encode(chunk >> 18));
-            cb.append(encode(chunk >> 12));
-            cb.append('=');
-            cb.append('=');
-        }
-
-        return cb.toString();
-    }
-
-    public static char encode(long d) {
-        d &= 0x3f;
-        if (d < 26)
-            return (char) (d + 'A');
-        else if (d < 52)
-            return (char) (d + 'a' - 26);
-        else if (d < 62)
-            return (char) (d + '0' - 52);
-        else if (d == 62)
-            return '+';
-        else
-            return '/';
-    }
-
-    private void logConnect(String sharedSessionName) {
-        StringBuilder log = new StringBuilder("Connecting to [");
-        if (username != null) {
-            log.append(username);
-
-            if (password != null) {
-                log.append(":*******");
-            }
-
-            log.append("@");
-        }
-
-        log.append(url);
-        log.append("]");
-
-        if (sharedSessionName != null) {
-            log.append(" - shared session '").append(sharedSessionName).append("'");
-        }
-        else {
-            log.append(" - dedicated session.");
-        }
-
-        logger.info(log.toString());
-    }
 }

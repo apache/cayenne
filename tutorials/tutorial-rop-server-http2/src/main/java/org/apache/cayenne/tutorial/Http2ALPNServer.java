@@ -20,6 +20,8 @@
 package org.apache.cayenne.tutorial;
 
 import org.apache.cayenne.rop.ROPServlet;
+import org.eclipse.jetty.alpn.ALPN;
+import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http2.HTTP2Cipher;
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
 import org.eclipse.jetty.security.ConstraintMapping;
@@ -28,6 +30,8 @@ import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.NegotiatingServerConnectionFactory;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -43,11 +47,11 @@ import static org.eclipse.jetty.util.resource.Resource.newClassPathResource;
 /**
  * Based on the example org.eclipse.jetty.embedded.Http2Server included in the jetty-project distribution.
  *
- * This server works without ALPN and could handle only HTTP/2 protocol. So you should directly specify protocol
- * on the client side to connect.
+ * This server uses ALPN and could handle both HTTP/1.1 and HTTP/2 protocols.
  */
-public class Http2Server {
+public class Http2ALPNServer {
 
+    // In order to run this, you need the alpn-boot-XXX.jar in the bootstrap classpath.
     public static void main(String... args) throws Exception {
         Server server = new Server();
 
@@ -56,10 +60,13 @@ public class Http2Server {
         context.setSecurityHandler(basicAuth("cayenne-user", "secret", "Cayenne Realm"));
         server.setHandler(context);
 
+        // HTTP Configuration
+        HttpConfiguration httpConfig = new HttpConfiguration();
+        httpConfig.setSecureScheme("https");
+        httpConfig.setSecurePort(8443);
+
         // HTTPS Configuration
-        HttpConfiguration httpsConfig = new HttpConfiguration();
-        httpsConfig.setSecureScheme("https");
-        httpsConfig.setSecurePort(8443);
+        HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
         httpsConfig.addCustomizer(new SecureRequestCustomizer());
 
         // SSL Context Factory for HTTPS and HTTP/2
@@ -69,13 +76,21 @@ public class Http2Server {
         sslContextFactory.setKeyManagerPassword("OBF:1u2u1wml1z7s1z7a1wnl1u2g");
         sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
 
+        NegotiatingServerConnectionFactory.checkProtocolNegotiationAvailable();
+        ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
+        alpn.setDefaultProtocol("h2");
+
         // SSL Connection Factory
-        SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory, "h2");
+        SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory, alpn.getProtocol());
 
         // HTTP/2 Connector
-        ServerConnector http2Connector = new ServerConnector(server, ssl, new HTTP2ServerConnectionFactory(httpsConfig));
+        ServerConnector http2Connector = new ServerConnector(server, ssl, alpn,
+                new HTTP2ServerConnectionFactory(httpsConfig),
+                new HttpConnectionFactory(httpsConfig));
         http2Connector.setPort(8443);
         server.addConnector(http2Connector);
+
+        ALPN.debug = false;
 
         server.start();
         server.join();
@@ -83,12 +98,12 @@ public class Http2Server {
 
     private static SecurityHandler basicAuth(String username, String password, String realm) {
         HashLoginService loginService = new HashLoginService();
-        loginService.putUser(username, Credential.getCredential(password), new String[]{"cayenne-service-user"});
+        loginService.putUser(username, Credential.getCredential(password), new String[] {"cayenne-service-user"});
         loginService.setName(realm);
 
         Constraint constraint = new Constraint();
         constraint.setName(Constraint.__BASIC_AUTH);
-        constraint.setRoles(new String[]{"cayenne-service-user"});
+        constraint.setRoles(new String[] {"cayenne-service-user"});
         constraint.setAuthenticate(true);
 
         ConstraintMapping constraintMapping = new ConstraintMapping();

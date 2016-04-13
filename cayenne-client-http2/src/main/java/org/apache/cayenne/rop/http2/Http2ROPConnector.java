@@ -23,46 +23,61 @@ import org.apache.cayenne.remote.RemoteSession;
 import org.apache.cayenne.rop.HttpClientConnection;
 import org.apache.cayenne.rop.ROPConnector;
 import org.apache.cayenne.rop.ROPConstants;
+import org.apache.cayenne.rop.ROPUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.BasicAuthentication;
-import org.eclipse.jetty.client.util.BytesContentProvider;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpURI;
+import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.http.MetaData;
+import org.eclipse.jetty.http2.api.Session;
+import org.eclipse.jetty.http2.api.Stream;
+import org.eclipse.jetty.http2.api.server.ServerSessionListener;
 import org.eclipse.jetty.http2.client.HTTP2Client;
-import org.eclipse.jetty.http2.client.http.HttpClientTransportOverHTTP2;
+import org.eclipse.jetty.http2.client.HTTP2ClientConnectionFactory;
+import org.eclipse.jetty.http2.frames.DataFrame;
+import org.eclipse.jetty.http2.frames.HeadersFrame;
+import org.eclipse.jetty.io.ssl.SslClientConnectionFactory;
+import org.eclipse.jetty.util.BufferUtil;
+import org.eclipse.jetty.util.Callback;
+import org.eclipse.jetty.util.FuturePromise;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.net.URI;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This implementation of ROPConnector uses Jetty HTTP2 Client (low-level API) and directly specifies HTTP/2 protocol.
+ * So you could use it without ALPN.
+ */
 public class Http2ROPConnector implements ROPConnector {
 
     private static Log logger = LogFactory.getLog(Http2ROPConnector.class);
 
     public static final String SESSION_COOKIE_NAME = "JSESSIONID";
 
-    private HttpClient httpClient;
+    private Session session;
+    private HTTP2Client http2Client;
     private HttpClientConnection clientConnection;
 
     private String url;
 
     private String username;
     private String password;
-    private String realm;
 
     private long readTimeout;
 
-    public Http2ROPConnector(String url, String username, String password, String realm) {
+    public Http2ROPConnector(String url, String username, String password) {
         this.url = url;
         this.username = username;
         this.password = password;
-        this.realm = realm;
     }
 
     public void setClientConnection(HttpClientConnection clientConnection) {
@@ -74,146 +89,121 @@ public class Http2ROPConnector implements ROPConnector {
     }
 
     @Override
-    public InputStream establishSession() {
+    public InputStream establishSession() throws Exception {
         if (logger.isInfoEnabled()) {
-            logConnect(null);
+            logger.info(ROPUtil.getLogConnect(url, username, password, null));
         }
 
-        try {
-            close();
-            httpClient = new HttpClient(new HttpClientTransportOverHTTP2(new HTTP2Client()), new SslContextFactory());
-            httpClient.start();
-            addAuthHeader();
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(ROPConstants.OPERATION_PARAMETER, ROPConstants.ESTABLISH_SESSION_OPERATION);
 
-            ContentResponse response = httpClient.newRequest(url)
-                    .method(HttpMethod.POST)
-                    .param(ROPConstants.OPERATION_PARAMETER, ROPConstants.ESTABLISH_SESSION_OPERATION)
-                    .timeout(readTimeout, TimeUnit.SECONDS)
-                    .send();
-
-            return new ByteArrayInputStream(response.getContent());
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        return establishSession(requestParams);
     }
 
     @Override
-    public InputStream establishSharedSession(String name) {
+    public InputStream establishSharedSession(String name) throws Exception {
         if (logger.isInfoEnabled()) {
-            logConnect(name);
+            logger.info(ROPUtil.getLogConnect(url, username, password, name));
         }
 
-        try {
-            close();
-            httpClient = new HttpClient(new HttpClientTransportOverHTTP2(new HTTP2Client()), new SslContextFactory());
-            httpClient.start();
-            addAuthHeader();
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(ROPConstants.OPERATION_PARAMETER, ROPConstants.ESTABLISH_SHARED_SESSION_OPERATION);
+        requestParams.put(ROPConstants.SESSION_NAME_PARAMETER, name);
 
-            ContentResponse response = httpClient.newRequest(url)
-                    .method(HttpMethod.POST)
-                    .param(ROPConstants.OPERATION_PARAMETER, ROPConstants.ESTABLISH_SHARED_SESSION_OPERATION)
-                    .param(ROPConstants.SESSION_NAME_PARAMETER, name)
-                    .timeout(readTimeout, TimeUnit.SECONDS)
-                    .send();
+        return establishSession(requestParams);
+    }
 
-            return new ByteArrayInputStream(response.getContent());
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+    private InputStream establishSession(Map<String, String> params) throws Exception {
+        close();
+        http2Client = new HTTP2Client();
+
+        SslContextFactory sslContextFactory = new SslContextFactory();
+        http2Client.addBean(sslContextFactory);
+        http2Client.setClientConnectionFactory((endPoint, context) ->
+                new SslClientConnectionFactory(
+                        sslContextFactory,
+                        http2Client.getByteBufferPool(),
+                        http2Client.getExecutor(),
+                        new HTTP2ClientConnectionFactory())
+                        .newConnection(endPoint, context));
+        http2Client.start();
+
+        HttpURI uri = new HttpURI(url);
+        uri.setQuery(ROPUtil.getParamsAsString(params));
+
+        FuturePromise<Session> sessionPromise = new FuturePromise<>();
+        http2Client.connect(sslContextFactory, new InetSocketAddress(uri.getHost(), uri.getPort()), new ServerSessionListener.Adapter(), sessionPromise);
+        session = sessionPromise.get(readTimeout, TimeUnit.SECONDS);
+
+        HttpFields fields = new HttpFields();
+        addAuthHeader(fields);
+
+        MetaData.Request request = new MetaData.Request("POST", uri, HttpVersion.HTTP_2, fields);
+        HeadersFrame headersFrame = new HeadersFrame(request, null, true);
+
+        PipedOutputStream outputStream = new PipedOutputStream();
+        InputStream inputStream = new PipedInputStream(outputStream);
+
+        Stream.Listener responseListener = new Http2ROPResponseListener(outputStream);
+        session.newStream(headersFrame, new FuturePromise<>(), responseListener);
+
+        return inputStream;
     }
 
     @Override
-    public InputStream sendMessage(byte[] message) {
-        try {
-            Request request = httpClient.newRequest(url)
-                    .method(HttpMethod.POST)
-                    .content(new BytesContentProvider(message))
-                    .timeout(readTimeout, TimeUnit.SECONDS);
+    public InputStream sendMessage(byte[] message) throws Exception {
+        HttpURI uri = new HttpURI(url);
 
-            addSessionCookie(request);
+        HttpFields fields = new HttpFields();
+        addAuthHeader(fields);
+        addSessionCookie(fields);
 
-            ContentResponse response = request.send();
-            return new ByteArrayInputStream(response.getContent());
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        MetaData.Request request = new MetaData.Request("POST", uri, HttpVersion.HTTP_2, fields);
+        HeadersFrame headersFrame = new HeadersFrame(request, null, false);
+
+        PipedOutputStream outputStream = new PipedOutputStream();
+        InputStream inputStream = new PipedInputStream(outputStream);
+
+        FuturePromise<Stream> promise = new FuturePromise<>();
+        Stream.Listener responseListener = new Http2ROPResponseListener(outputStream);
+
+        session.newStream(headersFrame, promise, responseListener);
+        Stream stream = promise.get(readTimeout, TimeUnit.SECONDS);
+
+        ByteBuffer content = BufferUtil.toBuffer(message);
+        DataFrame requestContent = new DataFrame(stream.getId(), content, true);
+        stream.data(requestContent, Callback.NOOP);
+
+        return inputStream;
     }
 
     @Override
-    public void close() {
-        try {
-            if (httpClient != null) {
-                if (logger.isInfoEnabled()) {
-                    logDisconnect();
-                }
-
-                httpClient.stop();
+    public void close() throws Exception {
+        if (http2Client != null) {
+            if (logger.isInfoEnabled()) {
+                logger.info(ROPUtil.getLogDisconnect(url, username, password));
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+
+            http2Client.stop();
         }
     }
 
-    protected void addAuthHeader() {
-        if (username != null && password != null && realm != null) {
-            httpClient.getAuthenticationStore()
-                    .addAuthentication(new BasicAuthentication(URI.create(url), realm, username, password));
-        }
+    protected void addAuthHeader(HttpFields fields) {
+        String basicAuth = ROPUtil.getBasicAuth(username, password);
 
+        if (basicAuth != null) {
+            fields.add(HttpHeader.AUTHORIZATION, basicAuth);
+        }
     }
 
-    protected void addSessionCookie(Request request) {
+    protected void addSessionCookie(HttpFields fields) {
         if (clientConnection == null)
             return;
 
         RemoteSession session = clientConnection.getSession();
         if (session != null && session.getSessionId() != null) {
-            request.header(HttpHeader.COOKIE, SESSION_COOKIE_NAME
-                    + "="
-                    + session.getSessionId());
+            fields.add(HttpHeader.COOKIE, SESSION_COOKIE_NAME + "=" + session.getSessionId());
         }
-    }
-
-    private void logConnect(String sharedSessionName) {
-        StringBuilder log = new StringBuilder("Connecting to [");
-        if (username != null) {
-            log.append(username);
-
-            if (password != null) {
-                log.append(":*******");
-            }
-
-            log.append("@");
-        }
-
-        log.append(url);
-        log.append("]");
-
-        if (sharedSessionName != null) {
-            log.append(" - shared session '").append(sharedSessionName).append("'");
-        } else {
-            log.append(" - dedicated session.");
-        }
-
-        logger.info(log.toString());
-    }
-
-    private void logDisconnect() {
-        StringBuilder log = new StringBuilder("Disconnecting from [");
-        if (username != null) {
-            log.append(username);
-
-            if (password != null) {
-                log.append(":*******");
-            }
-
-            log.append("@");
-        }
-
-        log.append(url);
-        log.append("]");
-
-        logger.info(log.toString());
     }
 
 }

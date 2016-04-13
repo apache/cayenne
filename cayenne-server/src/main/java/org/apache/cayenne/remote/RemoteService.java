@@ -51,5 +51,5 @@ public interface RemoteService extends Remote {
      *
      * @sine 4.0
      */
-    void close();
+    void close() throws RemoteException;
 }

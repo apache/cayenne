@@ -32,6 +32,7 @@ import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -154,7 +155,7 @@ public abstract class BaseRemoteService implements RemoteService {
 	}
 
 	@Override
-	public void close() {
+	public void close() throws RemoteException {
 
 	}
 
