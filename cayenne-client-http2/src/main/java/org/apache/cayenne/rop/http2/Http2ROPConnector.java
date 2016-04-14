@@ -51,7 +51,6 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This implementation of ROPConnector uses Jetty HTTP2 Client (low-level API) and directly specifies HTTP/2 protocol.
@@ -126,14 +125,20 @@ public class Http2ROPConnector implements ROPConnector {
                         http2Client.getExecutor(),
                         new HTTP2ClientConnectionFactory())
                         .newConnection(endPoint, context));
+
+        if (readTimeout > 0) {
+            http2Client.setIdleTimeout(readTimeout);
+        }
+
         http2Client.start();
+
 
         HttpURI uri = new HttpURI(url);
         uri.setQuery(ROPUtil.getParamsAsString(params));
 
         FuturePromise<Session> sessionPromise = new FuturePromise<>();
         http2Client.connect(sslContextFactory, new InetSocketAddress(uri.getHost(), uri.getPort()), new ServerSessionListener.Adapter(), sessionPromise);
-        session = sessionPromise.get(readTimeout, TimeUnit.SECONDS);
+        session = sessionPromise.get();
 
         HttpFields fields = new HttpFields();
         addAuthHeader(fields);
@@ -168,7 +173,7 @@ public class Http2ROPConnector implements ROPConnector {
         Stream.Listener responseListener = new Http2ROPResponseListener(outputStream);
 
         session.newStream(headersFrame, promise, responseListener);
-        Stream stream = promise.get(readTimeout, TimeUnit.SECONDS);
+        Stream stream = promise.get();
 
         ByteBuffer content = BufferUtil.toBuffer(message);
         DataFrame requestContent = new DataFrame(stream.getId(), content, true);

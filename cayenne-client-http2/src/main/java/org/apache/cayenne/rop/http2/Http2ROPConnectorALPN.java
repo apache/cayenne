@@ -40,7 +40,6 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This implementation of ROPConnector uses Jetty HTTP Client over HTTP2 Client (high-level API)
@@ -86,13 +85,17 @@ public class Http2ROPConnectorALPN implements ROPConnector {
 
         close();
         httpClient = new HttpClient(new HttpClientTransportOverHTTP2(new HTTP2Client()), new SslContextFactory());
+
+        if (readTimeout > 0) {
+            httpClient.setIdleTimeout(readTimeout);
+        }
+
         httpClient.start();
         addAuthHeader();
 
         ContentResponse response = httpClient.newRequest(url)
                 .method(HttpMethod.POST)
                 .param(ROPConstants.OPERATION_PARAMETER, ROPConstants.ESTABLISH_SESSION_OPERATION)
-                .timeout(readTimeout, TimeUnit.SECONDS)
                 .send();
 
         return new ByteArrayInputStream(response.getContent());
@@ -113,7 +116,6 @@ public class Http2ROPConnectorALPN implements ROPConnector {
                 .method(HttpMethod.POST)
                 .param(ROPConstants.OPERATION_PARAMETER, ROPConstants.ESTABLISH_SHARED_SESSION_OPERATION)
                 .param(ROPConstants.SESSION_NAME_PARAMETER, name)
-                .timeout(readTimeout, TimeUnit.SECONDS)
                 .send();
 
         return new ByteArrayInputStream(response.getContent());
@@ -123,8 +125,7 @@ public class Http2ROPConnectorALPN implements ROPConnector {
     public InputStream sendMessage(byte[] message) throws Exception {
         Request request = httpClient.newRequest(url)
                 .method(HttpMethod.POST)
-                .content(new BytesContentProvider(message))
-                .timeout(readTimeout, TimeUnit.SECONDS);
+                .content(new BytesContentProvider(message));
 
         addSessionCookie(request);
 

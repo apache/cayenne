@@ -41,7 +41,8 @@ public class ProxyRemoteService implements RemoteService {
         try {
             return serializationService.deserialize(ropConnector.establishSession(), RemoteSession.class);
         } catch (Exception e) {
-            throw new RemoteException(e.getMessage());
+            String message = e.getMessage();
+            throw new RemoteException((message != null) ? message : e.getClass().getName());
         }
     }
 
@@ -50,7 +51,8 @@ public class ProxyRemoteService implements RemoteService {
         try {
             return serializationService.deserialize(ropConnector.establishSharedSession(name), RemoteSession.class);
         } catch (Exception e) {
-            throw new RemoteException(e.getMessage());
+            String message = e.getMessage();
+            throw new RemoteException((message != null) ? message : e.getClass().getName());
         }
     }
 

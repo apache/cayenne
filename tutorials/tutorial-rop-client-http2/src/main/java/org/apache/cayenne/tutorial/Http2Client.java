@@ -45,7 +45,6 @@ public class Http2Client {
         properties.put(Constants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
         properties.put(Constants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
         properties.put(Constants.ROP_SERVICE_REALM_PROPERTY, "Cayenne Realm");
-        properties.put(Constants.ROP_SERVICE_TIMEOUT_PROPERTY, "5");
 
         // In order to run this with ALPN, you need the Http2ALPNClientModule instead of Http2ClientModule
         ClientRuntime runtime = new ClientRuntime(properties, new Http2ClientModule());
