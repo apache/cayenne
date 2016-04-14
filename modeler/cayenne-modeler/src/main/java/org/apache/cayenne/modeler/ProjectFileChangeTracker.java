@@ -84,6 +84,12 @@ public class ProjectFileChangeTracker extends Thread {
             while (it.hasNext()) {
                 DataMap dm = it.next();
                 addFile(dm.getConfigurationSource().getURL().getPath());
+
+                if (dm.getReverseEngineering() != null) {
+                    if (dm.getReverseEngineering().getConfigurationSource() != null) {
+                        addFile(dm.getReverseEngineering().getConfigurationSource().getURL().getPath());
+                    }
+                }
             }
 
         }
