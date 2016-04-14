@@ -267,7 +267,7 @@ generic.writeProperty("name", "New Name");</programlisting>This
             that spans more than one Cayenne operation. E.g. two sequential commits that need to be
             rolled back together in case of failure. This can be done via
                 <code>ServerRuntime.performInTransaction</code>
-            method:<programlisting>Integer result = runtime.performInTransaction(new TransactionalOperation&lt;Integer>() {
+            method:<programlisting>Integer result = runtime.performInTransaction(() -> {
     // commit one or more contexts
     context1.commitChanges();
     context2.commitChanges();
@@ -279,5 +279,10 @@ generic.writeProperty("name", "New Name");</programlisting>This
     // return an arbitrary result or null if we don't care about the result
     return 5;
 });</programlisting></para>
+        <para>When inside the transaction, current thread Transaction object can be accessed via a
+            static method. E.g. here is an example that initializes transaction JDBC connection with
+            a custom connection object
+            :<programlisting>Transaction tx = BaseTransaction.getThreadTransaction();
+tx.addConnection("mydatanode", myConnection); </programlisting></para>
     </section>
 </chapter>
