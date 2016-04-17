@@ -24,6 +24,11 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.configuration.rop.client.Http2ClientModule;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.rop.HighHttp2ALPNClientConnectionProvider;
+import org.apache.cayenne.rop.HighHttp2ClientConnectionProvider;
+import org.apache.cayenne.rop.LowHttp2ClientConnectionProvider;
+import org.apache.cayenne.rop.http2.HighHttp2ROPConnector;
+import org.apache.cayenne.rop.http2.LowHttp2ROPConnector;
 import org.apache.cayenne.tutorial.persistent.client.Artist;
 import org.apache.cayenne.tutorial.persistent.client.Gallery;
 import org.apache.cayenne.tutorial.persistent.client.Painting;
@@ -33,9 +38,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This example uses {@link HighHttp2ROPConnector} through {@link HighHttp2ClientConnectionProvider}
+ * without ALPN by default. In order to run this with ALPN, you need to customize {@link Http2ClientModule} to use
+ * {@link HighHttp2ALPNClientConnectionProvider} and provide the alpn-boot-XXX.jar into the bootstrap classpath.
+ * <p>
+ * Also you could try to use {@link LowHttp2ROPConnector} through {@link LowHttp2ClientConnectionProvider}.
+ */
 public class Http2Client {
 
-    // In order to run this with ALPN, you need the alpn-boot-XXX.jar in the bootstrap classpath.
     public static void main(String[] args) throws Exception {
         HttpsURLConnection.setDefaultHostnameVerifier((hostname, sslSession) -> hostname.equals("localhost"));
         System.setProperty("javax.net.ssl.trustStore", Http2Client.class.getResource("/keystore").getPath());
@@ -46,7 +57,6 @@ public class Http2Client {
         properties.put(Constants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
         properties.put(Constants.ROP_SERVICE_REALM_PROPERTY, "Cayenne Realm");
 
-        // In order to run this with ALPN, you need the Http2ALPNClientModule instead of Http2ClientModule
         ClientRuntime runtime = new ClientRuntime(properties, new Http2ClientModule());
 
         ObjectContext context = runtime.newContext();

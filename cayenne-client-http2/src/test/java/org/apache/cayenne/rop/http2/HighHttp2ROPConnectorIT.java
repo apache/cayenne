@@ -29,22 +29,18 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-public class Http2ROPConnectorALPN_IT {
+public class HighHttp2ROPConnectorIT {
 
     private static final String MESSAGE = "test message";
     private static final String SEND_MESSAGE_SESSION = "send message session";
 
-    private static Http2ROPConnectorALPN ropConnector;
+    private static HighHttp2ROPConnector ropConnector;
     private static Http2Server server;
 
     @BeforeClass
@@ -66,7 +62,7 @@ public class Http2ROPConnectorALPN_IT {
         }
 
         server = Http2Server.servlet(new TestServlet()).start();
-        ropConnector = new Http2ROPConnectorALPN(server.getBasePath(), null, null, null);
+        ropConnector = new HighHttp2ROPConnector(server.getBasePath(), null, null, null, false);
     }
 
     @AfterClass

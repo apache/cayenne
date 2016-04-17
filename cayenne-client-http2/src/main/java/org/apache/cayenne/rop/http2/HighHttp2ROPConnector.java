@@ -20,10 +20,7 @@
 package org.apache.cayenne.rop.http2;
 
 import org.apache.cayenne.remote.RemoteSession;
-import org.apache.cayenne.rop.HttpClientConnection;
-import org.apache.cayenne.rop.ROPConnector;
-import org.apache.cayenne.rop.ROPConstants;
-import org.apache.cayenne.rop.ROPUtil;
+import org.apache.cayenne.rop.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.client.HttpClient;
@@ -34,39 +31,49 @@ import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http2.client.HTTP2Client;
+import org.eclipse.jetty.http2.client.HTTP2ClientConnectionFactory;
 import org.eclipse.jetty.http2.client.http.HttpClientTransportOverHTTP2;
+import org.eclipse.jetty.io.Connection;
+import org.eclipse.jetty.io.EndPoint;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Map;
 
 /**
  * This implementation of ROPConnector uses Jetty HTTP Client over HTTP2 Client (high-level API)
- * and ALPN as TLS extension for protocol negotiation.
+ * Depends on HttpClientTransport it works with or without ALPN.
+ * <p>
+ * {@link HighHttp2ClientConnectionProvider}
+ * {@link HighHttp2ALPNClientConnectionProvider}
  */
-public class Http2ROPConnectorALPN implements ROPConnector {
+public class HighHttp2ROPConnector implements ROPConnector {
 
-    private static Log logger = LogFactory.getLog(Http2ROPConnectorALPN.class);
+    private static Log logger = LogFactory.getLog(HighHttp2ROPConnector.class);
 
     public static final String SESSION_COOKIE_NAME = "JSESSIONID";
 
-    private HttpClient httpClient;
-    private HttpClientConnection clientConnection;
+    protected HttpClient httpClient;
+    protected HttpClientConnection clientConnection;
+    protected boolean ALPN;
 
-    private String url;
+    protected String url;
 
-    private String username;
-    private String password;
-    private String realm;
+    protected String username;
+    protected String password;
+    protected String realm;
 
-    private long readTimeout;
+    protected long readTimeout;
 
-    public Http2ROPConnectorALPN(String url, String username, String password, String realm) {
+    public HighHttp2ROPConnector(String url, String username, String password, String realm, boolean ALPN) {
         this.url = url;
         this.username = username;
         this.password = password;
         this.realm = realm;
+        this.ALPN = ALPN;
     }
 
     public void setClientConnection(HttpClientConnection clientConnection) {
@@ -79,12 +86,13 @@ public class Http2ROPConnectorALPN implements ROPConnector {
 
     @Override
     public InputStream establishSession() throws Exception {
+        close();
+
         if (logger.isInfoEnabled()) {
             logger.info(ROPUtil.getLogConnect(url, username, password, null));
         }
 
-        close();
-        httpClient = new HttpClient(new HttpClientTransportOverHTTP2(new HTTP2Client()), new SslContextFactory());
+        httpClient = new HttpClient(getClientTransport(), new SslContextFactory());
 
         if (readTimeout > 0) {
             httpClient.setIdleTimeout(readTimeout);
@@ -103,12 +111,18 @@ public class Http2ROPConnectorALPN implements ROPConnector {
 
     @Override
     public InputStream establishSharedSession(String name) throws Exception {
+        close();
+
         if (logger.isInfoEnabled()) {
             logger.info(ROPUtil.getLogConnect(url, username, password, name));
         }
 
-        close();
-        httpClient = new HttpClient(new HttpClientTransportOverHTTP2(new HTTP2Client()), new SslContextFactory());
+        httpClient = new HttpClient(getClientTransport(), new SslContextFactory());
+
+        if (readTimeout > 0) {
+            httpClient.setIdleTimeout(readTimeout);
+        }
+
         httpClient.start();
         addAuthHeader();
 
@@ -145,7 +159,13 @@ public class Http2ROPConnectorALPN implements ROPConnector {
     }
 
     protected void addAuthHeader() {
-        if (username != null && password != null && realm != null) {
+        if (username != null && password != null) {
+            if (realm == null && logger.isWarnEnabled()) {
+                logger.warn("In order to use HighHttp2ROPConnector with BASIC Authentication " +
+                        "you should provide Constants.ROP_SERVICE_REALM_PROPERTY");
+                return;
+            }
+
             httpClient.getAuthenticationStore()
                     .addAuthentication(new BasicAuthentication(URI.create(url), realm, username, password));
         }
@@ -162,5 +182,16 @@ public class Http2ROPConnectorALPN implements ROPConnector {
                     + "="
                     + session.getSessionId());
         }
+    }
+
+    protected HttpClientTransportOverHTTP2 getClientTransport() {
+        if (ALPN) return new HttpClientTransportOverHTTP2(new HTTP2Client());
+
+        return new HttpClientTransportOverHTTP2(new HTTP2Client()) {
+            @Override
+            public Connection newConnection(EndPoint endPoint, Map<String, Object> context) throws IOException {
+                return new HTTP2ClientConnectionFactory().newConnection(endPoint, context);
+            }
+        };
     }
 }

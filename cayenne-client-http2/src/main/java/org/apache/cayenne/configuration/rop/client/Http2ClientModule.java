@@ -22,8 +22,18 @@ package org.apache.cayenne.configuration.rop.client;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.ClientConnection;
-import org.apache.cayenne.rop.http2.Http2ClientConnectionProvider;
+import org.apache.cayenne.rop.HighHttp2ALPNClientConnectionProvider;
+import org.apache.cayenne.rop.HighHttp2ClientConnectionProvider;
+import org.apache.cayenne.rop.LowHttp2ClientConnectionProvider;
+import org.apache.cayenne.rop.http2.HighHttp2ROPConnector;
 
+/**
+ * This module uses {@link HighHttp2ROPConnector} through {@link HighHttp2ClientConnectionProvider}
+ * without ALPN by default.
+ * <p>
+ * If you want to use other implementations with ALPN or with low-level API, see
+ * {@link HighHttp2ALPNClientConnectionProvider} or {@link LowHttp2ClientConnectionProvider} accordingly.
+ */
 public class Http2ClientModule implements Module {
 
     public Http2ClientModule() {
@@ -31,6 +41,6 @@ public class Http2ClientModule implements Module {
 
     @Override
     public void configure(Binder binder) {
-        binder.bind(ClientConnection.class).toProvider(Http2ClientConnectionProvider.class);
+        binder.bind(ClientConnection.class).toProvider(HighHttp2ClientConnectionProvider.class);
     }
 }

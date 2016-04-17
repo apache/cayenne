@@ -19,20 +19,37 @@
 
 package org.apache.cayenne.rop.http2;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.http2.api.Stream;
 import org.eclipse.jetty.http2.frames.DataFrame;
+import org.eclipse.jetty.http2.frames.HeadersFrame;
+import org.eclipse.jetty.http2.frames.PushPromiseFrame;
+import org.eclipse.jetty.http2.frames.ResetFrame;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.Callback;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class Http2ROPResponseListener extends Stream.Listener.Adapter {
+
+public class LowHttp2ROPResponseListener implements Stream.Listener {
+
+    private static Log logger = LogFactory.getLog(LowHttp2ROPResponseListener.class);
 
     private OutputStream outputStream;
 
-    public Http2ROPResponseListener(OutputStream stream) {
+    public LowHttp2ROPResponseListener(OutputStream stream) {
         this.outputStream = stream;
+    }
+
+    @Override
+    public void onHeaders(Stream stream, HeadersFrame frame) {
+    }
+
+    @Override
+    public Stream.Listener onPush(Stream stream, PushPromiseFrame frame) {
+        return null;
     }
 
     @Override
@@ -49,6 +66,16 @@ public class Http2ROPResponseListener extends Stream.Listener.Adapter {
         } catch (IOException e) {
             callback.failed(e);
         }
+    }
+
+    @Override
+    public void onReset(Stream stream, ResetFrame frame) {
+        logger.error("Stream has been canceled: " + frame);
+    }
+
+    @Override
+    public void onTimeout(Stream stream, Throwable x) {
+        logger.error(x.getMessage(), x);
     }
 
 }

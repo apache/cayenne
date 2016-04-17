@@ -20,10 +20,7 @@
 package org.apache.cayenne.rop.http2;
 
 import org.apache.cayenne.remote.RemoteSession;
-import org.apache.cayenne.rop.HttpClientConnection;
-import org.apache.cayenne.rop.ROPConnector;
-import org.apache.cayenne.rop.ROPConstants;
-import org.apache.cayenne.rop.ROPUtil;
+import org.apache.cayenne.rop.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.http.HttpFields;
@@ -54,26 +51,28 @@ import java.util.Map;
 
 /**
  * This implementation of ROPConnector uses Jetty HTTP2 Client (low-level API) and directly specifies HTTP/2 protocol.
- * So you could use it without ALPN.
+ * It works without ALPN.
+ * <p>
+ * {@link LowHttp2ClientConnectionProvider}
  */
-public class Http2ROPConnector implements ROPConnector {
+public class LowHttp2ROPConnector implements ROPConnector {
 
-    private static Log logger = LogFactory.getLog(Http2ROPConnector.class);
+    private static Log logger = LogFactory.getLog(LowHttp2ROPConnector.class);
 
     public static final String SESSION_COOKIE_NAME = "JSESSIONID";
 
-    private Session session;
-    private HTTP2Client http2Client;
-    private HttpClientConnection clientConnection;
+    protected Session session;
+    protected HTTP2Client http2Client;
+    protected HttpClientConnection clientConnection;
 
-    private String url;
+    protected String url;
 
-    private String username;
-    private String password;
+    protected String username;
+    protected String password;
 
-    private long readTimeout;
+    protected long readTimeout;
 
-    public Http2ROPConnector(String url, String username, String password) {
+    public LowHttp2ROPConnector(String url, String username, String password) {
         this.url = url;
         this.username = username;
         this.password = password;
@@ -89,6 +88,8 @@ public class Http2ROPConnector implements ROPConnector {
 
     @Override
     public InputStream establishSession() throws Exception {
+        close();
+
         if (logger.isInfoEnabled()) {
             logger.info(ROPUtil.getLogConnect(url, username, password, null));
         }
@@ -101,6 +102,8 @@ public class Http2ROPConnector implements ROPConnector {
 
     @Override
     public InputStream establishSharedSession(String name) throws Exception {
+        close();
+
         if (logger.isInfoEnabled()) {
             logger.info(ROPUtil.getLogConnect(url, username, password, name));
         }
@@ -113,7 +116,6 @@ public class Http2ROPConnector implements ROPConnector {
     }
 
     private InputStream establishSession(Map<String, String> params) throws Exception {
-        close();
         http2Client = new HTTP2Client();
 
         SslContextFactory sslContextFactory = new SslContextFactory();
@@ -149,7 +151,7 @@ public class Http2ROPConnector implements ROPConnector {
         PipedOutputStream outputStream = new PipedOutputStream();
         InputStream inputStream = new PipedInputStream(outputStream);
 
-        Stream.Listener responseListener = new Http2ROPResponseListener(outputStream);
+        Stream.Listener responseListener = new LowHttp2ROPResponseListener(outputStream);
         session.newStream(headersFrame, new FuturePromise<>(), responseListener);
 
         return inputStream;
@@ -170,7 +172,7 @@ public class Http2ROPConnector implements ROPConnector {
         InputStream inputStream = new PipedInputStream(outputStream);
 
         FuturePromise<Stream> promise = new FuturePromise<>();
-        Stream.Listener responseListener = new Http2ROPResponseListener(outputStream);
+        Stream.Listener responseListener = new LowHttp2ROPResponseListener(outputStream);
 
         session.newStream(headersFrame, promise, responseListener);
         Stream stream = promise.get();

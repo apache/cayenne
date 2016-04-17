@@ -17,7 +17,7 @@
  * under the License.
  ****************************************************************/
 
-package org.apache.cayenne.rop.http2;
+package org.apache.cayenne.rop;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.Constants;
@@ -26,11 +26,13 @@ import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.remote.ClientConnection;
-import org.apache.cayenne.rop.HttpClientConnection;
-import org.apache.cayenne.rop.ProxyRemoteService;
-import org.apache.cayenne.rop.ROPSerializationService;
+import org.apache.cayenne.rop.http2.LowHttp2ROPConnector;
 
-public class Http2ALPNClientConnectionProvider implements Provider<ClientConnection> {
+/**
+ * This {@link Provider} initializes {@link ClientConnection} through {@link LowHttp2ROPConnector}.
+ * It works without ALPN.
+ */
+public class LowHttp2ClientConnectionProvider implements Provider<ClientConnection> {
 
     @Inject
     protected RuntimeProperties runtimeProperties;
@@ -38,14 +40,14 @@ public class Http2ALPNClientConnectionProvider implements Provider<ClientConnect
     @Inject
     protected ROPSerializationService serializationService;
 
-    private Http2ROPConnectorALPN ropConnector;
+    private LowHttp2ROPConnector ropConnector;
 
     @Override
     public ClientConnection get() throws DIRuntimeException {
         String sharedSession = runtimeProperties
                 .get(Constants.ROP_SERVICE_SHARED_SESSION_PROPERTY);
 
-        ropConnector = createHttp2RopConnectorALPN();
+        ropConnector = createHttp2RopConnector();
         ProxyRemoteService remoteService = new ProxyRemoteService(serializationService, ropConnector);
 
         HttpClientConnection clientConnection = new HttpClientConnection(remoteService, sharedSession);
@@ -53,7 +55,7 @@ public class Http2ALPNClientConnectionProvider implements Provider<ClientConnect
         return clientConnection;
     }
 
-    protected Http2ROPConnectorALPN createHttp2RopConnectorALPN() {
+    protected LowHttp2ROPConnector createHttp2RopConnector() {
         String url = runtimeProperties.get(Constants.ROP_SERVICE_URL_PROPERTY);
         if (url == null) {
             throw new ConfigurationException(
@@ -63,13 +65,12 @@ public class Http2ALPNClientConnectionProvider implements Provider<ClientConnect
 
         String username = runtimeProperties.get(Constants.ROP_SERVICE_USERNAME_PROPERTY);
         String password = runtimeProperties.get(Constants.ROP_SERVICE_PASSWORD_PROPERTY);
-        String realm = runtimeProperties.get(Constants.ROP_SERVICE_REALM_PROPERTY);
 
         long readTimeout = runtimeProperties.getLong(
                 Constants.ROP_SERVICE_TIMEOUT_PROPERTY,
                 -1L);
 
-        Http2ROPConnectorALPN ropConnector = new Http2ROPConnectorALPN(url, username, password, realm);
+        LowHttp2ROPConnector ropConnector = new LowHttp2ROPConnector(url, username, password);
 
         if (readTimeout > 0) {
             ropConnector.setReadTimeout(readTimeout);

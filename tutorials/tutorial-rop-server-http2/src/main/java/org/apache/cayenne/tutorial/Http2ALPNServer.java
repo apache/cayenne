@@ -46,8 +46,8 @@ import static org.eclipse.jetty.util.resource.Resource.newClassPathResource;
 
 /**
  * Based on the example org.eclipse.jetty.embedded.Http2Server included in the jetty-project distribution.
- *
- * This server uses ALPN and could handle both HTTP/1.1 and HTTP/2 protocols.
+ * <p>
+ * This server uses ALPN and could handle both HTTP/1.1 and HTTP/2 protocols on the same https 8443 port.
  */
 public class Http2ALPNServer {
 
@@ -61,12 +61,9 @@ public class Http2ALPNServer {
         server.setHandler(context);
 
         // HTTP Configuration
-        HttpConfiguration httpConfig = new HttpConfiguration();
-        httpConfig.setSecureScheme("https");
-        httpConfig.setSecurePort(8443);
-
-        // HTTPS Configuration
-        HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
+        HttpConfiguration httpsConfig = new HttpConfiguration();
+        httpsConfig.setSecureScheme("https");
+        httpsConfig.setSecurePort(8443);
         httpsConfig.addCustomizer(new SecureRequestCustomizer());
 
         // SSL Context Factory for HTTPS and HTTP/2
@@ -98,12 +95,12 @@ public class Http2ALPNServer {
 
     private static SecurityHandler basicAuth(String username, String password, String realm) {
         HashLoginService loginService = new HashLoginService();
-        loginService.putUser(username, Credential.getCredential(password), new String[] {"cayenne-service-user"});
+        loginService.putUser(username, Credential.getCredential(password), new String[]{"cayenne-service-user"});
         loginService.setName(realm);
 
         Constraint constraint = new Constraint();
         constraint.setName(Constraint.__BASIC_AUTH);
-        constraint.setRoles(new String[] {"cayenne-service-user"});
+        constraint.setRoles(new String[]{"cayenne-service-user"});
         constraint.setAuthenticate(true);
 
         ConstraintMapping constraintMapping = new ConstraintMapping();

@@ -43,6 +43,9 @@ public interface ROPConnector {
 	 */
     InputStream sendMessage(byte[] message) throws Exception;
 
+	/**
+	 * Closes all resources related to ROP Connector.
+     */
 	void close() throws Exception;
     
 }

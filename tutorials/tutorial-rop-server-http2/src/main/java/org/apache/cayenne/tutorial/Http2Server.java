@@ -42,7 +42,7 @@ import static org.eclipse.jetty.util.resource.Resource.newClassPathResource;
 
 /**
  * Based on the example org.eclipse.jetty.embedded.Http2Server included in the jetty-project distribution.
- *
+ * <p>
  * This server works without ALPN and could handle only HTTP/2 protocol. So you should directly specify protocol
  * on the client side to connect.
  */
