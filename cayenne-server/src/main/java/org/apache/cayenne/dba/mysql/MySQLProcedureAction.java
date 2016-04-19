@@ -22,6 +22,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
@@ -78,7 +79,7 @@ class MySQLProcedureAction extends ProcedureAction {
 	}
 
 	private void processResultSet(CallableStatement statement, OperationObserver observer) throws Exception {
-		ResultSet rs = statement.getResultSet();
+		ResultSet rs = Objects.requireNonNull(statement.getResultSet());
 
 		try {
 			RowDescriptor descriptor = describeResultSet(rs, processedResultSets++);
