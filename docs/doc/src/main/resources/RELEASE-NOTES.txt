@@ -27,6 +27,7 @@ Bug Fixes:
 CAY-2064 Issue with BeanAccessor for classes with complex inheritance
 CAY-2066 Fixes for inner enums handling in ExtendedTypeMap
 CAY-2067 Cayenne 4.0 connection pool is occasionally running out of connections
+CAY-2078 Client code gen bug. Unnecessary DataMap class generation setting datamap gen to false.
 
 ----------------------------------
 Release: 4.0.M3
