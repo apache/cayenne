@@ -20,6 +20,7 @@ CAY-2062 MappedSelect and MappedExec fluent query API
 CAY-2063 ProcedureCall fluent query API
 CAY-2065 Pluggable serialization and connectivity layers for ROP
 CAY-2073 Ordering.orderedList methods
+CAY-2074 Support for catalogs in stored procedures
 
 Bug Fixes:
 
