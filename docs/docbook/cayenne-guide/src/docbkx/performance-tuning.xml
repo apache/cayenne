@@ -26,20 +26,23 @@
             application of prefetching is to refresh stale object relationships, so more generally
             it can be viewed as a technique for managing subsets of the object graph.</para>
         <para>Prefetching example:
-            <programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
+            <programlisting language="java">ObjectSelect&lt;Artist> query = ObjectSelect.query(Artist.class);
 
-// this instructs Cayenne to prefetch one of Artist's relationships
-query.addPrefetch("paintings");
+// instructs Cayenne to prefetch one of Artist's relationships
+query.prefetch(Artist.PAINTINGS.disjoint());
+
+// the above line is equivalent to the following: 
+// query.prefetch("paintings", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
 
 // query is expecuted as usual, but the resulting Artists will have
 // their paintings "inflated"
-List&lt;Artist> artists = context.performQuery(query);</programlisting>All
-            types of relationships can be preftetched - to-one, to-many, flattened. </para>
-        <para>A prefetch can span multiple relationships:
-            <programlisting language="java"> query.addPrefetch("paintings.gallery");</programlisting></para>
+List&lt;Artist> artists = query.select(context);</programlisting>All
+            types of relationships can be preftetched - to-one, to-many, flattened. A prefetch can
+            span multiple relationships:
+            <programlisting language="java">query.prefetch(Artist.PAINTINGS.dot(Painting.GALLERY).disjoint());</programlisting></para>
         <para>A query can have multiple
-            prefetches:<programlisting language="java">query.addPrefetch("paintings");
-query.addPrefetch("paintings.gallery"); </programlisting></para>
+            prefetches:<programlisting language="java">query.prefetch(Artist.PAINTINGS.disjoint());
+query.prefetch(Artist.PAINTINGS.dot(Painting.GALLERY).disjoint());</programlisting></para>
         <para>If a query is fetching DataRows, all "disjoint" prefetches are ignored, only "joint"
             prefetches are executed (see prefetching semantics discussion below for what disjoint and
             joint prefetches mean).</para>
@@ -51,28 +54,23 @@ query.addPrefetch("paintings.gallery"); </programlisting></para>
                 query root objects with related objects fully resolved. However semantics can affect
                 preformance, in some cases significantly. There are 3 types of prefetch semantics,
                 all defined as constants in
-                org.apache.cayenne.query.PrefetchTreeNode:<programlisting language="java">PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS
+                <code>org.apache.cayenne.query.PrefetchTreeNode</code>:<programlisting language="java">PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS
 PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS
 PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS</programlisting></para>
-            <para>Each query has a default prefetch semantics, so generally users do not have to
-                worry about changing it, except when performance is a concern, or a few special
-                cases when a default sematics can't produce the correct result. SelectQuery uses
-                DISJOINT_PREFETCH_SEMANTICS by default. Semantics can be changed as
-                follows:<programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
-query.addPrefetch("paintings").setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS); </programlisting></para>
-            <para>There's no limitation on mixing different types of semantics in the same
-                SelectQuery. Multiple prefetches each can have its own semantics. </para>
-            <para>SQLTemplate and ProcedureQuery are both using JOINT_PREFETCH_SEMANTICS and it can
-                not be changed due to the nature of these two queries.</para>
+            <para>There's no limitation on mixing different types of semantics in the same query.
+                Each prefetch can have its own semantics. <code>SelectQuery</code> uses
+                    <code>DISJOINT_PREFETCH_SEMANTICS</code> by default. <code>ObjectSelect</code>
+                requires explicit semantics as we've seen above. <code>SQLTemplate</code> and
+                    <code>ProcedureQuery</code> are both using <code>JOINT_PREFETCH_SEMANTICS</code>
+                and it can not be changed due to the nature of those two queries.</para>
         </section>
         <section xml:id="disjoint-prefetch-semantics">
             <title>Disjoint Prefetching Semantics</title>
-            <para>This semantics (only applicable to SelectQuery) results in Cayenne generatiing one
-                SQL statement for the main objects, and a separate statement for each prefetch path
-                (hence "disjoint" - related objects are not fetched with the main query). Each
-                additional SQL statement uses a qualifier of the main query plus a set of joins
-                traversing the preftech path between the main and related entity. </para>
+            <para>This semantics results in Cayenne generatiing one SQL statement for the main
+                objects, and a separate statement for each prefetch path (hence "disjoint" - related
+                objects are not fetched with the main query). Each additional SQL statement uses a
+                qualifier of the main query plus a set of joins traversing the preftech path between
+                the main and related entity. </para>
             <para>This strategy has an advantage of efficient JVM memory use, and faster overall
                 result processing by Cayenne, but it requires (1+N) SQL statements to be executed,
                 where N is the number of prefetched relationships.</para>
@@ -141,15 +139,12 @@ query.addPrefetch("paintings").setSemantics(
             in the application in many cases. So performance sensitive selects should consider
             DataRows - it saves memory and CPU cycles. All selecting queries support DataRows
             option,
-            e.g.:<programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
-query.setFetchingDataRows(true);
+            e.g.:<programlisting language="java">ObjectSelect&lt;DataRow> query = ObjectSelect.dataRowQuery(Artist.class);
 
-List&lt;DataRow> rows = context.performQuery(query); </programlisting><programlisting language="java">SQLTemplate query = new SQLTemplate(Artist.class, "SELECT * FROM ARTIST");
-query.setFetchingDataRows(true);
-
-List&lt;DataRow> rows = context.performQuery(query);</programlisting></para>
-        <para>Moreover DataRows may be converted to Persistent objects later as needed. So e.g. you
-            may implement some in-memory filtering, only converting a subset of fetched
+List&lt;DataRow> rows = query.select(context);</programlisting><programlisting language="java">SQLSelect&lt;DataRow> query = SQLSelect.dataRowQuery("SELECT * FROM ARTIST");
+List&lt;DataRow> rows = query.select(context);</programlisting></para>
+        <para>Individual DataRows may be converted to Persistent objects as needed. So e.g. you may
+            implement some in-memory filtering, only converting a subset of fetched
             objects:<programlisting language="java">// you need to cast ObjectContext to DataContext to get access to 'objectFromDataRow'
 DataContext dataContext = (DataContext) context;
 
@@ -213,9 +208,9 @@ for(DataRow row : rows) {
     // do something with the object...
     ...
 });</programlisting></para>
-        <para>Another example is a BatchIterator that allows to process more than one object in each
-            iteration. This is a common scenario in various data processing jobs - read a batch of
-            objects, process them, commit  the results, and then repeat. This allows to further
+        <para>Another example is a batch iterator that allows to process more than one object in
+            each iteration. This is a common scenario in various data processing jobs - read a batch
+            of objects, process them, commit the results, and then repeat. This allows to further
             optimize processing (e.g. by avoiding frequent
             commits).<programlisting>try(ResultBatchIterator&lt;Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
     for(List&lt;Artist> list : it) {
@@ -234,19 +229,14 @@ for(DataRow row : rows) {
             appears to be a list of Persistent objects - there's no iterator to close or DataRows to
             convert to objects:</para>
         <para>
-            <programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
-query.setPageSize(50);
-
-// the fact that result is paginated is transparent
-List&lt;Artist> artists = ctxt.performQuery(query);</programlisting>
+            <programlisting language="java">// the fact that result is paginated is transparent
+List&lt;Artist> artists = 
+    ObjectSelect.query(Artist.class).pageSize(50).select(context);</programlisting>
         </para>
         <para>Having said that, DataRows option can be combined with pagination, providing the best
             of both
-            worlds:<programlisting language="java">SelectQuery query = new SelectQuery(Artist.class);
-query.setPageSize(50);
-query.setFetchingDataRows(true);
-
-List&lt;DataRow> rows = ctxt.performQuery(query);</programlisting></para>
+            worlds:<programlisting language="java">List&lt;DataRow> rows = 
+    ObjectSelect.dataRowQuery(Artist.class).pageSize(50).select(context);</programlisting></para>
         <para>The way pagination works internally, it first fetches a list of IDs for the root
             entity of the query. This is very fast and initially takes very little memory. Then when
             an object is requested at an arbitrary index in the list, this object and adjacent
