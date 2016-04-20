@@ -192,7 +192,7 @@
                             <td><code>overwrite</code></td>
                             <td>boolean</td>
                             <td>Only has effect when "makePairs" is set to "false". If "overwrite"
-                                os "true", will overwrite older versions of generated classes.</td>
+                                is "true", will overwrite older versions of generated classes.</td>
                         </tr>
                         <tr>
                             <td><code>superPkg</code></td>
