@@ -29,7 +29,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.map.Procedure;
@@ -41,6 +40,7 @@ import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
@@ -100,8 +100,8 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
 
         builder.appendSeparator("Stored Procedure Configuration");
         builder.append("Procedure Name:", name.getComponent());
-        builder.append("Schema:", schema.getComponent());
         builder.append("Catalog:", catalog.getComponent());
+        builder.append("Schema:", schema.getComponent());
         builder.append("Returns Value:", returnsValue);
 
         this.setLayout(new BorderLayout());
