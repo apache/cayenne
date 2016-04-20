@@ -269,6 +269,8 @@
 			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="schema" type="xs:string"/>
+			<xs:attribute name="catalog" type="xs:string"/>
+			<xs:attribute name="returningValue" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="pre-update">

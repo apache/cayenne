@@ -29,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.jgoodies.forms.builder.DefaultFormBuilder;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.map.Procedure;
@@ -40,8 +41,6 @@ import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
@@ -54,6 +53,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
     protected ProjectController eventController;
     protected TextAdapter name;
     protected TextAdapter schema;
+    protected TextAdapter catalog;
     protected JCheckBox returnsValue;
     protected boolean ignoreChange;
 
@@ -81,27 +81,28 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
             }
         };
 
-        this.returnsValue = new JCheckBox();
+        this.catalog = new TextAdapter(new JTextField()) {
+
+            protected void updateModel(String text) {
+                setCatalog(text);
+            }
+        };
 
         JLabel returnValueHelp = new JLabel("(first parameter will be used as return value)");
         returnValueHelp.setFont(returnValueHelp.getFont().deriveFont(10));
 
-        // assemble
-        FormLayout layout = new FormLayout("right:max(50dlu;pref), 3dlu, left:max(20dlu;pref), 3dlu, fill:150dlu",
-                "p, 3dlu, p, 3dlu, p, 3dlu, p");
+        this.returnsValue = new JCheckBox();
+        this.returnsValue.setToolTipText(returnValueHelp.getText());
 
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(layout);
+        FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
+        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
-        builder.addSeparator("Stored Procedure Configuration", cc.xywh(1, 1, 5, 1));
-        builder.addLabel("Procedure Name:", cc.xy(1, 3));
-        builder.add(name.getComponent(), cc.xywh(3, 3, 3, 1));
-        builder.addLabel("Schema:", cc.xy(1, 5));
-        builder.add(schema.getComponent(), cc.xywh(3, 5, 3, 1));
-        builder.addLabel("Returns Value:", cc.xy(1, 7));
-        builder.add(returnsValue, cc.xy(3, 7));
-        builder.add(returnValueHelp, cc.xy(5, 7));
+        builder.appendSeparator("Stored Procedure Configuration");
+        builder.append("Procedure Name:", name.getComponent());
+        builder.append("Schema:", schema.getComponent());
+        builder.append("Catalog:", catalog.getComponent());
+        builder.append("Returns Value:", returnsValue);
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);
@@ -139,6 +140,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
 
         name.setText(procedure.getName());
         schema.setText(procedure.getSchema());
+        catalog.setText(procedure.getCatalog());
 
         ignoreChange = true;
         returnsValue.setSelected(procedure.isReturningValue());
@@ -178,6 +180,19 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
 
         if (procedure != null && !Util.nullSafeEquals(procedure.getSchema(), text)) {
             procedure.setSchema(text);
+            eventController.fireProcedureEvent(new ProcedureEvent(this, procedure));
+        }
+    }
+
+    void setCatalog(String text) {
+        if (text != null && text.trim().length() == 0) {
+            text = null;
+        }
+
+        Procedure procedure = eventController.getCurrentProcedure();
+
+        if (procedure != null && !Util.nullSafeEquals(procedure.getCatalog(), text)) {
+            procedure.setCatalog(text);
             eventController.fireProcedureEvent(new ProcedureEvent(this, procedure));
         }
     }
