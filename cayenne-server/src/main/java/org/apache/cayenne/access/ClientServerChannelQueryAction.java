@@ -92,6 +92,8 @@ class ClientServerChannelQueryAction {
                             originatingQuery);
                     subaction.execute();
                     cachedList = channel.getQueryCache().get(serverMetadata);
+                } else {
+                    return !DONE;
                 }
 
                 if (cachedList == null) {
