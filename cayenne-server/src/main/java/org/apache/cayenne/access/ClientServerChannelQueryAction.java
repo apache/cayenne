@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -36,6 +33,9 @@ import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.IncrementalListResponse;
 import org.apache.cayenne.util.ListResponse;
 import org.apache.cayenne.util.ObjectDetachOperation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A query handler used by ClientServerChannel.
@@ -83,22 +83,20 @@ class ClientServerChannelQueryAction {
             if (cachedList == null) {
 
                 // attempt to refetch... respawn the action...
-
                 Query originatingQuery = serverMetadata.getOrginatingQuery();
                 if (originatingQuery != null) {
-
                     ClientServerChannelQueryAction subaction = new ClientServerChannelQueryAction(
                             channel,
                             originatingQuery);
                     subaction.execute();
+
                     cachedList = channel.getQueryCache().get(serverMetadata);
+                    if (cachedList == null) {
+                        throw new CayenneRuntimeException("No cached list for "
+                                + serverMetadata.getCacheKey());
+                    }
                 } else {
                     return !DONE;
-                }
-
-                if (cachedList == null) {
-                    throw new CayenneRuntimeException("No cached list for "
-                            + serverMetadata.getCacheKey());
                 }
             }
 
