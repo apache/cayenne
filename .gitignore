@@ -7,3 +7,5 @@ target
 derby.log
 .metadata
 bin/
+.idea
+*.iml
