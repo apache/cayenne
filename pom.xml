@@ -64,7 +64,7 @@
 		<module>plugins</module>
 		<module>tutorials</module>
 		<module>docs</module>
-    </modules>
+	</modules>
 	<issueManagement>
 		<system>jira</system>
 		<url>https://issues.apache.org/jira/browse/CAY</url>
@@ -1457,7 +1457,8 @@
 			</activation>
 			<modules>
 				<module>cayenne-java8</module>
-                <module>assembly</module>
+				<module>cayenne-protostuff</module>
+				<module>assembly</module>
 			</modules>
 		</profile>
 	</profiles>
