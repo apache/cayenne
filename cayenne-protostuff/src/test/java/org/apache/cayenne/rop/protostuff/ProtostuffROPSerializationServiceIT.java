@@ -21,7 +21,7 @@ package org.apache.cayenne.rop.protostuff;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.rop.client.ClientLocalRuntime;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
-import org.apache.cayenne.configuration.rop.client.ProtostuffClientModule;
+import org.apache.cayenne.configuration.rop.client.ProtostuffModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.rop.ROPSerializationService;
 import org.apache.cayenne.rop.protostuff.persistent.ClientMtTable1;
@@ -60,7 +60,7 @@ public class ProtostuffROPSerializationServiceIT {
         ClientRuntime clientRuntime = new ClientLocalRuntime(
                 new ServerRuntime("cayenne-protostuff.xml").getInjector(),
                 Collections.emptyMap(),
-                new ProtostuffClientModule());
+                new ProtostuffModule());
 
         ObjectContext context = clientRuntime.newContext();
 
