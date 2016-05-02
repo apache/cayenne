@@ -28,6 +28,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * This {@link ROPSerializationService} implementation uses Protostuff {@link GraphIOUtil} to (de)serialize
+ * Cayenne object graph.
+ */
 public class ProtostuffROPSerializationService implements ROPSerializationService {
 
     @Override
@@ -57,11 +61,10 @@ public class ProtostuffROPSerializationService implements ROPSerializationServic
         Wrapper result = schema.newMessage();
         GraphIOUtil.mergeFrom(serializedObject, result, schema);
         return objectClass.cast(result.data);
-
     }
 
     private class Wrapper {
-        public Object data;
+        private Object data;
 
         public Wrapper(Object data) {
             this.data = data;
