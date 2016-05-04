@@ -152,23 +152,23 @@ public class DbImporterMojo extends AbstractMojo {
     private final OldFilterConfigBridge filterBuilder = new OldFilterConfigBridge();
 
     /**
-     * If true, would use primitives instead of numeric and boolean classes.
+     * An object that contains reverse engineering rules.
      *
      * @parameter reverseEngineering="reverseEngineering"
      */
     private ReverseEngineering reverseEngineering = new ReverseEngineering();
 
-    /**
-     * Flag which defines from where to take the configuration of cdbImport.
-     * If we define the config of cdbImport in pom.xml
-     * we should set it to true or it will be setted to true automatically
-     * if we will define some configuration parameters in pom.xml
-     * Else it remains default(false) and for cdbImport
-     * we use the configuration defined in signed dataMap
-     *
-     *  @parameter isReverseEngineeringDefined="isReverseEngineeringDefined" default-value="false"
-     */
-    private boolean isReverseEngineeringDefined = false;
+	/**
+	 * Flag which defines from where to take the configuration of cdbImport. If
+	 * we define the config of cdbImport in pom.xml we should set it to true or
+	 * it will be set to true automatically if we define some configuration
+	 * parameters in pom.xml. Else it remains default(false) and for cdbImport
+	 * we use the configuration defined in signed dataMap
+	 *
+	 * @parameter isReverseEngineeringDefined="isReverseEngineeringDefined"
+	 *            default-value="false"
+	 */
+	private boolean isReverseEngineeringDefined = false;
 
     public void setIsReverseEngineeringDefined(boolean isReverseEngineeringDefined) {
         this.isReverseEngineeringDefined = isReverseEngineeringDefined;
