@@ -19,17 +19,17 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.StringTokenizer;
-
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.util.Util;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * Defines a node in a prefetch tree.
@@ -472,7 +472,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 	// implementing 'readResolve' instead of 'readObject' so that this would
 	// work with
 	// hessian
-	private Object readResolve() throws ObjectStreamException {
+	protected Object readResolve() throws ObjectStreamException {
 
 		if (hasChildren()) {
 			for (PrefetchTreeNode child : children) {

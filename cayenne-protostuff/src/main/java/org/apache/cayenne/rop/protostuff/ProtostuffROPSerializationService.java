@@ -22,7 +22,10 @@ import io.protostuff.GraphIOUtil;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.Schema;
 import io.protostuff.runtime.RuntimeSchema;
+import org.apache.cayenne.query.PrefetchTreeNode;
+import org.apache.cayenne.query.PrefetchTreeNodeSchema;
 import org.apache.cayenne.rop.ROPSerializationService;
+import org.apache.cayenne.util.PersistentObjectList;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,43 +34,45 @@ import java.io.OutputStream;
 /**
  * This {@link ROPSerializationService} implementation uses Protostuff {@link GraphIOUtil} to (de)serialize
  * Cayenne object graph.
+ *
+ * @since 4.0
  */
 public class ProtostuffROPSerializationService implements ROPSerializationService {
 
+    protected Schema<Wrapper> wrapperSchema;
+
+    public ProtostuffROPSerializationService() {
+        this.wrapperSchema = RuntimeSchema.getSchema(Wrapper.class);
+        registerSchemas();
+    }
+
+    protected void registerSchemas() {
+        RuntimeSchema.register(PersistentObjectList.class, RuntimeSchema.getSchema(PersistentObjectList.class));
+        RuntimeSchema.register(PrefetchTreeNode.class, new PrefetchTreeNodeSchema());
+    }
+
     @Override
     public byte[] serialize(Object object) throws IOException {
-        Schema<Wrapper> schema = RuntimeSchema.getSchema(Wrapper.class);
-        return GraphIOUtil.toByteArray(new Wrapper(object), schema, LinkedBuffer.allocate());
+        return GraphIOUtil.toByteArray(new Wrapper(object), wrapperSchema, LinkedBuffer.allocate());
     }
 
     @Override
     public void serialize(Object object, OutputStream outputStream) throws IOException {
-        Schema<Wrapper> schema = RuntimeSchema.getSchema(Wrapper.class);
-        GraphIOUtil.writeTo(outputStream, new Wrapper(object), schema, LinkedBuffer.allocate());
+        GraphIOUtil.writeTo(outputStream, new Wrapper(object), wrapperSchema, LinkedBuffer.allocate());
     }
 
     @Override
     public <T> T deserialize(InputStream inputStream, Class<T> objectClass) throws IOException {
-        Schema<Wrapper> schema = RuntimeSchema.getSchema(Wrapper.class);
-        Wrapper result = schema.newMessage();
-        GraphIOUtil.mergeFrom(inputStream, result, schema, LinkedBuffer.allocate());
+        Wrapper result = wrapperSchema.newMessage();
+        GraphIOUtil.mergeFrom(inputStream, result, wrapperSchema, LinkedBuffer.allocate());
         return objectClass.cast(result.data);
-
     }
 
     @Override
     public <T> T deserialize(byte[] serializedObject, Class<T> objectClass) throws IOException {
-        Schema<Wrapper> schema = RuntimeSchema.getSchema(Wrapper.class);
-        Wrapper result = schema.newMessage();
-        GraphIOUtil.mergeFrom(serializedObject, result, schema);
+        Wrapper result = wrapperSchema.newMessage();
+        GraphIOUtil.mergeFrom(serializedObject, result, wrapperSchema);
         return objectClass.cast(result.data);
     }
 
-    private class Wrapper {
-        private Object data;
-
-        public Wrapper(Object data) {
-            this.data = data;
-        }
-    }
 }
