@@ -16,29 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.rop.client;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.rop.ROPSerializationService;
-import org.apache.cayenne.rop.protostuff.ProtostuffROPSerializationService;
+package org.apache.cayenne.rop.protostuff;
+
+import java.io.Serializable;
 
 /**
- * A DI module that uses Protostuff Object Graph Serialization as Cayenne {@link ROPSerializationService}.
- * <a href="http://www.protostuff.io/">
+ * As Protostuff has limitation that nested messages should not contain references to the root message, so we provide
+ * a simple wrapper for the root message.
  *
- * Note the you usually have to add -Dprotostuff.runtime.collection_schema_on_repeated_fields=true as VM option
- * because Cayenne objects might have cyclic collection fields.
- *
- * @since 4.0
+ * <a href="http://www.protostuff.io/documentation/object-graphs/">
  */
-public class ProtostuffModule implements Module {
+public class Wrapper implements Serializable {
 
-    public ProtostuffModule() {
+    public Object data;
+
+    public Wrapper(Object data) {
+        this.data = data;
     }
 
-    @Override
-    public void configure(Binder binder) {
-        binder.bind(ROPSerializationService.class).to(ProtostuffROPSerializationService.class).inSingletonScope();
-    }
 }

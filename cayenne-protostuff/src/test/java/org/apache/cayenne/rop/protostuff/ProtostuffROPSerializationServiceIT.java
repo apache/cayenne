@@ -80,8 +80,8 @@ public class ProtostuffROPSerializationServiceIT {
         table2.setTable1(table1);
         table2.setGlobalAttribute(GLOBAL_ATTRIBUTE2);
 
-        clientService = new ProtostuffROPSerializationServiceProvider().get();
-        serverService = new ProtostuffROPSerializationServiceProvider().get();
+        clientService = new ProtostuffROPSerializationService();
+        serverService = new ProtostuffROPSerializationService();
     }
 
     @Test

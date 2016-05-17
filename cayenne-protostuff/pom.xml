@@ -21,7 +21,7 @@
     <name>Cayenne Protostuff Extension</name>
 
     <properties>
-        <protostuff.version>1.4.1</protostuff.version>
+        <protostuff.version>1.4.2</protostuff.version>
     </properties>
 
     <dependencyManagement>
