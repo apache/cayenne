@@ -75,7 +75,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
             ObjectIdQuery oidQuery = (ObjectIdQuery) query;
 
             if (!oidQuery.isFetchMandatory()) {
-                Object object = actingContext.getGraphManager().getNode(
+                Object object = polymorphicObjectFromCache(
                         oidQuery.getObjectId());
                 if (object != null) {
 
