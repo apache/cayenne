@@ -13,9 +13,6 @@ public abstract class _Table3 extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String CRYPTO_STRING_PROPERTY = "cryptoString";
-
     public static final String ID_PK_COLUMN = "ID";
 
     public static final Property<String> CRYPTO_STRING = new Property<String>("cryptoString");
