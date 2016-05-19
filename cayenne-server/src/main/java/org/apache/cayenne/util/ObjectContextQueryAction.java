@@ -33,6 +33,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
+import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
@@ -167,7 +168,7 @@ public abstract class ObjectContextQueryAction {
             ObjectIdQuery oidQuery = (ObjectIdQuery) query;
 
             if (!oidQuery.isFetchMandatory() && !oidQuery.isFetchingDataRows()) {
-                Object object = actingContext.getGraphManager().getNode(
+                Object object = polymorphicObjectFromCache(
                         oidQuery.getObjectId());
                 if (object != null) {
 
@@ -184,6 +185,39 @@ public abstract class ObjectContextQueryAction {
 
         return !DONE;
     }
+    
+    // TODO: bunch of copy/paset from DataDomainQueryAction
+    protected Object polymorphicObjectFromCache(ObjectId superOid) {
+		Object object = actingContext.getGraphManager().getNode(superOid);
+		if (object != null) {
+			return object;
+		}
+
+		EntityInheritanceTree inheritanceTree = actingContext.getEntityResolver().getInheritanceTree(superOid.getEntityName());
+		if (!inheritanceTree.getChildren().isEmpty()) {
+			object = polymorphicObjectFromCache(inheritanceTree, superOid.getIdSnapshot());
+		}
+
+		return object;
+	}
+    
+	private Object polymorphicObjectFromCache(EntityInheritanceTree superNode, Map<String, ?> idSnapshot) {
+
+		for (EntityInheritanceTree child : superNode.getChildren()) {
+			ObjectId id = new ObjectId(child.getEntity().getName(), idSnapshot);
+			Object object = actingContext.getGraphManager().getNode(id);
+			if (object != null) {
+				return object;
+			}
+			
+			object = polymorphicObjectFromCache(child, idSnapshot);
+			if (object != null) {
+				return object;
+			}
+		}
+
+		return null;
+	}
 
     protected boolean interceptRelationshipQuery() {
 
