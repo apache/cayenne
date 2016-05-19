@@ -259,7 +259,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 return DONE;
             }
 
-            DataRow targetRow = cache.getCachedSnapshot(targetId);
+            // target id resolution (unlike source) should be polymorphic
+            DataRow targetRow = polymorphicRowFromCache(targetId);
 
             if (targetRow != null) {
                 this.response = new GenericResponse(Collections.singletonList(targetRow));
