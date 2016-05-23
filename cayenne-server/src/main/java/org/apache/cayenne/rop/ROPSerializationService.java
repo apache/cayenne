@@ -22,6 +22,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * ROP serialization service
+ *
+ * @since 4.0
+ */
 public interface ROPSerializationService {
 
     byte[] serialize(Object object) throws IOException;
