@@ -17,24 +17,24 @@
  * under the License.
  ****************************************************************/
 
-package org.apache.cayenne.rop.protostuff;
+package org.apache.cayenne.remote.service;
 
-import java.io.Serializable;
+import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.configuration.rop.client.ClientLocalRuntime;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.remote.ClientConnection;
 
-/**
- * As Protostuff has limitation that nested messages should not contain references to the root message, so we provide
- * a simple wrapper for the root message.
- *
- * <a href="http://www.protostuff.io/documentation/object-graphs/">
- *
- * @since 4.0
- */
-public class Wrapper implements Serializable {
+public class ProtostuffLocalConnectionProvider implements Provider<ClientConnection> {
 
-    public Object data;
+    @Inject(ClientLocalRuntime.CLIENT_SERVER_CHANNEL_KEY)
+    protected Provider<DataChannel> clientServerChannelProvider;
 
-    public Wrapper(Object data) {
-        this.data = data;
+    @Override
+    public ClientConnection get() throws ConfigurationException {
+        DataChannel clientServerChannel = clientServerChannelProvider.get();
+        return new ProtostuffLocalConnection(clientServerChannel);
     }
 
 }
