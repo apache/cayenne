@@ -21,7 +21,7 @@
     <name>Cayenne Protostuff Extension</name>
 
     <properties>
-        <protostuff.version>1.4.2</protostuff.version>
+        <protostuff.version>1.4.3</protostuff.version>
     </properties>
 
     <dependencyManagement>
@@ -67,6 +67,12 @@
         <dependency>
             <groupId>org.apache.cayenne</groupId>
             <artifactId>cayenne-client</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-java8</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

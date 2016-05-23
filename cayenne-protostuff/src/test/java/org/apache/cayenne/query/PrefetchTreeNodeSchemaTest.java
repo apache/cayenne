@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class ProtostuffPrefetchTreeNodeSchemaIT {
+public class PrefetchTreeNodeSchemaTest {
 
     private ROPSerializationService clientService;
     private ROPSerializationService serverService;
