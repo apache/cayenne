@@ -1,15 +1,15 @@
 package org.apache.cayenne.rop.protostuff.persistent.auto;
 
-import org.apache.cayenne.PersistentObject;
-import org.apache.cayenne.exp.Property;
-import org.apache.cayenne.rop.protostuff.persistent.ClientMtTable2;
-import org.apache.cayenne.util.PersistentObjectList;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.cayenne.PersistentObject;
+import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.rop.protostuff.persistent.ClientMtTable2;
+import org.apache.cayenne.util.PersistentObjectList;
 
 /**
  * A generated persistent class mapped as "MtTable1" Cayenne entity. It is a good idea to
