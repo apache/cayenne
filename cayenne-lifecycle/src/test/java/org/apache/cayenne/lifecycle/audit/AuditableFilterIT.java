@@ -57,7 +57,7 @@ public class AuditableFilterIT extends AuditableServerCase {
 
 		Processor processor = new Processor();
 
-		AuditableFilter filter = new AuditableFilter(domain.getEntityResolver(), processor);
+		AuditableFilter filter = new AuditableFilter(processor);
 		domain.addFilter(filter);
 
 		// prerequisite for BaseAuditableProcessor use
@@ -97,7 +97,7 @@ public class AuditableFilterIT extends AuditableServerCase {
 
 		Processor processor = new Processor();
 
-		AuditableFilter filter = new AuditableFilter(domain.getEntityResolver(), processor);
+		AuditableFilter filter = new AuditableFilter(processor);
 		domain.addFilter(filter);
 
 		// prerequisite for BaseAuditableProcessor use
@@ -130,7 +130,7 @@ public class AuditableFilterIT extends AuditableServerCase {
 
 		Processor processor = new Processor();
 
-		AuditableFilter filter = new AuditableFilter(domain.getEntityResolver(), processor);
+		AuditableFilter filter = new AuditableFilter(processor);
 		domain.addFilter(filter);
 
 		// prerequisite for BaseAuditableProcessor use
@@ -166,7 +166,7 @@ public class AuditableFilterIT extends AuditableServerCase {
 
 		Processor processor = new Processor();
 
-		AuditableFilter filter = new AuditableFilter(domain.getEntityResolver(), processor);
+		AuditableFilter filter = new AuditableFilter(processor);
 		domain.addFilter(filter);
 
 		// prerequisite for BaseAuditableProcessor use
@@ -197,7 +197,7 @@ public class AuditableFilterIT extends AuditableServerCase {
 		DataDomain domain = runtime.getDataDomain();
 		Processor processor = new Processor();
 
-		AuditableFilter filter = new AuditableFilter(domain.getEntityResolver(), processor);
+		AuditableFilter filter = new AuditableFilter(processor);
 		domain.addFilter(filter);
 
 		// prerequisite for BaseAuditableProcessor use
