@@ -48,6 +48,7 @@ class ObjectStoreGraphDiff implements GraphDiff {
 
     private ObjectStore objectStore;
     private GraphDiff resolvedDiff;
+    private int lastSeenDiffId;
 
     ObjectStoreGraphDiff(ObjectStore objectStore) {
         this.objectStore = objectStore;
@@ -147,26 +148,31 @@ class ObjectStoreGraphDiff implements GraphDiff {
      * Converts diffs organized by ObjectId in a collection of diffs sorted by
      * diffId (same as creation order).
      */
-    private void resolveDiff() {
-        if (resolvedDiff == null) {
+	private void resolveDiff() {
 
-            CompoundDiff diff = new CompoundDiff();
-            Map<Object, ObjectDiff> changes = getChangesByObjectId();
+		// refresh the diff on first access or if the underlying ObjectStore has
+		// changed the the last time we cached the changes.
+		if (resolvedDiff == null || lastSeenDiffId < objectStore.currentDiffId) {
 
-            if (!changes.isEmpty()) {
-                List<NodeDiff> allChanges = new ArrayList<NodeDiff>(changes.size() * 2);
+			CompoundDiff diff = new CompoundDiff();
+			Map<Object, ObjectDiff> changes = getChangesByObjectId();
 
-                for (final ObjectDiff objectDiff : changes.values()) {
-                    objectDiff.appendDiffs(allChanges);
-                }
+			if (!changes.isEmpty()) {
+				List<NodeDiff> allChanges = new ArrayList<NodeDiff>(changes.size() * 2);
 
-                Collections.sort(allChanges);
-                diff.addAll(allChanges);
-            }
+				for (final ObjectDiff objectDiff : changes.values()) {
+					objectDiff.appendDiffs(allChanges);
+				}
 
-            this.resolvedDiff = diff;
-        }
-    }
+				Collections.sort(allChanges);
+				diff.addAll(allChanges);
+
+			}
+
+			this.lastSeenDiffId = objectStore.currentDiffId;
+			this.resolvedDiff = diff;
+		}
+	}
 
     private void preprocess(ObjectStore objectStore) {
 
