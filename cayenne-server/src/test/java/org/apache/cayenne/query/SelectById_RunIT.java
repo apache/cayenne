@@ -85,6 +85,19 @@ public class SelectById_RunIT extends ServerCase {
 		assertNotNull(a2);
 		assertEquals("artist2", a2.getArtistName());
 	}
+	
+	@Test
+	public void testIntPk_SelectFirst() throws Exception {
+		createTwoArtists();
+
+		Artist a3 = SelectById.query(Artist.class, 3).selectFirst(context);
+		assertNotNull(a3);
+		assertEquals("artist3", a3.getArtistName());
+
+		Artist a2 = SelectById.query(Artist.class, 2).selectFirst(context);
+		assertNotNull(a2);
+		assertEquals("artist2", a2.getArtistName());
+	}
 
 	@Test
 	public void testMapPk() throws Exception {
