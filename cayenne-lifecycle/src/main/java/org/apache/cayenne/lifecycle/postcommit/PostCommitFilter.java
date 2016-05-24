@@ -35,7 +35,8 @@ import org.apache.cayenne.lifecycle.postcommit.meta.PostCommitEntityFactory;
 import org.apache.cayenne.query.Query;
 
 /**
- * A {@link DataChannelFilter} that organizes commit changes
+ * A {@link DataChannelFilter} that captures commit changes, delegating their
+ * processing to an underlying collection of listeners.
  * 
  * @since 4.0
  */
@@ -54,8 +55,7 @@ public class PostCommitFilter implements DataChannelFilter {
 
 	@Override
 	public void init(DataChannel channel) {
-		// TODO Auto-generated method stub
-
+		// do nothing...
 	}
 
 	@Override
