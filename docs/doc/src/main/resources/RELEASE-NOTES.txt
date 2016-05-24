@@ -30,6 +30,7 @@ CAY-2067 Cayenne 4.0 connection pool is occasionally running out of connections
 CAY-2078 Client code gen bug. Unnecessary DataMap class generation setting datamap gen to false.
 CAY-2080 Cayenne doesn't pick up reverse engineering file changes
 CAY-2084 ObjectIdQuery - no cache access polymorphism
+CAY-2086 SelectById.selectFirst stack overflow
 
 ----------------------------------
 Release: 4.0.M3
