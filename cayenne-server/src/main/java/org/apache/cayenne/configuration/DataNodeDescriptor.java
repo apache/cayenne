@@ -18,18 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A descriptor of {@link DataNode} configuration.
@@ -51,7 +51,7 @@ public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
     // (DataSourceDescriptor?)
     protected DataSourceInfo dataSourceDescriptor;
 
-    protected Resource configurationSource;
+    protected transient Resource configurationSource;
 
     /**
      * @since 3.1

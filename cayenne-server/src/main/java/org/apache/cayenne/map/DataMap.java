@@ -156,7 +156,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	/**
 	 * @since 3.1
 	 */
-	protected Resource configurationSource;
+	protected transient Resource configurationSource;
 
 	/**
 	 * @since 3.1
