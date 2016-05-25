@@ -40,10 +40,10 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.PathComponent;
+import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.map.naming.NameConverter;
 import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.commons.collections.set.ListOrderedSet;
 
@@ -63,7 +63,7 @@ public class DataMapUtils {
 	 * @param query
 	 * @return Method name that perform query.
 	 */
-	public String getQueryMethodName(Query query) {
+	public String getQueryMethodName(QueryDescriptor query) {
 		return NameConverter.underscoredToJava(query.getName(), true);
 	}
 
@@ -73,7 +73,7 @@ public class DataMapUtils {
 	 * @param query
 	 * @return Parameter names.
 	 */
-	public Collection getParameterNames(SelectQuery<?> query) {
+	public Collection getParameterNames(SelectQueryDescriptor query) {
 
 		if (query.getQualifier() == null) {
 			return Collections.EMPTY_SET;
@@ -89,7 +89,7 @@ public class DataMapUtils {
 		return parseQualifier(query.getQualifier().toString());
 	}
 
-	public Boolean isValidParameterNames(SelectQuery<?> query) {
+	public Boolean isValidParameterNames(SelectQueryDescriptor query) {
 
 		if (query.getQualifier() == null) {
 			return true;
@@ -106,18 +106,16 @@ public class DataMapUtils {
 			}
 		}
 
-		if (query instanceof SelectQuery) {
-			for (Ordering ordering : ((SelectQuery<?>) query).getOrderings()) {
-				// validate paths in ordering
-				String path = ordering.getSortSpecString();
-				Iterator<CayenneMapEntry> it = ((ObjEntity) query.getRoot()).resolvePathComponents(path);
-				while (it.hasNext()) {
-					try {
-						it.next();
-					} catch (ExpressionException e) {
-						// if we have wrong path in orderings return false.
-						return false;
-					}
+		for (Ordering ordering : query.getOrderings()) {
+			// validate paths in ordering
+			String path = ordering.getSortSpecString();
+			Iterator<CayenneMapEntry> it = ((ObjEntity) query.getRoot()).resolvePathComponents(path);
+			while (it.hasNext()) {
+				try {
+					it.next();
+				} catch (ExpressionException e) {
+					// if we have wrong path in orderings return false.
+					return false;
 				}
 			}
 		}
@@ -144,7 +142,7 @@ public class DataMapUtils {
 		return result;
 	}
 
-	public boolean hasParameters(SelectQuery<?> query) {
+	public boolean hasParameters(SelectQueryDescriptor query) {
 		Map queryParameters = queriesMap.get(query.getName());
 
 		if (queryParameters == null) {
@@ -162,7 +160,7 @@ public class DataMapUtils {
 	 * @param name
 	 * @return Parameter type.
 	 */
-	public String getParameterType(SelectQuery<?> query, String name) {
+	public String getParameterType(SelectQueryDescriptor query, String name) {
 		return queriesMap.get(query.getName()).get(name);
 	}
 
