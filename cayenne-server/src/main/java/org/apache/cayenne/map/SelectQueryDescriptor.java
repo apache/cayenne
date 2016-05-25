@@ -33,7 +33,9 @@ import java.util.Map;
  */
 public class SelectQueryDescriptor extends QueryDescriptor {
 
-    protected Expression qualifier;
+	private static final long serialVersionUID = -8798258795351950215L;
+
+	protected Expression qualifier;
 
     protected List<Ordering> orderings = new ArrayList<>();
     protected List<String> prefetches = new ArrayList<>();
