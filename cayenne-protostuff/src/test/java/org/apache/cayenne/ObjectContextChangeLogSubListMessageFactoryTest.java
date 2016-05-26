@@ -17,21 +17,20 @@
  * under the License.
  ****************************************************************/
 
-package org.apache.cayenne.query;
+package org.apache.cayenne;
 
+import org.apache.cayenne.graph.CompoundDiff;
+import org.apache.cayenne.graph.NodeCreateOperation;
 import org.apache.cayenne.rop.ROPSerializationService;
 import org.apache.cayenne.rop.protostuff.ProtostuffProperties;
 import org.apache.cayenne.rop.protostuff.ProtostuffROPSerializationService;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-public class PrefetchTreeNodeSchemaTest extends ProtostuffProperties {
+public class ObjectContextChangeLogSubListMessageFactoryTest extends ProtostuffProperties {
 
     private ROPSerializationService serializationService;
 
@@ -41,21 +40,16 @@ public class PrefetchTreeNodeSchemaTest extends ProtostuffProperties {
     }
 
     @Test
-    public void testPrefetchTreeNodeSchema() throws IOException {
-        PrefetchTreeNode parent = new PrefetchTreeNode(null, "parent");
-        PrefetchTreeNode child = new PrefetchTreeNode(parent, "child");
-        parent.addChild(child);
+    public void testGetDiffsSerializable() throws Exception {
+        ObjectContextChangeLog recorder = new ObjectContextChangeLog();
+        recorder.addOperation(new NodeCreateOperation(new ObjectId("test")));
+        CompoundDiff diff = (CompoundDiff) recorder.getDiffs();
 
-        byte[] data = serializationService.serialize(parent);
-        PrefetchTreeNode parent0 = serializationService.deserialize(data, PrefetchTreeNode.class);
+        byte[] data = serializationService.serialize(diff);
+        CompoundDiff diff0 = serializationService.deserialize(data, CompoundDiff.class);
 
-        assertNotNull(parent0);
-        assertTrue(parent0.hasChildren());
-
-        PrefetchTreeNode child0 = parent0.getChild("child");
-        assertNotNull(child0);
-        assertNotNull(child0.parent);
-        assertEquals(child0.parent, parent0);
+        assertNotNull(diff0);
+        assertEquals(1, diff0.getDiffs().size());
     }
 
 }

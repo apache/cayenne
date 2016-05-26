@@ -34,20 +34,11 @@ import org.junit.Before;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RuntimeBase {
+public class RuntimeBase extends ProtostuffProperties {
 
     protected ServerRuntime serverRuntime;
     protected ClientRuntime clientRuntime;
     protected ObjectContext context;
-
-
-    static {
-        System.setProperty("protostuff.runtime.collection_schema_on_repeated_fields", "true");
-        System.setProperty("protostuff.runtime.morph_collection_interfaces", "true");
-        System.setProperty("protostuff.runtime.morph_map_interfaces", "true");
-        System.setProperty("protostuff.runtime.pojo_schema_on_collection_fields", "true");
-        System.setProperty("protostuff.runtime.pojo_schema_on_map_fields", "true");
-    }
 
     @Before
     public void setUpRuntimes() throws Exception {

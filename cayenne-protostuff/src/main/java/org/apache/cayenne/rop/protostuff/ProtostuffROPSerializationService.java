@@ -21,7 +21,10 @@ package org.apache.cayenne.rop.protostuff;
 import io.protostuff.GraphIOUtil;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.Schema;
+import io.protostuff.runtime.DefaultIdStrategy;
+import io.protostuff.runtime.RuntimeEnv;
 import io.protostuff.runtime.RuntimeSchema;
+import org.apache.cayenne.ObjectContextChangeLogSubListMessageFactory;
 import org.apache.cayenne.access.ToManyList;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.PrefetchTreeNodeSchema;
@@ -43,13 +46,18 @@ import java.io.OutputStream;
 public class ProtostuffROPSerializationService implements ROPSerializationService {
 
     protected Schema<Wrapper> wrapperSchema;
+    protected DefaultIdStrategy strategy;
 
     public ProtostuffROPSerializationService() {
-        registerSchemas();
+        this.strategy = (DefaultIdStrategy) RuntimeEnv.ID_STRATEGY;
+        register();
     }
 
-    protected void registerSchemas() {
+    protected void register() {
         this.wrapperSchema = RuntimeSchema.getSchema(Wrapper.class);
+
+        this.strategy.registerCollection(new ObjectContextChangeLogSubListMessageFactory());
+
         RuntimeSchema.register(PrefetchTreeNode.class, new PrefetchTreeNodeSchema());
         RuntimeSchema.register(PersistentObjectList.class);
         RuntimeSchema.register(PersistentObjectMap.class);

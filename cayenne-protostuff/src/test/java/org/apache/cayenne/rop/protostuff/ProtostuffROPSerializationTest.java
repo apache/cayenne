@@ -34,7 +34,7 @@ import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 
-public class ProtostuffROPSerializationTest {
+public class ProtostuffROPSerializationTest extends ProtostuffProperties {
 
     private static final String GLOBAL_ATTRIBUTE1 = "Test table1";
     private static final String GLOBAL_ATTRIBUTE2 = "Test table2";

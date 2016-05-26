@@ -37,26 +37,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class ProtostuffPersistentObjectCollectionsTest {
+public class ProtostuffPersistentObjectCollectionsTest extends ProtostuffProperties {
 
-    static {
-        System.setProperty("protostuff.runtime.collection_schema_on_repeated_fields", "true");
-        System.setProperty("protostuff.runtime.morph_collection_interfaces", "true");
-        System.setProperty("protostuff.runtime.morph_map_interfaces", "true");
-        System.setProperty("protostuff.runtime.pojo_schema_on_collection_fields", "true");
-        System.setProperty("protostuff.runtime.pojo_schema_on_map_fields", "true");
-    }
-
-    private ROPSerializationService clientService;
-    private ROPSerializationService serverService;
+    private ROPSerializationService serializationService;
 
     private TestObject object1;
     private TestObject object2;
 
     @Before
     public void setUp() throws Exception {
-        clientService = new ProtostuffROPSerializationService();
-        serverService = new ProtostuffROPSerializationService();
+        serializationService = new ProtostuffROPSerializationService();
 
         object1 = new TestObject();
         object2 = new TestObject();
@@ -70,8 +60,8 @@ public class ProtostuffPersistentObjectCollectionsTest {
         PersistentObjectList list = new PersistentObjectList(object1, "test");
         list.add(object2);
 
-        byte[] bytes = serverService.serialize(list);
-        PersistentObjectList list0 = clientService.deserialize(bytes, PersistentObjectList.class);
+        byte[] bytes = serializationService.serialize(list);
+        PersistentObjectList list0 = serializationService.deserialize(bytes, PersistentObjectList.class);
 
         assertNotNull(list0);
         assertEquals(list.getRelationshipName(), list0.getRelationshipName());
@@ -86,8 +76,8 @@ public class ProtostuffPersistentObjectCollectionsTest {
         PersistentObjectList list = new PersistentObjectList(object1, "test");
         list.add(object2);
 
-        byte[] bytes = serverService.serialize(new ListWrapper(list));
-        ListWrapper lw = clientService.deserialize(bytes, ListWrapper.class);
+        byte[] bytes = serializationService.serialize(new ListWrapper(list));
+        ListWrapper lw = serializationService.deserialize(bytes, ListWrapper.class);
 
         assertNotNull(lw.object);
         assertTrue(lw.object instanceof PersistentObjectList);
@@ -105,8 +95,8 @@ public class ProtostuffPersistentObjectCollectionsTest {
         PersistentObjectSet set = new PersistentObjectSet(object1, "test");
         set.add(object2);
 
-        byte[] bytes = serverService.serialize(set);
-        PersistentObjectSet set0 = clientService.deserialize(bytes, PersistentObjectSet.class);
+        byte[] bytes = serializationService.serialize(set);
+        PersistentObjectSet set0 = serializationService.deserialize(bytes, PersistentObjectSet.class);
 
         assertNotNull(set0);
         assertEquals(set.getRelationshipName(), set0.getRelationshipName());
@@ -121,8 +111,8 @@ public class ProtostuffPersistentObjectCollectionsTest {
         PersistentObjectSet set = new PersistentObjectSet(object1, "test");
         set.add(object2);
 
-        byte[] bytes = serverService.serialize(new SetWrapper(set));
-        SetWrapper sw = clientService.deserialize(bytes, SetWrapper.class);
+        byte[] bytes = serializationService.serialize(new SetWrapper(set));
+        SetWrapper sw = serializationService.deserialize(bytes, SetWrapper.class);
 
         assertNotNull(sw.object);
         assertTrue(sw.object instanceof PersistentObjectSet);
@@ -141,8 +131,8 @@ public class ProtostuffPersistentObjectCollectionsTest {
         PersistentObjectMap map = new PersistentObjectMap(object1, "test", new MapAccessor("test"));
         map.put(object2.name, object2);
 
-        byte[] bytes = serverService.serialize(map);
-        PersistentObjectMap map0 = clientService.deserialize(bytes, PersistentObjectMap.class);
+        byte[] bytes = serializationService.serialize(map);
+        PersistentObjectMap map0 = serializationService.deserialize(bytes, PersistentObjectMap.class);
 
         assertNotNull(map0);
         assertEquals(map0.getRelationshipName(), map0.getRelationshipName());
@@ -157,8 +147,8 @@ public class ProtostuffPersistentObjectCollectionsTest {
         PersistentObjectMap map = new PersistentObjectMap(object1, "test", new MapAccessor("test"));
         map.put(object2.name, object2);
 
-        byte[] bytes = serverService.serialize(new MapWrapper(map));
-        MapWrapper mw = clientService.deserialize(bytes, MapWrapper.class);
+        byte[] bytes = serializationService.serialize(new MapWrapper(map));
+        MapWrapper mw = serializationService.deserialize(bytes, MapWrapper.class);
 
         assertNotNull(mw.object);
         assertTrue(mw.object instanceof PersistentObjectMap);
