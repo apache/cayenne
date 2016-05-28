@@ -23,7 +23,6 @@ import org.apache.cayenne.remote.ClientMessage;
 import org.apache.cayenne.remote.RemoteService;
 import org.apache.cayenne.remote.RemoteSession;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 public class ProxyRemoteService implements RemoteService {
@@ -41,8 +40,9 @@ public class ProxyRemoteService implements RemoteService {
     public RemoteSession establishSession() throws RemoteException {
         try {
             return serializationService.deserialize(ropConnector.establishSession(), RemoteSession.class);
-        } catch (IOException e) {
-            throw new RemoteException(e.getMessage());
+        } catch (Exception e) {
+            String message = e.getMessage();
+            throw new RemoteException((message != null) ? message : e.getClass().getName());
         }
     }
 
@@ -50,13 +50,23 @@ public class ProxyRemoteService implements RemoteService {
     public RemoteSession establishSharedSession(String name) throws RemoteException {
         try {
             return serializationService.deserialize(ropConnector.establishSharedSession(name), RemoteSession.class);
-        } catch (IOException e) {
-            throw new RemoteException(e.getMessage());
+        } catch (Exception e) {
+            String message = e.getMessage();
+            throw new RemoteException((message != null) ? message : e.getClass().getName());
         }
     }
 
     @Override
     public Object processMessage(ClientMessage message) throws RemoteException, Throwable {
         return serializationService.deserialize(ropConnector.sendMessage(serializationService.serialize(message)), Object.class);
+    }
+
+    @Override
+    public void close() throws RemoteException {
+        try {
+            ropConnector.close();
+        } catch (Exception e) {
+            throw new RemoteException(e.getMessage());
+        }
     }
 }
