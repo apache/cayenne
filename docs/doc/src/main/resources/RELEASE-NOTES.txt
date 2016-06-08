@@ -22,6 +22,7 @@ CAY-2065 Pluggable serialization and connectivity layers for ROP
 CAY-2073 Ordering.orderedList methods
 CAY-2074 Support for catalogs in stored procedures
 CAY-2083 Implement Protostuff as serialization service for Cayenne ROP
+CAY-2090 Untangle HttpRemoteService from ServiceContext thread local setup
 
 Bug Fixes:
 
