@@ -88,7 +88,7 @@ class ObjectDiff extends NodeDiff {
         if (state == PersistenceState.COMMITTED || state == PersistenceState.DELETED
                 || state == PersistenceState.MODIFIED) {
 
-            ObjEntity entity = entityResolver.getObjEntity(entityName);
+            final ObjEntity entity = entityResolver.getObjEntity(entityName);
             final boolean lock = entity.getLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC;
 
             this.snapshot = new HashMap<>();
@@ -109,9 +109,10 @@ class ObjectDiff extends NodeDiff {
 
                 @Override
                 public boolean visitToOne(ToOneProperty property) {
-
+                    boolean isUsedForLocking = entity.getRelationship(property.getName()).isUsedForLocking();
+                    
                     // eagerly resolve optimistically locked relationships
-                    Object target = lock ? property.readProperty(object) : property.readPropertyDirectly(object);
+                    Object target = isUsedForLocking ? property.readProperty(object) : property.readPropertyDirectly(object);
 
                     if (target instanceof Persistent) {
                         target = ((Persistent) target).getObjectId();
