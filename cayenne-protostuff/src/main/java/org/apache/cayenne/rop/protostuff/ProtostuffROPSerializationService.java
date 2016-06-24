@@ -78,7 +78,7 @@ public class ProtostuffROPSerializationService implements ROPSerializationServic
     @Override
     public <T> T deserialize(InputStream inputStream, Class<T> objectClass) throws IOException {
         Wrapper result = wrapperSchema.newMessage();
-        GraphIOUtil.mergeFrom(inputStream, result, wrapperSchema, LinkedBuffer.allocate());
+        GraphIOUtil.mergeFrom(inputStream, result, wrapperSchema);
         return objectClass.cast(result.data);
     }
 
