@@ -34,4 +34,7 @@ public class MockRemoteService implements RemoteService {
         return null;
     }
 
+    @Override
+    public void close() throws RemoteException {
+    }
 }

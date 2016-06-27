@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.tutorial.persistent.client;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.query.ObjectSelect;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Main {
 
@@ -43,6 +43,7 @@ public class Main {
         newObjectsTutorial(context);
         selectTutorial(context);
         deleteTutorial(context);
+        runtime.shutdown();
     }
 
     static void newObjectsTutorial(ObjectContext context) {

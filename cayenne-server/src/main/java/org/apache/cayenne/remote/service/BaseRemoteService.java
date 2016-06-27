@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.remote.service;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.ClientServerChannel;
@@ -35,6 +31,11 @@ import org.apache.cayenne.remote.RemoteSession;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.rmi.RemoteException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A generic implementation of an RemoteService. Can be subclassed to work with
@@ -97,6 +98,7 @@ public abstract class BaseRemoteService implements RemoteService {
 	 */
 	protected abstract ServerSession getServerSession();
 
+	@Override
 	public RemoteSession establishSession() {
 		logger.debug("Session requested by client");
 
@@ -106,6 +108,7 @@ public abstract class BaseRemoteService implements RemoteService {
 		return session;
 	}
 
+	@Override
 	public RemoteSession establishSharedSession(String name) {
 		logger.debug("Shared session requested by client. Group name: " + name);
 
@@ -116,6 +119,7 @@ public abstract class BaseRemoteService implements RemoteService {
 		return createServerSession(name).getSession();
 	}
 
+	@Override
 	public Object processMessage(ClientMessage message) throws Throwable {
 
 		if (message == null) {
@@ -148,6 +152,10 @@ public abstract class BaseRemoteService implements RemoteService {
 
 			throw new CayenneRuntimeException(wrapperMessageString, cause);
 		}
+	}
+
+	@Override
+	public void close() throws RemoteException {
 	}
 
 	protected RemoteSession createRemoteSession(String sessionId, String name, boolean enableEvents) {

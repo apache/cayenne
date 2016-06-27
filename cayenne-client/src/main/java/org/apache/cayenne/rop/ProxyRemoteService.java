@@ -64,4 +64,13 @@ public class ProxyRemoteService implements RemoteService {
             throw new RemoteException(e.getMessage(), e);
         }
     }
+
+    @Override
+    public void close() throws RemoteException {
+        try {
+            ropConnector.close();
+        } catch (IOException e) {
+            throw new RemoteException("Exception while closing ROP resources", e);
+        }
+    }
 }
