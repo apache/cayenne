@@ -1457,6 +1457,7 @@
 			</activation>
 			<modules>
 				<module>cayenne-java8</module>
+				<module>cayenne-client-jetty</module>
 				<module>cayenne-protostuff</module>
 				<module>assembly</module>
 			</modules>
