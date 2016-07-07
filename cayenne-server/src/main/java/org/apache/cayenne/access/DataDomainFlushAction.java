@@ -186,11 +186,11 @@ class DataDomainFlushAction {
 
         new DataDomainIndirectDiffBuilder(this).processIndirectChanges(changes);
 
-        insertBucket.appendQueries(queries);
-        flattenedBucket.appendInserts(queries);
-        updateBucket.appendQueries(queries);
         flattenedBucket.appendDeletes(queries);
         deleteBucket.appendQueries(queries);
+        updateBucket.appendQueries(queries);
+        insertBucket.appendQueries(queries);
+        flattenedBucket.appendInserts(queries);
     }
 
     private void runQueries() {
