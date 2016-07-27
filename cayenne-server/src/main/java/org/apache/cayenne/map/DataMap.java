@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.HashMap;
 
 import static java.util.Collections.emptyList;
 
@@ -1398,6 +1399,16 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
      */
     public String getNameWithDefaultClientPackage(String name) {
         return getNameWithPackage(defaultClientPackage, name);
+    }
+
+    public Map<String, ObjEntity> getSubclassesForObjEntity(ObjEntity superEntity) {
+        Map<String, ObjEntity> subObjectEntities = new HashMap(5);
+        for (ObjEntity objectEntity : objEntityMap.values()) {
+            if (superEntity.getName().equals(objectEntity.getSuperEntityName())) {
+                subObjectEntities.put(objectEntity.getName(), objectEntity);
+            }
+        }
+        return subObjectEntities;
     }
 
     public ReverseEngineering getReverseEngineering() {

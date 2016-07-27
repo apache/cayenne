@@ -61,6 +61,7 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
     private CutAttributeRelationshipAction cut;
     private RemoveAttributeRelationshipAction remove;
     private CopyAttributeRelationshipAction copy;
+    private JToolBar toolBar;
 
     public ObjEntityAttributeRelationshipTab(ProjectController mediator) {
         this.mediator = mediator;
@@ -95,7 +96,7 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
     }
 
     private void initToolBar() {
-        JToolBar toolBar = new JToolBar();
+        toolBar = new JToolBar();
         ActionManager actionManager = Application.getInstance().getActionManager();
 
         toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
@@ -166,5 +167,9 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
     public void currentObjEntityChanged(EntityDisplayEvent e) {
         attributePanel.currentObjEntityChanged(e);
         relationshipPanel.currentObjEntityChanged(e);
+    }
+
+    public JToolBar getToolBar() {
+        return toolBar;
     }
 }
