@@ -511,6 +511,11 @@ public class EOModelProcessor {
 						// not mistake any VARCHAR columns that just happen to have no width set in the model
 						// for CLOB columns, use externalType as an additional check.
 						sqlType = Types.CLOB;
+					} else if(sqlType == TypesMapping.NOT_DEFINED && externalType != null) {
+						// At this point we usually hit a custom Java class through a prototype, which isn't resolvable
+						// with the model alone. But we can use the externalType as a hint. If that still doesn't match
+						// anything, sqlType will still be NOT_DEFINED.
+						sqlType = TypesMapping.getSqlTypeByName(externalType.toUpperCase());
 					}
 					dbAttr = new EODbAttribute(dbAttrName, sqlType, dbEntity);
 					dbAttr.setEoAttributeName(attrName);
