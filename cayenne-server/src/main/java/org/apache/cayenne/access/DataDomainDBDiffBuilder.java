@@ -19,22 +19,16 @@
 
 package org.apache.cayenne.access;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataDomainSyncBucket.PropagatedValueFactory;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Processes object diffs, generating DB diffs. Can be used for both UPDATE and
@@ -97,9 +91,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
             for (final Map.Entry<Object, Object> entry : currentPropertyDiff.entrySet()) {
                 ObjAttribute attribute = objEntity.getAttribute(entry.getKey().toString());
 
-                // in case of a flattened attribute, ensure that it belongs to
-                // this
-                // bucket...
+                // In case of a flattened attribute, ensure that it belongs to this bucket...
                 DbAttribute dbAttribute = attribute.getDbAttribute();
                 if (dbAttribute.getEntity() == dbEntity) {
                     dbDiff.put(dbAttribute.getName(), entry.getValue());
@@ -123,12 +115,15 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
                     dbRelation = relation.getDbRelationships().get(0);
                 }
 
-                ObjectId targetId = (ObjectId) entry.getValue();
-                for (DbJoin join : dbRelation.getJoins()) {
-                    Object value = (targetId != null) ? new PropagatedValueFactory(targetId, join.getTargetName())
-                            : null;
+                // In case of a vertical inheritance, ensure that it belongs to this bucket...
+                if (dbRelation.getSourceEntity() == dbEntity) {
+                    ObjectId targetId = (ObjectId) entry.getValue();
+                    for (DbJoin join : dbRelation.getJoins()) {
+                        Object value = (targetId != null) ? new PropagatedValueFactory(targetId, join.getTargetName())
+                                : null;
 
-                    dbDiff.put(join.getSourceName(), value);
+                        dbDiff.put(join.getSourceName(), value);
+                    }
                 }
             }
         }

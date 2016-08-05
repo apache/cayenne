@@ -37,6 +37,7 @@ CAY-2084 ObjectIdQuery - no cache access polymorphism
 CAY-2086 SelectById.selectFirst stack overflow
 CAY-2087 PostCommitFilter is confused about changes made by Pre* listeners
 CAY-2089 HTTP connections aren't always closed in new ROP implementation
+CAY-2097 NullPointerException while updating relationships for entities with vertical inheritance
 
 ----------------------------------
 Release: 4.0.M3
