@@ -3,7 +3,7 @@
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/8/modelMap http://cayenne.apache.org/schema/8/modelMap.xsd"
 	 project-version="8">
-	<property name="defaultPackage" value="org.apache.cayenne.testdo.inheritance.vertical"/>
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.inheritance_vertical"/>
 	<db-entity name="IV1_ROOT">
 		<db-attribute name="DISCRIMINATOR" type="VARCHAR" length="10"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -42,6 +42,22 @@
 		<db-attribute name="SUB2_ATTR" type="VARCHAR" length="100"/>
 		<db-attribute name="SUB2_NAME" type="VARCHAR" length="100"/>
 	</db-entity>
+	<db-entity name="IV_CONCRETE">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="IV_ABSTRACT">
+		<db-attribute name="PARENT_ID" type="INTEGER"/>
+		<db-attribute name="TYPE" type="CHAR" isMandatory="true" length="1"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="IvConcrete" superEntityName="IvAbstract" className="org.apache.cayenne.testdo.inheritance_vertical.IvConcrete">
+		<qualifier><![CDATA[type = "S"]]></qualifier>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="concrete.NAME"/>
+	</obj-entity>
+	<obj-entity name="IvAbstract" abstract="true" className="org.apache.cayenne.testdo.inheritance_vertical.IvAbstract" dbEntityName="IV_ABSTRACT">
+		<obj-attribute name="type" type="java.lang.String" db-attribute-path="TYPE"/>
+	</obj-entity>
 	<obj-entity name="Iv1Root" className="org.apache.cayenne.testdo.inheritance_vertical.Iv1Root" dbEntityName="IV1_ROOT">
 		<obj-attribute name="discriminator" type="java.lang.String" db-attribute-path="DISCRIMINATOR"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
@@ -80,6 +96,18 @@
 		<obj-attribute name="sub2Attr" type="java.lang.String" db-attribute-path="sub2.SUB2_ATTR"/>
 		<obj-attribute name="sub2Name" type="java.lang.String" db-attribute-path="sub2.SUB2_NAME"/>
 	</obj-entity>
+	<db-relationship name="abstract" source="IV_CONCRETE" target="IV_ABSTRACT" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="concrete" source="IV_ABSTRACT" target="IV_CONCRETE" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="parent" source="IV_ABSTRACT" target="IV_ABSTRACT" toMany="false">
+		<db-attribute-pair source="PARENT_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="children" source="IV_ABSTRACT" target="IV_ABSTRACT" toMany="true">
+		<db-attribute-pair source="ID" target="PARENT_ID"/>
+	</db-relationship>
 	<db-relationship name="sub1" source="IV1_ROOT" target="IV1_SUB1" toDependentPK="true" toMany="false">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
@@ -117,4 +145,6 @@
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="x" source="Iv2Sub1" target="Iv2X" deleteRule="Nullify" db-relationship-path="sub1.x"/>
+	<obj-relationship name="parent" source="IvConcrete" target="IvConcrete" deleteRule="Nullify" db-relationship-path="parent"/>
+	<obj-relationship name="children" source="IvConcrete" target="IvConcrete" deleteRule="Deny" db-relationship-path="children"/>
 </data-map>

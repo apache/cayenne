@@ -1,5 +1,6 @@
 package org.apache.cayenne.testdo.inheritance_vertical.auto;
 
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_vertical.IvSub1;
 
 /**
@@ -10,15 +11,17 @@ import org.apache.cayenne.testdo.inheritance_vertical.IvSub1;
  */
 public abstract class _IvSub1Sub1 extends IvSub1 {
 
-    public static final String SUB1SUB1NAME_PROPERTY = "sub1Sub1Name";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<String> SUB1SUB1NAME = new Property<String>("sub1Sub1Name");
+
     public void setSub1Sub1Name(String sub1Sub1Name) {
-        writeProperty(SUB1SUB1NAME_PROPERTY, sub1Sub1Name);
+        writeProperty("sub1Sub1Name", sub1Sub1Name);
     }
     public String getSub1Sub1Name() {
-        return (String)readProperty(SUB1SUB1NAME_PROPERTY);
+        return (String)readProperty("sub1Sub1Name");
     }
 
 }
