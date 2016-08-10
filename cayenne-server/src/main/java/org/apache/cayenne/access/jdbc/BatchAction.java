@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.Collections;
-
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
@@ -37,12 +29,17 @@ import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
+
+import java.sql.*;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @since 1.2
@@ -161,8 +158,7 @@ public class BatchAction extends BaseSQLAction {
 
 		DbAdapter adapter = dataNode.getAdapter();
 
-		try (PreparedStatement statement = (generatesKeys) ? connection.prepareStatement(queryStr,
-				Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(queryStr);) {
+		try (PreparedStatement statement = prepareStatement(connection, queryStr, adapter, generatesKeys)) {
 			for (BatchQueryRow row : query.getRows()) {
 
 				DbAttributeBinding[] bindings = translator.updateBindings(row);
@@ -185,6 +181,35 @@ public class BatchAction extends BaseSQLAction {
 				logger.logUpdateCount(updated);
 			}
 		}
+	}
+
+	private PreparedStatement prepareStatement(
+			Connection connection,
+			String queryStr,
+			DbAdapter adapter,
+			boolean generatedKeys)
+			throws SQLException {
+
+		if (generatedKeys) {
+
+			if (adapter.unwrap().getClass().equals(PostgresAdapter.class)) {
+				Collection<DbAttribute> generatedAttributes = query.getDbEntity().getGeneratedAttributes();
+				String[] generatedPKColumns = new String[generatedAttributes.size()];
+
+				int i = 0;
+				for (DbAttribute generatedAttribute : generatedAttributes) {
+					if (generatedAttribute.isPrimaryKey()) {
+						generatedPKColumns[i++] = generatedAttribute.getName().toLowerCase();
+					}
+				}
+
+				return connection.prepareStatement(queryStr, generatedPKColumns);
+			}
+
+			return connection.prepareStatement(queryStr, Statement.RETURN_GENERATED_KEYS);
+		}
+
+		return connection.prepareStatement(queryStr);
 	}
 
 	/**

@@ -27,6 +27,7 @@ Broken PostgreSQL types mapping.
    <jdbc-type name="ARRAY"/>
    <jdbc-type name="BIGINT">
        <db-type name="bigint"/>
+       <db-type name="bigserial"/>
    </jdbc-type>
    <jdbc-type name="BINARY">
        <db-type name="bytea"/>
@@ -68,6 +69,7 @@ Broken PostgreSQL types mapping.
    </jdbc-type>
    <jdbc-type name="INTEGER">
        <db-type name="integer"/>
+       <db-type name="serial"/>
    </jdbc-type>
    <jdbc-type name="JAVA_OBJECT"/>
    <jdbc-type name="LONGVARBINARY">
@@ -89,6 +91,7 @@ Broken PostgreSQL types mapping.
    <jdbc-type name="REF"/>
    <jdbc-type name="SMALLINT">
        <db-type name="smallint"/>
+       <db-type name="smallserial"/>
    </jdbc-type>
    <jdbc-type name="STRUCT"/>
    <jdbc-type name="TIME">
