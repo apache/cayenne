@@ -520,7 +520,7 @@ public class VerticalInheritanceIT extends ServerCase {
 	}
 
 	@Test
-	public void testUpdateWithRelationshi() {
+	public void testUpdateWithRelationship() {
 		IvConcrete parent1 = context.newObject(IvConcrete.class);
 		parent1.setName("Parent1");
 		context.commitChanges();
