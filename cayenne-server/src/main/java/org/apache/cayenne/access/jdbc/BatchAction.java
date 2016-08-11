@@ -29,7 +29,6 @@ import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
@@ -183,33 +182,11 @@ public class BatchAction extends BaseSQLAction {
 		}
 	}
 
-	private PreparedStatement prepareStatement(
-			Connection connection,
-			String queryStr,
-			DbAdapter adapter,
-			boolean generatedKeys)
-			throws SQLException {
-
-		if (generatedKeys) {
-
-			if (adapter.unwrap().getClass().equals(PostgresAdapter.class)) {
-				Collection<DbAttribute> generatedAttributes = query.getDbEntity().getGeneratedAttributes();
-				String[] generatedPKColumns = new String[generatedAttributes.size()];
-
-				int i = 0;
-				for (DbAttribute generatedAttribute : generatedAttributes) {
-					if (generatedAttribute.isPrimaryKey()) {
-						generatedPKColumns[i++] = generatedAttribute.getName().toLowerCase();
-					}
-				}
-
-				return connection.prepareStatement(queryStr, generatedPKColumns);
-			}
-
-			return connection.prepareStatement(queryStr, Statement.RETURN_GENERATED_KEYS);
-		}
-
-		return connection.prepareStatement(queryStr);
+	protected PreparedStatement prepareStatement(Connection connection,	String queryStr,
+												 DbAdapter adapter,	boolean generatedKeys) throws SQLException {
+		return (generatedKeys)
+				? connection.prepareStatement(queryStr, Statement.RETURN_GENERATED_KEYS)
+				: connection.prepareStatement(queryStr);
 	}
 
 	/**
