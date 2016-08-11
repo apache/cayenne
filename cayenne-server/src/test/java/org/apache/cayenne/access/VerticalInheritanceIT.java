@@ -538,6 +538,10 @@ public class VerticalInheritanceIT extends ServerCase {
 		context.commitChanges();
 
 		assertEquals(parent2, child.getParent());
+
+		// Manually delete child to prevent a foreign key constraint failure while cleaning MySQL db
+		context.deleteObject(child);
+		context.commitChanges();
 	}
 
 }
