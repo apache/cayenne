@@ -19,16 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
@@ -44,7 +34,6 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -66,6 +55,16 @@ import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.Util;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The most common implementation of {@link ObjectContext}. DataContext is an isolated
@@ -328,6 +327,7 @@ public class DataContext extends BaseContext {
         final ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(
                 entity.getName());
         final DataRow snapshot = new DataRow(10);
+        snapshot.setEntityName(entity.getName());
 
         descriptor.visitProperties(new PropertyVisitor() {
 
