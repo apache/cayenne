@@ -53,7 +53,6 @@ public class DataContextObjectIdQuery_PolymorphicTest extends ServerCase {
 
 		queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-			@Override
 			public void execute() {
 				// use different context to ensure we hit shared cache
 				AbstractPerson ap2 = (AbstractPerson) Cayenne.objectForQuery(context2, q1);
@@ -73,8 +72,7 @@ public class DataContextObjectIdQuery_PolymorphicTest extends ServerCase {
 		assertTrue(ap1 instanceof Manager);
 
 		queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-			@Override
+			
 			public void execute() {
 				// use same context to ensure we hit local cache
 				// note that this does not guarantee test correctness. If local
@@ -105,7 +103,7 @@ public class DataContextObjectIdQuery_PolymorphicTest extends ServerCase {
 
 
 		queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-			
+
 			public void execute() {
 				// use different context to ensure we hit shared cache
 				AbstractPerson ap1 = (AbstractPerson) Cayenne.objectForQuery(context2, q1);
