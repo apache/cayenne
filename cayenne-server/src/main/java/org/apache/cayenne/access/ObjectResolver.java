@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
@@ -37,6 +31,14 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * DataRows-to-objects converter for a specific ObjEntity.
@@ -44,6 +46,8 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * @since 1.2
  */
 class ObjectResolver {
+
+	private static final Log LOGGER = LogFactory.getLog(ObjectResolver.class);
 
 	DataContext context;
 	ClassDescriptor descriptor;
@@ -255,8 +259,17 @@ class ObjectResolver {
 		public final ClassDescriptor descriptorForRow(DataRow row) {
 			String entityName = row.getEntityName();
 
-			// null probably means that inheritance qualifiers are messed up
-			return (entityName != null) ? context.getEntityResolver().getClassDescriptor(entityName) : descriptor;
+			// null either means a bug in Cayenne (e.g. CAY-2101) or the inheritance qualifiers are messed up
+			if(entityName == null) {
+
+				if(LOGGER.isWarnEnabled()) {
+					LOGGER.warn("** Null entity name for DataRow, can't resolve sub descriptor for "
+							+ descriptor.getEntity().getName());
+					return descriptor;
+				}
+			}
+
+			return context.getEntityResolver().getClassDescriptor(entityName);
 		}
 	}
 }

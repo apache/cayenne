@@ -19,29 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
@@ -80,6 +57,29 @@ import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextIT extends ServerCase {
@@ -183,6 +183,7 @@ public class DataContextIT extends ServerCase {
 		DataRow snapshot = context.currentSnapshot(artist);
 		assertEquals(artist.getArtistName(), snapshot.get("ARTIST_NAME"));
 		assertEquals(artist.getDateOfBirth(), snapshot.get("DATE_OF_BIRTH"));
+		assertEquals("Artist", snapshot.getEntityName());
 	}
 
 	@Test
@@ -198,6 +199,8 @@ public class DataContextIT extends ServerCase {
 		artist.setDateOfBirth(null);
 
 		DataRow snapshot = context.currentSnapshot(artist);
+		assertEquals("Artist", snapshot.getEntityName());
+
 		assertTrue(snapshot.containsKey("ARTIST_NAME"));
 		assertNull(snapshot.get("ARTIST_NAME"));
 
@@ -220,6 +223,7 @@ public class DataContextIT extends ServerCase {
 		p1.setToArtist(artist);
 
 		DataRow s1 = context.currentSnapshot(p1);
+		assertEquals("Painting", s1.getEntityName());
 		Map<String, Object> idMap = artist.getObjectId().getIdSnapshot();
 		assertEquals(idMap.get("ARTIST_ID"), s1.get("ARTIST_ID"));
 	}

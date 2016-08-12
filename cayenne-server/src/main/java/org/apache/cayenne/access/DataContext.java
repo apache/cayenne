@@ -312,6 +312,7 @@ public class DataContext extends BaseContext {
         ObjEntity entity = getEntityResolver().getObjEntity(object);
         final ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
         final DataRow snapshot = new DataRow(10);
+        snapshot.setEntityName(entity.getName());
 
         descriptor.visitProperties(new PropertyVisitor() {
 

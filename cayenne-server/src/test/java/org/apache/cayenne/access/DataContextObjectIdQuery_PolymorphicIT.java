@@ -1,22 +1,23 @@
 package org.apache.cayenne.access;
 
-import static org.junit.Assert.assertTrue;
-
-import java.sql.SQLException;
-import java.sql.Types;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
+import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.PeopleProjectCase;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.sql.SQLException;
+import java.sql.Types;
+
+import static org.junit.Assert.assertTrue;
 
 public class DataContextObjectIdQuery_PolymorphicIT extends PeopleProjectCase {
 
@@ -55,6 +56,36 @@ public class DataContextObjectIdQuery_PolymorphicIT extends PeopleProjectCase {
 				// use different context to ensure we hit shared cache
 				AbstractPerson ap2 = (AbstractPerson) Cayenne.objectForQuery(context2, q1);
 				assertTrue(ap2 instanceof Manager);
+			}
+		});
+	}
+
+	@Test
+	public void testPolymorphicSharedCache_AfterCayenneInsert() throws SQLException {
+
+
+		// see CAY-2101... we are trying to get a snapshot from a new object in the shared cache, and then read this
+		// object via a relationship, so that shared cache is consulted
+		Employee e = context1.newObject(Employee.class);
+		e.setName("E1");
+		e.setSalary(1234.01f);
+
+		context1.commitChanges();
+
+
+		final ObjectIdQuery q1 = new ObjectIdQuery(
+				new ObjectId("AbstractPerson", "PERSON_ID", Cayenne.intPKForObject(e)),
+				false,
+				ObjectIdQuery.CACHE);
+
+
+		queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+			@Override
+			public void execute() {
+				// use different context to ensure we hit shared cache
+				AbstractPerson ap1 = (AbstractPerson) Cayenne.objectForQuery(context2, q1);
+				assertTrue(ap1 instanceof Employee);
 			}
 		});
 	}
