@@ -25,6 +25,7 @@ CAY-2076 Implement Jetty HTTP/1.1 and HTTP/2 Client support for ROP Client
 CAY-2083 Implement Protostuff as serialization service for Cayenne ROP
 CAY-2090 Untangle HttpRemoteService from ServiceContext thread local setup
 CAY-2100 Add supporting generated keys for PostgreSQL
+CAY-2102 EJBQL: db: path not supported in select columns
 
 Bug Fixes:
 

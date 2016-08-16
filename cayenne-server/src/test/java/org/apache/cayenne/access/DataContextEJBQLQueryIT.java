@@ -201,6 +201,42 @@ public class DataContextEJBQLQueryIT extends ServerCase {
     }
 
     @Test
+    public void testSelectDbPath() throws Exception {
+        createFourArtistsTwoPaintings();
+
+        String ejbql = "select db:p.ESTIMATED_PRICE "
+                + "from Painting p order by p.estimatedPrice";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List<?> data = context.performQuery(query);
+        assertEquals(2, data.size());
+
+        assertTrue(data.get(0) instanceof BigDecimal);
+        assertEquals(new BigDecimal(3000d), data.get(0));
+
+        assertTrue(data.get(1) instanceof BigDecimal);
+        assertEquals(new BigDecimal(5000d), data.get(1));
+    }
+
+    @Test
+    public void testSelectDbPath_Relationship() throws Exception {
+        createFourArtistsTwoPaintings();
+
+        String ejbql = "select db:p.toArtist "
+                + "from Painting p order by p.estimatedPrice";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List<?> data = context.performQuery(query);
+        assertEquals(2, data.size());
+
+        assertTrue(data.get(0) instanceof Artist);
+        assertEquals(33001, Cayenne.intPKForObject((Artist) data.get(0)));
+
+        assertTrue(data.get(1) instanceof Artist);
+        assertEquals(33002, Cayenne.intPKForObject((Artist) data.get(1)));
+    }
+
+    @Test
     public void testSimpleSelect() throws Exception {
         createFourArtistsTwoPaintings();
 

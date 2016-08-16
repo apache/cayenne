@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.ejbql;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
@@ -33,6 +29,10 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Translator of the EJBQL select clause.
@@ -60,6 +60,62 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
     @Override
     public boolean visitAggregate(EJBQLExpression expression) {
         expression.visit(context.getTranslatorFactory().getAggregateColumnTranslator(context));
+        return false;
+    }
+
+    @Override
+    public boolean visitDbPath(EJBQLExpression expression, int finishedChildIndex) {
+
+        EJBQLDbPathTranslator pathTranslator = new EJBQLDbPathTranslator(context) {
+            @Override
+            protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
+                throw new EJBQLException("Can't use multi-column paths in column clause");
+            }
+
+            @Override
+            protected void processTerminatingRelationship(DbRelationship relationship) {
+                Map<String, String> xfields = null;
+                if (context.isAppendingResultColumns()) {
+                    xfields = context.nextEntityResult().getFields();
+                }
+
+                final Map<String, String> fields = xfields;
+
+                DbEntity table = (DbEntity) relationship.getTargetEntity();
+                Collection<DbAttribute> dbAttr = table.getAttributes();
+
+                Iterator<DbAttribute> it = dbAttr.iterator();
+                if (dbAttr.size() > 0) {
+                    resolveJoin();
+                }
+
+                String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
+                        .getQuotingStrategy().quotedFullyQualifiedName(table));
+
+                boolean first = true;
+                while (it.hasNext()) {
+
+                    context.append(!first ? ", " : " ");
+
+                    DbAttribute dbAttribute = it.next();
+                    appendColumn(TypesMapping.getJavaBySqlType(dbAttribute.getType()), alias, dbAttribute,
+                            fields != null ? fields.get(dbAttribute.getName()) : "");
+
+                    first = false;
+                }
+            }
+
+            @Override
+            protected void processTerminatingAttribute(DbAttribute attribute) {
+                String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
+                        .getQuotingStrategy().quotedFullyQualifiedName(currentEntity));
+
+                appendColumn(TypesMapping.getJavaBySqlType(attribute.getType()), alias, attribute,
+                        context.isAppendingResultColumns() ? context.nextColumnAlias() : "");
+            }
+        };
+
+        expression.visit(pathTranslator);
         return false;
     }
 
