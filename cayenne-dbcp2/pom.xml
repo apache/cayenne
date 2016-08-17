@@ -67,10 +67,6 @@
             <plugin>
                 <artifactId>maven-pmd-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-            </plugin>
         </plugins>
     </build>
 </project>
