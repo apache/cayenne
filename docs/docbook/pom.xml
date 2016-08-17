@@ -34,6 +34,7 @@
 		<module>cayenne-guide</module>
 		<module>getting-started</module>
 		<module>getting-started-rop</module>
+        <module>getting-started-reverse-engineering</module>
 		<module>upgrade-guide</module>
     </modules>
 
