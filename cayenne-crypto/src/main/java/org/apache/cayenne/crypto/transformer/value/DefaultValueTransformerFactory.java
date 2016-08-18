@@ -47,11 +47,11 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 
     private final Key defaultKey;
 
-    private final Map<String, BytesConverter> objectToBytes;
-    private final Map<Integer, BytesConverter> dbToBytes;
+    private final Map<String, BytesConverter<?>> objectToBytes;
+    private final Map<Integer, BytesConverter<?>> dbToBytes;
 
-    private final Map<String, BytesConverter> bytesToObject;
-    private final Map<Integer, BytesConverter> bytesToDb;
+    private final Map<String, BytesConverter<?>> bytesToObject;
+    private final Map<Integer, BytesConverter<?>> bytesToDb;
 
     private final ConcurrentMap<DbAttribute, ValueEncryptor> encryptors;
     private final ConcurrentMap<DbAttribute, ValueDecryptor> decryptors;
@@ -98,8 +98,8 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
         return e;
     }
 
-    protected Map<Integer, BytesConverter> createDbToBytesConverters() {
-        Map<Integer, BytesConverter> map = new HashMap<Integer, BytesConverter>();
+    protected Map<Integer, BytesConverter<?>> createDbToBytesConverters() {
+        Map<Integer, BytesConverter<?>> map = new HashMap<>();
 
         map.put(Types.BINARY, BytesToBytesConverter.INSTANCE);
         map.put(Types.BLOB, BytesToBytesConverter.INSTANCE);
@@ -118,8 +118,8 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
         return map;
     }
 
-    protected Map<Integer, BytesConverter> createBytesToDbConverters() {
-        Map<Integer, BytesConverter> map = new HashMap<Integer, BytesConverter>();
+    protected Map<Integer, BytesConverter<?>> createBytesToDbConverters() {
+        Map<Integer, BytesConverter<?>> map = new HashMap<>();
 
         map.put(Types.BINARY, BytesToBytesConverter.INSTANCE);
         map.put(Types.BLOB, BytesToBytesConverter.INSTANCE);
@@ -138,8 +138,8 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
         return map;
     }
 
-    protected Map<String, BytesConverter> createObjectToBytesConverters() {
-        Map<String, BytesConverter> map = new HashMap<>();
+    protected Map<String, BytesConverter<?>> createObjectToBytesConverters() {
+        Map<String, BytesConverter<?>> map = new HashMap<>();
 
         map.put("byte[]", BytesToBytesConverter.INSTANCE);
         map.put(String.class.getName(), Utf8StringConverter.INSTANCE);
@@ -162,9 +162,9 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
         return map;
     }
 
-    protected Map<String, BytesConverter> createBytesToObjectConverters() {
+    protected Map<String, BytesConverter<?>> createBytesToObjectConverters() {
 
-        Map<String, BytesConverter> map = new HashMap<>();
+        Map<String, BytesConverter<?>> map = new HashMap<>();
 
         map.put("byte[]", BytesToBytesConverter.INSTANCE);
         map.put(String.class.getName(), Utf8StringConverter.INSTANCE);
@@ -191,13 +191,13 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 
         String type = getJavaType(a);
 
-        BytesConverter toBytes = objectToBytes.get(type);
+        BytesConverter<?> toBytes = objectToBytes.get(type);
         if (toBytes == null) {
             throw new IllegalArgumentException("The type " + type + " for attribute " + a
                     + " has no object-to-bytes conversion");
         }
 
-        BytesConverter fromBytes = bytesToDb.get(a.getType());
+        BytesConverter<?> fromBytes = bytesToDb.get(a.getType());
         if (fromBytes == null) {
             throw new IllegalArgumentException("The type " + TypesMapping.getSqlNameByType(a.getType())
                     + " for attribute " + a + " has no bytes-to-db conversion");
@@ -208,14 +208,14 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 
     protected ValueDecryptor createDecryptor(DbAttribute a) {
 
-        BytesConverter toBytes = dbToBytes.get(a.getType());
+        BytesConverter<?> toBytes = dbToBytes.get(a.getType());
         if (toBytes == null) {
             throw new IllegalArgumentException("The type " + TypesMapping.getSqlNameByType(a.getType())
                     + " for attribute " + a + " has no db-to-bytes conversion");
         }
 
         String type = getJavaType(a);
-        BytesConverter fromBytes = bytesToObject.get(type);
+        BytesConverter<?> fromBytes = bytesToObject.get(type);
         if (fromBytes == null) {
             throw new IllegalArgumentException("The type " + type + " for attribute " + a
                     + " has no bytes-to-object conversion");

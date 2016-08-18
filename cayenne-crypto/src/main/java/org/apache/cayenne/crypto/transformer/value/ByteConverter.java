@@ -21,9 +21,9 @@ package org.apache.cayenne.crypto.transformer.value;
 /**
  * @since 4.0
  */
-public class ByteConverter implements BytesConverter {
+public class ByteConverter implements BytesConverter<Byte> {
 
-    public static final BytesConverter INSTANCE = new ByteConverter();
+    public static final BytesConverter<Byte> INSTANCE = new ByteConverter();
     private static final int BYTES = 1;
 
     static byte getByte(byte[] bytes) {
@@ -39,18 +39,12 @@ public class ByteConverter implements BytesConverter {
     }
 
     @Override
-    public Object fromBytes(byte[] bytes) {
+    public Byte fromBytes(byte[] bytes) {
         return getByte(bytes);
     }
 
     @Override
-    public byte[] toBytes(Object value) {
-
-        long number = ((Number) value).longValue();
-        if (number <= Byte.MAX_VALUE && number >= Byte.MIN_VALUE) {
-            return getBytes((byte) number);
-        }
-
-        throw new IllegalArgumentException("Byte is out of range: " + number);
+    public byte[] toBytes(Byte value) {
+        return getBytes(value);
     }
 }

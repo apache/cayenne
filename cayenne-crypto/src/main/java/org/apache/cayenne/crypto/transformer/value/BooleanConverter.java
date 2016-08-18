@@ -1,3 +1,21 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
 /**
@@ -5,12 +23,12 @@ package org.apache.cayenne.crypto.transformer.value;
  *
  * @since 4.0
  */
-public class BooleanConverter implements BytesConverter {
+public class BooleanConverter implements BytesConverter<Boolean> {
 
-    static final BytesConverter INSTANCE = new BooleanConverter();
+    static final BytesConverter<Boolean> INSTANCE = new BooleanConverter();
 
     @Override
-    public Object fromBytes(byte[] bytes) {
+    public Boolean fromBytes(byte[] bytes) {
 
         if (bytes.length != 1) {
             throw new IllegalArgumentException("Unexpected number of bytes for boolean: " + bytes.length);
@@ -27,9 +45,9 @@ public class BooleanConverter implements BytesConverter {
     }
 
     @Override
-    public byte[] toBytes(Object value) {
+    public byte[] toBytes(Boolean value) {
         return new byte[]{
-                ((Boolean) value) ? (byte) 1 : 0
+                value ? (byte) 1 : 0
         };
     }
 }

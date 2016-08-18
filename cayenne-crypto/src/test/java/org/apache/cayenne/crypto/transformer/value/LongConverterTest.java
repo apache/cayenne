@@ -43,7 +43,7 @@ public class LongConverterTest {
     public void testToBytes() {
         assertArrayEquals(new byte[]{127, -1, -1, -1, -1, -1, -1, -2}, new LongConverter().toBytes((long) (Long.MAX_VALUE - 1l)));
         assertArrayEquals(new byte[]{127, -1, -1, -2}, new LongConverter().toBytes((long) (Integer.MAX_VALUE - 1)));
-        assertArrayEquals(new byte[]{127, -2}, new LongConverter().toBytes(Short.MAX_VALUE - 1));
-        assertArrayEquals(new byte[]{-7}, new LongConverter().toBytes(-7));
+        assertArrayEquals(new byte[]{127, -2}, new LongConverter().toBytes(Short.MAX_VALUE - 1l));
+        assertArrayEquals(new byte[]{-7}, new LongConverter().toBytes(-7l));
     }
 }

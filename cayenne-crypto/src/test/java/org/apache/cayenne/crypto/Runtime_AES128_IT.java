@@ -72,7 +72,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
 
         Object[] data = table1.select();
         assertEquals(59, data[3]);
-        assertEquals(61, IntegerConverter.INSTANCE.fromBytes(CryptoUnitUtils.decrypt_AES_CBC((byte[]) data[4], runtime)));
+        assertEquals(new Integer(61), IntegerConverter.INSTANCE.fromBytes(CryptoUnitUtils.decrypt_AES_CBC((byte[]) data[4], runtime)));
     }
 
     @Test

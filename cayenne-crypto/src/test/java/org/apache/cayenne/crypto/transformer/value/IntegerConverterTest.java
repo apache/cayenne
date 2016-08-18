@@ -53,9 +53,4 @@ public class IntegerConverterTest {
         assertArrayEquals(new byte[]{127, -2}, new IntegerConverter().toBytes(Short.MAX_VALUE - 1));
         assertArrayEquals(new byte[]{-7}, new IntegerConverter().toBytes(-7));
     }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testToBytesOverflow() {
-        new IntegerConverter().toBytes(new Long(Integer.MAX_VALUE + 55l));
-    }
 }

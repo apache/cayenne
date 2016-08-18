@@ -21,9 +21,10 @@ package org.apache.cayenne.crypto.transformer.value;
 /**
  * @since 4.0
  */
-class BytesToBytesConverter implements BytesConverter {
+// we can't use <byte[]> , so parameterizing this converter to Object
+public class BytesToBytesConverter implements BytesConverter<Object> {
 
-    static final BytesToBytesConverter INSTANCE = new BytesToBytesConverter();
+    static final BytesConverter<Object> INSTANCE = new BytesToBytesConverter();
 
     @Override
     public byte[] toBytes(Object value) {
