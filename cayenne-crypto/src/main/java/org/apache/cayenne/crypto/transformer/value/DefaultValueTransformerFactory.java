@@ -174,6 +174,12 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 
         map.put("byte[]", BytesToBytesConverter.INSTANCE);
         map.put(String.class.getName(), Utf8StringConverter.INSTANCE);
+        
+        map.put(Double.class.getName(), DoubleConverter.INSTANCE);
+        map.put(Double.TYPE.getName(), DoubleConverter.INSTANCE);
+
+        map.put(Float.class.getName(), FloatConverter.INSTANCE);
+        map.put(Float.TYPE.getName(), FloatConverter.INSTANCE);
 
         map.put(Long.class.getName(), LongConverter.INSTANCE);
         map.put(Long.TYPE.getName(), LongConverter.INSTANCE);
