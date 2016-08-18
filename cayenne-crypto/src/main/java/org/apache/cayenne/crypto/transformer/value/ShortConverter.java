@@ -41,7 +41,7 @@ public class ShortConverter implements BytesConverter<Short> {
 
     static byte[] getBytes(short k) {
 
-        if (k <= Byte.MAX_VALUE) {
+        if (k >= Byte.MIN_VALUE && k <= Byte.MAX_VALUE) {
             return ByteConverter.getBytes((byte) k);
         }
 
