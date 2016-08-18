@@ -49,7 +49,7 @@ public class LongConverter implements BytesConverter<Long> {
 
     static byte[] getBytes(long k) {
 
-        if (k <= Integer.MAX_VALUE) {
+        if (k >= Integer.MIN_VALUE && k <= Integer.MAX_VALUE) {
             return IntegerConverter.getBytes((int) k);
         }
 

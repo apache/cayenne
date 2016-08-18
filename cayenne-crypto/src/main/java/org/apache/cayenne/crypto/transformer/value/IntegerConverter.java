@@ -42,7 +42,7 @@ public class IntegerConverter implements BytesConverter<Integer> {
 
     static byte[] getBytes(int k) {
 
-        if (k <= Short.MAX_VALUE) {
+        if (k >= Short.MIN_VALUE && k <= Short.MAX_VALUE) {
             return ShortConverter.getBytes((short) k);
         }
 
