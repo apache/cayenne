@@ -23,7 +23,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.test.junit.AssertExtras;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -128,11 +127,11 @@ public class DataContextEJBQLGroupByHavingIT extends ServerCase {
         assertTrue(data.get(0) instanceof Object[]);
 
         Object[] row0 = (Object[]) data.get(0);
-        AssertExtras.assertEquals(new BigDecimal(1d), row0[0], 0.001d);
+        assertEquals(1d, ((BigDecimal) row0[0]).doubleValue(), 0.00001d);
         assertEquals(new Long(3), row0[1]);
 
         Object[] row1 = (Object[]) data.get(1);
-        AssertExtras.assertEquals(new BigDecimal(2d), row1[0], 0.001d);
+        assertEquals(2d, ((BigDecimal) row1[0]).doubleValue(), 0.00001d);
         assertEquals(new Long(2l), row1[1]);
     }
 
@@ -150,17 +149,17 @@ public class DataContextEJBQLGroupByHavingIT extends ServerCase {
         assertTrue(data.get(0) instanceof Object[]);
 
         Object[] row0 = (Object[]) data.get(0);
-        AssertExtras.assertEquals(new BigDecimal(1d), row0[0], 0.001d);
+        assertEquals(1d, ((BigDecimal) row0[0]).doubleValue(), 0.00001d);
         assertEquals("PX", row0[1]);
         assertEquals(new Long(1), row0[2]);
 
         Object[] row1 = (Object[]) data.get(1);
-        AssertExtras.assertEquals(new BigDecimal(1), row1[0], 0.001d);
+        assertEquals(1d, ((BigDecimal) row1[0]).doubleValue(), 0.00001d);
         assertEquals("PZ", row1[1]);
         assertEquals(new Long(2), row1[2]);
 
         Object[] row2 = (Object[]) data.get(2);
-        AssertExtras.assertEquals(new BigDecimal(2d), row2[0], 0.001d);
+        assertEquals(2d, ((BigDecimal) row2[0]).doubleValue(), 0.00001d);
         assertEquals("PY", row2[1]);
         assertEquals(new Long(2), row2[2]);
     }
@@ -221,7 +220,7 @@ public class DataContextEJBQLGroupByHavingIT extends ServerCase {
         assertTrue(data.get(0) instanceof Object[]);
 
         Object[] row0 = (Object[]) data.get(0);
-        AssertExtras.assertEquals(new BigDecimal(2d), row0[0], 0.001d);
+        assertEquals(2d, ((BigDecimal) row0[0]).doubleValue(), 0.00001d);
         assertEquals(new Long(2), row0[1]);
     }
 
@@ -239,7 +238,7 @@ public class DataContextEJBQLGroupByHavingIT extends ServerCase {
         assertTrue(data.get(0) instanceof Object[]);
 
         Object[] row0 = (Object[]) data.get(0);
-        AssertExtras.assertEquals(new BigDecimal(1d), row0[0], 0.001d);
+        assertEquals(1d, ((BigDecimal) row0[0]).doubleValue(), 0.00001d);
         assertEquals(new Long(3l), row0[1]);
     }
 
@@ -257,7 +256,7 @@ public class DataContextEJBQLGroupByHavingIT extends ServerCase {
         assertTrue(data.get(0) instanceof Object[]);
 
         Object[] row0 = (Object[]) data.get(0);
-        AssertExtras.assertEquals(new BigDecimal(1d), row0[0], 0.001d);
+        assertEquals(1d, ((BigDecimal) row0[0]).doubleValue(), 0.00001d);
         assertEquals(new Long(3l), row0[1]);
     }
 
