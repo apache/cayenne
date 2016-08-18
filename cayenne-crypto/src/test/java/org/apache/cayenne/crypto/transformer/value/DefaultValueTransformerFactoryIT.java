@@ -18,6 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.crypto.key.KeySource;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.sql.Types;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
@@ -25,27 +34,18 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.sql.Types;
+public class DefaultValueTransformerFactoryIT {
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.crypto.key.KeySource;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.junit.Before;
-import org.junit.Test;
+    private static DbEntity t1;
+    private static DbEntity t2;
+    private static DbEntity t3;
 
-public class DefaultValueTransformerFactoryTest {
-
-    private DbEntity t1;
-    private DbEntity t2;
-    private DbEntity t3;
-
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void beforeClass() throws Exception {
         ServerRuntime runtime = new ServerRuntime("cayenne-crypto.xml");
-        this.t1 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE1");
-        this.t2 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE2");
-        this.t3 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE3");
+        t1 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE1");
+        t2 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE2");
+        t3 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE3");
     }
 
     @Test

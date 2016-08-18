@@ -34,7 +34,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.junit.Before;
 import org.junit.Test;
 
-public class Runtime_AES128_Test extends Runtime_AES128_Base {
+public class Runtime_AES128_IT extends Runtime_AES128_Base {
 
     @Before
     public void setUp() throws Exception {
