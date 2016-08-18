@@ -68,6 +68,17 @@
 	</dependencies>
 	<build>
 		<plugins>
+			<!-- This ensures LICESNE and NOTICE inclusion in all jars -->
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 			<plugin>
 				<groupId>org.apache.cayenne.plugins</groupId>
 				<artifactId>maven-cayenne-plugin</artifactId>
