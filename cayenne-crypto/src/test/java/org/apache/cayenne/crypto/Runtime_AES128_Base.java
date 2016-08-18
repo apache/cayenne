@@ -18,17 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.crypto;
 
-import java.net.URL;
-
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.crypto.key.JceksKeySourceTest;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 
+import java.net.URL;
+
 public class Runtime_AES128_Base {
 
     protected ServerRuntime runtime;
+    protected TableHelper table1;
     protected TableHelper table2;
 
     protected void setUp(boolean compress) throws Exception {
@@ -50,6 +51,10 @@ public class Runtime_AES128_Base {
 
         this.table2 = new TableHelper(dbHelper, "TABLE2").setColumns("ID", "PLAIN_BYTES", "CRYPTO_BYTES");
         table2.deleteAll();
+
+        this.table1 = new TableHelper(dbHelper, "TABLE1").setColumns("ID", "PLAIN_STRING", "CRYPTO_STRING",
+                "PLAIN_INT", "CRYPTO_INT");
+        table1.deleteAll();
     }
 
 }

@@ -23,7 +23,7 @@ import javax.xml.bind.DatatypeConverter;
 /**
  * @since 4.0
  */
-class Base64StringConverter implements BytesConverter {
+public class Base64StringConverter implements BytesConverter {
 
     static final BytesConverter INSTANCE = new Base64StringConverter();
 

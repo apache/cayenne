@@ -23,11 +23,11 @@ import java.nio.charset.Charset;
 /**
  * @since 4.0
  */
-final class Utf8StringConverter implements BytesConverter {
+public final class Utf8StringConverter implements BytesConverter {
 
     static final String DEFAULT_CHARSET = "UTF-8";
 
-    static final BytesConverter INSTANCE = new Utf8StringConverter();
+    public static final BytesConverter INSTANCE = new Utf8StringConverter();
 
     private Charset utf8;
 

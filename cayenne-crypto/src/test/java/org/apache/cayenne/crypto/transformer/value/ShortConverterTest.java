@@ -18,12 +18,31 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-/**
- * @since 4.0
- */
-public interface BytesConverter {
+import org.junit.Test;
 
-    Object fromBytes(byte[] bytes);
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
-    byte[] toBytes(Object value);
+public class ShortConverterTest {
+
+    @Test
+    public void testFromBytes_InByteRange() {
+        assertEquals(new Short((short) 6), ShortConverter.INSTANCE.fromBytes(new byte[]{6}));
+    }
+
+    @Test
+    public void testFromBytes_InShortRange() {
+        assertEquals(new Short((short) 1287), ShortConverter.INSTANCE.fromBytes(new byte[]{5, 7}));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFromBytes_TooLong() {
+        ShortConverter.INSTANCE.fromBytes(new byte[]{6, 5, 4});
+    }
+
+    @Test
+    public void testToBytes() {
+        assertArrayEquals(new byte[]{127, -2}, ShortConverter.INSTANCE.toBytes((short) (Short.MAX_VALUE - 1)));
+        assertArrayEquals(new byte[]{-7}, ShortConverter.INSTANCE.toBytes((short) -7));
+    }
 }
