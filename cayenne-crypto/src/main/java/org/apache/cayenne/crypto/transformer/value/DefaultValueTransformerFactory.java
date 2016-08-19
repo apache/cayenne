@@ -27,6 +27,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.security.Key;
 import java.sql.Types;
 import java.util.Collection;
@@ -164,6 +166,8 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 
         map.put(Boolean.class.getName(), BooleanConverter.INSTANCE);
         map.put(Date.class.getName(), UtilDateConverter.INSTANCE);
+        map.put(BigInteger.class.getName(), BigIntegerConverter.INSTANCE);
+        map.put(BigDecimal.class.getName(), BigDecimalConverter.INSTANCE);
 
         return map;
     }
@@ -195,6 +199,8 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 
         map.put(Boolean.class.getName(), BooleanConverter.INSTANCE);
         map.put(Date.class.getName(), UtilDateConverter.INSTANCE);
+        map.put(BigInteger.class.getName(), BigIntegerConverter.INSTANCE);
+        map.put(BigDecimal.class.getName(), BigDecimalConverter.INSTANCE);
 
         return map;
     }
