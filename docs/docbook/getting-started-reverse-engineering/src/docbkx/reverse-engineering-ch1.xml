@@ -109,8 +109,6 @@
                 <listitem>
                     <para>Forward Engineering  - Generating db schema according to the Java classes.</para>
                 </listitem>
-            </itemizedlist>
-            <itemizedlist>
                 <listitem>
                     <para>Reverse Engineering - Updating Java classes according to the database schema.</para>
                 </listitem>
@@ -122,10 +120,10 @@
     <section xml:id="basic-usage">
         <title>Basic Usage</title>
         <para>
-            CDBImport is a Maven plugin that helps you to do reverse engineering. In other words it helps you to synchronize
+            CDBImport is a Maven/Ant plugin that helps you to do reverse engineering. In other words it helps you to synchronize
             database structure with your Cayenne mapping config. It does not update Java classes by itself, but it synchronizes db
             and data access layer representation in Cayenne mapping file with actual database state.
-            Most common practice to complete reverse engineering is to use CGen Maven plugin after CDBImport,
+            Most common practice to complete reverse engineering is to use CDBImport followed by CGen Maven plugin,
             which does class generation according to the Cayenne mapping file updates.
         </para>
         <para>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one or more
+	contributor license agreements. See the NOTICE file distributed with
+	this work for additional information regarding copyright ownership.
+	The ASF licenses this file to you under the Apache License, Version
+	2.0 (the "License"); you may not use this file except in compliance
+	with the License. You may obtain a copy of the License at
+	
+	http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+	applicable law or agreed to in writing, software distributed under the
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+	CONDITIONS OF ANY KIND, either express or implied. See the License for
+	the specific language governing permissions and limitations under the
+	License.
+-->
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.0" xml:id="re-introduction">
+    <title>Reverse Engineering Introduction</title>
+    <section xml:id="what-is-cdbimport">
+    	<title>What is CDBImport</title>
+    	<para>
+    		CDBImport is a Maven/Ant plugin that helps you to do reverse engineering. In other words it helps you to synchronize
+    		database structure with your Cayenne mapping config. It does not update Java classes by itself, but it synchronizes db
+    		and data access layer representation in Cayenne mapping file with actual database state.
+    		Most common practice to complete reverse engineering is to use CDBImport followed by CGen Maven plugin,
+    		which does class generation according to the Cayenne mapping file updates.
+    	</para>
+    </section>
+	<section xml:id="re-configuration-file">
+		<title>Reverse Engineering configuration file</title>
+		<para>
+			Cayenne is designed to support database reverse engineering automation process via Maven and Ant build tools. 
+			You could control and configure this process in the several ways:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>Inside ANT/Maven build file</para>
+			</listitem>
+			<listitem>
+				<para>Externally in reverseEngineering.xml file, which will be used by Maven/Ant to perform cdbimport</para>
+			</listitem>
+		</itemizedlist>
+		<para>
+			Maven and Ant build files usually contain lots of configuration according to your project requirements. This is why reverseEngineering.xml
+			is designed as a sum of configuration styles of Maven and Ant. It will be quite easy to use and move your configuration from build file
+			definition into separate one. At practice you should be able to cut reverseEngineering section from Maven configuration and paste it into the 
+			external reverse engineering file without a problem. Then, put path to this file into config or it could be loaded from the datamap file. 
+			It should work for Ant at the same manner.
+		</para>
+		<para>
+			Note that each datamap has its own reverse engineering file, which is described by the &lt;reverse-engineering-config&gt; datamap tag.
+			<programlisting language="xml">
+			&lt;reverse-engineering-config name="reverseEngineering"/&gt;
+			</programlisting>
+		</para>
+		<para>
+			Here is a default template of reverse engineering file, which should help you to get started:
+		</para>
+		<programlisting language="xml">
+			&lt;?xml version="1.0" encoding="utf-8"?&gt;
+			&lt;reverseEngineering
+       				xmlns="http://cayenne.apache.org/schema/8/reverseEngineering"
+       				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       				xsi:schemaLocation="http://cayenne.apache.org/schema/8/reverseEngineering http://cayenne.apache.org/schema/8/reverseEngineering.xsd"&gt;
+
+    			&lt;skipRelationshipsLoading&gt;false&lt;/skipRelationshipsLoading&gt;
+    			&lt;skipPrimaryKeyLoading&gt;false&lt;/skipPrimaryKeyLoading&gt;
+
+    			&lt;catalog&gt;
+        			&lt;schema&gt;
+            			&lt;includeTable&gt;
+            			&lt;/includeTable&gt;
+        			&lt;/schema&gt;
+    			&lt;/catalog&gt;
+    			&lt;includeProcedure pattern=".*"/&gt;
+			&lt;/reverseEngineering&gt;
+		</programlisting>
+		<para>
+			Note that the whole database structure will be loaded after execution reverse engineering with this stub.
+		</para>
+	</section>
+</chapter>
