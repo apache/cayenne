@@ -165,6 +165,8 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
         map.put(Byte.TYPE.getName(), ByteConverter.INSTANCE);
 
         map.put(Boolean.class.getName(), BooleanConverter.INSTANCE);
+        map.put(Boolean.TYPE.getName(), BooleanConverter.INSTANCE);
+
         map.put(Date.class.getName(), UtilDateConverter.INSTANCE);
         map.put(BigInteger.class.getName(), BigIntegerConverter.INSTANCE);
         map.put(BigDecimal.class.getName(), BigDecimalConverter.INSTANCE);
@@ -198,6 +200,8 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
         map.put(Byte.TYPE.getName(), ByteConverter.INSTANCE);
 
         map.put(Boolean.class.getName(), BooleanConverter.INSTANCE);
+        map.put(Boolean.TYPE.getName(), BooleanConverter.INSTANCE);
+
         map.put(Date.class.getName(), UtilDateConverter.INSTANCE);
         map.put(BigInteger.class.getName(), BigIntegerConverter.INSTANCE);
         map.put(BigDecimal.class.getName(), BigDecimalConverter.INSTANCE);
