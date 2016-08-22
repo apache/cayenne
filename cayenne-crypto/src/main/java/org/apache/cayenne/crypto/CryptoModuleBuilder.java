@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.crypto;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
@@ -41,6 +37,10 @@ import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * A builder of a Cayenne DI module that will contain all extension to Cayenne
@@ -78,6 +78,10 @@ public class CryptoModuleBuilder {
     private char[] keyPassword;
 
     private boolean compress;
+
+    public static CryptoModuleBuilder builder() {
+        return new CryptoModuleBuilder();
+    }
 
     public CryptoModuleBuilder() {
 
