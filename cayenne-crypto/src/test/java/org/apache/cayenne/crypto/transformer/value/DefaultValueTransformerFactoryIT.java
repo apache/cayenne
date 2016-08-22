@@ -22,10 +22,12 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.sql.Types;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -40,6 +42,8 @@ public class DefaultValueTransformerFactoryIT {
     private static DbEntity t2;
     private static DbEntity t3;
 
+    private DefaultValueTransformerFactory f;
+
     @BeforeClass
     public static void beforeClass() throws Exception {
         ServerRuntime runtime = new ServerRuntime("cayenne-crypto.xml");
@@ -48,10 +52,15 @@ public class DefaultValueTransformerFactoryIT {
         t3 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE3");
     }
 
+    @Before
+    public void before() {
+        f = new DefaultValueTransformerFactory(mock(KeySource.class),
+                Collections.<String, BytesConverter<?>>emptyMap(),
+                Collections.<String, BytesConverter<?>>emptyMap());
+    }
+
     @Test
     public void testGetJavaType() {
-
-        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory(mock(KeySource.class));
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
         assertEquals("java.lang.String", f.getJavaType(t1_ct));
@@ -79,7 +88,6 @@ public class DefaultValueTransformerFactoryIT {
 
     @Test
     public void testCreateEncryptor() {
-        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory(mock(KeySource.class));
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -100,7 +108,6 @@ public class DefaultValueTransformerFactoryIT {
 
     @Test
     public void testCreateDecryptor() {
-        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory(mock(KeySource.class));
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -129,7 +136,6 @@ public class DefaultValueTransformerFactoryIT {
 
     @Test
     public void testEncryptor() {
-        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory(mock(KeySource.class));
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -148,7 +154,6 @@ public class DefaultValueTransformerFactoryIT {
 
     @Test
     public void testDecryptor() {
-        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory(mock(KeySource.class));
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -164,5 +169,4 @@ public class DefaultValueTransformerFactoryIT {
         assertSame(t2, f.decryptor(t2_cb));
         assertSame(t2, f.decryptor(t2_cb));
     }
-
 }

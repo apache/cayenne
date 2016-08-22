@@ -32,6 +32,7 @@ import org.apache.cayenne.crypto.transformer.DefaultTransformerFactory;
 import org.apache.cayenne.crypto.transformer.TransformerFactory;
 import org.apache.cayenne.crypto.transformer.bytes.BytesTransformerFactory;
 import org.apache.cayenne.crypto.transformer.bytes.DefaultBytesTransformerFactory;
+import org.apache.cayenne.crypto.transformer.value.BytesConverter;
 import org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactory;
 import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
 import org.apache.cayenne.di.Binder;
@@ -41,6 +42,9 @@ import org.apache.cayenne.di.Module;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * A builder of a Cayenne DI module that will contain all extension to Cayenne
@@ -58,6 +62,9 @@ public class CryptoModuleBuilder {
 
     private Class<? extends ValueTransformerFactory> valueTransformerFactoryType;
     private Class<? extends BytesTransformerFactory> bytesTransformerFactoryType;
+
+    private Map<String, BytesConverter<?>> extraObjectToBytes;
+    private Map<Integer, BytesConverter<?>> extraDbToBytes;
 
     private String columnMapperPattern;
     private ColumnMapper columnMapper;
@@ -117,6 +124,22 @@ public class CryptoModuleBuilder {
 
     public CryptoModuleBuilder valueTransformer(Class<? extends ValueTransformerFactory> factoryType) {
         this.valueTransformerFactoryType = factoryType;
+        return this;
+    }
+
+    public <T> CryptoModuleBuilder objectToBytesConverter(Class<T> objectType, BytesConverter<T> converter) {
+        if (extraObjectToBytes == null) {
+            extraObjectToBytes = new HashMap<>();
+        }
+        extraObjectToBytes.put(objectType.getName(), Objects.requireNonNull(converter));
+        return this;
+    }
+
+    public CryptoModuleBuilder dbToBytesConverter(int sqlType, BytesConverter<?> converter) {
+        if (extraDbToBytes == null) {
+            extraDbToBytes = new HashMap<>();
+        }
+        extraDbToBytes.put(sqlType, Objects.requireNonNull(converter));
         return this;
     }
 
@@ -303,6 +326,23 @@ public class CryptoModuleBuilder {
                 binder.bind(CipherFactory.class).to(cipherFactoryType);
                 binder.bind(TransformerFactory.class).to(DefaultTransformerFactory.class);
                 binder.bind(ValueTransformerFactory.class).to(valueTransformerFactoryType);
+
+                MapBuilder<BytesConverter<?>> extraDbToBytesBinder =
+                        binder.bindMap(DefaultValueTransformerFactory.EXTRA_DB_TO_BYTE_CONVERTERS_KEY);
+                if (extraDbToBytes != null) {
+                    for (Map.Entry<Integer, BytesConverter<?>> extraConverter : extraDbToBytes.entrySet()) {
+                        extraDbToBytesBinder.put(extraConverter.getKey().toString(), extraConverter.getValue());
+                    }
+                }
+
+                MapBuilder<BytesConverter<?>> extraObjectToBytesBinder =
+                        binder.bindMap(DefaultValueTransformerFactory.EXTRA_OBJECT_TO_BYTE_CONVERTERS_KEY);
+                if (extraObjectToBytes != null) {
+                    for (Map.Entry<String, BytesConverter<?>> extraConverter : extraObjectToBytes.entrySet()) {
+                        extraObjectToBytesBinder.put(extraConverter.getKey(), extraConverter.getValue());
+                    }
+                }
+
                 binder.bind(BytesTransformerFactory.class).to(bytesTransformerFactoryType);
 
                 if (keySource != null) {

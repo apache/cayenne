@@ -47,27 +47,38 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 
+    public static final String EXTRA_DB_TO_BYTE_CONVERTERS_KEY =
+            "org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactory.dbToBytes";
+
+    public static final String EXTRA_OBJECT_TO_BYTE_CONVERTERS_KEY =
+            "org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactory.objectToBytes";
+
     private final Key defaultKey;
 
     private final Map<String, BytesConverter<?>> objectToBytes;
     private final Map<Integer, BytesConverter<?>> dbToBytes;
 
-    private final Map<String, BytesConverter<?>> bytesToObject;
-    private final Map<Integer, BytesConverter<?>> bytesToDb;
-
     private final ConcurrentMap<DbAttribute, ValueEncryptor> encryptors;
     private final ConcurrentMap<DbAttribute, ValueDecryptor> decryptors;
 
-    public DefaultValueTransformerFactory(@Inject KeySource keySource) {
+    public DefaultValueTransformerFactory(@Inject KeySource keySource,
+                      @Inject(EXTRA_DB_TO_BYTE_CONVERTERS_KEY) Map<String, BytesConverter<?>> extraDbToBytes,
+                      @Inject(EXTRA_OBJECT_TO_BYTE_CONVERTERS_KEY) Map<String, BytesConverter<?>> extraObjectToBytes) {
+
         this.defaultKey = keySource.getKey(keySource.getDefaultKeyAlias());
 
-        this.encryptors = new ConcurrentHashMap<DbAttribute, ValueEncryptor>();
-        this.decryptors = new ConcurrentHashMap<DbAttribute, ValueDecryptor>();
+        this.encryptors = new ConcurrentHashMap<>();
+        this.decryptors = new ConcurrentHashMap<>();
 
         this.objectToBytes = createObjectToBytesConverters();
+        for (Map.Entry<String, BytesConverter<?>> extraConverter : extraObjectToBytes.entrySet()) {
+            objectToBytes.put(extraConverter.getKey(), extraConverter.getValue());
+        }
+
         this.dbToBytes = createDbToBytesConverters();
-        this.bytesToObject = createBytesToObjectConverters();
-        this.bytesToDb = createBytesToDbConverters();
+        for (Map.Entry<String, BytesConverter<?>> extraConverter : extraDbToBytes.entrySet()) {
+            dbToBytes.put(Integer.valueOf(extraConverter.getKey()), extraConverter.getValue());
+        }
     }
 
     @Override
@@ -101,26 +112,6 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
     }
 
     protected Map<Integer, BytesConverter<?>> createDbToBytesConverters() {
-        Map<Integer, BytesConverter<?>> map = new HashMap<>();
-
-        map.put(Types.BINARY, BytesToBytesConverter.INSTANCE);
-        map.put(Types.BLOB, BytesToBytesConverter.INSTANCE);
-        map.put(Types.VARBINARY, BytesToBytesConverter.INSTANCE);
-        map.put(Types.LONGVARBINARY, BytesToBytesConverter.INSTANCE);
-
-        map.put(Types.CHAR, Base64StringConverter.INSTANCE);
-        map.put(Types.NCHAR, Base64StringConverter.INSTANCE);
-        map.put(Types.CLOB, Base64StringConverter.INSTANCE);
-        map.put(Types.NCLOB, Base64StringConverter.INSTANCE);
-        map.put(Types.LONGVARCHAR, Base64StringConverter.INSTANCE);
-        map.put(Types.LONGNVARCHAR, Base64StringConverter.INSTANCE);
-        map.put(Types.VARCHAR, Base64StringConverter.INSTANCE);
-        map.put(Types.NVARCHAR, Base64StringConverter.INSTANCE);
-
-        return map;
-    }
-
-    protected Map<Integer, BytesConverter<?>> createBytesToDbConverters() {
         Map<Integer, BytesConverter<?>> map = new HashMap<>();
 
         map.put(Types.BINARY, BytesToBytesConverter.INSTANCE);
@@ -174,41 +165,6 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
         return map;
     }
 
-    protected Map<String, BytesConverter<?>> createBytesToObjectConverters() {
-
-        Map<String, BytesConverter<?>> map = new HashMap<>();
-
-        map.put("byte[]", BytesToBytesConverter.INSTANCE);
-        map.put(String.class.getName(), Utf8StringConverter.INSTANCE);
-        
-        map.put(Double.class.getName(), DoubleConverter.INSTANCE);
-        map.put(Double.TYPE.getName(), DoubleConverter.INSTANCE);
-
-        map.put(Float.class.getName(), FloatConverter.INSTANCE);
-        map.put(Float.TYPE.getName(), FloatConverter.INSTANCE);
-
-        map.put(Long.class.getName(), LongConverter.INSTANCE);
-        map.put(Long.TYPE.getName(), LongConverter.INSTANCE);
-
-        map.put(Integer.class.getName(), IntegerConverter.INSTANCE);
-        map.put(Integer.TYPE.getName(), IntegerConverter.INSTANCE);
-
-        map.put(Short.class.getName(), ShortConverter.INSTANCE);
-        map.put(Short.TYPE.getName(), ShortConverter.INSTANCE);
-
-        map.put(Byte.class.getName(), ByteConverter.INSTANCE);
-        map.put(Byte.TYPE.getName(), ByteConverter.INSTANCE);
-
-        map.put(Boolean.class.getName(), BooleanConverter.INSTANCE);
-        map.put(Boolean.TYPE.getName(), BooleanConverter.INSTANCE);
-
-        map.put(Date.class.getName(), UtilDateConverter.INSTANCE);
-        map.put(BigInteger.class.getName(), BigIntegerConverter.INSTANCE);
-        map.put(BigDecimal.class.getName(), BigDecimalConverter.INSTANCE);
-
-        return map;
-    }
-
     protected ValueEncryptor createEncryptor(DbAttribute a) {
 
         String type = getJavaType(a);
@@ -219,7 +175,7 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
                     + " has no object-to-bytes conversion");
         }
 
-        BytesConverter<?> fromBytes = bytesToDb.get(a.getType());
+        BytesConverter<?> fromBytes = dbToBytes.get(a.getType());
         if (fromBytes == null) {
             throw new IllegalArgumentException("The type " + TypesMapping.getSqlNameByType(a.getType())
                     + " for attribute " + a + " has no bytes-to-db conversion");
@@ -237,7 +193,7 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
         }
 
         String type = getJavaType(a);
-        BytesConverter<?> fromBytes = bytesToObject.get(type);
+        BytesConverter<?> fromBytes = objectToBytes.get(type);
         if (fromBytes == null) {
             throw new IllegalArgumentException("The type " + type + " for attribute " + a
                     + " has no bytes-to-object conversion");
