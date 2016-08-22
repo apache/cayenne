@@ -42,6 +42,7 @@ CAY-2087 PostCommitFilter is confused about changes made by Pre* listeners
 CAY-2089 HTTP connections aren't always closed in new ROP implementation
 CAY-2097 NullPointerException while updating relationships for entities with vertical inheritance
 CAY-2101 DataContext.currentSnapshot() doesn't set snapshot entity name
+CAY-2105 Add missing elements to the reverseEngineering.xsd
 
 ----------------------------------
 Release: 4.0.M3
