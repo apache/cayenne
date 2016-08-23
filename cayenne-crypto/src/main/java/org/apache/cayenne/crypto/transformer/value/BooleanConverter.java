@@ -25,7 +25,7 @@ package org.apache.cayenne.crypto.transformer.value;
  */
 public class BooleanConverter implements BytesConverter<Boolean> {
 
-    static final BytesConverter<Boolean> INSTANCE = new BooleanConverter();
+    public static final BytesConverter<Boolean> INSTANCE = new BooleanConverter();
 
     @Override
     public Boolean fromBytes(byte[] bytes) {
