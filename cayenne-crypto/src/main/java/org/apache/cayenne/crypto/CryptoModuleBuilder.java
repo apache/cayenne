@@ -32,6 +32,7 @@ import org.apache.cayenne.crypto.transformer.DefaultTransformerFactory;
 import org.apache.cayenne.crypto.transformer.TransformerFactory;
 import org.apache.cayenne.crypto.transformer.bytes.BytesTransformerFactory;
 import org.apache.cayenne.crypto.transformer.bytes.DefaultBytesTransformerFactory;
+import org.apache.cayenne.crypto.transformer.bytes.LazyBytesTransformerFactory;
 import org.apache.cayenne.crypto.transformer.value.Base64StringConverter;
 import org.apache.cayenne.crypto.transformer.value.BigDecimalConverter;
 import org.apache.cayenne.crypto.transformer.value.BigIntegerConverter;
@@ -43,6 +44,7 @@ import org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactor
 import org.apache.cayenne.crypto.transformer.value.DoubleConverter;
 import org.apache.cayenne.crypto.transformer.value.FloatConverter;
 import org.apache.cayenne.crypto.transformer.value.IntegerConverter;
+import org.apache.cayenne.crypto.transformer.value.LazyValueTransformerFactory;
 import org.apache.cayenne.crypto.transformer.value.LongConverter;
 import org.apache.cayenne.crypto.transformer.value.ShortConverter;
 import org.apache.cayenne.crypto.transformer.value.Utf8StringConverter;
@@ -380,6 +382,11 @@ public class CryptoModuleBuilder {
 
                 binder.decorate(BatchTranslatorFactory.class).before(CryptoBatchTranslatorFactoryDecorator.class);
                 binder.decorate(RowReaderFactory.class).before(CryptoRowReaderFactoryDecorator.class);
+
+                // decorate our own services to allow Cayenne to operate over plaintext entities
+                // even if crypto keys are not available.
+                binder.decorate(ValueTransformerFactory.class).after(LazyValueTransformerFactory.class);
+                binder.decorate(BytesTransformerFactory.class).after(LazyBytesTransformerFactory.class);
             }
         };
     }
