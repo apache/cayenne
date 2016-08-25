@@ -25,15 +25,41 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 
 import java.net.URL;
+import java.sql.SQLException;
 
 public class Runtime_AES128_Base {
 
     protected ServerRuntime runtime;
     protected TableHelper table1;
     protected TableHelper table2;
+    protected TableHelper table4;
 
     protected void setUp(boolean compress) throws Exception {
 
+        Module crypto = createCryptoModule(compress);
+        this.runtime = createRuntime(crypto);
+
+        setupTestTables(new DBHelper(runtime.getDataSource(null)));
+    }
+
+    protected void setupTestTables(DBHelper dbHelper) throws SQLException {
+
+        this.table2 = new TableHelper(dbHelper, "TABLE2").setColumns("ID", "PLAIN_BYTES", "CRYPTO_BYTES");
+        table2.deleteAll();
+
+        this.table1 = new TableHelper(dbHelper, "TABLE1").setColumns("ID", "PLAIN_STRING", "CRYPTO_STRING",
+                "PLAIN_INT", "CRYPTO_INT");
+        table1.deleteAll();
+
+        this.table4 = new TableHelper(dbHelper, "TABLE4").setColumns("ID", "PLAIN_STRING", "PLAIN_INT");
+        table4.deleteAll();
+    }
+
+    protected ServerRuntime createRuntime(Module crypto) {
+        return new ServerRuntime("cayenne-crypto.xml", crypto);
+    }
+
+    protected Module createCryptoModule(boolean compress) {
         URL keyStoreUrl = JceksKeySourceTest.class.getResource(JceksKeySourceTest.KS1_JCEKS);
 
         CryptoModuleBuilder builder = new CryptoModuleBuilder().keyStore(keyStoreUrl, JceksKeySourceTest.TEST_KEY_PASS,
@@ -43,18 +69,7 @@ public class Runtime_AES128_Base {
             builder.compress();
         }
 
-        Module crypto = builder.build();
-
-        this.runtime = new ServerRuntime("cayenne-crypto.xml", crypto);
-
-        DBHelper dbHelper = new DBHelper(runtime.getDataSource(null));
-
-        this.table2 = new TableHelper(dbHelper, "TABLE2").setColumns("ID", "PLAIN_BYTES", "CRYPTO_BYTES");
-        table2.deleteAll();
-
-        this.table1 = new TableHelper(dbHelper, "TABLE1").setColumns("ID", "PLAIN_STRING", "CRYPTO_STRING",
-                "PLAIN_INT", "CRYPTO_INT");
-        table1.deleteAll();
+        return builder.build();
     }
 
 }
