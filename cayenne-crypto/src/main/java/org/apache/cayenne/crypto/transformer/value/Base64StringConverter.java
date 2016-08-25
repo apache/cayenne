@@ -25,7 +25,7 @@ import javax.xml.bind.DatatypeConverter;
  */
 public class Base64StringConverter implements BytesConverter<String> {
 
-    static final BytesConverter<String> INSTANCE = new Base64StringConverter();
+    public static final BytesConverter<String> INSTANCE = new Base64StringConverter();
 
     @Override
     public byte[] toBytes(String value) {

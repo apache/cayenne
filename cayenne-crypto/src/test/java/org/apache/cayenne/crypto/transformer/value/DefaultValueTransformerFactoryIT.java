@@ -22,10 +22,16 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Types;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -40,18 +46,28 @@ public class DefaultValueTransformerFactoryIT {
     private static DbEntity t2;
     private static DbEntity t3;
 
+    private static Map<String, BytesConverter<?>> dbToBytes, objectToBytes;
+
+    private DefaultValueTransformerFactory f;
+
     @BeforeClass
     public static void beforeClass() throws Exception {
         ServerRuntime runtime = new ServerRuntime("cayenne-crypto.xml");
         t1 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE1");
         t2 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE2");
         t3 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE3");
+
+        dbToBytes = getDefaultDbConverters();
+        objectToBytes = getDefaultObjectConverters();
+    }
+
+    @Before
+    public void before() {
+        f = new DefaultValueTransformerFactory(mock(KeySource.class), dbToBytes, objectToBytes);
     }
 
     @Test
     public void testGetJavaType() {
-
-        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory(mock(KeySource.class));
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
         assertEquals("java.lang.String", f.getJavaType(t1_ct));
@@ -79,7 +95,6 @@ public class DefaultValueTransformerFactoryIT {
 
     @Test
     public void testCreateEncryptor() {
-        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory(mock(KeySource.class));
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -100,7 +115,6 @@ public class DefaultValueTransformerFactoryIT {
 
     @Test
     public void testCreateDecryptor() {
-        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory(mock(KeySource.class));
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -129,7 +143,6 @@ public class DefaultValueTransformerFactoryIT {
 
     @Test
     public void testEncryptor() {
-        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory(mock(KeySource.class));
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -148,7 +161,6 @@ public class DefaultValueTransformerFactoryIT {
 
     @Test
     public void testDecryptor() {
-        DefaultValueTransformerFactory f = new DefaultValueTransformerFactory(mock(KeySource.class));
 
         DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
 
@@ -165,4 +177,57 @@ public class DefaultValueTransformerFactoryIT {
         assertSame(t2, f.decryptor(t2_cb));
     }
 
+    private static Map<String, BytesConverter<?>> getDefaultDbConverters() {
+        Map<String, BytesConverter<?>> dbToBytes = new HashMap<>();
+
+        dbToBytes.put(String.valueOf(Types.BINARY), BytesToBytesConverter.INSTANCE);
+        dbToBytes.put(String.valueOf(Types.BLOB), BytesToBytesConverter.INSTANCE);
+        dbToBytes.put(String.valueOf(Types.VARBINARY), BytesToBytesConverter.INSTANCE);
+        dbToBytes.put(String.valueOf(Types.LONGVARBINARY), BytesToBytesConverter.INSTANCE);
+
+        dbToBytes.put(String.valueOf(Types.CHAR), Base64StringConverter.INSTANCE);
+        dbToBytes.put(String.valueOf(Types.NCHAR), Base64StringConverter.INSTANCE);
+        dbToBytes.put(String.valueOf(Types.CLOB), Base64StringConverter.INSTANCE);
+        dbToBytes.put(String.valueOf(Types.NCLOB), Base64StringConverter.INSTANCE);
+        dbToBytes.put(String.valueOf(Types.LONGVARCHAR), Base64StringConverter.INSTANCE);
+        dbToBytes.put(String.valueOf(Types.LONGNVARCHAR), Base64StringConverter.INSTANCE);
+        dbToBytes.put(String.valueOf(Types.VARCHAR), Base64StringConverter.INSTANCE);
+        dbToBytes.put(String.valueOf(Types.NVARCHAR), Base64StringConverter.INSTANCE);
+
+        return dbToBytes;
+    }
+
+    private static Map<String, BytesConverter<?>> getDefaultObjectConverters() {
+        Map<String, BytesConverter<?>> objectToBytes = new HashMap<>();
+
+        objectToBytes.put("byte[]", BytesToBytesConverter.INSTANCE);
+        objectToBytes.put(String.class.getName(), Utf8StringConverter.INSTANCE);
+
+        objectToBytes.put(Double.class.getName(), DoubleConverter.INSTANCE);
+        objectToBytes.put(Double.TYPE.getName(), DoubleConverter.INSTANCE);
+
+        objectToBytes.put(Float.class.getName(), FloatConverter.INSTANCE);
+        objectToBytes.put(Float.TYPE.getName(), FloatConverter.INSTANCE);
+
+        objectToBytes.put(Long.class.getName(), LongConverter.INSTANCE);
+        objectToBytes.put(Long.TYPE.getName(), LongConverter.INSTANCE);
+
+        objectToBytes.put(Integer.class.getName(), IntegerConverter.INSTANCE);
+        objectToBytes.put(Integer.TYPE.getName(), IntegerConverter.INSTANCE);
+
+        objectToBytes.put(Short.class.getName(), ShortConverter.INSTANCE);
+        objectToBytes.put(Short.TYPE.getName(), ShortConverter.INSTANCE);
+
+        objectToBytes.put(Byte.class.getName(), ByteConverter.INSTANCE);
+        objectToBytes.put(Byte.TYPE.getName(), ByteConverter.INSTANCE);
+
+        objectToBytes.put(Boolean.class.getName(), BooleanConverter.INSTANCE);
+        objectToBytes.put(Boolean.TYPE.getName(), BooleanConverter.INSTANCE);
+
+        objectToBytes.put(Date.class.getName(), UtilDateConverter.INSTANCE);
+        objectToBytes.put(BigInteger.class.getName(), BigIntegerConverter.INSTANCE);
+        objectToBytes.put(BigDecimal.class.getName(), BigDecimalConverter.INSTANCE);
+
+        return objectToBytes;
+    }
 }
