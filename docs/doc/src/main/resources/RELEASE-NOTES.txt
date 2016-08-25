@@ -45,6 +45,7 @@ CAY-2089 HTTP connections aren't always closed in new ROP implementation
 CAY-2097 NullPointerException while updating relationships for entities with vertical inheritance
 CAY-2101 DataContext.currentSnapshot() doesn't set snapshot entity name
 CAY-2105 Add missing elements to the reverseEngineering.xsd
+CAY-2108 cayenne-di: StackOverflow for decorator that takes Provider of the delegate
 
 ----------------------------------
 Release: 4.0.M3
