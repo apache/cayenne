@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import java.lang.reflect.Field;
-
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Provider;
+
+import java.lang.reflect.Field;
 
 /**
  * @since 4.0
@@ -45,7 +45,24 @@ class FieldInjectingDecoratorProvider<T> implements DecoratorProvider<T> {
 
             @Override
             protected Object value(Field field, String bindingName) {
-                if (field.getType().isAssignableFrom(implementation)) {
+                Class<?> fieldType = field.getType();
+
+                // delegate (possibly) injected as Provider
+                if (Provider.class.equals(fieldType)) {
+
+                    Class<?> objectClass = DIUtil.parameterClass(field.getGenericType());
+
+                    if (objectClass == null) {
+                        throw new DIRuntimeException("Provider field %s.%s of type %s must be "
+                                + "parameterized to be usable for injection", field.getDeclaringClass().getName(),
+                                field.getName(), fieldType.getName());
+                    }
+
+                    if(objectClass.isAssignableFrom(implementation)) {
+                        return undecorated;
+                    }
+                }
+                else if (fieldType.isAssignableFrom(implementation)) {
                     return undecorated.get();
                 }
 

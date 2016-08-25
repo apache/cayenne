@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import java.lang.reflect.Type;
-
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Provider;
+
+import java.lang.reflect.Type;
 
 /**
  * @since 4.0
@@ -43,7 +43,22 @@ public class ConstructorInjectingDecoratorProvider<T> implements DecoratorProvid
             @Override
             protected Object value(Class<?> parameter, Type genericType, String bindingName, InjectionStack stack) {
 
-                if (parameter.isAssignableFrom(implementation)) {
+                // delegate (possibly) injected as Provider
+                if (Provider.class.equals(parameter)) {
+
+                    Class<?> objectClass = DIUtil.parameterClass(genericType);
+
+                    if (objectClass == null) {
+                        throw new DIRuntimeException("Constructor provider parameter %s must be "
+                                + "parameterized to be usable for injection", parameter.getName());
+                    }
+
+                    if(objectClass.isAssignableFrom(implementation)) {
+                        return undecorated;
+                    }
+                }
+                // delegate injected as value
+                else if (parameter.isAssignableFrom(implementation)) {
                     return undecorated.get();
                 }
 
