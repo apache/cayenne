@@ -19,14 +19,13 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.tx.Transaction;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.tx.BaseTransaction;
-import org.apache.cayenne.tx.Transaction;
 
 /**
  * Decorates ResultIterator to close active transaction when the iterator is
@@ -65,10 +64,6 @@ final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
             }
 
             throw new CayenneRuntimeException(e);
-        } finally {
-            if (BaseTransaction.getThreadTransaction() == tx) {
-                BaseTransaction.bindThreadTransaction(null);
-            }
         }
     }
 

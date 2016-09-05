@@ -28,6 +28,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -38,6 +39,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextIteratedQueryIT extends ServerCase {
@@ -227,5 +229,16 @@ public class DataContextIteratedQueryIT extends ServerCase {
         }
 
         assertEquals(14, tPainting.getRowCount());
+    }
+
+    @Test
+    public void testPerformIteratedQuery_Transaction() throws Exception {
+        createArtistsDataSet();
+
+        try (ResultIterator<?> it = context.performIteratedQuery(SelectQuery.query(Artist.class));) {
+            assertNull(BaseTransaction.getThreadTransaction());
+        }
+
+        // TODO: how do we test that transaction unbound from the thread is closed/committed at the end?
     }
 }

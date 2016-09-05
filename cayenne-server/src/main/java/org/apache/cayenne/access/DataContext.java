@@ -874,14 +874,16 @@ public class DataContext extends BaseContext {
     // interface
     @SuppressWarnings({ "rawtypes" })
     public ResultIterator performIteratedQuery(Query query) {
-        // TODO: use 4.0 TransactionManager
+
         if (BaseTransaction.getThreadTransaction() != null) {
             return internalPerformIteratedQuery(query);
         } else {
 
+
+            // can't use TransactionManger here as it would attempt to commit the transaction at the end...
+
             // manually manage a transaction, so that a ResultIterator wrapper
-            // could close
-            // it when it is done.
+            // could close it when it is done.
             Transaction tx = getTransactionFactory().createTransaction();
             BaseTransaction.bindThreadTransaction(tx);
 
@@ -889,15 +891,19 @@ public class DataContext extends BaseContext {
             try {
                 result = internalPerformIteratedQuery(query);
             } catch (Exception e) {
-                BaseTransaction.bindThreadTransaction(null);
+
                 tx.setRollbackOnly();
                 throw new CayenneRuntimeException(e);
             } finally {
-                // note: we are keeping the transaction bound to the current
-                // thread on
-                // success - iterator will unbind it. Unsetting a transaction
-                // here would
-                // result in some strangeness, at least on Ingres
+
+                // unbind thread tx before returning to the caller. Transaction will be managed internally by the
+                // ResultIterator and should not get in the way of other DB operations that may be performed
+                // within the iterator....
+
+                // TODO: there was an older comment about Ingres breaking when we unbind thread transaction
+                // before closing the iterator. As we have no test environment for ingres, we can't
+                // confirm this here...
+                BaseTransaction.bindThreadTransaction(null);
 
                 if (tx.isRollbackOnly()) {
                     try {
