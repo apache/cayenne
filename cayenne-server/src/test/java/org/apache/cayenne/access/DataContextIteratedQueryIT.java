@@ -206,4 +206,26 @@ public class DataContextIteratedQueryIT extends ServerCase {
             }
         }
     }
+
+    @Test
+    public void testPerformIteratedQuery_CommitWithinIterator() throws Exception {
+        createArtistsAndPaintingsDataSet();
+
+        assertEquals(7, tPainting.getRowCount());
+
+        try (ResultIterator<?> it = context.performIteratedQuery(SelectQuery.query(Artist.class));) {
+            while (it.hasNextRow()) {
+                DataRow row = (DataRow) it.nextRow();
+
+                Artist artist = context.objectFromDataRow(Artist.class, row);
+
+                Painting painting = context.newObject(Painting.class);
+                painting.setPaintingTitle("P_" + artist.getArtistName());
+                painting.setToArtist(artist);
+                context.commitChanges();
+            }
+        }
+
+        assertEquals(14, tPainting.getRowCount());
+    }
 }
