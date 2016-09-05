@@ -35,6 +35,9 @@ import java.util.Map;
  */
 class ConnectionProperties {
 
+	static final int MIN_CONNECTIONS = 1;
+	static final int MAX_CONNECTIONS = 2;
+
 	private static final String ADAPTER_KEY = "adapter";
 	private static final String ADAPTER20_KEY = "cayenne.adapter";
 	private static final String USER_NAME_KEY = "jdbc.username";
@@ -85,8 +88,8 @@ class ConnectionProperties {
 		dsi.setPassword(props.getString(PASSWORD_KEY));
 		dsi.setDataSourceUrl(props.getString(URL_KEY));
 		dsi.setJdbcDriver(props.getString(DRIVER_KEY));
-		dsi.setMinConnections(1);
-		dsi.setMaxConnections(2);
+		dsi.setMinConnections(MIN_CONNECTIONS);
+		dsi.setMaxConnections(MAX_CONNECTIONS);
 
 		return dsi;
 	}

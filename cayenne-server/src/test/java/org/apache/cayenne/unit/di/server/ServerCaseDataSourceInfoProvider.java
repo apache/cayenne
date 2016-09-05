@@ -68,8 +68,8 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         hsqldb.setPassword("");
         hsqldb.setDataSourceUrl("jdbc:hsqldb:mem:aname");
         hsqldb.setJdbcDriver("org.hsqldb.jdbcDriver");
-        hsqldb.setMinConnections(1);
-        hsqldb.setMaxConnections(2);
+        hsqldb.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
+        hsqldb.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
         inMemoryDataSources.put("hsql", hsqldb);
 
         DataSourceInfo h2 = new DataSourceInfo();
@@ -78,8 +78,8 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         h2.setPassword("");
         h2.setDataSourceUrl("jdbc:h2:mem:aname;MVCC=TRUE;DB_CLOSE_DELAY=-1");
         h2.setJdbcDriver("org.h2.Driver");
-        h2.setMinConnections(1);
-        h2.setMaxConnections(2);
+        h2.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
+        h2.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
         inMemoryDataSources.put("h2", h2);
 
         DataSourceInfo derby = new DataSourceInfo();
@@ -88,8 +88,8 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         derby.setPassword("");
         derby.setDataSourceUrl("jdbc:derby:target/testdb;create=true");
         derby.setJdbcDriver("org.apache.derby.jdbc.EmbeddedDriver");
-        derby.setMinConnections(1);
-        derby.setMaxConnections(2);
+        derby.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
+        derby.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
         inMemoryDataSources.put("derby", derby);
     }
 
