@@ -19,19 +19,6 @@
 
 package org.apache.cayenne.dba;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
@@ -45,6 +32,20 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.IDUtil;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentMap;
+
 /**
  * Default primary key generator implementation. Uses a lookup table named
  * "AUTO_PK_SUPPORT" to search and increment primary keys for tables.
@@ -55,7 +56,7 @@ public class JdbcPkGenerator implements PkGenerator {
 	static final long DEFAULT_PK_START_VALUE = 200;
 
 	protected JdbcAdapter adapter;
-	protected ConcurrentHashMap<String, Queue<Long>> pkCache = new ConcurrentHashMap<>();
+	protected ConcurrentMap<String, Queue<Long>> pkCache = new ConcurrentHashMap<>();
 	protected int pkCacheSize = DEFAULT_PK_CACHE_SIZE;
 	protected long pkStartValue = DEFAULT_PK_START_VALUE;
 
