@@ -25,9 +25,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.ResultBatchIterator;
-import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -152,12 +149,6 @@ public class DataContextIT extends ServerCase {
 		tArtist.insert(33005, "artist5");
 		tArtist.insert(33006, "artist11");
 		tArtist.insert(33007, "artist21");
-	}
-
-	protected void createLargeArtistsDataSet() throws Exception {
-		for (int i = 1; i <= 20; i++) {
-			tArtist.insert(i, "artist" + i);
-		}
 	}
 
 	protected void createArtistsAndPaintingsDataSet() throws Exception {
@@ -620,118 +611,6 @@ public class DataContextIT extends ServerCase {
 		}
 
 		assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
-	}
-
-	@Test
-	public void testIterate() throws Exception {
-
-		createArtistsDataSet();
-
-		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-
-		final int[] count = new int[1];
-
-		context.iterate(q1, new ResultIteratorCallback<Artist>() {
-
-			@Override
-			public void next(Artist object) {
-				assertNotNull(object.getArtistName());
-				count[0]++;
-			}
-		});
-
-		assertEquals(7, count[0]);
-	}
-
-	@Test
-	public void testIterateDataRows() throws Exception {
-
-		createArtistsDataSet();
-
-		SelectQuery<DataRow> q1 = SelectQuery.dataRowQuery(Artist.class, null);
-		final int[] count = new int[1];
-
-		context.iterate(q1, new ResultIteratorCallback<DataRow>() {
-
-			@Override
-			public void next(DataRow object) {
-				assertNotNull(object.get("ARTIST_ID"));
-				count[0]++;
-			}
-		});
-
-		assertEquals(7, count[0]);
-	}
-
-	@Test
-	public void testIterator() throws Exception {
-
-		createArtistsDataSet();
-
-		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-
-		try (ResultIterator<Artist> it = context.iterator(q1);) {
-			int count = 0;
-
-			for (Artist a : it) {
-				count++;
-			}
-
-			assertEquals(7, count);
-		}
-	}
-
-	@Test
-	public void testBatchIterator() throws Exception {
-		createLargeArtistsDataSet();
-
-		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-
-		try (ResultBatchIterator<Artist> it = context.batchIterator(q1, 5);) {
-			int count = 0;
-
-			for (List<Artist> artistList : it) {
-				count++;
-				assertEquals(5, artistList.size());
-			}
-
-			assertEquals(4, count);
-		}
-	}
-
-	@Test
-	public void testPerformIteratedQuery1() throws Exception {
-
-		createArtistsDataSet();
-
-		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-
-		try (ResultIterator<?> it = context.performIteratedQuery(q1);) {
-			int count = 0;
-			while (it.hasNextRow()) {
-				it.nextRow();
-				count++;
-			}
-
-			assertEquals(7, count);
-		}
-	}
-
-	@Test
-	public void testPerformIteratedQuery2() throws Exception {
-		createArtistsAndPaintingsDataSet();
-
-		try (ResultIterator<?> it = context.performIteratedQuery(SelectQuery.query(Artist.class));) {
-			while (it.hasNextRow()) {
-				DataRow row = (DataRow) it.nextRow();
-
-				// try instantiating an object and fetching its relationships
-				Artist artist = context.objectFromDataRow(Artist.class, row);
-				List<?> paintings = artist.getPaintingArray();
-				assertNotNull(paintings);
-				assertEquals("Expected one painting for artist: " + artist, 1, paintings.size());
-			}
-		}
 	}
 
 	/**
