@@ -36,8 +36,6 @@ import java.util.List;
 final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
 
     private ResultIterator<T> result;
-
-
     private Transaction tx;
 
     public TransactionResultIteratorDecorator(ResultIterator<T> result, Transaction tx) {
