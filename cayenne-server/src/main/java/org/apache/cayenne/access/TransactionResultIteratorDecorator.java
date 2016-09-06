@@ -36,9 +36,17 @@ import java.util.List;
 final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
 
     private ResultIterator<T> result;
+
+
     private Transaction tx;
 
     public TransactionResultIteratorDecorator(ResultIterator<T> result, Transaction tx) {
+
+        // make sure it is still valid before proceeding with the iterator
+        if(tx.isRollbackOnly()) {
+            throw new CayenneRuntimeException("Transaction passed should be rolled back");
+        }
+
         this.result = result;
         this.tx = tx;
     }
@@ -56,6 +64,9 @@ final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
 
         try {
             result.close();
+
+            // we can safely commit here as the transaction is internal to this decorator, and we already checked
+            // that it hasn't been rolled back in constructor.
             tx.commit();
         } catch (Exception e) {
             try {

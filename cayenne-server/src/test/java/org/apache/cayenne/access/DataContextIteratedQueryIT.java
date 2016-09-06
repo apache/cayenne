@@ -236,7 +236,7 @@ public class DataContextIteratedQueryIT extends ServerCase {
         createArtistsDataSet();
 
         try (ResultIterator<?> it = context.performIteratedQuery(SelectQuery.query(Artist.class));) {
-            assertNull(BaseTransaction.getThreadTransaction());
+            assertNull("Iterator transaction was not unbound from thread", BaseTransaction.getThreadTransaction());
         }
 
         // TODO: how do we test that transaction unbound from the thread is closed/committed at the end?
