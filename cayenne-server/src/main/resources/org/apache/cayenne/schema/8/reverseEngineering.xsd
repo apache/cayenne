@@ -25,7 +25,7 @@
         <xs:annotation>
             <xs:documentation>
                 At least one of 3 options ot fill pattern information should be used
-                1) &lt;tag>pattarn&lt;tag>
+                1) &lt;tag>pattern&lt;tag>
                 2) &lt;tag pattern="pattern" />
                 3) &lt;tag>
                       &lt;pattern>pattern&lt;/pattern>
