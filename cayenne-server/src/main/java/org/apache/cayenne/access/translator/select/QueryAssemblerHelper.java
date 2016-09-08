@@ -82,14 +82,14 @@ public abstract class QueryAssemblerHelper {
     /**
      * Sets ouput buffer
      */
-    void setOut(Appendable out) {
+    public void setOut(Appendable out) {
         this.out = out;
     }
 
     /**
      * @return output buffer
      */
-    Appendable getOut() {
+    public Appendable getOut() {
         return out;
     }
 
@@ -127,13 +127,13 @@ public abstract class QueryAssemblerHelper {
     /**
      * Processes parts of the OBJ_PATH expression.
      */
-    protected void appendObjPath(Expression pathExp) throws IOException {
+    protected void appendObjPath(Expression pathExp) {
 
         queryAssembler.resetJoinStack();
         String joinSplitAlias = null;
 
-        for (PathComponent<ObjAttribute, ObjRelationship> component : getObjEntity().resolvePath(pathExp,
-                queryAssembler.getPathAliases())) {
+        for (PathComponent<ObjAttribute, ObjRelationship> component
+                : getObjEntity().resolvePath(pathExp, queryAssembler.getPathAliases())) {
 
             if (component.isAlias()) {
                 joinSplitAlias = component.getName();
@@ -159,22 +159,10 @@ public abstract class QueryAssemblerHelper {
             }
 
             ObjRelationship relationship = component.getRelationship();
-            ObjAttribute attribute = component.getAttribute();
-
-            if (relationship != null) {
-
-                // if this is a last relationship in the path,
-                // it needs special handling
-                if (component.isLast()) {
-                    processRelTermination(relationship, component.getJoinType(), joinSplitAlias);
-                } else {
-                    // find and add joins ....
-                    for (DbRelationship dbRel : relationship.getDbRelationships()) {
-                        queryAssembler.dbRelationshipAdded(dbRel, component.getJoinType(), joinSplitAlias);
-                    }
-                }
-            } else {
+            if (relationship == null) {
+                ObjAttribute attribute = component.getAttribute();
                 Iterator<CayenneMapEntry> dbPathIterator = attribute.getDbPathIterator();
+
                 while (dbPathIterator.hasNext()) {
                     Object pathPart = dbPathIterator.next();
 
@@ -186,12 +174,23 @@ public abstract class QueryAssemblerHelper {
                         processColumnWithQuoteSqlIdentifiers((DbAttribute) pathPart, pathExp);
                     }
                 }
+            } else {
 
+                // if this is a last relationship in the path,
+                // it needs special handling
+                if (component.isLast()) {
+                    processRelTermination(relationship, component.getJoinType(), joinSplitAlias);
+                } else {
+                    // find and add joins ....
+                    for (DbRelationship dbRel : relationship.getDbRelationships()) {
+                        queryAssembler.dbRelationshipAdded(dbRel, component.getJoinType(), joinSplitAlias);
+                    }
+                }
             }
         }
     }
 
-    protected void appendDbPath(Expression pathExp) throws IOException {
+    protected void appendDbPath(Expression pathExp) {
 
         queryAssembler.resetJoinStack();
         String joinSplitAlias = null;
@@ -237,14 +236,18 @@ public abstract class QueryAssemblerHelper {
         }
     }
 
-    protected void processColumn(DbAttribute dbAttr) throws IOException {
+    protected void processColumn(DbAttribute dbAttr) {
         processColumnWithQuoteSqlIdentifiers(dbAttr, null);
     }
 
-    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr, Expression pathExp) throws IOException {
+    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr, Expression pathExp) {
 
-        String alias = (queryAssembler.supportsTableAliases()) ? queryAssembler.getCurrentAlias() : null;
-        out.append(strategy.quotedIdentifier(dbAttr.getEntity(), alias, dbAttr.getName()));
+        try {
+            String alias = queryAssembler.supportsTableAliases() ? queryAssembler.getCurrentAlias() : null;
+            out.append(strategy.quotedIdentifier(dbAttr.getEntity(), alias, dbAttr.getName()));
+        } catch (IOException e) {
+            e.printStackTrace(); // TODO logging
+        }
     }
 
     /**
@@ -426,8 +429,7 @@ public abstract class QueryAssemblerHelper {
      * 
      * @since 3.0
      */
-    protected void processRelTermination(ObjRelationship rel, JoinType joinType, String joinSplitAlias)
-            throws IOException {
+    protected void processRelTermination(ObjRelationship rel, JoinType joinType, String joinSplitAlias) {
 
         Iterator<DbRelationship> dbRels = rel.getDbRelationships().iterator();
 
@@ -454,8 +456,7 @@ public abstract class QueryAssemblerHelper {
      * 
      * @since 3.0
      */
-    protected void processRelTermination(DbRelationship rel, JoinType joinType, String joinSplitAlias)
-            throws IOException {
+    protected void processRelTermination(DbRelationship rel, JoinType joinType, String joinSplitAlias) {
 
         if (rel.isToMany()) {
             // append joins
@@ -465,26 +466,20 @@ public abstract class QueryAssemblerHelper {
         // get last DbRelationship on the list
         List<DbJoin> joins = rel.getJoins();
         if (joins.size() != 1) {
-            StringBuilder msg = new StringBuilder();
-            msg.append("OBJ_PATH expressions are only supported ").append("for a single-join relationships. ")
-                    .append("This relationship has ").append(joins.size()).append(" joins.");
-
-            throw new CayenneRuntimeException(msg.toString());
+            throw new CayenneRuntimeException("OBJ_PATH expressions are only supported for a single-join " +
+                    "relationships. This relationship has " + joins.size() + " joins.");
         }
 
         DbJoin join = joins.get(0);
 
-        DbAttribute attribute = null;
+        DbAttribute attribute;
 
         if (rel.isToMany()) {
-            DbEntity ent = (DbEntity) join.getRelationship().getTargetEntity();
+            DbEntity ent = join.getRelationship().getTargetEntity();
             Collection<DbAttribute> pk = ent.getPrimaryKeys();
             if (pk.size() != 1) {
-                StringBuilder msg = new StringBuilder();
-                msg.append("DB_NAME expressions can only support ").append("targets with a single column PK. ")
-                        .append("This entity has ").append(pk.size()).append(" columns in primary key.");
-
-                throw new CayenneRuntimeException(msg.toString());
+                throw new CayenneRuntimeException("DB_NAME expressions can only support targets with a single " +
+                        "column PK. This entity has " + pk.size() + " columns in primary key.");
             }
 
             attribute = pk.iterator().next();

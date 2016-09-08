@@ -54,7 +54,7 @@ public class SQLResult {
 
         int offset = 0;
         for (Object component : getComponents()) {
-            if (component instanceof String) {
+            if (component == null || component instanceof String) {
                 resolvedComponents.add(new DefaultScalarResultSegment((String) component, offset));
                 offset = offset + 1;
             } else if (component instanceof EntityResult) {

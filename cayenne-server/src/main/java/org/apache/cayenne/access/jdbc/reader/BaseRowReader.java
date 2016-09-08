@@ -20,7 +20,6 @@ package org.apache.cayenne.access.jdbc.reader;
 
 import java.sql.ResultSet;
 
-import com.sun.istack.internal.Nullable;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -35,10 +34,8 @@ abstract class BaseRowReader<T> implements RowReader<T> {
     String[] labels;
     int[] types;
 
-    @Nullable
     DataRowPostProcessor postProcessor;
 
-    @Nullable
     String entityName;
 
     BaseRowReader(RowDescriptor descriptor, DataRowPostProcessor postProcessor, ObjEntity objEntity) {

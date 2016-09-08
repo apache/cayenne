@@ -226,6 +226,11 @@ public class StringIdQuery implements Query {
             public int getStatementFetchSize() {
                 return QueryMetadata.STATEMENT_FETCH_SIZE_DEFAULT;
             }
+
+            @Override
+            public void setResultSetMapping(List<Object> resolvedComponents) {
+                throw new UnsupportedOperationException();
+            }
         };
     }
 

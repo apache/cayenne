@@ -143,6 +143,10 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
             public int getStatementFetchSize() {
                 return metadata.getStatementFetchSize();
             }
+
+            public void setResultSetMapping(List<Object> resolvedComponents) {
+                metadata.setResultSetMapping(resolvedComponents);
+            }
         };
     }
 

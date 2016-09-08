@@ -145,6 +145,10 @@ class IncrementalQuery implements Query {
             public int getStatementFetchSize() {
                 return metadata.getStatementFetchSize();
             }
+
+            public void setResultSetMapping(List<Object> resolvedComponents) {
+                metadata.setResultSetMapping(resolvedComponents);
+            }
         };
     }
 

@@ -28,6 +28,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * A QueryMetadata implementation that returns all the defaults.
@@ -133,5 +134,10 @@ class DefaultQueryMetadata implements QueryMetadata {
 
     public int getStatementFetchSize() {
         return QueryMetadata.STATEMENT_FETCH_SIZE_DEFAULT;
+    }
+
+    @Override
+    public void setResultSetMapping(List<Object> resolvedComponents) {
+        throw new NotImplementedException();
     }
 }

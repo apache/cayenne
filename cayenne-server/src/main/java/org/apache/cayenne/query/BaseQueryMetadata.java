@@ -410,7 +410,12 @@ public class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serial
 		return statementFetchSize;
 	}
 
-	/**
+    @Override
+    public void setResultSetMapping(List<Object> resolvedComponents) {
+        this.resultSetMapping = resolvedComponents;
+    }
+
+    /**
 	 * Adds a joint prefetch.
 	 * 
 	 * @since 1.2

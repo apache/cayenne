@@ -28,11 +28,10 @@ import java.util.Map;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.parser.AggregationFunction;
+import org.apache.cayenne.map.*;
+import org.apache.cayenne.query.select.SelectClause;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -53,9 +52,11 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	protected List<Ordering> orderings;
 	protected boolean distinct;
 
-	SelectQueryMetadata metaData = new SelectQueryMetadata();
+    private SelectClause select;
 
-	/**
+    SelectQueryMetadata metaData = new SelectQueryMetadata();
+
+    /**
 	 * Creates a SelectQuery that selects objects of a given persistent class.
 	 * 
 	 * @param rootClass
@@ -491,6 +492,16 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 		return queryWithParameters(parameters);
 	}
 
+    public void setResult(Property ... properties) {
+        select = new SelectClause();
+        select.setProperties(properties);
+    }
+
+    public void setResult(AggregationFunction func, Property ... properties) {
+        setResult(properties);
+        select.setAggregationFunction(func);
+    }
+
 	/**
 	 * Adds ordering specification to this query orderings.
 	 */
@@ -818,4 +829,12 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	public void orQualifier(Expression e) {
 		qualifier = (qualifier != null) ? qualifier.orExp(e) : e;
 	}
+
+    public SelectClause getSelect() {
+        return select;
+    }
+
+    public Integer count(Expression property) {
+        return null; // TODO
+    }
 }

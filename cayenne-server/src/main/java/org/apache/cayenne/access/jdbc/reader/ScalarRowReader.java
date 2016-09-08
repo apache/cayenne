@@ -31,9 +31,9 @@ import org.apache.cayenne.util.Util;
  */
 class ScalarRowReader<T> implements RowReader<T> {
 
-    private ExtendedType converter;
-    private int index;
-    private int type;
+    private final ExtendedType converter;
+    private final int index;
+    private final int type;
 
     ScalarRowReader(RowDescriptor descriptor, ScalarResultSegment segmentMetadata) {
 

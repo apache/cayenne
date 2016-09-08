@@ -101,9 +101,8 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
                     .getEntityInheritanceTree()
                     .qualifierForEntityAndSubclasses();
             if (entityQualifier != null) {
-                qualifier = (qualifier != null)
-                        ? qualifier.andExp(entityQualifier)
-                        : entityQualifier;
+                qualifier = qualifier == null ? entityQualifier
+                        : qualifier.andExp(entityQualifier);
             }
         }
 
@@ -115,8 +114,8 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
             if (dbQualifier != null) {
                 dbQualifier = dbQualifier.transform(new DbEntityQualifierTransformer());
 
-                qualifier = qualifier == null ? dbQualifier : qualifier
-                        .andExp(dbQualifier);
+                qualifier = qualifier == null ? dbQualifier
+                        : qualifier.andExp(dbQualifier);
             }
         }
 
@@ -166,8 +165,6 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
         // impl.
         matchingObject = false;
 
-        boolean first = true;
-
         DbRelationship relationship = objectMatchTranslator.getRelationship();
         if (!relationship.isToMany() && !relationship.isToPK()) {
             queryAssembler.dbRelationshipAdded(
@@ -177,11 +174,11 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
         }
 
         Iterator<String> it = objectMatchTranslator.keys();
+        boolean first = true;
         while (it.hasNext()) {
             if (first) {
                 first = false;
-            }
-            else {
+            } else {
                 out.append(" AND ");
             }
 
@@ -203,7 +200,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
             return;
         }
 
-        Appendable out = (matchingObject) ? new StringBuilder() : this.out;
+        Appendable out = matchingObject ? new StringBuilder() : this.out;
 
         try {
             switch (node.getType()) {
@@ -288,16 +285,18 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
                     out.append(" / ");
                     break;
                 case Expression.BETWEEN:
-                    if (childIndex == 0)
+                    if (childIndex == 0) {
                         out.append(" BETWEEN ");
-                    else if (childIndex == 1)
+                    } else if (childIndex == 1) {
                         out.append(" AND ");
+                    }
                     break;
                 case Expression.NOT_BETWEEN:
-                    if (childIndex == 0)
+                    if (childIndex == 0) {
                         out.append(" NOT BETWEEN ");
-                    else if (childIndex == 1)
+                    } else if (childIndex == 1) {
                         out.append(" AND ");
+                    }
                     break;
                 case Expression.BITWISE_OR:
                     out.append(" ").append(operandForBitwiseOr()).append(" ");
@@ -393,14 +392,15 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
             }
 
             if (count == 1) {
-                if (node.getType() == Expression.NEGATIVE)
+                if (node.getType() == Expression.NEGATIVE) {
                     out.append('-');
-                // ignore POSITIVE - it is a NOOP
-                // else if(node.getType() == Expression.POSITIVE)
-                // qualBuf.append('+');
-                else if (node.getType() == Expression.NOT)
+
+                    // ignore POSITIVE - it is a NOOP
+                    // else if(node.getType() == Expression.POSITIVE)
+                    // qualBuf.append('+');
+                } else if (node.getType() == Expression.NOT) {
                     out.append("NOT ");
-                else if (node.getType() == Expression.BITWISE_NOT) {
+                } else if (node.getType() == Expression.BITWISE_NOT) {
                     out.append(operandForBitwiseNot());
                 }
             }
@@ -428,7 +428,10 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 			}
 
 			boolean parenthesisNeeded = parenthesisNeeded(node, parentNode);
-			boolean likeIgnoreCase = (node.getType() == Expression.LIKE_IGNORE_CASE || node.getType() == Expression.NOT_LIKE_IGNORE_CASE);
+			boolean likeIgnoreCase =
+                       node.getType() == Expression.LIKE_IGNORE_CASE
+                    || node.getType() == Expression.NOT_LIKE_IGNORE_CASE;
+
 			boolean isPatternMatchNode = PatternMatchNode.class.isAssignableFrom(node.getClass());
 
 			// closing UPPER parenthesis
@@ -455,14 +458,11 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
         try {
             if (parentNode.getType() == Expression.OBJ_PATH) {
                 appendObjPath(parentNode);
-            }
-            else if (parentNode.getType() == Expression.DB_PATH) {
+            } else if (parentNode.getType() == Expression.DB_PATH) {
                 appendDbPath(parentNode);
-            }
-            else if (parentNode.getType() == Expression.LIST) {
+            } else if (parentNode.getType() == Expression.LIST) {
                 appendList(parentNode, paramsDbType(parentNode));
-            }
-            else {
+            } else {
                 appendLiteral(leaf, paramsDbType(parentNode), parentNode);
             }
         }
@@ -472,44 +472,37 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
     }
 
     protected boolean parenthesisNeeded(Expression node, Expression parentNode) {
-        if (parentNode == null)
+        if (parentNode == null) {
             return false;
+        }
 
         // only unary expressions can go w/o parenthesis
-        if (node.getOperandCount() > 1)
-            return true;
-
-        if (node.getType() == Expression.OBJ_PATH)
-            return false;
-
-        if (node.getType() == Expression.DB_PATH)
-            return false;
-
-        return true;
+        return node.getOperandCount() > 1
+                || node.getType() != Expression.OBJ_PATH && node.getType() != Expression.DB_PATH;
     }
 
-    private final void appendList(Expression listExpr, DbAttribute paramDesc)
+    private void appendList(Expression listExpr, DbAttribute paramDesc)
             throws IOException {
         Iterator<?> it = null;
         Object list = listExpr.getOperand(0);
         if (list instanceof List) {
             it = ((List<?>) list).iterator();
-        }
-        else if (list instanceof Object[]) {
+        } else if (list instanceof Object[]) {
             it = IteratorUtils.arrayIterator((Object[]) list);
         }
         else {
-            String className = (list != null) ? list.getClass().getName() : "<null>";
+            String className = list != null ? list.getClass().getName() : "<null>";
             throw new IllegalArgumentException(
                     "Unsupported type for the list expressions: " + className);
         }
 
         // process first element outside the loop
         // (unroll loop to avoid condition checking
-        if (it.hasNext())
+        if (it.hasNext()) {
             appendLiteral(it.next(), paramDesc, listExpr);
-        else
+        } else {
             return;
+        }
 
         while (it.hasNext()) {
             out.append(", ");
@@ -523,14 +516,11 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 
         if (!matchingObject) {
             super.appendLiteral(val, attr, parentExpression);
-        }
-        else if (val == null || (val instanceof Persistent)) {
+        } else if (val == null || val instanceof Persistent) {
             objectMatchTranslator.setDataObject((Persistent) val);
-        }
-        else if (val instanceof ObjectId) {
+        } else if (val instanceof ObjectId) {
             objectMatchTranslator.setObjectId((ObjectId) val);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException(
                     "Attempt to use literal other than DataObject during object match.");
         }
@@ -540,12 +530,11 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
     protected void processRelTermination(
             DbRelationship rel,
             JoinType joinType,
-            String joinSplitAlias) throws IOException {
+            String joinSplitAlias) {
 
         if (!matchingObject) {
             super.processRelTermination(rel, joinType, joinSplitAlias);
-        }
-        else {
+        } else {
             if (rel.isToMany()) {
                 // append joins
                 queryAssembler.dbRelationshipAdded(rel, joinType, joinSplitAlias);

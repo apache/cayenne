@@ -36,6 +36,7 @@ import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 class ObjectsFromDataRowsQuery implements Query, QueryMetadata {
 
@@ -147,5 +148,10 @@ class ObjectsFromDataRowsQuery implements Query, QueryMetadata {
 
     public int getStatementFetchSize() {
         return 0;
+    }
+
+    @Override
+    public void setResultSetMapping(List<Object> resolvedComponents) {
+        throw new NotImplementedException();
     }
 }

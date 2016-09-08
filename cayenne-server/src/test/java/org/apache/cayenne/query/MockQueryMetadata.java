@@ -27,6 +27,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class MockQueryMetadata implements QueryMetadata {
 
@@ -104,5 +105,9 @@ public class MockQueryMetadata implements QueryMetadata {
 
     public int getStatementFetchSize() {
         return 0;
+    }
+
+    public void setResultSetMapping(List<Object> resolvedComponents) {
+        throw new NotImplementedException();
     }
 }

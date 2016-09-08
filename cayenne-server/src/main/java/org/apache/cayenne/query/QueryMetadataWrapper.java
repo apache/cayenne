@@ -171,4 +171,9 @@ class QueryMetadataWrapper implements QueryMetadata {
         Number n = (Number) overrides.get(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY);
         return n != null ? n.intValue() : 0;
     }
+
+    @Override
+    public void setResultSetMapping(List<Object> resolvedComponents) {
+        info.setResultSetMapping(resolvedComponents);
+    }
 }

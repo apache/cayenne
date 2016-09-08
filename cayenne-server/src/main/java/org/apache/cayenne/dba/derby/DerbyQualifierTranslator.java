@@ -38,7 +38,7 @@ public class DerbyQualifierTranslator extends TrimmingQualifierTranslator {
     @Override
     protected void processColumnWithQuoteSqlIdentifiers(
             DbAttribute dbAttr,
-            Expression pathExp) throws IOException {
+            Expression pathExp) {
 
         SimpleNode parent = null;
         if (pathExp instanceof SimpleNode) {
@@ -54,9 +54,13 @@ public class DerbyQualifierTranslator extends TrimmingQualifierTranslator {
                 && parent.getOperand(1) instanceof String) {
             Integer size = parent.getOperand(1).toString().length() + 1;
 
-            out.append("CAST(");
-            super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
-            out.append(" AS VARCHAR(" + size + "))");
+            try {
+                out.append("CAST(");
+                super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
+                out.append(" AS VARCHAR(").append(String.valueOf(size)).append("))");
+            } catch (IOException ex) {
+                ex.printStackTrace(); // TODO process exceptions
+            }
         }
         else {
             super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);

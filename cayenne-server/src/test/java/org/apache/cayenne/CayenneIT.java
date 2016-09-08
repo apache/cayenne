@@ -23,6 +23,10 @@ import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.parser.AggregationFunction;
+import org.apache.cayenne.exp.parser.AggregationFunction.Function;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.CapsStrategy;
@@ -109,12 +113,8 @@ public class CayenneIT extends ServerCase {
 
         DataMap map = context.getEntityResolver().getDataMap("testmap");
         SQLTemplate query = new SQLTemplate(map, sql, false);
-        query.setTemplate(
-                FrontBaseAdapter.class.getName(),
-                "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
-        query.setTemplate(
-                OpenBaseAdapter.class.getName(),
-                "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
+        query.setTemplate(FrontBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
+        query.setTemplate(OpenBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         SQLResult rsMap = new SQLResult();
@@ -125,6 +125,32 @@ public class CayenneIT extends ServerCase {
         assertNotNull(object);
         assertTrue(object instanceof Number);
         assertEquals(2, ((Number) object).intValue());
+    }
+
+    @Test
+    public void testAggregationForSelectQuery() throws Exception {
+        tArtist.insert(33001, "artist1");
+        tArtist.insert(33002, "artist2");
+
+        tPainting.insert(3300101, 33001, "artist1_p1");
+        tPainting.insert(3300102, 33001, "artist1_p2");
+        tPainting.insert(3300103, 33001, "artist1_p3");
+        tPainting.insert(3300104, 33001, "artist1_p4");
+
+        tPainting.insert(3300201, 33002, "artist2_p1");
+        tPainting.insert(3300202, 33002, "artist2_p2");
+        tPainting.insert(3300203, 33002, "artist2_p3");
+
+
+        SelectQuery<Artist> query = SelectQuery.query(Artist.class);
+
+        query.setResult(new AggregationFunction(Function.COUNT, new ASTObjPath("paintingArray")));
+
+        List<Object> object = context.performQuery(query);
+        assertNotNull(object);
+        Object count = object.get(0);
+        assertTrue(count instanceof Number);
+        assertEquals(7, count);
     }
 
     @Test
@@ -174,7 +200,7 @@ public class CayenneIT extends ServerCase {
 
         assertNotNull(object);
         assertTrue(object instanceof Artist);
-        assertEquals("artist2", ((Artist) object).getArtistName());
+        assertEquals("artist2", object.getArtistName());
     }
 
     @Test

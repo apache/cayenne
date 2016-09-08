@@ -154,6 +154,10 @@ class RangeQuery implements Query {
             public int getStatementFetchSize() {
                 return 0;
             }
+
+            public void setResultSetMapping(List<Object> resolvedComponents) {
+                originatingMetadata.setResultSetMapping(resolvedComponents);
+            }
         };
     }
 

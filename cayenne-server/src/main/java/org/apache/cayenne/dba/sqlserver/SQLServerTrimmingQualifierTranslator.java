@@ -51,7 +51,7 @@ class SQLServerTrimmingQualifierTranslator extends TrimmingQualifierTranslator {
     }
 
     @Override
-    protected void processColumn(DbAttribute dbAttr) throws IOException {
+    protected void processColumn(DbAttribute dbAttr) {
 
         Expression node = peek(1);
 
@@ -59,35 +59,43 @@ class SQLServerTrimmingQualifierTranslator extends TrimmingQualifierTranslator {
                 && dbAttr.getType() == Types.CLOB
                 && (node.getType() == Expression.LIKE_IGNORE_CASE || node.getType() == Expression.NOT_LIKE_IGNORE_CASE);
 
-        if (likeCI) {
-            out.append("CAST(");
-        }
+        try {
+            if (likeCI) {
+                out.append("CAST(");
+            }
 
-        super.processColumn(dbAttr);
+            super.processColumn(dbAttr);
 
-        if (likeCI) {
-            out.append(" AS NVARCHAR(MAX))");
+            if (likeCI) {
+                out.append(" AS NVARCHAR(MAX))");
+            }
+        } catch (IOException e) {
+            e.printStackTrace(); // TODO process exceptions
         }
     }
 
     @Override
     protected void processColumnWithQuoteSqlIdentifiers(
             DbAttribute dbAttr,
-            Expression pathExp) throws IOException {
+            Expression pathExp) {
         Expression node = peek(1);
 
         boolean likeCI = node != null
                 && dbAttr.getType() == Types.CLOB
                 && (node.getType() == Expression.LIKE_IGNORE_CASE || node.getType() == Expression.NOT_LIKE_IGNORE_CASE);
 
-        if (likeCI) {
-            out.append("CAST(");
-        }
+        try {
+            if (likeCI) {
+                out.append("CAST(");
+            }
 
-        super.processColumnWithQuoteSqlIdentifiers(dbAttr, node);
+            super.processColumnWithQuoteSqlIdentifiers(dbAttr, node);
 
-        if (likeCI) {
-            out.append(" AS NVARCHAR(MAX))");
+            if (likeCI) {
+                out.append(" AS NVARCHAR(MAX))");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();// TODO process exceptions
         }
     }
 

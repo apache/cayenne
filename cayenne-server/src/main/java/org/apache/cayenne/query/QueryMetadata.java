@@ -232,4 +232,7 @@ public interface QueryMetadata {
      * @since 3.0
      */
     public int getStatementFetchSize();
+
+
+    void setResultSetMapping(List<Object> resolvedComponents);
 }

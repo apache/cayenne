@@ -204,5 +204,10 @@ public class NestedQueryCache implements QueryCache {
         public int getStatementFetchSize() {
             return mdDelegate.getStatementFetchSize();
         }
+
+        @Override
+        public void setResultSetMapping(List<Object> resolvedComponents) {
+            mdDelegate.setResultSetMapping(resolvedComponents);
+        }
     }
 }

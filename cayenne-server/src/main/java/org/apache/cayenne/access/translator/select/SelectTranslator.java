@@ -19,46 +19,21 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.JoinType;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.PathComponent;
-import org.apache.cayenne.query.PrefetchSelectQuery;
-import org.apache.cayenne.query.PrefetchTreeNode;
+import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.parser.AggregationFunction;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.AttributeProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
-import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.cayenne.util.EqualsBuilder;
-import org.apache.cayenne.util.HashCodeBuilder;
+import org.apache.cayenne.query.select.SelectClause;
 
 import java.sql.Connection;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A builder of JDBC PreparedStatements based on Cayenne SelectQueries.
@@ -89,16 +64,14 @@ public class SelectTranslator extends QueryAssembler {
         super(query, dataNode, connection);
     }
 
-    private JoinStack getJoinStack() {
+    protected JoinStack getJoinStack() {
         if (joinStack == null) {
             joinStack = createJoinStack();
         }
         return joinStack;
     }
 
-    List<ColumnDescriptor> resultColumns;
     Map<ObjAttribute, ColumnDescriptor> attributeOverrides;
-    Map<ColumnDescriptor, ObjAttribute> defaultAttributesByColumn;
 
     boolean suppressingDistinct;
 
@@ -126,15 +99,12 @@ public class SelectTranslator extends QueryAssembler {
         DataMap dataMap = queryMetadata.getDataMap();
         JoinStack joins = getJoinStack();
 
-        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
         forcingDistinct = false;
 
-        // build column list
-        this.resultColumns = buildResultColumns();
+        SelectPropertyTranslator selectClauseTranslator = new SelectPropertyTranslator(this);
 
         // build qualifier
-        QualifierTranslator qualifierTranslator = adapter.getQualifierTranslator(this);
-        StringBuilder qualifierBuffer = qualifierTranslator.appendPart(new StringBuilder());
+        StringBuilder qualifierBuffer = adapter.getQualifierTranslator(this).appendPart(new StringBuilder());
 
         // build ORDER BY
         OrderingTranslator orderingTranslator = new OrderingTranslator(this);
@@ -149,7 +119,7 @@ public class SelectTranslator extends QueryAssembler {
         if (forcingDistinct || getSelectQuery().isDistinct()) {
             suppressingDistinct = false;
 
-            for (ColumnDescriptor column : resultColumns) {
+            for (ColumnDescriptor column : selectClauseTranslator.getResultColumns()) {
                 if (isUnsupportedForDistinct(column.getJdbcType())) {
                     suppressingDistinct = true;
                     break;
@@ -161,18 +131,13 @@ public class SelectTranslator extends QueryAssembler {
             }
         }
 
-        // convert ColumnDescriptors to column names
-        List<String> selectColumnExpList = new ArrayList<String>();
-        for (ColumnDescriptor column : resultColumns) {
-            String fullName = strategy.quotedIdentifier(dataMap, column.getNamePrefix(), column.getName());
-            selectColumnExpList.add(fullName);
-        }
+        SelectQuery<?> selectQuery = getSelectQuery();
+        List<String> selectColumnExpList = getSelectColumnExpList(dataMap, selectClauseTranslator.getResultColumns());
 
         // append any column expressions used in the order by if this query
         // uses the DISTINCT modifier
-        if (forcingDistinct || getSelectQuery().isDistinct()) {
-            List<String> orderByColumnList = orderingTranslator.getOrderByColumnList();
-            for (String orderByColumnExp : orderByColumnList) {
+        if (forcingDistinct || selectQuery.isDistinct()) {
+            for (String orderByColumnExp : orderingTranslator.getOrderByColumnList()) {
                 // Convert to ColumnDescriptors??
                 if (!selectColumnExpList.contains(orderByColumnExp)) {
                     selectColumnExpList.add(orderByColumnExp);
@@ -180,7 +145,26 @@ public class SelectTranslator extends QueryAssembler {
             }
         }
 
+
         appendSelectColumns(queryBuf, selectColumnExpList);
+
+        SelectClause select = selectQuery.getSelect();
+        if (select != null && select.getAggregationFunction() != null) {
+            if (!selectColumnExpList.isEmpty()) {
+                queryBuf.append(", ");
+            }
+            QueryMetadata metaData = query.getMetaData(entityResolver);
+
+            // Magic is here
+            String res = selectClauseTranslator.toString(select.getAggregationFunction(),
+                    adapter.getQualifierTranslator(this));
+            queryBuf.append(res);
+
+            List<ColumnDescriptor> list = new ArrayList<ColumnDescriptor>(selectClauseTranslator.getResultColumns());
+            list.add(new ColumnDescriptor(res, Types.INTEGER)); // TODO calculate type from function expression
+            metaData.setResultSetMapping(buildSqlResult(list, metaData).getResolvedComponents(entityResolver));
+        }
+
 
         // append from clause
         queryBuf.append(" FROM ");
@@ -205,6 +189,13 @@ public class SelectTranslator extends QueryAssembler {
             queryBuf.append(" ORDER BY ").append(orderingBuffer);
         }
 
+        if (select != null && select.getAggregationFunction() != null
+                && !selectColumnExpList.isEmpty()) {
+
+            queryBuf.append(" GROUP BY ");
+            appendSelectColumns(queryBuf, selectColumnExpList);
+        }
+
         if (!isSuppressingDistinct()) {
             appendLimitAndOffsetClauses(queryBuf);
         }
@@ -213,10 +204,45 @@ public class SelectTranslator extends QueryAssembler {
         return cachedSqlString;
     }
 
+    private SQLResult buildSqlResult(List<ColumnDescriptor> resultColumns, QueryMetadata metaData) {
+        if (resultColumns.isEmpty()) {
+            return new SQLResult();
+        }
+
+        SQLResult sqlResult = new SQLResult();
+        EntityResult result = new EntityResult(metaData.getObjEntity().getName());
+        for (ColumnDescriptor column : resultColumns) {
+            result.addDbField(column.getDataRowKey(), column.getName());
+        }
+        sqlResult.addEntityResult(result);
+
+        return sqlResult;
+    }
+
+    /**
+     * @param dataMap - we need it just to pass into QuotingStrategy#quotedIdentifier method
+     *
+     * @param columns
+     * @return list of quated columns name that we need to include into select statment
+     * */
+    private List<String> getSelectColumnExpList(DataMap dataMap, List<ColumnDescriptor> columns) {
+        // convert ColumnDescriptors to column names
+        QuotingStrategy strategy = getAdapter().getQuotingStrategy();
+        List<String> selectColumnExpList = new ArrayList<String>();
+        for (ColumnDescriptor column : columns) {
+            String fullName = strategy.quotedIdentifier(dataMap, column.getNamePrefix(), column.getName());
+            selectColumnExpList.add(fullName);
+        }
+        return selectColumnExpList;
+    }
+
     /**
      * @since 3.1
      */
     protected void appendSelectColumns(StringBuilder buffer, List<String> selectColumnExpList) {
+        if (selectColumnExpList.isEmpty()) {
+            return;
+        }
 
         // append columns (unroll the loop's first element)
         int columnCount = selectColumnExpList.size();
@@ -251,11 +277,8 @@ public class SelectTranslator extends QueryAssembler {
      * @since 1.2
      */
     public ColumnDescriptor[] getResultColumns() {
-        if (resultColumns == null || resultColumns.isEmpty()) {
-            return new ColumnDescriptor[0];
-        }
-
-        return resultColumns.toArray(new ColumnDescriptor[resultColumns.size()]);
+        List<ColumnDescriptor> columns = new SelectPropertyTranslator(this).getResultColumns();
+        return columns.toArray(new ColumnDescriptor[columns.size()]);
     }
 
     /**
@@ -289,287 +312,6 @@ public class SelectTranslator extends QueryAssembler {
         return (SelectQuery<?>) getQuery();
     }
 
-    protected List<ColumnDescriptor> buildResultColumns() {
-
-        this.defaultAttributesByColumn = new HashMap<ColumnDescriptor, ObjAttribute>();
-
-        SelectQuery<?> query = getSelectQuery();
-        if (query.getRoot() instanceof DbEntity) {
-            return appendDbEntityColumns();
-        }
-
-        if (getQueryMetadata().getPageSize() > 0) {
-            return appendIdColumns();
-        }
-
-        return appendQueryColumns(query);
-    }
-
-    List<ColumnDescriptor> appendDbEntityColumns() {
-        List<ColumnDescriptor> columns = new LinkedList<ColumnDescriptor>();
-        Set<ColumnTracker> attributes = new HashSet<ColumnTracker>();
-
-        DbEntity table = getRootDbEntity();
-        for (DbAttribute dba : table.getAttributes()) {
-            appendColumn(columns, null, dba, attributes, null);
-        }
-
-        return columns;
-    }
-
-    /**
-     * Appends columns needed for object SelectQuery to the provided columns
-     * list.
-     */
-    <T> List<ColumnDescriptor> appendQueryColumns(SelectQuery<T> query) {
-        final List<ColumnDescriptor> columns = new LinkedList<ColumnDescriptor>();
-        final Set<ColumnTracker> attributes = new HashSet<ColumnTracker>();
-
-        // fetched attributes include attributes that are either:
-        //
-        // * class properties
-        // * PK
-        // * FK used in relationship
-        // * joined prefetch PK
-
-        ClassDescriptor descriptor = queryMetadata.getClassDescriptor();
-        ObjEntity oe = descriptor.getEntity();
-
-        PropertyVisitor visitor = new PropertyVisitor() {
-
-            public boolean visitAttribute(AttributeProperty property) {
-                ObjAttribute oa = property.getAttribute();
-
-                resetJoinStack();
-                Iterator<CayenneMapEntry> dbPathIterator = oa.getDbPathIterator();
-                while (dbPathIterator.hasNext()) {
-                    Object pathPart = dbPathIterator.next();
-
-                    if (pathPart == null) {
-                        throw new CayenneRuntimeException("ObjAttribute has no component: " + oa.getName());
-
-                    } else if (pathPart instanceof DbRelationship) {
-                        dbRelationshipAdded((DbRelationship) pathPart, JoinType.LEFT_OUTER, null);
-
-                    } else if (pathPart instanceof DbAttribute) {
-                        appendColumn(columns, oa, (DbAttribute) pathPart, attributes, null);
-
-                    }
-                }
-                return true;
-            }
-
-            public boolean visitToMany(ToManyProperty property) {
-                visitRelationship(property);
-                return true;
-            }
-
-            public boolean visitToOne(ToOneProperty property) {
-                visitRelationship(property);
-                return true;
-            }
-
-            private void visitRelationship(ArcProperty property) {
-                resetJoinStack();
-
-                ObjRelationship rel = property.getRelationship();
-                DbRelationship dbRel = rel.getDbRelationships().get(0);
-
-                List<DbJoin> joins = dbRel.getJoins();
-                for (DbJoin join : joins) {
-                    DbAttribute src = join.getSource();
-                    appendColumn(columns, null, src, attributes, null);
-                }
-            }
-        };
-
-        descriptor.visitAllProperties(visitor);
-
-        // stack should be reset, because all root table attributes go with "t0"
-        // table alias
-        resetJoinStack();
-
-        // add remaining needed attrs from DbEntity
-        DbEntity table = getRootDbEntity();
-        for (DbAttribute dba : table.getPrimaryKeys()) {
-            appendColumn(columns, null, dba, attributes, null);
-        }
-
-        // special handling of a disjoint query...
-
-        if (query instanceof PrefetchSelectQuery) {
-
-            // for each relationship path add PK of the target entity...
-            for (String path : ((PrefetchSelectQuery) query).getResultPaths()) {
-
-                ASTDbPath pathExp = (ASTDbPath) oe.translateToDbPath(Expression.fromString(path));
-
-                // add joins and find terminating element
-
-                resetJoinStack();
-
-                PathComponent<DbAttribute, DbRelationship> lastComponent = null;
-                for (PathComponent<DbAttribute, DbRelationship> component : table
-                        .resolvePath(pathExp, getPathAliases())) {
-
-					if (component.getRelationship() != null) {
-						// do not invoke dbRelationshipAdded(), invoke
-						// pushJoin() instead. This is to prevent
-						// 'forcingDistinct' flipping to true, that will result
-						// in unneeded extra processing and sometimes in invalid
-						// results (see CAY-1979). Distinctness of each row is
-						// guaranteed by the prefetch query semantics - we
-						// include target ID in the result columns
-						getJoinStack().pushJoin(component.getRelationship(), component.getJoinType(), null);
-					}
-
-                    lastComponent = component;
-                }
-
-                // process terminating element
-                if (lastComponent == null) {
-                    continue;
-                }
-
-                DbRelationship relationship = lastComponent.getRelationship();
-                if (relationship == null) {
-                    continue;
-                }
-
-                String labelPrefix = pathExp.getPath();
-                DbEntity targetEntity = relationship.getTargetEntity();
-
-                for (DbAttribute pk : targetEntity.getPrimaryKeys()) {
-
-                    // note that we my select a source attribute, but label it as
-                    // target for simplified snapshot processing
-                    appendColumn(columns, null, pk, attributes, labelPrefix + '.' + pk.getName());
-                }
-            }
-        }
-
-        // handle joint prefetches directly attached to this query...
-        if (query.getPrefetchTree() != null) {
-
-            for (PrefetchTreeNode prefetch : query.getPrefetchTree().adjacentJointNodes()) {
-
-                // for each prefetch add all joins plus columns from the target
-                // entity
-                Expression prefetchExp = Expression.fromString(prefetch.getPath());
-                ASTDbPath dbPrefetch = (ASTDbPath) oe.translateToDbPath(prefetchExp);
-
-                resetJoinStack();
-                DbRelationship r = null;
-                for (PathComponent<DbAttribute, DbRelationship> component : table.resolvePath(dbPrefetch,
-                        getPathAliases())) {
-                    r = component.getRelationship();
-                    dbRelationshipAdded(r, JoinType.LEFT_OUTER, null);
-                }
-
-                if (r == null) {
-                    throw new CayenneRuntimeException("Invalid joint prefetch '" + prefetch + "' for entity: "
-                            + oe.getName());
-                }
-
-                // add columns from the target entity, including those that are
-                // matched
-                // against the FK of the source entity. This is needed to
-                // determine
-                // whether optional relationships are null
-
-                // go via target OE to make sure that Java types are mapped
-                // correctly...
-                ObjRelationship targetRel = (ObjRelationship) prefetchExp.evaluate(oe);
-                ObjEntity targetEntity = targetRel.getTargetEntity();
-
-                String labelPrefix = dbPrefetch.getPath();
-                for (ObjAttribute oa : targetEntity.getAttributes()) {
-                    Iterator<CayenneMapEntry> dbPathIterator = oa.getDbPathIterator();
-                    while (dbPathIterator.hasNext()) {
-                        Object pathPart = dbPathIterator.next();
-
-                        if (pathPart == null) {
-                            throw new CayenneRuntimeException("ObjAttribute has no component: " + oa.getName());
-                        } else if (pathPart instanceof DbRelationship) {
-                            dbRelationshipAdded((DbRelationship) pathPart, JoinType.INNER, null);
-
-                        } else if (pathPart instanceof DbAttribute) {
-                            DbAttribute attribute = (DbAttribute) pathPart;
-
-                            appendColumn(columns, oa, attribute, attributes, labelPrefix + '.' + attribute.getName());
-                        }
-                    }
-                }
-
-                // append remaining target attributes such as keys
-                DbEntity targetDbEntity = r.getTargetEntity();
-                for (DbAttribute attribute : targetDbEntity.getAttributes()) {
-                    appendColumn(columns, null, attribute, attributes, labelPrefix + '.' + attribute.getName());
-                }
-            }
-        }
-
-        return columns;
-    }
-
-    List<ColumnDescriptor> appendIdColumns() {
-        List<ColumnDescriptor> columns = new LinkedList<ColumnDescriptor>();
-        Set<ColumnTracker> skipSet = new HashSet<ColumnTracker>();
-
-        ClassDescriptor descriptor = queryMetadata.getClassDescriptor();
-        ObjEntity oe = descriptor.getEntity();
-        DbEntity dbEntity = oe.getDbEntity();
-        for (ObjAttribute attribute : oe.getPrimaryKeys()) {
-
-            // synthetic objattributes can't reliably lookup their DbAttribute,
-            // so do it manually..
-            DbAttribute dbAttribute = dbEntity.getAttribute(attribute.getDbAttributeName());
-            appendColumn(columns, attribute, dbAttribute, skipSet, null);
-        }
-
-        return columns;
-    }
-
-    private void appendColumn(List<ColumnDescriptor> columns, ObjAttribute objAttribute, DbAttribute attribute,
-            Set<ColumnTracker> skipSet, String label) {
-
-        String alias = getCurrentAlias();
-        if (skipSet.add(new ColumnTracker(alias, attribute))) {
-
-            ColumnDescriptor column = objAttribute == null
-                    ? new ColumnDescriptor(attribute, alias)
-                    : new ColumnDescriptor(objAttribute, attribute, alias);
-
-            if (label != null) {
-                column.setDataRowKey(label);
-            }
-
-            columns.add(column);
-
-            // TODO: andrus, 5/7/2006 - replace 'columns' collection with this map, as it is redundant
-            if (objAttribute != null) {
-                getAttributeOverrides().put(objAttribute, column);
-            }
-        } else if (objAttribute != null) {
-            ColumnDescriptor column = findColumnByName(columns, attribute.getName());
-            if (column == null) {
-                return;
-            }
-
-            column.setJavaClass(Void.TYPE.getName());
-            getAttributeOverrides().put(objAttribute, column);
-        }
-    }
-
-    private ColumnDescriptor findColumnByName(List<ColumnDescriptor> columns, String attributeName) {
-        for (ColumnDescriptor column : columns) {
-            if (attributeName.equals(column.getName())) {
-                return column;
-            }
-        }
-        return null;
-    }
-
     /**
      * @since 3.0
      */
@@ -596,38 +338,5 @@ public class SelectTranslator extends QueryAssembler {
     @Override
     public boolean supportsTableAliases() {
         return true;
-    }
-
-    static final class ColumnTracker {
-
-        private final DbAttribute attribute;
-        private final String alias;
-
-        ColumnTracker(String alias, DbAttribute attribute) {
-            this.attribute = attribute;
-            this.alias = alias;
-        }
-
-        @Override
-        public boolean equals(Object object) {
-            if (!(object instanceof ColumnTracker)) {
-                return false;
-            }
-
-            ColumnTracker other = (ColumnTracker) object;
-            return new EqualsBuilder()
-                    .append(alias, other.alias)
-                    .append(attribute, other.attribute) // TODO it doesn't override equals
-                    .isEquals();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder(31, 5)
-                    .append(alias)
-                    .append(attribute)
-                    .toHashCode();
-        }
-
     }
 }

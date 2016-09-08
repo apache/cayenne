@@ -142,4 +142,9 @@ class DataDomainQuery implements Query, QueryMetadata {
     public int getStatementFetchSize() {
         return 0;
     }
+
+    @Override
+    public void setResultSetMapping(List<Object> resolvedComponents) {
+
+    }
 }

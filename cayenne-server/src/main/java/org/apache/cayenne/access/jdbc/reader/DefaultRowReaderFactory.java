@@ -56,7 +56,10 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
         DbEntity dbEntity = queryMetadata.getDbEntity();
         int pageSize = queryMetadata.getPageSize();
 
-        DataRowPostProcessor postProcessor = create(descriptor, adapter.getExtendedTypes(), attributeOverrides, classDescriptor);
+        DataRowPostProcessor postProcessor = null;
+        if (!attributeOverrides.isEmpty()) {
+            postProcessor = create(descriptor, adapter.getExtendedTypes(), attributeOverrides, classDescriptor);
+        }
 
         List<Object> rsMapping = queryMetadata.getResultSetMapping();
         if (rsMapping == null) {
@@ -122,10 +125,6 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
     private DataRowPostProcessor create(RowDescriptor rowDescriptor, ExtendedTypeMap extendedTypes,
                                         Map<ObjAttribute, ColumnDescriptor> attributeOverrides, ClassDescriptor classDescriptor) {
 
-        if (attributeOverrides.isEmpty()) {
-            return null;
-        }
-
         ColumnDescriptor[] columns = rowDescriptor.getColumns();
 
         Map<String, Collection<ColumnOverride>> columnOverrides = new HashMap<String, Collection<ColumnOverride>>(2);
@@ -141,8 +140,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
             for (int i = 0; i < columns.length; i++) {
                 if (columns[i] == entry.getValue()) {
 
-                    // if attribute type is the same as column, there is no
-                    // conflict
+                    // if attribute type is the same as column, there is no conflict
                     if (!attribute.getType().equals(columns[i].getJavaClass())) {
                         // note that JDBC index is "1" based
                         index = i + 1;

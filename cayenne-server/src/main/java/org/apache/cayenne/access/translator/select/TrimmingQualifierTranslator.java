@@ -46,11 +46,15 @@ public class TrimmingQualifierTranslator extends QualifierTranslator {
      * Adds special handling of CHAR columns.
      */
     @Override
-    protected void processColumn(DbAttribute dbAttr) throws IOException {
+    protected void processColumn(DbAttribute dbAttr) {
         if (dbAttr.getType() == Types.CHAR) {
-            out.append(trimFunction).append("(");
-            super.processColumn(dbAttr);
-            out.append(')');
+            try {
+                out.append(trimFunction).append("(");
+                super.processColumn(dbAttr);
+                out.append(')');
+            } catch (IOException e) {
+                e.printStackTrace(); // TODO process exceptions
+            }
         }
         else {
             super.processColumn(dbAttr);
@@ -61,12 +65,16 @@ public class TrimmingQualifierTranslator extends QualifierTranslator {
      * Adds special handling of CHAR columns.
      */
     @Override
-    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr, Expression pathExp) throws IOException {
+    protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr, Expression pathExp) {
         
         if (dbAttr.getType() == Types.CHAR) {
-            out.append(trimFunction).append("(");
-            super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
-            out.append(')');
+            try {
+                out.append(trimFunction).append("(");
+                super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
+                out.append(')');
+            } catch (IOException e) {
+                e.printStackTrace(); // TODO process exceptions
+            }
         }
         else {
             super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);

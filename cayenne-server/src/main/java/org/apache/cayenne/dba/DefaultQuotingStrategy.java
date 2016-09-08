@@ -29,8 +29,8 @@ import org.apache.cayenne.map.Entity;
  */
 public class DefaultQuotingStrategy implements QuotingStrategy {
 
-    private String endQuote;
-    private String startQuote;
+    private final String endQuote;
+    private final String startQuote;
 
     public DefaultQuotingStrategy(String startQuote, String endQuote) {
         this.startQuote = startQuote;
@@ -79,10 +79,16 @@ public class DefaultQuotingStrategy implements QuotingStrategy {
         return quotedIdentifier(entity.getDataMap(), identifierParts);
     }
 
+    /**
+     * check in dataMap if we have to quote identifiers we add startQuote & endQuote around
+     * each part from identifierParts and join all of them with '.' (dot)
+     *
+     */
     @Override
     public String quotedIdentifier(DataMap dataMap, String... identifierParts) {
 
-        String startQuote, endQuote;
+        String startQuote;
+        String endQuote;
 
         if (dataMap != null && dataMap.isQuotingSQLIdentifiers()) {
             startQuote = this.startQuote;

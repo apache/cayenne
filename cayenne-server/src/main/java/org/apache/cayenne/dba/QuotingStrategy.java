@@ -25,6 +25,11 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.Entity;
 
 /**
+ * TODO
+ * it is better to have EmptyQuotingStrategy (with empty start/end quote) and chose strategy outside QuotingStrategy.
+ * It will simplify QuotingStrategy interface - make it independent from DataMap. Instead of boolean flag in DataMap
+ * we can save strategy itself.
+ *
  * @since 3.0
  */
 public interface QuotingStrategy {

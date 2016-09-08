@@ -47,6 +47,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Connection;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -624,50 +625,48 @@ public class SelectTranslatorIT extends ServerCase {
             assertTrue(artistId > 0 && artistId < iFrom);
             int dateOfBirth = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd);
             assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom);
-            int estimatedPrice = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ESTIMATED_PRICE" + charEnd);
+            int estimatedPrice = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "ESTIMATED_PRICE" + charEnd);
             assertTrue(estimatedPrice > 0 && estimatedPrice < iFrom);
-            int paintingDescription = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "PAINTING_DESCRIPTION"
-                    + charEnd);
+            int paintingDescription = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_DESCRIPTION" + charEnd);
             assertTrue(paintingDescription > 0 && paintingDescription < iFrom);
-            int paintingTitle = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd);
+            int paintingTitle = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd);
             assertTrue(paintingTitle > 0 && paintingTitle < iFrom);
-            int artistIdT1 = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
+            int artistIdT1 = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
             assertTrue(artistIdT1 > 0 && artistIdT1 < iFrom);
-            int galleryId = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "GALLERY_ID" + charEnd);
+            int galleryId = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "GALLERY_ID" + charEnd);
             assertTrue(galleryId > 0 && galleryId < iFrom);
-            int paintingId = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "PAINTING_ID" + charEnd);
+            int paintingId = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_ID" + charEnd);
             assertTrue(paintingId > 0 && paintingId < iFrom);
             int iArtist = s.indexOf(charStart + "ARTIST" + charEnd + " " + charStart + "t0" + charEnd);
             assertTrue(iArtist > iFrom);
             int iLeftJoin = s.indexOf("LEFT JOIN");
             assertTrue(iLeftJoin > iFrom);
-            int iPainting = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t1" + charEnd);
+            int iPainting = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t2" + charEnd);
             assertTrue(iPainting > iLeftJoin);
             int iOn = s.indexOf(" ON ");
             assertTrue(iOn > iLeftJoin);
             int iArtistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
             assertTrue(iArtistId > iOn);
-            int iArtistIdT1 = s
-                    .indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
+            int iArtistIdT1 = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
             assertTrue(iArtistIdT1 > iOn);
             int i = s.indexOf("=", iLeftJoin);
             assertTrue(iArtistIdT1 > i || iArtistId > i);
             int iJoin = s.indexOf("JOIN");
             assertTrue(iJoin > iLeftJoin);
-            int iPainting2 = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t2" + charEnd);
+            int iPainting2 = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t1" + charEnd);
             assertTrue(iPainting2 > iJoin);
             int iOn2 = s.indexOf(" ON ");
             assertTrue(iOn2 > iJoin);
             int iArtistId2 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
             assertTrue(iArtistId2 > iOn2);
-            int iArtistId2T2 = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
+            int iArtistId2T2 = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
             assertTrue(iArtistId2T2 > iOn2);
             int i2 = s.indexOf("=", iJoin);
             assertTrue(iArtistId2T2 > i2 || iArtistId2 > i2);
             int iWhere = s.indexOf(" WHERE ");
             assertTrue(iWhere > iJoin);
 
-            int paintingTitle2 = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd
+            int paintingTitle2 = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd
                     + " = ?");
             assertTrue(paintingTitle2 > iWhere);
 
@@ -748,7 +747,7 @@ public class SelectTranslatorIT extends ServerCase {
         SelectQuery q = new SelectQuery(Painting.class);
         SelectTranslator tr = new SelectTranslator(q, dataNode, connection);
 
-        List<?> columns = tr.buildResultColumns();
+        List<ColumnDescriptor> columns = Arrays.asList(tr.getResultColumns());
 
         // all DbAttributes must be included
         DbEntity entity = context.getEntityResolver().getDbEntity("PAINTING");
@@ -767,7 +766,7 @@ public class SelectTranslatorIT extends ServerCase {
         q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
         SelectTranslator tr = new SelectTranslator(q, dataNode, connection);
 
-        List<?> columns = tr.buildResultColumns();
+        List<ColumnDescriptor> columns =  Arrays.asList(tr.getResultColumns());
 
         // assert root entity columns
         DbEntity entity = context.getEntityResolver().getDbEntity("PAINTING");
