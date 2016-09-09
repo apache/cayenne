@@ -23,6 +23,7 @@ import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataNodeFactory;
 import org.apache.cayenne.dba.DbAdapter;
@@ -31,39 +32,43 @@ import org.apache.cayenne.log.JdbcEventLogger;
 
 public class ServerCaseDataNodeFactory implements DataNodeFactory {
 
-    @Inject
-    private JdbcEventLogger jdbcEventLogger;
+	@Inject
+	private JdbcEventLogger jdbcEventLogger;
 
-    @Inject
-    protected RowReaderFactory rowReaderFactory;
+	@Inject
+	protected RowReaderFactory rowReaderFactory;
 
-    @Inject
-    protected BatchTranslatorFactory batchTranslatorFactory;
+	@Inject
+	protected BatchTranslatorFactory batchTranslatorFactory;
 
-    @Inject
-    private ServerCaseDataSourceFactory dataSourceFactory;
+	@Inject
+	protected SelectTranslatorFactory selectTranslatorFactory;
 
-    @Inject
-    private DbAdapter adapter;
-    
-    @Inject
-    protected SQLTemplateProcessor sqlTemplateProcessor;
+	@Inject
+	private ServerCaseDataSourceFactory dataSourceFactory;
 
-    @Override
-    public DataNode createDataNode(DataNodeDescriptor nodeDescriptor) throws Exception {
-        DataNode dataNode = new DataNode(nodeDescriptor.getName());
+	@Inject
+	private DbAdapter adapter;
 
-        dataNode.setJdbcEventLogger(jdbcEventLogger);
-        dataNode.setRowReaderFactory(rowReaderFactory);
-        dataNode.setBatchTranslatorFactory(batchTranslatorFactory);
+	@Inject
+	protected SQLTemplateProcessor sqlTemplateProcessor;
 
-        // shared or dedicated DataSources can be mapped per DataMap
-        dataNode.setDataSource(dataSourceFactory.getDataSource(nodeDescriptor.getName()));
-        dataNode.setAdapter(adapter);
-        dataNode.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
-        dataNode.setSqlTemplateProcessor(sqlTemplateProcessor);
+	@Override
+	public DataNode createDataNode(DataNodeDescriptor nodeDescriptor) throws Exception {
+		DataNode dataNode = new DataNode(nodeDescriptor.getName());
 
-        return dataNode;
-    }
+		dataNode.setJdbcEventLogger(jdbcEventLogger);
+		dataNode.setRowReaderFactory(rowReaderFactory);
+		dataNode.setBatchTranslatorFactory(batchTranslatorFactory);
+		dataNode.setSelectTranslatorFactory(selectTranslatorFactory);
+
+		// shared or dedicated DataSources can be mapped per DataMap
+		dataNode.setDataSource(dataSourceFactory.getDataSource(nodeDescriptor.getName()));
+		dataNode.setAdapter(adapter);
+		dataNode.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
+		dataNode.setSqlTemplateProcessor(sqlTemplateProcessor);
+
+		return dataNode;
+	}
 
 }

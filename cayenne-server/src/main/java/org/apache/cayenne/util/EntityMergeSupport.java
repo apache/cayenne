@@ -53,7 +53,7 @@ public class EntityMergeSupport {
     private static final Map<String, String> CLASS_TO_PRIMITIVE;
 
     static {
-        CLASS_TO_PRIMITIVE = new HashMap<String, String>();
+        CLASS_TO_PRIMITIVE = new HashMap<>();
         CLASS_TO_PRIMITIVE.put(Byte.class.getName(), "byte");
         CLASS_TO_PRIMITIVE.put(Long.class.getName(), "long");
         CLASS_TO_PRIMITIVE.put(Double.class.getName(), "double");

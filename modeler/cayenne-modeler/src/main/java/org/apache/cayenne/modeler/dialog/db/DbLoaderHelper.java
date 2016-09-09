@@ -23,10 +23,9 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
-import org.apache.cayenne.access.loader.filters.EntityFilters;
-import org.apache.cayenne.access.loader.filters.FilterFactory;
-import org.apache.cayenne.access.loader.filters.FiltersConfig;
+import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
@@ -59,8 +58,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.apache.cayenne.access.loader.filters.FilterFactory.NULL;
-
 /**
  * Stateful helper class that encapsulates access to DbLoader.
  * 
@@ -85,8 +82,9 @@ public class DbLoaderHelper {
     protected boolean meaningfulPk;
     protected List<String> schemas;
     protected List<String> catalogs;
+    protected DbAdapter adapter;
 
-    private final EntityFilters.Builder filterBuilder = new EntityFilters.Builder();
+    private final OldFilterConfigBridge filterBuilder = new OldFilterConfigBridge();
 
     protected String loadStatusNote;
 
@@ -103,6 +101,7 @@ public class DbLoaderHelper {
         } catch (SQLException e) {
             logObj.warn("Error getting catalog.", e);
         }
+        this.adapter = adapter;
         this.loader = new DbLoader(connection, adapter, new LoaderDelegate());
     }
 
@@ -123,8 +122,10 @@ public class DbLoaderHelper {
         stoppingReverseEngineering = false;
 
         // load catalogs...
-        LongRunningTask loadCatalogsTask = new LoadCatalogsTask(Application.getFrame(), "Loading Catalogs");
-        loadCatalogsTask.startAndWait();
+        if (adapter.supportsCatalogsOnReverseEngineering()) {
+            LongRunningTask loadCatalogsTask = new LoadCatalogsTask(Application.getFrame(), "Loading Catalogs");
+            loadCatalogsTask.startAndWait();
+        }
 
         if (stoppingReverseEngineering) {
             return;
@@ -162,7 +163,7 @@ public class DbLoaderHelper {
         this.filterBuilder.catalog(dialog.getSelectedCatalog());
         this.filterBuilder.schema(dialog.getSelectedSchema());
         this.filterBuilder.includeTables(dialog.getTableNamePattern());
-        this.filterBuilder.setProceduresFilters(dialog.isLoadingProcedures() ? FilterFactory.TRUE : FilterFactory.NULL);
+        this.filterBuilder.setProceduresFilters(dialog.isLoadingProcedures());
         this.filterBuilder.includeProcedures(dialog.getProcedureNamePattern());
 
         this.meaningfulPk = dialog.isMeaningfulPk();
@@ -388,7 +389,8 @@ public class DbLoaderHelper {
                 // this will be new data map so need to set configuration source
                 // for it
                 if (baseResource != null) {
-                    Resource dataMapResource = baseResource.getRelativeResource(dataMap.getName());
+                    DefaultConfigurationNameMapper nameMapper = new DefaultConfigurationNameMapper();
+                    Resource dataMapResource = baseResource.getRelativeResource(nameMapper.configurationLocation(dataMap));
                     dataMap.setConfigurationSource(dataMapResource);
                 }
                 mediator.addDataMap(Application.getFrame(), dataMap);
@@ -396,14 +398,15 @@ public class DbLoaderHelper {
         }
 
         private void importingProcedures() {
-            if (!filterBuilder.proceduresFilters().equals(NULL)) {
+            if (!filterBuilder.isLoadProcedures()) {
                 return;
             }
 
             loadStatusNote = "Importing procedures...";
             try {
                 DbLoaderConfiguration configuration = new DbLoaderConfiguration();
-                configuration.setFiltersConfig(new FiltersConfig(filterBuilder.build()));
+                configuration.setFiltersConfig(new FiltersConfigBuilder(new ReverseEngineering())
+                        .add(filterBuilder).filtersConfig());
 
                 loader.loadProcedures(dataMap, new DbLoaderConfiguration());
             } catch (Throwable th) {
@@ -420,7 +423,7 @@ public class DbLoaderHelper {
                
                 DbLoaderConfiguration configuration = new DbLoaderConfiguration();
                 configuration.setFiltersConfig(new FiltersConfigBuilder(new ReverseEngineering())
-                        .add(filterBuilder.build()).filtersConfig());
+                        .add(filterBuilder).filtersConfig());
                 loader.load(dataMap, configuration);
 
                 /**

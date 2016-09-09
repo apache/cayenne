@@ -52,7 +52,7 @@ class QueryMetadataWrapper implements QueryMetadata {
      */
     void override(String key, Object value) {
         if (overrides == null) {
-            overrides = new HashMap<String, Object>();
+            overrides = new HashMap<>();
         }
 
         overrides.put(key, value);

@@ -54,7 +54,7 @@ public class DbRelationshipIT extends ServerCase {
 
     @Test
     public void testSrcFkSnapshotWithTargetSnapshot() throws Exception {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<>();
         Integer id = new Integer(44);
         map.put("GALLERY_ID", id);
 

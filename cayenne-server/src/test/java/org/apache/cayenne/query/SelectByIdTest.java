@@ -19,9 +19,6 @@
 package org.apache.cayenne.query;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Test;
@@ -36,7 +33,10 @@ public class SelectByIdTest {
 		SelectById<Artist> q = SelectById.query(Artist.class, 6);
 		q.prefetch(root);
 
-		assertSame(root, q.getPrefetches());
+		PrefetchTreeNode prefetch = q.getPrefetches();
+
+		assertNotNull(prefetch);
+		assertNotNull(prefetch.getNode("a.b"));
 	}
 
 	@Test
@@ -44,35 +44,37 @@ public class SelectByIdTest {
 
 		SelectById<Artist> q = SelectById.query(Artist.class, 7);
 		q.prefetch("a.b", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
-		PrefetchTreeNode root1 = q.getPrefetches();
+		PrefetchTreeNode prefetch = q.getPrefetches();
 
-		assertNotNull(root1);
-		assertNotNull(root1.getNode("a.b"));
+		assertNotNull(prefetch);
+		assertNotNull(prefetch.getNode("a.b"));
 
 		q.prefetch("a.c", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
-		PrefetchTreeNode root2 = q.getPrefetches();
+		prefetch = q.getPrefetches();
 
-		assertNotNull(root2);
-		assertNotNull(root2.getNode("a.c"));
-		assertNull(root2.getNode("a.b"));
-		assertNotSame(root1, root2);
+		assertNotNull(prefetch);
+		assertNotNull(prefetch.getNode("a.c"));
+		assertNotNull(prefetch.getNode("a.b"));
 	}
 
 	@Test
-	public void testAddPrefetch() {
+	public void testPrefetch_Subroot() {
 
 		PrefetchTreeNode root = PrefetchTreeNode.withPath("a.b", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
 		SelectById<Artist> q = SelectById.query(Artist.class, 8);
 		q.prefetch(root);
 
-		assertSame(root, q.getPrefetches());
+		PrefetchTreeNode prefetch = q.getPrefetches();
+
+		assertNotNull(prefetch.getNode("a.b"));
 
 		PrefetchTreeNode subRoot = PrefetchTreeNode.withPath("a.b.c", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
-		q.addPrefetch(subRoot);
+		q.prefetch(subRoot);
 
-		assertSame(root, q.getPrefetches());
+		prefetch = q.getPrefetches();
 
-		assertNotNull(root.getNode("a.b.c"));
+		assertNotNull(prefetch.getNode("a.b"));
+		assertNotNull(prefetch.getNode("a.b.c"));
 	}
 }

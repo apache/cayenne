@@ -48,7 +48,7 @@ public abstract class HttpRemoteService extends BaseRemoteService {
     public HttpRemoteService(ObjectContextFactory contextFactory,
             Map<String, String> eventBridgeProperties) {
         super(contextFactory, eventBridgeProperties);
-        this.sharedChannels = new HashMap<String, WeakReference<DataChannel>>();
+        this.sharedChannels = new HashMap<>();
     }
 
     /**

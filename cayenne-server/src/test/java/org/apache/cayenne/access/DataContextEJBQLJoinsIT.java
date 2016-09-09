@@ -43,198 +43,210 @@ import static org.junit.Assert.assertTrue;
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextEJBQLJoinsIT extends ServerCase {
 
-    @Inject
-    private ObjectContext context;
+	@Inject
+	private ObjectContext context;
 
-    @Inject
-    protected DBHelper dbHelper;
+	@Inject
+	protected DBHelper dbHelper;
 
-    protected TableHelper tArtist;
-    protected TableHelper tPainting;
-    protected TableHelper tGallery;
+	protected TableHelper tArtist;
+	protected TableHelper tPainting;
+	protected TableHelper tGallery;
 
-    @Before
-    public void setUp() throws Exception {
-        tArtist = new TableHelper(dbHelper, "ARTIST");
-        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+	@Before
+	public void setUp() throws Exception {
+		tArtist = new TableHelper(dbHelper, "ARTIST");
+		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
-        tPainting = new TableHelper(dbHelper, "PAINTING");
-        tPainting.setColumns(
-                "PAINTING_ID",
-                "ARTIST_ID",
-                "GALLERY_ID",
-                "PAINTING_TITLE",
-                "ESTIMATED_PRICE").setColumnTypes(
-                Types.INTEGER,
-                Types.BIGINT,
-                Types.INTEGER,
-                Types.VARCHAR,
-                Types.DECIMAL);
+		tPainting = new TableHelper(dbHelper, "PAINTING");
+		tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "GALLERY_ID", "PAINTING_TITLE", "ESTIMATED_PRICE")
+				.setColumnTypes(Types.INTEGER, Types.BIGINT, Types.INTEGER, Types.VARCHAR, Types.DECIMAL);
 
-        tGallery = new TableHelper(dbHelper, "GALLERY");
-        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
-    }
+		tGallery = new TableHelper(dbHelper, "GALLERY");
+		tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+	}
 
-    private void createFourArtistsFourPaintings() throws Exception {
-        tArtist.insert(33001, "AA1");
-        tArtist.insert(33002, "AA2");
-        tArtist.insert(33003, "BB1");
-        tArtist.insert(33004, "BB2");
-        tPainting.insert(33001, 33001, null, "P1", 3000);
-        tPainting.insert(33002, 33002, null, "P2", 5000);
-        tPainting.insert(33003, 33001, null, "AA1", 3000);
-        tPainting.insert(33004, 33002, null, "BB2", 3000);
-    }
+	private void createFourArtistsFourPaintings() throws Exception {
+		tArtist.insert(33001, "AA1");
+		tArtist.insert(33002, "AA2");
+		tArtist.insert(33003, "BB1");
+		tArtist.insert(33004, "BB2");
+		tPainting.insert(33001, 33001, null, "P1", 3000);
+		tPainting.insert(33002, 33002, null, "P2", 5000);
+		tPainting.insert(33003, 33001, null, "AA1", 3000);
+		tPainting.insert(33004, 33002, null, "BB2", 3000);
+	}
 
-    private void createTwoArtistsOnePainting() throws Exception {
-        tArtist.insert(33001, "AA1");
-        tArtist.insert(33005, "AA1");
-        tPainting.insert(33001, 33001, null, "P1", 3000);
-    }
+	private void createTwoArtistsOnePainting() throws Exception {
+		tArtist.insert(33001, "AA1");
+		tArtist.insert(33005, "AA1");
+		tPainting.insert(33001, 33001, null, "P1", 3000);
+	}
 
-    private void createTwoArtistsTwoPaintingsTwoGalleries() throws Exception {
-        tArtist.insert(33001, "AA1");
-        tArtist.insert(33002, "AA2");
-        tGallery.insert(33001, "gallery1");
-        tGallery.insert(33002, "gallery2");
-        tPainting.insert(33005, 33001, 33001, "CC1", 5000);
-        tPainting.insert(33006, 33002, 33002, "CC2", 5000);
-    }
+	private void createTwoArtistsTwoPaintingsTwoGalleries() throws Exception {
+		tArtist.insert(33001, "AA1");
+		tArtist.insert(33002, "AA2");
+		tGallery.insert(33001, "gallery1");
+		tGallery.insert(33002, "gallery2");
+		tPainting.insert(33005, 33001, 33001, "CC1", 5000);
+		tPainting.insert(33006, 33002, 33002, "CC2", 5000);
+	}
 
-    private void createTwoArtistsThreePaintings() throws Exception {
-        tArtist.insert(33001, "AA1");
-        tArtist.insert(33002, "AA2");
-        tPainting.insert(33001, 33001, null, "P1", 3000);
-        tPainting.insert(33002, 33002, null, "P2", 5000);
-        tPainting.insert(33007, 33001, null, "P2", 5000);
-    }
+	private void createTwoArtistsThreePaintings() throws Exception {
+		tArtist.insert(33001, "AA1");
+		tArtist.insert(33002, "AA2");
+		tPainting.insert(33001, 33001, null, "P1", 3000);
+		tPainting.insert(33002, 33002, null, "P2", 5000);
+		tPainting.insert(33007, 33001, null, "P2", 5000);
+	}
 
-    @Test
-    public void testThetaJoins() throws Exception {
-        createFourArtistsFourPaintings();
+	@Test
+	public void testThetaJoins() throws Exception {
+		createFourArtistsFourPaintings();
 
-        String ejbql = "SELECT DISTINCT a "
-                + "FROM Artist a, Painting b "
-                + "WHERE a.artistName = b.paintingTitle";
+		String ejbql = "SELECT DISTINCT a FROM Artist a, Painting b " + "WHERE a.artistName = b.paintingTitle";
 
-        EJBQLQuery query = new EJBQLQuery(ejbql);
-        List<?> artists = context.performQuery(query);
-        assertEquals(2, artists.size());
+		EJBQLQuery query = new EJBQLQuery(ejbql);
+		List<?> artists = context.performQuery(query);
+		assertEquals(2, artists.size());
 
-        Set<String> names = new HashSet<String>(2);
-        Iterator<?> it = artists.iterator();
-        while (it.hasNext()) {
-            Artist a = (Artist) it.next();
-            names.add(a.getArtistName());
-        }
+		Set<String> names = new HashSet<String>(2);
+		Iterator<?> it = artists.iterator();
+		while (it.hasNext()) {
+			Artist a = (Artist) it.next();
+			names.add(a.getArtistName());
+		}
 
-        assertTrue(names.contains("AA1"));
-        assertTrue(names.contains("BB2"));
-    }
+		assertTrue(names.contains("AA1"));
+		assertTrue(names.contains("BB2"));
+	}
 
-    @Test
-    public void testInnerJoins() throws Exception {
-        createTwoArtistsOnePainting();
+	@Test
+	public void testInnerJoins() throws Exception {
+		createTwoArtistsOnePainting();
 
-        String ejbql = "SELECT a "
-                + "FROM Artist a INNER JOIN a.paintingArray p "
-                + "WHERE a.artistName = 'AA1'";
+		String ejbql = "SELECT a FROM Artist a INNER JOIN a.paintingArray p " + "WHERE a.artistName = 'AA1'";
 
-        List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
-        assertEquals(1, artists.size());
-        assertEquals(33001, Cayenne.intPKForObject((Artist) artists.get(0)));
-    }
+		List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
+		assertEquals(1, artists.size());
+		assertEquals(33001, Cayenne.intPKForObject((Artist) artists.get(0)));
+	}
 
-    @Test
-    public void testOuterJoins() throws Exception {
-        createTwoArtistsOnePainting();
+	@Test
+	public void testOuterJoins() throws Exception {
+		createTwoArtistsOnePainting();
 
-        String ejbql = "SELECT a "
-                + "FROM Artist a LEFT JOIN a.paintingArray p "
-                + "WHERE a.artistName = 'AA1'";
+		String ejbql = "SELECT a FROM Artist a LEFT JOIN a.paintingArray p " + "WHERE a.artistName = 'AA1'";
 
-        List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
-        assertEquals(2, artists.size());
-        Set<Object> ids = new HashSet<Object>(2);
-        Iterator<?> it = artists.iterator();
-        while (it.hasNext()) {
-            Artist a = (Artist) it.next();
-            ids.add(Cayenne.pkForObject(a));
-        }
+		List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
+		assertEquals(2, artists.size());
+		Set<Object> ids = new HashSet<Object>(2);
+		Iterator<?> it = artists.iterator();
+		while (it.hasNext()) {
+			Artist a = (Artist) it.next();
+			ids.add(Cayenne.pkForObject(a));
+		}
 
-        assertTrue(ids.contains(33001l));
-        assertTrue(ids.contains(33005l));
-    }
+		assertTrue(ids.contains(33001l));
+		assertTrue(ids.contains(33005l));
+	}
 
-    @Test
-    public void testChainedJoins() throws Exception {
-        createTwoArtistsTwoPaintingsTwoGalleries();
+	@Test
+	public void testChainedJoins() throws Exception {
+		createTwoArtistsTwoPaintingsTwoGalleries();
 
-        String ejbql = "SELECT a "
-                + "FROM Artist a JOIN a.paintingArray p JOIN p.toGallery g "
-                + "WHERE g.galleryName = 'gallery2'";
+		String ejbql = "SELECT a FROM Artist a JOIN a.paintingArray p JOIN p.toGallery g "
+				+ "WHERE g.galleryName = 'gallery2'";
 
-        EJBQLQuery query = new EJBQLQuery(ejbql);
+		EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> artists = context.performQuery(query);
-        assertEquals(1, artists.size());
-        assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
-    }
+		List<?> artists = context.performQuery(query);
+		assertEquals(1, artists.size());
+		assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
+	}
 
-    @Test
-    public void testImplicitJoins() throws Exception {
-        createTwoArtistsTwoPaintingsTwoGalleries();
+	@Test
+	public void testImplicitJoins() throws Exception {
+		createTwoArtistsTwoPaintingsTwoGalleries();
 
-        String ejbql = "SELECT a "
-                + "FROM Artist a "
-                + "WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
+		String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
 
-        EJBQLQuery query = new EJBQLQuery(ejbql);
+		EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        System.out.println(""
-                + query.getExpression(context.getEntityResolver()).getExpression());
+		List<?> artists = context.performQuery(query);
+		assertEquals(1, artists.size());
+		assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
+	}
 
-        List<?> artists = context.performQuery(query);
-        assertEquals(1, artists.size());
-        assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
-    }
+	@Test
+	public void testImplicitJoins_OUTER_LastComponent() throws Exception {
 
-    @Test
-    public void testPartialImplicitJoins1() throws Exception {
-        createTwoArtistsTwoPaintingsTwoGalleries();
+		tArtist.insert(33001, "AA1");
+		tArtist.insert(33002, "AA2");
+		tPainting.insert(33005, 33001, null, "CC1", 5000);
+		tPainting.insert(33006, 33001, null, "CC2", 5000);
 
-        String ejbql = "SELECT a "
-                + "FROM Artist a JOIN a.paintingArray b "
-                + "WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
+		String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray+ is null";
 
-        List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
-        assertEquals(1, artists.size());
-        assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
-    }
+		EJBQLQuery query = new EJBQLQuery(ejbql);
 
-    @Test
-    public void testPartialImplicitJoins2() throws Exception {
-        createTwoArtistsTwoPaintingsTwoGalleries();
+		List<?> artists = context.performQuery(query);
+		assertEquals(1, artists.size());
+		assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
+	}
 
-        String ejbql = "SELECT a "
-                + "FROM Artist a JOIN a.paintingArray b "
-                + "WHERE a.paintingArray.paintingTitle = 'CC2'";
+	@Test
+	public void testImplicitJoins_OUTER_InTheMiddle() throws Exception {
 
-        List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
-        assertEquals(1, artists.size());
-        assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
-    }
+		tGallery.insert(33001, "gallery1");
+		tGallery.insert(33002, "gallery2");
+		tArtist.insert(33001, "AA1");
+		tArtist.insert(33002, "AA2");
+		tPainting.insert(33005, 33001, 33001, "CC1", 5000);
+		tPainting.insert(33006, 33001, 33002, "CC2", 5000);
 
-    @Test
-    public void testMultipleJoinsToTheSameTable() throws Exception {
-        createTwoArtistsThreePaintings();
+		String ejbql = "SELECT a FROM Artist a WHERE a.paintingArray+.toGallery is null";
 
-        String ejbql = "SELECT a "
-                + "FROM Artist a JOIN a.paintingArray b JOIN a.paintingArray c "
-                + "WHERE b.paintingTitle = 'P1' AND c.paintingTitle = 'P2'";
+		EJBQLQuery query = new EJBQLQuery(ejbql);
 
-        List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
-        assertEquals(1, artists.size());
-        assertEquals(33001, Cayenne.intPKForObject((Artist) artists.get(0)));
-    }
+		List<?> artists = context.performQuery(query);
+		assertEquals(1, artists.size());
+		assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
+	}
+
+	@Test
+	public void testPartialImplicitJoins1() throws Exception {
+		createTwoArtistsTwoPaintingsTwoGalleries();
+
+		String ejbql = "SELECT a " + "FROM Artist a JOIN a.paintingArray b "
+				+ "WHERE a.paintingArray.toGallery.galleryName = 'gallery2'";
+
+		List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
+		assertEquals(1, artists.size());
+		assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
+	}
+
+	@Test
+	public void testPartialImplicitJoins2() throws Exception {
+		createTwoArtistsTwoPaintingsTwoGalleries();
+
+		String ejbql = "SELECT a " + "FROM Artist a JOIN a.paintingArray b "
+				+ "WHERE a.paintingArray.paintingTitle = 'CC2'";
+
+		List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
+		assertEquals(1, artists.size());
+		assertEquals(33002, Cayenne.intPKForObject((Artist) artists.get(0)));
+	}
+
+	@Test
+	public void testMultipleJoinsToTheSameTable() throws Exception {
+		createTwoArtistsThreePaintings();
+
+		String ejbql = "SELECT a " + "FROM Artist a JOIN a.paintingArray b JOIN a.paintingArray c "
+				+ "WHERE b.paintingTitle = 'P1' AND c.paintingTitle = 'P2'";
+
+		List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
+		assertEquals(1, artists.size());
+		assertEquals(33001, Cayenne.intPKForObject((Artist) artists.get(0)));
+	}
 }

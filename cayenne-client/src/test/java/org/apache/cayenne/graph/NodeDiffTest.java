@@ -27,16 +27,32 @@ import static org.junit.Assert.assertNotNull;
 
 public class NodeDiffTest {
 
-    @Test
-    public void testHessianSerialization() throws Exception {
+	@Test
+	public void testHessianSerialization() throws Exception {
 
-        // id must be a serializable object...
-        String id = "abcd";
-        NodeDiff diff = new MockNodeDiff(id);
+		// id must be a serializable object...
+		String id = "abcd";
+		NodeDiff diff = new ConcreteNodeDiff(id);
 
-        Object d = HessianUtil.cloneViaClientServerSerialization(diff, new EntityResolver());
-        assertNotNull(d);
-        assertNotNull(((NodeDiff) d).getNodeId());
-        assertEquals(id, ((NodeDiff) d).getNodeId());
-    }
+		Object d = HessianUtil.cloneViaClientServerSerialization(diff, new EntityResolver());
+		assertNotNull(d);
+		assertNotNull(((NodeDiff) d).getNodeId());
+		assertEquals(id, ((NodeDiff) d).getNodeId());
+	}
+
+	@SuppressWarnings("serial")
+	static class ConcreteNodeDiff extends NodeDiff {
+
+		ConcreteNodeDiff(Object id) {
+			super(id);
+		}
+
+		@Override
+		public void apply(GraphChangeHandler tracker) {
+		}
+
+		@Override
+		public void undo(GraphChangeHandler tracker) {
+		}
+	}
 }

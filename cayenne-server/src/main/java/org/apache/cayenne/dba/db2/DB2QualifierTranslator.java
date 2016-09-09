@@ -34,100 +34,84 @@ import org.apache.cayenne.map.DbAttribute;
 
 public class DB2QualifierTranslator extends TrimmingQualifierTranslator {
 
-    public DB2QualifierTranslator(QueryAssembler queryAssembler, String trimFunction) {
-        super(queryAssembler, trimFunction);
-    }
+	public DB2QualifierTranslator(QueryAssembler queryAssembler, String trimFunction) {
+		super(queryAssembler, trimFunction);
+	}
 
-    @Override
-    protected void appendLiteralDirect(
-            Object val,
-            DbAttribute attr,
-            Expression parentExpression) throws IOException {
+	@Override
+	protected void appendLiteralDirect(Object val, DbAttribute attr, Expression parentExpression) throws IOException {
 
-        boolean castNeeded = false;
+		boolean castNeeded = false;
 
-        if (parentExpression != null) {
-            int type = parentExpression.getType();
+		if (parentExpression != null) {
+			int type = parentExpression.getType();
 
-            castNeeded = attr != null
-                    && (type == Expression.LIKE
-                            || type == Expression.LIKE_IGNORE_CASE
-                            || type == Expression.NOT_LIKE || type == Expression.NOT_LIKE_IGNORE_CASE);
-        }
+			castNeeded = attr != null
+					&& (type == Expression.LIKE || type == Expression.LIKE_IGNORE_CASE || type == Expression.NOT_LIKE || type == Expression.NOT_LIKE_IGNORE_CASE);
+		}
 
-        if (castNeeded) {
-            out.append("CAST (");
-        }
+		if (castNeeded) {
+			out.append("CAST (");
+		}
 
-        super.appendLiteralDirect(val, attr, parentExpression);
+		super.appendLiteralDirect(val, attr, parentExpression);
 
-        if (castNeeded) {
-            int jdbcType = attr.getType();
-            int len = attr.getMaxLength();
+		if (castNeeded) {
+			int jdbcType = attr.getType();
+			int len = attr.getMaxLength();
 
-            // determine CAST type
+			// determine CAST type
 
-            // LIKE on CHAR may produce unpredictible results
-            // LIKE on LONVARCHAR doesn't seem to be supported
-            if (jdbcType == Types.CHAR || jdbcType == Types.LONGVARCHAR) {
-                jdbcType = Types.VARCHAR;
+			// LIKE on CHAR may produce unpredictible results
+			// LIKE on LONVARCHAR doesn't seem to be supported
+			if (jdbcType == Types.CHAR || jdbcType == Types.LONGVARCHAR) {
+				jdbcType = Types.VARCHAR;
 
-                // length is required for VARCHAR
-                if (len <= 0) {
-                    len = 254;
-                }
-            }
+				// length is required for VARCHAR
+				if (len <= 0) {
+					len = 254;
+				}
+			}
 
-            out.append(" AS ");
-            String[] types = queryAssembler.getAdapter().externalTypesForJdbcType(
-                    jdbcType);
+			out.append(" AS ");
+			String[] types = queryAssembler.getAdapter().externalTypesForJdbcType(jdbcType);
 
-            if (types == null || types.length == 0) {
-                throw new CayenneRuntimeException(
-                        "Can't find database type for JDBC type '"
-                                + TypesMapping.getSqlNameByType(jdbcType));
-            }
+			if (types == null || types.length == 0) {
+				throw new CayenneRuntimeException("Can't find database type for JDBC type '"
+						+ TypesMapping.getSqlNameByType(jdbcType));
+			}
 
-            out.append(types[0]);
-            if (len > 0 && queryAssembler.getAdapter().typeSupportsLength(jdbcType)) {
-                out.append("(");
-                out.append(String.valueOf(len));
-                out.append(")");
-            }
+			out.append(types[0]);
+			if (len > 0 && queryAssembler.getAdapter().typeSupportsLength(jdbcType)) {
+				out.append("(");
+				out.append(String.valueOf(len));
+				out.append(")");
+			}
 
-            out.append(")");
-        }
-    }
-    
-    @Override
-    protected void processColumnWithQuoteSqlIdentifiers(
-            DbAttribute dbAttr,
-            Expression pathExp) {
+			out.append(")");
+		}
+	}
 
-        SimpleNode parent = null;
-        if (pathExp instanceof SimpleNode) {
-            parent = (SimpleNode) ((SimpleNode) pathExp).jjtGetParent();
-        }
+	@Override
+	protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr, Expression pathExp) {
 
-        // problem in db2 : Comparisons between CLOB and CLOB are not supported.
-        // we need do it by casting the Clob to VARCHAR.
-        if (parent != null
-                && (parent instanceof ASTEqual || parent instanceof ASTNotEqual)
-                && dbAttr.getType() == Types.CLOB
-                && parent.getOperandCount() == 2
-                && parent.getOperand(1) instanceof String) {
-            Integer size = parent.getOperand(1).toString().length() + 1;
+		SimpleNode parent = null;
+		if (pathExp instanceof SimpleNode) {
+			parent = (SimpleNode) ((SimpleNode) pathExp).jjtGetParent();
+		}
 
-            try {
-                out.append("CAST(");
-                super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
-                out.append(" AS VARCHAR(").append(String.valueOf(size)).append("))");
-            } catch (IOException ex) {
-                ex.printStackTrace(); // TODO process exceptions
-            }
-        }
-        else {
-            super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
-        }
-    }
+		// problem in db2 : Comparisons between CLOB and CLOB are not supported.
+		// we need do it by casting the Clob to VARCHAR.
+		if (parent != null && (parent instanceof ASTEqual || parent instanceof ASTNotEqual)
+				&& dbAttr.getType() == Types.CLOB && parent.getOperandCount() == 2
+				&& parent.getOperand(1) instanceof String) {
+			Integer size = parent.getOperand(1).toString().length() + 1;
+
+			out.append("CAST(");
+			super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
+			out.append(" AS VARCHAR(" + size + "))");
+		} else {
+			super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
+		}
+	}
 }

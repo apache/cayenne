@@ -105,15 +105,12 @@ public class Util {
 	 */
 	public static String stringFromFile(File file, String joinWith) throws IOException {
 		StringBuilder buf = new StringBuilder();
-		BufferedReader in = new BufferedReader(new FileReader(file));
 
-		try {
+		try (BufferedReader in = new BufferedReader(new FileReader(file));) {
 			String line = null;
 			while ((line = in.readLine()) != null) {
 				buf.append(line).append(joinWith);
 			}
-		} finally {
-			in.close();
 		}
 		return buf.toString();
 	}
@@ -232,6 +229,7 @@ public class Util {
 	/**
 	 * Creates Serializable object copy using serialization/deserialization.
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T extends Serializable> T cloneViaSerialization(T object) throws Exception {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream() {
 
@@ -241,18 +239,13 @@ public class Util {
 			}
 		};
 
-		ObjectOutputStream out = new ObjectOutputStream(bytes);
-		out.writeObject(object);
-		out.close();
+		try (ObjectOutputStream out = new ObjectOutputStream(bytes)) {
+			out.writeObject(object);
+		}
 
-		ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()));
-		T copy = (T) in.readObject();
-
-		// no need to close the stream - we created it and now will be throwing
-		// away...
-		// in.close();
-
-		return copy;
+		try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()))) {
+			return (T) in.readObject();
+		}
 	}
 
 	/**

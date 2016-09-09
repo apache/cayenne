@@ -20,7 +20,8 @@
 		RELEASE-NOTES.txt included in Cayenne download. For release-specific upgrade instructions check UPGRADE.txt.</para>
 	<section xml:id="java-version">
 		<title>Java Version</title>
-		<para>Minimum required JDK version is 1.6 or newer. Cayenne 4.0 is fully tested with Java 1.6, 1.7, 1.8. </para>
+		<para>Minimum required JDK version is 1.7 or newer. Cayenne 4.0 is fully tested with Java 1.7,
+			1.8. </para>
 		<para>The examples below often use Java 8 syntax. But those same examples should work without lambdas just as well.</para>
 	</section>
 	<section xml:id="cayenne-configuration">
@@ -40,6 +41,34 @@
 			<title>Mapping-free ServerRuntime</title>
 			<para>ServerRuntime can now be started without any ORM mapping at all. This is useful in situations when Cayenne is used as a stack to
 				execute raw SQL, in unit tests, etc.</para>
+		</section>
+		<section>
+			<title>DI Container Decorators</title>
+			<para>In addition to overriding services in DI container, Cayenne now allows to supply
+				decorators. True to the "smallest-footprint" DI philosophy, decorator approach is
+				very simple and does not require proxies or class enhancement. Just implement the
+				decorated interface and provide a constructor that takes a delegate instance being
+				decorated:<programlisting>public class MyInterfaceDecorator implements MyInterface {
+
+    private MyInterface delegate;
+
+    public MockInterface1_Decorator3(@Inject MyInterface delegate) {
+        this.delegate = delegate;
+    }
+
+    @Override
+    public String getName() {
+        return "&lt;" + delegate.getName() + ">";
+    }
+}
+
+Module module = new Module() {
+
+    @Override
+    public void configure(Binder binder) {
+        binder.decorate(MyInterface.class).before(MyInterfaceDecorator.class);
+    }
+};</programlisting></para>
 		</section>
 	</section>
 	<section xml:id="framework-api">

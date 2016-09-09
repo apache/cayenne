@@ -18,11 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.dba.mysql;
 
-import java.sql.Connection;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
@@ -30,17 +27,12 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class MySQLSelectAction extends SelectAction {
 
-    <T> MySQLSelectAction(SelectQuery<T> query, DataNode dataNode) {
-        super(query, dataNode);
-    }
+	<T> MySQLSelectAction(SelectQuery<T> query, DataNode dataNode) {
+		super(query, dataNode);
+	}
 
-    @Override
-    protected int getInMemoryOffset(int queryOffset) {
-        return 0;
-    }
-
-    @Override
-    protected SelectTranslator createTranslator(Connection connection) {
-        return new MySQLSelectTranslator(query, dataNode, connection);
-    }
+	@Override
+	protected int getInMemoryOffset(int queryOffset) {
+		return 0;
+	}
 }

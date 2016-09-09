@@ -16,10 +16,8 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
- 
-package org.apache.cayenne.dba.firebird;
 
-import java.io.IOException;
+package org.apache.cayenne.dba.firebird;
 
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
@@ -27,18 +25,18 @@ import org.apache.cayenne.dba.oracle.OracleQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
 
 public class FirebirdQualifierTranslator extends QualifierTranslator {
-    public FirebirdQualifierTranslator(QueryAssembler queryAssembler) {
-        super(queryAssembler);
-    }
+	public FirebirdQualifierTranslator(QueryAssembler queryAssembler) {
+		super(queryAssembler);
+	}
 
-    @Override
-    protected void doAppendPart(Expression rootNode) throws IOException {
-        if (rootNode == null) {
-            return;
-        }
-        // IN statements with more than 1500 values are denied in Firebird
-        // so we need to split one big statement on few smaller ones
-        rootNode = rootNode.transform(new OracleQualifierTranslator.INTrimmer());
-        rootNode.traverse(this);
-    }
+	@Override
+	protected void doAppendPart(Expression rootNode) {
+		if (rootNode == null) {
+			return;
+		}
+		// IN statements with more than 1500 values are denied in Firebird
+		// so we need to split one big statement on few smaller ones
+		rootNode = rootNode.transform(new OracleQualifierTranslator.INTrimmer());
+		rootNode.traverse(this);
+	}
 }

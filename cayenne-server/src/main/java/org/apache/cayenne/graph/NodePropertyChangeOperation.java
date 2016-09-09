@@ -26,59 +26,59 @@ import org.apache.cayenne.util.Util;
  */
 public class NodePropertyChangeOperation extends NodeDiff {
 
-    protected String property;
-    protected Object oldValue;
-    protected Object newValue;
+	private static final long serialVersionUID = 3282063727025159961L;
 
-    public NodePropertyChangeOperation(Object nodeId, String property, Object oldValue,
-            Object newValue) {
+	protected String property;
+	protected Object oldValue;
+	protected Object newValue;
 
-        super(nodeId);
-        this.property = property;
-        this.oldValue = oldValue;
-        this.newValue = newValue;
-    }
+	public NodePropertyChangeOperation(Object nodeId, String property, Object oldValue, Object newValue) {
 
-    public NodePropertyChangeOperation(Object nodeId, String property, Object oldValue,
-            Object newValue, int diffId) {
-        super(nodeId, diffId);
+		super(nodeId);
+		this.property = property;
+		this.oldValue = oldValue;
+		this.newValue = newValue;
+	}
 
-        this.property = property;
-        this.oldValue = oldValue;
-        this.newValue = newValue;
-    }
+	public NodePropertyChangeOperation(Object nodeId, String property, Object oldValue, Object newValue, int diffId) {
+		super(nodeId, diffId);
 
-    /**
-     * @since 3.0
-     */
-    public String getProperty() {
-        return property;
-    }
+		this.property = property;
+		this.oldValue = oldValue;
+		this.newValue = newValue;
+	}
 
-    /**
-     * Chnages the 'newValue'.
-     * 
-     * @since 3.0
-     */
-    void setNewValue(Object newValue) {
-        this.newValue = newValue;
-    }
+	/**
+	 * @since 3.0
+	 */
+	public String getProperty() {
+		return property;
+	}
 
-    /**
-     * Returns true if both old and new value are equal.
-     */
-    @Override
-    public boolean isNoop() {
-        return Util.nullSafeEquals(oldValue, newValue);
-    }
+	/**
+	 * Changes the 'newValue'.
+	 * 
+	 * @since 3.0
+	 */
+	void setNewValue(Object newValue) {
+		this.newValue = newValue;
+	}
 
-    @Override
-    public void apply(GraphChangeHandler tracker) {
-        tracker.nodePropertyChanged(nodeId, property, oldValue, newValue);
-    }
+	/**
+	 * Returns true if both old and new value are equal.
+	 */
+	@Override
+	public boolean isNoop() {
+		return Util.nullSafeEquals(oldValue, newValue);
+	}
 
-    @Override
-    public void undo(GraphChangeHandler tracker) {
-        tracker.nodePropertyChanged(nodeId, property, newValue, oldValue);
-    }
+	@Override
+	public void apply(GraphChangeHandler tracker) {
+		tracker.nodePropertyChanged(nodeId, property, oldValue, newValue);
+	}
+
+	@Override
+	public void undo(GraphChangeHandler tracker) {
+		tracker.nodePropertyChanged(nodeId, property, newValue, oldValue);
+	}
 }

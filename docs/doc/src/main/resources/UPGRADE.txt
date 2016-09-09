@@ -4,6 +4,41 @@ Apache Cayenne Upgrade Information
 IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
+UPGRADING TO 4.0.M3
+
+* Per CAY-2026 minimal Java version is now 1.7. If you are still need Java 1.6, you can use Cayenne 3.1 or 4.0.M2 until your
+  application is able to upgrade. 
+
+* We no longer add @Deprecated annotation to generated String property names in entity superclasses.
+  Instead String property names inclusion
+  became optional, controlled with "createPropertyNames" flag in cgen ("false" by default). Also a similar option
+  was added to Advanced Type of CayenneModeler class generation dialog.
+  Note if you have references to @Deprecated String properties and you run cgen without "createPropertyNames" flag,
+  there will be errors. Reference Jira: CAY-1991
+
+* Per CAY-2008, CAY-2009 we got rid of org.apache.cayenne.conn.PoolManager and associated classes that made up a 
+  pooling DataSource. A replacement is non-blocking DataSource under org.apache.cayenne.datasource (PoolingDataSource, ManagedPoolingDataSource),
+  best assembled using org.apache.cayenne.datasource.DataSourceBuilder.
+
+* Per CAY-2012 API for ObjectSelect and SelectById queries were changed to remove "reset" functionality. Methods like 'where', 'prefetch',
+  'orderBy' that would previously reset the corresponding option state now work as "append". Methods that would previously append to the
+  option state were removed as redundant. Please revisit your code if you previously relied on the reset behavior.
+
+* If you are using DBCPDataSourceFactory, you will need to take a few steps to upgrade:
+
+  - Per CAY-2025 and CAY-2026, DBCPDataSourceFactory is now based on DBCP2 (which is required under Java 1.7 and newer).
+  - Check your DBCP properties file to ensure it uses property names supported by DBCP. 
+    (In the past Cayenne would require prefixing those properties with 'cayenne.dbcp.'. If you still have that prefix, remove it).
+  - To use DBCPDataSourceFactory, you will now have to explicitly include an extra Cayenne module, as it is no longer in cayenne-server. 
+    E.g. if you are using Maven:
+
+    <parent>
+      <groupId>org.apache.cayenne</groupId>
+      <artifactId>cayenne-dbcp2</artifactId>
+      <version>4.0.M3</version>
+    </parent>
+ 
+
 UPGRADING TO 4.0.M2
 
 * Note that 3.2 line of development was renamed to 4.0. So 4.0.M2 is a straight descendant of

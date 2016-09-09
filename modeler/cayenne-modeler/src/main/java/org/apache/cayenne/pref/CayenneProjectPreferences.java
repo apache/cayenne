@@ -36,12 +36,12 @@ public class CayenneProjectPreferences {
     private Map<Preferences, CayennePreference> projectCayennePreferences;
 
     public CayenneProjectPreferences() {
-        cayennePreferences = new HashMap<Class<?>, ChildrenMapPreference>();
+        cayennePreferences = new HashMap<>();
 
         cayennePreferences.put(DBConnectionInfo.class, new ChildrenMapPreference(
                 new DBConnectionInfo()));
 
-        projectCayennePreferences = new HashMap<Preferences, CayennePreference>();
+        projectCayennePreferences = new HashMap<>();
 
         for (ChildrenMapPreference value : cayennePreferences.values()) {
             value.initChildrenPreferences();

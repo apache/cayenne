@@ -18,21 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import static org.apache.cayenne.access.loader.filters.FilterFactory.*;
 import static org.junit.Assert.assertEquals;
 
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
-import org.apache.cayenne.access.loader.filters.DbPath;
-import org.apache.cayenne.access.loader.filters.EntityFilters;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
+import org.apache.cayenne.access.loader.filters.PatternFilter;
+import org.apache.cayenne.access.loader.filters.TableFilter;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
@@ -105,13 +103,14 @@ public abstract class MergeCase extends ServerCase {
 		return new DbMerger(mergerFactory, valueForNullProvider);
 	}
 
-    protected List<MergerToken> createMergeTokens() {
-        DbLoaderConfiguration loaderConfiguration = new DbLoaderConfiguration();
-        loaderConfiguration.setFiltersConfig(new FiltersConfig(new EntityFilters(DbPath.EMPTY, include("ARTIST|GALLERY|PAINTING|NEW_TABLE2?"), TRUE, NULL)));
+	protected List<MergerToken> createMergeTokens() {
+		DbLoaderConfiguration loaderConfiguration = new DbLoaderConfiguration();
+		loaderConfiguration.setFiltersConfig(FiltersConfig.create(null, null,
+				TableFilter.include("ARTIST|GALLERY|PAINTING|NEW_TABLE2?"), PatternFilter.INCLUDE_NOTHING));
 
-        return createMerger(node.getAdapter().mergerFactory())
-                .createMergeTokens(node.getDataSource(), node.getAdapter(), map, loaderConfiguration);
-    }
+		return createMerger(node.getAdapter().mergerFactory()).createMergeTokens(node.getDataSource(),
+				node.getAdapter(), map, loaderConfiguration);
+	}
 
 	/**
 	 * Remote binary pk {@link DbEntity} for {@link DbAdapter} not supporting
@@ -159,20 +158,12 @@ public abstract class MergeCase extends ServerCase {
 	}
 
 	private void executeSql(String sql) throws Exception {
-		Connection conn = dataSourceFactory.getSharedDataSource().getConnection();
 
-		try {
-			Statement st = conn.createStatement();
+		try (Connection conn = dataSourceFactory.getSharedDataSource().getConnection();) {
 
-			try {
+			try (Statement st = conn.createStatement();) {
 				st.execute(sql);
-			} finally {
-				st.close();
 			}
-		}
-
-		finally {
-			conn.close();
 		}
 	}
 

@@ -54,7 +54,7 @@ public class EnumTest {
     @Test
     public void testSerializabilityWithHessianInTheMap() throws Exception {
         // test in the Map
-        Map<String, MockEnum> map = new HashMap<String, MockEnum>();
+        Map<String, MockEnum> map = new HashMap<>();
         map.put("a", MockEnum.b);
 
         Map after = (Map) HessianUtil.cloneViaClientServerSerialization(

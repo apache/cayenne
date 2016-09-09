@@ -37,7 +37,7 @@ public class DefaultBytesTransformerFactoryTest {
     @Test
     public void testCreateEncryptionHeader() {
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         KeySource keySource = mock(KeySource.class);
         when(keySource.getDefaultKeyAlias()).thenReturn("bla");
 

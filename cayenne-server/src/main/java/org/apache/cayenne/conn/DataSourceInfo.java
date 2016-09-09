@@ -35,374 +35,392 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable {
 
-    private static Log logger = LogFactory.getLog(DataSourceInfo.class);
+	private static final long serialVersionUID = 3748394113864532902L;
 
-    protected String userName;
-    protected String password;
-    protected String jdbcDriver;
-    protected String dataSourceUrl;
-    protected String adapterClassName;
-    protected int minConnections = 1;
-    protected int maxConnections = 1;
+	private static Log logger = LogFactory.getLog(DataSourceInfo.class);
 
-    // Constants for passwordLocation
-    public static final String PASSWORD_LOCATION_CLASSPATH = "classpath";
-    public static final String PASSWORD_LOCATION_EXECUTABLE = "executable";
-    public static final String PASSWORD_LOCATION_MODEL = "model";
-    public static final String PASSWORD_LOCATION_URL = "url";
+	public static final String PASSWORD_LOCATION_CLASSPATH = "classpath";
+	public static final String PASSWORD_LOCATION_EXECUTABLE = "executable";
+	public static final String PASSWORD_LOCATION_MODEL = "model";
+	public static final String PASSWORD_LOCATION_URL = "url";
 
-    // Extended parameters
-    protected String passwordEncoderClass = PlainTextPasswordEncoder.class.getName();
-    protected String passwordEncoderKey = "";
-    protected String passwordLocation = PASSWORD_LOCATION_MODEL;
-    protected String passwordSourceExecutable = "";
-    protected String passwordSourceFilename = "";
-    protected final String passwordSourceModel = "Not Applicable";
-    protected String passwordSourceUrl = "";
+	protected String userName;
+	protected String password;
+	protected String jdbcDriver;
+	protected String dataSourceUrl;
+	protected String adapterClassName;
+	protected int minConnections = 1;
+	protected int maxConnections = 1;
+	protected String passwordEncoderClass = PlainTextPasswordEncoder.class.getName();
+	protected String passwordEncoderKey = "";
+	protected String passwordLocation = PASSWORD_LOCATION_MODEL;
+	protected String passwordSourceExecutable = "";
+	protected String passwordSourceFilename = "";
+	protected final String passwordSourceModel = "Not Applicable";
+	protected String passwordSourceUrl = "";
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this)
-            return true;
+	@Override
+	public boolean equals(Object obj) {
+		
+		if (obj == this) {
+			return true;
+		}
 
-        if (obj == null)
-            return false;
+		if (obj == null) {
+			return false;
+		}
 
-        if (obj.getClass() != this.getClass())
-            return false;
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
 
-        DataSourceInfo dsi = (DataSourceInfo) obj;
+		DataSourceInfo dsi = (DataSourceInfo) obj;
 
-        if (!Util.nullSafeEquals(this.userName, dsi.userName))
-            return false;
-        if (!Util.nullSafeEquals(this.password, dsi.password))
-            return false;
-        if (!Util.nullSafeEquals(this.jdbcDriver, dsi.jdbcDriver))
-            return false;
-        if (!Util.nullSafeEquals(this.dataSourceUrl, dsi.dataSourceUrl))
-            return false;
-        if (!Util.nullSafeEquals(this.adapterClassName, dsi.adapterClassName))
-            return false;
-        if (this.minConnections != dsi.minConnections)
-            return false;
-        if (this.maxConnections != dsi.maxConnections)
-            return false;
-        if (!Util.nullSafeEquals(this.passwordEncoderClass, dsi.passwordEncoderClass))
-            return false;
-        if (!Util.nullSafeEquals(this.passwordEncoderKey, dsi.passwordEncoderKey))
-            return false;
-        if (!Util.nullSafeEquals(this.passwordSourceFilename, dsi.passwordSourceFilename))
-            return false;
-        if (!Util.nullSafeEquals(this.passwordSourceModel, dsi.passwordSourceModel))
-            return false;
-        if (!Util.nullSafeEquals(this.passwordSourceUrl, dsi.passwordSourceUrl))
-            return false;
-        if (!Util.nullSafeEquals(this.passwordLocation, dsi.passwordLocation))
-            return false;
+		if (!Util.nullSafeEquals(this.userName, dsi.userName)) {
+			return false;
+		}
 
-        return true;
-    }
+		if (!Util.nullSafeEquals(this.password, dsi.password)) {
+			return false;
+		}
 
-    /**
-     * @since 3.1
-     */
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.println("<data-source>");
-        encoder.indent(1);
+		if (!Util.nullSafeEquals(this.jdbcDriver, dsi.jdbcDriver)) {
+			return false;
+		}
 
-        encoder.print("<driver");
-        encoder.printAttribute("value", jdbcDriver);
-        encoder.println("/>");
+		if (!Util.nullSafeEquals(this.dataSourceUrl, dsi.dataSourceUrl)) {
+			return false;
+		}
 
-        encoder.print("<url");
-        encoder.printAttribute("value", dataSourceUrl);
-        encoder.println("/>");
+		if (!Util.nullSafeEquals(this.adapterClassName, dsi.adapterClassName)) {
+			return false;
+		}
 
-        encoder.print("<connectionPool");
-        encoder.printAttribute("min", String.valueOf(minConnections));
-        encoder.printAttribute("max", String.valueOf(maxConnections));
-        encoder.println("/>");
+		if (this.minConnections != dsi.minConnections) {
+			return false;
+		}
 
-        encoder.print("<login");
-        encoder.printAttribute("userName", userName);
+		if (this.maxConnections != dsi.maxConnections) {
+			return false;
+		}
 
-        if (DataSourceInfo.PASSWORD_LOCATION_MODEL.equals(passwordLocation)) {
+		if (!Util.nullSafeEquals(this.passwordEncoderClass, dsi.passwordEncoderClass)) {
+			return false;
+		}
 
-            PasswordEncoding passwordEncoder = getPasswordEncoder();
+		if (!Util.nullSafeEquals(this.passwordEncoderKey, dsi.passwordEncoderKey)) {
+			return false;
+		}
 
-            if (passwordEncoder != null) {
-                String passwordEncoded = passwordEncoder.encodePassword(
-                        password,
-                        passwordEncoderKey);
-                encoder.printAttribute("password", passwordEncoded);
-            }
-        }
+		if (!Util.nullSafeEquals(this.passwordSourceFilename, dsi.passwordSourceFilename)) {
+			return false;
+		}
 
-        if (!PlainTextPasswordEncoder.class.getName().equals(passwordEncoderClass)) {
-            encoder.printAttribute("encoderClass", passwordEncoderClass);
-        }
+		if (!Util.nullSafeEquals(this.passwordSourceModel, dsi.passwordSourceModel)) {
+			return false;
+		}
 
-        encoder.printAttribute("encoderKey", passwordEncoderKey);
+		if (!Util.nullSafeEquals(this.passwordSourceUrl, dsi.passwordSourceUrl)) {
+			return false;
+		}
 
-        if (!DataSourceInfo.PASSWORD_LOCATION_MODEL.equals(passwordLocation)) {
-            encoder.printAttribute("passwordLocation", passwordLocation);
-        }
+		if (!Util.nullSafeEquals(this.passwordLocation, dsi.passwordLocation)) {
+			return false;
+		}
 
-        // TODO: this is very not nice... we need to clean up the whole DataSourceInfo
-        // to avoid returning arbitrary labels...
-        String passwordSource = getPasswordSource();
-        if (!"Not Applicable".equals(passwordSource)) {
-            encoder.printAttribute("passwordSource", passwordSource);
-        }
+		return true;
+	}
 
-        encoder.println("/>");
+	/**
+	 * @since 3.1
+	 */
+	public void encodeAsXML(XMLEncoder encoder) {
+		encoder.println("<data-source>");
+		encoder.indent(1);
 
-        encoder.indent(-1);
-        encoder.println("</data-source>");
-    }
+		encoder.print("<driver");
+		encoder.printAttribute("value", jdbcDriver);
+		encoder.println("/>");
 
-    public DataSourceInfo cloneInfo() {
-        try {
-            return (DataSourceInfo) super.clone();
-        }
-        catch (CloneNotSupportedException ex) {
-            throw new RuntimeException("Cloning error", ex);
-        }
-    }
+		encoder.print("<url");
+		encoder.printAttribute("value", dataSourceUrl);
+		encoder.println("/>");
 
-    public String getAdapterClassName() {
-        return adapterClassName;
-    }
+		encoder.print("<connectionPool");
+		encoder.printAttribute("min", String.valueOf(minConnections));
+		encoder.printAttribute("max", String.valueOf(maxConnections));
+		encoder.println("/>");
 
-    public void setAdapterClassName(String adapterClassName) {
-        this.adapterClassName = adapterClassName;
-    }
+		encoder.print("<login");
+		encoder.printAttribute("userName", userName);
 
-    public void setMinConnections(int minConnections) {
-        this.minConnections = minConnections;
-    }
+		if (DataSourceInfo.PASSWORD_LOCATION_MODEL.equals(passwordLocation)) {
 
-    public int getMinConnections() {
-        return minConnections;
-    }
+			PasswordEncoding passwordEncoder = getPasswordEncoder();
 
-    public void setMaxConnections(int maxConnections) {
-        this.maxConnections = maxConnections;
-    }
+			if (passwordEncoder != null) {
+				String passwordEncoded = passwordEncoder.encodePassword(password, passwordEncoderKey);
+				encoder.printAttribute("password", passwordEncoded);
+			}
+		}
 
-    public int getMaxConnections() {
-        return maxConnections;
-    }
+		if (!PlainTextPasswordEncoder.class.getName().equals(passwordEncoderClass)) {
+			encoder.printAttribute("encoderClass", passwordEncoderClass);
+		}
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+		encoder.printAttribute("encoderKey", passwordEncoderKey);
 
-    public String getUserName() {
-        return userName;
-    }
+		if (!DataSourceInfo.PASSWORD_LOCATION_MODEL.equals(passwordLocation)) {
+			encoder.printAttribute("passwordLocation", passwordLocation);
+		}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+		// TODO: this is very not nice... we need to clean up the whole
+		// DataSourceInfo
+		// to avoid returning arbitrary labels...
+		String passwordSource = getPasswordSource();
+		if (!"Not Applicable".equals(passwordSource)) {
+			encoder.printAttribute("passwordSource", passwordSource);
+		}
 
-    public String getPassword() {
-        return password;
-    }
+		encoder.println("/>");
 
-    public void setJdbcDriver(String jdbcDriver) {
-        this.jdbcDriver = jdbcDriver;
-    }
+		encoder.indent(-1);
+		encoder.println("</data-source>");
+	}
 
-    public String getJdbcDriver() {
-        return jdbcDriver;
-    }
+	public DataSourceInfo cloneInfo() {
+		try {
+			return (DataSourceInfo) super.clone();
+		} catch (CloneNotSupportedException ex) {
+			throw new RuntimeException("Cloning error", ex);
+		}
+	}
 
-    public void setDataSourceUrl(String dataSourceUrl) {
-        this.dataSourceUrl = dataSourceUrl;
-    }
+	public String getAdapterClassName() {
+		return adapterClassName;
+	}
 
-    public String getDataSourceUrl() {
-        return dataSourceUrl;
-    }
+	public void setAdapterClassName(String adapterClassName) {
+		this.adapterClassName = adapterClassName;
+	}
 
-    /**
-     * @deprecated since 4.0 as class loading should not happen here.
-     */
-    @Deprecated
-    public PasswordEncoding getPasswordEncoder() {
-        try {
-            return (PasswordEncoding) Util
-                    .getJavaClass(getPasswordEncoderClass())
-                    .newInstance();
-        }
-        catch (InstantiationException e) {
-            ; // Swallow it -- no need to throw/etc.
-        }
-        catch (IllegalAccessException e) {
-            ; // Swallow it -- no need to throw/etc.
-        }
-        catch (ClassNotFoundException e) {
-            ; // Swallow it -- no need to throw/etc.
-        }
-        catch (DIRuntimeException e) {
-            ; // Swallow it -- no need to throw/etc.
-        }
+	public void setMinConnections(int minConnections) {
+		this.minConnections = minConnections;
+	}
 
-        logger.error("Failed to obtain specified Password Encoder '" + getPasswordEncoderClass() + "'");
-        return null;
-    }
+	public int getMinConnections() {
+		return minConnections;
+	}
 
-    /**
-     * @return the passwordEncoderClass
-     */
-    public String getPasswordEncoderClass() {
-        return passwordEncoderClass;
-    }
+	public void setMaxConnections(int maxConnections) {
+		this.maxConnections = maxConnections;
+	}
 
-    /**
-     * @param passwordEncoderClass the passwordEncoderClass to set
-     */
-    public void setPasswordEncoderClass(String passwordEncoderClass) {
-        if (passwordEncoderClass == null)
-            this.passwordEncoderClass = PasswordEncoding.standardEncoders[0];
-        else
-            this.passwordEncoderClass = passwordEncoderClass;
-    }
+	public int getMaxConnections() {
+		return maxConnections;
+	}
 
-    /**
-     * @return the passwordEncoderKey
-     */
-    public String getPasswordEncoderKey() {
-        return passwordEncoderKey;
-    }
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
-    /**
-     * @param passwordEncoderKey the passwordEncoderKey to set
-     */
-    public void setPasswordEncoderKey(String passwordEncoderKey) {
-        this.passwordEncoderKey = passwordEncoderKey;
-    }
+	public String getUserName() {
+		return userName;
+	}
 
-    /**
-     * @return the passwordLocationFilename
-     */
-    public String getPasswordSourceFilename() {
-        return passwordSourceFilename;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    /**
-     * @param passwordSourceFilename the passwordSourceFilename to set
-     */
-    public void setPasswordSourceFilename(String passwordSourceFilename) {
-        this.passwordSourceFilename = passwordSourceFilename;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    /**
-     * @return the passwordLocationModel
-     */
-    public String getPasswordSourceModel() {
-        return passwordSourceModel;
-    }
+	public void setJdbcDriver(String jdbcDriver) {
+		this.jdbcDriver = jdbcDriver;
+	}
 
-    /**
-     * @return the passwordLocationUrl
-     */
-    public String getPasswordSourceUrl() {
-        return passwordSourceUrl;
-    }
+	public String getJdbcDriver() {
+		return jdbcDriver;
+	}
 
-    /**
-     * @param passwordSourceUrl the passwordSourceUrl to set
-     */
-    public void setPasswordSourceUrl(String passwordSourceUrl) {
-        this.passwordSourceUrl = passwordSourceUrl;
-    }
+	public void setDataSourceUrl(String dataSourceUrl) {
+		this.dataSourceUrl = dataSourceUrl;
+	}
 
-    /**
-     * @return the passwordLocationExecutable
-     */
-    public String getPasswordSourceExecutable() {
-        return passwordSourceExecutable;
-    }
+	public String getDataSourceUrl() {
+		return dataSourceUrl;
+	}
 
-    /**
-     * @param passwordSourceExecutable the passwordSourceExecutable to set
-     */
-    public void setPasswordSourceExecutable(String passwordSourceExecutable) {
-        this.passwordSourceExecutable = passwordSourceExecutable;
-    }
+	/**
+	 * @deprecated since 4.0 as class loading should not happen here.
+	 */
+	@Deprecated
+	public PasswordEncoding getPasswordEncoder() {
+		try {
+			return (PasswordEncoding) Util.getJavaClass(getPasswordEncoderClass()).newInstance();
+		} catch (InstantiationException e) {
+			; // Swallow it -- no need to throw/etc.
+		} catch (IllegalAccessException e) {
+			; // Swallow it -- no need to throw/etc.
+		} catch (ClassNotFoundException e) {
+			; // Swallow it -- no need to throw/etc.
+		} catch (DIRuntimeException e) {
+			; // Swallow it -- no need to throw/etc.
+		}
 
-    public String getPasswordSource() {
-        if (getPasswordLocation().equals(PASSWORD_LOCATION_CLASSPATH))
-            return getPasswordSourceFilename();
-        else if (getPasswordLocation().equals(PASSWORD_LOCATION_EXECUTABLE))
-            return getPasswordSourceExecutable();
-        else if (getPasswordLocation().equals(PASSWORD_LOCATION_MODEL))
-            return getPasswordSourceModel();
-        else if (getPasswordLocation().equals(PASSWORD_LOCATION_URL))
-            return getPasswordSourceUrl();
+		logger.error("Failed to obtain specified Password Encoder '" + getPasswordEncoderClass() + "'");
+		return null;
+	}
 
-        throw new RuntimeException("Invalid password source detected");
-    }
+	/**
+	 * @return the passwordEncoderClass
+	 */
+	public String getPasswordEncoderClass() {
+		return passwordEncoderClass;
+	}
 
-    public void setPasswordSource(String passwordSource) {
-        // The location for the model is omitted since it cannot change
-        if (getPasswordLocation().equals(PASSWORD_LOCATION_CLASSPATH))
-            setPasswordSourceFilename(passwordSource);
-        else if (getPasswordLocation().equals(PASSWORD_LOCATION_EXECUTABLE))
-            setPasswordSourceExecutable(passwordSource);
-        else if (getPasswordLocation().equals(PASSWORD_LOCATION_URL))
-            setPasswordSourceUrl(passwordSource);
-    }
+	/**
+	 * @param passwordEncoderClass
+	 *            the passwordEncoderClass to set
+	 */
+	public void setPasswordEncoderClass(String passwordEncoderClass) {
+		if (passwordEncoderClass == null)
+			this.passwordEncoderClass = PasswordEncoding.standardEncoders[0];
+		else
+			this.passwordEncoderClass = passwordEncoderClass;
+	}
 
-    /**
-     * @return the passwordLocation
-     */
-    public String getPasswordLocation() {
-        return passwordLocation;
-    }
+	/**
+	 * @return the passwordEncoderKey
+	 */
+	public String getPasswordEncoderKey() {
+		return passwordEncoderKey;
+	}
 
-    /**
-     * @param passwordLocation the passwordLocation to set
-     */
-    public void setPasswordLocation(String passwordLocation) {
-        if (passwordLocation == null)
-            this.passwordLocation = DataSourceInfo.PASSWORD_LOCATION_MODEL;
-        else
-            this.passwordLocation = passwordLocation;
-    }
+	/**
+	 * @param passwordEncoderKey
+	 *            the passwordEncoderKey to set
+	 */
+	public void setPasswordEncoderKey(String passwordEncoderKey) {
+		this.passwordEncoderKey = passwordEncoderKey;
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("[").append(getClass().getName()).append(":").append(
-                "\n   user name: ").append(userName).append("\n   password: ");
+	/**
+	 * @return the passwordLocationFilename
+	 */
+	public String getPasswordSourceFilename() {
+		return passwordSourceFilename;
+	}
 
-        buffer.append("**********");
-        buffer
-                .append("\n   driver: ")
-                .append(jdbcDriver)
-                .append("\n   db adapter class: ")
-                .append(adapterClassName)
-                .append("\n   url: ")
-                .append(dataSourceUrl)
-                .append("\n   min. connections: ")
-                .append(minConnections)
-                .append("\n   max. connections: ")
-                .append(maxConnections);
+	/**
+	 * @param passwordSourceFilename
+	 *            the passwordSourceFilename to set
+	 */
+	public void setPasswordSourceFilename(String passwordSourceFilename) {
+		this.passwordSourceFilename = passwordSourceFilename;
+	}
 
-        if (!PlainTextPasswordEncoder.class.getName().equals(passwordEncoderClass)) {
-            buffer.append("\n   encoder class: ").append(passwordEncoderClass).append(
-                    "\n   encoder key: ").append(passwordEncoderKey);
-        }
+	/**
+	 * @return the passwordLocationModel
+	 */
+	public String getPasswordSourceModel() {
+		return passwordSourceModel;
+	}
 
-        if (!PASSWORD_LOCATION_MODEL.equals(passwordLocation)) {
-            buffer.append("\n   password location: ").append(passwordLocation).append(
-                    "\n   password source: ").append(getPasswordSource());
-        }
+	/**
+	 * @return the passwordLocationUrl
+	 */
+	public String getPasswordSourceUrl() {
+		return passwordSourceUrl;
+	}
 
-        buffer.append("\n]");
-        return buffer.toString();
-    }
+	/**
+	 * @param passwordSourceUrl
+	 *            the passwordSourceUrl to set
+	 */
+	public void setPasswordSourceUrl(String passwordSourceUrl) {
+		this.passwordSourceUrl = passwordSourceUrl;
+	}
+
+	/**
+	 * @return the passwordLocationExecutable
+	 */
+	public String getPasswordSourceExecutable() {
+		return passwordSourceExecutable;
+	}
+
+	/**
+	 * @param passwordSourceExecutable
+	 *            the passwordSourceExecutable to set
+	 */
+	public void setPasswordSourceExecutable(String passwordSourceExecutable) {
+		this.passwordSourceExecutable = passwordSourceExecutable;
+	}
+
+	public String getPasswordSource() {
+		if (getPasswordLocation().equals(PASSWORD_LOCATION_CLASSPATH))
+			return getPasswordSourceFilename();
+		else if (getPasswordLocation().equals(PASSWORD_LOCATION_EXECUTABLE))
+			return getPasswordSourceExecutable();
+		else if (getPasswordLocation().equals(PASSWORD_LOCATION_MODEL))
+			return getPasswordSourceModel();
+		else if (getPasswordLocation().equals(PASSWORD_LOCATION_URL))
+			return getPasswordSourceUrl();
+
+		throw new RuntimeException("Invalid password source detected");
+	}
+
+	public void setPasswordSource(String passwordSource) {
+		// The location for the model is omitted since it cannot change
+		if (getPasswordLocation().equals(PASSWORD_LOCATION_CLASSPATH))
+			setPasswordSourceFilename(passwordSource);
+		else if (getPasswordLocation().equals(PASSWORD_LOCATION_EXECUTABLE))
+			setPasswordSourceExecutable(passwordSource);
+		else if (getPasswordLocation().equals(PASSWORD_LOCATION_URL))
+			setPasswordSourceUrl(passwordSource);
+	}
+
+	/**
+	 * @return the passwordLocation
+	 */
+	public String getPasswordLocation() {
+		return passwordLocation;
+	}
+
+	/**
+	 * @param passwordLocation
+	 *            the passwordLocation to set
+	 */
+	public void setPasswordLocation(String passwordLocation) {
+		if (passwordLocation == null)
+			this.passwordLocation = DataSourceInfo.PASSWORD_LOCATION_MODEL;
+		else
+			this.passwordLocation = passwordLocation;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("[").append(getClass().getName()).append(":").append("\n   user name: ").append(userName)
+				.append("\n   password: ");
+
+		buffer.append("**********");
+		buffer.append("\n   driver: ").append(jdbcDriver).append("\n   db adapter class: ").append(adapterClassName)
+				.append("\n   url: ").append(dataSourceUrl).append("\n   min. connections: ").append(minConnections)
+				.append("\n   max. connections: ").append(maxConnections);
+
+		if (!PlainTextPasswordEncoder.class.getName().equals(passwordEncoderClass)) {
+			buffer.append("\n   encoder class: ").append(passwordEncoderClass).append("\n   encoder key: ")
+					.append(passwordEncoderKey);
+		}
+
+		if (!PASSWORD_LOCATION_MODEL.equals(passwordLocation)) {
+			buffer.append("\n   password location: ").append(passwordLocation).append("\n   password source: ")
+					.append(getPasswordSource());
+		}
+
+		buffer.append("\n]");
+		return buffer.toString();
+	}
 }

@@ -30,254 +30,250 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.cayenne.util.Util;
 
 /**
- * Stores ExtendedTypes, implementing an algorithm to determine the right type for a given
- * Java class. See {@link #getRegisteredType(String)} documentation for lookup algorithm
- * details.
+ * Stores ExtendedTypes, implementing an algorithm to determine the right type
+ * for a given Java class. See {@link #getRegisteredType(String)} documentation
+ * for lookup algorithm details.
  */
 public class ExtendedTypeMap {
 
-    static final Map<String, String> classesForPrimitives;
+	static final Map<String, String> classesForPrimitives;
 
-    static {
-        classesForPrimitives = new HashMap<String, String>();
-        classesForPrimitives.put("long", Long.class.getName());
-        classesForPrimitives.put("double", Double.class.getName());
-        classesForPrimitives.put("byte", Byte.class.getName());
-        classesForPrimitives.put("boolean", Boolean.class.getName());
-        classesForPrimitives.put("float", Float.class.getName());
-        classesForPrimitives.put("short", Short.class.getName());
-        classesForPrimitives.put("int", Integer.class.getName());
-    }
+	static {
+		classesForPrimitives = new HashMap<>();
+		classesForPrimitives.put("long", Long.class.getName());
+		classesForPrimitives.put("double", Double.class.getName());
+		classesForPrimitives.put("byte", Byte.class.getName());
+		classesForPrimitives.put("boolean", Boolean.class.getName());
+		classesForPrimitives.put("float", Float.class.getName());
+		classesForPrimitives.put("short", Short.class.getName());
+		classesForPrimitives.put("int", Integer.class.getName());
+	}
 
-    protected final Map<String, ExtendedType> typeMap;
-    protected ExtendedType defaultType;
+	protected final Map<String, ExtendedType> typeMap;
+	protected ExtendedType defaultType;
 
-    Collection<ExtendedTypeFactory> extendedTypeFactories;
+	Collection<ExtendedTypeFactory> extendedTypeFactories;
 
-    // standard type factories registered by Cayenne that are consulted after the user
-    // factories.
-    Collection<ExtendedTypeFactory> internalTypeFactories;
+	// standard type factories registered by Cayenne that are consulted after
+	// the user
+	// factories.
+	Collection<ExtendedTypeFactory> internalTypeFactories;
 
-    /**
-     * Creates new ExtendedTypeMap, populating it with default JDBC-compatible types. If
-     * JDK version is at least 1.5, also loads support for enumerated types.
-     */
-    public ExtendedTypeMap() {
-        this.defaultType = new ObjectType();
-        this.typeMap = new ConcurrentHashMap<String, ExtendedType>();
-        this.extendedTypeFactories = new CopyOnWriteArrayList<ExtendedTypeFactory>();
-        this.internalTypeFactories = new CopyOnWriteArrayList<ExtendedTypeFactory>();
+	/**
+	 * Creates new ExtendedTypeMap, populating it with default JDBC-compatible
+	 * types. If JDK version is at least 1.5, also loads support for enumerated
+	 * types.
+	 */
+	public ExtendedTypeMap() {
+		this.defaultType = new ObjectType();
+		this.typeMap = new ConcurrentHashMap<>();
+		this.extendedTypeFactories = new CopyOnWriteArrayList<>();
+		this.internalTypeFactories = new CopyOnWriteArrayList<>();
 
-        initDefaultFactories();
-    }
+		initDefaultFactories();
+	}
 
-    /**
-     * Registers default factories for creating enum types and serializable types. Note
-     * that user-defined factories are consulted before any default factory.
-     * 
-     * @since 3.0
-     */
-    protected void initDefaultFactories() {
-        internalTypeFactories.add(new EnumTypeFactory());
-        internalTypeFactories.add(new ByteOrCharArrayFactory(this));
+	/**
+	 * Registers default factories for creating enum types and serializable
+	 * types. Note that user-defined factories are consulted before any default
+	 * factory.
+	 * 
+	 * @since 3.0
+	 */
+	protected void initDefaultFactories() {
+		internalTypeFactories.add(new EnumTypeFactory());
+		internalTypeFactories.add(new ByteOrCharArrayFactory(this));
 
-        // note that Serializable type should be used as a last resort after all other
-        // alternatives are exhausted.
-        internalTypeFactories.add(new SerializableTypeFactory(this));
-    }
+		// note that Serializable type should be used as a last resort after all
+		// other
+		// alternatives are exhausted.
+		internalTypeFactories.add(new SerializableTypeFactory(this));
+	}
 
-    /**
-     * Adds an ExtendedTypeFactory that will be consulted if no direct mapping for a given
-     * class exists. This feature can be used to map interfaces.
-     * <p>
-     * <i>Note that the order in which factories are added is important, as factories are
-     * consulted in turn when an ExtendedType is looked up, and lookup is stopped when any
-     * factory provides a non-null type.</i>
-     * </p>
-     * 
-     * @since 1.2
-     */
-    public void addFactory(ExtendedTypeFactory factory) {
-        if (factory == null) {
-            throw new IllegalArgumentException("Attempt to add null factory");
-        }
+	/**
+	 * Adds an ExtendedTypeFactory that will be consulted if no direct mapping
+	 * for a given class exists. This feature can be used to map interfaces.
+	 * <p>
+	 * <i>Note that the order in which factories are added is important, as
+	 * factories are consulted in turn when an ExtendedType is looked up, and
+	 * lookup is stopped when any factory provides a non-null type.</i>
+	 * </p>
+	 * 
+	 * @since 1.2
+	 */
+	public void addFactory(ExtendedTypeFactory factory) {
+		if (factory == null) {
+			throw new IllegalArgumentException("Attempt to add null factory");
+		}
 
-        extendedTypeFactories.add(factory);
-    }
+		extendedTypeFactories.add(factory);
+	}
 
-    /**
-     * Removes a factory from the registered factories if it was previously added.
-     * 
-     * @since 1.2
-     */
-    public void removeFactory(ExtendedTypeFactory factory) {
-        if (factory != null) {
-            extendedTypeFactories.remove(factory);
-        }
-    }
+	/**
+	 * Removes a factory from the registered factories if it was previously
+	 * added.
+	 * 
+	 * @since 1.2
+	 */
+	public void removeFactory(ExtendedTypeFactory factory) {
+		if (factory != null) {
+			extendedTypeFactories.remove(factory);
+		}
+	}
 
-    /**
-     * Adds a new type to the list of registered types. If there is another type
-     * registered for a class described by the <code>type</code> argument, the old handler
-     * is overridden by the new one.
-     */
-    public void registerType(ExtendedType type) {
-        typeMap.put(type.getClassName(), type);
+	/**
+	 * Adds a new type to the list of registered types. If there is another type
+	 * registered for a class described by the <code>type</code> argument, the
+	 * old handler is overridden by the new one.
+	 */
+	public void registerType(ExtendedType type) {
+		typeMap.put(type.getClassName(), type);
 
-        // factory to handle subclasses of type.className
-        addFactory(new SubclassTypeFactory(type));
-    }
+		// factory to handle subclasses of type.className
+		addFactory(new SubclassTypeFactory(type));
+	}
 
-    /**
-     * Returns a default ExtendedType that is used to handle unmapped types.
-     */
-    public ExtendedType getDefaultType() {
-        return defaultType;
-    }
+	/**
+	 * Returns a default ExtendedType that is used to handle unmapped types.
+	 */
+	public ExtendedType getDefaultType() {
+		return defaultType;
+	}
 
-    /**
-     * Returns a guaranteed non-null ExtendedType instance for a given Java class name.
-     * Primitive class names are internally replaced by the non-primitive counterparts.
-     * The following lookup sequence is used to determine the type:
-     * <ul>
-     * <li>First the methods checks for an ExtendedType explicitly registered with the map
-     * for a given class name (most common types are registered by Cayenne internally;
-     * users can register their own).</li>
-     * <li>Second, the method tries to obtain a type by iterating through
-     * {@link ExtendedTypeFactory} instances registered by users. If a factory returns a
-     * non-null type, it is returned to the user and the rest of the factories are
-     * ignored.</li>
-     * <li>Third, the method iterates through standard {@link ExtendedTypeFactory}
-     * instances that can dynamically construct extended types for serializable objects
-     * and JDK 1.5 enums.</li>
-     * <li>If all the methods above failed, the default type is returned that relies on
-     * default JDBC driver mapping to set and get objects.</li>
-     * </ul>
-     * <i>Note that for array types class name must be in the form 'MyClass[]'</i>.
-     */
-    public ExtendedType getRegisteredType(String javaClassName) {
+	/**
+	 * Returns a guaranteed non-null ExtendedType instance for a given Java
+	 * class name. Primitive class names are internally replaced by the
+	 * non-primitive counterparts. The following lookup sequence is used to
+	 * determine the type:
+	 * <ul>
+	 * <li>First the methods checks for an ExtendedType explicitly registered
+	 * with the map for a given class name (most common types are registered by
+	 * Cayenne internally; users can register their own).</li>
+	 * <li>Second, the method tries to obtain a type by iterating through
+	 * {@link ExtendedTypeFactory} instances registered by users. If a factory
+	 * returns a non-null type, it is returned to the user and the rest of the
+	 * factories are ignored.</li>
+	 * <li>Third, the method iterates through standard
+	 * {@link ExtendedTypeFactory} instances that can dynamically construct
+	 * extended types for serializable objects and JDK 1.5 enums.</li>
+	 * <li>If all the methods above failed, the default type is returned that
+	 * relies on default JDBC driver mapping to set and get objects.</li>
+	 * </ul>
+	 * <i>Note that for array types class name must be in the form
+	 * 'MyClass[]'</i>.
+	 */
+	public ExtendedType getRegisteredType(String javaClassName) {
 
-        if (javaClassName == null) {
-            return getDefaultType();
-        }
+		if (javaClassName == null) {
+			return getDefaultType();
+		}
 
-        String nonPrimitive = classesForPrimitives.get(javaClassName);
-        if (nonPrimitive != null) {
-            javaClassName = nonPrimitive;
-        }
+		String nonPrimitive = classesForPrimitives.get(javaClassName);
+		if (nonPrimitive != null) {
+			javaClassName = nonPrimitive;
+		}
 
-        ExtendedType type = getExplictlyRegisteredType(javaClassName);
+		ExtendedType type = getExplictlyRegisteredType(javaClassName);
 
-        if (type != null) {
-            return type;
-        }
+		if (type != null) {
+			return type;
+		}
 
-        type = createType(javaClassName);
+		type = createType(javaClassName);
 
-        if (type != null) {
-            // register to speed up future access
-            registerType(type);
-            return type;
-        }
+		if (type != null) {
+			// register to speed up future access
+			registerType(type);
+			return type;
+		}
 
-        return getDefaultType();
-    }
+		return getDefaultType();
+	}
 
-    ExtendedType getExplictlyRegisteredType(String className) {
+	ExtendedType getExplictlyRegisteredType(String className) {
 
-        if (className == null) {
-            throw new NullPointerException("Null className");
-        }
-        return typeMap.get(className);
-    }
+		if (className == null) {
+			throw new NullPointerException("Null className");
+		}
+		return typeMap.get(className);
+	}
 
-    /**
-     * Returns a type registered for the class name. If no such type exists, returns the
-     * default type. It is guaranteed that this method returns a non-null ExtendedType
-     * instance.
-     */
-    public ExtendedType getRegisteredType(Class<?> javaClass) {
-        String name = null;
+	/**
+	 * Returns a type registered for the class name. If no such type exists,
+	 * returns the default type. It is guaranteed that this method returns a
+	 * non-null ExtendedType instance.
+	 */
+	public ExtendedType getRegisteredType(Class<?> javaClass) {
+		return getRegisteredType(javaClass.getCanonicalName());
+	}
 
-        if (javaClass.isArray()) {
-            // only support single dimensional arrays now
-            name = javaClass.getComponentType().getName() + "[]";
-        }
-        else {
-            name = javaClass.getName();
-        }
+	/**
+	 * Removes registered ExtendedType object corresponding to
+	 * <code>javaClassName</code> parameter.
+	 */
+	public void unregisterType(String javaClassName) {
+		typeMap.remove(javaClassName);
+	}
 
-        return getRegisteredType(name);
-    }
+	/**
+	 * Returns array of Java class names supported by Cayenne for JDBC mapping.
+	 */
+	public String[] getRegisteredTypeNames() {
+		Set<String> keys = typeMap.keySet();
+		int len = keys.size();
+		String[] types = new String[len];
 
-    /**
-     * Removes registered ExtendedType object corresponding to <code>javaClassName</code>
-     * parameter.
-     */
-    public void unregisterType(String javaClassName) {
-        typeMap.remove(javaClassName);
-    }
+		Iterator<String> it = keys.iterator();
+		for (int i = 0; i < len; i++) {
+			types[i] = it.next();
+		}
 
-    /**
-     * Returns array of Java class names supported by Cayenne for JDBC mapping.
-     */
-    public String[] getRegisteredTypeNames() {
-        Set<String> keys = typeMap.keySet();
-        int len = keys.size();
-        String[] types = new String[len];
+		return types;
+	}
 
-        Iterator<String> it = keys.iterator();
-        for (int i = 0; i < len; i++) {
-            types[i] = it.next();
-        }
+	/**
+	 * Returns an ExtendedType for specific Java classes. Uses user-provided and
+	 * Cayenne-provided {@link ExtendedTypeFactory} factories to instantiate the
+	 * ExtendedType. All primitive classes must be converted to the
+	 * corresponding Java classes by the callers.
+	 * 
+	 * @return a default type for a given class or null if a class has no
+	 *         default type mapping.
+	 * @since 1.2
+	 */
+	protected ExtendedType createType(String className) {
 
-        return types;
-    }
+		if (className == null) {
+			return null;
+		}
 
-    /**
-     * Returns an ExtendedType for specific Java classes. Uses user-provided and
-     * Cayenne-provided {@link ExtendedTypeFactory} factories to instantiate the
-     * ExtendedType. All primitive classes must be converted to the corresponding Java
-     * classes by the callers.
-     * 
-     * @return a default type for a given class or null if a class has no default type
-     *         mapping.
-     * @since 1.2
-     */
-    protected ExtendedType createType(String className) {
+		Class<?> typeClass;
+		try {
+			typeClass = Util.getJavaClass(className);
+		} catch (Throwable th) {
+			// ignore exceptions...
+			return null;
+		}
 
-        if (className == null) {
-            return null;
-        }
+		// lookup in user factories first
 
-        Class<?> typeClass;
-        try {
-            typeClass = Util.getJavaClass(className);
-        }
-        catch (Throwable th) {
-            // ignore exceptions...
-            return null;
-        }
+		for (ExtendedTypeFactory factory : extendedTypeFactories) {
 
-        // lookup in user factories first
+			ExtendedType type = factory.getType(typeClass);
+			if (type != null) {
+				return type;
+			}
+		}
 
-        for (ExtendedTypeFactory factory : extendedTypeFactories) {
+		// lookup in internal factories
 
-            ExtendedType type = factory.getType(typeClass);
-            if (type != null) {
-                return type;
-            }
-        }
+		for (ExtendedTypeFactory factory : internalTypeFactories) {
+			ExtendedType type = factory.getType(typeClass);
+			if (type != null) {
+				return type;
+			}
+		}
 
-        // lookup in internal factories
-
-        for (ExtendedTypeFactory factory : internalTypeFactories) {
-            ExtendedType type = factory.getType(typeClass);
-            if (type != null) {
-                return type;
-            }
-        }
-
-        return null;
-    }
+		return null;
+	}
 }

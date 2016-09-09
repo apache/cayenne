@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@Deprecated
 public class AntDataPortDelegateTest {
 
     @Test

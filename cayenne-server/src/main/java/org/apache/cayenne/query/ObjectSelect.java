@@ -27,6 +27,9 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ResultBatchIterator;
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
@@ -228,23 +231,25 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Initializes or resets a qualifier expression of this query.
+	 * Appends a qualifier expression of this query. An equivalent to
+	 * {@link #and(Expression...)} that can be used a syntactic sugar.
 	 * 
 	 * @return this object
 	 */
 	public ObjectSelect<T> where(Expression expression) {
-		this.where = expression;
+		and(expression);
 		return this;
 	}
 
 	/**
-	 * Initializes or resets a qualifier expression of this query, using
-	 * provided expression String and an array of position parameters.
+	 * Appends a qualifier expression of this query, using provided expression
+	 * String and an array of position parameters. This is an equivalent to
+	 * calling "and".
 	 * 
 	 * @return this object
 	 */
 	public ObjectSelect<T> where(String expressionString, Object... parameters) {
-		this.where = ExpressionFactory.exp(expressionString, parameters);
+		and(ExpressionFactory.exp(expressionString, parameters));
 		return this;
 	}
 
@@ -344,59 +349,11 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Initializes or resets a list of orderings of this query.
+	 * Adds a list of orderings of this query.
 	 * 
 	 * @return this object
 	 */
 	public ObjectSelect<T> orderBy(Ordering... orderings) {
-
-		if (this.orderings != null) {
-			this.orderings.clear();
-		}
-
-		return addOrderBy(orderings);
-	}
-
-	/**
-	 * Initializes or resets a list of orderings of this query.
-	 * 
-	 * @return this object
-	 */
-	public ObjectSelect<T> orderBy(Collection<Ordering> orderings) {
-
-		if (this.orderings != null) {
-			this.orderings.clear();
-		}
-
-		return addOrderBy(orderings);
-	}
-
-	/**
-	 * Adds a single ascending ordering on a given property to the existing
-	 * ordering clause of this query.
-	 * 
-	 * @return this object
-	 */
-	public ObjectSelect<T> addOrderBy(String property) {
-		return addOrderBy(new Ordering(property));
-	}
-
-	/**
-	 * Adds a single ordering on a given property to the existing ordering
-	 * clause of this query.
-	 * 
-	 * @return this object
-	 */
-	public ObjectSelect<T> addOrderBy(String property, SortOrder sortOrder) {
-		return addOrderBy(new Ordering(property, sortOrder));
-	}
-
-	/**
-	 * Adds new orderings to the list of the existing orderings.
-	 * 
-	 * @return this object
-	 */
-	public ObjectSelect<T> addOrderBy(Ordering... orderings) {
 
 		if (orderings == null || orderings == null) {
 			return this;
@@ -414,11 +371,11 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Adds new orderings to the list of orderings.
+	 * Adds a list of orderings of this query.
 	 * 
 	 * @return this object
 	 */
-	public ObjectSelect<T> addOrderBy(Collection<Ordering> orderings) {
+	public ObjectSelect<T> orderBy(Collection<Ordering> orderings) {
 
 		if (orderings == null || orderings == null) {
 			return this;
@@ -434,32 +391,11 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Resets internal prefetches to the new value, which is a single prefetch
-	 * with specified semantics.
-	 * 
-	 * @return this object
-	 */
-	public ObjectSelect<T> prefetch(String path, int semantics) {
-		this.prefetches = PrefetchTreeNode.withPath(path, semantics);
-		return this;
-	}
-
-	/**
-	 * Resets internal prefetches to the new value.
-	 * 
-	 * @return this object
-	 */
-	public ObjectSelect<T> prefetch(PrefetchTreeNode prefetch) {
-		this.prefetches = prefetch;
-		return this;
-	}
-
-	/**
 	 * Merges prefetch into the query prefetch tree.
 	 * 
 	 * @return this object
 	 */
-	public ObjectSelect<T> addPrefetch(PrefetchTreeNode prefetch) {
+	public ObjectSelect<T> prefetch(PrefetchTreeNode prefetch) {
 
 		if (prefetch == null) {
 			return this;
@@ -479,7 +415,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 	 * 
 	 * @return this object
 	 */
-	public ObjectSelect<T> addPrefetch(String path, int semantics) {
+	public ObjectSelect<T> prefetch(String path, int semantics) {
 
 		if (path == null) {
 			return this;
@@ -652,41 +588,33 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 		return prefetches;
 	}
 
-	/**
-	 * Selects objects using provided context. Essentially the inversion of
-	 * "ObjectContext.select(query)".
-	 */
+	@Override
 	public List<T> select(ObjectContext context) {
 		return context.select(this);
 	}
 
-	/**
-	 * Selects a single object using provided context. The query is expected to
-	 * match zero or one object. It returns null if no objects were matched. If
-	 * query matched more than one object, {@link CayenneRuntimeException} is
-	 * thrown.
-	 * <p>
-	 * Essentially the inversion of "ObjectContext.selectOne(Select)".
-	 */
+	@Override
 	public T selectOne(ObjectContext context) {
 		return context.selectOne(this);
 	}
 
-	/**
-	 * Selects a single object using provided context. The query itself can
-	 * match any number of objects, but will return only the first one. It
-	 * returns null if no objects were matched.
-	 * <p>
-	 * If it matched more than one object, the first object from the list is
-	 * returned. This makes 'selectFirst' different from
-	 * {@link #selectOne(ObjectContext)}, which would throw in this situation.
-	 * 'selectFirst' is useful e.g. when the query is ordered and we only want
-	 * to see the first object (e.g. "most recent news article"), etc.
-	 * <p>
-	 * This method is equivalent to calling "limit(1).selectOne(context)".
-	 */
+	@Override
 	public T selectFirst(ObjectContext context) {
-		return limit(1).selectOne(context);
+		return context.selectFirst(limit(1));
 	}
 
+	@Override
+	public void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
+		context.iterate((Select<T>) this, callback);
+	}
+
+	@Override
+	public ResultIterator<T> iterator(ObjectContext context) {
+		return context.iterator(this);
+	}
+
+	@Override
+	public ResultBatchIterator<T> batchIterator(ObjectContext context, int size) {
+		return context.batchIterator(this, size);
+	}
 }

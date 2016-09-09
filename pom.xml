@@ -49,28 +49,26 @@
 
 	<url>http://cayenne.apache.org/</url>
 	<modules>
-		<!--<module>build-tools</module>-->
-		<!--<module>cayenne-di</module>-->
-        <module>cayenne-qeury-language</module>
-
+		<module>build-tools</module>
+		<module>cayenne-di</module>
 		<module>cayenne-server</module>
 		<module>cayenne-client</module>
 		<module>cayenne-tools</module>
 		<module>cayenne-project</module>
 		<module>cayenne-lifecycle</module>
 		<module>cayenne-crypto</module>
+		<module>cayenne-joda</module>
+		<module>cayenne-dbcp2</module>
 		<module>itests</module>
 		<module>modeler</module>
 		<module>plugins</module>
-		<!--<module>tutorials</module>-->
-		<!--<module>docs</module>-->
-		<!--<module>assembly</module>-->
-
-
-	</modules>
+		<module>tutorials</module>
+		<module>docs</module>
+		<module>assembly</module>
+    </modules>
 	<issueManagement>
 		<system>jira</system>
-		<url>http://issues.apache.org/cayenne/</url>
+		<url>https://issues.apache.org/jira/browse/CAY</url>
 	</issueManagement>
 	<inceptionYear>2001</inceptionYear>
 	<mailingLists>
@@ -321,37 +319,15 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>commons-dbcp</groupId>
-				<artifactId>commons-dbcp</artifactId>
-				<version>1.2.1</version>
-				<scope>provided</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>xerces</groupId>
-						<artifactId>xerces</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>xml-apis</groupId>
-						<artifactId>xml-apis</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>commons-pool</groupId>
-				<artifactId>commons-pool</artifactId>
-				<version>1.2</version>
-				<scope>provided</scope>
-				<exclusions>
-					<exclusion>
-						<groupId>xerces</groupId>
-						<artifactId>xerces</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>xml-apis</groupId>
-						<artifactId>xml-apis</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-dbcp2</artifactId>
+                <version>2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>2.4.2</version>
+            </dependency>
 			<dependency>
 				<groupId>com.caucho</groupId>
 				<artifactId>resin-hessian</artifactId>
@@ -751,8 +727,8 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>2.3.2</version>
 					<configuration>
-						<source>1.6</source>
-						<target>1.6</target>
+						<source>1.7</source>
+						<target>1.7</target>
 						<encoding>UTF-8</encoding>
 					</configuration>
 				</plugin>
@@ -948,6 +924,18 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+						    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						    <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<distributionManagement>
@@ -1006,7 +994,7 @@
                             <configuration>
                                 <skip>${pmd.skip}</skip>
                                 <sourceEncoding>utf-8</sourceEncoding>
-                                <targetJdk>1.6</targetJdk>
+                                <targetJdk>1.7</targetJdk>
                                 <verbose>true</verbose>
                                 <failOnViolation>false</failOnViolation>
                                 <!-- TODO make it 'true' when we will be ready -->
@@ -1461,6 +1449,15 @@
 			<properties>
 				<javadoc.doclint.none>-Xdoclint:none</javadoc.doclint.none>
 			</properties>
+		</profile>
+		<profile>
+			<id>cayenne-java8-module-to-build</id>
+			<activation>
+				<jdk>[1.8,)</jdk>
+			</activation>
+			<modules>
+				<module>cayenne-java8</module>
+			</modules>
 		</profile>
 	</profiles>
 

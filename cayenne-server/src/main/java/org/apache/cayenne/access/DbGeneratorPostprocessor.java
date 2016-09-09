@@ -24,53 +24,47 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 
 /**
- * A helper class that handles postprocessing after the schema generation operation. E.g.
- * some databases require a checkpoint command to be run for the schema changes to be
- * flushed to disk.
+ * A helper class that handles postprocessing after the schema generation
+ * operation. E.g. some databases require a checkpoint command to be run for the
+ * schema changes to be flushed to disk.
  * 
  */
 class DbGeneratorPostprocessor {
 
-    private static final Map<String, HSQLDBPostprocessor> postprocessors;
+	private static final Map<String, HSQLDBPostprocessor> postprocessors;
 
-    static {
-        postprocessors = new HashMap<String, HSQLDBPostprocessor>();
-        postprocessors.put(HSQLDBAdapter.class.getName(), new HSQLDBPostprocessor());
-    }
+	static {
+		postprocessors = new HashMap<>();
+		postprocessors.put(HSQLDBAdapter.class.getName(), new HSQLDBPostprocessor());
+	}
 
-    void execute(Connection connection, DbAdapter adapter) throws SQLException {
+	void execute(Connection connection, DbAdapter adapter) throws SQLException {
 
-        if (adapter != null) {
-            Postprocessor postprocessor = postprocessors.get(adapter
-                    .getClass()
-                    .getName());
-            if (postprocessor != null) {
-                postprocessor.execute(connection);
-            }
-        }
-    }
+		if (adapter != null) {
+			Postprocessor postprocessor = postprocessors.get(adapter.getClass().getName());
+			if (postprocessor != null) {
+				postprocessor.execute(connection);
+			}
+		}
+	}
 
-    static abstract class Postprocessor {
+	static abstract class Postprocessor {
 
-        abstract void execute(Connection c) throws SQLException;
-    }
+		abstract void execute(Connection c) throws SQLException;
+	}
 
-    static class HSQLDBPostprocessor extends Postprocessor {
+	static class HSQLDBPostprocessor extends Postprocessor {
 
-        @Override
-        void execute(Connection c) throws SQLException {
-            PreparedStatement st = c.prepareStatement("CHECKPOINT");
-            try {
-                st.execute();
-            }
-            finally {
-                st.close();
-            }
-        }
-    }
+		@Override
+		void execute(Connection c) throws SQLException {
+
+			try (PreparedStatement st = c.prepareStatement("CHECKPOINT");) {
+				st.execute();
+			}
+		}
+	}
 }

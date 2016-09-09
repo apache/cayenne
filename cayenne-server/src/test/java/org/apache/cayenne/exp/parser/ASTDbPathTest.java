@@ -34,9 +34,9 @@ public class ASTDbPathTest {
     @Test
     public void testAppendAsString() throws IOException {
         StringBuilder buffer = new StringBuilder();
-
         new ASTDbPath("x.y").appendAsString(buffer);
-
         assertEquals("db:x.y", buffer.toString());
     }
+    
+    
 }

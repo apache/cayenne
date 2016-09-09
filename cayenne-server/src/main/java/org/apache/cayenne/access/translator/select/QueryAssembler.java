@@ -19,21 +19,16 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.JoinType;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 
@@ -42,135 +37,122 @@ import org.apache.cayenne.query.QueryMetadata;
  */
 public abstract class QueryAssembler {
 
-    protected Query query;
-    protected QueryMetadata queryMetadata;
-    protected String cachedSqlString;
-    protected Connection connection;
-    protected DbAdapter adapter;
-    protected EntityResolver entityResolver;
-    protected JdbcEventLogger logger;
+	protected Query query;
+	protected QueryMetadata queryMetadata;
+	protected boolean translated;
+	protected String sql;
+	protected DbAdapter adapter;
+	protected EntityResolver entityResolver;
+	protected List<ParameterBinding> bindings;
 
-    /**
-     * Holds PreparedStatement values.
-     */
-    protected List<Object> values = new ArrayList<Object>();
+	/**
+	 * @since 4.0
+	 */
+	public QueryAssembler(Query query, DbAdapter adapter, EntityResolver entityResolver) {
+		this.entityResolver = entityResolver;
+		this.adapter = adapter;
+		this.query = query;
+		this.queryMetadata = query.getMetaData(entityResolver);
+		this.bindings = new ArrayList<ParameterBinding>();
+	}
 
-    /**
-     * PreparedStatement attributes matching entries in <code>values</code>
-     * list.
-     */
-    protected List<DbAttribute> attributes = new ArrayList<DbAttribute>();
+	/**
+	 * Returns aliases for the path splits defined in the query.
+	 *
+	 * @since 3.0
+	 */
+	protected Map<String, String> getPathAliases() {
+		return queryMetadata.getPathSplitAliases();
+	}
 
-    /**
-     * The index parameter will be inserted at in parameter list
-     */
-    protected int parameterIndex;
+	public EntityResolver getEntityResolver() {
+		return entityResolver;
+	}
 
-    /**
-     * @since 4.0
-     */
-    public QueryAssembler(Query query, DataNode dataNode, Connection connection) {
-        this.logger = dataNode.getJdbcEventLogger();
-        this.entityResolver = dataNode.getEntityResolver();
-        this.adapter = dataNode.getAdapter();
-        this.query = query;
-        this.connection = connection;
-        this.queryMetadata = query.getMetaData(entityResolver);
-    }
+	public DbAdapter getAdapter() {
+		return adapter;
+	}
 
-    /**
-     * Returns aliases for the path splits defined in the query.
-     * 
-     * @since 3.0
-     */
-    protected Map<String, String> getPathAliases() {
-        return query.getMetaData(entityResolver).getPathSplitAliases();
-    }
+	/**
+	 * Returns query object being processed.
+	 */
+	public Query getQuery() {
+		return query;
+	}
 
-    public EntityResolver getEntityResolver() {
-        return entityResolver;
-    }
+	public QueryMetadata getQueryMetadata() {
+		return queryMetadata;
+	}
 
-    public DbAdapter getAdapter() {
-        return adapter;
-    }
+	/**
+	 * A callback invoked by a child qualifier or ordering processor allowing
+	 * query assembler to reset its join stack.
+	 *
+	 * @since 3.0
+	 */
+	public abstract void resetJoinStack();
 
-    /**
-     * Returns query object being processed.
-     */
-    public Query getQuery() {
-        return query;
-    }
+	/**
+	 * Returns an alias of the table which is currently at the top of the join
+	 * stack.
+	 *
+	 * @since 3.0
+	 */
+	public abstract String getCurrentAlias();
 
-    public QueryMetadata getQueryMetadata() {
-        return queryMetadata;
-    }
+	/**
+	 * Appends a join with given semantics to the query.
+	 *
+	 * @since 3.0
+	 */
+	public abstract void dbRelationshipAdded(DbRelationship relationship, JoinType joinType, String joinSplitAlias);
 
-    /**
-     * @since 3.1
-     */
-    public JdbcEventLogger getJdbcEventLogger() {
-        return logger;
-    }
+	/**
+	 * Translates query into an SQL string formatted to use in a
+	 * PreparedStatement.
+	 */
+	public String getSql() {
+		ensureTranslated();
+		return sql;
+	}
 
-    public DbEntity getRootDbEntity() {
-        return queryMetadata.getDbEntity();
-    }
+	/**
+	 * @since 4.0
+	 */
+	protected void ensureTranslated() {
+		if (!translated) {
+			doTranslate();
+			translated = true;
+		}
+	}
 
-    public ObjEntity getRootEntity() {
-        return queryMetadata.getObjEntity();
-    }
+	/**
+	 * @since 4.0
+	 */
+	protected abstract void doTranslate();
 
-    /**
-     * A callback invoked by a child qualifier or ordering processor allowing
-     * query assembler to reset its join stack.
-     * 
-     * @since 3.0
-     */
-    public abstract void resetJoinStack();
+	/**
+	 * Returns <code>true</code> if table aliases are supported. Default
+	 * implementation returns false.
+	 */
+	public boolean supportsTableAliases() {
+		return false;
+	}
 
-    /**
-     * Returns an alias of the table which is currently at the top of the join
-     * stack.
-     * 
-     * @since 3.0
-     */
-    public abstract String getCurrentAlias();
-
-    /**
-     * Appends a join with given semantics to the query.
-     * 
-     * @since 3.0
-     */
-    public abstract void dbRelationshipAdded(DbRelationship relationship, JoinType joinType, String joinSplitAlias);
-
-    /**
-     * Translates query into sql string. This is a workhorse method of
-     * QueryAssembler. It is called internally from <code>createStatement</code>
-     * . Usually there is no need to invoke it explicitly.
-     */
-    public abstract String createSqlString() throws Exception;
-
-    /**
-     * Returns <code>true</code> if table aliases are supported. Default
-     * implementation returns false.
-     */
-    public boolean supportsTableAliases() {
-        return false;
-    }
-
-    /**
-     * Registers <code>anObject</code> as a PreparedStatement parameter.
-     * 
-     * @param anObject
-     *            object that represents a value of DbAttribute
-     * @param dbAttr
-     *            DbAttribute being processed.
-     */
-    public void addToParamList(DbAttribute dbAttr, Object anObject) {
-        attributes.add(parameterIndex, dbAttr);
-        values.add(parameterIndex++, anObject);
-    }
+	/**
+	 * Registers <code>anObject</code> as a PreparedStatement parameter.
+	 *
+	 * @param anObject
+	 *            object that represents a value of DbAttribute
+	 * @param dbAttr
+	 *            DbAttribute being processed.
+	 */
+	public void addToParamList(DbAttribute dbAttr, Object anObject) {
+		ParameterBinding binding = new ParameterBinding(dbAttr);
+		binding.setValue(anObject);
+		binding.setStatementPosition(bindings.size() + 1);
+		bindings.add(binding);
+	}
 
     /**
      * Translates internal query into PreparedStatement.
@@ -212,4 +194,11 @@ public abstract class QueryAssembler {
             stmt.setFetchSize(queryMetadata.getStatementFetchSize());
         }
     }
+
+	/**
+	 * @since 4.0
+	 */
+	public ParameterBinding[] getBindings() {
+		return bindings.toArray(new ParameterBinding[bindings.size()]);
+	}
 }

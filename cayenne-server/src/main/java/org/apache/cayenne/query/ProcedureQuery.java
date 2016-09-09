@@ -69,7 +69,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
     protected Class<?> resultClass;
     protected CapsStrategy columnNamesCapitalization;
 
-    protected Map<String, Object> parameters = new HashMap<String, Object>();
+    protected Map<String, Object> parameters = new HashMap<>();
 
     ProcedureQueryMetadata metaData = new ProcedureQueryMetadata();
 

@@ -38,142 +38,120 @@ import static org.junit.Assert.fail;
 
 public class CayenneGeneratorTaskCrossMapRelationshipsTest {
 
-    /**
-     * Tests pairs generation with a cross-DataMap relationship.
-     */
-    @Test
-    public void testCrossDataMapRelationships() throws Exception {
+	/**
+	 * Tests pairs generation with a cross-DataMap relationship.
+	 */
+	@Test
+	public void testCrossDataMapRelationships() throws Exception {
 
-        CayenneGeneratorTask task = new CayenneGeneratorTask();
-        task.setProject(new Project());
-        task.setTaskName("Test");
-        task.setLocation(Location.UNKNOWN_LOCATION);
+		CayenneGeneratorTask task = new CayenneGeneratorTask();
+		task.setProject(new Project());
+		task.setTaskName("Test");
+		task.setLocation(Location.UNKNOWN_LOCATION);
 
-        // prepare destination directory
+		// prepare destination directory
 
-        File destDir = new File(FileUtil.baseTestDirectory(), "cgen12");
-        // prepare destination directory
-        if (!destDir.exists()) {
-            assertTrue(destDir.mkdirs());
-        }
+		File destDir = new File(FileUtil.baseTestDirectory(), "cgen12");
+		// prepare destination directory
+		if (!destDir.exists()) {
+			assertTrue(destDir.mkdirs());
+		}
 
-        File map = new File(destDir, "cgen-dependent.map.xml");
-        ResourceUtil.copyResourceToFile(
-                "org/apache/cayenne/tools/cgen-dependent.map.xml",
-                map);
+		File map = new File(destDir, "cgen-dependent.map.xml");
+		ResourceUtil.copyResourceToFile("org/apache/cayenne/tools/cgen-dependent.map.xml", map);
 
-        File additionalMaps[] = new File[1];
-        additionalMaps[0] = new File(destDir, "cgen.map.xml");
-        ResourceUtil.copyResourceToFile(
-                "org/apache/cayenne/tools/cgen.map.xml",
-                additionalMaps[0]);
+		File additionalMaps[] = new File[1];
+		additionalMaps[0] = new File(destDir, "cgen.map.xml");
+		ResourceUtil.copyResourceToFile("org/apache/cayenne/tools/cgen.map.xml", additionalMaps[0]);
 
-        FileList additionalMapsFilelist = new FileList();
-        additionalMapsFilelist.setDir(additionalMaps[0].getParentFile());
-        additionalMapsFilelist.setFiles(additionalMaps[0].getName());
+		FileList additionalMapsFilelist = new FileList();
+		additionalMapsFilelist.setDir(additionalMaps[0].getParentFile());
+		additionalMapsFilelist.setFiles(additionalMaps[0].getName());
 
-        Path additionalMapsPath = new Path(task.getProject());
-        additionalMapsPath.addFilelist(additionalMapsFilelist);
+		Path additionalMapsPath = new Path(task.getProject());
+		additionalMapsPath.addFilelist(additionalMapsFilelist);
 
-        // setup task
-        task.setMap(map);
-        task.setAdditionalMaps(additionalMapsPath);
-        task.setMakepairs(true);
-        task.setOverwrite(false);
-        task.setMode("entity");
-        task.setIncludeEntities("MyArtGroup");
-        task.setDestDir(destDir);
-        task.setSuperpkg("org.apache.cayenne.testdo.cgen2.auto");
-        task.setUsepkgpath(true);
+		// setup task
+		task.setMap(map);
+		task.setAdditionalMaps(additionalMapsPath);
+		task.setMakepairs(true);
+		task.setOverwrite(false);
+		task.setMode("entity");
+		task.setIncludeEntities("MyArtGroup");
+		task.setDestDir(destDir);
+		task.setSuperpkg("org.apache.cayenne.testdo.cgen2.auto");
+		task.setUsepkgpath(true);
 
-        // run task
-        task.execute();
+		// run task
+		task.execute();
 
-        // check results
-        File a = new File(destDir, convertPath("org/apache/cayenne/testdo/cgen2/MyArtGroup.java"));
-        assertTrue(a.isFile());
-        assertContents(a, "MyArtGroup", "org.apache.cayenne.testdo.cgen2", "_MyArtGroup");
+		// check results
+		File a = new File(destDir, convertPath("org/apache/cayenne/testdo/cgen2/MyArtGroup.java"));
+		assertTrue(a.isFile());
+		assertContents(a, "MyArtGroup", "org.apache.cayenne.testdo.cgen2", "_MyArtGroup");
 
-        File _a = new File(destDir, convertPath("org/apache/cayenne/testdo/cgen2/auto/_MyArtGroup.java"));
-        assertTrue(_a.exists());
-        assertContents(_a, "_MyArtGroup", "org.apache.cayenne.testdo.cgen2.auto", "CayenneDataObject");
-        assertContents(_a, "import org.apache.cayenne.testdo.testmap.ArtGroup;");
-        assertContents(_a, " ArtGroup getToParentGroup()");
-        assertContents(_a, "setToParentGroup(ArtGroup toParentGroup)");
-    }
+		File _a = new File(destDir, convertPath("org/apache/cayenne/testdo/cgen2/auto/_MyArtGroup.java"));
+		assertTrue(_a.exists());
+		assertContents(_a, "_MyArtGroup", "org.apache.cayenne.testdo.cgen2.auto", "CayenneDataObject");
+		assertContents(_a, "import org.apache.cayenne.testdo.testmap.ArtGroup;");
+		assertContents(_a, " ArtGroup getToParentGroup()");
+		assertContents(_a, "setToParentGroup(ArtGroup toParentGroup)");
+	}
 
-    private String convertPath(String unixPath) {
-        return unixPath.replace('/', File.separatorChar);
-    }
+	private String convertPath(String unixPath) {
+		return unixPath.replace('/', File.separatorChar);
+	}
 
-    private void assertContents(File f, String content) throws Exception {
+	private void assertContents(File f, String content) throws Exception {
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(
-                f)));
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(f)));) {
+			String s = null;
+			while ((s = in.readLine()) != null) {
+				if (s.contains(content))
+					return;
+			}
 
-        try {
-            String s = null;
-            while ((s = in.readLine()) != null) {
-                if (s.contains(content))
-                    return;
-            }
+			fail("<" + content + "> not found in " + f.getAbsolutePath() + ".");
+		}
 
-            fail("<" + content + "> not found in " + f.getAbsolutePath() + ".");
-        }
-        finally {
-            in.close();
-        }
+	}
 
-    }
+	private void assertContents(File f, String className, String packageName, String extendsName) throws Exception {
 
-    private void assertContents(
-            File f,
-            String className,
-            String packageName,
-            String extendsName) throws Exception {
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(f)));) {
+			assertPackage(in, packageName);
+			assertClass(in, className, extendsName);
+		}
+	}
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(
-                f)));
+	private void assertPackage(BufferedReader in, String packageName) throws Exception {
 
-        try {
-            assertPackage(in, packageName);
-            assertClass(in, className, extendsName);
-        }
-        finally {
-            in.close();
-        }
+		String s = null;
+		while ((s = in.readLine()) != null) {
 
-    }
+			if (Pattern.matches("^package\\s+([^\\s;]+);", s)) {
+				assertTrue(s.contains(packageName));
+				return;
+			}
+		}
 
-    private void assertPackage(BufferedReader in, String packageName) throws Exception {
+		fail("No package declaration found.");
+	}
 
-        String s = null;
-        while ((s = in.readLine()) != null) {
+	private void assertClass(BufferedReader in, String className, String extendsName) throws Exception {
 
-            if (Pattern.matches("^package\\s+([^\\s;]+);", s)) {
-                assertTrue(s.contains(packageName));
-                return;
-            }
-        }
+		Pattern classPattern = Pattern.compile("^public\\s+");
 
-        fail("No package declaration found.");
-    }
+		String s = null;
+		while ((s = in.readLine()) != null) {
+			if (classPattern.matcher(s).find()) {
+				assertTrue(s.contains(className));
+				assertTrue(s.contains(extendsName));
+				assertTrue(s.indexOf(className) < s.indexOf(extendsName));
+				return;
+			}
+		}
 
-    private void assertClass(BufferedReader in, String className, String extendsName)
-            throws Exception {
-        
-        Pattern classPattern = Pattern.compile("^public\\s+");
-
-        String s = null;
-        while ((s = in.readLine()) != null) {
-            if (classPattern.matcher(s).find()) {
-                assertTrue(s.contains(className));
-                assertTrue(s.contains(extendsName));
-                assertTrue(s.indexOf(className) < s.indexOf(extendsName));
-                return;
-            }
-        }
-
-        fail("No class declaration found.");
-    }
+		fail("No class declaration found.");
+	}
 }

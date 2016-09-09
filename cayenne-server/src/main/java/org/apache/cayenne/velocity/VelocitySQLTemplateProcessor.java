@@ -28,7 +28,7 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.jdbc.ParameterBinding;
+import org.apache.cayenne.access.jdbc.SQLParameterBinding;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
 import org.apache.cayenne.exp.ExpressionException;
@@ -130,7 +130,7 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 	@Override
 	public SQLStatement processTemplate(String template, Map<String, ?> parameters) {
 		// have to make a copy of parameter map since we are gonna modify it..
-		Map<String, Object> internalParameters = (parameters != null && !parameters.isEmpty()) ? new HashMap<String, Object>(
+		Map<String, Object> internalParameters = (parameters != null && !parameters.isEmpty()) ? new HashMap<>(
 				parameters) : new HashMap<String, Object>(5);
 
 		SimpleNode parsedTemplate = parse(template);
@@ -142,7 +142,7 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 
 		SimpleNode parsedTemplate = parse(template);
 
-		Map<String, Object> internalParameters = new HashMap<String, Object>();
+		Map<String, Object> internalParameters = new HashMap<>();
 
 		PositionalParamMapper visitor = new PositionalParamMapper(positionalParameters, internalParameters);
 		parsedTemplate.jjtAccept(visitor, null);
@@ -152,7 +152,7 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 	}
 
 	SQLStatement processTemplate(String template, SimpleNode parsedTemplate, Map<String, Object> parameters) {
-		List<ParameterBinding> bindings = new ArrayList<ParameterBinding>();
+		List<SQLParameterBinding> bindings = new ArrayList<SQLParameterBinding>();
 		List<ColumnDescriptor> results = new ArrayList<ColumnDescriptor>();
 		parameters.put(BINDINGS_LIST_KEY, bindings);
 		parameters.put(RESULT_COLUMNS_LIST_KEY, results);
@@ -165,7 +165,7 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 			throw new CayenneRuntimeException("Error processing Velocity template", e);
 		}
 
-		ParameterBinding[] bindingsArray = new ParameterBinding[bindings.size()];
+		SQLParameterBinding[] bindingsArray = new SQLParameterBinding[bindings.size()];
 		bindings.toArray(bindingsArray);
 
 		ColumnDescriptor[] resultsArray = new ColumnDescriptor[results.size()];

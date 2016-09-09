@@ -22,7 +22,7 @@ package org.apache.cayenne.velocity;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.apache.cayenne.access.jdbc.ParameterBinding;
+import org.apache.cayenne.access.jdbc.SQLParameterBinding;
 import org.apache.velocity.context.InternalContextAdapter;
 
 /**
@@ -43,7 +43,7 @@ public class BindNotEqualDirective extends BindDirective {
     protected void render(
             InternalContextAdapter context,
             Writer writer,
-            ParameterBinding binding) throws IOException {
+            SQLParameterBinding binding) throws IOException {
 
         if (binding.getValue() != null) {
             bind(context, binding);

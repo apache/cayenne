@@ -113,7 +113,7 @@ class ObjectContextChangeLog {
         // list may have been exposed via events or "getDiffs", and trimming it is
         // undesirable.
         this.diffs = new ArrayList<GraphDiff>();
-        this.markers = new HashMap<String, Integer>();
+        this.markers = new HashMap<>();
     }
 
     int size() {

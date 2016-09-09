@@ -18,8 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import java.io.File;
-
+import foundrylogic.vpp.VPPConfig;
 import org.apache.cayenne.access.loader.NamePatternMatcher;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
@@ -29,7 +28,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
 import org.apache.velocity.VelocityContext;
 
-import foundrylogic.vpp.VPPConfig;
+import java.io.File;
 
 /**
  * An Ant task to perform class generation based on CayenneDataMap.
@@ -59,6 +58,7 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected String querytemplate;
     protected String querysupertemplate;
     protected boolean usepkgpath;
+    protected boolean createpropertynames;
 
     public CayenneGeneratorTask() {
         this.makepairs = true;
@@ -90,6 +90,7 @@ public class CayenneGeneratorTask extends CayenneTask {
         action.setQueryTemplate(querytemplate);
         action.setQuerySuperTemplate(querysupertemplate);
         action.setUsePkgPath(usepkgpath);
+        action.setCreatePropertyNames(createpropertynames);
 
         return action;
     }
@@ -266,6 +267,13 @@ public class CayenneGeneratorTask extends CayenneTask {
      */
     public void setMode(String mode) {
         this.mode = mode;
+    }
+
+    /**
+     * Sets <code>createpropertynames</code> property.
+     */
+    public void setCreatepropertynames(boolean createpropertynames) {
+        this.createpropertynames = createpropertynames;
     }
 
     public void setEmbeddabletemplate(String embeddabletemplate) {

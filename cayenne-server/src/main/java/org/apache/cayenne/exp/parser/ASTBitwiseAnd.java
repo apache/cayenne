@@ -30,81 +30,81 @@ import org.apache.cayenne.util.ConversionUtil;
  * @since 3.1
  */
 public class ASTBitwiseAnd extends SimpleNode {
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = -1482206814209874743L;
 
 	ASTBitwiseAnd(int id) {
 		super(id);
 	}
-	
+
 	public ASTBitwiseAnd() {
 		super(ExpressionParserTreeConstants.JJTBITWISEAND);
 	}
-	
+
 	public ASTBitwiseAnd(Object[] nodes) {
-        super(ExpressionParserTreeConstants.JJTBITWISEAND);
-        int len = nodes.length;
-        for (int i = 0; i < len; i++) {
-            jjtAddChild(wrapChild(nodes[i]), i);
-        }
-        
-        connectChildren();
+		super(ExpressionParserTreeConstants.JJTBITWISEAND);
+		int len = nodes.length;
+		for (int i = 0; i < len; i++) {
+			jjtAddChild(wrapChild(nodes[i]), i);
+		}
+
+		connectChildren();
 	}
-	
-    public ASTBitwiseAnd(Collection<Object> nodes) {
-        super(ExpressionParserTreeConstants.JJTBITWISEAND);
-        int len = nodes.size();
-        Iterator<Object> it = nodes.iterator();
-        for (int i = 0; i < len; i++) {
-            jjtAddChild(wrapChild(it.next()), i);
-        }
-    }
-	
+
+	public ASTBitwiseAnd(Collection<Object> nodes) {
+		super(ExpressionParserTreeConstants.JJTBITWISEAND);
+		int len = nodes.size();
+		Iterator<Object> it = nodes.iterator();
+		for (int i = 0; i < len; i++) {
+			jjtAddChild(wrapChild(it.next()), i);
+		}
+	}
+
 	@Override
 	protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len == 0) {
-            return null;
-        }
+		int len = jjtGetNumChildren();
+		if (len == 0) {
+			return null;
+		}
 
-        Long result = null;
-        for (int i = 0; i < len; i++) {
-            Long value = ConversionUtil.toLong(evaluateChild(i, o), Long.MIN_VALUE);
+		Long result = null;
+		for (int i = 0; i < len; i++) {
+			Long value = ConversionUtil.toLong(evaluateChild(i, o), Long.MIN_VALUE);
 
-            if (value == Long.MIN_VALUE) {
-                return null;
-            }
+			if (value == Long.MIN_VALUE) {
+				return null;
+			}
 
-            result = (i == 0) ? value : result & value;
-        }
+			result = (i == 0) ? value : result & value;
+		}
 
-        return result;
+		return result;
 	}
 
 	@Override
 	protected String getExpressionOperator(int index) {
 		return "&";
 	}
-	
+
 	@Override
 	public int getType() {
 		return Expression.BITWISE_AND;
 	}
-	
+
 	@Override
 	protected String getEJBQLExpressionOperator(int index) {
-		throw new UnsupportedOperationException(
-				"EJBQL 'bitwise not' is not supported");
+		throw new UnsupportedOperationException("EJBQL 'bitwise not' is not supported");
 	}
-	
+
 	@Override
 	public Expression shallowCopy() {
 		return new ASTBitwiseAnd(id);
 	}
-	
-    @Override
-    public void jjtClose() {
-        super.jjtClose();
-        flattenTree();
-    }
+
+	@Override
+	public void jjtClose() {
+		super.jjtClose();
+		flattenTree();
+	}
 
 }

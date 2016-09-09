@@ -117,7 +117,7 @@ public class Runtime_AES128_GZIP_Test extends Runtime_AES128_Base {
         List<Object[]> data = table2.selectAll();
         assertEquals(3, data.size());
 
-        Map<String, byte[]> cipherByPlain = new HashMap<String, byte[]>();
+        Map<String, byte[]> cipherByPlain = new HashMap<>();
         for (Object[] r : data) {
             cipherByPlain.put(new String((byte[]) r[1]), (byte[]) r[2]);
         }

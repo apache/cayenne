@@ -40,214 +40,213 @@ import static org.junit.Assert.assertTrue;
 
 public class ClassGenerationActionTest {
 
-    protected ClassGenerationAction action;
-    protected Collection<StringWriter> writers;
+	protected ClassGenerationAction action;
+	protected Collection<StringWriter> writers;
 
-    @Before
-    public void setUp() throws Exception {
-        this.writers = new ArrayList<StringWriter>(3);
-        this.action = new ClassGenerationAction() {
+	@Before
+	public void setUp() throws Exception {
+		this.writers = new ArrayList<StringWriter>(3);
+		this.action = new ClassGenerationAction() {
 
-            @Override
-            protected Writer openWriter(TemplateType templateType) throws Exception {
-                StringWriter writer = new StringWriter();
-                writers.add(writer);
-                return writer;
-            }
-        };
-    }
+			@Override
+			protected Writer openWriter(TemplateType templateType) throws Exception {
+				StringWriter writer = new StringWriter();
+				writers.add(writer);
+				return writer;
+			}
+		};
+	}
 
-    @After
-    public void tearDown() throws Exception {
-        action = null;
-        writers = null;
-    }
+	@After
+	public void tearDown() throws Exception {
+		action = null;
+		writers = null;
+	}
 
-    @Test
-    public void testExecuteArtifactPairsImports() throws Exception {
+	@Test
+	public void testExecuteArtifactPairsImports() throws Exception {
 
-        ObjEntity testEntity1 = new ObjEntity("TE1");
-        testEntity1.setClassName("org.example.TestClass1");
+		ObjEntity testEntity1 = new ObjEntity("TE1");
+		testEntity1.setClassName("org.example.TestClass1");
 
-        action.setMakePairs(true);
-        action.setSuperPkg("org.example.auto");
+		action.setMakePairs(true);
+		action.setSuperPkg("org.example.auto");
 
-        List<String> generated = execute(new EntityArtifact(testEntity1));
-        assertNotNull(generated);
-        assertEquals(2, generated.size());
+		List<String> generated = execute(new EntityArtifact(testEntity1));
+		assertNotNull(generated);
+		assertEquals(2, generated.size());
 
-        String superclass = generated.get(0);
-        assertTrue(superclass, superclass.contains("package org.example.auto;"));
-        assertTrue(superclass, superclass.contains("import org.apache.cayenne.CayenneDataObject;"));
+		String superclass = generated.get(0);
+		assertTrue(superclass, superclass.contains("package org.example.auto;"));
+		assertTrue(superclass, superclass.contains("import org.apache.cayenne.CayenneDataObject;"));
 
-        String subclass = generated.get(1);
-        assertTrue(subclass, subclass.contains("package org.example;"));
-        assertTrue(
-                subclass,
-                subclass.contains("import org.example.auto._TestClass1;"));
-    }
+		String subclass = generated.get(1);
+		assertTrue(subclass, subclass.contains("package org.example;"));
+		assertTrue(subclass, subclass.contains("import org.example.auto._TestClass1;"));
+	}
 
-    @Test
-    public void testExecuteArtifactPairsMapRelationships() throws Exception {
+	@Test
+	public void testExecuteArtifactPairsMapRelationships() throws Exception {
 
-        ObjEntity testEntity1 = new ObjEntity("TE1");
-        testEntity1.setClassName("org.example.TestClass1");
+		ObjEntity testEntity1 = new ObjEntity("TE1");
+		testEntity1.setClassName("org.example.TestClass1");
 
-        final ObjEntity testEntity2 = new ObjEntity("TE1");
-        testEntity2.setClassName("org.example.TestClass2");
+		final ObjEntity testEntity2 = new ObjEntity("TE1");
+		testEntity2.setClassName("org.example.TestClass2");
 
-        ObjRelationship relationship = new ObjRelationship("xMap") {
+		ObjRelationship relationship = new ObjRelationship("xMap") {
 
-            @Override
-            public boolean isToMany() {
-                return true;
-            }
-            
-            @Override
-            public ObjEntity getTargetEntity() {
-                return testEntity2;
-            }
-        };
-        relationship.setCollectionType("java.util.Map");
-        testEntity1.addRelationship(relationship);
+			private static final long serialVersionUID = 8042147877503405974L;
 
-        action.setMakePairs(true);
+			@Override
+			public boolean isToMany() {
+				return true;
+			}
 
-        List<String> generated = execute(new EntityArtifact(testEntity1));
-        assertNotNull(generated);
-        assertEquals(2, generated.size());
+			@Override
+			public ObjEntity getTargetEntity() {
+				return testEntity2;
+			}
+		};
+		relationship.setCollectionType("java.util.Map");
+		testEntity1.addRelationship(relationship);
 
-        String superclass = generated.get(0);
-        assertTrue(superclass, superclass.contains("import java.util.Map;"));
-    }
+		action.setMakePairs(true);
 
-    @Test
-    public void testExecuteArtifactPairsAttribute() throws Exception {
+		List<String> generated = execute(new EntityArtifact(testEntity1));
+		assertNotNull(generated);
+		assertEquals(2, generated.size());
 
-        ObjEntity testEntity1 = new ObjEntity("TE1");
-        testEntity1.setClassName("org.example.TestClass1");
-        
-        ObjAttribute attr = new ObjAttribute();
-        attr.setName("ID");
-        attr.setType("int");
+		String superclass = generated.get(0);
+		assertTrue(superclass, superclass.contains("import java.util.Map;"));
+	}
 
-        ObjAttribute attr1 = new ObjAttribute();
-        attr1.setName("name");
-        attr1.setType("char");
-        
-        testEntity1.addAttribute(attr);
-        testEntity1.addAttribute(attr1);
+	@Test
+	public void testExecuteArtifactPairsAttribute() throws Exception {
 
-        action.setMakePairs(true);
+		ObjEntity testEntity1 = new ObjEntity("TE1");
+		testEntity1.setClassName("org.example.TestClass1");
 
-        List<String> generated = execute(new EntityArtifact(testEntity1));
-        assertNotNull(generated);
-        assertEquals(2, generated.size());
-        String superclass = generated.get(0);
-        
-        assertTrue(superclass, superclass.contains("public void setID(int ID)"));
-        assertTrue(superclass, superclass.contains("writeProperty(\"ID\", ID);"));
-        
-        assertTrue(superclass, superclass.contains("public int getID()"));
-        assertTrue(superclass, superclass.contains("Object value = readProperty(\"ID\");"));
-        assertTrue(superclass, superclass.contains("return (value != null) ? (Integer) value : 0;"));
-        
-        assertTrue(superclass, superclass.contains("public void setName(char name)"));
-        assertTrue(superclass, superclass.contains("writeProperty(\"name\", name);"));
-        
-        assertTrue(superclass, superclass.contains("public char getName()"));
-        assertTrue(superclass, superclass.contains("Object value = readProperty(\"name\");"));
-        assertTrue(superclass, superclass.contains("return (value != null) ? (Character) value : 0;"));
+		ObjAttribute attr = new ObjAttribute();
+		attr.setName("ID");
+		attr.setType("int");
 
-    }
+		ObjAttribute attr1 = new ObjAttribute();
+		attr1.setName("name");
+		attr1.setType("char");
 
-    @Test
-    public void testExecuteDataMapQueryNames() throws Exception {
-        runDataMapTest(false);
-    }
+		testEntity1.addAttribute(attr);
+		testEntity1.addAttribute(attr1);
 
-    @Test
-    public void testExecuteClientDataMapQueryNames() throws Exception {
-        runDataMapTest(true);
-    }
+		action.setMakePairs(true);
 
-    private void runDataMapTest(boolean client) throws Exception {
-        DataMap map = new DataMap();
-        map.addQuery(new NamedQuery("TestQuery"));
-        map.setName("testmap");
-        List<String> generated;
-        if (client) {
-            map.setDefaultClientPackage("testpackage");
-            generated = execute(new ClientDataMapArtifact(map,map.getQueries()));
-        } else {
-            map.setDefaultPackage("testpackage");
-            generated = execute(new DataMapArtifact(map,map.getQueries()));
-        }
-        assertEquals(2,generated.size());
-        assertTrue(generated.get(0).contains("public static final String TEST_QUERY_QUERYNAME = \"TestQuery\""));
-    }
+		List<String> generated = execute(new EntityArtifact(testEntity1));
+		assertNotNull(generated);
+		assertEquals(2, generated.size());
+		String superclass = generated.get(0);
 
-    @Test
-    public void testCallbackMethodGeneration() throws Exception {
-        assertCallbacks(false);
-    }
+		assertTrue(superclass, superclass.contains("public void setID(int ID)"));
+		assertTrue(superclass, superclass.contains("writeProperty(\"ID\", ID);"));
 
-    @Test
-    public void testClientCallbackMethodGeneration() throws Exception {
-        assertCallbacks(true);
-    }
+		assertTrue(superclass, superclass.contains("public int getID()"));
+		assertTrue(superclass, superclass.contains("Object value = readProperty(\"ID\");"));
+		assertTrue(superclass, superclass.contains("return (value != null) ? (Integer) value : 0;"));
 
-    private void assertCallbacks(boolean isClient) throws Exception
-    {
-        ObjEntity testEntity1 = new ObjEntity("TE1");
-        testEntity1.setClassName("org.example.TestClass1");
-        int i=0;
-        for(CallbackDescriptor cb : testEntity1.getCallbackMap().getCallbacks()) {
-            cb.addCallbackMethod("cb" + i++);
-        }
-        
-        if (isClient) {
+		assertTrue(superclass, superclass.contains("public void setName(char name)"));
+		assertTrue(superclass, superclass.contains("writeProperty(\"name\", name);"));
 
-            action = new ClientClassGenerationAction() {
-                @Override
-                protected Writer openWriter(TemplateType templateType) throws Exception {
-                    StringWriter writer = new StringWriter();
-                    writers.add(writer);
-                    return writer;
-                }
+		assertTrue(superclass, superclass.contains("public char getName()"));
+		assertTrue(superclass, superclass.contains("Object value = readProperty(\"name\");"));
+		assertTrue(superclass, superclass.contains("return (value != null) ? (Character) value : 0;"));
 
-            };
+	}
 
-        }
+	@Test
+	public void testExecuteDataMapQueryNames() throws Exception {
+		runDataMapTest(false);
+	}
 
-        action.setMakePairs(true);
+	@Test
+	public void testExecuteClientDataMapQueryNames() throws Exception {
+		runDataMapTest(true);
+	}
 
-        List<String> generated = execute(new EntityArtifact(testEntity1));
-        assertNotNull(generated);
-        assertEquals(2, generated.size());
+	private void runDataMapTest(boolean client) throws Exception {
+		DataMap map = new DataMap();
+		map.addQuery(new NamedQuery("TestQuery"));
+		map.setName("testmap");
+		List<String> generated;
+		if (client) {
+			map.setDefaultClientPackage("testpackage");
+			generated = execute(new ClientDataMapArtifact(map, map.getQueries()));
+		} else {
+			map.setDefaultPackage("testpackage");
+			generated = execute(new DataMapArtifact(map, map.getQueries()));
+		}
+		assertEquals(2, generated.size());
+		assertTrue(generated.get(0).contains("public static final String TEST_QUERY_QUERYNAME = \"TestQuery\""));
+	}
 
-        String superclass = generated.get(0);
+	@Test
+	public void testCallbackMethodGeneration() throws Exception {
+		assertCallbacks(false);
+	}
 
-        assertTrue(superclass, superclass.contains("public abstract class _TestClass1"));
+	@Test
+	public void testClientCallbackMethodGeneration() throws Exception {
+		assertCallbacks(true);
+	}
 
-        for(int j=0;j<i;j++) {
-            assertTrue(superclass, superclass.contains("protected abstract void cb" + j + "();"));
-        }
+	private void assertCallbacks(boolean isClient) throws Exception {
+		ObjEntity testEntity1 = new ObjEntity("TE1");
+		testEntity1.setClassName("org.example.TestClass1");
+		int i = 0;
+		for (CallbackDescriptor cb : testEntity1.getCallbackMap().getCallbacks()) {
+			cb.addCallbackMethod("cb" + i++);
+		}
 
-        String subclass = generated.get(1);
-        for(int j=0;j<i;j++) {
-            assertTrue(subclass, subclass.contains("protected void cb" + j + "() {"));
-        }
-    }
+		if (isClient) {
 
-    protected List<String> execute(Artifact artifact) throws Exception {
+			action = new ClientClassGenerationAction() {
+				@Override
+				protected Writer openWriter(TemplateType templateType) throws Exception {
+					StringWriter writer = new StringWriter();
+					writers.add(writer);
+					return writer;
+				}
 
-        action.execute(artifact);
+			};
 
-        List<String> strings = new ArrayList<String>(writers.size());
-        for (StringWriter writer : writers) {
-            strings.add(writer.toString());
-        }
-        return strings;
-    }
+		}
+
+		action.setMakePairs(true);
+
+		List<String> generated = execute(new EntityArtifact(testEntity1));
+		assertNotNull(generated);
+		assertEquals(2, generated.size());
+
+		String superclass = generated.get(0);
+
+		assertTrue(superclass, superclass.contains("public abstract class _TestClass1"));
+
+		for (int j = 0; j < i; j++) {
+			assertTrue(superclass, superclass.contains("protected abstract void cb" + j + "();"));
+		}
+
+		String subclass = generated.get(1);
+		for (int j = 0; j < i; j++) {
+			assertTrue(subclass, subclass.contains("protected void cb" + j + "() {"));
+		}
+	}
+
+	protected List<String> execute(Artifact artifact) throws Exception {
+
+		action.execute(artifact);
+
+		List<String> strings = new ArrayList<String>(writers.size());
+		for (StringWriter writer : writers) {
+			strings.add(writer.toString());
+		}
+		return strings;
+	}
 }

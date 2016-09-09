@@ -32,77 +32,80 @@ import org.apache.cayenne.util.ConversionUtil;
  * @since 1.1
  */
 public class ASTDivide extends SimpleNode {
-    ASTDivide(int id) {
-        super(id);
-    }
 
-    public ASTDivide() {
-        super(ExpressionParserTreeConstants.JJTDIVIDE);
-    }
+	private static final long serialVersionUID = -5086569683844539310L;
 
-    public ASTDivide(Object[] nodes) {
-        super(ExpressionParserTreeConstants.JJTDIVIDE);
-        int len = nodes.length;
-        for (int i = 0; i < len; i++) {
-            jjtAddChild(wrapChild(nodes[i]), i);
-        }
-        
-        connectChildren();
-    }
+	ASTDivide(int id) {
+		super(id);
+	}
 
-    public ASTDivide(Collection nodes) {
-        super(ExpressionParserTreeConstants.JJTDIVIDE);
-        int len = nodes.size();
-        Iterator it = nodes.iterator();
-        for (int i = 0; i < len; i++) {
-            jjtAddChild(wrapChild(it.next()), i);
-        }
-        
-        connectChildren();
-    }
+	public ASTDivide() {
+		super(ExpressionParserTreeConstants.JJTDIVIDE);
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len == 0) {
-            return null;
-        }
+	public ASTDivide(Object[] nodes) {
+		super(ExpressionParserTreeConstants.JJTDIVIDE);
+		int len = nodes.length;
+		for (int i = 0; i < len; i++) {
+			jjtAddChild(wrapChild(nodes[i]), i);
+		}
 
-        BigDecimal result = null;
-        for (int i = 0; i < len; i++) {
-            BigDecimal value = ConversionUtil.toBigDecimal(evaluateChild(i, o));
+		connectChildren();
+	}
 
-            if (value == null) {
-                return null;
-            }
+	public ASTDivide(Collection<?> nodes) {
+		super(ExpressionParserTreeConstants.JJTDIVIDE);
+		int len = nodes.size();
+		Iterator<?> it = nodes.iterator();
+		for (int i = 0; i < len; i++) {
+			jjtAddChild(wrapChild(it.next()), i);
+		}
 
-            result = (i == 0) ? value : result.divide(value, BigDecimal.ROUND_HALF_EVEN);
-        }
+		connectChildren();
+	}
 
-        return result;
-    }
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		int len = jjtGetNumChildren();
+		if (len == 0) {
+			return null;
+		}
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        return new ASTDivide(id);
-    }
+		BigDecimal result = null;
+		for (int i = 0; i < len; i++) {
+			BigDecimal value = ConversionUtil.toBigDecimal(evaluateChild(i, o));
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        return "/";
-    }
+			if (value == null) {
+				return null;
+			}
 
-    @Override
-    public int getType() {
-        return Expression.DIVIDE;
-    }
+			result = (i == 0) ? value : result.divide(value, BigDecimal.ROUND_HALF_EVEN);
+		}
 
-    @Override
-    public void jjtClose() {
-        super.jjtClose();
-        flattenTree();
-    }
+		return result;
+	}
+
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		return new ASTDivide(id);
+	}
+
+	@Override
+	protected String getExpressionOperator(int index) {
+		return "/";
+	}
+
+	@Override
+	public int getType() {
+		return Expression.DIVIDE;
+	}
+
+	@Override
+	public void jjtClose() {
+		super.jjtClose();
+		flattenTree();
+	}
 }

@@ -19,6 +19,10 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataNode;
@@ -38,115 +42,96 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-
-import java.sql.Connection;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class QualifierTranslatorIT extends ServerCase {
 
-    @Inject
-    private DataNode node;
+	@Inject
+	private DataNode node;
 
-    @Inject
-    private ServerCaseDataSourceFactory dataSourceFactory;
+	@Inject
+	private ServerCaseDataSourceFactory dataSourceFactory;
 
-    private Connection connection;
+	@Test
+	public void testNonQualifiedQuery() throws Exception {
+		TstQueryAssembler qa = new TstQueryAssembler(new MockQuery(), node.getAdapter(), node.getEntityResolver());
 
-    @Before
-    public void setUp() throws Exception {
-        this.connection = dataSourceFactory.getSharedDataSource().getConnection();
-    }
+		try {
+			new QualifierTranslator(qa).appendPart(new StringBuilder());
+			fail();
+		} catch (ClassCastException ccex) {
+			// exception expected
+		}
+	}
 
-    @After
-    public void tearDown() throws Exception {
-        connection.close();
-    }
+	@Test
+	public void testNullQualifier() throws Exception {
+		TstQueryAssembler qa = new TstQueryAssembler(new SelectQuery<Object>(), node.getAdapter(),
+				node.getEntityResolver());
 
-    @Test
-    public void testNonQualifiedQuery() throws Exception {
-        TstQueryAssembler qa = new TstQueryAssembler(new MockQuery(), node, connection);
+		StringBuilder out = new StringBuilder();
+		new QualifierTranslator(qa).appendPart(out);
+		assertEquals(0, out.length());
+	}
 
-        try {
-            new QualifierTranslator(qa).appendPart(new StringBuilder());
-            fail();
-        } catch (ClassCastException ccex) {
-            // exception expected
-        }
-    }
+	@Test
+	public void testUnary() throws Exception {
+		doExpressionTest(new TstUnaryExpSuite());
+	}
 
-    @Test
-    public void testNullQualifier() throws Exception {
-        TstQueryAssembler qa = new TstQueryAssembler(new SelectQuery<Object>(), node, connection);
+	@Test
+	public void testBinary() throws Exception {
+		doExpressionTest(new TstBinaryExpSuite());
+	}
 
-        StringBuilder out = new StringBuilder();
-        new QualifierTranslator(qa).appendPart(out);
-        assertEquals(0, out.length());
-    }
+	@Test
+	public void testTernary() throws Exception {
+		doExpressionTest(new TstTernaryExpSuite());
+	}
 
-    @Test
-    public void testUnary() throws Exception {
-        doExpressionTest(new TstUnaryExpSuite());
-    }
+	@Test
+	public void testExtras() throws Exception {
+		ObjectId oid1 = new ObjectId("Gallery", "GALLERY_ID", 1);
+		ObjectId oid2 = new ObjectId("Gallery", "GALLERY_ID", 2);
+		Gallery g1 = new Gallery();
+		Gallery g2 = new Gallery();
+		g1.setObjectId(oid1);
+		g2.setObjectId(oid2);
 
-    @Test
-    public void testBinary() throws Exception {
-        doExpressionTest(new TstBinaryExpSuite());
-    }
+		Expression e1 = ExpressionFactory.matchExp("toGallery", g1);
+		Expression e2 = e1.orExp(ExpressionFactory.matchExp("toGallery", g2));
 
-    @Test
-    public void testTernary() throws Exception {
-        doExpressionTest(new TstTernaryExpSuite());
-    }
+		TstExpressionCase extraCase = new TstExpressionCase("Exhibit", e2,
+				"(ta.GALLERY_ID = ?) OR (ta.GALLERY_ID = ?)", 4, 4);
 
-    @Test
-    public void testExtras() throws Exception {
-        ObjectId oid1 = new ObjectId("Gallery", "GALLERY_ID", 1);
-        ObjectId oid2 = new ObjectId("Gallery", "GALLERY_ID", 2);
-        Gallery g1 = new Gallery();
-        Gallery g2 = new Gallery();
-        g1.setObjectId(oid1);
-        g2.setObjectId(oid2);
+		TstExpressionSuite suite = new TstExpressionSuite() {
+		};
+		suite.addCase(extraCase);
+		doExpressionTest(suite);
+	}
 
-        Expression e1 = ExpressionFactory.matchExp("toGallery", g1);
-        Expression e2 = e1.orExp(ExpressionFactory.matchExp("toGallery", g2));
+	private void doExpressionTest(TstExpressionSuite suite) throws Exception {
 
-        TstExpressionCase extraCase = new TstExpressionCase("Exhibit", e2,
-                "(ta.GALLERY_ID = ?) OR (ta.GALLERY_ID = ?)", 4, 4);
+		TstExpressionCase[] cases = suite.cases();
 
-        TstExpressionSuite suite = new TstExpressionSuite() {
-        };
-        suite.addCase(extraCase);
-        doExpressionTest(suite);
-    }
+		int len = cases.length;
+		for (int i = 0; i < len; i++) {
+			try {
 
-    private void doExpressionTest(TstExpressionSuite suite) throws Exception {
+				ObjEntity entity = node.getEntityResolver().getObjEntity(cases[i].getRootEntity());
+				assertNotNull(entity);
+				SelectQuery q = new SelectQuery(entity);
+				q.setQualifier(cases[i].getCayenneExp());
 
-        TstExpressionCase[] cases = suite.cases();
+				TstQueryAssembler qa = new TstQueryAssembler(q, node.getAdapter(), node.getEntityResolver());
 
-        int len = cases.length;
-        for (int i = 0; i < len; i++) {
-            try {
-
-                ObjEntity entity = node.getEntityResolver().getObjEntity(cases[i].getRootEntity());
-                assertNotNull(entity);
-                SelectQuery q = new SelectQuery(entity);
-                q.setQualifier(cases[i].getCayenneExp());
-
-                TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);
-
-                StringBuilder out = new StringBuilder();
-                new QualifierTranslator(qa).appendPart(out);
-                cases[i].assertTranslatedWell(out.toString());
-            } catch (Exception ex) {
-                throw new CayenneRuntimeException("Failed case: [" + i + "]: " + cases[i], ex);
-            }
-        }
-    }
+				StringBuilder out = new StringBuilder();
+				new QualifierTranslator(qa).appendPart(out);
+				cases[i].assertTranslatedWell(out.toString());
+			} catch (Exception ex) {
+				throw new CayenneRuntimeException("Failed case: [" + i + "]: " + cases[i], ex);
+			}
+		}
+	}
 }

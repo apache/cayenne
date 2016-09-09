@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.dba.hsqldb;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.configuration.Constants;
@@ -30,6 +26,10 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.resource.ResourceLocator;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A flavor of HSQLDBAdapter that implements workarounds for some old driver limitations.
@@ -42,7 +42,7 @@ public class HSQLDBNoSchemaAdapter extends HSQLDBAdapter {
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-            @Inject ResourceLocator resourceLocator) {
+            @Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator) {
         super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator);
     }
 

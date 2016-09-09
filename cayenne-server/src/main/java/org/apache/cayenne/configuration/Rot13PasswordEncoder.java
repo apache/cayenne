@@ -68,7 +68,7 @@ public class Rot13PasswordEncoder implements PasswordEncoding {
             // If c is a letter, rotate it by 13. Numbers/symbols are untouched.
             if ((c >= 'a' && c <= 'm') || (c >= 'A' && c <= 'M'))
                 c += 13; // The first half of the alphabet goes forward 13 letters
-            else if ((c >= 'n' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+            else if ((c >= 'n' && c <= 'z') || (c >= 'N' && c <= 'Z'))
                 c -= 13; // The last half of the alphabet goes backward 13 letters
 
             result.append(c);
@@ -77,19 +77,4 @@ public class Rot13PasswordEncoder implements PasswordEncoding {
         return result.toString();
     }
 
-    /**
-     * Small test program to run text through the ROT-13 cipher. This program can also be
-     * run by hand to encode/decode values manually. The values passed on the command line
-     * are printed to standard out.
-     * 
-     * @param args The array of text values (on the command-line) to be run through the
-     *            ROT-13 cipher.
-     */
-    public static void main(String[] args) {
-        Rot13PasswordEncoder encoder = new Rot13PasswordEncoder();
-
-        for (String string : args) {
-            System.out.println(encoder.rotate(string));
-        }
-    }
 }

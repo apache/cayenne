@@ -33,102 +33,104 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTNegate extends SimpleNode {
 
-    ASTNegate(int id) {
-        super(id);
-    }
+	private static final long serialVersionUID = -9161722951926428414L;
 
-    public ASTNegate() {
-        super(ExpressionParserTreeConstants.JJTNEGATE);
-    }
+	ASTNegate(int id) {
+		super(id);
+	}
 
-    public ASTNegate(Object node) {
-        super(ExpressionParserTreeConstants.JJTNEGATE);
-        jjtAddChild(wrapChild(node), 0);
-        connectChildren();
-    }
+	public ASTNegate() {
+		super(ExpressionParserTreeConstants.JJTNEGATE);
+	}
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        return new ASTNegate(id);
-    }
+	public ASTNegate(Object node) {
+		super(ExpressionParserTreeConstants.JJTNEGATE);
+		jjtAddChild(wrapChild(node), 0);
+		connectChildren();
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len == 0) {
-            return null;
-        }
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		return new ASTNegate(id);
+	}
 
-        BigDecimal result = ConversionUtil.toBigDecimal(evaluateChild(0, o));
-        return result != null ? result.negate() : null;
-    }
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		int len = jjtGetNumChildren();
+		if (len == 0) {
+			return null;
+		}
 
-    /**
-     * @since 4.0
-     */
-    @Override
-    public void appendAsString(Appendable out) throws IOException {
+		BigDecimal result = ConversionUtil.toBigDecimal(evaluateChild(0, o));
+		return result != null ? result.negate() : null;
+	}
 
-        if ((children != null) && (children.length > 0)) {
-            out.append("-");
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void appendAsString(Appendable out) throws IOException {
 
-            SimpleNode child = (SimpleNode) children[0];
+		if ((children != null) && (children.length > 0)) {
+			out.append("-");
 
-            // don't call super - we have our own parenthesis policy
-            boolean useParen = parent != null && !((child instanceof ASTScalar) || (child instanceof ASTPath));
-            if (useParen) {
-                out.append("(");
-            }
+			SimpleNode child = (SimpleNode) children[0];
 
-            child.appendAsString(out);
+			// don't call super - we have our own parenthesis policy
+			boolean useParen = parent != null && !((child instanceof ASTScalar) || (child instanceof ASTPath));
+			if (useParen) {
+				out.append("(");
+			}
 
-            if (useParen) {
-                out.append(')');
-            }
-        }
-    }
+			child.appendAsString(out);
 
-    /**
-     * @since 4.0
-     */
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+			if (useParen) {
+				out.append(')');
+			}
+		}
+	}
 
-        if ((children != null) && (children.length > 0)) {
-            out.append("-");
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
 
-            SimpleNode child = (SimpleNode) children[0];
+		if ((children != null) && (children.length > 0)) {
+			out.append("-");
 
-            // don't call super - we have our own parenthesis policy
-            boolean useParen = parent != null && !((child instanceof ASTScalar) || (child instanceof ASTPath));
-            if (useParen) {
-                out.append("(");
-            }
+			SimpleNode child = (SimpleNode) children[0];
 
-            child.appendAsEJBQL(parameterAccumulator, out, rootId);
+			// don't call super - we have our own parenthesis policy
+			boolean useParen = parent != null && !((child instanceof ASTScalar) || (child instanceof ASTPath));
+			if (useParen) {
+				out.append("(");
+			}
 
-            if (useParen) {
-                out.append(')');
-            }
-        }
-    }
+			child.appendAsEJBQL(parameterAccumulator, out, rootId);
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
-                + "'");
-    }
+			if (useParen) {
+				out.append(')');
+			}
+		}
+	}
 
-    @Override
-    public int getType() {
-        return Expression.NEGATIVE;
-    }
+	@Override
+	protected String getExpressionOperator(int index) {
+		throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
+				+ "'");
+	}
 
-    @Override
-    public int getOperandCount() {
-        return 1;
-    }
+	@Override
+	public int getType() {
+		return Expression.NEGATIVE;
+	}
+
+	@Override
+	public int getOperandCount() {
+		return 1;
+	}
 }

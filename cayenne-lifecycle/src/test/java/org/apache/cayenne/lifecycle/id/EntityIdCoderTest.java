@@ -187,7 +187,7 @@ public class EntityIdCoderTest {
 
         EntityIdCoder coder = new EntityIdCoder(entity);
 
-        Map<String, Object> idMap = new HashMap<String, Object>();
+        Map<String, Object> idMap = new HashMap<>();
         idMap.put("ID", "X;Y");
         idMap.put("ABC", 6783463l);
         idMap.put("ZZZ", "'_'");

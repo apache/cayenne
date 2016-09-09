@@ -49,6 +49,12 @@ class EJBQLOrderByTranslator extends EJBQLBaseVisitor {
         context.append(" DESC");
         return true;
     }
+    
+	@Override
+	public boolean visitAggregate(EJBQLExpression expression) {
+		expression.visit(context.getTranslatorFactory().getAggregateColumnTranslator(context));
+		return false;
+	}
 
     @Override
     public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {

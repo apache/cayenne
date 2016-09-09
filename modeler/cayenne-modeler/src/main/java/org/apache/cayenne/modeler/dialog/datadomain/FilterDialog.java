@@ -21,7 +21,8 @@ package org.apache.cayenne.modeler.dialog.datadomain;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.swing.BindingBuilder;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JPopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
@@ -30,12 +31,12 @@ public class FilterDialog extends JPopupMenu {
 	
 	private String SHOW_ALL = "Show all";
 	
-	private JCheckBoxMenuItem dbEntity;
-	private JCheckBoxMenuItem objEntity;
-	private JCheckBoxMenuItem embeddable;
-	private JCheckBoxMenuItem procedure;
-	private JCheckBoxMenuItem query;
-	private JCheckBoxMenuItem all;
+	private JCheckBox dbEntity;
+	private JCheckBox objEntity;
+	private JCheckBox embeddable;
+	private JCheckBox procedure;
+	private JCheckBox query;
+	private JCheckBox all;
 	private ProjectController eventController;
 	private FilterController filterController;
 	
@@ -101,14 +102,14 @@ public class FilterDialog extends JPopupMenu {
 	}
 	
 	public void initView(){
-		
-		all = new JCheckBoxMenuItem(SHOW_ALL);
-		dbEntity = new JCheckBoxMenuItem("DbEntity");
-		objEntity = new JCheckBoxMenuItem("ObjEntity");
-		embeddable = new JCheckBoxMenuItem("Embeddable");
-		procedure = new JCheckBoxMenuItem("Procedure");
-		query = new JCheckBoxMenuItem("Query");
-		
+
+		all = new JCheckBox(SHOW_ALL);
+		dbEntity = new JCheckBox("DbEntity");
+		objEntity = new JCheckBox("ObjEntity");
+		embeddable = new JCheckBox("Embeddable");
+		procedure = new JCheckBox("Procedure");
+		query = new JCheckBox("Query");
+
 		add(all);
 		addSeparator();
 		add(dbEntity);
@@ -187,7 +188,7 @@ public class FilterDialog extends JPopupMenu {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			filterController.getFilterMap().put(key, ((JCheckBoxMenuItem)e.getSource()).isSelected());
+			filterController.getFilterMap().put(key, ((JCheckBox) e.getSource()).isSelected());
 			filterController.getTreeModel().setFiltered(filterController.getFilterMap());
             filterController.getTree().updateUI();
             checkAllStates();

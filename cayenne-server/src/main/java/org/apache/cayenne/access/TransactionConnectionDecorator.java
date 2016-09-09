@@ -39,344 +39,349 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 /**
- * A wrapper of a JDBC connection that is attached to a transaction. The behavior of this
- * object to delegate all method calls to the underlying connection, except for the
- * 'close' method that is implemented as noop in hope that a transaction originator will
- * close the underlying Connection object.
+ * A wrapper of a JDBC connection that is attached to a transaction. The
+ * behavior of this object to delegate all method calls to the underlying
+ * connection, except for the 'close' method that is implemented as noop in hope
+ * that a transaction originator will close the underlying Connection object.
  * 
  * @since 1.2
  */
 class TransactionConnectionDecorator implements Connection {
 
-    Connection connection;
+	Connection connection;
 
-    TransactionConnectionDecorator(Connection connection) {
-        this.connection = connection;
-    }
+	TransactionConnectionDecorator(Connection connection) {
+		this.connection = connection;
+	}
 
-    // the only method that is NOT delegated...
-    public void close() throws SQLException {
-        // noop
-    }
+	// the only method that is NOT delegated...
+	@Override
+	public void close() throws SQLException {
+		// noop
+	}
 
-    public void clearWarnings() throws SQLException {
-        connection.clearWarnings();
-    }
+	/**
+	 * @since 3.1
+	 */
+	@Override
+	public void abort(Executor executor) throws SQLException {
 
-    public void commit() throws SQLException {
-        connection.commit();
-    }
+		// do nothing; same as 'close'
+	}
 
-    public Statement createStatement() throws SQLException {
-        return connection.createStatement();
-    }
+	@Override
+	public void clearWarnings() throws SQLException {
+		connection.clearWarnings();
+	}
 
-    public Statement createStatement(
-            int resultSetType,
-            int resultSetConcurrency,
-            int resultSetHoldability) throws SQLException {
-        return connection.createStatement(
-                resultSetType,
-                resultSetConcurrency,
-                resultSetHoldability);
-    }
+	@Override
+	public void commit() throws SQLException {
+		connection.commit();
+	}
 
-    public Statement createStatement(int resultSetType, int resultSetConcurrency)
-            throws SQLException {
-        return connection.createStatement(resultSetType, resultSetConcurrency);
-    }
+	@Override
+	public Statement createStatement() throws SQLException {
+		return connection.createStatement();
+	}
 
-    public boolean getAutoCommit() throws SQLException {
-        return connection.getAutoCommit();
-    }
+	@Override
+	public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability)
+			throws SQLException {
+		return connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+	}
 
-    public String getCatalog() throws SQLException {
-        return connection.getCatalog();
-    }
+	@Override
+	public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
+		return connection.createStatement(resultSetType, resultSetConcurrency);
+	}
 
-    public int getHoldability() throws SQLException {
-        return connection.getHoldability();
-    }
+	@Override
+	public boolean getAutoCommit() throws SQLException {
+		return connection.getAutoCommit();
+	}
 
-    public DatabaseMetaData getMetaData() throws SQLException {
-        return connection.getMetaData();
-    }
+	@Override
+	public String getCatalog() throws SQLException {
+		return connection.getCatalog();
+	}
 
-    public int getTransactionIsolation() throws SQLException {
-        return connection.getTransactionIsolation();
-    }
+	@Override
+	public int getHoldability() throws SQLException {
+		return connection.getHoldability();
+	}
 
-    public Map<String,Class<?>> getTypeMap() throws SQLException {
-        return connection.getTypeMap();
-    }
+	@Override
+	public DatabaseMetaData getMetaData() throws SQLException {
+		return connection.getMetaData();
+	}
 
-    public SQLWarning getWarnings() throws SQLException {
-        return connection.getWarnings();
-    }
+	@Override
+	public int getTransactionIsolation() throws SQLException {
+		return connection.getTransactionIsolation();
+	}
 
-    public boolean isClosed() throws SQLException {
-        return connection.isClosed();
-    }
+	@Override
+	public Map<String, Class<?>> getTypeMap() throws SQLException {
+		return connection.getTypeMap();
+	}
 
-    public boolean isReadOnly() throws SQLException {
-        return connection.isReadOnly();
-    }
+	@Override
+	public SQLWarning getWarnings() throws SQLException {
+		return connection.getWarnings();
+	}
 
-    public String nativeSQL(String sql) throws SQLException {
-        return connection.nativeSQL(sql);
-    }
+	@Override
+	public boolean isClosed() throws SQLException {
+		return connection.isClosed();
+	}
 
-    public CallableStatement prepareCall(
-            String sql,
-            int resultSetType,
-            int resultSetConcurrency,
-            int resultSetHoldability) throws SQLException {
-        return connection.prepareCall(
-                sql,
-                resultSetType,
-                resultSetConcurrency,
-                resultSetHoldability);
-    }
+	@Override
+	public boolean isReadOnly() throws SQLException {
+		return connection.isReadOnly();
+	}
 
-    public CallableStatement prepareCall(
-            String sql,
-            int resultSetType,
-            int resultSetConcurrency) throws SQLException {
-        return connection.prepareCall(sql, resultSetType, resultSetConcurrency);
-    }
+	@Override
+	public String nativeSQL(String sql) throws SQLException {
+		return connection.nativeSQL(sql);
+	}
 
-    public CallableStatement prepareCall(String sql) throws SQLException {
-        return connection.prepareCall(sql);
-    }
+	@Override
+	public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
+			int resultSetHoldability) throws SQLException {
+		return connection.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+	}
 
-    public PreparedStatement prepareStatement(
-            String sql,
-            int resultSetType,
-            int resultSetConcurrency,
-            int resultSetHoldability) throws SQLException {
-        return connection.prepareStatement(
-                sql,
-                resultSetType,
-                resultSetConcurrency,
-                resultSetHoldability);
-    }
+	@Override
+	public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
+		return connection.prepareCall(sql, resultSetType, resultSetConcurrency);
+	}
 
-    public PreparedStatement prepareStatement(
-            String sql,
-            int resultSetType,
-            int resultSetConcurrency) throws SQLException {
-        return connection.prepareStatement(sql, resultSetType, resultSetConcurrency);
-    }
+	@Override
+	public CallableStatement prepareCall(String sql) throws SQLException {
+		return connection.prepareCall(sql);
+	}
 
-    public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys)
-            throws SQLException {
-        return connection.prepareStatement(sql, autoGeneratedKeys);
-    }
+	@Override
+	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency,
+			int resultSetHoldability) throws SQLException {
+		return connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+	}
 
-    public PreparedStatement prepareStatement(String sql, int[] columnIndexes)
-            throws SQLException {
-        return connection.prepareStatement(sql, columnIndexes);
-    }
+	@Override
+	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency)
+			throws SQLException {
+		return connection.prepareStatement(sql, resultSetType, resultSetConcurrency);
+	}
 
-    public PreparedStatement prepareStatement(String sql, String[] columnNames)
-            throws SQLException {
-        return connection.prepareStatement(sql, columnNames);
-    }
+	@Override
+	public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException {
+		return connection.prepareStatement(sql, autoGeneratedKeys);
+	}
 
-    public PreparedStatement prepareStatement(String sql) throws SQLException {
-        return connection.prepareStatement(sql);
-    }
+	@Override
+	public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
+		return connection.prepareStatement(sql, columnIndexes);
+	}
 
-    public void releaseSavepoint(Savepoint savepoint) throws SQLException {
-        connection.releaseSavepoint(savepoint);
-    }
+	@Override
+	public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
+		return connection.prepareStatement(sql, columnNames);
+	}
 
-    public void rollback() throws SQLException {
-        connection.rollback();
-    }
+	@Override
+	public PreparedStatement prepareStatement(String sql) throws SQLException {
+		return connection.prepareStatement(sql);
+	}
 
-    public void rollback(Savepoint savepoint) throws SQLException {
-        connection.rollback(savepoint);
-    }
+	@Override
+	public void releaseSavepoint(Savepoint savepoint) throws SQLException {
+		connection.releaseSavepoint(savepoint);
+	}
 
-    public void setAutoCommit(boolean autoCommit) throws SQLException {
-        connection.setAutoCommit(autoCommit);
-    }
+	@Override
+	public void rollback() throws SQLException {
+		connection.rollback();
+	}
 
-    public void setCatalog(String catalog) throws SQLException {
-        connection.setCatalog(catalog);
-    }
+	@Override
+	public void rollback(Savepoint savepoint) throws SQLException {
+		connection.rollback(savepoint);
+	}
 
-    public void setHoldability(int holdability) throws SQLException {
-        connection.setHoldability(holdability);
-    }
+	@Override
+	public void setAutoCommit(boolean autoCommit) throws SQLException {
+		connection.setAutoCommit(autoCommit);
+	}
 
-    public void setReadOnly(boolean readOnly) throws SQLException {
-        connection.setReadOnly(readOnly);
-    }
+	@Override
+	public void setCatalog(String catalog) throws SQLException {
+		connection.setCatalog(catalog);
+	}
 
-    public Savepoint setSavepoint() throws SQLException {
-        return connection.setSavepoint();
-    }
+	@Override
+	public void setHoldability(int holdability) throws SQLException {
+		connection.setHoldability(holdability);
+	}
 
-    public Savepoint setSavepoint(String name) throws SQLException {
-        return connection.setSavepoint(name);
-    }
+	@Override
+	public void setReadOnly(boolean readOnly) throws SQLException {
+		connection.setReadOnly(readOnly);
+	}
 
-    public void setTransactionIsolation(int level) throws SQLException {
-        connection.setTransactionIsolation(level);
-    }
+	@Override
+	public Savepoint setSavepoint() throws SQLException {
+		return connection.setSavepoint();
+	}
 
-    public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
-        connection.setTypeMap(map);
-    }
+	@Override
+	public Savepoint setSavepoint(String name) throws SQLException {
+		return connection.setSavepoint(name);
+	}
 
-    /**
-     * @since 3.0
-     */
-    // JDBC 4 compatibility under Java 1.5
-    public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void setTransactionIsolation(int level) throws SQLException {
+		connection.setTransactionIsolation(level);
+	}
 
-    /**
-     * @since 3.0
-     */
-    // JDBC 4 compatibility under Java 1.5
-    public Blob createBlob() throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
+		connection.setTypeMap(map);
+	}
 
-    /**
-     * @since 3.0
-     */
-    // JDBC 4 compatibility under Java 1.5
-    public Clob createClob() throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
+		return connection.createArrayOf(typeName, elements);
+	}
 
-    /**
-     * @since 3.0
-     */
-    // JDBC 4 compatibility under Java 1.5
-    public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public Blob createBlob() throws SQLException {
+		return connection.createBlob();
+	}
 
-    /**
-     * @since 3.0
-     */
-    // JDBC 4 compatibility under Java 1.5
-    public Properties getClientInfo() throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public Clob createClob() throws SQLException {
+		return connection.createClob();
+	}
 
-    /**
-     * @since 3.0
-     */
-    // JDBC 4 compatibility under Java 1.5
-    public String getClientInfo(String name) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
+		return connection.createStruct(typeName, attributes);
+	}
 
-    /**
-     * @since 3.0
-     */
-    // JDBC 4 compatibility under Java 1.5
-    public void setClientInfo(Properties properties) throws SQLClientInfoException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public Properties getClientInfo() throws SQLException {
+		return connection.getClientInfo();
+	}
 
-    /**
-     * @since 3.0
-     */
-    // JDBC 4 compatibility under Java 1.5
-    public void setClientInfo(String name, String value) throws SQLClientInfoException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public String getClientInfo(String name) throws SQLException {
+		return connection.getClientInfo(name);
+	}
 
-    /**
-     * @since 3.0
-     */
-    // JDBC 4 compatibility under Java 1.5
-    public boolean isValid(int timeout) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public void setClientInfo(Properties properties) throws SQLClientInfoException {
+		connection.setClientInfo(properties);
+	}
 
-    /**
-     * @since 3.0
-     */
-    // JDBC 4 compatibility under Java 1.5
-    public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public void setClientInfo(String name, String value) throws SQLClientInfoException {
+		connection.setClientInfo(name, value);
+	}
 
-    /**
-     * @since 3.0
-     */
-    // JDBC 4 compatibility under Java 1.5
-    public <T> T unwrap(Class<T> iface) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public boolean isValid(int timeout) throws SQLException {
+		return connection.isValid(timeout);
+	}
 
-    /**
-     * @since 3.0
-     */
-    // JDBC 4 compatibility under Java 1.5
-    public NClob createNClob() throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		// TODO...
+		throw new UnsupportedOperationException();
+	}
 
-    /**
-     * @since 3.0
-     */
-    // JDBC 4 compatibility under Java 1.5
-    public SQLXML createSQLXML() throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		// TODO
+		throw new UnsupportedOperationException();
+	}
 
-    /**
-     * @since 3.1
-     *
-     * JDBC 4.1 compatibility under Java 1.5
-     */
-    public void setSchema(String schema) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public NClob createNClob() throws SQLException {
+		return connection.createNClob();
+	}
 
-    /**
-     * @since 3.1
-     *
-     * JDBC 4.1 compatibility under Java 1.5
-     */
-    public String getSchema() throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	public SQLXML createSQLXML() throws SQLException {
+		return connection.createSQLXML();
+	}
 
-    /**
-     * @since 3.1
-     *
-     * JDBC 4.1 compatibility under Java 1.5
-     */
-    public void abort(Executor executor) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.1
+	 */
+	@Override
+	public void setSchema(String schema) throws SQLException {
+		connection.setSchema(schema);
+	}
 
-    /**
-     * @since 3.1
-     *
-     * JDBC 4.1 compatibility under Java 1.5
-     */
-    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.1
+	 */
+	@Override
+	public String getSchema() throws SQLException {
+		return connection.getSchema();
+	}
 
-    /**
-     * @since 3.1
-     *
-     * JDBC 4.1 compatibility under Java 1.5
-     */
-    public int getNetworkTimeout() throws SQLException {
-        throw new UnsupportedOperationException();
-    }
+	/**
+	 * @since 3.1
+	 */
+	@Override
+	public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+		connection.setNetworkTimeout(executor, milliseconds);
+	}
+
+	/**
+	 * @since 3.1
+	 */
+	public int getNetworkTimeout() throws SQLException {
+		return connection.getNetworkTimeout();
+	}
 }

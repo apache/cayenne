@@ -37,9 +37,9 @@ import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 
 /**
- * ProcedureAction for SQLServer MS JDBC driver. Customizes OUT parameter processing - it
- * has to be done AFTER the ResultSets are read (note that jTDS driver works fine with
- * normal ProcedureAction).
+ * ProcedureAction for SQLServer MS JDBC driver. Customizes OUT parameter
+ * processing - it has to be done AFTER the ResultSets are read (note that jTDS
+ * driver works fine with normal ProcedureAction).
  * <p>
  * <i>See JIRA CAY-251 for details. </i>
  * </p>
@@ -48,157 +48,141 @@ import org.apache.cayenne.query.Query;
  */
 public class SQLServerProcedureAction extends ProcedureAction {
 
-    /**
-     * @since 4.0
-     */
-    public SQLServerProcedureAction(ProcedureQuery query, DataNode dataNode) {
-        super(query, dataNode);
-    }
+	/**
+	 * @since 4.0
+	 */
+	public SQLServerProcedureAction(ProcedureQuery query, DataNode dataNode) {
+		super(query, dataNode);
+	}
 
-    @Override
-    public void performAction(Connection connection, OperationObserver observer)
-            throws SQLException, Exception {
+	@Override
+	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
-        ProcedureTranslator transl = createTranslator(connection);
-        CallableStatement statement = (CallableStatement) transl.createStatement();
+		ProcedureTranslator transl = createTranslator(connection);
 
-        try {
-            // stored procedure may contain a mixture of update counts and result sets,
-            // and out parameters. Read out parameters first, then
-            // iterate until we exhaust all results
-            boolean hasResultSet = statement.execute();
+		try (CallableStatement statement = (CallableStatement) transl.createStatement();) {
+			// stored procedure may contain a mixture of update counts and
+			// result sets,
+			// and out parameters. Read out parameters first, then
+			// iterate until we exhaust all results
+			boolean hasResultSet = statement.execute();
 
-            // local observer to cache results and provide them to the external observer
-            // in the order consistent with other adapters.
+			// local observer to cache results and provide them to the external
+			// observer
+			// in the order consistent with other adapters.
 
-            Observer localObserver = new Observer(observer);
+			Observer localObserver = new Observer(observer);
 
-            // read query, using local observer
+			// read query, using local observer
 
-            while (true) {
-                if (hasResultSet) {
-                    ResultSet rs = statement.getResultSet();
-                    try {
-                        RowDescriptor descriptor = describeResultSet(
-                                rs,
-                                processedResultSets++);
-                        readResultSet(rs, descriptor, query, localObserver);
-                    }
-                    finally {
-                        try {
-                            rs.close();
-                        }
-                        catch (SQLException ex) {
-                        }
-                    }
-                }
-                else {
-                    int updateCount = statement.getUpdateCount();
-                    if (updateCount == -1) {
-                        break;
-                    }
-                    dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
-                    localObserver.nextCount(query, updateCount);
-                }
+			while (true) {
+				if (hasResultSet) {
 
-                hasResultSet = statement.getMoreResults();
-            }
+					try (ResultSet rs = statement.getResultSet();) {
+						RowDescriptor descriptor = describeResultSet(rs, processedResultSets++);
+						readResultSet(rs, descriptor, query, localObserver);
+					}
+				} else {
+					int updateCount = statement.getUpdateCount();
+					if (updateCount == -1) {
+						break;
+					}
+					dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
+					localObserver.nextCount(query, updateCount);
+				}
 
-            // read out parameters to the main observer ... AFTER the main result set
-            // TODO: I hope SQLServer does not support ResultSets as OUT parameters,
-            // otherwise
-            // the order of custom result descriptors will be messed up
-            readProcedureOutParameters(statement, observer);
+				hasResultSet = statement.getMoreResults();
+			}
 
-            // add results back to main observer
-            localObserver.flushResults(query);
-        }
-        finally {
-            try {
-                statement.close();
-            }
-            catch (SQLException ex) {
+			// read out parameters to the main observer ... AFTER the main
+			// result set
+			// TODO: I hope SQLServer does not support ResultSets as OUT
+			// parameters,
+			// otherwise
+			// the order of custom result descriptors will be messed up
+			readProcedureOutParameters(statement, observer);
 
-            }
-        }
-    }
+			// add results back to main observer
+			localObserver.flushResults(query);
+		}
+	}
 
-    class Observer implements OperationObserver {
+	class Observer implements OperationObserver {
 
-        List<List<?>> results;
-        List<Integer> counts;
-        OperationObserver observer;
+		List<List<?>> results;
+		List<Integer> counts;
+		OperationObserver observer;
 
-        Observer(OperationObserver observer) {
-            this.observer = observer;
-        }
+		Observer(OperationObserver observer) {
+			this.observer = observer;
+		}
 
-        void flushResults(Query query) {
-            if (results != null) {
-                for (List<?> result : results) {
-                    observer.nextRows(query, result);
-                }
-                results = null;
-            }
+		void flushResults(Query query) {
+			if (results != null) {
+				for (List<?> result : results) {
+					observer.nextRows(query, result);
+				}
+				results = null;
+			}
 
-            if (counts != null) {
-                for (Integer count : counts) {
-                    observer.nextCount(query, count);
-                }
-                counts = null;
-            }
-        }
+			if (counts != null) {
+				for (Integer count : counts) {
+					observer.nextCount(query, count);
+				}
+				counts = null;
+			}
+		}
 
-        @Override
-        public void nextBatchCount(Query query, int[] resultCount) {
-            observer.nextBatchCount(query, resultCount);
-        }
+		@Override
+		public void nextBatchCount(Query query, int[] resultCount) {
+			observer.nextBatchCount(query, resultCount);
+		}
 
-        @Override
-        public void nextCount(Query query, int resultCount) {
-            // does not delegate to wrapped observer
-            // but instead caches results locally.
-            if (counts == null) {
-                counts = new ArrayList<Integer>();
-            }
+		@Override
+		public void nextCount(Query query, int resultCount) {
+			// does not delegate to wrapped observer
+			// but instead caches results locally.
+			if (counts == null) {
+				counts = new ArrayList<Integer>();
+			}
 
-            counts.add(Integer.valueOf(resultCount));
-        }
+			counts.add(Integer.valueOf(resultCount));
+		}
 
-        @Override
-        public void nextRows(Query query, List<?> dataRows) {
-            // does not delegate to wrapped observer
-            // but instead caches results locally.
-            if (results == null) {
-                results = new ArrayList<List<?>>();
-            }
+		@Override
+		public void nextRows(Query query, List<?> dataRows) {
+			// does not delegate to wrapped observer
+			// but instead caches results locally.
+			if (results == null) {
+				results = new ArrayList<List<?>>();
+			}
 
-            results.add(dataRows);
-        }
+			results.add(dataRows);
+		}
 
-        @Override
-        public void nextRows(Query q, ResultIterator it) {
-            observer.nextRows(q, it);
-        }
+		@Override
+		public void nextRows(Query q, ResultIterator it) {
+			observer.nextRows(q, it);
+		}
 
-        @Override
-        public void nextGlobalException(Exception ex) {
-            observer.nextGlobalException(ex);
-        }
-        
-        @Override
-        public void nextGeneratedRows(Query query, ResultIterator keys, ObjectId idToUpdate) {
-            observer.nextGeneratedRows(query, keys, idToUpdate);
-        }
+		@Override
+		public void nextGlobalException(Exception ex) {
+			observer.nextGlobalException(ex);
+		}
 
-        @Override
-        public void nextQueryException(Query query, Exception ex) {
-            observer.nextQueryException(query, ex);
-        }
+		@Override
+		public void nextGeneratedRows(Query query, ResultIterator keys, ObjectId idToUpdate) {
+			observer.nextGeneratedRows(query, keys, idToUpdate);
+		}
 
-        @Override
-        public boolean isIteratedResult() {
-            return observer.isIteratedResult();
-        }
-    }
+		@Override
+		public void nextQueryException(Query query, Exception ex) {
+			observer.nextQueryException(query, ex);
+		}
+
+		@Override
+		public boolean isIteratedResult() {
+			return observer.isIteratedResult();
+		}
+	}
 }

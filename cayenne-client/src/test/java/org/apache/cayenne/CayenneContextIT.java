@@ -25,7 +25,6 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.graph.MockGraphDiff;
 import org.apache.cayenne.graph.NodeIdChangeOperation;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
@@ -63,307 +62,270 @@ import static org.mockito.Mockito.when;
 @UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class CayenneContextIT extends ClientCase {
 
-    @Inject
-    private ObjectContext serverContext;
+	@Inject
+	private ObjectContext serverContext;
 
-    @Test
-    public void testConstructor() {
+	@Test
+	public void testConstructor() {
 
-        CayenneContext context = new CayenneContext();
+		CayenneContext context = new CayenneContext();
 
-        // test default property parameters
-        assertNotNull(context.getGraphManager());
-        assertNull(context.channel);
+		// test default property parameters
+		assertNotNull(context.getGraphManager());
+		assertNull(context.channel);
 
-        MockDataChannel channel = new MockDataChannel();
-        context.setChannel(channel);
-        assertSame(channel, context.getChannel());
-    }
+		MockDataChannel channel = new MockDataChannel();
+		context.setChannel(channel);
+		assertSame(channel, context.getChannel());
+	}
 
-    @Test
-    public void testChannel() {
-        MockDataChannel channel = new MockDataChannel();
-        CayenneContext context = new CayenneContext(channel);
+	@Test
+	public void testChannel() {
+		MockDataChannel channel = new MockDataChannel();
+		CayenneContext context = new CayenneContext(channel);
 
-        assertSame(channel, context.getChannel());
-    }
+		assertSame(channel, context.getChannel());
+	}
 
-    @Test
-    public void testCommitUnchanged() {
+	@Test
+	public void testCommitUnchanged() {
 
-        MockDataChannel channel = new MockDataChannel();
-        CayenneContext context = new CayenneContext(channel);
+		MockDataChannel channel = new MockDataChannel();
+		CayenneContext context = new CayenneContext(channel);
 
-        // no context changes so no connector access is expected
-        context.commitChanges();
-        assertTrue(channel.getRequestObjects().isEmpty());
-    }
+		// no context changes so no connector access is expected
+		context.commitChanges();
+		assertTrue(channel.getRequestObjects().isEmpty());
+	}
 
-    @Test
-    public void testCommitCommandExecuted() {
+	@Test
+	public void testCommitCommandExecuted() {
 
-        MockDataChannel channel = new MockDataChannel(new MockGraphDiff());
-        channel.setEntityResolver(serverContext
-                .getEntityResolver()
-                .getClientEntityResolver());
-        CayenneContext context = new CayenneContext(channel);
+		MockDataChannel channel = new MockDataChannel(mock(GraphDiff.class));
+		channel.setEntityResolver(serverContext.getEntityResolver().getClientEntityResolver());
+		CayenneContext context = new CayenneContext(channel);
 
-        // test that a command is being sent via connector on commit...
+		// test that a command is being sent via connector on commit...
 
-        context.internalGraphManager().nodePropertyChanged(
-                new ObjectId("MtTable1"),
-                "x",
-                "y",
-                "z");
+		context.internalGraphManager().nodePropertyChanged(new ObjectId("MtTable1"), "x", "y", "z");
 
-        context.commitChanges();
-        assertEquals(1, channel.getRequestObjects().size());
+		context.commitChanges();
+		assertEquals(1, channel.getRequestObjects().size());
 
-        // expect a sync/commit chain
-        Object mainMessage = channel.getRequestObjects().iterator().next();
-        assertTrue(mainMessage instanceof GraphDiff);
-    }
+		// expect a sync/commit chain
+		Object mainMessage = channel.getRequestObjects().iterator().next();
+		assertTrue(mainMessage instanceof GraphDiff);
+	}
 
-    @Test
-    public void testCommitChangesNew() {
-        final CompoundDiff diff = new CompoundDiff();
-        final Object newObjectId = new ObjectId("test", "key", "generated");
-        final EventManager eventManager = new DefaultEventManager(0);
+	@Test
+	public void testCommitChangesNew() {
+		final CompoundDiff diff = new CompoundDiff();
+		final Object newObjectId = new ObjectId("test", "key", "generated");
+		final EventManager eventManager = new DefaultEventManager(0);
 
-        // test that ids that are passed back are actually propagated to the right
-        // objects...
+		// test that ids that are passed back are actually propagated to the
+		// right
+		// objects...
 
-        MockDataChannel channel = new MockDataChannel() {
+		MockDataChannel channel = new MockDataChannel() {
 
-            @Override
-            public GraphDiff onSync(
-                    ObjectContext originatingContext,
-                    GraphDiff changes,
-                    int syncType) {
+			@Override
+			public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
 
-                return diff;
-            }
+				return diff;
+			}
 
-            // must provide a channel with working event manager
-            @Override
-            public EventManager getEventManager() {
-                return eventManager;
-            }
-        };
+			// must provide a channel with working event manager
+			@Override
+			public EventManager getEventManager() {
+				return eventManager;
+			}
+		};
 
-        CayenneContext context = new CayenneContext(channel);
-        ObjEntity entity = new ObjEntity("test_entity");
-        entity.setClassName(MockPersistentObject.class.getName());
+		CayenneContext context = new CayenneContext(channel);
+		ObjEntity entity = new ObjEntity("test_entity");
+		entity.setClassName(MockPersistentObject.class.getName());
 
-        DataMap dataMap = new DataMap("test");
-        dataMap.addObjEntity(entity);
-        Collection<DataMap> entities = Collections.singleton(dataMap);
-        context.setEntityResolver(new EntityResolver(entities));
-        Persistent object = context.newObject(MockPersistentObject.class);
+		DataMap dataMap = new DataMap("test");
+		dataMap.addObjEntity(entity);
+		Collection<DataMap> entities = Collections.singleton(dataMap);
+		context.setEntityResolver(new EntityResolver(entities));
+		Persistent object = context.newObject(MockPersistentObject.class);
 
-        // record change here to make it available to the anonymous connector method..
-        diff.add(new NodeIdChangeOperation(object.getObjectId(), newObjectId));
+		// record change here to make it available to the anonymous connector
+		// method..
+		diff.add(new NodeIdChangeOperation(object.getObjectId(), newObjectId));
 
-        // check that a generated object ID is assigned back to the object...
-        assertNotSame(newObjectId, object.getObjectId());
-        context.commitChanges();
-        assertSame(newObjectId, object.getObjectId());
-        assertSame(object, context.graphManager.getNode(newObjectId));
-    }
+		// check that a generated object ID is assigned back to the object...
+		assertNotSame(newObjectId, object.getObjectId());
+		context.commitChanges();
+		assertSame(newObjectId, object.getObjectId());
+		assertSame(object, context.graphManager.getNode(newObjectId));
+	}
 
-    @Test
-    public void testNewObject() {
+	@Test
+	public void testNewObject() {
 
-        CayenneContext context = new CayenneContext(new MockDataChannel());
+		CayenneContext context = new CayenneContext(new MockDataChannel());
 
-        ObjEntity entity = new ObjEntity("test_entity");
-        entity.setClassName(MockPersistentObject.class.getName());
+		ObjEntity entity = new ObjEntity("test_entity");
+		entity.setClassName(MockPersistentObject.class.getName());
 
-        DataMap dataMap = new DataMap("test");
-        dataMap.addObjEntity(entity);
-        Collection<DataMap> entities = Collections.singleton(dataMap);
-        context.setEntityResolver(new EntityResolver(entities));
+		DataMap dataMap = new DataMap("test");
+		dataMap.addObjEntity(entity);
+		Collection<DataMap> entities = Collections.singleton(dataMap);
+		context.setEntityResolver(new EntityResolver(entities));
 
-        Persistent object = context.newObject(MockPersistentObject.class);
-        assertNotNull(object);
-        assertTrue(object instanceof MockPersistentObject);
-        assertEquals(PersistenceState.NEW, object.getPersistenceState());
-        assertSame(context, object.getObjectContext());
-        assertTrue(context
-                .internalGraphManager()
-                .dirtyNodes(PersistenceState.NEW)
-                .contains(object));
-        assertNotNull(object.getObjectId());
-        assertTrue(object.getObjectId().isTemporary());
-    }
+		Persistent object = context.newObject(MockPersistentObject.class);
+		assertNotNull(object);
+		assertTrue(object instanceof MockPersistentObject);
+		assertEquals(PersistenceState.NEW, object.getPersistenceState());
+		assertSame(context, object.getObjectContext());
+		assertTrue(context.internalGraphManager().dirtyNodes(PersistenceState.NEW).contains(object));
+		assertNotNull(object.getObjectId());
+		assertTrue(object.getObjectId().isTemporary());
+	}
 
-    @Test
-    public void testDeleteObject() {
+	@Test
+	public void testDeleteObject() {
 
-        CayenneContext context = new CayenneContext(new MockDataChannel());
-        ObjEntity entity = new ObjEntity("test_entity");
-        entity.setClassName(MockPersistentObject.class.getName());
+		CayenneContext context = new CayenneContext(new MockDataChannel());
+		ObjEntity entity = new ObjEntity("test_entity");
+		entity.setClassName(MockPersistentObject.class.getName());
 
-        DataMap dataMap = new DataMap("test");
-        dataMap.addObjEntity(entity);
-        Collection<DataMap> entities = Collections.singleton(dataMap);
-        context.setEntityResolver(new EntityResolver(entities));
+		DataMap dataMap = new DataMap("test");
+		dataMap.addObjEntity(entity);
+		Collection<DataMap> entities = Collections.singleton(dataMap);
+		context.setEntityResolver(new EntityResolver(entities));
 
-        // TRANSIENT ... should quietly ignore it
-        Persistent transientObject = new MockPersistentObject();
-        context.deleteObjects(transientObject);
-        assertEquals(PersistenceState.TRANSIENT, transientObject.getPersistenceState());
+		// TRANSIENT ... should quietly ignore it
+		Persistent transientObject = new MockPersistentObject();
+		context.deleteObjects(transientObject);
+		assertEquals(PersistenceState.TRANSIENT, transientObject.getPersistenceState());
 
-        // NEW ... should make it TRANSIENT
-        // create via context to make sure that object store would register it
-        Persistent newObject = context.newObject(MockPersistentObject.class);
-        assertNotNull(newObject.getObjectContext());
-        context.deleteObjects(newObject);
-        assertNull(newObject.getObjectContext());
-        assertEquals(PersistenceState.TRANSIENT, newObject.getPersistenceState());
-        assertFalse(context
-                .internalGraphManager()
-                .dirtyNodes()
-                .contains(newObject.getObjectId()));
+		// NEW ... should make it TRANSIENT
+		// create via context to make sure that object store would register it
+		Persistent newObject = context.newObject(MockPersistentObject.class);
+		assertNotNull(newObject.getObjectContext());
+		context.deleteObjects(newObject);
+		assertNull(newObject.getObjectContext());
+		assertEquals(PersistenceState.TRANSIENT, newObject.getPersistenceState());
+		assertFalse(context.internalGraphManager().dirtyNodes().contains(newObject.getObjectId()));
 
-        // see CAY-547 for details...
-        assertFalse(context.internalGraphManager().dirtyNodes().contains(null));
+		// see CAY-547 for details...
+		assertFalse(context.internalGraphManager().dirtyNodes().contains(null));
 
-        // COMMITTED
-        Persistent committed = new MockPersistentObject();
-        committed.setPersistenceState(PersistenceState.COMMITTED);
-        committed.setObjectId(new ObjectId("test_entity", "key", "value1"));
-        committed.setObjectContext(context);
-        context.deleteObjects(committed);
-        assertEquals(PersistenceState.DELETED, committed.getPersistenceState());
+		// COMMITTED
+		Persistent committed = new MockPersistentObject();
+		committed.setPersistenceState(PersistenceState.COMMITTED);
+		committed.setObjectId(new ObjectId("test_entity", "key", "value1"));
+		committed.setObjectContext(context);
+		context.deleteObjects(committed);
+		assertEquals(PersistenceState.DELETED, committed.getPersistenceState());
 
-        // MODIFIED
-        Persistent modified = new MockPersistentObject();
-        modified.setPersistenceState(PersistenceState.MODIFIED);
-        modified.setObjectId(new ObjectId("test_entity", "key", "value2"));
-        modified.setObjectContext(context);
-        context.deleteObjects(modified);
-        assertEquals(PersistenceState.DELETED, modified.getPersistenceState());
+		// MODIFIED
+		Persistent modified = new MockPersistentObject();
+		modified.setPersistenceState(PersistenceState.MODIFIED);
+		modified.setObjectId(new ObjectId("test_entity", "key", "value2"));
+		modified.setObjectContext(context);
+		context.deleteObjects(modified);
+		assertEquals(PersistenceState.DELETED, modified.getPersistenceState());
 
-        // DELETED
-        Persistent deleted = new MockPersistentObject();
-        deleted.setPersistenceState(PersistenceState.DELETED);
-        deleted.setObjectId(new ObjectId("test_entity", "key", "value3"));
-        deleted.setObjectContext(context);
-        context.deleteObjects(deleted);
-        assertEquals(PersistenceState.DELETED, committed.getPersistenceState());
-    }
+		// DELETED
+		Persistent deleted = new MockPersistentObject();
+		deleted.setPersistenceState(PersistenceState.DELETED);
+		deleted.setObjectId(new ObjectId("test_entity", "key", "value3"));
+		deleted.setObjectContext(context);
+		context.deleteObjects(deleted);
+		assertEquals(PersistenceState.DELETED, committed.getPersistenceState());
+	}
 
-    @Test
-    public void testBeforePropertyReadShouldInflateHollow() {
+	@Test
+	public void testBeforePropertyReadShouldInflateHollow() {
 
-        ObjectId gid = new ObjectId("MtTable1", "a", "b");
-        final ClientMtTable1 inflated = new ClientMtTable1();
-        inflated.setPersistenceState(PersistenceState.COMMITTED);
-        inflated.setObjectId(gid);
-        inflated.setGlobalAttribute1("abc");
+		ObjectId gid = new ObjectId("MtTable1", "a", "b");
+		final ClientMtTable1 inflated = new ClientMtTable1();
+		inflated.setPersistenceState(PersistenceState.COMMITTED);
+		inflated.setObjectId(gid);
+		inflated.setGlobalAttribute1("abc");
 
-        ClientConnection connection = mock(ClientConnection.class);
-        when(connection.sendMessage((ClientMessage) any())).thenAnswer(
-                new Answer<Object>() {
+		ClientConnection connection = mock(ClientConnection.class);
+		when(connection.sendMessage((ClientMessage) any())).thenAnswer(new Answer<Object>() {
 
-                    public Object answer(InvocationOnMock invocation) {
-                        ClientMessage arg = (ClientMessage) invocation.getArguments()[0];
+			public Object answer(InvocationOnMock invocation) {
+				ClientMessage arg = (ClientMessage) invocation.getArguments()[0];
 
-                        if (arg instanceof BootstrapMessage) {
-                            return new EntityResolver();
-                        }
-                        else {
-                            return new GenericResponse(Arrays.asList(inflated));
-                        }
-                    }
-                });
+				if (arg instanceof BootstrapMessage) {
+					return new EntityResolver();
+				} else {
+					return new GenericResponse(Arrays.asList(inflated));
+				}
+			}
+		});
 
-        ClientChannel channel = new ClientChannel(
-                connection,
-                false,
-                new MockEventManager(),
-                false);
+		ClientChannel channel = new ClientChannel(connection, false, new MockEventManager(), false);
 
-        // check that a HOLLOW object is infalted on "beforePropertyRead"
-        ClientMtTable1 hollow = new ClientMtTable1();
-        hollow.setPersistenceState(PersistenceState.HOLLOW);
-        hollow.setObjectId(gid);
+		// check that a HOLLOW object is infalted on "beforePropertyRead"
+		ClientMtTable1 hollow = new ClientMtTable1();
+		hollow.setPersistenceState(PersistenceState.HOLLOW);
+		hollow.setObjectId(gid);
 
-        final boolean[] selectExecuted = new boolean[1];
-        CayenneContext context = new CayenneContext(channel) {
+		final boolean[] selectExecuted = new boolean[1];
+		CayenneContext context = new CayenneContext(channel) {
 
-            @Override
-            public List<?> performQuery(Query query) {
-                selectExecuted[0] = true;
-                return super.performQuery(query);
-            }
-        };
+			@Override
+			public List<?> performQuery(Query query) {
+				selectExecuted[0] = true;
+				return super.performQuery(query);
+			}
+		};
 
-        context.setEntityResolver(serverContext
-                .getEntityResolver()
-                .getClientEntityResolver());
+		context.setEntityResolver(serverContext.getEntityResolver().getClientEntityResolver());
 
-        context.graphManager.registerNode(hollow.getObjectId(), hollow);
+		context.graphManager.registerNode(hollow.getObjectId(), hollow);
 
-        // testing this...
-        context
-                .prepareForAccess(
-                        hollow,
-                        ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY,
-                        false);
-        assertTrue(selectExecuted[0]);
-        assertSame(hollow, context.getGraphManager().getNode(gid));
-        assertEquals(
-                inflated.getGlobalAttribute1Direct(),
-                hollow.getGlobalAttribute1Direct());
-        assertEquals(PersistenceState.COMMITTED, hollow.getPersistenceState());
-    }
+		// testing this...
+		context.prepareForAccess(hollow, ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, false);
+		assertTrue(selectExecuted[0]);
+		assertSame(hollow, context.getGraphManager().getNode(gid));
+		assertEquals(inflated.getGlobalAttribute1Direct(), hollow.getGlobalAttribute1Direct());
+		assertEquals(PersistenceState.COMMITTED, hollow.getPersistenceState());
+	}
 
-    @Test
-    public void testBeforeHollowDeleteShouldChangeStateToCommited() {
+	@Test
+	public void testBeforeHollowDeleteShouldChangeStateToCommited() {
 
-        ObjectId gid = new ObjectId("MtTable1", "a", "b");
-        final ClientMtTable1 inflated = new ClientMtTable1();
-        inflated.setPersistenceState(PersistenceState.COMMITTED);
-        inflated.setObjectId(gid);
-        inflated.setGlobalAttribute1("abc");
+		ObjectId gid = new ObjectId("MtTable1", "a", "b");
+		final ClientMtTable1 inflated = new ClientMtTable1();
+		inflated.setPersistenceState(PersistenceState.COMMITTED);
+		inflated.setObjectId(gid);
+		inflated.setGlobalAttribute1("abc");
 
-        ClientConnection connection = mock(ClientConnection.class);
-        when(connection.sendMessage((ClientMessage) any())).thenAnswer(
-                new Answer<Object>() {
+		ClientConnection connection = mock(ClientConnection.class);
+		when(connection.sendMessage((ClientMessage) any())).thenAnswer(new Answer<Object>() {
 
-                    public Object answer(InvocationOnMock invocation) {
-                        ClientMessage arg = (ClientMessage) invocation.getArguments()[0];
+			public Object answer(InvocationOnMock invocation) {
+				ClientMessage arg = (ClientMessage) invocation.getArguments()[0];
 
-                        if (arg instanceof BootstrapMessage) {
-                            return new EntityResolver();
-                        }
-                        else {
-                            return new GenericResponse(Arrays.asList(inflated));
-                        }
-                    }
-                });
-        ClientChannel channel = new ClientChannel(
-                connection,
-                false,
-                new MockEventManager(),
-                false);
+				if (arg instanceof BootstrapMessage) {
+					return new EntityResolver();
+				} else {
+					return new GenericResponse(Arrays.asList(inflated));
+				}
+			}
+		});
+		ClientChannel channel = new ClientChannel(connection, false, new MockEventManager(), false);
 
-        CayenneContext context = new CayenneContext(channel);
-        context.setEntityResolver(serverContext
-                .getEntityResolver()
-                .getClientEntityResolver());
-        ClientMtTable1 hollow = context.localObject(inflated);
-        assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
+		CayenneContext context = new CayenneContext(channel);
+		context.setEntityResolver(serverContext.getEntityResolver().getClientEntityResolver());
+		ClientMtTable1 hollow = context.localObject(inflated);
+		assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
 
-        // testing this...
-        context.deleteObjects(hollow);
-        assertSame(hollow, context.getGraphManager().getNode(gid));
-        assertEquals(
-                inflated.getGlobalAttribute1Direct(),
-                hollow.getGlobalAttribute1Direct());
-        assertEquals(PersistenceState.DELETED, hollow.getPersistenceState());
-    }
+		// testing this...
+		context.deleteObjects(hollow);
+		assertSame(hollow, context.getGraphManager().getNode(gid));
+		assertEquals(inflated.getGlobalAttribute1Direct(), hollow.getGlobalAttribute1Direct());
+		assertEquals(PersistenceState.DELETED, hollow.getPersistenceState());
+	}
 
 }

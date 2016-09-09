@@ -24,39 +24,33 @@ import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SelectQuery;
-
 
 /**
  * @since 1.2
  */
 public class SQLServerActionBuilder extends JdbcActionBuilder {
 
-    /**
-     * @since 4.0
-     */
-    public SQLServerActionBuilder(DataNode dataNode) {
-        super(dataNode);
-    }
-    
-    @Override
-    public SQLAction batchAction(BatchQuery query) {
-        // check run strategy...
+	/**
+	 * @since 4.0
+	 */
+	public SQLServerActionBuilder(DataNode dataNode) {
+		super(dataNode);
+	}
 
-        // optimistic locking is not supported in batches due to JDBC driver limitations
-        boolean useOptimisticLock = query.isUsingOptimisticLocking();
+	@Override
+	public SQLAction batchAction(BatchQuery query) {
+		// check run strategy...
 
-        boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
-        return new SQLServerBatchAction(query, dataNode, runningAsBatch);
-    }
+		// optimistic locking is not supported in batches due to JDBC driver
+		// limitations
+		boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
-    @Override
-    public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new SQLServerSelectAction(query, dataNode);
-    }    
-    
-    @Override
-    public SQLAction procedureAction(ProcedureQuery query) {
-        return new SQLServerProcedureAction(query, dataNode);
-    }
+		boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
+		return new SQLServerBatchAction(query, dataNode, runningAsBatch);
+	}
+
+	@Override
+	public SQLAction procedureAction(ProcedureQuery query) {
+		return new SQLServerProcedureAction(query, dataNode);
+	}
 }

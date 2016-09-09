@@ -69,7 +69,7 @@ public class SQLTemplate_LegacyTest {
 		assertNotNull(query.getParameters());
 		assertTrue(query.getParameters().isEmpty());
 
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<>();
 		params.put("a", "b");
 
 		query.setParameters(params);
@@ -95,10 +95,10 @@ public class SQLTemplate_LegacyTest {
 		assertNotNull(query.getParameters());
 		assertTrue(query.getParameters().isEmpty());
 
-		Map<String, Object> params1 = new HashMap<String, Object>();
+		Map<String, Object> params1 = new HashMap<>();
 		params1.put("a", "b");
 
-		Map<String, Object> params2 = new HashMap<String, Object>();
+		Map<String, Object> params2 = new HashMap<>();
 		params2.put("1", "2");
 
 		query.setParameters(new Map[] { params1, params2, null });

@@ -69,7 +69,7 @@ public class EJBQLJoinAppender {
             String targetId) {
 
         if (reusableJoins == null) {
-            reusableJoins = new HashMap<String, String>();
+            reusableJoins = new HashMap<>();
         }
 
         String key = sourceIdPath + ":" + relationship;

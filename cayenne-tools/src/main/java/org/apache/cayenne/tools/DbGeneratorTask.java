@@ -23,7 +23,7 @@ import java.sql.Driver;
 import java.util.Collections;
 
 import org.apache.cayenne.access.DbGenerator;
-import org.apache.cayenne.conn.DriverDataSource;
+import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -45,111 +45,110 @@ import org.apache.tools.ant.Project;
 // TODO: support classpath attribute for loading the driver
 public class DbGeneratorTask extends CayenneTask {
 
-    // DbGenerator options... setup defaults similar to DbGenerator itself:
-    // all DROP set to false, all CREATE - to true
-    protected boolean dropTables;
-    protected boolean dropPK;
-    protected boolean createTables = true;
-    protected boolean createPK = true;
-    protected boolean createFK = true;
+	// DbGenerator options... setup defaults similar to DbGenerator itself:
+	// all DROP set to false, all CREATE - to true
+	protected boolean dropTables;
+	protected boolean dropPK;
+	protected boolean createTables = true;
+	protected boolean createPK = true;
+	protected boolean createFK = true;
 
-    @Override
-    public void execute() {
+	@Override
+	public void execute() {
 
-        Log logger = new AntLogger(this);
-       
+		Log logger = new AntLogger(this);
 
-        log(String.format("connection settings - [driver: %s, url: %s, username: %s]", driver, url, userName),
-                Project.MSG_VERBOSE);
+		log(String.format("connection settings - [driver: %s, url: %s, username: %s]", driver, url, userName),
+				Project.MSG_VERBOSE);
 
-        log(String.format(
-                "generator options - [dropTables: %s, dropPK: %s, createTables: %s, createPK: %s, createFK: %s]",
-                dropTables, dropPK, createTables, createPK, createFK), Project.MSG_VERBOSE);
+		log(String.format(
+				"generator options - [dropTables: %s, dropPK: %s, createTables: %s, createPK: %s, createFK: %s]",
+				dropTables, dropPK, createTables, createPK, createFK), Project.MSG_VERBOSE);
 
-        validateAttributes();
+		validateAttributes();
 
-        ClassLoader loader = null;
-        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger));
-        try {
-            loader = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(DbGeneratorTask.class.getClassLoader());
+		ClassLoader loader = null;
+		Injector injector = DIBootstrap.createInjector(new ToolsModule(logger));
+		try {
+			loader = Thread.currentThread().getContextClassLoader();
+			Thread.currentThread().setContextClassLoader(DbGeneratorTask.class.getClassLoader());
 
-            // Load the data map and run the db generator.
-            DataMap dataMap = loadDataMap();
+			// Load the data map and run the db generator.
+			DataMap dataMap = loadDataMap();
 
-            // load driver taking custom CLASSPATH into account...
-            DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).newInstance(), url,
-                    userName, password);
+			// load driver taking custom CLASSPATH into account...
+			DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).newInstance(), url,
+					userName, password);
 
-            DbAdapter adapter = getAdapter(injector, dataSource);
+			DbAdapter adapter = getAdapter(injector, dataSource);
 
-            DbGenerator generator = new DbGenerator(adapter, dataMap, Collections.<DbEntity> emptyList(), null,
-                    NoopJdbcEventLogger.getInstance());
-            generator.setShouldCreateFKConstraints(createFK);
-            generator.setShouldCreatePKSupport(createPK);
-            generator.setShouldCreateTables(createTables);
-            generator.setShouldDropPKSupport(dropPK);
-            generator.setShouldDropTables(dropTables);
+			DbGenerator generator = new DbGenerator(adapter, dataMap, Collections.<DbEntity> emptyList(), null,
+					NoopJdbcEventLogger.getInstance());
+			generator.setShouldCreateFKConstraints(createFK);
+			generator.setShouldCreatePKSupport(createPK);
+			generator.setShouldCreateTables(createTables);
+			generator.setShouldDropPKSupport(dropPK);
+			generator.setShouldDropTables(dropTables);
 
-            generator.runGenerator(dataSource);
-        } catch (Exception ex) {
-            Throwable th = Util.unwindException(ex);
+			generator.runGenerator(dataSource);
+		} catch (Exception ex) {
+			Throwable th = Util.unwindException(ex);
 
-            String message = "Error generating database";
+			String message = "Error generating database";
 
-            if (th.getLocalizedMessage() != null) {
-                message += ": " + th.getLocalizedMessage();
-            }
+			if (th.getLocalizedMessage() != null) {
+				message += ": " + th.getLocalizedMessage();
+			}
 
-            log(message, Project.MSG_ERR);
-            throw new BuildException(message, th);
-        } finally {
-            Thread.currentThread().setContextClassLoader(loader);
-            injector.shutdown();
-        }
-    }
+			log(message, Project.MSG_ERR);
+			throw new BuildException(message, th);
+		} finally {
+			Thread.currentThread().setContextClassLoader(loader);
+			injector.shutdown();
+		}
+	}
 
-    /**
-     * Validates attributes that are not related to internal
-     * DefaultClassGenerator. Throws BuildException if attributes are invalid.
-     */
-    protected void validateAttributes() throws BuildException {
-        StringBuilder error = new StringBuilder("");
+	/**
+	 * Validates attributes that are not related to internal
+	 * DefaultClassGenerator. Throws BuildException if attributes are invalid.
+	 */
+	protected void validateAttributes() throws BuildException {
+		StringBuilder error = new StringBuilder("");
 
-        if (map == null) {
-            error.append("The 'map' attribute must be set.\n");
-        }
+		if (map == null) {
+			error.append("The 'map' attribute must be set.\n");
+		}
 
-        if (driver == null) {
-            error.append("The 'driver' attribute must be set.\n");
-        }
+		if (driver == null) {
+			error.append("The 'driver' attribute must be set.\n");
+		}
 
-        if (url == null) {
-            error.append("The 'adapter' attribute must be set.\n");
-        }
+		if (url == null) {
+			error.append("The 'adapter' attribute must be set.\n");
+		}
 
-        if (error.length() > 0) {
-            throw new BuildException(error.toString());
-        }
-    }
+		if (error.length() > 0) {
+			throw new BuildException(error.toString());
+		}
+	}
 
-    public void setCreateFK(boolean createFK) {
-        this.createFK = createFK;
-    }
+	public void setCreateFK(boolean createFK) {
+		this.createFK = createFK;
+	}
 
-    public void setCreatePK(boolean createPK) {
-        this.createPK = createPK;
-    }
+	public void setCreatePK(boolean createPK) {
+		this.createPK = createPK;
+	}
 
-    public void setCreateTables(boolean createTables) {
-        this.createTables = createTables;
-    }
+	public void setCreateTables(boolean createTables) {
+		this.createTables = createTables;
+	}
 
-    public void setDropPK(boolean dropPK) {
-        this.dropPK = dropPK;
-    }
+	public void setDropPK(boolean dropPK) {
+		this.dropPK = dropPK;
+	}
 
-    public void setDropTables(boolean dropTables) {
-        this.dropTables = dropTables;
-    }
+	public void setDropTables(boolean dropTables) {
+		this.dropTables = dropTables;
+	}
 }

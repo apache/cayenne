@@ -19,65 +19,43 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.sql.Connection;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class QueryAssemblerIT extends ServerCase {
 
-    @Inject
-    private DataNode dataNode;
+	@Inject
+	private DataNode node;
 
-    @Inject
-    private ServerCaseDataSourceFactory dataSourceFactory;
+	private TstQueryAssembler qa;
 
-    private Connection connection;
+	@Before
+	public void setUp() throws Exception {
+		this.qa = new TstQueryAssembler(new SelectQuery<Object>(), node.getAdapter(), node.getEntityResolver());
+	}
 
-    private TstQueryAssembler qa;
+	@Test
+	public void testGetQuery() throws Exception {
+		assertNotNull(qa.getQuery());
+	}
 
-    @Before
-    public void setUp() throws Exception {
-        this.connection = dataSourceFactory.getSharedDataSource().getConnection();
-        this.qa = new TstQueryAssembler(new SelectQuery<Object>(), dataNode, connection);
-    }
+	@Test
+	public void testAddToParamList() throws Exception {
 
-    @After
-    public void tearDown() throws Exception {
-        connection.close();
-    }
+		assertEquals(0, qa.getBindings().length);
 
-    @Test
-    public void testGetQuery() throws Exception {
-        assertNotNull(qa.getQuery());
-    }
-
-    @Test
-    public void testAddToParamList() throws Exception {
-
-        assertEquals(0, qa.getAttributes().size());
-        assertEquals(0, qa.getValues().size());
-
-        qa.addToParamList(new DbAttribute(), new Object());
-        assertEquals(1, qa.getAttributes().size());
-        assertEquals(1, qa.getValues().size());
-    }
-
-    @Test
-    public void testCreateStatement() throws Exception {
-        assertNotNull(qa.createStatement());
-    }
+		qa.addToParamList(new DbAttribute(), new Object());
+		assertEquals(1, qa.getBindings().length);
+	}
 }

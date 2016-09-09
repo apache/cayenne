@@ -31,7 +31,7 @@ import java.util.Map;
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.access.jdbc.ParameterBinding;
+import org.apache.cayenne.access.jdbc.SQLParameterBinding;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -171,7 +171,7 @@ public class VelocitySQLTemplateProcessorTest {
 				+ "COLUMN1 #bindNotEqual($helper.cayenneExp($a, 'db:ID_COLUMN1')) "
 				+ "AND COLUMN2 #bindNotEqual($helper.cayenneExp($a, 'db:ID_COLUMN2'))";
 
-		Map<String, Object> idMap = new HashMap<String, Object>();
+		Map<String, Object> idMap = new HashMap<>();
 		idMap.put("ID_COLUMN1", new Integer(3));
 		idMap.put("ID_COLUMN2", "aaa");
 		ObjectId id = new ObjectId("T", idMap);
@@ -223,12 +223,12 @@ public class VelocitySQLTemplateProcessorTest {
 	}
 
 	private void assertBindingValue(Object expectedValue, Object binding) {
-		assertTrue("Not a binding!", binding instanceof ParameterBinding);
-		assertEquals(expectedValue, ((ParameterBinding) binding).getValue());
+		assertTrue("Not a binding!", binding instanceof SQLParameterBinding);
+		assertEquals(expectedValue, ((SQLParameterBinding) binding).getValue());
 	}
 
 	private void assertBindingType(int expectedType, Object binding) {
-		assertTrue("Not a binding!", binding instanceof ParameterBinding);
-		assertEquals(expectedType, ((ParameterBinding) binding).getJdbcType());
+		assertTrue("Not a binding!", binding instanceof SQLParameterBinding);
+		assertEquals(expectedType, ((SQLParameterBinding) binding).getJdbcType());
 	}
 }

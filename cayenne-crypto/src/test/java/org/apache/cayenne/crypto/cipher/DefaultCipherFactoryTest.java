@@ -35,7 +35,7 @@ public class DefaultCipherFactoryTest {
     @Test
     public void testConstructor() {
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(CryptoConstants.CIPHER_ALGORITHM, "AES");
         properties.put(CryptoConstants.CIPHER_MODE, "CBC");
         properties.put(CryptoConstants.CIPHER_PADDING, "PKCS5Padding");
@@ -46,14 +46,14 @@ public class DefaultCipherFactoryTest {
 
     @Test(expected = CayenneCryptoException.class)
     public void testConstructor_Missing3Props() {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         
         new DefaultCipherFactory(properties);
     }
 
     @Test(expected = CayenneCryptoException.class)
     public void testConstructor_Missing2Props() {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(CryptoConstants.CIPHER_ALGORITHM, "AES");
         
         new DefaultCipherFactory(properties);
@@ -61,7 +61,7 @@ public class DefaultCipherFactoryTest {
 
     @Test(expected = CayenneCryptoException.class)
     public void testConstructor_Missing1Props() {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(CryptoConstants.CIPHER_ALGORITHM, "AES");
         properties.put(CryptoConstants.CIPHER_MODE, "CBC");
         
@@ -70,7 +70,7 @@ public class DefaultCipherFactoryTest {
 
     @Test
     public void testGetCipher() {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(CryptoConstants.CIPHER_ALGORITHM, "AES");
         properties.put(CryptoConstants.CIPHER_MODE, "CBC");
         properties.put(CryptoConstants.CIPHER_PADDING, "PKCS5Padding");

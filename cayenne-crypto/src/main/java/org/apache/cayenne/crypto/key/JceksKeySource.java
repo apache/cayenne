@@ -43,106 +43,103 @@ import org.apache.cayenne.di.Inject;
  */
 public class JceksKeySource implements KeySource {
 
-    // this is the only standard keystore type that supports storing secret keys
-    private static final String JCEKS_KEYSTORE_TYPE = "jceks";
-    private static final Key NULL_KEY = new Key() {
+	// this is the only standard keystore type that supports storing secret keys
+	private static final String JCEKS_KEYSTORE_TYPE = "jceks";
+	private static final Key NULL_KEY = new Key() {
 
-        private static final long serialVersionUID = 4755682444381893880L;
+		private static final long serialVersionUID = 4755682444381893880L;
 
-        @Override
-        public String getFormat() {
-            throw new UnsupportedOperationException();
-        }
+		@Override
+		public String getFormat() {
+			throw new UnsupportedOperationException();
+		}
 
-        @Override
-        public byte[] getEncoded() {
-            throw new UnsupportedOperationException();
-        }
+		@Override
+		public byte[] getEncoded() {
+			throw new UnsupportedOperationException();
+		}
 
-        @Override
-        public String getAlgorithm() {
-            throw new UnsupportedOperationException();
-        }
-    };
+		@Override
+		public String getAlgorithm() {
+			throw new UnsupportedOperationException();
+		}
+	};
 
-    private KeyStore keyStore;
-    private char[] keyPassword;
-    private String defaultKeyAlias;
+	private KeyStore keyStore;
+	private char[] keyPassword;
+	private String defaultKeyAlias;
 
-    // caching the keys may not be a good idea for security reasons, but
-    // re-reading the key from KeyStore for every select row creates a huge
-    // bottleneck... And considering we are caching keystore password, it
-    // probably doesn't make things that much worse
-    private ConcurrentMap<String, Key> keyCache;
+	// caching the keys may not be a good idea for security reasons, but
+	// re-reading the key from KeyStore for every select row creates a huge
+	// bottleneck... And considering we are caching keystore password, it
+	// probably doesn't make things that much worse
+	private ConcurrentMap<String, Key> keyCache;
 
-    public JceksKeySource(@Inject(CryptoConstants.PROPERTIES_MAP) Map<String, String> properties,
-            @Inject(CryptoConstants.CREDENTIALS_MAP) Map<String, char[]> credentials) {
+	public JceksKeySource(@Inject(CryptoConstants.PROPERTIES_MAP) Map<String, String> properties,
+			@Inject(CryptoConstants.CREDENTIALS_MAP) Map<String, char[]> credentials) {
 
-        String keyStoreUrl = properties.get(CryptoConstants.KEYSTORE_URL);
-        if (keyStoreUrl == null) {
-            throw new CayenneCryptoException("KeyStore URL is not set. Property name: " + CryptoConstants.KEYSTORE_URL);
-        }
+		String keyStoreUrl = properties.get(CryptoConstants.KEYSTORE_URL);
+		if (keyStoreUrl == null) {
+			throw new CayenneCryptoException("KeyStore URL is not set. Property name: " + CryptoConstants.KEYSTORE_URL);
+		}
 
-        this.keyPassword = credentials.get(CryptoConstants.KEY_PASSWORD);
-        // NULL password is valid, though not secure .. so no NULL validation
+		this.keyPassword = credentials.get(CryptoConstants.KEY_PASSWORD);
+		// NULL password is valid, though not secure .. so no NULL validation
 
-        try {
-            this.keyStore = createKeyStore(keyStoreUrl);
-        } catch (Exception e) {
-            throw new CayenneCryptoException("Error loading keystore at " + keyStoreUrl, e);
-        }
+		try {
+			this.keyStore = createKeyStore(keyStoreUrl);
+		} catch (Exception e) {
+			throw new CayenneCryptoException("Error loading keystore at " + keyStoreUrl, e);
+		}
 
-        this.defaultKeyAlias = properties.get(CryptoConstants.ENCRYPTION_KEY_ALIAS);
-        if (defaultKeyAlias == null) {
-            throw new CayenneCryptoException("Default key alias is not set. Property name: "
-                    + CryptoConstants.ENCRYPTION_KEY_ALIAS);
-        }
+		this.defaultKeyAlias = properties.get(CryptoConstants.ENCRYPTION_KEY_ALIAS);
+		if (defaultKeyAlias == null) {
+			throw new CayenneCryptoException("Default key alias is not set. Property name: "
+					+ CryptoConstants.ENCRYPTION_KEY_ALIAS);
+		}
 
-        this.keyCache = new ConcurrentHashMap<String, Key>();
-    }
+		this.keyCache = new ConcurrentHashMap<>();
+	}
 
-    private KeyStore createKeyStore(String keyStoreUrl) throws KeyStoreException, IOException,
-            NoSuchAlgorithmException, CertificateException {
+	private KeyStore createKeyStore(String keyStoreUrl) throws KeyStoreException, IOException,
+			NoSuchAlgorithmException, CertificateException {
 
-        KeyStore keyStore = KeyStore.getInstance(JCEKS_KEYSTORE_TYPE);
+		KeyStore keyStore = KeyStore.getInstance(JCEKS_KEYSTORE_TYPE);
 
-        URL url = new URL(keyStoreUrl);
-        InputStream in = url.openStream();
+		URL url = new URL(keyStoreUrl);
 
-        try {
-            keyStore.load(in, null);
-        } finally {
-            in.close();
-        }
+		try (InputStream in = url.openStream();) {
+			keyStore.load(in, null);
+		}
 
-        return keyStore;
-    }
+		return keyStore;
+	}
 
-    @Override
-    public Key getKey(String alias) {
+	@Override
+	public Key getKey(String alias) {
 
-        Key key = keyCache.get(alias);
-        if (key == null) {
+		Key key = keyCache.get(alias);
+		if (key == null) {
 
-            Key newKey = createKey(alias);
-            Key oldKey = keyCache.putIfAbsent(alias, newKey);
-            key = oldKey != null ? oldKey : newKey;
-        }
+			Key newKey = createKey(alias);
+			Key oldKey = keyCache.putIfAbsent(alias, newKey);
+			key = oldKey != null ? oldKey : newKey;
+		}
 
-        return key == NULL_KEY ? null : key;
-    }
+		return key == NULL_KEY ? null : key;
+	}
 
-    protected Key createKey(String alias) {
-        try {
-            Key key = keyStore.getKey(alias, keyPassword);
-            return key != null ? key : NULL_KEY;
-        } catch (Exception e) {
-            throw new CayenneCryptoException("Error accessing key for alias: " + alias, e);
-        }
-    }
+	protected Key createKey(String alias) {
+		try {
+			Key key = keyStore.getKey(alias, keyPassword);
+			return key != null ? key : NULL_KEY;
+		} catch (Exception e) {
+			throw new CayenneCryptoException("Error accessing key for alias: " + alias, e);
+		}
+	}
 
-    @Override
-    public String getDefaultKeyAlias() {
-        return defaultKeyAlias;
-    }
+	@Override
+	public String getDefaultKeyAlias() {
+		return defaultKeyAlias;
+	}
 }

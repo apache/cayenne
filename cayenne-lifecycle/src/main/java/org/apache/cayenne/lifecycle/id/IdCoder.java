@@ -39,7 +39,7 @@ public class IdCoder {
 
     public IdCoder(EntityResolver entityResolver) {
         this.entityResolver = entityResolver;
-        this.coders = new ConcurrentHashMap<String, EntityIdCoder>();
+        this.coders = new ConcurrentHashMap<>();
     }
 
     /**

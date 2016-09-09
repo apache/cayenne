@@ -55,10 +55,10 @@ public class EntityResult {
     public Map<String, String> getDbFields(EntityResolver resolver) {
 
         if (this.fields == null) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
 
-        Map<String, String> dbFields = new HashMap<String, String>();
+        Map<String, String> dbFields = new HashMap<>();
 
         for (FieldResult field : fields) {
             if (field.isDbAttribute() || field.getAttributeName().startsWith("fetch.")) {

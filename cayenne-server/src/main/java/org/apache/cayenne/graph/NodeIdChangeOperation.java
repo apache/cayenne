@@ -26,26 +26,28 @@ package org.apache.cayenne.graph;
  */
 public class NodeIdChangeOperation extends NodeDiff {
 
-    protected Object newNodeId;
+	private static final long serialVersionUID = -7763730686130451729L;
+	
+	protected Object newNodeId;
 
-    public NodeIdChangeOperation(Object nodeId, Object newNodeId) {
-        super(nodeId);
+	public NodeIdChangeOperation(Object nodeId, Object newNodeId) {
+		super(nodeId);
 
-        this.newNodeId = newNodeId;
-    }
+		this.newNodeId = newNodeId;
+	}
 
-    public NodeIdChangeOperation(Object nodeId, Object newNodeId, int diffId) {
-        super(nodeId, diffId);
-        this.newNodeId = newNodeId;
-    }
+	public NodeIdChangeOperation(Object nodeId, Object newNodeId, int diffId) {
+		super(nodeId, diffId);
+		this.newNodeId = newNodeId;
+	}
 
-    @Override
-    public void apply(GraphChangeHandler tracker) {
-        tracker.nodeIdChanged(nodeId, newNodeId);
-    }
+	@Override
+	public void apply(GraphChangeHandler tracker) {
+		tracker.nodeIdChanged(nodeId, newNodeId);
+	}
 
-    @Override
-    public void undo(GraphChangeHandler tracker) {
-        tracker.nodeIdChanged(newNodeId, nodeId);
-    }
+	@Override
+	public void undo(GraphChangeHandler tracker) {
+		tracker.nodeIdChanged(newNodeId, nodeId);
+	}
 }

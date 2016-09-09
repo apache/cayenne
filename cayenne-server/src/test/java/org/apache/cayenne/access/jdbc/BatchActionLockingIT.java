@@ -55,106 +55,106 @@ import static org.mockito.Mockito.mock;
 @UseServerRuntime(CayenneProjects.LOCKING_PROJECT)
 public class BatchActionLockingIT extends ServerCase {
 
-    @Inject
-    protected ServerRuntime runtime;
+	@Inject
+	protected ServerRuntime runtime;
 
-    @Inject
-    private Injector injector;
+	@Inject
+	private Injector injector;
 
-    @Inject
-    private AdhocObjectFactory objectFactory;
+	@Inject
+	private AdhocObjectFactory objectFactory;
 
-    @Test
-    public void testRunAsIndividualQueriesSuccess() throws Exception {
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+	@Test
+	public void testRunAsIndividualQueriesSuccess() throws Exception {
+		EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
-        // test with adapter that supports keys...
-        JdbcAdapter adapter = buildAdapter(true);
+		// test with adapter that supports keys...
+		JdbcAdapter adapter = buildAdapter(true);
 
-        DbEntity dbEntity = resolver.getObjEntity(SimpleLockingTestEntity.class).getDbEntity();
+		DbEntity dbEntity = resolver.getObjEntity(SimpleLockingTestEntity.class).getDbEntity();
 
-        List<DbAttribute> qualifierAttributes = Arrays.asList(dbEntity.getAttribute("LOCKING_TEST_ID"),
-                dbEntity.getAttribute("NAME"));
+		List<DbAttribute> qualifierAttributes = Arrays.asList(dbEntity.getAttribute("LOCKING_TEST_ID"),
+				dbEntity.getAttribute("NAME"));
 
-        Collection<String> nullAttributeNames = Collections.singleton("NAME");
+		Collection<String> nullAttributeNames = Collections.singleton("NAME");
 
-        Map<String, Object> qualifierSnapshot = new HashMap<String, Object>();
-        qualifierSnapshot.put("LOCKING_TEST_ID", new Integer(1));
+		Map<String, Object> qualifierSnapshot = new HashMap<>();
+		qualifierSnapshot.put("LOCKING_TEST_ID", new Integer(1));
 
-        DeleteBatchQuery batchQuery = new DeleteBatchQuery(dbEntity, qualifierAttributes, nullAttributeNames, 5);
-        batchQuery.setUsingOptimisticLocking(true);
-        batchQuery.add(qualifierSnapshot);
+		DeleteBatchQuery batchQuery = new DeleteBatchQuery(dbEntity, qualifierAttributes, nullAttributeNames, 5);
+		batchQuery.setUsingOptimisticLocking(true);
+		batchQuery.add(qualifierSnapshot);
 
-        DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter, null);
+		DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter, null);
 
-        MockConnection mockConnection = new MockConnection();
-        PreparedStatementResultSetHandler preparedStatementResultSetHandler = mockConnection
-                .getPreparedStatementResultSetHandler();
-        preparedStatementResultSetHandler.setExactMatch(false);
-        preparedStatementResultSetHandler.setCaseSensitive(false);
-        preparedStatementResultSetHandler.prepareUpdateCount("DELETE", 1);
+		MockConnection mockConnection = new MockConnection();
+		PreparedStatementResultSetHandler preparedStatementResultSetHandler = mockConnection
+				.getPreparedStatementResultSetHandler();
+		preparedStatementResultSetHandler.setExactMatch(false);
+		preparedStatementResultSetHandler.setCaseSensitive(false);
+		preparedStatementResultSetHandler.prepareUpdateCount("DELETE", 1);
 
-        boolean generatesKeys = false;
+		boolean generatesKeys = false;
 
-        DataNode node = new DataNode();
-        node.setAdapter(adapter);
-        node.setEntityResolver(resolver);
-        node.setRowReaderFactory(mock(RowReaderFactory.class));
-        BatchAction action = new BatchAction(batchQuery, node, false);
-        action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys);
-        assertEquals(0, mockConnection.getNumberCommits());
-        assertEquals(0, mockConnection.getNumberRollbacks());
-    }
+		DataNode node = new DataNode();
+		node.setAdapter(adapter);
+		node.setEntityResolver(resolver);
+		node.setRowReaderFactory(mock(RowReaderFactory.class));
+		BatchAction action = new BatchAction(batchQuery, node, false);
+		action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys);
+		assertEquals(0, mockConnection.getNumberCommits());
+		assertEquals(0, mockConnection.getNumberRollbacks());
+	}
 
-    @Test
-    public void testRunAsIndividualQueriesOptimisticLockingFailure() throws Exception {
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+	@Test
+	public void testRunAsIndividualQueriesOptimisticLockingFailure() throws Exception {
+		EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
-        // test with adapter that supports keys...
-        JdbcAdapter adapter = buildAdapter(true);
+		// test with adapter that supports keys...
+		JdbcAdapter adapter = buildAdapter(true);
 
-        DbEntity dbEntity = resolver.getObjEntity(SimpleLockingTestEntity.class).getDbEntity();
+		DbEntity dbEntity = resolver.getObjEntity(SimpleLockingTestEntity.class).getDbEntity();
 
-        List<DbAttribute> qualifierAttributes = Arrays.asList(dbEntity.getAttribute("LOCKING_TEST_ID"),
-                dbEntity.getAttribute("NAME"));
+		List<DbAttribute> qualifierAttributes = Arrays.asList(dbEntity.getAttribute("LOCKING_TEST_ID"),
+				dbEntity.getAttribute("NAME"));
 
-        Collection<String> nullAttributeNames = Collections.singleton("NAME");
+		Collection<String> nullAttributeNames = Collections.singleton("NAME");
 
-        Map<String, Object> qualifierSnapshot = new HashMap<String, Object>();
-        qualifierSnapshot.put("LOCKING_TEST_ID", new Integer(1));
+		Map<String, Object> qualifierSnapshot = new HashMap<>();
+		qualifierSnapshot.put("LOCKING_TEST_ID", new Integer(1));
 
-        DeleteBatchQuery batchQuery = new DeleteBatchQuery(dbEntity, qualifierAttributes, nullAttributeNames, 5);
-        batchQuery.setUsingOptimisticLocking(true);
-        batchQuery.add(qualifierSnapshot);
+		DeleteBatchQuery batchQuery = new DeleteBatchQuery(dbEntity, qualifierAttributes, nullAttributeNames, 5);
+		batchQuery.setUsingOptimisticLocking(true);
+		batchQuery.add(qualifierSnapshot);
 
-        DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter, null);
+		DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter, null);
 
-        MockConnection mockConnection = new MockConnection();
-        PreparedStatementResultSetHandler preparedStatementResultSetHandler = mockConnection
-                .getPreparedStatementResultSetHandler();
-        preparedStatementResultSetHandler.setExactMatch(false);
-        preparedStatementResultSetHandler.setCaseSensitive(false);
-        preparedStatementResultSetHandler.prepareUpdateCount("DELETE", 0);
+		MockConnection mockConnection = new MockConnection();
+		PreparedStatementResultSetHandler preparedStatementResultSetHandler = mockConnection
+				.getPreparedStatementResultSetHandler();
+		preparedStatementResultSetHandler.setExactMatch(false);
+		preparedStatementResultSetHandler.setCaseSensitive(false);
+		preparedStatementResultSetHandler.prepareUpdateCount("DELETE", 0);
 
-        boolean generatesKeys = false;
-        DataNode node = new DataNode();
-        node.setAdapter(adapter);
-        node.setEntityResolver(resolver);
-        node.setRowReaderFactory(mock(RowReaderFactory.class));
-        BatchAction action = new BatchAction(batchQuery, node, false);
-        try {
-            action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys);
-            fail("No OptimisticLockingFailureException thrown.");
-        } catch (OptimisticLockException e) {
-        }
-        assertEquals(0, mockConnection.getNumberCommits());
-        assertEquals(0, mockConnection.getNumberRollbacks());
-    }
+		boolean generatesKeys = false;
+		DataNode node = new DataNode();
+		node.setAdapter(adapter);
+		node.setEntityResolver(resolver);
+		node.setRowReaderFactory(mock(RowReaderFactory.class));
+		BatchAction action = new BatchAction(batchQuery, node, false);
+		try {
+			action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys);
+			fail("No OptimisticLockingFailureException thrown.");
+		} catch (OptimisticLockException e) {
+		}
+		assertEquals(0, mockConnection.getNumberCommits());
+		assertEquals(0, mockConnection.getNumberRollbacks());
+	}
 
-    JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {
-        JdbcAdapter adapter = objectFactory.newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
-        adapter.setSupportsGeneratedKeys(supportGeneratedKeys);
-        injector.injectMembers(adapter);
-        return adapter;
-    }
+	JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {
+		JdbcAdapter adapter = objectFactory.newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
+		adapter.setSupportsGeneratedKeys(supportGeneratedKeys);
+		injector.injectMembers(adapter);
+		return adapter;
+	}
 }

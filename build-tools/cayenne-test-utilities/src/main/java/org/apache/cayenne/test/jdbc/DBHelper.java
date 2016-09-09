@@ -36,340 +36,335 @@ import javax.sql.DataSource;
  */
 public class DBHelper {
 
-    protected DataSource dataSource;
-
-    public DBHelper(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-
-    /**
-     * Quotes a SQL identifier as appropriate for the given DB. This
-     * implementation returns the identifier unchanged, while subclasses can
-     * implement a custom quoting strategy.
-     */
-    protected String quote(String sqlIdentifier) {
-        return sqlIdentifier;
-    }
-
-    /**
-     * Selects a single row.
-     */
-    public Object[] select(String table, final String[] columns) throws SQLException {
-
-        if (columns.length == 0) {
-            throw new IllegalArgumentException("No columns");
-        }
-
-        StringBuilder sql = new StringBuilder("select ");
-        sql.append(quote(columns[0]));
-        for (int i = 1; i < columns.length; i++) {
-            sql.append(", ").append(quote(columns[i]));
-        }
-        sql.append(" from ").append(quote(table));
-
-        return new RowTemplate<Object[]>(this) {
-
-            @Override
-            Object[] readRow(ResultSet rs, String sql) throws SQLException {
-
-                Object[] result = new Object[columns.length];
-                for (int i = 1; i <= result.length; i++) {
-                    result[i - 1] = rs.getObject(i);
-                }
-
-                return result;
-            }
-        }.execute(sql.toString());
-    }
-
-    public List<Object[]> selectAll(String table, final String[] columns) throws SQLException {
-        if (columns.length == 0) {
-            throw new IllegalArgumentException("No columns");
-        }
-
-        StringBuilder sql = new StringBuilder("select ");
-        sql.append(quote(columns[0]));
-        for (int i = 1; i < columns.length; i++) {
-            sql.append(", ").append(quote(columns[i]));
-        }
-        sql.append(" from ").append(quote(table));
-
-        return new ResultSetTemplate<List<Object[]>>(this) {
-            @Override
-            List<Object[]> readResultSet(ResultSet rs, String sql) throws SQLException {
-
-                List<Object[]> result = new ArrayList<Object[]>();
-                while (rs.next()) {
-
-                    Object[] row = new Object[columns.length];
-                    for (int i = 1; i <= row.length; i++) {
-                        row[i - 1] = rs.getObject(i);
-                    }
-
-                    result.add(row);
-                }
-
-                return result;
-            }
-        }.execute(sql.toString());
-    }
-
-    /**
-     * Inserts a single row. Columns types can be null and will be determined
-     * from ParameterMetaData in this case. The later scenario will not work if
-     * values contains nulls and the DB is Oracle.
-     */
-    public void insert(String table, String[] columns, Object[] values, int[] columnTypes) throws SQLException {
-
-        if (columns.length != values.length) {
-            throw new IllegalArgumentException("Columns and values arrays have different sizes: " + columns.length
-                    + " and " + values.length);
-        }
-
-        if (columns.length == 0) {
-            throw new IllegalArgumentException("No columns");
-        }
-
-        StringBuilder sql = new StringBuilder("INSERT INTO ");
-        sql.append(quote(table)).append(" (").append(quote(columns[0]));
-        for (int i = 1; i < columns.length; i++) {
-            sql.append(", ").append(quote(columns[i]));
-        }
-
-        sql.append(") VALUES (?");
-        for (int i = 1; i < values.length; i++) {
-            sql.append(", ?");
-        }
-        sql.append(")");
+	protected DataSource dataSource;
+
+	public DBHelper(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+
+	/**
+	 * Quotes a SQL identifier as appropriate for the given DB. This
+	 * implementation returns the identifier unchanged, while subclasses can
+	 * implement a custom quoting strategy.
+	 */
+	protected String quote(String sqlIdentifier) {
+		return sqlIdentifier;
+	}
+
+	/**
+	 * Selects a single row.
+	 */
+	public Object[] select(String table, final String[] columns) throws SQLException {
+
+		if (columns.length == 0) {
+			throw new IllegalArgumentException("No columns");
+		}
+
+		StringBuilder sql = new StringBuilder("select ");
+		sql.append(quote(columns[0]));
+		for (int i = 1; i < columns.length; i++) {
+			sql.append(", ").append(quote(columns[i]));
+		}
+		sql.append(" from ").append(quote(table));
+
+		return new RowTemplate<Object[]>(this) {
+
+			@Override
+			Object[] readRow(ResultSet rs, String sql) throws SQLException {
+
+				Object[] result = new Object[columns.length];
+				for (int i = 1; i <= result.length; i++) {
+					result[i - 1] = rs.getObject(i);
+				}
+
+				return result;
+			}
+		}.execute(sql.toString());
+	}
+
+	public List<Object[]> selectAll(String table, final String[] columns) throws SQLException {
+		if (columns.length == 0) {
+			throw new IllegalArgumentException("No columns");
+		}
+
+		StringBuilder sql = new StringBuilder("select ");
+		sql.append(quote(columns[0]));
+		for (int i = 1; i < columns.length; i++) {
+			sql.append(", ").append(quote(columns[i]));
+		}
+		sql.append(" from ").append(quote(table));
+
+		return new ResultSetTemplate<List<Object[]>>(this) {
+			@Override
+			List<Object[]> readResultSet(ResultSet rs, String sql) throws SQLException {
+
+				List<Object[]> result = new ArrayList<Object[]>();
+				while (rs.next()) {
+
+					Object[] row = new Object[columns.length];
+					for (int i = 1; i <= row.length; i++) {
+						row[i - 1] = rs.getObject(i);
+					}
+
+					result.add(row);
+				}
+
+				return result;
+			}
+		}.execute(sql.toString());
+	}
+
+	/**
+	 * Inserts a single row. Columns types can be null and will be determined
+	 * from ParameterMetaData in this case. The later scenario will not work if
+	 * values contains nulls and the DB is Oracle.
+	 */
+	public void insert(String table, String[] columns, Object[] values, int[] columnTypes) throws SQLException {
+
+		if (columns.length != values.length) {
+			throw new IllegalArgumentException("Columns and values arrays have different sizes: " + columns.length
+					+ " and " + values.length);
+		}
+
+		if (columns.length == 0) {
+			throw new IllegalArgumentException("No columns");
+		}
+
+		StringBuilder sql = new StringBuilder("INSERT INTO ");
+		sql.append(quote(table)).append(" (").append(quote(columns[0]));
+		for (int i = 1; i < columns.length; i++) {
+			sql.append(", ").append(quote(columns[i]));
+		}
+
+		sql.append(") VALUES (?");
+		for (int i = 1; i < values.length; i++) {
+			sql.append(", ?");
+		}
+		sql.append(")");
 
-        Connection c = getConnection();
-        try {
+		try (Connection c = getConnection();) {
 
-            String sqlString = sql.toString();
-            UtilityLogger.log(sqlString);
-            PreparedStatement st = c.prepareStatement(sqlString);
-            ParameterMetaData parameters = null;
-            try {
-                for (int i = 0; i < values.length; i++) {
+			String sqlString = sql.toString();
+			UtilityLogger.log(sqlString);
 
-                    if (values[i] == null) {
+			ParameterMetaData parameters = null;
+			try (PreparedStatement st = c.prepareStatement(sqlString);) {
+				for (int i = 0; i < values.length; i++) {
 
-                        int type;
+					if (values[i] == null) {
 
-                        if (columnTypes == null) {
+						int type;
 
-                            // check for the right NULL type
-                            if (parameters == null) {
-                                parameters = st.getParameterMetaData();
-                            }
+						if (columnTypes == null) {
 
-                            type = parameters.getParameterType(i + 1);
-                        } else {
-                            type = columnTypes[i];
-                        }
+							// check for the right NULL type
+							if (parameters == null) {
+								parameters = st.getParameterMetaData();
+							}
 
-                        st.setNull(i + 1, type);
-                    } else {
-                        st.setObject(i + 1, values[i]);
-                    }
-                }
+							type = parameters.getParameterType(i + 1);
+						} else {
+							type = columnTypes[i];
+						}
 
-                st.executeUpdate();
-            } finally {
-                st.close();
-            }
-            c.commit();
-        } finally {
-            c.close();
-        }
+						st.setNull(i + 1, type);
+					} else {
+						st.setObject(i + 1, values[i]);
+					}
+				}
 
-    }
+				st.executeUpdate();
+			}
+			c.commit();
+		}
 
-    public int deleteAll(String tableName) throws SQLException {
-        return delete(tableName).execute();
-    }
+	}
 
-    public UpdateBuilder update(String tableName) throws SQLException {
-        return new UpdateBuilder(this, tableName);
-    }
+	public int deleteAll(String tableName) throws SQLException {
+		return delete(tableName).execute();
+	}
 
-    public DeleteBuilder delete(String tableName) {
-        return new DeleteBuilder(this, tableName);
-    }
+	public UpdateBuilder update(String tableName) throws SQLException {
+		return new UpdateBuilder(this, tableName);
+	}
 
-    public int getRowCount(String table) throws SQLException {
-        String sql = "select count(*) from " + quote(table);
+	public DeleteBuilder delete(String tableName) {
+		return new DeleteBuilder(this, tableName);
+	}
 
-        return new RowTemplate<Integer>(this) {
+	public int getRowCount(String table) throws SQLException {
+		String sql = "select count(*) from " + quote(table);
 
-            @Override
-            Integer readRow(ResultSet rs, String sql) throws SQLException {
-                return rs.getInt(1);
-            }
+		return new RowTemplate<Integer>(this) {
 
-        }.execute(sql);
-    }
+			@Override
+			Integer readRow(ResultSet rs, String sql) throws SQLException {
+				return rs.getInt(1);
+			}
 
-    public String getString(String table, String column) throws SQLException {
-        final String sql = "select " + quote(column) + " from " + quote(table);
+		}.execute(sql);
+	}
 
-        return new RowTemplate<String>(this) {
+	public String getString(String table, String column) throws SQLException {
+		final String sql = "select " + quote(column) + " from " + quote(table);
 
-            @Override
-            String readRow(ResultSet rs, String sql) throws SQLException {
-                return rs.getString(1);
-            }
+		return new RowTemplate<String>(this) {
 
-        }.execute(sql);
-    }
+			@Override
+			String readRow(ResultSet rs, String sql) throws SQLException {
+				return rs.getString(1);
+			}
 
-    public Object getObject(String table, String column) throws SQLException {
-        final String sql = "select " + quote(column) + " from " + quote(table);
+		}.execute(sql);
+	}
 
-        return new RowTemplate<Object>(this) {
+	public Object getObject(String table, String column) throws SQLException {
+		final String sql = "select " + quote(column) + " from " + quote(table);
 
-            @Override
-            Object readRow(ResultSet rs, String sql) throws SQLException {
-                return rs.getObject(1);
-            }
+		return new RowTemplate<Object>(this) {
 
-        }.execute(sql);
-    }
+			@Override
+			Object readRow(ResultSet rs, String sql) throws SQLException {
+				return rs.getObject(1);
+			}
 
-    public byte getByte(String table, String column) throws SQLException {
-        final String sql = "select " + quote(column) + " from " + quote(table);
+		}.execute(sql);
+	}
 
-        return new RowTemplate<Byte>(this) {
+	public byte getByte(String table, String column) throws SQLException {
+		final String sql = "select " + quote(column) + " from " + quote(table);
 
-            @Override
-            Byte readRow(ResultSet rs, String sql) throws SQLException {
-                return rs.getByte(1);
-            }
+		return new RowTemplate<Byte>(this) {
 
-        }.execute(sql);
-    }
+			@Override
+			Byte readRow(ResultSet rs, String sql) throws SQLException {
+				return rs.getByte(1);
+			}
 
-    public byte[] getBytes(String table, String column) throws SQLException {
-        final String sql = "select " + quote(column) + " from " + quote(table);
+		}.execute(sql);
+	}
 
-        return new RowTemplate<byte[]>(this) {
+	public byte[] getBytes(String table, String column) throws SQLException {
+		final String sql = "select " + quote(column) + " from " + quote(table);
 
-            @Override
-            byte[] readRow(ResultSet rs, String sql) throws SQLException {
-                return rs.getBytes(1);
-            }
+		return new RowTemplate<byte[]>(this) {
 
-        }.execute(sql);
-    }
+			@Override
+			byte[] readRow(ResultSet rs, String sql) throws SQLException {
+				return rs.getBytes(1);
+			}
 
-    public int getInt(String table, String column) throws SQLException {
-        final String sql = "select " + quote(column) + " from " + quote(table);
+		}.execute(sql);
+	}
 
-        return new RowTemplate<Integer>(this) {
+	public int getInt(String table, String column) throws SQLException {
+		final String sql = "select " + quote(column) + " from " + quote(table);
 
-            @Override
-            Integer readRow(ResultSet rs, String sql) throws SQLException {
-                return rs.getInt(1);
-            }
+		return new RowTemplate<Integer>(this) {
 
-        }.execute(sql);
-    }
+			@Override
+			Integer readRow(ResultSet rs, String sql) throws SQLException {
+				return rs.getInt(1);
+			}
 
-    public long getLong(String table, String column) throws SQLException {
-        final String sql = "select " + quote(column) + " from " + quote(table);
+		}.execute(sql);
+	}
 
-        return new RowTemplate<Long>(this) {
+	public long getLong(String table, String column) throws SQLException {
+		final String sql = "select " + quote(column) + " from " + quote(table);
 
-            @Override
-            Long readRow(ResultSet rs, String sql) throws SQLException {
-                return rs.getLong(1);
-            }
+		return new RowTemplate<Long>(this) {
 
-        }.execute(sql);
-    }
+			@Override
+			Long readRow(ResultSet rs, String sql) throws SQLException {
+				return rs.getLong(1);
+			}
 
-    public double getDouble(String table, String column) throws SQLException {
-        final String sql = "select " + quote(column) + " from " + quote(table);
+		}.execute(sql);
+	}
 
-        return new RowTemplate<Double>(this) {
+	public double getDouble(String table, String column) throws SQLException {
+		final String sql = "select " + quote(column) + " from " + quote(table);
 
-            @Override
-            Double readRow(ResultSet rs, String sql) throws SQLException {
-                return rs.getDouble(1);
-            }
+		return new RowTemplate<Double>(this) {
 
-        }.execute(sql);
-    }
+			@Override
+			Double readRow(ResultSet rs, String sql) throws SQLException {
+				return rs.getDouble(1);
+			}
 
-    public boolean getBoolean(String table, String column) throws SQLException {
-        final String sql = "select " + quote(column) + " from " + quote(table);
+		}.execute(sql);
+	}
 
-        return new RowTemplate<Boolean>(this) {
+	public boolean getBoolean(String table, String column) throws SQLException {
+		final String sql = "select " + quote(column) + " from " + quote(table);
 
-            @Override
-            Boolean readRow(ResultSet rs, String sql) throws SQLException {
-                return rs.getBoolean(1);
-            }
+		return new RowTemplate<Boolean>(this) {
 
-        }.execute(sql);
-    }
+			@Override
+			Boolean readRow(ResultSet rs, String sql) throws SQLException {
+				return rs.getBoolean(1);
+			}
 
-    public java.util.Date getUtilDate(String table, String column) throws SQLException {
-        Timestamp ts = getTimestamp(table, column);
-        return ts != null ? new java.util.Date(ts.getTime()) : null;
-    }
+		}.execute(sql);
+	}
 
-    public java.sql.Date getSqlDate(String table, String column) throws SQLException {
-        final String sql = "select " + quote(column) + " from " + quote(table);
+	public java.util.Date getUtilDate(String table, String column) throws SQLException {
+		Timestamp ts = getTimestamp(table, column);
+		return ts != null ? new java.util.Date(ts.getTime()) : null;
+	}
 
-        return new RowTemplate<java.sql.Date>(this) {
+	public java.sql.Date getSqlDate(String table, String column) throws SQLException {
+		final String sql = "select " + quote(column) + " from " + quote(table);
 
-            @Override
-            java.sql.Date readRow(ResultSet rs, String sql) throws SQLException {
-                return rs.getDate(1);
-            }
+		return new RowTemplate<java.sql.Date>(this) {
 
-        }.execute(sql);
-    }
+			@Override
+			java.sql.Date readRow(ResultSet rs, String sql) throws SQLException {
+				return rs.getDate(1);
+			}
 
-    public Time getTime(String table, String column) throws SQLException {
-        final String sql = "select " + quote(column) + " from " + quote(table);
+		}.execute(sql);
+	}
 
-        return new RowTemplate<Time>(this) {
+	public Time getTime(String table, String column) throws SQLException {
+		final String sql = "select " + quote(column) + " from " + quote(table);
 
-            @Override
-            Time readRow(ResultSet rs, String sql) throws SQLException {
-                return rs.getTime(1);
-            }
+		return new RowTemplate<Time>(this) {
 
-        }.execute(sql);
-    }
+			@Override
+			Time readRow(ResultSet rs, String sql) throws SQLException {
+				return rs.getTime(1);
+			}
 
-    public Timestamp getTimestamp(String table, String column) throws SQLException {
-        final String sql = "select " + quote(column) + " from " + quote(table);
+		}.execute(sql);
+	}
 
-        return new RowTemplate<Timestamp>(this) {
+	public Timestamp getTimestamp(String table, String column) throws SQLException {
+		final String sql = "select " + quote(column) + " from " + quote(table);
 
-            @Override
-            Timestamp readRow(ResultSet rs, String sql) throws SQLException {
-                return rs.getTimestamp(1);
-            }
+		return new RowTemplate<Timestamp>(this) {
 
-        }.execute(sql);
-    }
+			@Override
+			Timestamp readRow(ResultSet rs, String sql) throws SQLException {
+				return rs.getTimestamp(1);
+			}
 
-    public Connection getConnection() throws SQLException {
-        Connection connection = dataSource.getConnection();
+		}.execute(sql);
+	}
 
-        try {
-            connection.setAutoCommit(false);
-        } catch (SQLException e) {
+	public Connection getConnection() throws SQLException {
+		Connection connection = dataSource.getConnection();
 
-            try {
-                connection.close();
-            } catch (SQLException ignored) {
-            }
-        }
-        return connection;
-    }
+		try {
+			connection.setAutoCommit(false);
+		} catch (SQLException e) {
+
+			try {
+				connection.close();
+			} catch (SQLException ignored) {
+			}
+		}
+		return connection;
+	}
 }

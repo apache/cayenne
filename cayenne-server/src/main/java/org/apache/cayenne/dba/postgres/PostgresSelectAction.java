@@ -18,11 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.dba.postgres;
 
-import java.sql.Connection;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
@@ -30,17 +27,12 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class PostgresSelectAction extends SelectAction {
 
-    <T> PostgresSelectAction(SelectQuery<T> query, DataNode dataNode) {
-        super(query, dataNode);
-    }
+	<T> PostgresSelectAction(SelectQuery<T> query, DataNode dataNode) {
+		super(query, dataNode);
+	}
 
-    @Override
-    protected int getInMemoryOffset(int queryOffset) {
-        return 0;
-    }
-
-    @Override
-    protected SelectTranslator createTranslator(Connection connection) {
-        return new PostgresSelectTranslator(query, dataNode, connection);
-    }
+	@Override
+	protected int getInMemoryOffset(int queryOffset) {
+		return 0;
+	}
 }

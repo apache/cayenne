@@ -39,84 +39,68 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
 
-    final static Log logger = LogFactory.getLog(CreateIfNoSchemaStrategy.class);
+	final static Log logger = LogFactory.getLog(CreateIfNoSchemaStrategy.class);
 
-    @Override
-    protected void processSchemaUpdate(DataNode dataNode) throws SQLException {
+	@Override
+	protected void processSchemaUpdate(DataNode dataNode) throws SQLException {
 
-        Map<String, Boolean> nameTables = getNameTablesInDB(dataNode);
-        Collection<DbEntity> entities = dataNode.getEntityResolver().getDbEntities();
-        boolean generate = true;
-        Iterator<DbEntity> it = entities.iterator();
-        while (it.hasNext()) {
-            if (nameTables.get(it.next().getName()) != null) {
-                generate = false;
-                break;
-            }
-        }
+		Map<String, Boolean> nameTables = getNameTablesInDB(dataNode);
+		Collection<DbEntity> entities = dataNode.getEntityResolver().getDbEntities();
+		boolean generate = true;
+		Iterator<DbEntity> it = entities.iterator();
+		while (it.hasNext()) {
+			if (nameTables.get(it.next().getName()) != null) {
+				generate = false;
+				break;
+			}
+		}
 
-        if (generate) {
-            logger.info("No schema detected, will create mapped tables");
-            generate(dataNode);
-        }
-        else {
-            logger.info("Full or partial schema detected, skipping tables creation");
-        }
-    }
+		if (generate) {
+			logger.info("No schema detected, will create mapped tables");
+			generate(dataNode);
+		} else {
+			logger.info("Full or partial schema detected, skipping tables creation");
+		}
+	}
 
-    private void generate(DataNode dataNode) {
-        Collection<DataMap> map = dataNode.getDataMaps();
-        Iterator<DataMap> iterator = map.iterator();
-        while (iterator.hasNext()) {
-            DbGenerator gen = new DbGenerator(dataNode.getAdapter(), iterator.next(), 
-                    dataNode.getJdbcEventLogger());
-            gen.setShouldCreateTables(true);
-            gen.setShouldDropTables(false);
-            gen.setShouldCreateFKConstraints(true);
-            gen.setShouldCreatePKSupport(true);
-            gen.setShouldDropPKSupport(false);
-            try {
-                gen.runGenerator(dataNode.getDataSource());
-            }
-            catch (Exception e) {
-                throw new CayenneRuntimeException(e);
-            }
-        }
-    }
+	private void generate(DataNode dataNode) {
+		Collection<DataMap> map = dataNode.getDataMaps();
+		Iterator<DataMap> iterator = map.iterator();
+		while (iterator.hasNext()) {
+			DbGenerator gen = new DbGenerator(dataNode.getAdapter(), iterator.next(), dataNode.getJdbcEventLogger());
+			gen.setShouldCreateTables(true);
+			gen.setShouldDropTables(false);
+			gen.setShouldCreateFKConstraints(true);
+			gen.setShouldCreatePKSupport(true);
+			gen.setShouldDropPKSupport(false);
+			try {
+				gen.runGenerator(dataNode.getDataSource());
+			} catch (Exception e) {
+				throw new CayenneRuntimeException(e);
+			}
+		}
+	}
 
-    /**
-     * Returns all the table names in database.
-     * 
-     * @throws SQLException
-     */
-    protected Map<String, Boolean> getNameTablesInDB(DataNode dataNode)
-            throws SQLException {
-        String tableLabel = dataNode.getAdapter().tableTypeForTable();
-        Connection con = null;
-        Map<String, Boolean> nameTables = new HashMap<String, Boolean>();
-        con = dataNode.getDataSource().getConnection();
+	/**
+	 * Returns all the table names in database.
+	 * 
+	 * @throws SQLException
+	 */
+	protected Map<String, Boolean> getNameTablesInDB(DataNode dataNode) throws SQLException {
+		String tableLabel = dataNode.getAdapter().tableTypeForTable();
+		Map<String, Boolean> nameTables = new HashMap<>();
 
-        try {
-            ResultSet rs = con.getMetaData().getTables(null, null, "%", new String[] {
-                tableLabel
-            });
+		try (Connection con = dataNode.getDataSource().getConnection();) {
 
-            try {
+			try (ResultSet rs = con.getMetaData().getTables(null, null, "%", new String[] { tableLabel });) {
 
-                while (rs.next()) {
-                    String name = rs.getString("TABLE_NAME");
-                    nameTables.put(name, false);
-                }
-            }
-            finally {
-                rs.close();
-            }
+				while (rs.next()) {
+					String name = rs.getString("TABLE_NAME");
+					nameTables.put(name, false);
+				}
+			}
+		}
 
-        }
-        finally {
-
-            con.close();
-        }
-        return nameTables;
-    }
+		return nameTables;
+	}
 }

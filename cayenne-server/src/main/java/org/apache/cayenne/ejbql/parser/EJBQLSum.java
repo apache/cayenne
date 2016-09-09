@@ -28,42 +28,44 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
  */
 public class EJBQLSum extends EJBQLAggregateColumn {
 
-    // per JPA spec, 4.8.4, SUM type mapping rules are a bit convoluted. Mapping them
-    // here...
+	// per JPA spec, 4.8.4, SUM type mapping rules are a bit convoluted. Mapping
+	// them here...
 
-    static final Map<String, String> typeMap;
+	private static final long serialVersionUID = 2256495371122671530L;
+	static final Map<String, String> typeMap;
 
-    static {
-        typeMap = new HashMap<String, String>();
-        typeMap.put(Integer.class.getName(), Long.class.getName());
-        typeMap.put(Short.class.getName(), Long.class.getName());
-        typeMap.put(Float.class.getName(), Double.class.getName());
-    }
+	static {
+		typeMap = new HashMap<>();
+		typeMap.put(Integer.class.getName(), Long.class.getName());
+		typeMap.put(Short.class.getName(), Long.class.getName());
+		typeMap.put(Float.class.getName(), Double.class.getName());
+	}
 
-    public EJBQLSum(int id) {
-        super(id);
-    }
+	public EJBQLSum(int id) {
+		super(id);
+	}
 
-    @Override
-    protected boolean visitNode(EJBQLExpressionVisitor visitor) {
-        return visitor.visitSum(this);
-    }
+	@Override
+	protected boolean visitNode(EJBQLExpressionVisitor visitor) {
+		return visitor.visitSum(this);
+	}
 
-    @Override
-    public String getFunction() {
-        return "SUM";
-    }
+	@Override
+	public String getFunction() {
+		return "SUM";
+	}
 
-    @Override
-    public String getJavaType(String pathType) {
+	@Override
+	public String getJavaType(String pathType) {
 
-        if (pathType == null) {
-            return "java.lang.Long";
-        }
+		if (pathType == null) {
+			return "java.lang.Long";
+		}
 
-        // type map only contains mappings that are different from the attribute path, so
-        // if no mapping exists, return the argument passed to this method.
-        String mappedType = typeMap.get(pathType);
-        return mappedType != null ? mappedType : pathType;
-    }
+		// type map only contains mappings that are different from the attribute
+		// path, so
+		// if no mapping exists, return the argument passed to this method.
+		String mappedType = typeMap.get(pathType);
+		return mappedType != null ? mappedType : pathType;
+	}
 }

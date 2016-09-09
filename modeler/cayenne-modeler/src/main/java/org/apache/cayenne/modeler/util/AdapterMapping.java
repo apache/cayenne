@@ -50,10 +50,10 @@ public class AdapterMapping {
     protected Map<String, String> eofPluginToAdapterMap;
 
     public AdapterMapping() {
-        this.adapterToJDBCDriverMap = new HashMap<String, String>();
-        this.adapterToJDBCURLMap = new HashMap<String, String>();
-        this.jdbcDriverToAdapterMap = new HashMap<String, String>();
-        this.eofPluginToAdapterMap = new HashMap<String, String>();
+        this.adapterToJDBCDriverMap = new HashMap<>();
+        this.adapterToJDBCURLMap = new HashMap<>();
+        this.jdbcDriverToAdapterMap = new HashMap<>();
+        this.eofPluginToAdapterMap = new HashMap<>();
 
         initDefaults();
     }

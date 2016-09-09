@@ -39,7 +39,6 @@
 		<module>cayenne-modeler-generic-ext</module>
 		<module>cayenne-modeler-mac-ext</module>
 		<module>cayenne-modeler-mac</module>
-		<module>cayenne-modeler-mac-legacy</module>
 		<module>cayenne-modeler-win</module>
 	</modules>
 

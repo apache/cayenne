@@ -103,6 +103,7 @@ public class DataContextFactory implements ObjectContextFactory {
         context.setValidatingObjectsOnCommit(parent.isValidatingObjectsOnCommit());
         context.setUsingSharedSnapshotCache(parent.isUsingSharedSnapshotCache());
         context.setQueryCache(new NestedQueryCache(queryCache));
+        context.setTransactionFactory(transactionFactory);
 
         return context;
     }

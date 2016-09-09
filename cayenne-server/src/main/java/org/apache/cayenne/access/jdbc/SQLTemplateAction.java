@@ -341,7 +341,7 @@ public class SQLTemplateAction implements SQLAction {
 	/**
 	 * Binds parameters to the PreparedStatement.
 	 */
-	protected void bind(PreparedStatement preparedStatement, ParameterBinding[] bindings) throws SQLException,
+	protected void bind(PreparedStatement preparedStatement, SQLParameterBinding[] bindings) throws SQLException,
 			Exception {
 		// bind parameters
 		if (bindings.length > 0) {

@@ -78,7 +78,7 @@ class EJBQLGroupByTranslator extends EJBQLBaseVisitor {
                             .quotedFullyQualifiedName(descriptor.getEntity().getDbEntity()));
                 }
 
-                this.lastPathComponent = expression.getText();
+                resolveLastPathComponent(expression.getText());
                 this.fullPath = fullPath + '.' + lastPathComponent;
 
                 return true;

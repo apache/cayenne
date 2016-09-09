@@ -24,21 +24,23 @@ package org.apache.cayenne.graph;
  */
 public class NodeCreateOperation extends NodeDiff {
 
-    public NodeCreateOperation(Object nodeId) {
-        super(nodeId);
-    }
+	private static final long serialVersionUID = -7383872939009489304L;
 
-    public NodeCreateOperation(Object nodeId, int diffId) {
-        super(nodeId, diffId);
-    }
+	public NodeCreateOperation(Object nodeId) {
+		super(nodeId);
+	}
 
-    @Override
-    public void apply(GraphChangeHandler tracker) {
-        tracker.nodeCreated(nodeId);
-    }
+	public NodeCreateOperation(Object nodeId, int diffId) {
+		super(nodeId, diffId);
+	}
 
-    @Override
-    public void undo(GraphChangeHandler tracker) {
-        tracker.nodeRemoved(nodeId);
-    }
+	@Override
+	public void apply(GraphChangeHandler tracker) {
+		tracker.nodeCreated(nodeId);
+	}
+
+	@Override
+	public void undo(GraphChangeHandler tracker) {
+		tracker.nodeRemoved(nodeId);
+	}
 }

@@ -18,24 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.junit.Test;
 
 public class ObjectSelectTest {
 
@@ -105,7 +104,7 @@ public class ObjectSelectTest {
 		assertEquals("a = 3", q.getWhere().toString());
 
 		q.where(ExpressionFactory.matchExp("b", 4));
-		assertEquals("b = 4", q.getWhere().toString());
+		assertEquals("(a = 3) and (b = 4)", q.getWhere().toString());
 	}
 
 	@Test
@@ -214,26 +213,6 @@ public class ObjectSelectTest {
 		q.orderBy(o2);
 
 		Object[] result2 = q.getOrderings().toArray();
-		assertEquals(1, result2.length);
-		assertSame(o2, result2[0]);
-	}
-
-	@Test
-	public void testAddOrderBy_Array() {
-
-		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
-
-		Ordering o1 = new Ordering("x");
-		q.orderBy(o1);
-
-		Object[] result1 = q.getOrderings().toArray();
-		assertEquals(1, result1.length);
-		assertSame(o1, result1[0]);
-
-		Ordering o2 = new Ordering("y");
-		q.addOrderBy(o2);
-
-		Object[] result2 = q.getOrderings().toArray();
 		assertEquals(2, result2.length);
 		assertSame(o1, result2[0]);
 		assertSame(o2, result2[1]);
@@ -255,47 +234,9 @@ public class ObjectSelectTest {
 		q.orderBy(Collections.singletonList(o2));
 
 		Object[] result2 = q.getOrderings().toArray();
-		assertEquals(1, result2.length);
-		assertSame(o2, result2[0]);
-	}
-
-	@Test
-	public void testAddOrderBy_Collection() {
-
-		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
-
-		Ordering o1 = new Ordering("x");
-		q.orderBy(Collections.singletonList(o1));
-
-		Object[] result1 = q.getOrderings().toArray();
-		assertEquals(1, result1.length);
-		assertSame(o1, result1[0]);
-
-		Ordering o2 = new Ordering("y");
-		q.addOrderBy(Collections.singletonList(o2));
-
-		Object[] result2 = q.getOrderings().toArray();
 		assertEquals(2, result2.length);
 		assertSame(o1, result2[0]);
 		assertSame(o2, result2[1]);
-	}
-
-	@Test
-	public void testOrderBy_Property() {
-
-		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
-
-		q.orderBy("x");
-
-		Object[] result1 = q.getOrderings().toArray();
-		assertEquals(1, result1.length);
-		assertEquals(new Ordering("x", SortOrder.ASCENDING), result1[0]);
-
-		q.orderBy("y");
-
-		Object[] result2 = q.getOrderings().toArray();
-		assertEquals(1, result2.length);
-		assertEquals(new Ordering("y", SortOrder.ASCENDING), result2[0]);
 	}
 
 	@Test
@@ -312,22 +253,22 @@ public class ObjectSelectTest {
 		q.orderBy("y", SortOrder.DESCENDING);
 
 		Object[] result2 = q.getOrderings().toArray();
-		assertEquals(1, result2.length);
-		assertEquals(new Ordering("y", SortOrder.DESCENDING), result2[0]);
+		assertEquals(2, result2.length);
+		assertEquals(new Ordering("y", SortOrder.DESCENDING), result2[1]);
 	}
 
 	@Test
-	public void testAddOrderBy_Property() {
+	public void testOrderBy_Property() {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
-		q.addOrderBy("x");
+		q.orderBy("x");
 
 		Object[] result1 = q.getOrderings().toArray();
 		assertEquals(1, result1.length);
 		assertEquals(new Ordering("x", SortOrder.ASCENDING), result1[0]);
 
-		q.addOrderBy("y");
+		q.orderBy("y");
 
 		Object[] result2 = q.getOrderings().toArray();
 		assertEquals(2, result2.length);
@@ -343,7 +284,10 @@ public class ObjectSelectTest {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 		q.prefetch(root);
 
-		assertSame(root, q.getPrefetches());
+		PrefetchTreeNode root1 = q.getPrefetches();
+		assertNotNull(root1);
+		assertNotNull(root1.getNode("a.b"));
+		assertEquals(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS, root1.getNode("a.b").getSemantics());
 	}
 
 	@Test
@@ -361,26 +305,32 @@ public class ObjectSelectTest {
 
 		assertNotNull(root2);
 		assertNotNull(root2.getNode("a.c"));
-		assertNull(root2.getNode("a.b"));
-		assertNotSame(root1, root2);
+		assertNotNull(root2.getNode("a.b"));
 	}
 
 	@Test
-	public void testAddPrefetch() {
+	public void testPrefetch_Merge() {
 
 		PrefetchTreeNode root = PrefetchTreeNode.withPath("a.b", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 		q.prefetch(root);
 
-		assertSame(root, q.getPrefetches());
+		PrefetchTreeNode root1 = q.getPrefetches();
+		assertNotNull(root1);
+		assertNotNull(root1.getNode("a.b"));
+		assertEquals(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS, root1.getNode("a.b").getSemantics());
 
 		PrefetchTreeNode subRoot = PrefetchTreeNode.withPath("a.b.c", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
-		q.addPrefetch(subRoot);
+		q.prefetch(subRoot);
 
-		assertSame(root, q.getPrefetches());
+		root1 = q.getPrefetches();
+		assertNotNull(root1);
+		assertNotNull(root1.getNode("a.b"));
+		assertEquals(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS, root1.getNode("a.b").getSemantics());
 
-		assertNotNull(root.getNode("a.b.c"));
+		assertNotNull(root1.getNode("a.b.c"));
+		assertEquals(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS, root1.getNode("a.b.c").getSemantics());
 	}
 
 	@Test
@@ -394,7 +344,7 @@ public class ObjectSelectTest {
 		q.limit(3).limit(5);
 		assertEquals(5, q.getLimit());
 	}
-	
+
 	@Test
 	public void testOffset() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
@@ -406,7 +356,7 @@ public class ObjectSelectTest {
 		q.offset(3).offset(5);
 		assertEquals(5, q.getOffset());
 	}
-	
+
 	@Test
 	public void testStatementFetchSize() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
@@ -418,8 +368,7 @@ public class ObjectSelectTest {
 		q.statementFetchSize(3).statementFetchSize(5);
 		assertEquals(5, q.getStatementFetchSize());
 	}
-	
-	
+
 	@Test
 	public void testCacheGroups_Collection() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
@@ -447,7 +396,7 @@ public class ObjectSelectTest {
 		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
 		assertNull(q.getCacheGroups());
 	}
-	
+
 	@Test
 	public void testLocalCache() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
@@ -463,7 +412,7 @@ public class ObjectSelectTest {
 		assertSame(QueryCacheStrategy.LOCAL_CACHE, q.getCacheStrategy());
 		assertNull(q.getCacheGroups());
 	}
-	
+
 	@Test
 	public void testSharedCache() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);

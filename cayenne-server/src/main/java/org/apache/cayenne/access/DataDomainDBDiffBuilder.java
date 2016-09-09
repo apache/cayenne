@@ -82,7 +82,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
             return null;
         }
 
-        Map<String, Object> dbDiff = new HashMap<String, Object>();
+        Map<String, Object> dbDiff = new HashMap<>();
 
         appendSimpleProperties(dbDiff);
         appendForeignKeys(dbDiff);

@@ -63,7 +63,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 	public void testProcessTemplateFullChain() throws Exception {
 		String template = "#chain(' OR ')" + "#chunk($a)$a#end" + "#chunk($b)$b#end" + "#chunk($c)$c#end" + "#end";
 
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("a", "[A]");
 		map.put("b", "[B]");
 		map.put("c", "[C]");
@@ -77,7 +77,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)$a#end" + "#chunk($b)$b#end" + "#chunk($c)$c#end"
 				+ "#end";
 
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("a", "[A]");
 		map.put("b", "[B]");
 		map.put("c", "[C]");
@@ -91,7 +91,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)$a#end" + "#chunk($b)$b#end" + "#chunk($c)$c#end"
 				+ "#end";
 
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("a", "[A]");
 		map.put("c", "[C]");
 
@@ -104,7 +104,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)$a#end" + "#chunk($b)$b#end" + "#chunk($c)$c#end"
 				+ "#end";
 
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("b", "[B]");
 		map.put("c", "[C]");
 
@@ -117,7 +117,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)$a#end" + "#chunk($b)$b#end" + "#chunk($c)$c#end"
 				+ "#end";
 
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("a", "[A]");
 		map.put("b", "[B]");
 
@@ -130,7 +130,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)$a#end" + " some other stuff" + "#chunk($c)$c#end"
 				+ "#end";
 
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("a", "[A]");
 		map.put("c", "[C]");
 
@@ -160,7 +160,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)[A]#end" + "#chunk($b)[B]#end" + "#chunk($c)$c#end"
 				+ "#end";
 
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("a", false);
 		map.put("b", 0);
 
@@ -173,7 +173,7 @@ public class VelocitySQLTemplateProcessor_ChainTest {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)$a#end" + "#chunk($b)$b#end" + "#chunk($c)$c#end"
 				+ "#end";
 
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("a", false);
 		map.put("b", 0);
 

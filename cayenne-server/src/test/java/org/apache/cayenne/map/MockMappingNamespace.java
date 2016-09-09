@@ -24,103 +24,97 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.MappingNamespace;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.Query;
 
-/**
- */
 public class MockMappingNamespace implements MappingNamespace {
 
-    private Map<String, DbEntity> dbEntities = new HashMap<String, DbEntity>();
-    private Map<String, ObjEntity> objEntities = new HashMap<String, ObjEntity>();
-    private Map<String, Query> queries = new HashMap<String, Query>();
-    private Map<String, Procedure> procedures = new HashMap<String, Procedure>();
+	private Map<String, DbEntity> dbEntities = new HashMap<>();
+	private Map<String, ObjEntity> objEntities = new HashMap<>();
+	private Map<String, Query> queries = new HashMap<>();
+	private Map<String, Procedure> procedures = new HashMap<>();
 
-    public Embeddable getEmbeddable(String className) {
-        return null;
-    }
+	public Embeddable getEmbeddable(String className) {
+		return null;
+	}
 
-    public SQLResult getResult(String name) {
-        return null;
-    }
+	public SQLResult getResult(String name) {
+		return null;
+	}
 
-    public EntityListener getEntityListener(String className) {
-        return null;
-    }
+	public EntityListener getEntityListener(String className) {
+		return null;
+	}
 
-    public void addDbEntity(DbEntity entity) {
-        dbEntities.put(entity.getName(), entity);
-    }
+	public void addDbEntity(DbEntity entity) {
+		dbEntities.put(entity.getName(), entity);
+	}
 
-    public void addObjEntity(ObjEntity entity) {
-        objEntities.put(entity.getName(), entity);
-    }
+	public void addObjEntity(ObjEntity entity) {
+		objEntities.put(entity.getName(), entity);
+	}
 
-    public void addQuery(Query query) {
-        queries.put(query.getName(), query);
-    }
+	public void addQuery(Query query) {
+		queries.put(query.getName(), query);
+	}
 
-    public void addProcedure(Procedure procedure) {
-        procedures.put(procedure.getName(), procedure);
-    }
+	public void addProcedure(Procedure procedure) {
+		procedures.put(procedure.getName(), procedure);
+	}
 
-    public DbEntity getDbEntity(String name) {
-        return dbEntities.get(name);
-    }
+	public DbEntity getDbEntity(String name) {
+		return dbEntities.get(name);
+	}
 
-    public ObjEntity getObjEntity(String name) {
-        return objEntities.get(name);
-    }
+	public ObjEntity getObjEntity(String name) {
+		return objEntities.get(name);
+	}
 
-    public Procedure getProcedure(String name) {
-        return procedures.get(name);
-    }
+	public Procedure getProcedure(String name) {
+		return procedures.get(name);
+	}
 
-    public Query getQuery(String name) {
-        return queries.get(name);
-    }
+	public Query getQuery(String name) {
+		return queries.get(name);
+	}
 
-    public Collection<DbEntity> getDbEntities() {
-        return dbEntities.values();
-    }
+	public Collection<DbEntity> getDbEntities() {
+		return dbEntities.values();
+	}
 
-    public Collection<ObjEntity> getObjEntities() {
-        return objEntities.values();
-    }
+	public Collection<ObjEntity> getObjEntities() {
+		return objEntities.values();
+	}
 
-    public Collection<Procedure> getProcedures() {
-        return procedures.values();
-    }
+	public Collection<Procedure> getProcedures() {
+		return procedures.values();
+	}
 
-    public Collection<Query> getQueries() {
-        return queries.values();
-    }
-    
-    public Collection<Embeddable> getEmbeddables() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    public EntityInheritanceTree getInheritanceTree(String entityName) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    public ObjEntity getObjEntity(Class<?> entityClass) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    public Collection<SQLResult> getResults() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    public ObjEntity getObjEntity(Persistent object) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	public Collection<Query> getQueries() {
+		return queries.values();
+	}
+
+	public Collection<Embeddable> getEmbeddables() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public EntityInheritanceTree getInheritanceTree(String entityName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ObjEntity getObjEntity(Class<?> entityClass) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Collection<SQLResult> getResults() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ObjEntity getObjEntity(Persistent object) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

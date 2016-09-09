@@ -40,7 +40,7 @@ public class SQLTemplateTest {
 
 		assertTrue(query.getParams().isEmpty());
 
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<>();
 		params.put("a", "b");
 
 		query.setParams(params);

@@ -32,63 +32,66 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTNot extends AggregateConditionNode {
 
-    ASTNot(int id) {
-        super(id);
-    }
+	private static final long serialVersionUID = 7418894098531106347L;
 
-    public ASTNot() {
-        super(ExpressionParserTreeConstants.JJTNOT);
-    }
+	ASTNot(int id) {
+		super(id);
+	}
 
-    public ASTNot(Node expression) {
-        super(ExpressionParserTreeConstants.JJTNOT);
-        jjtAddChild(expression, 0);
-        connectChildren();
-    }
+	public ASTNot() {
+		super(ExpressionParserTreeConstants.JJTNOT);
+	}
+
+	public ASTNot(Node expression) {
+		super(ExpressionParserTreeConstants.JJTNOT);
+		jjtAddChild(expression, 0);
+		connectChildren();
+	}
+
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		int len = jjtGetNumChildren();
+		if (len == 0) {
+			return Boolean.FALSE;
+		}
+
+		return ConversionUtil.toBoolean(evaluateChild(0, o)) ? Boolean.FALSE : Boolean.TRUE;
+	}
+
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		return new ASTNot(id);
+	}
 
     @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len == 0) {
-            return Boolean.FALSE;
-        }
+	public int getType() {
+		return Expression.NOT;
+	}
 
-        return ConversionUtil.toBoolean(evaluateChild(0, o)) ? Boolean.FALSE : Boolean.TRUE;
-    }
-
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        return new ASTNot(id);
-    }
-
-    @Override
-    public int getType() {
-        return Expression.NOT;
-    }
-
-    /**
-     * @since 4.0
-     */
-    @Override
-    public void appendAsString(Appendable out) throws IOException {
-        out.append("not ");
-        super.appendAsString(out);
-    }
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void appendAsString(Appendable out) throws IOException {
+		out.append("not ");
+		super.appendAsString(out);
+	}
 
     /**
      * @since 4.0
      */
     @Override
     public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        appendAsString(out);
+        out.append("not ");
+        super.appendAsEJBQL(parameterAccumulator, out, rootId);
     }
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
-                + "'");
-    }
+	@Override
+	protected String getExpressionOperator(int index) {
+		throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
+				+ "'");
+	}
 }

@@ -115,7 +115,7 @@ class ObjectContextStateLog implements GraphChangeHandler {
 
     Collection<Object> dirtyNodes() {
         if (dirtyIds.isEmpty()) {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
 
         Collection<Object> objects = new ArrayList<Object>(dirtyIds.size());
@@ -128,7 +128,7 @@ class ObjectContextStateLog implements GraphChangeHandler {
 
     Collection<Object> dirtyNodes(int state) {
         if (dirtyIds.isEmpty()) {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
 
         int size = dirtyIds.size();

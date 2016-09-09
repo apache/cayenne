@@ -18,17 +18,40 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.junit.Test;
 
 public class ASTLikeIgnoreCaseTest {
 
-    @Test
-    public void testToEJBQL() {
-        Expression like = ExpressionFactory.likeIgnoreCaseExp("a", "%b%");
-        assertEquals(like.toEJBQL("p"), "upper(p.a) like '%B%'");
-    }
+	@Test
+	public void testToEJBQL() {
+		Expression like = new ASTLikeIgnoreCase(new ASTObjPath("a"), "%b%");
+		assertEquals(like.toEJBQL("p"), "upper(p.a) like '%B%'");
+	}
+
+	@Test
+	public void testEvaluate() {
+		Expression like = new ASTLikeIgnoreCase(new ASTObjPath("artistName"), "aBcD");
+		Expression notLike = new ASTNotLikeIgnoreCase(new ASTObjPath("artistName"), "aBcD");
+
+		Artist noMatch1 = new Artist();
+		noMatch1.setArtistName("dabc");
+		assertFalse(like.match(noMatch1));
+		assertTrue(notLike.match(noMatch1));
+
+		Artist match1 = new Artist();
+		match1.setArtistName("abcd");
+		assertTrue("Failed: " + like, like.match(match1));
+		assertFalse("Failed: " + notLike, notLike.match(match1));
+
+		Artist match2 = new Artist();
+		match2.setArtistName("ABcD");
+		assertTrue("Failed: " + like, like.match(match2));
+		assertFalse("Failed: " + notLike, notLike.match(match2));
+	}
 }

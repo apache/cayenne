@@ -76,7 +76,7 @@ public class ClientRuntimeTest {
 			}
 		};
 
-		Map<String, String> properties = new HashMap<String, String>();
+		Map<String, String> properties = new HashMap<>();
 
 		ClientRuntime runtime = new ClientRuntime(properties, m1, m2);
 		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
@@ -107,7 +107,7 @@ public class ClientRuntimeTest {
 			}
 		});
 
-		Map<String, String> properties = new HashMap<String, String>();
+		Map<String, String> properties = new HashMap<>();
 
 		ClientRuntime runtime = new ClientRuntime(properties, modules);
 		Collection<Module> cmodules = ((ModuleCollection) runtime.getModule()).getModules();
@@ -120,7 +120,7 @@ public class ClientRuntimeTest {
     @Test
 	public void testGetObjectContext() {
 
-		Map<String, String> properties = new HashMap<String, String>();
+		Map<String, String> properties = new HashMap<>();
 		ClientModule extraModule = new ClientModule(properties) {
 
 			@Override
@@ -147,7 +147,7 @@ public class ClientRuntimeTest {
     @Test
 	public void testGetDataChannel() {
 
-		Map<String, String> properties = new HashMap<String, String>();
+		Map<String, String> properties = new HashMap<>();
 
 		Module extraModule = new Module() {
 
@@ -168,7 +168,7 @@ public class ClientRuntimeTest {
     @Test
 	public void testShutdown() throws Exception {
 
-		Map<String, String> properties = new HashMap<String, String>();
+		Map<String, String> properties = new HashMap<>();
 		ClientRuntime runtime = new ClientRuntime(properties);
 
 		// make sure objects to be shut down are resolved

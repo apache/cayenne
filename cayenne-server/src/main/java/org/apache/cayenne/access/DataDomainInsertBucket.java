@@ -79,7 +79,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                     // we need to insert even if there is no changes to default
                     // values so creating an empty changes map
                     if (snapshot == null) {
-                        snapshot = new HashMap<String, Object>();
+                        snapshot = new HashMap<>();
                     }
 
                     batch.add(snapshot, o.getObjectId());

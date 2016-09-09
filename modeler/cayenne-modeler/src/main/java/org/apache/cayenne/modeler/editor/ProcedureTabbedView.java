@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.Component;
-
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -34,6 +27,12 @@ import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayListener;
+
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.Component;
 
 /**
  * Tabbed panel for stored procedure editing.
@@ -94,6 +93,7 @@ public class ProcedureTabbedView extends JTabbedPane implements ProcedureDisplay
         ProcedureParameter[] parameters = e.getProcedureParameters();
 
         if (parameters.length > 0) {
+            setSelectedComponent(procedureParameterPanel);
             procedureParameterPanel.selectParameters(parameters);
         }
     }

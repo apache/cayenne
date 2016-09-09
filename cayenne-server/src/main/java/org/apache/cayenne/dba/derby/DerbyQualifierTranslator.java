@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dba.derby;
 
-import java.io.IOException;
 import java.sql.Types;
 
 import org.apache.cayenne.access.translator.select.QueryAssembler;
@@ -31,39 +30,31 @@ import org.apache.cayenne.map.DbAttribute;
 
 public class DerbyQualifierTranslator extends TrimmingQualifierTranslator {
 
-    public DerbyQualifierTranslator(QueryAssembler queryAssembler, String trimFunction) {
-        super(queryAssembler, trimFunction);
-    }
+	public DerbyQualifierTranslator(QueryAssembler queryAssembler, String trimFunction) {
+		super(queryAssembler, trimFunction);
+	}
 
-    @Override
-    protected void processColumnWithQuoteSqlIdentifiers(
-            DbAttribute dbAttr,
-            Expression pathExp) {
+	@Override
+	protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr, Expression pathExp) {
 
-        SimpleNode parent = null;
-        if (pathExp instanceof SimpleNode) {
-            parent = (SimpleNode) ((SimpleNode) pathExp).jjtGetParent();
-        }
+		SimpleNode parent = null;
+		if (pathExp instanceof SimpleNode) {
+			parent = (SimpleNode) ((SimpleNode) pathExp).jjtGetParent();
+		}
 
-        // problem in derby : Comparisons between 'CLOB (UCS_BASIC)' and 'CLOB (UCS_BASIC)' are not supported.
-        // we need do it by casting the Clob to VARCHAR.
-        if (parent != null
-                && (parent instanceof ASTEqual || parent instanceof ASTNotEqual)
-                && dbAttr.getType() == Types.CLOB
-                && parent.getOperandCount() == 2
-                && parent.getOperand(1) instanceof String) {
-            Integer size = parent.getOperand(1).toString().length() + 1;
+		// problem in derby : Comparisons between 'CLOB (UCS_BASIC)' and 'CLOB
+		// (UCS_BASIC)' are not supported.
+		// we need do it by casting the Clob to VARCHAR.
+		if (parent != null && (parent instanceof ASTEqual || parent instanceof ASTNotEqual)
+				&& dbAttr.getType() == Types.CLOB && parent.getOperandCount() == 2
+				&& parent.getOperand(1) instanceof String) {
+			Integer size = parent.getOperand(1).toString().length() + 1;
 
-            try {
-                out.append("CAST(");
-                super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
-                out.append(" AS VARCHAR(").append(String.valueOf(size)).append("))");
-            } catch (IOException ex) {
-                ex.printStackTrace(); // TODO process exceptions
-            }
-        }
-        else {
-            super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
-        }
-    }
+			out.append("CAST(");
+			super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
+			out.append(" AS VARCHAR(" + size + "))");
+		} else {
+			super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
+		}
+	}
 }

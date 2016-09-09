@@ -18,15 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.dbsync;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.unit.di.server.ServerCase;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,6 +26,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.unit.di.server.ServerCase;
 
 public class SchemaUpdateStrategyBase extends ServerCase {
 
@@ -82,7 +82,7 @@ public class SchemaUpdateStrategyBase extends ServerCase {
 
 	protected Map<String, Boolean> tablesMap() {
 		DataMap map = node.getEntityResolver().getDataMap("sus-map");
-		Map<String, String> tables = new HashMap<String, String>();
+		Map<String, String> tables = new HashMap<>();
 
 		// add upper/lower case permutations
 		for (String name : map.getDbEntityMap().keySet()) {
@@ -90,36 +90,27 @@ public class SchemaUpdateStrategyBase extends ServerCase {
 			tables.put(name.toUpperCase(), name);
 		}
 
-		Map<String, Boolean> presentInDB = new HashMap<String, Boolean>();
+		Map<String, Boolean> presentInDB = new HashMap<>();
 		for (String name : map.getDbEntityMap().keySet()) {
 			presentInDB.put(name, false);
 		}
 
 		String tableLabel = node.getAdapter().tableTypeForTable();
-		Connection con = null;
-		try {
-			con = node.getDataSource().getConnection();
-			ResultSet rs = con.getMetaData().getTables(null, null, "%", new String[] { tableLabel });
-			while (rs.next()) {
-				String dbName = rs.getString("TABLE_NAME");
+		try (Connection con = node.getDataSource().getConnection();) {
 
-				String name = tables.get(dbName);
+			try (ResultSet rs = con.getMetaData().getTables(null, null, "%", new String[] { tableLabel });) {
+				while (rs.next()) {
+					String dbName = rs.getString("TABLE_NAME");
 
-				if (name != null) {
-					presentInDB.put(name, true);
+					String name = tables.get(dbName);
+
+					if (name != null) {
+						presentInDB.put(name, true);
+					}
 				}
 			}
-			rs.close();
 		} catch (SQLException e) {
 			throw new CayenneRuntimeException(e);
-		} finally {
-			try {
-				if (con != null) {
-					con.close();
-				}
-			} catch (SQLException e) {
-				throw new CayenneRuntimeException(e);
-			}
 		}
 
 		return presentInDB;

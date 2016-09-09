@@ -33,9 +33,9 @@ public class SQLTemplateCustomizerProvider implements Provider<SQLTemplateCustom
     private DbAdapter dbAdapter;
 
     public SQLTemplateCustomizer get() throws ConfigurationException {
-        Map<String, Map<String, String>> map = new HashMap<String, Map<String, String>>();
+        Map<String, Map<String, String>> map = new HashMap<>();
 
-        Map<String, String> q1 = new HashMap<String, String>();
+        Map<String, String> q1 = new HashMap<>();
         q1.put(
                 "org.apache.cayenne.dba.postgres.PostgresAdapter",
                 "SELECT #result('ARTIST_ID'), RTRIM(#result('ARTIST_NAME')), "
@@ -49,7 +49,7 @@ public class SQLTemplateCustomizerProvider implements Provider<SQLTemplateCustom
                 "SELECT #result('ARTIST_ID'), #result('ARTIST_NAME'), "
                         + "#result('DATE_OF_BIRTH') FROM ARTIST ORDER BY ARTIST_ID");
 
-        Map<String, String> q2 = new HashMap<String, String>();
+        Map<String, String> q2 = new HashMap<>();
         q2.put(
                 "org.apache.cayenne.dba.postgres.PostgresAdapter",
                 "SELECT #result('ARTIST_ID'), RTRIM(#result('ARTIST_NAME')), #result('DATE_OF_BIRTH') "
@@ -63,7 +63,7 @@ public class SQLTemplateCustomizerProvider implements Provider<SQLTemplateCustom
                 "SELECT #result('ARTIST_ID'), #result('ARTIST_NAME'), #result('DATE_OF_BIRTH') "
                         + "FROM ARTIST WHERE ARTIST_ID = #bind($id)");
 
-        Map<String, String> q3 = new HashMap<String, String>();
+        Map<String, String> q3 = new HashMap<>();
         q3
                 .put(
                         "org.apache.cayenne.dba.oracle.OracleAdapter",

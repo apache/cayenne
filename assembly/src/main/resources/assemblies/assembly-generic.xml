@@ -76,9 +76,11 @@
 				<include>org.apache.cayenne:cayenne-client</include>
 				<include>org.apache.cayenne:cayenne-crypto</include>
 				<include>org.apache.cayenne:cayenne-di</include>
+				<include>org.apache.cayenne:cayenne-joda</include>
 				<include>org.apache.cayenne:cayenne-lifecycle</include>
 				<include>org.apache.cayenne:cayenne-server</include>
 				<include>org.apache.cayenne:cayenne-tools</include>
+				<include>org.apache.cayenne:cayenne-dbcp2</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>

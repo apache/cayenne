@@ -35,9 +35,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
-import org.apache.cayenne.access.loader.filters.DbPath;
-import org.apache.cayenne.access.loader.filters.EntityFilters;
+import org.apache.cayenne.access.loader.filters.TableFilter;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
+import org.apache.cayenne.access.loader.filters.PatternFilter;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -68,6 +68,9 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
+import org.apache.cayenne.tools.dbimport.config.FiltersConfigBuilder;
+import org.apache.cayenne.tools.dbimport.config.ReverseEngineering;
+import org.apache.cayenne.tools.dbimport.config.Schema;
 import org.apache.cayenne.validation.ValidationResult;
 
 public class MergerOptions extends CayenneController {
@@ -170,7 +173,7 @@ public class MergerOptions extends CayenneController {
             merger = new DbMerger(adapter.mergerFactory());
 
             DbLoaderConfiguration config = new DbLoaderConfiguration();
-            config.setFiltersConfig(new FiltersConfig(new EntityFilters(new DbPath(null, defaultSchema))));
+            config.setFiltersConfig(FiltersConfig.create(null, defaultSchema, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING));
 
             List<MergerToken> mergerTokens = merger.createMergeTokens(
                     connectionInfo.makeDataSource(getApplication().getClassLoadingService()),

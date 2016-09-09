@@ -23,8 +23,11 @@ import org.apache.cayenne.Persistent;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -63,6 +66,136 @@ public class EvaluatorTest {
         assertFalse(e.eq(1, 1.1));
     }
 
+	@Test
+    public void testEvaluator_NumberWideningEquals() {
+        Evaluator e = Evaluator.evaluator(1);
+
+        assertTrue(e.eq((byte)1, (byte)1));
+        assertTrue(e.eq((byte)1, (short)1));
+        assertTrue(e.eq((byte)1, (int)1));
+        assertTrue(e.eq((byte)1, (long)1));
+        assertTrue(e.eq((byte)1, (float)1));
+        assertTrue(e.eq((byte)1, (double)1));
+
+        assertTrue(e.eq((short)1, (byte)1));
+        assertTrue(e.eq((short)1, (short)1));
+        assertTrue(e.eq((short)1, (int)1));
+        assertTrue(e.eq((short)1, (long)1));
+        assertTrue(e.eq((short)1, (float)1));
+        assertTrue(e.eq((short)1, (double)1));
+
+        assertTrue(e.eq((int)1, (byte)1));
+        assertTrue(e.eq((int)1, (short)1));
+        assertTrue(e.eq((int)1, (int)1));
+        assertTrue(e.eq((int)1, (long)1));
+        assertTrue(e.eq((int)1, (float)1));
+        assertTrue(e.eq((int)1, (double)1));
+        
+        assertTrue(e.eq((long)1, (byte)1));
+        assertTrue(e.eq((long)1, (short)1));
+        assertTrue(e.eq((long)1, (int)1));
+        assertTrue(e.eq((long)1, (long)1));
+        assertTrue(e.eq((long)1, (float)1));
+        assertTrue(e.eq((long)1, (double)1));
+        
+        assertTrue(e.eq((float)1, (byte)1));
+        assertTrue(e.eq((float)1, (short)1));
+        assertTrue(e.eq((float)1, (int)1));
+        assertTrue(e.eq((float)1, (long)1));
+        assertTrue(e.eq((float)1, (float)1));
+        assertTrue(e.eq((float)1, (double)1));
+        
+        assertTrue(e.eq((double)1, (byte)1));
+        assertTrue(e.eq((double)1, (short)1));
+        assertTrue(e.eq((double)1, (int)1));
+        assertTrue(e.eq((double)1, (long)1));
+        assertTrue(e.eq((double)1, (float)1));
+        assertTrue(e.eq((double)1, (double)1));
+        
+        assertTrue(e.eq((float)1.1, (float)1.1));
+        assertTrue(e.eq((float)1.1, (double)1.1));
+        
+        assertTrue(e.eq(Long.MAX_VALUE, Long.MAX_VALUE));
+        assertTrue(e.eq(Double.MAX_VALUE, Double.MAX_VALUE));
+        
+        assertTrue(e.eq((int)1, new AtomicInteger(1)));
+        assertTrue(e.eq(new AtomicInteger(1), (int)1));
+        
+        assertTrue(e.eq((int)1, new AtomicLong(1)));
+        assertTrue(e.eq(new AtomicLong(1), (int)1));
+        
+        assertTrue(e.eq((int)1, BigInteger.ONE));
+        assertTrue(e.eq(BigInteger.ONE, (int)1));
+        
+        BigInteger bigInt = new BigInteger(Long.valueOf(Long.MAX_VALUE).toString() + "0");
+        assertTrue(e.eq(bigInt, bigInt));
+    }
+    
+	@Test
+    public void testEvaluator_NumberWideningCompare() {
+        Evaluator e = Evaluator.evaluator(1);
+
+        assertTrue(e.compare((byte)1, (byte)1) == 0);
+        assertTrue(e.compare((byte)1, (short)1) == 0);
+        assertTrue(e.compare((byte)1, (int)1) == 0);
+        assertTrue(e.compare((byte)1, (long)1) == 0);
+        assertTrue(e.compare((byte)1, (float)1) == 0);
+        assertTrue(e.compare((byte)1, (double)1) == 0);
+
+        assertTrue(e.compare((short)1, (byte)1) == 0);
+        assertTrue(e.compare((short)1, (short)1) == 0);
+        assertTrue(e.compare((short)1, (int)1) == 0);
+        assertTrue(e.compare((short)1, (long)1) == 0);
+        assertTrue(e.compare((short)1, (float)1) == 0);
+        assertTrue(e.compare((short)1, (double)1) == 0);
+
+        assertTrue(e.compare((int)1, (byte)1) == 0);
+        assertTrue(e.compare((int)1, (short)1) == 0);
+        assertTrue(e.compare((int)1, (int)1) == 0);
+        assertTrue(e.compare((int)1, (long)1) == 0);
+        assertTrue(e.compare((int)1, (float)1) == 0);
+        assertTrue(e.compare((int)1, (double)1) == 0);
+        
+        assertTrue(e.compare((long)1, (byte)1) == 0);
+        assertTrue(e.compare((long)1, (short)1) == 0);
+        assertTrue(e.compare((long)1, (int)1) == 0);
+        assertTrue(e.compare((long)1, (long)1) == 0);
+        assertTrue(e.compare((long)1, (float)1) == 0);
+        assertTrue(e.compare((long)1, (double)1) == 0);
+        
+        assertTrue(e.compare((float)1, (byte)1) == 0);
+        assertTrue(e.compare((float)1, (short)1) == 0);
+        assertTrue(e.compare((float)1, (int)1) == 0);
+        assertTrue(e.compare((float)1, (long)1) == 0);
+        assertTrue(e.compare((float)1, (float)1) == 0);
+        assertTrue(e.compare((float)1, (double)1) == 0);
+        
+        assertTrue(e.compare((double)1, (byte)1) == 0);
+        assertTrue(e.compare((double)1, (short)1) == 0);
+        assertTrue(e.compare((double)1, (int)1) == 0);
+        assertTrue(e.compare((double)1, (long)1) == 0);
+        assertTrue(e.compare((double)1, (float)1) == 0);
+        assertTrue(e.compare((double)1, (double)1) == 0);
+        
+        assertTrue(e.compare((float)1.1, (float)1.1) == 0);
+        assertTrue(e.compare((float)1.1, (double)1.1) == 0);
+        
+        assertTrue(e.compare(Long.MAX_VALUE, Long.MAX_VALUE) == 0);
+        assertTrue(e.compare(Double.MAX_VALUE, Double.MAX_VALUE) == 0);
+        
+        assertTrue(e.compare((int)1, new AtomicInteger(1)) == 0);
+        assertTrue(e.compare(new AtomicInteger(1), (int)1) == 0);
+        
+        assertTrue(e.compare((int)1, new AtomicLong(1)) == 0);
+        assertTrue(e.compare(new AtomicLong(1), (int)1) == 0);
+        
+        assertTrue(e.compare((int)1, BigInteger.ONE) == 0);
+        assertTrue(e.compare(BigInteger.ONE, (int)1) == 0);
+        
+        BigInteger bigInt = new BigInteger(Long.valueOf(Long.MAX_VALUE).toString() + "0");
+        assertTrue(e.compare(bigInt, bigInt) == 0);
+    }
+    
     @Test
     public void testEvaluator_BigDecimal() {
         Object lhs = new BigDecimal("1.10");
@@ -132,7 +265,7 @@ public class EvaluatorTest {
     @Test
     public void testEvaluator_Persistent_MultiKey() {
 
-        Map<String, Object> lhsIdMap = new HashMap<String, Object>();
+        Map<String, Object> lhsIdMap = new HashMap<>();
         lhsIdMap.put("a", 1);
         lhsIdMap.put("b", "B");
         ObjectId lhsId = new ObjectId("X", lhsIdMap);
@@ -142,7 +275,7 @@ public class EvaluatorTest {
         Evaluator e = Evaluator.evaluator(lhs);
         assertNotNull(e);
 
-        Map<String, Object> rhsId1Map = new HashMap<String, Object>();
+        Map<String, Object> rhsId1Map = new HashMap<>();
         rhsId1Map.put("a", 1);
         rhsId1Map.put("b", "B");
         ObjectId rhsId1 = new ObjectId("X", rhsId1Map);
@@ -153,7 +286,7 @@ public class EvaluatorTest {
         assertTrue(e.eq(lhs, rhsId1));
         assertTrue(e.eq(lhs, rhsId1Map));
 
-        Map<String, Object> rhsId2Map = new HashMap<String, Object>();
+        Map<String, Object> rhsId2Map = new HashMap<>();
         rhsId2Map.put("a", 1);
         rhsId2Map.put("b", "BX");
         ObjectId rhsId2 = new ObjectId("X", rhsId2Map);

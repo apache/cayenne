@@ -44,7 +44,7 @@ public class ClientModuleTest {
     @Test
     public void testClientConnection() {
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(Constants.ROP_SERVICE_URL_PROPERTY, "http://localhost/YuM");
         ClientModule module = new ClientModule(properties);
 
@@ -61,7 +61,7 @@ public class ClientModuleTest {
     @Test
     public void testObjectContextFactory() {
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         ClientModule module = new ClientModule(properties) {
 
             @Override
@@ -84,7 +84,7 @@ public class ClientModuleTest {
     @Test
     public void testDataChannel() {
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         ClientModule module = new ClientModule(properties) {
 
             @Override
@@ -113,7 +113,7 @@ public class ClientModuleTest {
     @Test
     public void testDataChannel_NoChannelEvents() {
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(Constants.ROP_CHANNEL_EVENTS_PROPERTY, "true");
         ClientModule module = new ClientModule(properties) {
 

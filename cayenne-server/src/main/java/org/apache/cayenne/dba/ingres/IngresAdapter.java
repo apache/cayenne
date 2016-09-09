@@ -19,15 +19,11 @@
 
 package org.apache.cayenne.dba.ingres;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
+import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
@@ -39,11 +35,17 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.List;
 
 /**
  * DbAdapter implementation for <a
@@ -59,101 +61,109 @@ import org.apache.cayenne.resource.ResourceLocator;
  */
 public class IngresAdapter extends JdbcAdapter {
 
-    public static final String TRIM_FUNCTION = "TRIM";
+	public static final String TRIM_FUNCTION = "TRIM";
 
-    public IngresAdapter(@Inject RuntimeProperties runtimeProperties,
-            @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
-            @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
-            @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-            @Inject ResourceLocator resourceLocator) {
-        super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator);
-        setSupportsUniqueConstraints(true);
-        setSupportsGeneratedKeys(true);
-    }
+	public IngresAdapter(@Inject RuntimeProperties runtimeProperties,
+			@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+			@Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+			@Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+			@Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator) {
+		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator);
+		setSupportsUniqueConstraints(true);
+		setSupportsGeneratedKeys(true);
+	}
 
-    @Override
-    public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new TrimmingQualifierTranslator(queryAssembler, IngresAdapter.TRIM_FUNCTION);
-    }
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver) {
+		return new IngresSelectTranslator(query, this, entityResolver);
+	}
 
-    @Override
-    public SQLAction getAction(Query query, DataNode node) {
-        return query.createSQLAction(new IngresActionBuilder(node));
-    }
+	@Override
+	public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
+		return new TrimmingQualifierTranslator(queryAssembler, IngresAdapter.TRIM_FUNCTION);
+	}
 
-    @Override
-    protected void configureExtendedTypes(ExtendedTypeMap map) {
-        super.configureExtendedTypes(map);
-        map.registerType(new IngresCharType());
+	@Override
+	public SQLAction getAction(Query query, DataNode node) {
+		return query.createSQLAction(new IngresActionBuilder(node));
+	}
 
-        // configure boolean type to work with numeric columns
-        map.registerType(new IngresBooleanType());
-    }
+	@Override
+	protected void configureExtendedTypes(ExtendedTypeMap map) {
+		super.configureExtendedTypes(map);
+		map.registerType(new IngresCharType());
 
-    /**
-     * @see JdbcAdapter#createPkGenerator()
-     */
-    @Override
-    protected PkGenerator createPkGenerator() {
-        return new IngresPkGenerator(this);
-    }
+		// configure boolean type to work with numeric columns
+		map.registerType(new IngresBooleanType());
+	}
 
-    @Override
-    public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale)
-            throws SQLException, Exception {
+	/**
+	 * @see JdbcAdapter#createPkGenerator()
+	 */
+	@Override
+	protected PkGenerator createPkGenerator() {
+		return new IngresPkGenerator(this);
+	}
 
-        if (object == null && (sqlType == Types.BOOLEAN || sqlType == Types.BIT)) {
-            statement.setNull(pos, Types.VARCHAR);
-        } else {
-            super.bindParameter(statement, object, pos, sqlType, scale);
-        }
-    }
+	@Override
+	public void bindParameter(PreparedStatement statement, Object object, int pos, int sqlType, int scale)
+			throws SQLException, Exception {
 
-    @Override
-    public MergerFactory mergerFactory() {
-        return new IngresMergerFactory();
-    }
+		if (object == null && (sqlType == Types.BOOLEAN || sqlType == Types.BIT)) {
+			statement.setNull(pos, Types.VARCHAR);
+		} else {
+			super.bindParameter(statement, object, pos, sqlType, scale);
+		}
+	}
 
-    @Override
-    public void createTableAppendColumn(StringBuffer buf, DbAttribute at) {
+	@Override
+	public MergerFactory mergerFactory() {
+		return new IngresMergerFactory();
+	}
 
-        String[] types = externalTypesForJdbcType(at.getType());
-        if (types == null || types.length == 0) {
-            throw new CayenneRuntimeException("Undefined type for attribute '"
-                    + at.getEntity().getFullyQualifiedName() + "." + at.getName() + "': " + at.getType());
-        }
+	@Override
+	public void createTableAppendColumn(StringBuffer buf, DbAttribute at) {
 
-        String type = types[0];
-        buf.append(quotingStrategy.quotedName(at)).append(' ').append(type);
+		String[] types = externalTypesForJdbcType(at.getType());
+		if (types == null || types.length == 0) {
+			throw new CayenneRuntimeException("Undefined type for attribute '" + at.getEntity().getFullyQualifiedName()
+					+ "." + at.getName() + "': " + at.getType());
+		}
 
-        // append size and precision (if applicable)
-        if (typeSupportsLength(at.getType())) {
-            int len = at.getMaxLength();
-            int scale = TypesMapping.isDecimal(at.getType()) ? at.getScale() : -1;
+		String type = types[0];
+		buf.append(quotingStrategy.quotedName(at)).append(' ').append(type);
 
-            // sanity check
-            if (scale > len) {
-                scale = -1;
-            }
+		// append size and precision (if applicable)
+		if (typeSupportsLength(at.getType())) {
+			int len = at.getMaxLength();
+			int scale = TypesMapping.isDecimal(at.getType()) ? at.getScale() : -1;
 
-            if (len > 0) {
-                buf.append('(').append(len);
+			// sanity check
+			if (scale > len) {
+				scale = -1;
+			}
 
-                if (scale >= 0) {
-                    buf.append(", ").append(scale);
-                }
+			if (len > 0) {
+				buf.append('(').append(len);
 
-                buf.append(')');
-            }
-        }
+				if (scale >= 0) {
+					buf.append(", ").append(scale);
+				}
 
-        if (at.isGenerated()) {
-            buf.append(" GENERATED BY DEFAULT AS IDENTITY ");
-        }
+				buf.append(')');
+			}
+		}
 
-        // Ingres does not like "null" for non mandatory fields
-        if (at.isMandatory()) {
-            buf.append(" NOT NULL");
-        }
-    }
+		if (at.isGenerated()) {
+			buf.append(" GENERATED BY DEFAULT AS IDENTITY ");
+		}
+
+		// Ingres does not like "null" for non mandatory fields
+		if (at.isMandatory()) {
+			buf.append(" NOT NULL");
+		}
+	}
 }

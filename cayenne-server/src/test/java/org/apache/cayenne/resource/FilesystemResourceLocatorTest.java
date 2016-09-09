@@ -32,78 +32,76 @@ import static org.junit.Assert.assertNotNull;
 
 public class FilesystemResourceLocatorTest {
 
-    @Test
-    public void testArrayConstructor() {
-        FilesystemResourceLocator l1 = new FilesystemResourceLocator();
-        assertEquals(1, l1.roots.length);
-        assertEquals(System.getProperty("user.dir"), l1.roots[0].getPath());
+	@Test
+	public void testArrayConstructor() {
+		FilesystemResourceLocator l1 = new FilesystemResourceLocator();
+		assertEquals(1, l1.roots.length);
+		assertEquals(System.getProperty("user.dir"), l1.roots[0].getPath());
 
-        File base = FileUtil.baseTestDirectory();
-        File f1 = new File(base, "f1");
-        File f2 = new File(new File(base, "f2"), "f3");
+		File base = FileUtil.baseTestDirectory();
+		File f1 = new File(base, "f1");
+		File f2 = new File(new File(base, "f2"), "f3");
 
-        FilesystemResourceLocator l2 = new FilesystemResourceLocator(f1, f2);
-        assertEquals(2, l2.roots.length);
-        assertEquals(base, l2.roots[0]);
-        assertEquals(new File(base, "f2"), l2.roots[1]);
-    }
+		FilesystemResourceLocator l2 = new FilesystemResourceLocator(f1, f2);
+		assertEquals(2, l2.roots.length);
+		assertEquals(base, l2.roots[0]);
+		assertEquals(new File(base, "f2"), l2.roots[1]);
+	}
 
-    @Test
-    public void testCollectionConstructor() {
-        FilesystemResourceLocator l1 = new FilesystemResourceLocator(Collections
-                .<File> emptyList());
-        assertEquals(1, l1.roots.length);
-        assertEquals(System.getProperty("user.dir"), l1.roots[0].getPath());
+	@Test
+	public void testCollectionConstructor() {
+		FilesystemResourceLocator l1 = new FilesystemResourceLocator(Collections.<File> emptyList());
+		assertEquals(1, l1.roots.length);
+		assertEquals(System.getProperty("user.dir"), l1.roots[0].getPath());
 
-        File base = FileUtil.baseTestDirectory();
-        File f1 = new File(base, "f1");
-        File f2 = new File(new File(base, "f2"), "f3");
+		File base = FileUtil.baseTestDirectory();
+		File f1 = new File(base, "f1");
+		File f2 = new File(new File(base, "f2"), "f3");
 
-        FilesystemResourceLocator l2 = new FilesystemResourceLocator(Arrays
-                .asList(f1, f2));
-        assertEquals(2, l2.roots.length);
-        assertEquals(base, l2.roots[0]);
-        assertEquals(new File(base, "f2"), l2.roots[1]);
-    }
+		FilesystemResourceLocator l2 = new FilesystemResourceLocator(Arrays.asList(f1, f2));
+		assertEquals(2, l2.roots.length);
+		assertEquals(base, l2.roots[0]);
+		assertEquals(new File(base, "f2"), l2.roots[1]);
+	}
 
-    @Test
-    public void testFindResources() throws Exception {
+	@Test
+	public void testFindResources() throws Exception {
 
-        File base = new File(FileUtil.baseTestDirectory(), getClass().getName());
-        File root1 = new File(base, "r1");
-        File root2 = new File(base, "r2");
+		File base = new File(FileUtil.baseTestDirectory(), getClass().getName());
+		File root1 = new File(base, "r1");
+		File root2 = new File(base, "r2");
 
-        root1.mkdirs();
-        root2.mkdirs();
+		root1.mkdirs();
+		root2.mkdirs();
 
-        FilesystemResourceLocator locator = new FilesystemResourceLocator(root1, root2);
-        Collection<Resource> resources1 = locator.findResources("x.txt");
-        assertNotNull(resources1);
-        assertEquals(0, resources1.size());
+		FilesystemResourceLocator locator = new FilesystemResourceLocator(root1, root2);
+		Collection<Resource> resources1 = locator.findResources("x.txt");
+		assertNotNull(resources1);
+		assertEquals(0, resources1.size());
 
-        File f1 = new File(root1, "x.txt");
-        touch(f1);
+		File f1 = new File(root1, "x.txt");
+		touch(f1);
 
-        Collection<Resource> resources2 = locator.findResources("x.txt");
-        assertNotNull(resources2);
-        assertEquals(1, resources2.size());
-        assertEquals(f1.toURL(), resources2.iterator().next().getURL());
+		Collection<Resource> resources2 = locator.findResources("x.txt");
+		assertNotNull(resources2);
+		assertEquals(1, resources2.size());
+		assertEquals(f1.toURL(), resources2.iterator().next().getURL());
 
-        File f2 = new File(root2, "x.txt");
-        touch(f2);
+		File f2 = new File(root2, "x.txt");
+		touch(f2);
 
-        Collection<Resource> resources3 = locator.findResources("x.txt");
-        assertNotNull(resources3);
-        assertEquals(2, resources3.size());
-        
-        Resource[] resources3a = resources3.toArray(new Resource[2]);
-        assertEquals(f1.toURL(), resources3a[0].getURL());
-        assertEquals(f2.toURL(), resources3a[1].getURL());
-    }
+		Collection<Resource> resources3 = locator.findResources("x.txt");
+		assertNotNull(resources3);
+		assertEquals(2, resources3.size());
 
-    private void touch(File f) throws Exception {
-        FileOutputStream out = new FileOutputStream(f);
-        out.write('a');
-        out.close();
-    }
+		Resource[] resources3a = resources3.toArray(new Resource[2]);
+		assertEquals(f1.toURL(), resources3a[0].getURL());
+		assertEquals(f2.toURL(), resources3a[1].getURL());
+	}
+
+	private void touch(File f) throws Exception {
+		try (FileOutputStream out = new FileOutputStream(f);) {
+			out.write('a');
+		}
+	}
 }

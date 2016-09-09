@@ -219,7 +219,7 @@ public class EJBQLQuery implements Query, XMLSerializable {
         // spec requires it.
 
         if (namedParameters == null) {
-            namedParameters = new HashMap<String, Object>();
+            namedParameters = new HashMap<>();
         }
 
         namedParameters.put(name, object);

@@ -21,6 +21,7 @@ package org.apache.cayenne.tools.dbimport.config;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.join;
 
 /**
@@ -63,15 +64,22 @@ public class IncludeTable extends PatternParam {
     }
 
     @Override
-    public String toString() {
-        String str = "+(" + getPattern() + ") ";
+    public StringBuilder toString(StringBuilder res, String s) {
+        super.toString(res, s);
+
+        String prefix = s + "  ";
         if (includeColumns != null && !includeColumns.isEmpty()) {
-            str += "+Columns(" + join(includeColumns, ", ") + ") ";
+            for (IncludeColumn includeColumn : includeColumns) {
+                includeColumn.toString(res, prefix);
+            }
         }
 
         if (excludeColumns != null && !excludeColumns.isEmpty()) {
-            str += "-Columns(" + join(excludeColumns, ", ") + ") ";
+            for (ExcludeColumn excludeColumn : excludeColumns) {
+                excludeColumn.toString(res, prefix);
+            }
         }
-        return str;
+
+        return res;
     }
 }

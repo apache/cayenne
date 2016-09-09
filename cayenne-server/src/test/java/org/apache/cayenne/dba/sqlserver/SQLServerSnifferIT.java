@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+import java.sql.Connection;
+
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
@@ -30,49 +35,33 @@ import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLServerSnifferIT extends ServerCase {
 
-    @Inject
-    private ServerCaseDataSourceFactory dataSourceFactory;
+	@Inject
+	private ServerCaseDataSourceFactory dataSourceFactory;
 
-    @Inject
-    private UnitDbAdapter accessStackAdapter;
-    
-    @Inject
-    private AdhocObjectFactory objectFactory;
+	@Inject
+	private UnitDbAdapter accessStackAdapter;
 
-    @Test
-    public void testCreateAdapter() throws Exception {
+	@Inject
+	private AdhocObjectFactory objectFactory;
 
-        SQLServerSniffer sniffer = new SQLServerSniffer(objectFactory);
+	@Test
+	public void testCreateAdapter() throws Exception {
 
-        DbAdapter adapter = null;
-        Connection c = dataSourceFactory.getSharedDataSource().getConnection();
+		SQLServerSniffer sniffer = new SQLServerSniffer(objectFactory);
 
-        try {
-            adapter = sniffer.createAdapter(c.getMetaData());
-        }
-        finally {
-            try {
-                c.close();
-            }
-            catch (SQLException e) {
+		DbAdapter adapter = null;
 
-            }
-        }
+		try (Connection c = dataSourceFactory.getSharedDataSource().getConnection();) {
+			adapter = sniffer.createAdapter(c.getMetaData());
+		}
 
-        if (accessStackAdapter instanceof SQLServerUnitDbAdapter) {
-            assertNotNull(adapter);
-        }
-        else {
-            assertNull(adapter);
-        }
-    }
+		if (accessStackAdapter instanceof SQLServerUnitDbAdapter) {
+			assertNotNull(adapter);
+		} else {
+			assertNull(adapter);
+		}
+	}
 }

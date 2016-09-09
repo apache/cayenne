@@ -34,191 +34,195 @@ import org.apache.cayenne.exp.Expression;
  * @since 1.1
  */
 public class ASTList extends SimpleNode {
-    protected Object[] values;
 
-    ASTList(int id) {
-        super(id);
-    }
+	private static final long serialVersionUID = 6045178972189002055L;
 
-    public ASTList() {
-        super(ExpressionParserTreeConstants.JJTLIST);
-    }
+	protected Object[] values;
 
-    /**
-     * Initializes a list expression with an Object[].
-     */
-    public ASTList(Object[] objects) {
-        super(ExpressionParserTreeConstants.JJTLIST);
-        setValues(objects);
-    }
+	ASTList(int id) {
+		super(id);
+	}
 
-    /**
-     * Initializes a list expression with a Java Collection
-     */
-    public ASTList(Collection objects) {
-        super(ExpressionParserTreeConstants.JJTLIST);
-        setValues(objects);
-    }
+	public ASTList() {
+		super(ExpressionParserTreeConstants.JJTLIST);
+	}
 
-    /**
-     * Initializes a list expression with a Java Iterator.
-     */
-    public ASTList(Iterator objects) {
-        super(ExpressionParserTreeConstants.JJTLIST);
-        setValues(objects);
-    }
+	/**
+	 * Initializes a list expression with an Object[].
+	 */
+	public ASTList(Object[] objects) {
+		super(ExpressionParserTreeConstants.JJTLIST);
+		setValues(objects);
+	}
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        return new ASTList(id);
-    }
+	/**
+	 * Initializes a list expression with a Java Collection
+	 */
+	public ASTList(Collection<?> objects) {
+		super(ExpressionParserTreeConstants.JJTLIST);
+		setValues(objects);
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        return values;
-    }
+	/**
+	 * Initializes a list expression with a Java Iterator.
+	 */
+	public ASTList(Iterator<?> objects) {
+		super(ExpressionParserTreeConstants.JJTLIST);
+		setValues(objects);
+	}
 
-    @Override
-    public int getType() {
-        return Expression.LIST;
-    }
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		return new ASTList(id);
+	}
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        return ",";
-    }
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		return values;
+	}
 
-    /**
-     * @since 4.0
-     */
-    @Override
-    public void appendAsString(Appendable out) throws IOException {
+	@Override
+	public int getType() {
+		return Expression.LIST;
+	}
 
-        out.append('(');
+	@Override
+	protected String getExpressionOperator(int index) {
+		return ",";
+	}
 
-        if ((values != null) && (values.length > 0)) {
-            for (int i = 0; i < values.length; ++i) {
-                if (i > 0) {
-                    out.append(getExpressionOperator(i));
-                    out.append(' ');
-                }
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void appendAsString(Appendable out) throws IOException {
 
-                if (values[i] instanceof Expression) {
-                    ((Expression) values[i]).appendAsString(out);
-                } else {
-                    appendScalarAsString(out, values[i], '\"');
-                }
-            }
-        }
+		out.append('(');
 
-        out.append(')');
-    }
+		if ((values != null) && (values.length > 0)) {
+			for (int i = 0; i < values.length; ++i) {
+				if (i > 0) {
+					out.append(getExpressionOperator(i));
+					out.append(' ');
+				}
 
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+				if (values[i] instanceof Expression) {
+					((Expression) values[i]).appendAsString(out);
+				} else {
+					appendScalarAsString(out, values[i], '\"');
+				}
+			}
+		}
 
-        if (parent != null) {
-            out.append("(");
-        }
+		out.append(')');
+	}
 
-        if ((values != null) && (values.length > 0)) {
-            for (int i = 0; i < values.length; ++i) {
-                if (i > 0) {
-                    out.append(getEJBQLExpressionOperator(i));
-                    out.append(' ');
-                }
+	@Override
+	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
 
-                if (values[i] == null) {
-                    out.append("null");
-                } else {
-                    SimpleNode.encodeScalarAsEJBQL(parameterAccumulator, out, values[i]);
-                }
-            }
-        }
+		if (parent != null) {
+			out.append("(");
+		}
 
-        if (parent != null) {
-            out.append(')');
-        }
-    }
+		if ((values != null) && (values.length > 0)) {
+			for (int i = 0; i < values.length; ++i) {
+				if (i > 0) {
+					out.append(getEJBQLExpressionOperator(i));
+					out.append(' ');
+				}
 
-    @Override
-    public int getOperandCount() {
-        return 1;
-    }
+				if (values[i] == null) {
+					out.append("null");
+				} else {
+					SimpleNode.encodeScalarAsEJBQL(parameterAccumulator, out, values[i]);
+				}
+			}
+		}
 
-    @Override
-    public Object getOperand(int index) {
-        if (index == 0) {
-            return values;
-        }
+		if (parent != null) {
+			out.append(')');
+		}
+	}
 
-        throw new ArrayIndexOutOfBoundsException(index);
-    }
+	@Override
+	public int getOperandCount() {
+		return 1;
+	}
 
-    @Override
-    public void setOperand(int index, Object value) {
-        if (index != 0) {
-            throw new ArrayIndexOutOfBoundsException(index);
-        }
+	@Override
+	public Object getOperand(int index) {
+		if (index == 0) {
+			return values;
+		}
 
-        setValues(value);
-    }
+		throw new ArrayIndexOutOfBoundsException(index);
+	}
 
-    /**
-     * Sets an internal collection of values. Value argument can be an Object[],
-     * a Collection or an iterator.
-     */
-    protected void setValues(Object value) {
-        if (value == null) {
-            this.values = null;
-        } else if (value instanceof Object[]) {
-            int size = ((Object[]) value).length;
-            this.values = new Object[size];
-            System.arraycopy((Object[]) value, 0, this.values, 0, size);
-        } else if (value instanceof Collection) {
-            this.values = ((Collection) value).toArray(new Object[((Collection) value).size()]);
-        } else if (value instanceof Iterator) {
-            List values = new ArrayList();
-            Iterator it = (Iterator) value;
-            while (it.hasNext()) {
-                values.add(it.next());
-            }
+	@Override
+	public void setOperand(int index, Object value) {
+		if (index != 0) {
+			throw new ArrayIndexOutOfBoundsException(index);
+		}
 
-            this.values = values.toArray();
-        } else {
-            throw new IllegalArgumentException("Invalid value class '" + value.getClass().getName()
-                    + "', expected null, Object[], Collection, Iterator");
-        }
-        convertValues();
-    }
-    
-    private void convertValues() {
-        for (int i = 0; i < values.length; i++) {
-            if (values[i] instanceof Persistent) {
-                values[i] = ((Persistent)values[i]).getObjectId();
-            }
-        }
-    }
-    
-    @Override
-    public void jjtClose() {
-        super.jjtClose();
+		setValues(value);
+	}
 
-        // For backwards compatibility set a List value wrapping the nodes.
-        // or maybe we should rewrite the parser spec to insert children
-        // directly into internal collection?
-        int size = jjtGetNumChildren();
-        Object[] listValue = new Object[size];
-        for (int i = 0; i < size; i++) {
-            listValue[i] = unwrapChild(jjtGetChild(i));
-        }
+	/**
+	 * Sets an internal collection of values. Value argument can be an Object[],
+	 * a Collection or an iterator.
+	 */
+	protected void setValues(Object value) {
+		if (value == null) {
+			this.values = null;
+		} else if (value instanceof Object[]) {
+			int size = ((Object[]) value).length;
+			this.values = new Object[size];
+			System.arraycopy((Object[]) value, 0, this.values, 0, size);
+		} else if (value instanceof Collection) {
+			Collection<?> c = (Collection<?>) value;
+			this.values = c.toArray(new Object[c.size()]);
+		} else if (value instanceof Iterator) {
+			List<Object> values = new ArrayList<Object>();
+			Iterator<?> it = (Iterator<?>) value;
+			while (it.hasNext()) {
+				values.add(it.next());
+			}
 
-        setValues(listValue);
+			this.values = values.toArray();
+		} else {
+			throw new IllegalArgumentException("Invalid value class '" + value.getClass().getName()
+					+ "', expected null, Object[], Collection, Iterator");
+		}
+		convertValues();
+	}
 
-        // clean children - we are not supposed to use them anymore
-        children = null;
-    }
+	private void convertValues() {
+		for (int i = 0; i < values.length; i++) {
+			if (values[i] instanceof Persistent) {
+				values[i] = ((Persistent) values[i]).getObjectId();
+			}
+		}
+	}
+
+	@Override
+	public void jjtClose() {
+		super.jjtClose();
+
+		// For backwards compatibility set a List value wrapping the nodes.
+		// or maybe we should rewrite the parser spec to insert children
+		// directly into internal collection?
+		int size = jjtGetNumChildren();
+		Object[] listValue = new Object[size];
+		for (int i = 0; i < size; i++) {
+			listValue[i] = unwrapChild(jjtGetChild(i));
+		}
+
+		setValues(listValue);
+
+		// clean children - we are not supposed to use them anymore
+		children = null;
+	}
 }

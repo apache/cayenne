@@ -43,124 +43,118 @@ import static org.junit.Assert.fail;
 @UseServerRuntime(CayenneProjects.COMPOUND_PROJECT)
 public class CayenneCompoundIT extends ServerCase {
 
-    @Inject
-    private ObjectContext context;
+	@Inject
+	private ObjectContext context;
 
-    @Inject
-    protected DBHelper dbHelper;
+	@Inject
+	protected DBHelper dbHelper;
 
-    protected TableHelper tCompoundPKTest;
-    protected TableHelper tCharPKTest;
+	protected TableHelper tCompoundPKTest;
+	protected TableHelper tCharPKTest;
 
-    @Before
-    public void setUp() throws Exception {
-        tCompoundPKTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
-        tCompoundPKTest.setColumns("KEY1", "KEY2", "NAME");
+	@Before
+	public void setUp() throws Exception {
+		tCompoundPKTest = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
+		tCompoundPKTest.setColumns("KEY1", "KEY2", "NAME");
 
-        tCharPKTest = new TableHelper(dbHelper, "CHAR_PK_TEST");
-        tCharPKTest.setColumns("PK_COL", "OTHER_COL");
-    }
+		tCharPKTest = new TableHelper(dbHelper, "CHAR_PK_TEST");
+		tCharPKTest.setColumns("PK_COL", "OTHER_COL");
+	}
 
-    private void createOneCompoundPK() throws Exception {
-        tCompoundPKTest.insert("PK1", "PK2", "BBB");
-    }
+	private void createOneCompoundPK() throws Exception {
+		tCompoundPKTest.insert("PK1", "PK2", "BBB");
+	}
 
-    private void createOneCharPK() throws Exception {
-        tCharPKTest.insert("CPK", "AAAA");
-    }
+	private void createOneCharPK() throws Exception {
+		tCharPKTest.insert("CPK", "AAAA");
+	}
 
-    @Test
-    public void testObjectForPKEntityMapCompound() throws Exception {
-        createOneCompoundPK();
+	@Test
+	public void testObjectForPKEntityMapCompound() throws Exception {
+		createOneCompoundPK();
 
-        Map<String, Object> pk = new HashMap<String, Object>();
-        pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "PK1");
-        pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "PK2");
-        Object object = Cayenne.objectForPK(context, CompoundPkTestEntity.class, pk);
+		Map<String, Object> pk = new HashMap<>();
+		pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "PK1");
+		pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "PK2");
+		Object object = Cayenne.objectForPK(context, CompoundPkTestEntity.class, pk);
 
-        assertNotNull(object);
-        assertTrue(object instanceof CompoundPkTestEntity);
-        assertEquals("BBB", ((CompoundPkTestEntity) object).getName());
-    }
+		assertNotNull(object);
+		assertTrue(object instanceof CompoundPkTestEntity);
+		assertEquals("BBB", ((CompoundPkTestEntity) object).getName());
+	}
 
-    @Test
-    public void testCompoundPKForObject() throws Exception {
-        createOneCompoundPK();
+	@Test
+	public void testCompoundPKForObject() throws Exception {
+		createOneCompoundPK();
 
-        List<?> objects = context
-                .performQuery(new SelectQuery(CompoundPkTestEntity.class));
-        assertEquals(1, objects.size());
-        DataObject object = (DataObject) objects.get(0);
+		List<?> objects = context.performQuery(new SelectQuery(CompoundPkTestEntity.class));
+		assertEquals(1, objects.size());
+		DataObject object = (DataObject) objects.get(0);
 
-        Map<String, Object> pk = Cayenne.compoundPKForObject(object);
-        assertNotNull(pk);
-        assertEquals(2, pk.size());
-        assertEquals("PK1", pk.get(CompoundPkTestEntity.KEY1_PK_COLUMN));
-        assertEquals("PK2", pk.get(CompoundPkTestEntity.KEY2_PK_COLUMN));
-    }
+		Map<String, Object> pk = Cayenne.compoundPKForObject(object);
+		assertNotNull(pk);
+		assertEquals(2, pk.size());
+		assertEquals("PK1", pk.get(CompoundPkTestEntity.KEY1_PK_COLUMN));
+		assertEquals("PK2", pk.get(CompoundPkTestEntity.KEY2_PK_COLUMN));
+	}
 
-    @Test
-    public void testIntPKForObjectFailureForCompound() throws Exception {
-        createOneCompoundPK();
+	@Test
+	public void testIntPKForObjectFailureForCompound() throws Exception {
+		createOneCompoundPK();
 
-        List<?> objects = context
-                .performQuery(new SelectQuery(CompoundPkTestEntity.class));
-        assertEquals(1, objects.size());
-        DataObject object = (DataObject) objects.get(0);
+		List<?> objects = context.performQuery(new SelectQuery(CompoundPkTestEntity.class));
+		assertEquals(1, objects.size());
+		DataObject object = (DataObject) objects.get(0);
 
-        try {
-            Cayenne.intPKForObject(object);
-            fail("intPKForObject must fail for compound key");
-        }
-        catch (CayenneRuntimeException ex) {
-            // expected
-        }
-    }
+		try {
+			Cayenne.intPKForObject(object);
+			fail("intPKForObject must fail for compound key");
+		} catch (CayenneRuntimeException ex) {
+			// expected
+		}
+	}
 
-    @Test
-    public void testIntPKForObjectFailureForNonNumeric() throws Exception {
-        createOneCharPK();
+	@Test
+	public void testIntPKForObjectFailureForNonNumeric() throws Exception {
+		createOneCharPK();
 
-        List<?> objects = context.performQuery(new SelectQuery(CharPkTestEntity.class));
-        assertEquals(1, objects.size());
-        DataObject object = (DataObject) objects.get(0);
+		List<?> objects = context.performQuery(new SelectQuery(CharPkTestEntity.class));
+		assertEquals(1, objects.size());
+		DataObject object = (DataObject) objects.get(0);
 
-        try {
-            Cayenne.intPKForObject(object);
-            fail("intPKForObject must fail for non-numeric key");
-        }
-        catch (CayenneRuntimeException ex) {
+		try {
+			Cayenne.intPKForObject(object);
+			fail("intPKForObject must fail for non-numeric key");
+		} catch (CayenneRuntimeException ex) {
 
-        }
-    }
+		}
+	}
 
-    @Test
-    public void testPKForObjectFailureForCompound() throws Exception {
-        createOneCompoundPK();
+	@Test
+	public void testPKForObjectFailureForCompound() throws Exception {
+		createOneCompoundPK();
 
-        List<?> objects = context
-                .performQuery(new SelectQuery(CompoundPkTestEntity.class));
-        assertEquals(1, objects.size());
-        DataObject object = (DataObject) objects.get(0);
+		List<?> objects = context.performQuery(new SelectQuery(CompoundPkTestEntity.class));
+		assertEquals(1, objects.size());
+		DataObject object = (DataObject) objects.get(0);
 
-        try {
-            Cayenne.pkForObject(object);
-            fail("pkForObject must fail for compound key");
-        }
-        catch (CayenneRuntimeException ex) {
+		try {
+			Cayenne.pkForObject(object);
+			fail("pkForObject must fail for compound key");
+		} catch (CayenneRuntimeException ex) {
 
-        }
-    }
+		}
+	}
 
-    @Test
-    public void testIntPKForObjectNonNumeric() throws Exception {
-        createOneCharPK();
+	@Test
+	public void testIntPKForObjectNonNumeric() throws Exception {
+		createOneCharPK();
 
-        List<?> objects = context.performQuery(new SelectQuery(CharPkTestEntity.class));
-        assertEquals(1, objects.size());
-        DataObject object = (DataObject) objects.get(0);
+		List<?> objects = context.performQuery(new SelectQuery(CharPkTestEntity.class));
+		assertEquals(1, objects.size());
+		DataObject object = (DataObject) objects.get(0);
 
-        assertEquals("CPK", Cayenne.pkForObject(object));
-    }
+		assertEquals("CPK", Cayenne.pkForObject(object));
+	}
 
 }

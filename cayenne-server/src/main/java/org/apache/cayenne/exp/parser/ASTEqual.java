@@ -32,129 +32,131 @@ import org.apache.commons.logging.LogFactory;
  * @since 1.1
  */
 public class ASTEqual extends ConditionNode implements ValueInjector {
-    
-    private static final Log logObj = LogFactory.getLog(ASTEqual.class);
 
-    /**
-     * Constructor used by expression parser. Do not invoke directly.
-     */
-    ASTEqual(int id) {
-        super(id);
-    }
+	private static final long serialVersionUID = 1211234198602067833L;
+	
+	private static final Log LOGGER = LogFactory.getLog(ASTEqual.class);
 
-    public ASTEqual() {
-        super(ExpressionParserTreeConstants.JJTEQUAL);
-    }
+	/**
+	 * Constructor used by expression parser. Do not invoke directly.
+	 */
+	ASTEqual(int id) {
+		super(id);
+	}
 
-    /**
-     * Creates "Equal To" expression.
-     */
-    public ASTEqual(ASTPath path, Object value) {
-        super(ExpressionParserTreeConstants.JJTEQUAL);
-        jjtAddChild(path, 0);
-        jjtAddChild(new ASTScalar(value), 1);
-        connectChildren();
-    }
+	public ASTEqual() {
+		super(ExpressionParserTreeConstants.JJTEQUAL);
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len != 2) {
-            return Boolean.FALSE;
-        }
+	/**
+	 * Creates "Equal To" expression.
+	 */
+	public ASTEqual(ASTPath path, Object value) {
+		super(ExpressionParserTreeConstants.JJTEQUAL);
+		jjtAddChild(path, 0);
+		jjtAddChild(new ASTScalar(value), 1);
+		connectChildren();
+	}
 
-        Object o1 = evaluateChild(0, o);
-        Object o2 = evaluateChild(1, o);
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		int len = jjtGetNumChildren();
+		if (len != 2) {
+			return Boolean.FALSE;
+		}
 
-        return evaluateImpl(o1, o2);
-    }
+		Object o1 = evaluateChild(0, o);
+		Object o2 = evaluateChild(1, o);
 
-    /**
-     * Compares two objects, if one of them is array, 'in' operation is
-     * performed
-     */
-    static boolean evaluateImpl(Object o1, Object o2) {
-        // TODO: maybe we need a comparison "strategy" here, instead of
-        // a switch of all possible cases? ... there were other requests for
-        // more relaxed type-unsafe comparison (e.g. numbers to strings)
+		return evaluateImpl(o1, o2);
+	}
 
-        if (o1 == null && o2 == null) {
-            return true;
-        } else if (o1 != null) {
+	/**
+	 * Compares two objects, if one of them is array, 'in' operation is
+	 * performed
+	 */
+	static boolean evaluateImpl(Object o1, Object o2) {
+		// TODO: maybe we need a comparison "strategy" here, instead of
+		// a switch of all possible cases? ... there were other requests for
+		// more relaxed type-unsafe comparison (e.g. numbers to strings)
 
-            // Per CAY-419 we perform 'in' comparison if one object is a list,
-            // and other is not
+		if (o1 == null && o2 == null) {
+			return true;
+		} else if (o1 != null) {
 
-            if (o1 instanceof List && !(o2 instanceof List)) {
-                for (Object element : ((List<?>) o1)) {
-                    if (element != null && Evaluator.evaluator(element).eq(element, o2)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-            if (o2 instanceof List && !(o1 instanceof List)) {
-                for (Object element : ((List<?>) o2)) {
-                    if (element != null && Evaluator.evaluator(element).eq(element, o1)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
+			// Per CAY-419 we perform 'in' comparison if one object is a list,
+			// and other is not
 
-            return Evaluator.evaluator(o1).eq(o1, o2);
-        }
-        return false;
-    }
+			if (o1 instanceof List && !(o2 instanceof List)) {
+				for (Object element : ((List<?>) o1)) {
+					if (element != null && Evaluator.evaluator(element).eq(element, o2)) {
+						return true;
+					}
+				}
+				return false;
+			}
+			if (o2 instanceof List && !(o1 instanceof List)) {
+				for (Object element : ((List<?>) o2)) {
+					if (element != null && Evaluator.evaluator(element).eq(element, o1)) {
+						return true;
+					}
+				}
+				return false;
+			}
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        return new ASTEqual(id);
-    }
+			return Evaluator.evaluator(o1).eq(o1, o2);
+		}
+		return false;
+	}
 
-    @Override
-    protected String getExpressionOperator(int index) {
-        return "=";
-    }
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		return new ASTEqual(id);
+	}
 
-    @Override
-    protected String getEJBQLExpressionOperator(int index) {
-        if (jjtGetChild(1) instanceof ASTScalar && ((ASTScalar) jjtGetChild(1)).getValue() == null) {
-            // for ejbql, we need "is null" instead of "= null"
-            return "is";
-        }
-        return getExpressionOperator(index);
-    }
+	@Override
+	protected String getExpressionOperator(int index) {
+		return "=";
+	}
 
-    @Override
-    public int getType() {
-        return Expression.EQUAL_TO;
-    }
+	@Override
+	protected String getEJBQLExpressionOperator(int index) {
+		if (jjtGetChild(1) instanceof ASTScalar && ((ASTScalar) jjtGetChild(1)).getValue() == null) {
+			// for ejbql, we need "is null" instead of "= null"
+			return "is";
+		}
+		return getExpressionOperator(index);
+	}
 
-    public void injectValue(Object o) {
-        // try to inject value, if one of the operands is scalar, and other is a
-        // path
+	@Override
+	public int getType() {
+		return Expression.EQUAL_TO;
+	}
 
-        Node[] args = new Node[] { jjtGetChild(0), jjtGetChild(1) };
+	public void injectValue(Object o) {
+		// try to inject value, if one of the operands is scalar, and other is a
+		// path
 
-        int scalarIndex = -1;
-        if (args[0] instanceof ASTScalar) {
-            scalarIndex = 0;
-        } else if (args[1] instanceof ASTScalar) {
-            scalarIndex = 1;
-        }
+		Node[] args = new Node[] { jjtGetChild(0), jjtGetChild(1) };
 
-        if (scalarIndex != -1 && args[1 - scalarIndex] instanceof ASTObjPath) {
-            // inject
-            ASTObjPath path = (ASTObjPath) args[1 - scalarIndex];
-            try {
-                path.injectValue(o, evaluateChild(scalarIndex, o));
-            } catch (Exception ex) {
-                logObj.warn("Failed to inject value " + " on path " + path.getPath() + " to " + o, ex);
-            }
-        }
-    }
+		int scalarIndex = -1;
+		if (args[0] instanceof ASTScalar) {
+			scalarIndex = 0;
+		} else if (args[1] instanceof ASTScalar) {
+			scalarIndex = 1;
+		}
+
+		if (scalarIndex != -1 && args[1 - scalarIndex] instanceof ASTObjPath) {
+			// inject
+			ASTObjPath path = (ASTObjPath) args[1 - scalarIndex];
+			try {
+				path.injectValue(o, evaluateChild(scalarIndex, o));
+			} catch (Exception ex) {
+				LOGGER.warn("Failed to inject value " + " on path " + path.getPath() + " to " + o, ex);
+			}
+		}
+	}
 }

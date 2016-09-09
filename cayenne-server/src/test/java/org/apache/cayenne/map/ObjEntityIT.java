@@ -141,7 +141,7 @@ public class ObjEntityIT extends ServerCase {
     public void testLastPathComponent() {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
 
-        Map<String, String> aliases = new HashMap<String, String>();
+        Map<String, String> aliases = new HashMap<>();
         aliases.put("a", "paintingArray.toGallery");
 
         PathComponent<ObjAttribute, ObjRelationship> lastAttribute = artistE.lastPathComponent(

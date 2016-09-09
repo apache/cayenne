@@ -30,45 +30,40 @@ import org.junit.Test;
 
 public class GzipDecryptorTest {
 
-    @Test
-    public void testGunzip() throws IOException {
+	@Test
+	public void testGunzip() throws IOException {
 
-        byte[] input1 = CryptoUnitUtils.hexToBytes("1f8b0800000000000000f348cdc9c957f0409000a91a078c11000000");
-        byte[] output1 = GzipDecryptor.gunzip(input1);
-        byte[] expectedOutput1 = "Hello Hello Hello".getBytes("UTF8");
+		byte[] input1 = CryptoUnitUtils.hexToBytes("1f8b0800000000000000f348cdc9c957f0409000a91a078c11000000");
+		byte[] output1 = GzipDecryptor.gunzip(input1);
+		byte[] expectedOutput1 = "Hello Hello Hello".getBytes("UTF8");
 
-        assertArrayEquals(expectedOutput1, output1);
-    }
+		assertArrayEquals(expectedOutput1, output1);
+	}
 
-    @Test
-    public void testGunzip_Large() throws IOException {
+	@Test
+	public void testGunzip_Large() throws IOException {
 
-        byte[] input1 = readResource("plain.txt.gz");
-        byte[] output1 = GzipDecryptor.gunzip(input1);
-        byte[] expectedOutput1 = readResource("plain.txt");
+		byte[] input1 = readResource("plain.txt.gz");
+		byte[] output1 = GzipDecryptor.gunzip(input1);
+		byte[] expectedOutput1 = readResource("plain.txt");
 
-        assertArrayEquals(expectedOutput1, output1);
-    }
+		assertArrayEquals(expectedOutput1, output1);
+	}
 
-    private byte[] readResource(String name) throws IOException {
+	private byte[] readResource(String name) throws IOException {
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        InputStream in = getClass().getResourceAsStream(name);
-        assertNotNull(in);
+		try (InputStream in = getClass().getResourceAsStream(name);) {
 
-        try {
+			assertNotNull(in);
+			int read;
+			byte[] buffer = new byte[1024];
+			while ((read = in.read(buffer)) > 0) {
+				out.write(buffer, 0, read);
+			}
+		}
 
-            int read;
-            byte[] buffer = new byte[1024];
-            while ((read = in.read(buffer)) > 0) {
-                out.write(buffer, 0, read);
-            }
-
-        } finally {
-            in.close();
-        }
-
-        return out.toByteArray();
-    }
+		return out.toByteArray();
+	}
 }

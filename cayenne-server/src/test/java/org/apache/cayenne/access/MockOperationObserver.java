@@ -70,11 +70,11 @@ public class MockOperationObserver implements OperationObserver {
         throw new CayenneRuntimeException(ex);
     }
 
-    public void nextRows(Query q, ResultIterator it) {
+    public void nextRows(Query q, ResultIterator<?> it) {
     }
 
     @Override
-    public void nextGeneratedRows(Query query, ResultIterator keys, ObjectId idToUpdate) {
+    public void nextGeneratedRows(Query query, ResultIterator<?> keys, ObjectId idToUpdate) {
     }
 
     public boolean isIteratedResult() {

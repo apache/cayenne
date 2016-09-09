@@ -253,7 +253,7 @@ TOKEN : /* literals */
 /* From the Java 1.0.2 specification */
 TOKEN : /* IDENTIFIERS */
 {
-  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* (["+"])? >
 	|
   < #LETTER:
 	  [
@@ -1058,7 +1058,10 @@ void orderby_clause() #OrderBy : { }
 
 void orderby_item() #OrderByItem : { }
 {
-	path() [ <ASC> #Ascending | <DESC> #Descending ]
+	(aggregate_select_expression() 
+	| path()
+	)
+	[ <ASC> #Ascending | <DESC> #Descending ]
 }
 
 

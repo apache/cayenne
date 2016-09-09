@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
@@ -41,9 +42,6 @@ import org.apache.cayenne.di.Module;
  */
 public class ServerRuntimeBuilder {
 
-	/**
-	 * @since 4.0
-	 */
 	static final String DEFAULT_NAME = "cayenne";
 
 	private String name;
@@ -56,6 +54,16 @@ public class ServerRuntimeBuilder {
 	private String jdbcPassword;
 	private int jdbcMinConnections;
 	private int jdbcMaxConnections;
+	private long maxQueueWaitTime;
+	private String validationQuery;
+
+	public static ServerRuntimeBuilder builder() {
+		return new ServerRuntimeBuilder();
+	}
+
+	public static ServerRuntimeBuilder builder(String name) {
+		return new ServerRuntimeBuilder(name);
+	}
 
 	/**
 	 * Creates an empty builder.
@@ -77,9 +85,10 @@ public class ServerRuntimeBuilder {
 
 	/**
 	 * Sets a DataSource that will override any DataSources found in the
-	 * mapping. Moreover if the mapping contains no DataNodes, and the
-	 * DataSource is set with this method, the builder would create a single
-	 * default DataNode.
+	 * mapping. If the mapping contains no DataNodes, and the DataSource is set
+	 * with this method, the builder would create a single default DataNode.
+	 * 
+	 * @see DataSourceBuilder
 	 */
 	public ServerRuntimeBuilder dataSource(DataSource dataSource) {
 		this.dataSourceFactory = new FixedDataSourceFactory(dataSource);
@@ -87,7 +96,9 @@ public class ServerRuntimeBuilder {
 	}
 
 	/**
-	 * Sets JNDI location for the default DataSource.
+	 * Sets JNDI location for the default DataSource. If the mapping contains no
+	 * DataNodes, and the DataSource is set with this method, the builder would
+	 * create a single default DataNode.
 	 */
 	public ServerRuntimeBuilder jndiDataSource(String location) {
 		this.dataSourceFactory = new FixedJNDIDataSourceFactory(location);
@@ -108,6 +119,23 @@ public class ServerRuntimeBuilder {
 	public ServerRuntimeBuilder jdbcDriver(String driver) {
 		// TODO: guess the driver from URL
 		this.jdbcDriver = driver;
+		return this;
+	}
+
+	/**
+	 * Sets a validation query for the default DataSource.
+	 * 
+	 * @param validationQuery
+	 *            a SQL string that returns some result. It will be used to
+	 *            validate connections in the pool.
+	 */
+	public ServerRuntimeBuilder validationQuery(String validationQuery) {
+		this.validationQuery = validationQuery;
+		return this;
+	}
+	
+	public ServerRuntimeBuilder maxQueueWaitTime(long maxQueueWaitTime) {
+		this.maxQueueWaitTime = maxQueueWaitTime;
 		return this;
 	}
 
@@ -233,7 +261,14 @@ public class ServerRuntimeBuilder {
 					if (jdbcMaxConnections > 0) {
 						props.put(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, Integer.toString(jdbcMaxConnections));
 					}
+					
+					if (maxQueueWaitTime > 0) {
+						props.put(Constants.JDBC_MAX_QUEUE_WAIT_TIME, Long.toString(maxQueueWaitTime));
+					}
 
+					if (validationQuery != null) {
+						props.put(Constants.JDBC_VALIDATION_QUERY_PROPERTY, validationQuery);
+					}
 				}
 			});
 		}

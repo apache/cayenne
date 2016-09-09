@@ -41,147 +41,140 @@ import org.apache.commons.collections.Transformer;
  */
 class DataNodeSyncQualifierDescriptor {
 
-    private List<DbAttribute> attributes;
-    private List<Transformer> valueTransformers;
-    private boolean usingOptimisticLocking;
+	private List<DbAttribute> attributes;
+	private List<Transformer> valueTransformers;
+	private boolean usingOptimisticLocking;
 
-    public boolean isUsingOptimisticLocking() {
-        return usingOptimisticLocking;
-    }
+	public boolean isUsingOptimisticLocking() {
+		return usingOptimisticLocking;
+	}
 
-    List<DbAttribute> getAttributes() {
-        return attributes;
-    }
+	List<DbAttribute> getAttributes() {
+		return attributes;
+	}
 
-    Map<String, Object> createQualifierSnapshot(ObjectDiff diff) {
-        int len = attributes.size();
+	Map<String, Object> createQualifierSnapshot(ObjectDiff diff) {
+		int len = attributes.size();
 
-        Map<String, Object> map = new HashMap<String, Object>(len * 2);
-        for (int i = 0; i < len; i++) {
-            DbAttribute attribute = attributes.get(i);
-            if (!map.containsKey(attribute.getName())) {
+		Map<String, Object> map = new HashMap<>(len * 2);
+		for (int i = 0; i < len; i++) {
+			DbAttribute attribute = attributes.get(i);
+			if (!map.containsKey(attribute.getName())) {
 
-                Object value = valueTransformers.get(i).transform(diff);
-                map.put(attribute.getName(), value);
-            }
-        }
+				Object value = valueTransformers.get(i).transform(diff);
+				map.put(attribute.getName(), value);
+			}
+		}
 
-        return map;
-    }
+		return map;
+	}
 
-    void reset(DbEntityClassDescriptor descriptor) {
+	void reset(DbEntityClassDescriptor descriptor) {
 
-        attributes = new ArrayList<DbAttribute>(3);
-        valueTransformers = new ArrayList<Transformer>(3);
-        usingOptimisticLocking = descriptor.getEntity().getLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC;
+		attributes = new ArrayList<>(3);
+		valueTransformers = new ArrayList<>(3);
+		usingOptimisticLocking = descriptor.getEntity().getLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC;
 
-        // master PK columns
-        if (descriptor.isMaster()) {
-            for (final DbAttribute attribute : descriptor.getDbEntity().getPrimaryKeys()) {
-                attributes.add(attribute);
-                valueTransformers.add(new Transformer() {
+		// master PK columns
+		if (descriptor.isMaster()) {
+			for (final DbAttribute attribute : descriptor.getDbEntity().getPrimaryKeys()) {
+				attributes.add(attribute);
+				valueTransformers.add(new Transformer() {
 
-                    public Object transform(Object input) {
-                        ObjectId id = (ObjectId) ((ObjectDiff) input).getNodeId();
-                        return id.getIdSnapshot().get(attribute.getName());
-                    }
-                });
-            }
-        }
-        else {
+					public Object transform(Object input) {
+						ObjectId id = (ObjectId) ((ObjectDiff) input).getNodeId();
+						return id.getIdSnapshot().get(attribute.getName());
+					}
+				});
+			}
+		} else {
 
-            // TODO: andrus 12/23/2007 - only one step relationship is supported...
-            if (descriptor.getPathFromMaster().size() != 1) {
-                throw new CayenneRuntimeException(
-                        "Only single step dependent relationships are currently supported. Actual path length: "
-                                + descriptor.getPathFromMaster().size());
-            }
-            
-            DbRelationship masterDependentDbRel = descriptor.getPathFromMaster().get(0);
+			// TODO: andrus 12/23/2007 - only one step relationship is
+			// supported...
+			if (descriptor.getPathFromMaster().size() != 1) {
+				throw new CayenneRuntimeException(
+						"Only single step dependent relationships are currently supported. Actual path length: "
+								+ descriptor.getPathFromMaster().size());
+			}
 
-            if (masterDependentDbRel != null) {
-                for (final DbJoin dbAttrPair : masterDependentDbRel.getJoins()) {
-                    DbAttribute dbAttribute = dbAttrPair.getTarget();
-                    if (!attributes.contains(dbAttribute)) {
+			DbRelationship masterDependentDbRel = descriptor.getPathFromMaster().get(0);
 
-                        attributes.add(dbAttribute);
-                        valueTransformers.add(new Transformer() {
+			if (masterDependentDbRel != null) {
+				for (final DbJoin dbAttrPair : masterDependentDbRel.getJoins()) {
+					DbAttribute dbAttribute = dbAttrPair.getTarget();
+					if (!attributes.contains(dbAttribute)) {
 
-                            public Object transform(Object input) {
-                                ObjectId id = (ObjectId) ((ObjectDiff) input).getNodeId();
-                                return id.getIdSnapshot().get(dbAttrPair.getSourceName());
-                            }
-                        });
-                    }
-                }
-            }
-        }
+						attributes.add(dbAttribute);
+						valueTransformers.add(new Transformer() {
 
-        if (usingOptimisticLocking) {
+							public Object transform(Object input) {
+								ObjectId id = (ObjectId) ((ObjectDiff) input).getNodeId();
+								return id.getIdSnapshot().get(dbAttrPair.getSourceName());
+							}
+						});
+					}
+				}
+			}
+		}
 
-            for (final ObjAttribute attribute : descriptor.getEntity().getAttributes()) {
+		if (usingOptimisticLocking) {
 
-                if (attribute.isUsedForLocking()) {
-                    // only care about first step in a flattened attribute
-                    DbAttribute dbAttribute = (DbAttribute) attribute
-                            .getDbPathIterator()
-                            .next();
+			for (final ObjAttribute attribute : descriptor.getEntity().getAttributes()) {
 
-                    if (!attributes.contains(dbAttribute)) {
-                        attributes.add(dbAttribute);
+				if (attribute.isUsedForLocking()) {
+					// only care about first step in a flattened attribute
+					DbAttribute dbAttribute = (DbAttribute) attribute.getDbPathIterator().next();
 
-                        valueTransformers.add(new Transformer() {
+					if (!attributes.contains(dbAttribute)) {
+						attributes.add(dbAttribute);
 
-                            public Object transform(Object input) {
-                                return ((ObjectDiff) input).getSnapshotValue(attribute
-                                        .getName());
-                            }
-                        });
-                    }
-                }
-            }
+						valueTransformers.add(new Transformer() {
 
-            for (final ObjRelationship relationship : descriptor
-                    .getEntity()
-                    .getRelationships()) {
+							public Object transform(Object input) {
+								return ((ObjectDiff) input).getSnapshotValue(attribute.getName());
+							}
+						});
+					}
+				}
+			}
 
-                if (relationship.isUsedForLocking()) {
-                    // only care about the first DbRelationship
-                    DbRelationship dbRelationship = relationship
-                            .getDbRelationships()
-                            .get(0);
+			for (final ObjRelationship relationship : descriptor.getEntity().getRelationships()) {
 
-                    for (final DbJoin dbAttrPair : dbRelationship.getJoins()) {
-                        DbAttribute dbAttribute = dbAttrPair.getSource();
+				if (relationship.isUsedForLocking()) {
+					// only care about the first DbRelationship
+					DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
 
-                        // relationship transformers override attribute transformers for
-                        // meaningful FK's... why meaningful FKs can go out of sync is
-                        // another story (CAY-595)
-                        int index = attributes.indexOf(dbAttribute);
-                        if (index >= 0 && !dbAttribute.isForeignKey()) {
-                            continue;
-                        }
+					for (final DbJoin dbAttrPair : dbRelationship.getJoins()) {
+						DbAttribute dbAttribute = dbAttrPair.getSource();
 
-                        Transformer transformer = new Transformer() {
+						// relationship transformers override attribute
+						// transformers for
+						// meaningful FK's... why meaningful FKs can go out of
+						// sync is
+						// another story (CAY-595)
+						int index = attributes.indexOf(dbAttribute);
+						if (index >= 0 && !dbAttribute.isForeignKey()) {
+							continue;
+						}
 
-                            public Object transform(Object input) {
-                                ObjectId targetId = ((ObjectDiff) input)
-                                        .getArcSnapshotValue(relationship.getName());
-                                return targetId != null ? targetId.getIdSnapshot().get(
-                                        dbAttrPair.getTargetName()) : null;
-                            }
-                        };
+						Transformer transformer = new Transformer() {
 
-                        if (index < 0) {
-                            attributes.add(dbAttribute);
-                            valueTransformers.add(transformer);
-                        }
-                        else {
-                            valueTransformers.set(index, transformer);
-                        }
-                    }
-                }
-            }
-        }
-    }
+							public Object transform(Object input) {
+								ObjectId targetId = ((ObjectDiff) input).getArcSnapshotValue(relationship.getName());
+								return targetId != null ? targetId.getIdSnapshot().get(dbAttrPair.getTargetName())
+										: null;
+							}
+						};
+
+						if (index < 0) {
+							attributes.add(dbAttribute);
+							valueTransformers.add(transformer);
+						} else {
+							valueTransformers.set(index, transformer);
+						}
+					}
+				}
+			}
+		}
+	}
 }

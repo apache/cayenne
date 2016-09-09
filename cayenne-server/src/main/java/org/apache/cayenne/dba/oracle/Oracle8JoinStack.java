@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dba.oracle;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.cayenne.access.translator.select.JoinStack;
@@ -36,79 +35,74 @@ import org.apache.cayenne.map.DbRelationship;
 // cloned from OpenBaseJoin stack... need better strategies of reuse...
 class Oracle8JoinStack extends JoinStack {
 
-    Oracle8JoinStack(DbAdapter dbAdapter, QueryAssembler assembler) {
-        super(dbAdapter, assembler);
-    }
+	Oracle8JoinStack(DbAdapter dbAdapter, DataMap dataMap, QueryAssembler assembler) {
+		super(dbAdapter, dataMap, assembler);
+	}
 
-    @Override
-    protected void appendJoinSubtree(Appendable out, JoinTreeNode node)
-            throws IOException {
-        DbRelationship relationship = node.getRelationship();
+	@Override
+	protected void appendJoinSubtree(StringBuilder out, JoinTreeNode node) {
+		DbRelationship relationship = node.getRelationship();
 
-        if (relationship == null) {
-            return;
-        }
+		if (relationship == null) {
+			return;
+		}
 
-        DbEntity targetEntity = (DbEntity) relationship.getTargetEntity();
-        String targetAlias = node.getTargetTableAlias();
+		DbEntity targetEntity = (DbEntity) relationship.getTargetEntity();
+		String targetAlias = node.getTargetTableAlias();
 
-        out.append(", ").append(targetEntity.getFullyQualifiedName()).append(' ').append(
-                targetAlias);
+		out.append(", ").append(targetEntity.getFullyQualifiedName()).append(' ').append(targetAlias);
 
-        for (JoinTreeNode child : node.getChildren()) {
-            appendJoinSubtree(out, child);
-        }
-    }
+		for (JoinTreeNode child : node.getChildren()) {
+			appendJoinSubtree(out, child);
+		}
+	}
 
-    @Override
-    protected void appendQualifier(Appendable out, boolean firstQualifierElement)
-            throws IOException {
-        boolean first = firstQualifierElement;
-        for (JoinTreeNode node : rootNode.getChildren()) {
-            if (!first) {
-                out.append(" AND ");
-            }
-            appendQualifierSubtree(out, node);
-            first = false;
-        }
-    }
+	@Override
+	protected void appendQualifier(StringBuilder out, boolean firstQualifierElement) {
+		boolean first = firstQualifierElement;
+		for (JoinTreeNode node : rootNode.getChildren()) {
+			if (!first) {
+				out.append(" AND ");
+			}
+			appendQualifierSubtree(out, node);
+			first = false;
+		}
+	}
 
-    protected void appendQualifierSubtree(Appendable out, JoinTreeNode node)
-            throws IOException {
-        DbRelationship relationship = node.getRelationship();
+	protected void appendQualifierSubtree(StringBuilder out, JoinTreeNode node) {
+		DbRelationship relationship = node.getRelationship();
 
-        String srcAlias = node.getSourceTableAlias();
-        String targetAlias = node.getTargetTableAlias();
+		String srcAlias = node.getSourceTableAlias();
+		String targetAlias = node.getTargetTableAlias();
 
-        List<DbJoin> joins = relationship.getJoins();
-        int len = joins.size();
-        for (int i = 0; i < len; i++) {
-            DbJoin join = joins.get(i);
+		List<DbJoin> joins = relationship.getJoins();
+		int len = joins.size();
+		for (int i = 0; i < len; i++) {
+			DbJoin join = joins.get(i);
 
-            if (i > 0) {
-                out.append(" AND ");
-            }
+			if (i > 0) {
+				out.append(" AND ");
+			}
 
-            out.append(srcAlias).append('.').append(join.getSourceName());
+			out.append(srcAlias).append('.').append(join.getSourceName());
 
-            switch (node.getJoinType()) {
-                case INNER:
-                    out.append(" = ");
-                    break;
-                case LEFT_OUTER:
-                    out.append(" * ");
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unsupported join type: "
-                            + node.getJoinType());
-            }
+			switch (node.getJoinType()) {
+			case INNER:
+				out.append(" = ");
+				break;
+			case LEFT_OUTER:
+				out.append(" * ");
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported join type: " + node.getJoinType());
+			}
 
-            out.append(targetAlias).append('.').append(join.getTargetName());
-        }
+			out.append(targetAlias).append('.').append(join.getTargetName());
+		}
 
-        for (JoinTreeNode child : node.getChildren()) {
-            out.append(" AND ");
-            appendQualifierSubtree(out, child);
-        }
-    }
+		for (JoinTreeNode child : node.getChildren()) {
+			out.append(" AND ");
+			appendQualifierSubtree(out, child);
+		}
+	}
 }

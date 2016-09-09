@@ -32,72 +32,55 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
 
 /**
- * Default PK generator for Derby that uses updateable ResultSet to get the next id from
- * the lookup table.
+ * Default PK generator for Derby that uses updateable ResultSet to get the next
+ * id from the lookup table.
  * 
  * @since 1.2
  */
 public class DerbyPkGenerator extends JdbcPkGenerator {
 
-    DerbyPkGenerator(JdbcAdapter adapter) {
-        super(adapter);
-    }
+	DerbyPkGenerator(JdbcAdapter adapter) {
+		super(adapter);
+	}
 
-    static final String SELECT_QUERY = "SELECT NEXT_ID FROM AUTO_PK_SUPPORT"
-            + " WHERE TABLE_NAME = ? FOR UPDATE";
+	static final String SELECT_QUERY = "SELECT NEXT_ID FROM AUTO_PK_SUPPORT" + " WHERE TABLE_NAME = ? FOR UPDATE";
 
-    /**
-     * @since 3.0
-     */
-    @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
 
-        JdbcEventLogger logger = adapter.getJdbcEventLogger();
-        if (logger.isLoggable()) {
-            logger.logQuery(SELECT_QUERY, Collections
-                    .singletonList(entity.getName()));
-        }
+		JdbcEventLogger logger = adapter.getJdbcEventLogger();
+		if (logger.isLoggable()) {
+			logger.logQuery(SELECT_QUERY, Collections.singletonList(entity.getName()));
+		}
 
-        Connection c = node.getDataSource().getConnection();
-        try {
-            PreparedStatement select = c.prepareStatement(
-                    SELECT_QUERY,
-                    ResultSet.TYPE_FORWARD_ONLY,
-                    ResultSet.CONCUR_UPDATABLE);
-            try {
-                select.setString(1, entity.getName());
-                ResultSet rs = select.executeQuery();
-    
-                try {
-                    if (!rs.next()) {
-                        throw new CayenneException("PK lookup failed for table: "
-                                + entity.getName());
-                    }
-        
-                    long nextId = rs.getLong(1);
-        
-                    rs.updateLong(1, nextId + pkCacheSize);
-                    rs.updateRow();
-        
-                    if (rs.next()) {
-                        throw new CayenneException("More than one PK record for table: "
-                                + entity.getName());
-                    }
-                    
-                    c.commit();
+		try (Connection c = node.getDataSource().getConnection();) {
 
-                    return nextId;
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                select.close();
-            }
-        }
-        finally {
-            c.close();
-        }
-    }
+			try (PreparedStatement select = c.prepareStatement(SELECT_QUERY, ResultSet.TYPE_FORWARD_ONLY,
+					ResultSet.CONCUR_UPDATABLE);) {
+				select.setString(1, entity.getName());
+
+				try (ResultSet rs = select.executeQuery();) {
+					if (!rs.next()) {
+						throw new CayenneException("PK lookup failed for table: " + entity.getName());
+					}
+
+					long nextId = rs.getLong(1);
+
+					rs.updateLong(1, nextId + pkCacheSize);
+					rs.updateRow();
+
+					if (rs.next()) {
+						throw new CayenneException("More than one PK record for table: " + entity.getName());
+					}
+
+					c.commit();
+
+					return nextId;
+				}
+			}
+		}
+	}
 }

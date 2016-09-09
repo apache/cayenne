@@ -28,38 +28,30 @@ import java.sql.SQLException;
  */
 public class HSQLProcedures {
 
-    public static void cayenne_tst_upd_proc(Connection c, int paintingPrice)
-            throws SQLException {
+	public static void cayenne_tst_upd_proc(Connection c, int paintingPrice) throws SQLException {
 
-        PreparedStatement st = c
-                .prepareStatement("UPDATE PAINTING SET ESTIMATED_PRICE = ESTIMATED_PRICE * 2 "
-                        + "WHERE ESTIMATED_PRICE < ?");
+		try (PreparedStatement st = c.prepareStatement("UPDATE PAINTING SET ESTIMATED_PRICE = ESTIMATED_PRICE * 2 "
+				+ "WHERE ESTIMATED_PRICE < ?");) {
+			st.setInt(1, paintingPrice);
+			st.execute();
+		}
+	}
 
-        st.setInt(1, paintingPrice);
-        st.execute();
-        st.close();
-    }
+	public static void cayenne_tst_select_proc(Connection c, String name, int paintingPrice) throws SQLException {
 
-    public static void cayenne_tst_select_proc(
-            Connection c,
-            String name,
-            int paintingPrice) throws SQLException {
+		try (PreparedStatement st = c.prepareStatement("UPDATE PAINTING SET ESTIMATED_PRICE = ESTIMATED_PRICE * 2 "
+				+ "WHERE ESTIMATED_PRICE < ?");) {
 
-        PreparedStatement st = c
-                .prepareStatement("UPDATE PAINTING SET ESTIMATED_PRICE = ESTIMATED_PRICE * 2 "
-                        + "WHERE ESTIMATED_PRICE < ?");
+			st.setInt(1, paintingPrice);
+			st.execute();
+		}
 
-        st.setInt(1, paintingPrice);
-        st.execute();
-        st.close();
-
-        PreparedStatement select = c
-                .prepareStatement("SELECT DISTINCT A.ARTIST_ID, A.ARTIST_NAME, A.DATE_OF_BIRTH"
-                        + " FROM ARTIST A, PAINTING P"
-                        + " WHERE A.ARTIST_ID = P.ARTIST_ID AND"
-                        + " A.ARTIST_NAME = ?"
-                        + " ORDER BY A.ARTIST_ID");
-        select.setString(1, name);
-        select.executeQuery();
-    }
+		try (PreparedStatement select = c
+				.prepareStatement("SELECT DISTINCT A.ARTIST_ID, A.ARTIST_NAME, A.DATE_OF_BIRTH"
+						+ " FROM ARTIST A, PAINTING P" + " WHERE A.ARTIST_ID = P.ARTIST_ID AND" + " A.ARTIST_NAME = ?"
+						+ " ORDER BY A.ARTIST_ID");) {
+			select.setString(1, name);
+			select.executeQuery();
+		}
+	}
 }

@@ -36,124 +36,98 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-/** 
- * TypesHandler provides JDBC-RDBMS types mapping. Loads types info from 
- * an XML file.
+/**
+ * TypesHandler provides JDBC-RDBMS types mapping. Loads types info from an XML
+ * file.
  * 
  */
 public class TypesHandler {
 
-    private static Map<URL, TypesHandler> handlerMap = new HashMap<URL, TypesHandler>();
+	private static Map<URL, TypesHandler> handlerMap = new HashMap<URL, TypesHandler>();
 
-    protected Map<Integer, String[]> typesMap;
+	protected Map<Integer, String[]> typesMap;
 
-    /**
-     * @since 1.1
-     */
-    public static TypesHandler getHandler(URL typesConfig) {
-        synchronized (handlerMap) {
-            TypesHandler handler = handlerMap.get(typesConfig);
+	/**
+	 * @since 1.1
+	 */
+	public static TypesHandler getHandler(URL typesConfig) {
+		synchronized (handlerMap) {
+			TypesHandler handler = handlerMap.get(typesConfig);
 
-            if (handler == null) {
-                handler = new TypesHandler(typesConfig);
-                handlerMap.put(typesConfig, handler);
-            }
+			if (handler == null) {
+				handler = new TypesHandler(typesConfig);
+				handlerMap.put(typesConfig, handler);
+			}
 
-            return handler;
-        }
-    }
+			return handler;
+		}
+	}
 
-    /**
-     * Creates new TypesHandler loading configuration info from the XML
-     * file specified as <code>typesConfigPath</code> parameter.
-     * 
-     * @since 1.1
-     */
-    public TypesHandler(URL typesConfig) {
-        try {
-            InputStream in = typesConfig.openStream();
+	/**
+	 * Creates new TypesHandler loading configuration info from the XML file
+	 * specified as <code>typesConfigPath</code> parameter.
+	 * 
+	 * @since 1.1
+	 */
+	public TypesHandler(URL typesConfig) {
 
-            try {
-                XMLReader parser = Util.createXmlReader();
-                TypesParseHandler ph = new TypesParseHandler();
-                parser.setContentHandler(ph);
-                parser.setErrorHandler(ph);
-                parser.parse(new InputSource(in));
+		try (InputStream in = typesConfig.openStream();) {
+			XMLReader parser = Util.createXmlReader();
+			TypesParseHandler ph = new TypesParseHandler();
+			parser.setContentHandler(ph);
+			parser.setErrorHandler(ph);
+			parser.parse(new InputSource(in));
 
-                typesMap = ph.getTypes();
-            }
-            catch (Exception ex) {
-                throw new CayenneRuntimeException(
-                    "Error creating TypesHandler '" + typesConfig + "'.",
-                    ex);
-            }
-            finally {
-                try {
-                    in.close();
-                }
-                catch (IOException ioex) {
-                }
-            }
-        }
-        catch (IOException ioex) {
-            throw new CayenneRuntimeException(
-                "Error opening config file '" + typesConfig + "'.",
-                ioex);
-        }
-    }
+			typesMap = ph.getTypes();
+		} catch (Exception ex) {
+			throw new CayenneRuntimeException("Error creating TypesHandler '" + typesConfig + "'.", ex);
+		}
+	}
 
-    public String[] externalTypesForJdbcType(int type) {
-        return typesMap.get(type);
-    }
+	public String[] externalTypesForJdbcType(int type) {
+		return typesMap.get(type);
+	}
 
-    /** 
-     * Helper class to load types data from XML.
-     */
-    final class TypesParseHandler extends DefaultHandler {
-        private static final String JDBC_TYPE_TAG = "jdbc-type";
-        private static final String DB_TYPE_TAG = "db-type";
-        private static final String NAME_ATTR = "name";
+	/**
+	 * Helper class to load types data from XML.
+	 */
+	final class TypesParseHandler extends DefaultHandler {
+		private static final String JDBC_TYPE_TAG = "jdbc-type";
+		private static final String DB_TYPE_TAG = "db-type";
+		private static final String NAME_ATTR = "name";
 
-        private Map<Integer, String[]> types = new HashMap<Integer, String[]>();
-        private List<String> currentTypes = new ArrayList<String>();
-        private int currentType = TypesMapping.NOT_DEFINED;
+		private Map<Integer, String[]> types = new HashMap<Integer, String[]>();
+		private List<String> currentTypes = new ArrayList<String>();
+		private int currentType = TypesMapping.NOT_DEFINED;
 
-        public Map<Integer, String[]> getTypes() {
-            return types;
-        }
+		public Map<Integer, String[]> getTypes() {
+			return types;
+		}
 
-        @Override
-        public void startElement(
-            String namespaceURI,
-            String localName,
-            String qName,
-            Attributes atts)
-            throws SAXException {
-            if (JDBC_TYPE_TAG.equals(localName)) {
-                currentTypes.clear();
-                String strType = atts.getValue("", NAME_ATTR);
+		@Override
+		public void startElement(String namespaceURI, String localName, String qName, Attributes atts)
+				throws SAXException {
+			if (JDBC_TYPE_TAG.equals(localName)) {
+				currentTypes.clear();
+				String strType = atts.getValue("", NAME_ATTR);
 
-                // convert to Types int value
-                try {
-                    currentType = Types.class.getDeclaredField(strType).getInt(null);
-                }
-                catch (Exception ex) {
-                    currentType = TypesMapping.NOT_DEFINED;
-                }
-            }
-            else if (DB_TYPE_TAG.equals(localName)) {
-                currentTypes.add(atts.getValue("", NAME_ATTR));
-            }
-        }
+				// convert to Types int value
+				try {
+					currentType = Types.class.getDeclaredField(strType).getInt(null);
+				} catch (Exception ex) {
+					currentType = TypesMapping.NOT_DEFINED;
+				}
+			} else if (DB_TYPE_TAG.equals(localName)) {
+				currentTypes.add(atts.getValue("", NAME_ATTR));
+			}
+		}
 
-        @Override
-        public void endElement(String namespaceURI, String localName, String qName)
-            throws SAXException {
-            if (JDBC_TYPE_TAG.equals(localName)
-                && currentType != TypesMapping.NOT_DEFINED) {
-                String[] typesAsArray = new String[currentTypes.size()];
-                types.put(Integer.valueOf(currentType), currentTypes.toArray(typesAsArray));
-            }
-        }
-    }
+		@Override
+		public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
+			if (JDBC_TYPE_TAG.equals(localName) && currentType != TypesMapping.NOT_DEFINED) {
+				String[] typesAsArray = new String[currentTypes.size()];
+				types.put(Integer.valueOf(currentType), currentTypes.toArray(typesAsArray));
+			}
+		}
+	}
 }

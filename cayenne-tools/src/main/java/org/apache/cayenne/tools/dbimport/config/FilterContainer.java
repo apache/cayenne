@@ -114,30 +114,31 @@ public abstract class FilterContainer {
             && includeProcedures.isEmpty() && excludeProcedures.isEmpty();
     }
 
+    public static boolean isBlank(Collection<?> collection) {
+        return collection == null || collection.isEmpty();
+    }
+
     @Override
     public String toString() {
-        return toString("    ");
+        return toString(new StringBuilder(), "").toString();
     }
 
-    public String toString(String indent) {
-        return toStringFilters(indent + "Filter Tables     - ", includeTables, excludeTables)
-             + toStringFilters(indent + "Filter Columns    - ", includeColumns, excludeColumns)
-             + toStringFilters(indent + "Filter Procedures - ", includeProcedures, excludeProcedures);
+    public StringBuilder toString(StringBuilder res, String prefix) {
+        appendCollection(res, prefix, includeTables);
+        appendCollection(res, prefix, excludeTables);
+        appendCollection(res, prefix, includeColumns);
+        appendCollection(res, prefix, excludeColumns);
+        appendCollection(res, prefix, includeProcedures);
+        appendCollection(res, prefix, excludeProcedures);
 
-    }
-
-    private String toStringFilters(String name, Collection<? extends PatternParam> include, Collection<? extends PatternParam> exclude) {
-        if (include.isEmpty() && exclude.isEmpty()) {
-            return "";
-        }
-
-        String res = "\n" + name + ": ";
-        if (!include.isEmpty()) {
-            res += include + " ";
-        }
-        if (!exclude.isEmpty()) {
-            res += exclude + " ";
-        }
         return res;
+    }
+
+    protected void appendCollection(StringBuilder res, String prefix, Collection<? extends PatternParam> collection) {
+        if (!isBlank(collection)) {
+            for (PatternParam item : collection) {
+                item.toString(res, prefix);
+            }
+        }
     }
 }

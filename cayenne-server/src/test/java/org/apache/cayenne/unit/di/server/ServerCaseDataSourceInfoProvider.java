@@ -58,7 +58,7 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         this.connectionProperties = new ConnectionProperties(properties);
         logger.info("Loaded  " + connectionProperties.size() + " DataSource configurations from properties file");
 
-        this.inMemoryDataSources = new HashMap<String, DataSourceInfo>();
+        this.inMemoryDataSources = new HashMap<>();
 
         // preload default in-memory DataSources. Will use them as defaults if
         // nothing is configured in ~/.cayenne/connection.properties

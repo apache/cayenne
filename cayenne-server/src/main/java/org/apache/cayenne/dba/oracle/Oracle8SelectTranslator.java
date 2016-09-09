@@ -18,10 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.dba.oracle;
 
-import java.sql.Connection;
-
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.select.JoinStack;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 
 /**
@@ -29,20 +28,20 @@ import org.apache.cayenne.query.Query;
  */
 class Oracle8SelectTranslator extends OracleSelectTranslator {
 
-    /**
-     * @since 4.0
-     */
-    public Oracle8SelectTranslator(Query query, DataNode dataNode, Connection connection) {
-        super(query, dataNode, connection);
-    }
-    
-    /**
-     * Returns an old style joint stack for Oracle8 that does not support explicit join
-     * syntax.
-     */
-    @Override
-    protected JoinStack createJoinStack() {
-        return new Oracle8JoinStack(getAdapter(), this);
-    }
+	/**
+	 * @since 4.0
+	 */
+	public Oracle8SelectTranslator(Query query, DbAdapter adapter, EntityResolver entityResolver) {
+		super(query, adapter, entityResolver);
+	}
+
+	/**
+	 * Returns an old style joint stack for Oracle8 that does not support
+	 * explicit join syntax.
+	 */
+	@Override
+	protected JoinStack createJoinStack() {
+		return new Oracle8JoinStack(getAdapter(), queryMetadata.getDataMap(), this);
+	}
 
 }

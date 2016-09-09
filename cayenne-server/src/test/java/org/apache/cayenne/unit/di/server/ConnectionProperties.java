@@ -35,81 +35,81 @@ import org.apache.commons.collections.ExtendedProperties;
  */
 class ConnectionProperties {
 
-    private static final String ADAPTER_KEY = "adapter";
-    private static final String ADAPTER20_KEY = "cayenne.adapter";
-    private static final String USER_NAME_KEY = "jdbc.username";
-    private static final String PASSWORD_KEY = "jdbc.password";
-    private static final String URL_KEY = "jdbc.url";
-    private static final String DRIVER_KEY = "jdbc.driver";
+	private static final String ADAPTER_KEY = "adapter";
+	private static final String ADAPTER20_KEY = "cayenne.adapter";
+	private static final String USER_NAME_KEY = "jdbc.username";
+	private static final String PASSWORD_KEY = "jdbc.password";
+	private static final String URL_KEY = "jdbc.url";
+	private static final String DRIVER_KEY = "jdbc.driver";
 
-    private Map<String, DataSourceInfo> connectionInfos;
+	private Map<String, DataSourceInfo> connectionInfos;
 
-    /**
-     * Constructor for ConnectionProperties.
-     */
-    ConnectionProperties(ExtendedProperties props) {
-        connectionInfos = new HashMap<String, DataSourceInfo>();
-        for (String name : extractNames(props)) {
-            DataSourceInfo dsi = buildDataSourceInfo(props.subset(name));
-            connectionInfos.put(name, dsi);
-        }
-    }
+	/**
+	 * Constructor for ConnectionProperties.
+	 */
+	ConnectionProperties(ExtendedProperties props) {
+		connectionInfos = new HashMap<>();
+		for (String name : extractNames(props)) {
+			DataSourceInfo dsi = buildDataSourceInfo(props.subset(name));
+			connectionInfos.put(name, dsi);
+		}
+	}
 
-    int size() {
-        return connectionInfos.size();
-    }
+	int size() {
+		return connectionInfos.size();
+	}
 
-    /**
-     * Returns DataSourceInfo object for a symbolic name. If name does not match
-     * an existing object, returns null.
-     */
-    DataSourceInfo getConnection(String name) {
-        return connectionInfos.get(name);
-    }
+	/**
+	 * Returns DataSourceInfo object for a symbolic name. If name does not match
+	 * an existing object, returns null.
+	 */
+	DataSourceInfo getConnection(String name) {
+		return connectionInfos.get(name);
+	}
 
-    /**
-     * Creates a DataSourceInfo object from a set of properties.
-     */
-    private DataSourceInfo buildDataSourceInfo(ExtendedProperties props) {
-        DataSourceInfo dsi = new DataSourceInfo();
+	/**
+	 * Creates a DataSourceInfo object from a set of properties.
+	 */
+	private DataSourceInfo buildDataSourceInfo(ExtendedProperties props) {
+		DataSourceInfo dsi = new DataSourceInfo();
 
-        String adapter = props.getString(ADAPTER_KEY);
+		String adapter = props.getString(ADAPTER_KEY);
 
-        // try legacy adapter key
-        if (adapter == null) {
-            adapter = props.getString(ADAPTER20_KEY);
-        }
+		// try legacy adapter key
+		if (adapter == null) {
+			adapter = props.getString(ADAPTER20_KEY);
+		}
 
-        dsi.setAdapterClassName(adapter);
-        dsi.setUserName(props.getString(USER_NAME_KEY));
-        dsi.setPassword(props.getString(PASSWORD_KEY));
-        dsi.setDataSourceUrl(props.getString(URL_KEY));
-        dsi.setJdbcDriver(props.getString(DRIVER_KEY));
+		dsi.setAdapterClassName(adapter);
+		dsi.setUserName(props.getString(USER_NAME_KEY));
+		dsi.setPassword(props.getString(PASSWORD_KEY));
+		dsi.setDataSourceUrl(props.getString(URL_KEY));
+		dsi.setJdbcDriver(props.getString(DRIVER_KEY));
 
-        return dsi;
-    }
+		return dsi;
+	}
 
-    /**
-     * Returns a list of connection names configured in the properties object.
-     */
-    private List<String> extractNames(ExtendedProperties props) {
-        Iterator<?> it = props.getKeys();
-        List<String> list = new ArrayList<String>();
+	/**
+	 * Returns a list of connection names configured in the properties object.
+	 */
+	private List<String> extractNames(ExtendedProperties props) {
+		Iterator<?> it = props.getKeys();
+		List<String> list = new ArrayList<String>();
 
-        while (it.hasNext()) {
-            String key = (String) it.next();
+		while (it.hasNext()) {
+			String key = (String) it.next();
 
-            int dotInd = key.indexOf('.');
-            if (dotInd <= 0 || dotInd >= key.length()) {
-                continue;
-            }
+			int dotInd = key.indexOf('.');
+			if (dotInd <= 0 || dotInd >= key.length()) {
+				continue;
+			}
 
-            String name = key.substring(0, dotInd);
-            if (!list.contains(name)) {
-                list.add(name);
-            }
-        }
+			String name = key.substring(0, dotInd);
+			if (!list.contains(name)) {
+				list.add(name);
+			}
+		}
 
-        return list;
-    }
+		return list;
+	}
 }

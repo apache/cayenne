@@ -34,6 +34,7 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.ObjAttribute;
@@ -73,8 +74,8 @@ class Compiler {
 
     Compiler(EntityResolver resolver) {
         this.resolver = resolver;
-        this.descriptorsById = new HashMap<String, ClassDescriptor>();
-        this.incomingById = new HashMap<String, ObjRelationship>();
+        this.descriptorsById = new HashMap<>();
+        this.incomingById = new HashMap<>();
 
         this.rootDescriptorVisitor = new SelectExpressionVisitor();
         this.fromItemVisitor = new FromItemVisitor();
@@ -147,6 +148,10 @@ class Compiler {
                 for (int i = 1; i < path.getChildrenCount(); i++) {
 
                     String pathChunk = path.getChild(i).getText();
+                    if(pathChunk.endsWith(Entity.OUTER_JOIN_INDICATOR)) {
+                    	pathChunk = pathChunk.substring(0, pathChunk.length() - 1);
+                    }
+                    
                     buffer.append('.').append(pathChunk);
 
                     PropertyDescriptor property = descriptor.getProperty(pathChunk);

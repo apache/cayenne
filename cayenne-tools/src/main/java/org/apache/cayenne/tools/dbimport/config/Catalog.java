@@ -96,14 +96,15 @@ public class Catalog extends FilterContainer {
         return true;
     }
 
-    @Override
-    public String toString() {
-        return toString("    ");
-    }
+    public StringBuilder toString(StringBuilder res, String prefix) {
+        res.append(prefix).append("Catalog: ").append(name).append("\n");
 
-    @Override
-    public String toString(String indent) {
-        return indent + "Catalog '" + name + "': "
-             + super.toString(indent + "    ");
+        if (!isBlank(schemas)) {
+            for (Schema schema : schemas) {
+                schema.toString(res, prefix + "  ");
+            }
+        }
+
+        return super.toString(res, prefix + "  ");
     }
 }

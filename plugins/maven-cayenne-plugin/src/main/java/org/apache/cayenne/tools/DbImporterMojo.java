@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import java.io.File;
-
-import org.apache.cayenne.access.loader.filters.EntityFilters;
-import org.apache.cayenne.access.loader.filters.FilterFactory;
+import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
+import java.io.File;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.tools.configuration.ToolsModule;
@@ -41,6 +41,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import javax.sql.DataSource;
+import java.io.File;
 
 /**
  * Maven mojo to reverse engineer datamap from DB.
@@ -144,7 +145,7 @@ public class DbImporterMojo extends AbstractMojo {
      */
     private boolean usePrimitives;
 
-    private final EntityFilters.Builder filterBuilder = new EntityFilters.Builder();
+    private final OldFilterConfigBridge filterBuilder = new OldFilterConfigBridge();
 
     /**
      * If true, would use primitives instead of numeric and boolean classes.
@@ -160,6 +161,7 @@ public class DbImporterMojo extends AbstractMojo {
      * @deprecated since 4.0 renamed to "schema"
      */
     private String schemaName;
+    private DbImportConfiguration config;
 
     private void setSchemaName(String schemaName) {
         getLog().warn("'schemaName' property is deprecated. Use 'schema' instead");
@@ -207,7 +209,7 @@ public class DbImporterMojo extends AbstractMojo {
     private String importProcedures;
 
     public void setImportProcedures(boolean importProcedures) {
-        filterBuilder.setProceduresFilters(importProcedures ? FilterFactory.TRUE : FilterFactory.NULL);
+        filterBuilder.setProceduresFilters(importProcedures);
     }
 
     /**
@@ -249,6 +251,8 @@ public class DbImporterMojo extends AbstractMojo {
         config.setLogger(logger);
         Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
 
+        validateDbImportConfiguration(config, injector);
+
         try {
             injector.getInstance(DbImportAction.class).execute(config);
         } catch (Exception ex) {
@@ -265,8 +269,33 @@ public class DbImporterMojo extends AbstractMojo {
         }
     }
 
+    private void validateDbImportConfiguration(DbImportConfiguration config, Injector injector) throws MojoExecutionException {
+        DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
+        DataSource dataSource = null;
+        DbAdapter adapter = null;
+
+        try {
+            dataSource = injector.getInstance(DataSourceFactory.class).getDataSource(dataNodeDescriptor);
+            adapter = injector.getInstance(DbAdapterFactory.class).createAdapter(dataNodeDescriptor, dataSource);
+
+            if (!adapter.supportsCatalogsOnReverseEngineering() &&
+                    reverseEngineering.getCatalogs() != null && !reverseEngineering.getCatalogs().isEmpty()) {
+                String message = "Your database does not support catalogs on reverse engineering. " +
+                        "It allows to connect to only one at the moment. Please don't note catalogs as param.";
+                throw new MojoExecutionException(message);
+            }
+        } catch (Exception e) {
+            throw new MojoExecutionException("Error creating DataSource ("
+                    + dataSource + ") or DbAdapter (" + adapter + ") for DataNodeDescriptor (" + dataNodeDescriptor + ")", e);
+        }
+    }
+
     DbImportConfiguration toParameters() {
-        DbImportConfiguration config = new DbImportConfiguration();
+        if (config != null) {
+            return config;
+        }
+
+        config = new DbImportConfiguration();
         config.setAdapter(adapter);
         config.setDefaultPackage(defaultPackage);
         config.setDriver(driver);
@@ -279,10 +308,11 @@ public class DbImporterMojo extends AbstractMojo {
         config.setUsername(username);
         config.setUsePrimitives(usePrimitives);
         config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering)
-                .add(filterBuilder.build()).filtersConfig());
+                .add(filterBuilder).filtersConfig());
         config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
         config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
         config.setTableTypes(reverseEngineering.getTableTypes());
+
         return config;
     }
 

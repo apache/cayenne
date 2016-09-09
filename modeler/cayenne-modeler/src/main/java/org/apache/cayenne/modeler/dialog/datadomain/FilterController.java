@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.dialog.datadomain;
 
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
@@ -31,7 +32,7 @@ import org.apache.cayenne.modeler.ProjectTreeView;
 
 public class FilterController {
 	
-	private HashMap<String,Boolean> filterMap = new HashMap<String, Boolean>();
+	private Map<String,Boolean> filterMap = new HashMap<>();
 	private ProjectTreeView tree;
 	private ProjectController eventController;
 	private ProjectTreeModel treeModel;
@@ -48,7 +49,7 @@ public class FilterController {
 		return eventController;
 	}
 
-	public HashMap<String, Boolean> getFilterMap() {
+	public Map<String, Boolean> getFilterMap() {
 		return filterMap;
 	}
 

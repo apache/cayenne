@@ -43,45 +43,44 @@ import static org.mockito.Mockito.mock;
 
 public class JDBCResultIteratorTest {
 
-    @Test
-    public void testNextDataRow() throws Exception {
-        Connection c = new MockConnection();
-        Statement s = new MockStatement(c);
-        MockResultSet rs = new MockResultSet("rs");
-        rs.addColumn("a", new Object[] { "1", "2", "3" });
+	@Test
+	public void testNextDataRow() throws Exception {
+		Connection c = new MockConnection();
+		Statement s = new MockStatement(c);
+		MockResultSet rs = new MockResultSet("rs");
+		rs.addColumn("a", new Object[] { "1", "2", "3" });
 
-        RowDescriptor descriptor = new RowDescriptorBuilder().setResultSet(rs).getDescriptor(new ExtendedTypeMap());
-        RowReader<?> rowReader = new DefaultRowReaderFactory().rowReader(descriptor, new MockQueryMetadata(),
-                mock(DbAdapter.class), Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
+		RowDescriptor descriptor = new RowDescriptorBuilder().setResultSet(rs).getDescriptor(new ExtendedTypeMap());
+		RowReader<?> rowReader = new DefaultRowReaderFactory().rowReader(descriptor, new MockQueryMetadata(),
+				mock(DbAdapter.class), Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
 
-        JDBCResultIterator it = new JDBCResultIterator(s, rs, rowReader);
+		JDBCResultIterator it = new JDBCResultIterator(s, rs, rowReader);
 
-        DataRow row = (DataRow) it.nextRow();
+		DataRow row = (DataRow) it.nextRow();
 
-        assertNotNull(row);
-        assertEquals(1, row.size());
-        assertEquals("1", row.get("a"));
-    }
+		assertNotNull(row);
+		assertEquals(1, row.size());
+		assertEquals("1", row.get("a"));
+	}
 
-    @Test
-    public void testClose() throws Exception {
-        Connection c = new MockConnection();
-        MockStatement s = new MockStatement(c);
-        MockResultSet rs = new MockResultSet("rs");
-        rs.addColumn("a", new Object[] { "1", "2", "3" });
+	@Test
+	public void testClose() throws Exception {
+		Connection c = new MockConnection();
+		MockStatement s = new MockStatement(c);
+		MockResultSet rs = new MockResultSet("rs");
+		rs.addColumn("a", new Object[] { "1", "2", "3" });
 
-        RowReader<?> rowReader = mock(RowReader.class);
+		RowReader<?> rowReader = mock(RowReader.class);
 
-        JDBCResultIterator it = new JDBCResultIterator(s, rs, rowReader);
+		try (JDBCResultIterator it = new JDBCResultIterator(s, rs, rowReader);) {
 
-        assertFalse(rs.isClosed());
-        assertFalse(s.isClosed());
-        assertFalse(c.isClosed());
+			assertFalse(rs.isClosed());
+			assertFalse(s.isClosed());
+			assertFalse(c.isClosed());
+		}
 
-        it.close();
-
-        assertTrue(rs.isClosed());
-        assertTrue(s.isClosed());
-    }
+		assertTrue(rs.isClosed());
+		assertTrue(s.isClosed());
+	}
 
 }

@@ -33,89 +33,31 @@ import org.junit.Test;
 public class ExpressionTest {
 
 	@Test
-	public void testToEJBQL1() {
-
-		Expression e = ExpressionFactory.exp("artistName = \"bla\"");
-
-		// note single quotes - EJBQL does not support doublequotes...
-		assertEquals("x.artistName = 'bla'", e.toEJBQL("x"));
-	}
-
-	@Test
-	public void testEncodeAsEJBQL1() throws IOException {
-
-		Expression e = ExpressionFactory.exp("artistName = 'bla'");
-
-		StringBuilder buffer = new StringBuilder();
-
-		e.appendAsEJBQL(buffer, "x");
-
-		String ejbql = buffer.toString();
-
-		assertEquals("x.artistName = 'bla'", ejbql);
-	}
-
-	@Test
-	public void testEncodeAsEJBQL2() throws IOException {
-
-		Expression e = ExpressionFactory.exp("artistName.stuff = $name");
-
-		StringBuilder buffer = new StringBuilder();
-
-		e.appendAsEJBQL(buffer, "x");
-		String ejbql = buffer.toString();
-
-		assertEquals("x.artistName.stuff = :name", ejbql);
-	}
-
-	@Test
-	public void testEncodeAsEJBQL_likeEscape() throws IOException {
-		Expression e = ExpressionFactory.likeExp("mainName", "|%|%?|_title|%",
-				'|');
-		assertEquals("x.mainName like '|%|%?|_title|%' escape '|'",
-				e.toEJBQL("x"));
-	}
-
-	@Test
-	public void testEncodeAsEJBQL_numericType_integer() throws IOException {
-		Expression e = ExpressionFactory.matchExp("consignment.parts",
-				new Integer(123));
+	public void testToEJBQL_numericType_integer() throws IOException {
+		Expression e = ExpressionFactory.matchExp("consignment.parts", new Integer(123));
 		assertEquals("x.consignment.parts = 123", e.toEJBQL("x"));
 	}
 
 	@Test
-	public void testEncodeAsEJBQL_numericType_long() throws IOException {
-		Expression e = ExpressionFactory.matchExp("consignment.parts",
-				new Long(1418342400));
+	public void testToEJBQL_numericType_long() throws IOException {
+		Expression e = ExpressionFactory.matchExp("consignment.parts", new Long(1418342400));
 		assertEquals("x.consignment.parts = 1418342400", e.toEJBQL("x"));
 	}
 
 	@Test
-	public void testEncodeAsEJBQL_numericType_float() throws IOException {
-		Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts",
-				new Float("3.145"));
+	public void testToEJBQL_numericType_float() throws IOException {
+		Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", new Float("3.145"));
 		assertEquals("x.consignment.parts >= 3.145", e.toEJBQL("x"));
 	}
 
 	@Test
-	public void testEncodeAsEJBQL_numericType_double() throws IOException {
-		Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts",
-				new Double(3.14));
+	public void testToEJBQL_numericType_double() throws IOException {
+		Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", new Double(3.14));
 		assertEquals("x.consignment.parts >= 3.14", e.toEJBQL("x"));
 	}
 
 	@Test
-	public void testEncodeAsEJBQL_in() throws IOException {
-		List<Integer> valuesIn = new ArrayList<Integer>();
-		valuesIn.add(91);
-		valuesIn.add(23);
-		Expression e = ExpressionFactory.inExp("consignment.parts", valuesIn);
-		assertEquals("x.consignment.parts in (91, 23)", e.toEJBQL("x"));
-	}
-
-	@Test
-	public void testEncodeAsEJBQL_Timestamp_ParameterCapture()
-			throws IOException {
+	public void testAppendAsEJBQL_Timestamp_ParameterCapture() throws IOException {
 		Date now = new Date();
 
 		Expression e = ExpressionFactory.greaterOrEqualExp("dateOfBirth", now);
@@ -134,8 +76,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testEncodeAsEJBQL3_EncodeListOfParameters_ParameterCapture()
-			throws IOException {
+	public void testAppendAsEJBQL_in_EncodeListOfParameters_ParameterCapture() throws IOException {
 
 		Expression e = ExpressionFactory.inExp("artistName", "a", "b", "c");
 
@@ -155,7 +96,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testEncodeAsEJBQL3_EncodeListOfParameters() throws IOException {
+	public void testAppendAsEJBQL_in_EncodeListOfParameters() throws IOException {
 
 		Expression e = ExpressionFactory.inExp("artistName", "a", "b", "c");
 
@@ -169,7 +110,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testEncodeAsEJBQL_PersistentParamater() throws IOException {
+	public void testAppendAsEJBQL_PersistentParamater() throws IOException {
 
 		Artist a = new Artist();
 		ObjectId aId = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
@@ -196,6 +137,13 @@ public class ExpressionTest {
 		String ejbql = buffer.toString();
 
 		assertEquals("x.artistName <> 'bla'", ejbql);
+	}
+
+	@Test
+	public void testIsNotNullEx() {
+		Expression e = Artist.ARTIST_NAME.isNotNull();
+		String ejbql = e.toEJBQL("x");
+		assertEquals("not (x.artistName is null)", ejbql);
 	}
 
 	@Test
@@ -378,8 +326,7 @@ public class ExpressionTest {
 	 */
 	@Test
 	public void testBitwiseHuntingtonEquation() {
-		Expression theHuntingEquation = ExpressionFactory
-				.exp("~(~3748 | 4095) | ~(~3748 | ~4095)");
+		Expression theHuntingEquation = ExpressionFactory.exp("~(~3748 | 4095) | ~(~3748 | ~4095)");
 
 		assertEquals(new Long(3748), theHuntingEquation.evaluate(new Object()));
 	}
@@ -392,8 +339,7 @@ public class ExpressionTest {
 	 */
 	@Test
 	public void testBitwiseRobbinsEquation() {
-		Expression theRobbinsEquation = ExpressionFactory
-				.exp("~(~(5111 | 4095) | ~(5111 | ~4095))");
+		Expression theRobbinsEquation = ExpressionFactory.exp("~(~(5111 | 4095) | ~(5111 | ~4095))");
 
 		assertEquals(new Long(5111), theRobbinsEquation.evaluate(new Object()));
 	}
@@ -436,8 +382,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testAppendAsEJBQLNotEquals_ParameterCapture()
-			throws IOException {
+	public void testAppendAsEJBQL_NotEquals_ParameterCapture() throws IOException {
 		Expression e = ExpressionFactory.exp("artistName != 'bla'");
 
 		StringBuilder buffer = new StringBuilder();
@@ -451,10 +396,9 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testEncodeAsEJBQL_Enum() throws IOException {
+	public void testAppendAsEJBQL_Enum() throws IOException {
 
-		Expression e = ExpressionFactory
-				.exp("a = enum:org.apache.cayenne.exp.ExpEnum1.THREE");
+		Expression e = ExpressionFactory.exp("a = enum:org.apache.cayenne.exp.ExpEnum1.THREE");
 
 		StringBuilder buffer = new StringBuilder();
 		e.appendAsEJBQL(buffer, "x");
@@ -465,7 +409,7 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testEncodeAsString_StringLiteral() throws IOException {
+	public void testAppendAsString_StringLiteral() throws IOException {
 		Expression e1 = ExpressionFactory.exp("a = 'abc'");
 
 		StringBuilder buffer = new StringBuilder();
@@ -476,15 +420,13 @@ public class ExpressionTest {
 	}
 
 	@Test
-	public void testEncodeAsString_Enum() throws IOException {
-		Expression e1 = ExpressionFactory
-				.exp("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO");
+	public void testAppendAsString_Enum() throws IOException {
+		Expression e1 = ExpressionFactory.exp("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO");
 
 		StringBuilder buffer = new StringBuilder();
 
 		e1.appendAsString(buffer);
-		assertEquals("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO",
-				buffer.toString());
+		assertEquals("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO", buffer.toString());
 	}
 
 }

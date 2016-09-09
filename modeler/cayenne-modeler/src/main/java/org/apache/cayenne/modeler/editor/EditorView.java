@@ -55,18 +55,19 @@ import org.apache.commons.logging.LogFactory;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JToolBar;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 
 /**
  * Main display area split into the project navigation tree on the left and selected
@@ -180,18 +181,20 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 
         // init widgets
         JButton collapseButton = getAction(CollapseTreeAction.class).buildButton();
-        collapseButton.setPreferredSize(new Dimension(35, 30));
+        collapseButton.setPreferredSize(new Dimension(30, 20));
         JButton filterButton = getAction(FilterAction.class).buildButton();
-        filterButton.setPreferredSize(new Dimension(35, 30));
+        filterButton.setPreferredSize(new Dimension(30, 20));
         actionManager.getAction(CollapseTreeAction.class).setAlwaysOn(true);
         actionManager.getAction(FilterAction.class).setAlwaysOn(true);
 
-        JPanel barPanel = new JPanel(true);
-        barPanel.setMinimumSize(new Dimension(75, 33));
-        barPanel.setLayout(new FlowLayout(FlowLayout.TRAILING, 1, 0));
-        barPanel.add(collapseButton);
+        JToolBar barPanel = new JToolBar();
+        barPanel.setMinimumSize(new Dimension(75, 25));
+        barPanel.setBorder(BorderFactory.createEtchedBorder());
+        barPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        barPanel.add(Box.createHorizontalStrut(3));
         barPanel.add(filterButton);
-        barPanel.setBorder(BorderFactory.createLineBorder(Color.gray));
+        barPanel.addSeparator();
+        barPanel.add(collapseButton);
 
         treePanel = new ProjectTreeView(eventController);
         treePanel.setMinimumSize(new Dimension(75, 180));

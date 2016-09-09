@@ -45,8 +45,7 @@ public class SQLReader {
 
 		Collection<String> statements = new ArrayList<String>();
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(sqlSource.openStream(), "UTF-8"));
-		try {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(sqlSource.openStream(), "UTF-8"));) {
 
 			String line;
 			StringBuilder statement = new StringBuilder();
@@ -60,9 +59,6 @@ public class SQLReader {
 			if (statement.length() > 0) {
 				statements.add(statement.toString());
 			}
-
-		} finally {
-			reader.close();
 		}
 
 		return statements;

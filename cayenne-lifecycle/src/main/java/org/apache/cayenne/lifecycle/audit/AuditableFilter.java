@@ -57,8 +57,8 @@ public class AuditableFilter implements DataChannelFilter {
      */
     public AuditableFilter(AuditableProcessor processor) {
         this.processor = processor;
-        this.entityDescriptors = new ConcurrentHashMap<String, AuditableEntityDescriptor>();
-        this.threadAggregator = new ThreadLocal<AuditableAggregator>();
+        this.entityDescriptors = new ConcurrentHashMap<>();
+        this.threadAggregator = new ThreadLocal<>();
     }
 
     /**

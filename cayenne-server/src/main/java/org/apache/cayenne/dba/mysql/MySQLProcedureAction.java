@@ -35,115 +35,102 @@ import org.apache.cayenne.query.ProcedureQuery;
  */
 class MySQLProcedureAction extends ProcedureAction {
 
-    public MySQLProcedureAction(ProcedureQuery query, DataNode dataNode) {
-        super(query, dataNode);
-    }
+	public MySQLProcedureAction(ProcedureQuery query, DataNode dataNode) {
+		super(query, dataNode);
+	}
 
-    @Override
-    public void performAction(Connection connection, OperationObserver observer)
-            throws SQLException, Exception {
+	@Override
+	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
-        processedResultSets = 0;
+		processedResultSets = 0;
 
-        ProcedureTranslator transl = createTranslator(connection);
-        CallableStatement statement = (CallableStatement) transl.createStatement();
+		ProcedureTranslator transl = createTranslator(connection);
 
-        try {
+		try (CallableStatement statement = (CallableStatement) transl.createStatement();) {
 
-            // this is one difference with super - we need to read the first result set
-            // without calling 'getMoreResults' - which may actually be a good default
-            // strategy?
-            boolean firstResult = statement.execute();
+			// this is one difference with super - we need to read the first
+			// result set
+			// without calling 'getMoreResults' - which may actually be a good
+			// default
+			// strategy?
+			boolean firstResult = statement.execute();
 
-            // read out parameters
-            readProcedureOutParameters(statement, observer);
+			// read out parameters
+			readProcedureOutParameters(statement, observer);
 
-            // read first result
-            if (firstResult) {
-                processResultSet(statement, observer);
-            }
-            else if (!processUpdate(statement, observer)) {
-                return;
-            }
+			// read first result
+			if (firstResult) {
+				processResultSet(statement, observer);
+			} else if (!processUpdate(statement, observer)) {
+				return;
+			}
 
-            // read the rest of the query
-            while (true) {
-                if (statement.getMoreResults()) {
-                    processResultSet(statement, observer);
-                }
-                else if (!processUpdate(statement, observer)) {
-                    break;
-                }
-            }
-        }
-        finally {
-            try {
-                statement.close();
-            }
-            catch (SQLException ex) {
+			// read the rest of the query
+			while (true) {
+				if (statement.getMoreResults()) {
+					processResultSet(statement, observer);
+				} else if (!processUpdate(statement, observer)) {
+					break;
+				}
+			}
+		}
 
-            }
-        }
-    }
+	}
 
-    private void processResultSet(CallableStatement statement, OperationObserver observer)
-            throws Exception {
-        ResultSet rs = statement.getResultSet();
+	private void processResultSet(CallableStatement statement, OperationObserver observer) throws Exception {
+		ResultSet rs = statement.getResultSet();
 
-        try {
-            RowDescriptor descriptor = describeResultSet(rs, processedResultSets++);
-            readResultSet(rs, descriptor, query, observer);
-        }
-        finally {
-            try {
-                rs.close();
-            }
-            catch (SQLException ex) {
-            }
-        }
-    }
+		try {
+			RowDescriptor descriptor = describeResultSet(rs, processedResultSets++);
+			readResultSet(rs, descriptor, query, observer);
+		} finally {
+			try {
+				rs.close();
+			} catch (SQLException ex) {
+			}
+		}
+	}
 
-    private boolean processUpdate(CallableStatement statement, OperationObserver observer)
-            throws Exception {
-        int updateCount = statement.getUpdateCount();
-        if (updateCount == -1) {
-            return false;
-        }
-        dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
-        observer.nextCount(query, updateCount);
+	private boolean processUpdate(CallableStatement statement, OperationObserver observer) throws Exception {
+		int updateCount = statement.getUpdateCount();
+		if (updateCount == -1) {
+			return false;
+		}
+		dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
+		observer.nextCount(query, updateCount);
 
-        return true;
-    }
+		return true;
+	}
 
-    /**
-     * Creates a translator that adds parenthesis to no-param queries.
-     */
-    // see CAY-750 for the problem description
-    @Override
-    protected ProcedureTranslator createTranslator(Connection connection) {
-        ProcedureTranslator translator = new MySQLProcedureTranslator();
-        translator.setAdapter(dataNode.getAdapter());
-        translator.setQuery(query);
-        translator.setEntityResolver(dataNode.getEntityResolver());
-        translator.setConnection(connection);
-        translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
-        return translator;
-    }
+	/**
+	 * Creates a translator that adds parenthesis to no-param queries.
+	 */
+	// see CAY-750 for the problem description
+	@Override
+	protected ProcedureTranslator createTranslator(Connection connection) {
+		ProcedureTranslator translator = new MySQLProcedureTranslator();
+		translator.setAdapter(dataNode.getAdapter());
+		translator.setQuery(query);
+		translator.setEntityResolver(dataNode.getEntityResolver());
+		translator.setConnection(connection);
+		translator.setJdbcEventLogger(dataNode.getJdbcEventLogger());
+		return translator;
+	}
 
-    // same as postgres translator - should we make this the default?
-    static class MySQLProcedureTranslator extends ProcedureTranslator {
+	// same as postgres translator - should we make this the default?
+	static class MySQLProcedureTranslator extends ProcedureTranslator {
 
-        @Override
-        protected String createSqlString() {
+		@Override
+		protected String createSqlString() {
 
-            String sql = super.createSqlString();
+			String sql = super.createSqlString();
 
-            // add empty parameter parenthesis
-            if (sql.endsWith("}") && !sql.endsWith(")}")) {
-                sql = sql.substring(0, sql.length() - 1) + "()}";
-            }
+			// add empty parameter parenthesis
+			if (sql.endsWith("}") && !sql.endsWith(")}")) {
+				sql = sql.substring(0, sql.length() - 1) + "()}";
+			}
 
-            return sql;
-        }
-    }
+			return sql;
+		}
+	}
 }

@@ -39,7 +39,7 @@ import org.apache.cayenne.util.XMLSerializable;
 public class DataChannelDescriptor implements ConfigurationNode, Serializable, XMLSerializable {
 
 	private static final long serialVersionUID = 6567527544207035602L;
-	
+
 	protected String name;
 	protected Map<String, String> properties;
 	protected Collection<DataMap> dataMaps;
@@ -48,9 +48,9 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 	protected String defaultNodeName;
 
 	public DataChannelDescriptor() {
-		properties = new HashMap<String, String>();
-		dataMaps = new ArrayList<DataMap>(5);
-		nodeDescriptors = new ArrayList<DataNodeDescriptor>(3);
+		properties = new HashMap<>();
+		dataMaps = new ArrayList<>(5);
+		nodeDescriptors = new ArrayList<>(3);
 	}
 
 	public void encodeAsXML(XMLEncoder encoder) {
@@ -65,7 +65,7 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 		if (!properties.isEmpty()) {
 			breakNeeded = true;
 
-			List<String> keys = new ArrayList<String>(properties.keySet());
+			List<String> keys = new ArrayList<>(properties.keySet());
 			Collections.sort(keys);
 
 			for (String key : keys) {
@@ -80,7 +80,7 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 				breakNeeded = true;
 			}
 
-			List<DataMap> maps = new ArrayList<DataMap>(this.dataMaps);
+			List<DataMap> maps = new ArrayList<>(this.dataMaps);
 			Collections.sort(maps);
 
 			for (DataMap dataMap : maps) {
@@ -98,7 +98,7 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 				breakNeeded = true;
 			}
 
-			List<DataNodeDescriptor> nodes = new ArrayList<DataNodeDescriptor>(nodeDescriptors);
+			List<DataNodeDescriptor> nodes = new ArrayList<>(nodeDescriptors);
 			Collections.sort(nodes);
 			encoder.print(nodes);
 		}

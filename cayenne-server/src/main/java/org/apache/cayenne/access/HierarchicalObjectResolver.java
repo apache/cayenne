@@ -159,13 +159,15 @@ class HierarchicalObjectResolver {
             }
 
             List<?> parentDataRows;
-            if (parentProcessorNode instanceof PrefetchProcessorJointNode) {
-                parentDataRows = ((PrefetchProcessorJointNode) parentProcessorNode)
-                        .getResolvedRows();
-            }
-            else {
-                parentDataRows = parentProcessorNode.getDataRows();
-            }
+            
+			// note that a disjoint prefetch that has adjacent joint prefetches
+			// will be a PrefetchProcessorJointNode, so here check for
+			// semantics, not node type
+			if (parentProcessorNode.getSemantics() == PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS) {
+				parentDataRows = ((PrefetchProcessorJointNode) parentProcessorNode).getResolvedRows();
+			} else {
+				parentDataRows = parentProcessorNode.getDataRows();
+			}
 
             int maxIdQualifierSize = context
                     .getParentDataDomain()

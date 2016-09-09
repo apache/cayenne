@@ -246,7 +246,7 @@ public class ParsedExpQualifierCompatIT extends ServerCase {
     @Test
     public void testParameter() throws Exception {
         createTwentyFiveArtists();
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("artistName", "artist5");
         Expression parsed1 = Expression.fromString("artistName=$artistName");
         parsed1 = parsed1.expWithParameters(parameters);

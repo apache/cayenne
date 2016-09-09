@@ -198,30 +198,33 @@ for(DataRow row : rows) {
             closing to avoid JDBC resources leak, or a callback that lets Cayenne handle resource
             management. In both cases iteration can be performed using "for" loop, as ResultIterator
             is "Iterable".</para>
-        <para>Direct access.  Here common sense tells us that ResultIterators instances should be
+        <para>Direct access. Here common sense tells us that ResultIterators instances should be
             processed and closed as soon as possible to release the DB connection. E.g. storing open
             iterators between HTTP requests for unpredictable length of time would quickly exhaust
             the connection
-            pool.<programlisting language="java">// create a regular query
-SelectQuery&lt;Artist> q = new SelectQuery&lt;Artist>(Artist.class);
-
-ResultIterator&lt;Artist> it = context.iterator(q);
-try {
+            pool.<programlisting language="java">try(ResultIterator&lt;Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
     for(Artist a : it) {
        // do something with the object...
        ...
     }           
-}
-finally {
-    it.close();
 }</programlisting></para>
         <para>Same thing with a
-            callback:<programlisting>SelectQuery&lt;Artist> q = new SelectQuery&lt;Artist>(Artist.class);
-
-context.iterate(q, (Artist a) -> {
+            callback:<programlisting>ObjectSelect.query(Artist.class).iterate(context, (Artist a) -> {
     // do something with the object...
     ...
 });</programlisting></para>
+        <para>Another example is a BatchIterator that allows to process more than one object in each
+            iteration. This is a common scenario in various data processing jobs - read a batch of
+            objects, process them, commit  the results, and then repeat. This allows to further
+            optimize processing (e.g. by avoiding frequent
+            commits).<programlisting>try(ResultBatchIterator&lt;Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
+    for(List&lt;Artist> list : it) {
+       // do something with each list
+       ...
+       // possibly commit your changes
+       context.commitChanges();
+    }           
+}</programlisting></para>
     </section>
     <section xml:id="paginated-queries">
         <title>Paginated Queries</title>

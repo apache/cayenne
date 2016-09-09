@@ -37,4 +37,9 @@ import java.lang.annotation.Target;
 public @interface Auditable {
 
     String[] ignoredProperties() default {};
+    
+    /**
+     * @since 4.0
+     */
+    String[] confidential() default {};
 }

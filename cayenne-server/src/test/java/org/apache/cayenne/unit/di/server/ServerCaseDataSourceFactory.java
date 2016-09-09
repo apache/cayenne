@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import java.sql.SQLException;
+import java.sql.Driver;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,69 +28,50 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.conn.PoolDataSource;
-import org.apache.cayenne.conn.PoolManager;
+import org.apache.cayenne.datasource.DataSourceBuilder;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
-public class ServerCaseDataSourceFactory  {
+public class ServerCaseDataSourceFactory {
 
-    private DataSource sharedDataSource;
-    private DataSourceInfo dataSourceInfo;
-    private Map<String, DataSource> dataSources;
-    private Set<String> mapsWithDedicatedDataSource;
+	private DataSource sharedDataSource;
+	private DataSourceInfo dataSourceInfo;
+	private Map<String, DataSource> dataSources;
+	private Set<String> mapsWithDedicatedDataSource;
+	private AdhocObjectFactory objectFactory;
 
-    public ServerCaseDataSourceFactory(@Inject DataSourceInfo dataSourceInfo) {
+	public ServerCaseDataSourceFactory(@Inject DataSourceInfo dataSourceInfo, @Inject AdhocObjectFactory objectFactory) {
 
-        this.dataSourceInfo = dataSourceInfo;
-        this.dataSources = new HashMap<String, DataSource>();
-        this.mapsWithDedicatedDataSource = new HashSet<String>(Arrays.asList(
-                "map-db1",
-                "map-db2"));
+		this.objectFactory = objectFactory;
+		this.dataSourceInfo = dataSourceInfo;
+		this.dataSources = new HashMap<>();
+		this.mapsWithDedicatedDataSource = new HashSet<>(Arrays.asList("map-db1", "map-db2"));
 
-        this.sharedDataSource = createDataSource();
-    }
+		this.sharedDataSource = createDataSource();
+	}
 
-    public DataSource getSharedDataSource() {
-        return sharedDataSource;
-    }
+	public DataSource getSharedDataSource() {
+		return sharedDataSource;
+	}
 
-    public DataSource getDataSource(String dataMapName) {
-        DataSource ds = dataSources.get(dataMapName);
-        if (ds == null) {
+	public DataSource getDataSource(String dataMapName) {
+		DataSource ds = dataSources.get(dataMapName);
+		if (ds == null) {
 
-            ds = mapsWithDedicatedDataSource.contains(dataMapName)
-                    ? createDataSource()
-                    : sharedDataSource;
+			ds = mapsWithDedicatedDataSource.contains(dataMapName) ? createDataSource() : sharedDataSource;
 
-            dataSources.put(dataMapName, ds);
-        }
+			dataSources.put(dataMapName, ds);
+		}
 
-        return ds;
-    }
+		return ds;
+	}
 
-    private DataSource createDataSource() {
-        try {
-            PoolDataSource poolDS = new PoolDataSource(
-                    dataSourceInfo.getJdbcDriver(),
-                    dataSourceInfo.getDataSourceUrl());
-            return new PoolManager(
-                    poolDS,
-                    dataSourceInfo.getMinConnections(),
-                    dataSourceInfo.getMaxConnections(),
-                    dataSourceInfo.getUserName(),
-                    dataSourceInfo.getPassword(), PoolManager.MAX_QUEUE_WAIT_DEFAULT) {
+	private DataSource createDataSource() {
+		Driver driver = objectFactory.newInstance(Driver.class, dataSourceInfo.getJdbcDriver());
 
-                @Override
-                public void shutdown() throws SQLException {
-                    // noop - make sure we are not shutdown by the test scope, but at the
-                    // same time PoolManager methods are exposed (so we can't wrap
-                    // PoolManager)
-                }
-            };
-        }
-        catch (Exception ex) {
-            throw new RuntimeException("Can not create shared data source.", ex);
-        }
-    }
+		return DataSourceBuilder.url(dataSourceInfo.getDataSourceUrl()).driver(driver)
+				.userName(dataSourceInfo.getUserName()).password(dataSourceInfo.getPassword())
+				.pool(dataSourceInfo.getMinConnections(), dataSourceInfo.getMaxConnections()).build();
+	}
 
 }

@@ -20,13 +20,24 @@
 package org.apache.cayenne.exp.parser;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * Path expression traversing DB relationships and attributes.
@@ -35,82 +46,151 @@ import org.apache.cayenne.map.Entity;
  */
 public class ASTDbPath extends ASTPath {
 
-    public static final String DB_PREFIX = "db:";
+	private static final long serialVersionUID = 6623715674339310782L;
 
-    ASTDbPath(int id) {
-        super(id);
-    }
+	public static final String DB_PREFIX = "db:";
 
-    public ASTDbPath() {
-        super(ExpressionParserTreeConstants.JJTDBPATH);
-    }
+	ASTDbPath(int id) {
+		super(id);
+	}
 
-    public ASTDbPath(Object value) {
-        super(ExpressionParserTreeConstants.JJTDBPATH);
-        setPath(value);
-    }
+	public ASTDbPath() {
+		super(ExpressionParserTreeConstants.JJTDBPATH);
+	}
 
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        // TODO: implement resolving DB_PATH for DataObjects
+	public ASTDbPath(Object value) {
+		super(ExpressionParserTreeConstants.JJTDBPATH);
+		setPath(value);
+	}
 
-        if (o instanceof Entity) {
-            return evaluateEntityNode((Entity) o);
-        }
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
 
-        Map<?, ?> map = toMap(o);
-        return (map != null) ? map.get(path) : null;
-    }
+		if (o instanceof Entity) {
+			return evaluateEntityNode((Entity) o);
+		}
 
-    protected Map<?, ?> toMap(Object o) {
-        if (o instanceof Map) {
-            return (Map<?, ?>) o;
-        } else if (o instanceof ObjectId) {
-            return ((ObjectId) o).getIdSnapshot();
-        } else if (o instanceof Persistent) {
-            Persistent persistent = (Persistent) o;
+		Map<?, ?> map = toMap(o);
+		int finalDotIndex = path.lastIndexOf('.');
+		String finalPathComponent = finalDotIndex == -1 ? path : path.substring(finalDotIndex + 1);
 
-            // TODO: returns ObjectId snapshot for now.. should probably
-            // retrieve full snapshot...
-            ObjectId oid = persistent.getObjectId();
-            return (oid != null) ? oid.getIdSnapshot() : null;
-        } else {
-            return null;
-        }
-    }
+		return (map != null) ? map.get(finalPathComponent) : null;
+	}
 
-    /**
-     * Creates a copy of this expression node, without copying children.
-     */
-    @Override
-    public Expression shallowCopy() {
-        ASTDbPath copy = new ASTDbPath(id);
-        copy.path = path;
-        return copy;
-    }
+	protected Map<?, ?> toMap(Object o) {
+		if (o instanceof Map) {
+			return (Map<?, ?>) o;
+		} else if (o instanceof ObjectId) {
+			return ((ObjectId) o).getIdSnapshot();
+		} else if (o instanceof Persistent) {
 
-    /**
-     * @since 4.0
-     */
-    @Override
-    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
-        // warning: non-standard EJBQL...
-        out.append(DB_PREFIX);
-        out.append(rootId);
-        out.append('.');
-        out.append(path);
-    }
+			Persistent persistent = (Persistent) o;
 
-    /**
-     * @since 4.0
-     */
-    @Override
-    public void appendAsString(Appendable out) throws IOException {
-        out.append(DB_PREFIX).append(path);
-    }
+			// before reading full snapshot, check if we can use smaller ID
+			// snapshot ... it is much cheaper...
+			return persistent.getObjectContext() != null ? toMap_AttachedObject(persistent.getObjectContext(),
+					persistent) : toMap_DetachedObject(persistent);
+		} else {
+			return null;
+		}
+	}
 
-    @Override
-    public int getType() {
-        return Expression.DB_PATH;
-    }
+	private Map<?, ?> toMap_AttachedObject(ObjectContext context, Persistent persistent) {
+		return path.indexOf('.') >= 0 ? toMap_AttchedObject_MultiStepPath(context, persistent)
+				: toMap_AttchedObject_SingleStepPath(context, persistent);
+	}
+
+	private Map<?, ?> toMap_AttchedObject_MultiStepPath(ObjectContext context, Persistent persistent) {
+		Iterator<CayenneMapEntry> pathComponents = Cayenne.getObjEntity(persistent).getDbEntity()
+				.resolvePathComponents(this);
+		LinkedList<DbRelationship> reversedPathComponents = new LinkedList<DbRelationship>();
+
+		while (pathComponents.hasNext()) {
+			CayenneMapEntry component = pathComponents.next();
+			if (component instanceof DbRelationship) {
+				DbRelationship rel = (DbRelationship) component;
+				DbRelationship reverseRelationship = rel.getReverseRelationship();
+				if (reverseRelationship == null) {
+					reverseRelationship = rel.createReverseRelationship();
+				}
+				reversedPathComponents.addFirst(reverseRelationship);
+			} else {
+				break; // an attribute can only occur at the end of the path
+			}
+		}
+
+		DbEntity finalEntity = reversedPathComponents.get(0).getSourceEntity();
+
+		StringBuilder reversedPathStr = new StringBuilder();
+		for (int i = 0; i < reversedPathComponents.size(); i++) {
+			reversedPathStr.append(reversedPathComponents.get(i).getName());
+			if (i < reversedPathComponents.size() - 1) {
+				reversedPathStr.append('.');
+			}
+		}
+
+		return ObjectSelect.dbQuery(finalEntity.getName())
+				.where(ExpressionFactory.matchDbExp(reversedPathStr.toString(), persistent)).selectOne(context);
+	}
+
+	private Map<?, ?> toMap_AttchedObject_SingleStepPath(ObjectContext context, Persistent persistent) {
+		ObjectId oid = persistent.getObjectId();
+
+		// TODO: snapshotting API should not be limited to DataContext...
+		if (context instanceof DataContext) {
+			return ((DataContext) context).currentSnapshot(persistent);
+		}
+
+		if (oid != null) {
+
+			return SelectById.dataRowQuery(persistent.getObjectId()).selectOne(context);
+		}
+
+		// fallback to ID snapshot as a last resort
+		return toMap_DetachedObject(persistent);
+	}
+
+	private Map<?, ?> toMap_DetachedObject(Persistent persistent) {
+
+		ObjectId oid = persistent.getObjectId();
+
+		// returning null here is for backwards compatibility. Should we throw
+		// instead?
+		return (oid != null) ? oid.getIdSnapshot() : null;
+	}
+
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
+	@Override
+	public Expression shallowCopy() {
+		ASTDbPath copy = new ASTDbPath(id);
+		copy.path = path;
+		return copy;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+		// warning: non-standard EJBQL...
+		out.append(DB_PREFIX);
+		out.append(rootId);
+		out.append('.');
+		out.append(path);
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void appendAsString(Appendable out) throws IOException {
+		out.append(DB_PREFIX).append(path);
+	}
+
+	@Override
+	public int getType() {
+		return Expression.DB_PATH;
+	}
 }

@@ -257,7 +257,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		// since we don't have ordering, need to analyze results in an order
 		// agnostic
 		// fashion
-		Map<String, IvRoot> resultTypes = new HashMap<String, IvRoot>();
+		Map<String, IvRoot> resultTypes = new HashMap<>();
 
 		for (IvRoot result : results) {
 			resultTypes.put(result.getClass().getName(), result);
@@ -313,7 +313,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		// since we don't have ordering, need to analyze results in an order
 		// agnostic
 		// fashion
-		Map<String, IvRoot> resultTypes = new HashMap<String, IvRoot>();
+		Map<String, IvRoot> resultTypes = new HashMap<>();
 
 		for (IvRoot result : results) {
 			resultTypes.put(result.getClass().getName(), result);
@@ -383,7 +383,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		// since we don't have ordering, need to analyze results in an order
 		// agnostic
 		// fashion
-		Map<String, IvRoot> resultTypes = new HashMap<String, IvRoot>();
+		Map<String, IvRoot> resultTypes = new HashMap<>();
 
 		for (IvRoot result : results) {
 			resultTypes.put(result.getClass().getName(), result);
@@ -439,7 +439,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		List<IvRoot> results = context.performQuery(query);
 
 		assertEquals(4, results.size());
-		Map<String, IvRoot> resultTypes = new HashMap<String, IvRoot>();
+		Map<String, IvRoot> resultTypes = new HashMap<>();
 
 		for (IvRoot result : results) {
 			resultTypes.put(result.getClass().getName(), result);
@@ -487,7 +487,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		// since we don't have ordering, need to analyze results in an order
 		// agnostic
 		// fashion
-		Map<String, Iv1Root> resultTypes = new HashMap<String, Iv1Root>();
+		Map<String, Iv1Root> resultTypes = new HashMap<>();
 
 		for (Iv1Root result : results) {
 			resultTypes.put(result.getClass().getName(), result);

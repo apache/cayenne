@@ -24,29 +24,31 @@ package org.apache.cayenne;
  */
 public class ConfigurationException extends CayenneRuntimeException {
 
-    /**
-     * Creates new <code>ConfigurationException</code> without detail message.
-     */
-    public ConfigurationException() {
-    }
+	private static final long serialVersionUID = 3991782831459956981L;
 
-    /**
-     * Constructs an exception with the specified message with an optional list
-     * of message formatting arguments. Message formatting rules follow
-     * "String.format(..)" conventions.
-     */
-    public ConfigurationException(String messageFormat, Object... messageArgs) {
-        super(messageFormat, messageArgs);
-    }
+	/**
+	 * Creates new <code>ConfigurationException</code> without detail message.
+	 */
+	public ConfigurationException() {
+	}
 
-    /**
-     * Constructs an exception wrapping another exception thrown elsewhere.
-     */
-    public ConfigurationException(Throwable cause) {
-        super(cause);
-    }
+	/**
+	 * Constructs an exception with the specified message with an optional list
+	 * of message formatting arguments. Message formatting rules follow
+	 * "String.format(..)" conventions.
+	 */
+	public ConfigurationException(String messageFormat, Object... messageArgs) {
+		super(messageFormat, messageArgs);
+	}
 
-    public ConfigurationException(String messageFormat, Throwable cause, Object... messageArgs) {
-        super(messageFormat, cause, messageArgs);
-    }
+	/**
+	 * Constructs an exception wrapping another exception thrown elsewhere.
+	 */
+	public ConfigurationException(Throwable cause) {
+		super(cause);
+	}
+
+	public ConfigurationException(String messageFormat, Throwable cause, Object... messageArgs) {
+		super(messageFormat, cause, messageArgs);
+	}
 }

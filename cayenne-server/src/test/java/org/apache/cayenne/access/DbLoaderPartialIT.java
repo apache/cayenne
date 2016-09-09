@@ -75,9 +75,7 @@ public class DbLoaderPartialIT extends ServerCase {
         DataMap map = new DataMap();
         String tableLabel = adapter.tableTypeForTable();
 
-        loader.loadDataMapFromDB(null, "%", new String[] {
-            tableLabel
-        }, map);
+        loader.loadDataMapFromDB(null, "%", new String[] {tableLabel}, map);
 
         Collection<?> rels = getDbEntity(map, "ARTIST").getRelationships();
         assertNotNull(rels);

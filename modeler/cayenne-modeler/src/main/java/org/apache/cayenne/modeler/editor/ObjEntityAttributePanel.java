@@ -90,7 +90,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
     private ActionListener resolver;
 
     /**
-     * By now popup menu item is made similiar to toolbar button. (i.e. all functionality
+     * By now popup menu item is made similar to toolbar button. (i.e. all functionality
      * is here) This should be probably refactored as Action.
      */
     protected JMenuItem resolveMenu;
@@ -167,7 +167,6 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
         table.getSelectionModel().addListSelectionListener(new ObjAttributeListSelectionListener());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        table.setAutoCreateRowSorter(true);
 
         mediator.getApplication().getActionManager().setupCutCopyPaste(
                 table,

@@ -30,59 +30,58 @@ import org.apache.cayenne.query.EntityResultSegment;
  */
 class PersistentDescriptorResultMetadata implements EntityResultSegment {
 
-    ClassDescriptor classDescriptor;
-    Map<String, String> fields;
-    Map<String, String> reverseFields;
+	ClassDescriptor classDescriptor;
+	Map<String, String> fields;
+	Map<String, String> reverseFields;
 
-    PersistentDescriptorResultMetadata(ClassDescriptor classDescriptor) {
-        this.classDescriptor = classDescriptor;
-        this.fields = new HashMap<String, String>();
-        this.reverseFields = new HashMap<String, String>();
-    }
+	PersistentDescriptorResultMetadata(ClassDescriptor classDescriptor) {
+		this.classDescriptor = classDescriptor;
+		this.fields = new HashMap<>();
+		this.reverseFields = new HashMap<String, String>();
+	}
 
-    public ClassDescriptor getClassDescriptor() {
-        return classDescriptor;
-    }
+	public ClassDescriptor getClassDescriptor() {
+		return classDescriptor;
+	}
 
-    public Map<String, String> getFields() {
-        return fields;
-    }
+	public Map<String, String> getFields() {
+		return fields;
+	}
 
-    public String getColumnPath(String resultSetLabel) {
-        return reverseFields.get(resultSetLabel);
-    }
+	public String getColumnPath(String resultSetLabel) {
+		return reverseFields.get(resultSetLabel);
+	}
 
-    void addObjectField(String attributeName, String column) {
-        ObjEntity entity = classDescriptor.getEntity();
+	void addObjectField(String attributeName, String column) {
+		ObjEntity entity = classDescriptor.getEntity();
 
-        ObjAttribute attribute = entity.getAttribute(attributeName);
-        fields.put(attribute.getDbAttributePath(), column);
-        reverseFields.put(column, attribute.getDbAttributePath());
-    }
+		ObjAttribute attribute = entity.getAttribute(attributeName);
+		fields.put(attribute.getDbAttributePath(), column);
+		reverseFields.put(column, attribute.getDbAttributePath());
+	}
 
-    /**
-     * Adds a result set column mapping for a single object property of a specified entity
-     * that may differ from the root entity if inheritance is involved.
-     */
-    void addObjectField(String entityName, String attributeName, String column) {
-        ObjEntity entity = classDescriptor.getEntity().getDataMap().getObjEntity(
-                entityName);
+	/**
+	 * Adds a result set column mapping for a single object property of a
+	 * specified entity that may differ from the root entity if inheritance is
+	 * involved.
+	 */
+	void addObjectField(String entityName, String attributeName, String column) {
+		ObjEntity entity = classDescriptor.getEntity().getDataMap().getObjEntity(entityName);
 
-        ObjAttribute attribute = entity.getAttribute(attributeName);
-        fields.put(attribute.getDbAttributePath(), column);
-        reverseFields.put(column, attribute.getDbAttributePath());
-    }
+		ObjAttribute attribute = entity.getAttribute(attributeName);
+		fields.put(attribute.getDbAttributePath(), column);
+		reverseFields.put(column, attribute.getDbAttributePath());
+	}
 
-    /**
-     * Adds a result set column mapping for a single DbAttribute.
-     */
-    void addDbField(String dbAttributeName, String column) {
-        fields.put(dbAttributeName, column);
-        reverseFields.put(column, dbAttributeName);
-    }
+	/**
+	 * Adds a result set column mapping for a single DbAttribute.
+	 */
+	void addDbField(String dbAttributeName, String column) {
+		fields.put(dbAttributeName, column);
+		reverseFields.put(column, dbAttributeName);
+	}
 
-    public int getColumnOffset() {
-        throw new UnsupportedOperationException(
-                "Column offset only makes sense in the context of a query");
-    }
+	public int getColumnOffset() {
+		throw new UnsupportedOperationException("Column offset only makes sense in the context of a query");
+	}
 }

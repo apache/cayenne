@@ -26,36 +26,37 @@ import org.apache.cayenne.CayenneRuntimeException;
  */
 public class ExpressionException extends CayenneRuntimeException {
 
-    protected String expressionString;
+	private static final long serialVersionUID = -4933472762330859309L;
+	
+	protected String expressionString;
 
-    public ExpressionException() {
-        super();
-    }
+	public ExpressionException() {
+		super();
+	}
 
-    public ExpressionException(String messageFormat, Object... messageArgs) {
-        super(messageFormat, messageArgs);
-    }
+	public ExpressionException(String messageFormat, Object... messageArgs) {
+		super(messageFormat, messageArgs);
+	}
 
-    public ExpressionException(String messageFormat, Throwable cause,
-            Object... messageArgs) {
-        super(messageFormat, cause, messageArgs);
-    }
+	public ExpressionException(String messageFormat, Throwable cause, Object... messageArgs) {
+		super(messageFormat, cause, messageArgs);
+	}
 
-    public ExpressionException(Throwable cause) {
-        super(cause);
-    }
+	public ExpressionException(Throwable cause) {
+		super(cause);
+	}
 
-    /**
-     * Constructor for ExpressionException.
-     * 
-     * @since 1.1
-     */
-    public ExpressionException(String messageFormat, String expressionString, Throwable th, Object... messageArgs) {
-        super(messageFormat, th, messageArgs);
-        this.expressionString = expressionString;
-    }
+	/**
+	 * Constructor for ExpressionException.
+	 * 
+	 * @since 1.1
+	 */
+	public ExpressionException(String messageFormat, String expressionString, Throwable th, Object... messageArgs) {
+		super(messageFormat, th, messageArgs);
+		this.expressionString = expressionString;
+	}
 
-    public String getExpressionString() {
-        return expressionString;
-    }
+	public String getExpressionString() {
+		return expressionString;
+	}
 }

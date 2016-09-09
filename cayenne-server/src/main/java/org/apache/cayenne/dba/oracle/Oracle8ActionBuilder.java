@@ -23,7 +23,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 
 /**
  * An action builder for Oracle8Adapter.
@@ -32,33 +31,28 @@ import org.apache.cayenne.query.SelectQuery;
  */
 class Oracle8ActionBuilder extends OracleActionBuilder {
 
-    Oracle8ActionBuilder(DataNode dataNode) {
-        super(dataNode);
-    }
+	Oracle8ActionBuilder(DataNode dataNode) {
+		super(dataNode);
+	}
 
-    @Override
-    public SQLAction sqlAction(SQLTemplate query) {
-        return new Oracle8SQLTemplateAction(query, dataNode);
-    }
+	@Override
+	public SQLAction sqlAction(SQLTemplate query) {
+		return new Oracle8SQLTemplateAction(query, dataNode);
+	}
 
-    @Override
-    public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new Oracle8SelectAction(query, dataNode);
-    }
+	@Override
+	public SQLAction batchAction(BatchQuery query) {
+		// special handling for LOB updates
+		if (OracleAdapter.isSupportsOracleLOB() && OracleAdapter.updatesLOBColumns(query)) {
+			// Special action for Oracle8. See CAY-1307.
+			return new Oracle8LOBBatchAction(query, dataNode.getAdapter(), dataNode.getJdbcEventLogger());
+		} else {
+			// optimistic locking is not supported in batches due to JDBC driver
+			// limitations
+			boolean useOptimisticLock = query.isUsingOptimisticLocking();
+			boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
 
-    @Override
-    public SQLAction batchAction(BatchQuery query) {
-        // special handling for LOB updates
-        if (OracleAdapter.isSupportsOracleLOB() && OracleAdapter.updatesLOBColumns(query)) {
-            // Special action for Oracle8. See CAY-1307.
-            return new Oracle8LOBBatchAction(query, dataNode.getAdapter(), dataNode.getJdbcEventLogger());
-        } else {
-            // optimistic locking is not supported in batches due to JDBC driver
-            // limitations
-            boolean useOptimisticLock = query.isUsingOptimisticLocking();
-            boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
-
-            return new OracleBatchAction(query, dataNode, runningAsBatch);
-        }
-    }
+			return new OracleBatchAction(query, dataNode, runningAsBatch);
+		}
+	}
 }

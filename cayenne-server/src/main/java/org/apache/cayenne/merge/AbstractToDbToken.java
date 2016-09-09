@@ -30,113 +30,97 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 
 /**
- * Common abstract superclass for all {@link MergerToken}s going from the model to the
- * database.
+ * Common abstract superclass for all {@link MergerToken}s going from the model
+ * to the database.
  */
 public abstract class AbstractToDbToken implements MergerToken, Comparable<MergerToken> {
 
-    private final String tokenName;
+	private final String tokenName;
 
-    protected AbstractToDbToken(String tokenName) {
-        this.tokenName = tokenName;
-    }
+	protected AbstractToDbToken(String tokenName) {
+		this.tokenName = tokenName;
+	}
 
-    @Override
-    public final String getTokenName() {
-        return tokenName;
-    }
+	@Override
+	public final String getTokenName() {
+		return tokenName;
+	}
 
-    public final MergeDirection getDirection() {
-        return MergeDirection.TO_DB;
-    }
+	@Override
+	public final MergeDirection getDirection() {
+		return MergeDirection.TO_DB;
+	}
 
-    public void execute(MergerContext mergerContext) {
-        for (String sql : createSql(mergerContext.getAdapter())) {
-            executeSql(mergerContext, sql);
-        }
-    }
+	@Override
+	public void execute(MergerContext mergerContext) {
+		for (String sql : createSql(mergerContext.getAdapter())) {
+			executeSql(mergerContext, sql);
+		}
+	}
 
-    protected void executeSql(MergerContext mergerContext, String sql) {
-        Connection conn = null;
-        Statement st = null;
-        JdbcEventLogger logger = mergerContext.getDataNode().getJdbcEventLogger();
-        try {
-            logger.log(sql);
-            conn = mergerContext.getDataNode().getDataSource().getConnection();
-            st = conn.createStatement();
-            st.execute(sql);
-        }
-        catch (SQLException e) {
-            mergerContext.getValidationResult().addFailure(
-                    new SimpleValidationFailure(sql, e.getMessage()));
-            logger.logQueryError(e);
-        }
-        finally {
-            if (st != null) {
-                try {
-                    st.close();
-                }
-                catch (SQLException e) {
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                }
-                catch (SQLException e) {
-                }
-            }
-        }
-    }
+	protected void executeSql(MergerContext mergerContext, String sql) {
+		JdbcEventLogger logger = mergerContext.getDataNode().getJdbcEventLogger();
+		logger.log(sql);
 
-    @Override
-    public String toString() {
-        return getTokenName() + ' ' + getTokenValue() + ' ' + getDirection();
-    }
+		try (Connection conn = mergerContext.getDataNode().getDataSource().getConnection();) {
 
-    public abstract List<String> createSql(DbAdapter adapter);
+			try (Statement st = conn.createStatement();) {
+				st.execute(sql);
+			}
+		} catch (SQLException e) {
+			mergerContext.getValidationResult().addFailure(new SimpleValidationFailure(sql, e.getMessage()));
+			logger.logQueryError(e);
+		}
+	}
 
-    abstract static class Entity extends AbstractToDbToken {
+	@Override
+	public String toString() {
+		return getTokenName() + ' ' + getTokenValue() + ' ' + getDirection();
+	}
 
-        private DbEntity entity;
+	public abstract List<String> createSql(DbAdapter adapter);
 
-        public Entity(String tokenName, DbEntity entity) {
-            super(tokenName);
-            this.entity = entity;
-        }
+	abstract static class Entity extends AbstractToDbToken {
 
-        public DbEntity getEntity() {
-            return entity;
-        }
+		private DbEntity entity;
 
-        public String getTokenValue() {
-            return getEntity().getName();
-        }
+		public Entity(String tokenName, DbEntity entity) {
+			super(tokenName);
+			this.entity = entity;
+		}
 
-        public int compareTo(MergerToken o) {
-            // default order as tokens are created
-            return 0;
-        }
+		public DbEntity getEntity() {
+			return entity;
+		}
 
-    }
+		public String getTokenValue() {
+			return getEntity().getName();
+		}
 
-    abstract static class EntityAndColumn extends Entity {
+		public int compareTo(MergerToken o) {
+			// default order as tokens are created
+			return 0;
+		}
 
-        private DbAttribute column;
+	}
 
-        public EntityAndColumn(String tokenName, DbEntity entity, DbAttribute column) {
-            super(tokenName, entity);
-            this.column = column;
-        }
+	abstract static class EntityAndColumn extends Entity {
 
-        public DbAttribute getColumn() {
-            return column;
-        }
+		private DbAttribute column;
 
-        @Override
-        public String getTokenValue() {
-            return getEntity().getName() + "." + getColumn().getName();
-        }
+		public EntityAndColumn(String tokenName, DbEntity entity, DbAttribute column) {
+			super(tokenName, entity);
+			this.column = column;
+		}
 
-    }
+		public DbAttribute getColumn() {
+			return column;
+		}
+
+		@Override
+		public String getTokenValue() {
+			return getEntity().getName() + "." + getColumn().getName();
+		}
+
+	}
 }

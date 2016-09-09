@@ -251,6 +251,123 @@ binder.bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
                 this:<programlisting language="java">binder.bind(QueryCache.class).to(EhCacheQueryCache.class);</programlisting></para>
         </section>
     </section>
+    <section xml:id="extendedtypes">
+        <title>Extended Types</title>
+        <para>JDBC specification defines a set of "standard" database column types (defined in java.sql.Types class)
+            and a very specific mapping of these types to Java Object Types, such as java.lang.String,
+            java.math.BigDecimal, etc. Sometimes there is a need to use a custom Java type not known to JDBC driver and
+            Cayenne allows to configure it. For this Cayenne needs to know how to instantiate this type from
+            a database "primitive" value, and conversely, how to transform an object of the custom type to
+            a JDBC-compatible object.</para>
+        <section xml:id="supporting-non-standard-types">
+            <title>Supporting Non-Standard Types</title>
+            <para>For supporting non-standard type you should define it via an interface <code>org.apache.cayenne.access.types.ExtendedType</code>.
+                An implementation must provide <code>ExtendedType.getClassName()</code> method that returns
+                a fully qualified Java class name for the supported custom type, and a number of methods
+                that convert data between JDBC and custom type.
+                The following example demonstrates how to add a custom DoubleArrayType
+                to store java.lang.Double[] as a custom string in a database:</para>
+            <programlisting language="java">
+/**
+* Defines methods to read Java objects from JDBC ResultSets and write as parameters of
+* PreparedStatements.
+*/
+public class DoubleArrayType implements ExtendedType {
+
+    private final String SEPARATOR = ",";
+
+    /**
+    * Returns a full name of Java class that this ExtendedType supports.
+    */
+    @Override
+    public String getClassName() {
+        return Double[].class.getCanonicalName();
+    }
+
+    /**
+    * Initializes a single parameter of a PreparedStatement with object value.
+    */
+    @Override
+    public void setJdbcObject(PreparedStatement statement, Object value,
+            int pos, int type, int scale) throws Exception {
+
+        String str = StringUtils.join((Double[]) value, SEPARATOR);
+        statement.setString(pos, str);
+    }
+
+
+    /**
+    * Reads an object from JDBC ResultSet column, converting it to class returned by
+    * 'getClassName' method.
+    *
+    * @throws Exception if read error occurred, or an object can't be converted to a
+    *             target Java class.
+    */
+    @Override
+    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+        String[] str = rs.getString(index).split(SEPARATOR);
+        Double[] res = new Double[str.length];
+
+        for (int i = 0; i &lt; str.length; i++) {
+            res[i] = Double.valueOf(str[i]);
+        }
+
+        return res;
+    }
+
+    /**
+    * Reads an object from a stored procedure OUT parameter, converting it to class
+    * returned by 'getClassName' method.
+    *
+    * @throws Exception if read error ocurred, or an object can't be converted to a
+    *             target Java class.
+    */
+    @Override
+    public Object materializeObject(CallableStatement rs, int index, int type) throws Exception {
+        String[] str = rs.getString(index).split(SEPARATOR);
+        Double[] res = new Double[str.length];
+
+        for (int i = 0; i &lt; str.length; i++) {
+            res[i] = Double.valueOf(str[i]);
+        }
+
+        return res;
+    }
+}
+            </programlisting>
+            <para>For Java7</para>
+            <programlisting language="java">
+// add DoubleArrayType to list of user types
+ServerRuntime runtime = new ServerRuntime("cayenne-project.xml", new Module() {
+    @Override
+    public void configure(Binder binder) {
+        binder
+                .bindList(Constants.SERVER_USER_TYPES_LIST)
+                .add(new DoubleArrayType());
+    }
+});
+            </programlisting>
+            <para>For Java8</para>
+            <programlisting language="java">
+// add DoubleArrayType to list of user types
+ServerRuntime runtime = new ServerRuntime("cayenne-project.xml",
+    (Binder binder) -> binder.bindList(Constants.SERVER_USER_TYPES_LIST)
+                .add(new DoubleArrayType()));
+            </programlisting>
+            <para>More examples of implementation you can find in
+                <link xlink:href="https://github.com/apache/cayenne/tree/master/cayenne-java8">cayenne-java8 module</link> or
+                <link xlink:href="https://github.com/apache/cayenne/tree/master/cayenne-joda">cayenne-joda module</link>.</para>
+        </section>
+        <section xml:id="dbadapters-and-extended-types">
+            <title>DbAdapters and Extended Types</title>
+            <para>As shown in the example above, ExtendedTypes are stored by DbAdapter. In fact DbAdapters often install
+                their own extended types to address incompatibilities, incompleteness and differences between
+                JDBC drivers in handling "standard" JDBC types. For instance some drivers support reading large
+                character columns (CLOB) as java.sql.Clob, but some other - as "character stream", etc.
+                Adapters provided with Cayenne override <code>configureExtendedTypes()</code> method to install their own types,
+                possibly substituting Cayenne defaults. Custom DbAdapters can use the same technique.</para>
+        </section>
+    </section>
     <section xml:id="noteworthy-runtime-components">
         <title>Noteworthy Built-in Services</title>
         <section xml:id="jdbceventlogger">
@@ -271,9 +388,6 @@ binder.bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
         </section>
         <section xml:id="querycache">
             <title>QueryCache</title>
-        </section>
-        <section xml:id="extendedtypes">
-            <title>ExtendedTypes</title>
         </section>
     </section>
 </chapter>

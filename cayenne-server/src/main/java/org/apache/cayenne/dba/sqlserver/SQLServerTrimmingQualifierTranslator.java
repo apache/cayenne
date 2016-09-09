@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sqlserver;
 
-import java.io.IOException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,95 +32,84 @@ import org.apache.cayenne.map.DbAttribute;
  */
 class SQLServerTrimmingQualifierTranslator extends TrimmingQualifierTranslator {
 
-    // since LIKE IGNORE CASE requires more contextual information than the super
-    // translator can provide, we are using an internal element stack to trace translation
-    // context.. Maybe it is a good idea to introduce it in the superclass?
-    private List<Expression> expressionStack;
+	// since LIKE IGNORE CASE requires more contextual information than the
+	// super
+	// translator can provide, we are using an internal element stack to trace
+	// translation
+	// context.. Maybe it is a good idea to introduce it in the superclass?
+	private List<Expression> expressionStack;
 
-    SQLServerTrimmingQualifierTranslator(QueryAssembler queryAssembler,
-            String trimFunction) {
-        super(queryAssembler, trimFunction);
-        expressionStack = new ArrayList<Expression>();
-    }
+	SQLServerTrimmingQualifierTranslator(QueryAssembler queryAssembler, String trimFunction) {
+		super(queryAssembler, trimFunction);
+		expressionStack = new ArrayList<Expression>();
+	}
 
-    @Override
-    public void startNode(Expression node, Expression parentNode) {
-        push(node);
-        super.startNode(node, parentNode);
-    }
+	@Override
+	public void startNode(Expression node, Expression parentNode) {
+		push(node);
+		super.startNode(node, parentNode);
+	}
 
-    @Override
-    protected void processColumn(DbAttribute dbAttr) {
+	@Override
+	protected void processColumn(DbAttribute dbAttr) {
 
-        Expression node = peek(1);
+		Expression node = peek(1);
 
-        boolean likeCI = node != null
-                && dbAttr.getType() == Types.CLOB
-                && (node.getType() == Expression.LIKE_IGNORE_CASE || node.getType() == Expression.NOT_LIKE_IGNORE_CASE);
+		boolean likeCI = node != null && dbAttr.getType() == Types.CLOB
+				&& (node.getType() == Expression.LIKE_IGNORE_CASE || node.getType() == Expression.NOT_LIKE_IGNORE_CASE);
 
-        try {
-            if (likeCI) {
-                out.append("CAST(");
-            }
+		if (likeCI) {
+			out.append("CAST(");
+		}
 
-            super.processColumn(dbAttr);
+		super.processColumn(dbAttr);
 
-            if (likeCI) {
-                out.append(" AS NVARCHAR(MAX))");
-            }
-        } catch (IOException e) {
-            e.printStackTrace(); // TODO process exceptions
-        }
-    }
+		if (likeCI) {
+			out.append(" AS NVARCHAR(MAX))");
+		}
+	}
 
-    @Override
-    protected void processColumnWithQuoteSqlIdentifiers(
-            DbAttribute dbAttr,
-            Expression pathExp) {
-        Expression node = peek(1);
+	@Override
+	protected void processColumnWithQuoteSqlIdentifiers(DbAttribute dbAttr, Expression pathExp) {
+		Expression node = peek(1);
 
-        boolean likeCI = node != null
-                && dbAttr.getType() == Types.CLOB
-                && (node.getType() == Expression.LIKE_IGNORE_CASE || node.getType() == Expression.NOT_LIKE_IGNORE_CASE);
+		boolean likeCI = node != null && dbAttr.getType() == Types.CLOB
+				&& (node.getType() == Expression.LIKE_IGNORE_CASE || node.getType() == Expression.NOT_LIKE_IGNORE_CASE);
 
-        try {
-            if (likeCI) {
-                out.append("CAST(");
-            }
+		if (likeCI) {
+			out.append("CAST(");
+		}
 
-            super.processColumnWithQuoteSqlIdentifiers(dbAttr, node);
+		super.processColumnWithQuoteSqlIdentifiers(dbAttr, node);
 
-            if (likeCI) {
-                out.append(" AS NVARCHAR(MAX))");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();// TODO process exceptions
-        }
-    }
+		if (likeCI) {
+			out.append(" AS NVARCHAR(MAX))");
+		}
+	}
 
-    @Override
-    public void endNode(Expression node, Expression parentNode) {
-        super.endNode(node, parentNode);
-        pop();
-    }
+	@Override
+	public void endNode(Expression node, Expression parentNode) {
+		super.endNode(node, parentNode);
+		pop();
+	}
 
-    private void push(Expression node) {
-        expressionStack.add(node);
-    }
+	private void push(Expression node) {
+		expressionStack.add(node);
+	}
 
-    private void pop() {
-        int len = expressionStack.size();
-        if (len > 0) {
-            expressionStack.remove(len - 1);
-        }
-    }
+	private void pop() {
+		int len = expressionStack.size();
+		if (len > 0) {
+			expressionStack.remove(len - 1);
+		}
+	}
 
-    private Expression peek(int tailIndex) {
-        int index = expressionStack.size() - tailIndex - 1;
-        if (index < 0) {
-            return null;
-        }
+	private Expression peek(int tailIndex) {
+		int index = expressionStack.size() - tailIndex - 1;
+		if (index < 0) {
+			return null;
+		}
 
-        return expressionStack.get(index);
-    }
+		return expressionStack.get(index);
+	}
 }

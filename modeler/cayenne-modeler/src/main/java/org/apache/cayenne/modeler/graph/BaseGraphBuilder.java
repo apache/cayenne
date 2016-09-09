@@ -150,9 +150,9 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
             }
         });
 
-        entityCells = new HashMap<String, DefaultGraphCell>();
-        createdObjects = new ArrayList<DefaultGraphCell>();
-        relCells = new HashMap<String, DefaultEdge>();
+        entityCells = new HashMap<>();
+        createdObjects = new ArrayList<>();
+        relCells = new HashMap<>();
 
         /**
          * an array for entities that are not connected to anyone. We add them

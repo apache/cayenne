@@ -50,7 +50,7 @@ class AuditableAggregator {
 
     AuditableAggregator(AuditableProcessor delegate) {
         this.delegate = delegate;
-        this.ops = new IdentityHashMap<Persistent, AuditableOperation>();
+        this.ops = new IdentityHashMap<>();
     }
 
     void audit(Persistent object, AuditableOperation operation) {

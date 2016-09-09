@@ -26,6 +26,7 @@ public class CayenneProjects {
     // can define their own on the fly (TODO: how would that work with the
     // global schema
     // setup?)
+    public static final String ARRAY_TYPE_PROJECT = "cayenne-array-type.xml";
     public static final String BINARY_PK_PROJECT = "cayenne-binary-pk.xml";
     public static final String COMPOUND_PROJECT = "cayenne-compound.xml";
     public static final String DATE_TIME_PROJECT = "cayenne-date-time.xml";

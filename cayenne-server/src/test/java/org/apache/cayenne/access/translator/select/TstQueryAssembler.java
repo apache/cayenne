@@ -19,57 +19,47 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.select.QueryAssembler;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.query.Query;
 
 public class TstQueryAssembler extends QueryAssembler {
 
-    protected List<DbRelationship> dbRels;
+	protected List<DbRelationship> dbRels;
 
-    public TstQueryAssembler(Query q, DataNode node, Connection connection) throws SQLException {
-        super(q, node, connection);
-        dbRels = new ArrayList<DbRelationship>();
-    }
+	public TstQueryAssembler(Query q, DbAdapter adapter, EntityResolver resolver) throws SQLException {
+		super(q, adapter, resolver);
+		dbRels = new ArrayList<DbRelationship>();
+	}
 
-    @Override
-    public void dbRelationshipAdded(DbRelationship relationship, JoinType joinType, String joinSplitAlias) {
-        dbRels.add(relationship);
-    }
+	@Override
+	public void dbRelationshipAdded(DbRelationship relationship, JoinType joinType, String joinSplitAlias) {
+		dbRels.add(relationship);
+	}
 
-    @Override
-    public String getCurrentAlias() {
-        return "ta";
-    }
+	@Override
+	public String getCurrentAlias() {
+		return "ta";
+	}
 
-    @Override
-    public void resetJoinStack() {
-        // noop
-    }
+	@Override
+	public void resetJoinStack() {
+		// noop
+	}
 
-    @Override
-    public boolean supportsTableAliases() {
-        return true;
-    }
+	@Override
+	public boolean supportsTableAliases() {
+		return true;
+	}
 
-    @Override
-    public String createSqlString() {
-        return "SELECT * FROM ARTIST";
-    }
-
-    public List<DbAttribute> getAttributes() {
-        return attributes;
-    }
-
-    public List getValues() {
-        return values;
-    }
+	@Override
+	protected void doTranslate() {
+		this.sql = "SELECT * FROM ARTIST";
+	}
 }

@@ -18,7 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.*;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalog;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertCatalogAndSchema;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertFlat;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertSchema;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertSkipRelationshipsLoading;
+import static org.apache.cayenne.tools.dbimport.config.DefaultReverseEngineeringLoaderTest.assertTableTypes;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -46,10 +51,8 @@ import org.apache.tools.ant.util.FileUtils;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.Difference;
-import org.custommonkey.xmlunit.DifferenceListener;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 // TODO: we are only testing on Derby. We may need to dynamically switch between DBs 
@@ -85,10 +88,10 @@ public class DbImporterTaskTest {
 		assertSkipRelationshipsLoading(getCdbImport("build-skip-relationships-loading.xml").getReverseEngineering());
 	}
 
-    @Test
-    public void testTableTypes() throws Exception {
-        assertTableTypes(getCdbImport("build-table-types.xml").getReverseEngineering());
-    }
+	@Test
+	public void testTableTypes() throws Exception {
+		assertTableTypes(getCdbImport("build-table-types.xml").getReverseEngineering());
+	}
 
 	@Test
 	public void testIncludeTable() throws Exception {
@@ -179,6 +182,7 @@ public class DbImporterTaskTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void verifyResult(File map, File mapFileCopy) {
 		try {
 			FileReader control = new FileReader(map.getAbsolutePath() + "-result");
@@ -186,14 +190,13 @@ public class DbImporterTaskTest {
 
 			DetailedDiff diff = new DetailedDiff(new Diff(control, test));
 			if (!diff.similar()) {
-                for (Difference d : ((List<Difference>) diff.getAllDifferences())) {
+				for (Difference d : ((List<Difference>) diff.getAllDifferences())) {
 
-
-                    System.out.println("-------------------------------------------");
-                    System.out.println(d.getTestNodeDetail().getNode());
-                    System.out.println(d.getControlNodeDetail().getValue());
-                }
-                fail(diff.toString());
+					System.out.println("-------------------------------------------");
+					System.out.println(d.getTestNodeDetail().getNode());
+					System.out.println(d.getControlNodeDetail().getValue());
+				}
+				fail(diff.toString());
 			}
 
 		} catch (SAXException e) {
@@ -212,16 +215,13 @@ public class DbImporterTaskTest {
 
 		Class.forName(dbImportConfiguration.getDriver()).newInstance();
 
-		Connection c = DriverManager.getConnection(dbImportConfiguration.getUrl());
-		try {
-
-			Statement stmt = c.createStatement();
+		try (Connection c = DriverManager.getConnection(dbImportConfiguration.getUrl());) {
 
 			// TODO: move parsing SQL files to a common utility (DBHelper?) .
 			// ALso see UnitDbApater.executeDDL - this should use the same
 			// utility
 
-			try {
+			try (Statement stmt = c.createStatement();) {
 				for (String sql : SQLReader.statements(sqlUrl, ";")) {
 
 					// skip comments
@@ -231,11 +231,7 @@ public class DbImporterTaskTest {
 
 					stmt.execute(sql);
 				}
-			} finally {
-				stmt.close();
 			}
-		} finally {
-			c.close();
 		}
 	}
 

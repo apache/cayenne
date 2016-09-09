@@ -32,126 +32,112 @@ import org.apache.cayenne.swing.ObjectBinding;
 
 public class GeneralPreferences extends CayenneController {
 
-    public static final String AUTO_LOAD_PROJECT_PREFERENCE = "autoLoadProject";
-    public static final String DELETE_PROMPT_PREFERENCE = "deletePrompt";
-    public static final String ENCODING_PREFERENCE = "encoding";
+	public static final String AUTO_LOAD_PROJECT_PREFERENCE = "autoLoadProject";
+	public static final String DELETE_PROMPT_PREFERENCE = "deletePrompt";
+	public static final String ENCODING_PREFERENCE = "encoding";
 
-    protected GeneralPreferencesView view;
-    protected CayennePreferenceEditor editor;
+	protected GeneralPreferencesView view;
+	protected CayennePreferenceEditor editor;
 
-    protected boolean autoLoadProjectPreference;
-    protected String encoding;
-    protected boolean deletePromptPreference;
+	protected boolean autoLoadProjectPreference;
+	protected String encoding;
+	protected boolean deletePromptPreference;
 
-    protected Preferences preferences;
+	protected Preferences preferences;
 
-    protected ObjectBinding encodingBinding;
-    protected ObjectBinding autoLoadProjectBinding;
-    protected ObjectBinding deletePromptBinding;
+	protected ObjectBinding encodingBinding;
+	protected ObjectBinding autoLoadProjectBinding;
+	protected ObjectBinding deletePromptBinding;
 
-    public GeneralPreferences(PreferenceDialog parentController) {
-        super(parentController);
-        this.view = new GeneralPreferencesView();
+	public GeneralPreferences(PreferenceDialog parentController) {
+		super(parentController);
+		this.view = new GeneralPreferencesView();
 
-        PreferenceEditor editor = parentController.getEditor();
-        if (editor instanceof CayennePreferenceEditor) {
-            this.editor = (CayennePreferenceEditor) editor;
-            this.view.setEnabled(true);
-            initBindings();
+		PreferenceEditor editor = parentController.getEditor();
+		if (editor instanceof CayennePreferenceEditor) {
+			this.editor = (CayennePreferenceEditor) editor;
+			this.view.setEnabled(true);
+			initBindings();
 
-            encodingBinding.updateView();
-            autoLoadProjectBinding.updateView();
-            deletePromptBinding.updateView();
-        }
-        else {
-            this.view.setEnabled(false);
-        }
-    }
+			encodingBinding.updateView();
+			autoLoadProjectBinding.updateView();
+			deletePromptBinding.updateView();
+		} else {
+			this.view.setEnabled(false);
+		}
+	}
 
-    public Component getView() {
-        return view;
-    }
+	public Component getView() {
+		return view;
+	}
 
-    protected void initBindings() {
-        // init model objects
-        preferences = application.getPreferencesNode(GeneralPreferences.class, "");
+	protected void initBindings() {
+		// init model objects
+		preferences = application.getPreferencesNode(GeneralPreferences.class, "");
 
-        this.encoding = preferences.get(ENCODING_PREFERENCE, null);
+		this.encoding = preferences.get(ENCODING_PREFERENCE, null);
 
-        this.autoLoadProjectPreference = preferences.getBoolean(
-                AUTO_LOAD_PROJECT_PREFERENCE,
-                false);
-        this.deletePromptPreference = preferences.getBoolean(
-                DELETE_PROMPT_PREFERENCE,
-                false);
+		this.autoLoadProjectPreference = preferences.getBoolean(AUTO_LOAD_PROJECT_PREFERENCE, false);
+		this.deletePromptPreference = preferences.getBoolean(DELETE_PROMPT_PREFERENCE, false);
 
-        // build child controllers...
-        EncodingSelector encodingSelector = new EncodingSelector(this, view
-                .getEncodingSelector());
+		// build child controllers...
+		EncodingSelector encodingSelector = new EncodingSelector(this, view.getEncodingSelector());
 
-        // create bindings...
-        BindingBuilder builder = new BindingBuilder(
-                getApplication().getBindingFactory(),
-                this);
+		// create bindings...
+		BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
 
-        this.encodingBinding = builder.bindToProperty(
-                encodingSelector,
-                "encoding",
-                EncodingSelector.ENCODING_PROPERTY_BINDING);
+		this.encodingBinding = builder.bindToProperty(encodingSelector, "encoding",
+				EncodingSelector.ENCODING_PROPERTY_BINDING);
 
-        this.autoLoadProjectBinding = builder.bindToCheckBox(
-                view.getAutoLoadProject(),
-                "autoLoadProject");
+		this.autoLoadProjectBinding = builder.bindToCheckBox(view.getAutoLoadProject(), "autoLoadProject");
 
-        this.deletePromptBinding = builder.bindToCheckBox(
-                view.getDeletePrompt(),
-                "deletePrompt");
-    }
+		this.deletePromptBinding = builder.bindToCheckBox(view.getDeletePrompt(), "deletePrompt");
+	}
 
-    public String getEncoding() {
-        return encoding;
-    }
+	public String getEncoding() {
+		return encoding;
+	}
 
-    public void setEncoding(String encoding) {
-        addChangedPreferences(ENCODING_PREFERENCE, encoding);
-        this.encoding = encoding;
-    }
+	public void setEncoding(String encoding) {
+		addChangedPreferences(ENCODING_PREFERENCE, encoding);
+		this.encoding = encoding;
+	}
 
-    public boolean getAutoLoadProject() {
-        return autoLoadProjectPreference;
-    }
+	public boolean getAutoLoadProject() {
+		return autoLoadProjectPreference;
+	}
 
-    public void setAutoLoadProject(boolean autoLoadProject) {
+	public void setAutoLoadProject(boolean autoLoadProject) {
 
-        addChangedBooleanPreferences(AUTO_LOAD_PROJECT_PREFERENCE, autoLoadProject);
-        this.autoLoadProjectPreference = autoLoadProject;
-    }
+		addChangedBooleanPreferences(AUTO_LOAD_PROJECT_PREFERENCE, autoLoadProject);
+		this.autoLoadProjectPreference = autoLoadProject;
+	}
 
-    public boolean getDeletePrompt() {
-        return deletePromptPreference;
-    }
+	public boolean getDeletePrompt() {
+		return deletePromptPreference;
+	}
 
-    public void setDeletePrompt(boolean deletePrompt) {
+	public void setDeletePrompt(boolean deletePrompt) {
 
-        addChangedBooleanPreferences(DELETE_PROMPT_PREFERENCE, deletePrompt);
-        this.deletePromptPreference = deletePrompt;
-    }
+		addChangedBooleanPreferences(DELETE_PROMPT_PREFERENCE, deletePrompt);
+		this.deletePromptPreference = deletePrompt;
+	}
 
-    public void addChangedBooleanPreferences(String key, boolean value) {
-        Map<String, Boolean> map = editor.getChangedBooleanPreferences().get(preferences);
-        if (map == null) {
-            map = new HashMap<String, Boolean>();
-        }
-        map.put(key, value);
-        editor.getChangedBooleanPreferences().put(preferences, map);
-    }
+	public void addChangedBooleanPreferences(String key, boolean value) {
+		Map<String, Boolean> map = editor.getChangedBooleanPreferences().get(preferences);
+		if (map == null) {
+			map = new HashMap<>();
+		}
+		map.put(key, value);
+		editor.getChangedBooleanPreferences().put(preferences, map);
+	}
 
-    public void addChangedPreferences(String key, String value) {
-        Map<String, String> map = editor.getChangedPreferences().get(preferences);
-        if (map == null) {
-            map = new HashMap<String, String>();
-        }
-        map.put(key, value);
-        editor.getChangedPreferences().put(preferences, map);
-    }
+	public void addChangedPreferences(String key, String value) {
+		Map<String, String> map = editor.getChangedPreferences().get(preferences);
+		if (map == null) {
+			map = new HashMap<>();
+		}
+		map.put(key, value);
+		editor.getChangedPreferences().put(preferences, map);
+	}
 }

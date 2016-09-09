@@ -57,14 +57,9 @@ public class Schema extends FilterContainer {
     }
 
     @Override
-    public String toString() {
-        return toString("    ");
-    }
+    public StringBuilder toString(StringBuilder res, String prefix) {
+        res.append(prefix).append("Schema: ").append(name).append("\n");
 
-    @Override
-    public String toString(String indent) {
-        return indent + "Schema '" + name + "': "
-                + super.toString(indent + "    ");
+        return super.toString(res, prefix + "  ");
     }
-
 }

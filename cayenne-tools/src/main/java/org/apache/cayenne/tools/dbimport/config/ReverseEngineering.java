@@ -108,12 +108,19 @@ public class ReverseEngineering extends FilterContainer {
 
     @Override
     public String toString() {
-        StringBuilder res = new StringBuilder("    ReverseEngineering: ");
-        for (Catalog catalog : catalogs) {
-            res.append("\n").append(catalog.toString("        "));
+        StringBuilder res = new StringBuilder();
+        res.append("ReverseEngineering: ").append("\n");
+
+        if (!isBlank(catalogs)) {
+            for (Catalog catalog : catalogs) {
+                catalog.toString(res, "  ");
+            }
         }
-        for (Schema schema : schemas) {
-            res.append("\n").append(schema.toString("        "));
+
+        if (!isBlank(schemas)) {
+            for (Schema schema : schemas) {
+                schema.toString(res, "  ");
+            }
         }
 
         if (skipRelationshipsLoading != null && skipRelationshipsLoading) {
@@ -122,8 +129,7 @@ public class ReverseEngineering extends FilterContainer {
         if (skipPrimaryKeyLoading != null && skipPrimaryKeyLoading) {
             res.append("\n").append("        Skip PrimaryKey Loading");
         }
-        res.append(super.toString("    "));
 
-        return res.toString();
+        return super.toString(res, "  ").toString();
     }
 }

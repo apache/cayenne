@@ -28,11 +28,13 @@ import org.apache.cayenne.wocompat.PlistDataStructureFactory;
 
 class DefaultPlistDataStructureFactory implements PlistDataStructureFactory {
 
-    public Collection<Object> createCollection(String keyPath) {
-        return new ArrayList<Object>();
-    }
+	@Override
+	public Collection<Object> createCollection(String keyPath) {
+		return new ArrayList<Object>();
+	}
 
-    public Map<String, Object> createMap(String keyPath) {
-        return new HashMap<String, Object>();
-    }
+	@Override
+	public Map<String, Object> createMap(String keyPath) {
+		return new HashMap<>();
+	}
 }
