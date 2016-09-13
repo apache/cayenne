@@ -841,6 +841,11 @@
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>2.4</version>
                 </plugin>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>0.15.6</version>
+                </plugin>
             </plugins>
 		</pluginManagement>
 
@@ -1345,6 +1350,67 @@
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
+		</profile>
+		<profile>
+			<id>postgres-docker</id>
+			<activation>
+				<property>
+					<name>cayenneTestConnection</name>
+					<value>postgres-docker</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+					<version>9.4.1209</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<configuration>
+							<systemPropertyVariables>
+								<!-- Default user, password, and DB name is "postgres", see https://hub.docker.com/_/postgres/ -->
+								<!-- ${db.host} and ${db.port} are dynamically set by docker-maven-plugin below -->
+								<cayenneAdapter>org.apache.cayenne.dba.postgres.PostgresAdapter</cayenneAdapter>
+								<cayenneJdbcUsername>postgres</cayenneJdbcUsername>
+								<cayenneJdbcPassword>postgres</cayenneJdbcPassword>
+								<cayenneJdbcUrl>jdbc:postgresql://${db.host}:${db.port}/postgres</cayenneJdbcUrl>
+								<cayenneJdbcDriver>org.postgresql.Driver</cayenneJdbcDriver>
+							</systemPropertyVariables>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<configuration>
+							<images>
+								<image>
+									<alias>db</alias>
+									<name>postgres:9.5</name>
+									<run>
+										<ports>
+											<port>${db.host}:${db.port}:5432</port>
+										</ports>
+										<wait>
+											<tcp>
+												<ports>
+													<port>5432</port>
+												</ports>
+											</tcp>
+											<time>30000</time>
+										</wait>
+									</run>
+								</image>
+							</images>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 		<profile>
 			<id>derby</id>
