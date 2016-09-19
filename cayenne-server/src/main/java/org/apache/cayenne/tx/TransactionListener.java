@@ -21,29 +21,16 @@ package org.apache.cayenne.tx;
 import java.sql.Connection;
 
 /**
- * A Cayenne Transaction interface.
- * 
+ * A callback that is notified as transaction progresses through stages. It can customize transaction isolation level,
+ * etc.
+ *
  * @since 4.0
  */
-public interface Transaction {
+public interface TransactionListener {
 
-    /**
-     * Starts a Transaction. If Transaction is not started explicitly, it will
-     * be started when the first connection is added.
-     */
-    void begin();
+    void willCommit(Transaction tx);
 
-    void commit();
+    void willRollback(Transaction tx);
 
-    void rollback();
-
-    void setRollbackOnly();
-
-    boolean isRollbackOnly();
-
-    Connection getConnection(String name);
-
-    void addConnection(String connectionName, Connection connection);
-
-    void addListener(TransactionListener listener);
+    void willAddConnection(Transaction tx, String connectionName, Connection connection);
 }

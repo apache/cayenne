@@ -20,8 +20,10 @@
 package org.apache.cayenne.tx;
 
 import java.sql.Connection;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 /**
@@ -45,6 +47,7 @@ public abstract class BaseTransaction implements Transaction {
 	protected static final int STATUS_MARKED_ROLLEDBACK = 7;
 
 	protected Map<String, Connection> connections;
+	protected Collection<TransactionListener> listeners;
 	protected int status;
 
 	static String decodeStatus(int status) {
@@ -100,6 +103,15 @@ public abstract class BaseTransaction implements Transaction {
 		return status == STATUS_MARKED_ROLLEDBACK;
 	}
 
+	@Override
+	public void addListener(TransactionListener listener) {
+		if(listeners == null) {
+			listeners = new LinkedHashSet<>();
+		}
+
+		listeners.add(listener);
+	}
+
 	/**
 	 * Starts a Transaction. If Transaction is not started explicitly, it will
 	 * be started when the first connection is added.
@@ -126,6 +138,12 @@ public abstract class BaseTransaction implements Transaction {
 					+ "Current status: " + BaseTransaction.decodeStatus(status));
 		}
 
+		if(listeners != null) {
+			for(TransactionListener listener : listeners) {
+				listener.willCommit(this);
+			}
+		}
+
 		processCommit();
 
 		status = BaseTransaction.STATUS_COMMITTED;
@@ -139,6 +157,7 @@ public abstract class BaseTransaction implements Transaction {
 	public void rollback() {
 
 		try {
+
 			if (status == BaseTransaction.STATUS_NO_TRANSACTION || status == BaseTransaction.STATUS_ROLLEDBACK
 					|| status == BaseTransaction.STATUS_ROLLING_BACK) {
 				return;
@@ -148,6 +167,12 @@ public abstract class BaseTransaction implements Transaction {
 				throw new IllegalStateException(
 						"Transaction must have 'STATUS_ACTIVE' or 'STATUS_MARKED_ROLLEDBACK' to be rolled back. "
 								+ "Current status: " + BaseTransaction.decodeStatus(status));
+			}
+
+			if(listeners != null) {
+				for(TransactionListener listener : listeners) {
+					listener.willRollback(this);
+				}
 			}
 
 			processRollback();
@@ -167,13 +192,19 @@ public abstract class BaseTransaction implements Transaction {
 	}
 
 	@Override
-	public void addConnection(String name, Connection connection) {
+	public void addConnection(String connectionName, Connection connection) {
+
+		if(listeners != null) {
+			for(TransactionListener listener : listeners) {
+				listener.willAddConnection(this, connectionName, connection);
+			}
+		}
 
 		if (connections == null) {
 			connections = new HashMap<>();
 		}
 
-		if (connections.put(name, connection) != connection) {
+		if (connections.put(connectionName, connection) != connection) {
 			connectionAdded(connection);
 		}
 	}

@@ -18,15 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.tx.TransactionListener;
 import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.tx.TransactionalOperation;
+
+import javax.sql.DataSource;
 
 /**
  * An object representing Cayenne server-stack that connects directly to the
@@ -77,6 +78,21 @@ public class ServerRuntime extends CayenneRuntime {
 	public <T> T performInTransaction(TransactionalOperation<T> op) {
 		TransactionManager tm = injector.getInstance(TransactionManager.class);
 		return tm.performInTransaction(op);
+	}
+
+	/**
+	 * Runs provided operation wrapped in a single transaction. Transaction
+	 * handling delegated to the internal {@link TransactionManager}. Nested
+	 * calls to 'performInTransaction' are safe and attached to the same
+	 * in-progress transaction. TransactionalOperation can be some arbitrary
+	 * user code, which most often than not will consist of multiple Cayenne
+	 * operations.
+	 *
+	 * @since 4.0
+	 */
+	public <T> T performInTransaction(TransactionalOperation<T> op, TransactionListener callback) {
+		TransactionManager tm = injector.getInstance(TransactionManager.class);
+		return tm.performInTransaction(op, callback);
 	}
 
 	/**

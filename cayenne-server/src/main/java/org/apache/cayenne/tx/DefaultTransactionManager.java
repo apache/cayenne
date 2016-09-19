@@ -37,23 +37,27 @@ public class DefaultTransactionManager implements TransactionManager {
 
     @Override
     public <T> T performInTransaction(TransactionalOperation<T> op) {
+        return performInTransaction(op, DoNothingTransactionListener.getInstance());
+    }
 
-        // join existing tx if it is in progress... in such case do not try to
-        // commit or roll it back
+    @Override
+    public <T> T performInTransaction(TransactionalOperation<T> op, TransactionListener callback) {
+
+        // Either join existing tx (in such case do not try to commit or rollback), or start a new tx and manage it
+        // till the end
+
         Transaction currentTx = BaseTransaction.getThreadTransaction();
-        if (currentTx != null) {
-            return op.perform();
-        }
+        return (currentTx != null)
+                ? performInTransaction(currentTx, op, callback)
+                : performInLocalTransaction(op, callback);
+    }
 
-        // start a new tx and manage it till the end
+    protected <T> T performInLocalTransaction(TransactionalOperation<T> op, TransactionListener callback) {
         Transaction tx = txFactory.createTransaction();
         BaseTransaction.bindThreadTransaction(tx);
         try {
-
-            T result = op.perform();
-
+            T result = performInTransaction(tx, op, callback);
             tx.commit();
-
             return result;
 
         } catch (CayenneRuntimeException ex) {
@@ -76,6 +80,11 @@ public class DefaultTransactionManager implements TransactionManager {
                 }
             }
         }
+    }
+
+    protected <T> T performInTransaction(Transaction tx, TransactionalOperation<T> op, TransactionListener callback) {
+        tx.addListener(callback);
+        return op.perform();
     }
 
 }

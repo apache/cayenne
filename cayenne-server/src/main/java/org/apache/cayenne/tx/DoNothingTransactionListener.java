@@ -21,29 +21,31 @@ package org.apache.cayenne.tx;
 import java.sql.Connection;
 
 /**
- * A Cayenne Transaction interface.
- * 
- * @since 4.0
+ * Created by andrus on 9/19/16.
  */
-public interface Transaction {
+class DoNothingTransactionListener implements TransactionListener {
 
-    /**
-     * Starts a Transaction. If Transaction is not started explicitly, it will
-     * be started when the first connection is added.
-     */
-    void begin();
+    private static TransactionListener INSTANCE = new DoNothingTransactionListener();
 
-    void commit();
+    public static TransactionListener getInstance() {
+        return INSTANCE;
+    }
 
-    void rollback();
+    private DoNothingTransactionListener() {
+    }
 
-    void setRollbackOnly();
+    @Override
+    public void willCommit(Transaction tx) {
+        // do nothing...
+    }
 
-    boolean isRollbackOnly();
+    @Override
+    public void willRollback(Transaction tx) {
+        // do nothing...
+    }
 
-    Connection getConnection(String name);
-
-    void addConnection(String connectionName, Connection connection);
-
-    void addListener(TransactionListener listener);
+    @Override
+    public void willAddConnection(Transaction tx, String connectionName, Connection connection) {
+        // do nothing...
+    }
 }

@@ -30,6 +30,7 @@ CAY-2103 cayenne-crypto: support for mapping non-String and non-binary types
 CAY-2106 cayenne-crypto: allow DI contribution of type converters inside ValueTransformerFactory
 CAY-2107 cayenne-crypto: Lazy initialization of crypto subsystem
 CAY-2111 Unbind transaction object from the current thread for iterated queries
+CAY-2112 Expose callback for "performInTransaction"
 
 Bug Fixes:
 
