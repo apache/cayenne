@@ -16,18 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.test.junit;
+package org.apache.cayenne.di.mock;
 
-import java.math.BigDecimal;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 
-import junit.framework.Assert;
+public class MockInterface1_Decorator5 implements MockInterface1 {
 
-public class AssertExtras {
+    @Inject
+    private Provider<MockInterface1> delegate;
 
-    public static void assertEquals(BigDecimal d1, Object d2, double delta) {
-        Assert.assertNotNull(d2);
-        Assert.assertTrue("d2: " + d2.getClass().getName(), d2 instanceof BigDecimal);
-        BigDecimal d3 = d1.subtract((BigDecimal) d2);
-        Assert.assertTrue(Math.abs(d3.doubleValue()) < delta);
+    @Override
+    public String getName() {
+        return "[5" + delegate.get().getName() + "5]";
     }
 }

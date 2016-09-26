@@ -68,7 +68,7 @@ public class EJBQLPath extends SimpleNode {
 
     @Override
     protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
-        return super.visitChild(visitor, childIndex)
-                && visitor.visitPath(this, childIndex);
+        children[childIndex].visit(visitor);
+        return visitor.visitPath(this, childIndex);
     }
 }

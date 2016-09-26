@@ -26,6 +26,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.CayenneTransaction;
 import org.apache.cayenne.tx.Transaction;
+import org.apache.cayenne.tx.TransactionListener;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -106,6 +107,11 @@ public class TransactionThreadIT extends ServerCase {
             }
 
             delegate.addConnection(name, connection);
+        }
+
+        @Override
+        public void addListener(TransactionListener listener) {
+            delegate.addListener(listener);
         }
     }
 }

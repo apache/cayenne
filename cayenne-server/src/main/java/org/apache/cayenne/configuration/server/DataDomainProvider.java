@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
@@ -45,6 +42,9 @@ import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A {@link DataChannel} provider that provides a single instance of DataDomain
@@ -104,18 +104,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
 	protected DataDomain createAndInitDataDomain() throws Exception {
 
-		DataChannelDescriptor descriptor;
-
-		if (locations.isEmpty()) {
-			descriptor = new DataChannelDescriptor();
-		} else {
-			descriptor = descriptorFromConfigs();
-		}
-
-		String nameOverride = runtimeProperties.get(Constants.SERVER_DOMAIN_NAME_PROPERTY);
-		if (nameOverride != null) {
-			descriptor.setName(nameOverride);
-		}
+		DataChannelDescriptor descriptor = loadDescriptor();
 
 		DataDomain dataDomain = createDataDomain(descriptor.getName());
 
@@ -167,6 +156,20 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
 	/**
 	 * @since 4.0
+     */
+	protected DataChannelDescriptor loadDescriptor() {
+		DataChannelDescriptor descriptor = locations.isEmpty() ? new DataChannelDescriptor() : loadDescriptorFromConfigs();
+
+		String nameOverride = runtimeProperties.get(Constants.SERVER_DOMAIN_NAME_PROPERTY);
+		if (nameOverride != null) {
+			descriptor.setName(nameOverride);
+		}
+
+		return descriptor;
+	}
+
+	/**
+	 * @since 4.0
 	 */
 	protected DataNode addDataNode(DataDomain dataDomain, DataNodeDescriptor nodeDescriptor) throws Exception {
 		DataNode dataNode = dataNodeFactory.createDataNode(nodeDescriptor);
@@ -180,7 +183,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 		return dataNode;
 	}
 
-	private DataChannelDescriptor descriptorFromConfigs() {
+	private DataChannelDescriptor loadDescriptorFromConfigs() {
 
 		long t0 = System.currentTimeMillis();
 

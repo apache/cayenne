@@ -24,6 +24,7 @@ import org.apache.cayenne.remote.RemoteService;
 import org.apache.cayenne.remote.RemoteSession;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.rmi.RemoteException;
 
 public class ProxyRemoteService implements RemoteService {
@@ -39,24 +40,37 @@ public class ProxyRemoteService implements RemoteService {
 
     @Override
     public RemoteSession establishSession() throws RemoteException {
-        try {
-            return serializationService.deserialize(ropConnector.establishSession(), RemoteSession.class);
+        try (InputStream is = ropConnector.establishSession()) {
+            return serializationService.deserialize(is, RemoteSession.class);
         } catch (IOException e) {
-            throw new RemoteException(e.getMessage());
+            throw new RemoteException(e.getMessage(), e);
         }
     }
 
     @Override
     public RemoteSession establishSharedSession(String name) throws RemoteException {
-        try {
-            return serializationService.deserialize(ropConnector.establishSharedSession(name), RemoteSession.class);
+        try (InputStream is = ropConnector.establishSharedSession(name)) {
+            return serializationService.deserialize(is, RemoteSession.class);
         } catch (IOException e) {
-            throw new RemoteException(e.getMessage());
+            throw new RemoteException(e.getMessage(), e);
         }
     }
 
     @Override
     public Object processMessage(ClientMessage message) throws RemoteException, Throwable {
-        return serializationService.deserialize(ropConnector.sendMessage(serializationService.serialize(message)), Object.class);
+        try (InputStream is = ropConnector.sendMessage(serializationService.serialize(message))) {
+            return serializationService.deserialize(is, Object.class);
+        } catch (IOException e) {
+            throw new RemoteException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void close() throws RemoteException {
+        try {
+            ropConnector.close();
+        } catch (IOException e) {
+            throw new RemoteException("Exception while closing ROP resources", e);
+        }
     }
 }

@@ -27,6 +27,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.qualified.Qualified1;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -47,12 +48,20 @@ public class ConcurrentPkGeneratorIT extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
+
+	@Inject
+	private UnitDbAdapter unitDbAdapter;
     
     /*
      * Attempts to discover any problems regarding thread locking in the PkGenerator
      */
     @Test
     public void testConcurrentInserts() throws Exception {
+
+    	if(!unitDbAdapter.supportsPKGeneratorConcurrency()) {
+    		return;
+		}
+
 		final DataMap dataMap = runtime.getDataDomain().getDataMap("qualified");
 		
 		// clear out the table

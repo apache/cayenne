@@ -19,6 +19,21 @@
 
 package org.apache.cayenne.dba;
 
+import org.apache.cayenne.util.Util;
+
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static java.sql.Types.ARRAY;
 import static java.sql.Types.BIGINT;
 import static java.sql.Types.BINARY;
@@ -49,20 +64,6 @@ import static java.sql.Types.TIMESTAMP;
 import static java.sql.Types.TINYINT;
 import static java.sql.Types.VARBINARY;
 import static java.sql.Types.VARCHAR;
-
-import java.io.Serializable;
-import java.math.BigInteger;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.cayenne.util.Util;
 
 /**
  * A utility class that handles mappings of JDBC data types to the database
@@ -278,6 +279,30 @@ public class TypesMapping {
 	 */
 	public static boolean supportsLength(int type) {
 		return JdbcAdapter.supportsLength(type);
+	}
+
+
+	// TODO: redo all isXyz as an internal enum over types, where each enum object knows whether it is this or that kind
+
+	/**
+	 * Returns true if supplied type is a character type.
+	 * @since 4.0
+	 * @param type JDBC type
+	 * @return true if supplied type is a character type.
+	 */
+	public static boolean isCharacter(int type) {
+		return type == Types.CHAR || type == Types.NCHAR || type == Types.VARCHAR || type == Types.NVARCHAR
+				|| type == Types.CLOB || type == Types.NCLOB || type == Types.LONGVARCHAR || type == Types.LONGNVARCHAR;
+	}
+
+	/**
+	 * Returns true if supplied type is a binary type.
+	 * @since 4.0
+	 * @param type JDBC type
+	 * @return true if supplied type is a binary type.
+	 */
+	public static boolean isBinary(int type) {
+		return type == Types.BINARY || type == Types.BLOB || type == Types.VARBINARY || type == Types.LONGVARBINARY;
 	}
 
 	/**

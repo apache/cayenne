@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.rop;
 
-import com.caucho.services.server.ServiceContext;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.rop.server.ROPServerModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -98,8 +97,7 @@ public class ROPServlet extends HttpServlet {
                 objectId = req.getParameter("ejbid");
             }
 
-            // TODO: need to untangle HttpRemoteService from dependence on Hessian's ServiceContext thread local setup
-            ServiceContext.begin(req, resp, serviceId, objectId);
+            ROPRequestContext.start(serviceId, objectId, req, resp);
 
             String operation = req.getParameter(ROPConstants.OPERATION_PARAMETER);
 
@@ -128,6 +126,8 @@ public class ROPServlet extends HttpServlet {
             throw e;
         } catch (Throwable e) {
             throw new ServletException(e);
+        } finally {
+            ROPRequestContext.end();
         }
     }
 }

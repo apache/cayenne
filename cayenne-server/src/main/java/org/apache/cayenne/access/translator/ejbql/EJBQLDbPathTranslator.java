@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.ejbql;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
@@ -32,6 +27,11 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 
@@ -173,7 +173,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 		}
 	}
 
-	private void processTerminatingRelationship(DbRelationship relationship) {
+	protected void processTerminatingRelationship(DbRelationship relationship) {
 
 		if (relationship.isToMany()) {
 
@@ -234,5 +234,47 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 
 	public void setUsingAliases(boolean usingAliases) {
 		this.usingAliases = usingAliases;
+	}
+
+	protected void resolveJoin() {
+
+		EJBQLJoinAppender joinAppender = context.getTranslatorFactory().getJoinAppender(context);
+
+		String newPath = idPath + '.' + lastPathComponent;
+		String oldPath = joinAppender.registerReusableJoin(idPath, lastPathComponent, newPath);
+
+		this.fullPath = fullPath + '.' + lastPathComponent;
+
+		if (oldPath != null) {
+			this.idPath = oldPath;
+			DbRelationship lastRelationship = currentEntity.getRelationship(lastPathComponent);
+			if (lastRelationship != null) {
+				DbEntity targetEntity = lastRelationship.getTargetEntity();
+
+				this.lastAlias = context.getTableAlias(fullPath,
+						context.getQuotingStrategy().quotedFullyQualifiedName(targetEntity));
+			} else {
+				String tableName = context.getQuotingStrategy().quotedFullyQualifiedName(currentEntity);
+				this.lastAlias = context.getTableAlias(oldPath, tableName);
+			}
+		} else {
+			DbRelationship lastRelationship = currentEntity.getRelationship(lastPathComponent);
+
+			DbEntity targetEntity = null;
+			if (lastRelationship != null) {
+				targetEntity = lastRelationship.getTargetEntity();
+			} else {
+				targetEntity = currentEntity;
+			}
+
+			// register join
+			joinAppender.appendInnerJoin(joinMarker, new EJBQLTableId(idPath), new EJBQLTableId(fullPath));
+			// TODO: outer joins handling
+
+			this.lastAlias = context.getTableAlias(fullPath,
+					context.getQuotingStrategy().quotedFullyQualifiedName(targetEntity));
+
+			this.idPath = newPath;
+		}
 	}
 }

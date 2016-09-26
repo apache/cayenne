@@ -19,6 +19,18 @@
 
 package org.apache.cayenne.unit;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Procedure;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,18 +45,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.Procedure;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Defines API and a common superclass for testing various database features.
  * Different databases support different feature sets that need to be tested
@@ -53,7 +53,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class UnitDbAdapter {
 
-    private static Log logger = LogFactory.getLog(UnitDbAdapter.class);
+    private static final Log logger = LogFactory.getLog(UnitDbAdapter.class);
 
     @Inject
     protected RuntimeProperties runtimeProperties;
@@ -65,6 +65,10 @@ public class UnitDbAdapter {
             throw new CayenneRuntimeException("Null adapter.");
         }
         this.adapter = adapter;
+    }
+
+    public boolean supportsPKGeneratorConcurrency() {
+        return true;
     }
     
     public String getIdentifiersStartQuote() {
@@ -78,8 +82,6 @@ public class UnitDbAdapter {
     /**
      * Returns whether the target DB treats REAL values as DOUBLEs. Default is
      * false, i.e. REALs are treated as FLOATs.
-     * 
-     * @return
      */
     public boolean realAsDouble() {
         return false;

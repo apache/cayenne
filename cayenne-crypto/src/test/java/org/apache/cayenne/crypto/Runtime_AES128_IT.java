@@ -18,23 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.crypto;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.crypto.db.Table1;
+import org.apache.cayenne.crypto.db.Table2;
+import org.apache.cayenne.crypto.transformer.value.IntegerConverter;
+import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
+import org.apache.cayenne.query.SelectQuery;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.crypto.db.Table2;
-import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
-import org.apache.cayenne.query.SelectQuery;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-public class Runtime_AES128_Test extends Runtime_AES128_Base {
+public class Runtime_AES128_IT extends Runtime_AES128_Base {
 
     @Before
     public void setUp() throws Exception {
@@ -55,6 +57,22 @@ public class Runtime_AES128_Test extends Runtime_AES128_Base {
         Object[] data = table2.select();
         assertArrayEquals("plain_1".getBytes(), (byte[]) data[1]);
         assertArrayEquals("crypto_1".getBytes(), CryptoUnitUtils.decrypt_AES_CBC((byte[]) data[2], runtime));
+    }
+
+    @Test
+    public void testInsert_Numeric() throws SQLException {
+
+        ObjectContext context = runtime.newContext();
+
+        Table1 t1 = context.newObject(Table1.class);
+        t1.setPlainInt(59);
+        t1.setCryptoInt(61);
+
+        context.commitChanges();
+
+        Object[] data = table1.select();
+        assertEquals(59, data[3]);
+        assertEquals(new Integer(61), IntegerConverter.INSTANCE.fromBytes(CryptoUnitUtils.decrypt_AES_CBC((byte[]) data[4], runtime)));
     }
 
     @Test
@@ -117,6 +135,25 @@ public class Runtime_AES128_Test extends Runtime_AES128_Base {
         assertArrayEquals("crypto_1".getBytes(), result.get(0).getCryptoBytes());
         assertArrayEquals("crypto_2".getBytes(), result.get(1).getCryptoBytes());
         assertArrayEquals(null, result.get(2).getCryptoBytes());
+    }
+
+
+    @Test
+    public void test_SelectNumeric() throws SQLException {
+
+        ObjectContext context = runtime.newContext();
+
+        Table1 t1 = context.newObject(Table1.class);
+        t1.setPlainInt(59);
+        t1.setCryptoInt(61);
+
+        context.commitChanges();
+
+        List<Table1> result = SelectQuery.query(Table1.class).select(runtime.newContext());
+
+        assertEquals(1, result.size());
+        assertEquals(59, result.get(0).getPlainInt());
+        assertEquals(61, result.get(0).getCryptoInt());
     }
 
 }

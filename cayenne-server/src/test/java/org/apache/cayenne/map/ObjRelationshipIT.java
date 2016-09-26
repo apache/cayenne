@@ -429,7 +429,7 @@ public class ObjRelationshipIT extends ServerCase {
         EntityResolver resolver = new EntityResolver(Collections.singleton(dataMap));
 
         ObjEntity iv2Sub1 = resolver.getObjEntity(Iv2Sub1.class);
-        ObjRelationship x = iv2Sub1.getRelationship(Iv2Sub1.X_PROPERTY);
+        ObjRelationship x = iv2Sub1.getRelationship(Iv2Sub1.X.getName());
         assertTrue(x.isFlattened());
         assertFalse(x.isReadOnly());
     }

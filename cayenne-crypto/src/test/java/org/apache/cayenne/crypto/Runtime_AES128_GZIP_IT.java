@@ -18,17 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.crypto;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.crypto.db.Table2;
 import org.apache.cayenne.crypto.transformer.bytes.Header;
@@ -37,7 +26,18 @@ import org.apache.cayenne.query.SelectQuery;
 import org.junit.Before;
 import org.junit.Test;
 
-public class Runtime_AES128_GZIP_Test extends Runtime_AES128_Base {
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+public class Runtime_AES128_GZIP_IT extends Runtime_AES128_Base {
 
     private static final int GZIP_THRESHOLD = 150;
 

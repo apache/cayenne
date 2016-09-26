@@ -23,14 +23,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.inheritance_vertical.Iv1Root;
-import org.apache.cayenne.testdo.inheritance_vertical.Iv1Sub1;
-import org.apache.cayenne.testdo.inheritance_vertical.Iv2Sub1;
-import org.apache.cayenne.testdo.inheritance_vertical.Iv2X;
-import org.apache.cayenne.testdo.inheritance_vertical.IvRoot;
-import org.apache.cayenne.testdo.inheritance_vertical.IvSub1;
-import org.apache.cayenne.testdo.inheritance_vertical.IvSub1Sub1;
-import org.apache.cayenne.testdo.inheritance_vertical.IvSub2;
+import org.apache.cayenne.testdo.inheritance_vertical.*;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -524,6 +517,31 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertEquals(1, xTable.getRowCount());
 		assertEquals(1, rootTable.getRowCount());
 		assertEquals(1, sub1Table.getRowCount());
+	}
+
+	@Test
+	public void testUpdateWithRelationship() {
+		IvConcrete parent1 = context.newObject(IvConcrete.class);
+		parent1.setName("Parent1");
+		context.commitChanges();
+
+		IvConcrete parent2 = context.newObject(IvConcrete.class);
+		parent2.setName("Parent2");
+		context.commitChanges();
+
+		IvConcrete child = context.newObject(IvConcrete.class);
+		child.setName("Child");
+		child.setParent(parent1);
+		context.commitChanges();
+
+		child.setParent(parent2);
+		context.commitChanges();
+
+		assertEquals(parent2, child.getParent());
+
+		// Manually delete child to prevent a foreign key constraint failure while cleaning MySQL db
+		context.deleteObject(child);
+		context.commitChanges();
 	}
 
 }

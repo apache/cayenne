@@ -37,11 +37,16 @@ public interface ROPConnector {
 	 * Creates a new session with the specified or joins an existing one. This method is
 	 * used to bootstrap collaborating clients of a single "group chat".
 	 */
-    InputStream establishSharedSession(String name) throws IOException;
+    InputStream establishSharedSession(String sharedSessionName) throws IOException;
 
 	/**
 	 * Processes message on a remote server, returning the result of such processing.
 	 */
     InputStream sendMessage(byte[] message) throws IOException;
+
+	/**
+	 * Close all resources related to ROP Connector.
+	 */
+	void close() throws IOException;
     
 }

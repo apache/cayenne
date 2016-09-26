@@ -22,15 +22,30 @@ package org.apache.cayenne.tx;
  * An optional utility service that simplifies wrapping multiple operations in
  * transactions. Users only rarely need to invoke it directly, as all standard
  * Cayenne operations are managing their own transactions internally.
- * 
+ *
  * @since 4.0
  */
 public interface TransactionManager {
 
     /**
      * Starts a new transaction (or joins an existing one) calling
-     * {@link org.apache.cayenne.tx.TransactionalOperation#perform()}, and then
-     * committing or rolling back the transaction. Frees the user
+     * {@link org.apache.cayenne.tx.TransactionalOperation#perform()}, and then committing or rolling back the
+     * transaction.
+     *
+     * @param op an operation to perform within the trsnaction.
+     * @return a value returned by the "op" operation.
      */
     <T> T performInTransaction(TransactionalOperation<T> op);
+
+    /**
+     * Starts a new transaction (or joins an existing one) calling
+     * {@link org.apache.cayenne.tx.TransactionalOperation#perform()}, and then committing or rolling back the
+     * transaction. As transaction goes through stages, callback methods are invoked allowing the caller to customize
+     * transaction parameters.
+     *
+     * @param op       an operation to perform within the trsnaction.
+     * @param callback a callback to notify as transaction progresses through stages.
+     * @return a value returned by the "op" operation.
+     */
+    <T> T performInTransaction(TransactionalOperation<T> op, TransactionListener callback);
 }

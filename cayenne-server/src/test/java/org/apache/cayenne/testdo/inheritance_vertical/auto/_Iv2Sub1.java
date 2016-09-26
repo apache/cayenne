@@ -1,5 +1,6 @@
 package org.apache.cayenne.testdo.inheritance_vertical.auto;
 
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv2Root;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv2X;
 
@@ -11,16 +12,18 @@ import org.apache.cayenne.testdo.inheritance_vertical.Iv2X;
  */
 public abstract class _Iv2Sub1 extends Iv2Root {
 
-    public static final String X_PROPERTY = "x";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<Iv2X> X = new Property<Iv2X>("x");
+
     public void setX(Iv2X x) {
-        setToOneTarget(X_PROPERTY, x, true);
+        setToOneTarget("x", x, true);
     }
 
     public Iv2X getX() {
-        return (Iv2X)readProperty(X_PROPERTY);
+        return (Iv2X)readProperty("x");
     }
 
 

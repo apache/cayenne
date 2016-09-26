@@ -53,21 +53,22 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-remote-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>process</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+			<!-- This ensures LICESNE and NOTICE inclusion in all jars -->
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
-	</build>
+    </build>
 
     <profiles>
         <profile>

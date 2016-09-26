@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 public class DefaultTransactionManagerIT extends ServerCase {
 
     @Test
-    public void testPerformInTransaction_NoTx() {
+    public void testPerformInTransaction_Local() {
 
         final BaseTransaction tx = mock(BaseTransaction.class);
         TransactionFactory txFactory = mock(TransactionFactory.class);
@@ -78,4 +78,6 @@ public class DefaultTransactionManagerIT extends ServerCase {
             BaseTransaction.bindThreadTransaction(null);
         }
     }
+
+
 }

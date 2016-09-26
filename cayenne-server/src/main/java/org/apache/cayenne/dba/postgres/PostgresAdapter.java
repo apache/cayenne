@@ -76,6 +76,7 @@ public class PostgresAdapter extends JdbcAdapter {
 			@Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator) {
 		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator);
 		setSupportsBatchUpdates(true);
+		setSupportsGeneratedKeys(true);
 	}
 
 	/**
@@ -220,7 +221,11 @@ public class PostgresAdapter extends JdbcAdapter {
 					+ at.getName() + "': " + at.getType());
 		}
 
-		buf.append(context.quotedName(at)).append(' ').append(types[0]).append(sizeAndPrecision(this, at))
+		// Checking that attribute is generated and we have alternative types in types.xml.
+		// If so, use those autoincremented types. For example serial, bigserial, smallserial.
+		String type = (at.isGenerated() && types.length > 1) ? types[1] : types[0];
+
+		buf.append(context.quotedName(at)).append(' ').append(type).append(sizeAndPrecision(this, at))
 				.append(at.isMandatory() ? " NOT" : "").append(" NULL");
 	}
 

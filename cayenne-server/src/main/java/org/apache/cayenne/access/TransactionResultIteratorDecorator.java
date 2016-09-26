@@ -19,14 +19,13 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.tx.Transaction;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.tx.BaseTransaction;
-import org.apache.cayenne.tx.Transaction;
 
 /**
  * Decorates ResultIterator to close active transaction when the iterator is
@@ -40,6 +39,12 @@ final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
     private Transaction tx;
 
     public TransactionResultIteratorDecorator(ResultIterator<T> result, Transaction tx) {
+
+        // make sure it is still valid before proceeding with the iterator
+        if(tx.isRollbackOnly()) {
+            throw new CayenneRuntimeException("Transaction passed should be rolled back");
+        }
+
         this.result = result;
         this.tx = tx;
     }
@@ -57,6 +62,9 @@ final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
 
         try {
             result.close();
+
+            // we can safely commit here as the transaction is internal to this decorator, and we already checked
+            // that it hasn't been rolled back in constructor.
             tx.commit();
         } catch (Exception e) {
             try {
@@ -65,10 +73,6 @@ final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
             }
 
             throw new CayenneRuntimeException(e);
-        } finally {
-            if (BaseTransaction.getThreadTransaction() == tx) {
-                BaseTransaction.bindThreadTransaction(null);
-            }
         }
     }
 

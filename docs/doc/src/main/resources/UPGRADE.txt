@@ -6,8 +6,10 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 -------------------------------------------------------------------------------
 UPGRADING TO 4.0.M4
 
-* 4.0.M4 changes the way queries are stored in the mapping files, so all existing *.map.xml files should be upgraded.
-  To do that open each of your existing projects in the new CayenneModeler. Agree to perform an upgrade when asked.
+* Per CAY-2060 4.0.M4 changes the way queries are stored in the mapping files, so all existing *.map.xml files should be upgraded.
+  To do that open each of your existing projects in the new CayenneModeler. Agree to perform an upgrade when asked. 
+
+  Also EntityResolver.getQuery(String) method is removed. If you relied on it, consider switching to MappedSelect or MappedExec query, or if you absolutely need to get a hold of specific query, use EntityResolver.getQueryDescriptor(String).buildQuery().
 
 * Per CAY-2065 ROPHessianServlet has been discarded in favor of new implementation called ROPServlet,
   so if you were using org.apache.cayenne.configuration.rop.server.ROPHessianServlet in your web.xml configuration,

@@ -262,7 +262,7 @@ public class DbLoaderIT extends ServerCase {
 
         if (adapter.supportsGeneratedKeys()) {
             DbEntity bag = getDbEntity(map, "GENERATED_COLUMN_TEST");
-            DbAttribute id = bag.getAttribute("GENERATED_COLUMN");
+            DbAttribute id = getDbAttribute(bag, "GENERATED_COLUMN");
             assertTrue(id.isPrimaryKey());
             assertTrue(id.isGenerated());
         }

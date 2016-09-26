@@ -28,8 +28,8 @@ public class EJBQLDbPath extends EJBQLPath {
 
     @Override
     protected boolean visitChild(EJBQLExpressionVisitor visitor, int childIndex) {
-        return super.visitChild(visitor, childIndex)
-                && visitor.visitDbPath(this, childIndex);
+        children[childIndex].visit(visitor);
+        return visitor.visitDbPath(this, childIndex);
     }
 
     @Override

@@ -43,5 +43,7 @@ public interface Transaction {
 
     Connection getConnection(String name);
 
-    void addConnection(String name, Connection connection);
+    void addConnection(String connectionName, Connection connection);
+
+    void addListener(TransactionListener listener);
 }

@@ -42,6 +42,7 @@ import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.EntityResultSegment;
@@ -159,9 +160,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             DataRow row = null;
 
-            if (cache != null && !oidQuery.isFetchMandatory()) {
-                row = cache.getCachedSnapshot(oidQuery.getObjectId());
-            }
+			if (cache != null && !oidQuery.isFetchMandatory()) {
+				row = polymorphicRowFromCache(oid);
+			}
 
             // refresh is forced or not found in cache
             if (row == null) {
@@ -181,6 +182,38 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         return !DONE;
     }
+    
+	private DataRow polymorphicRowFromCache(ObjectId superOid) {
+		DataRow row = cache.getCachedSnapshot(superOid);
+		if (row != null) {
+			return row;
+		}
+
+		EntityInheritanceTree inheritanceTree = domain.getEntityResolver().getInheritanceTree(superOid.getEntityName());
+		if (!inheritanceTree.getChildren().isEmpty()) {
+			row = polymorphicRowFromCache(inheritanceTree, superOid.getIdSnapshot());
+		}
+
+		return row;
+	}
+    
+	private DataRow polymorphicRowFromCache(EntityInheritanceTree superNode, Map<String, ?> idSnapshot) {
+
+		for (EntityInheritanceTree child : superNode.getChildren()) {
+			ObjectId id = new ObjectId(child.getEntity().getName(), idSnapshot);
+			DataRow row = cache.getCachedSnapshot(id);
+			if (row != null) {
+				return row;
+			}
+			
+			row = polymorphicRowFromCache(child, idSnapshot);
+			if (row != null) {
+				return row;
+			}
+		}
+
+		return null;
+	}
 
     private boolean interceptRelationshipQuery() {
 
@@ -226,7 +259,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 return DONE;
             }
 
-            DataRow targetRow = cache.getCachedSnapshot(targetId);
+            // target id resolution (unlike source) should be polymorphic
+            DataRow targetRow = polymorphicRowFromCache(targetId);
 
             if (targetRow != null) {
                 this.response = new GenericResponse(Collections.singletonList(targetRow));

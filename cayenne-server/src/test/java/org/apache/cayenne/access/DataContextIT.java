@@ -19,38 +19,12 @@
 
 package org.apache.cayenne.access;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.ResultBatchIterator;
-import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -80,6 +54,29 @@ import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextIT extends ServerCase {
@@ -154,12 +151,6 @@ public class DataContextIT extends ServerCase {
 		tArtist.insert(33007, "artist21");
 	}
 
-	protected void createLargeArtistsDataSet() throws Exception {
-		for (int i = 1; i <= 20; i++) {
-			tArtist.insert(i, "artist" + i);
-		}
-	}
-
 	protected void createArtistsAndPaintingsDataSet() throws Exception {
 		createArtistsDataSet();
 
@@ -183,6 +174,7 @@ public class DataContextIT extends ServerCase {
 		DataRow snapshot = context.currentSnapshot(artist);
 		assertEquals(artist.getArtistName(), snapshot.get("ARTIST_NAME"));
 		assertEquals(artist.getDateOfBirth(), snapshot.get("DATE_OF_BIRTH"));
+		assertEquals("Artist", snapshot.getEntityName());
 	}
 
 	@Test
@@ -198,6 +190,8 @@ public class DataContextIT extends ServerCase {
 		artist.setDateOfBirth(null);
 
 		DataRow snapshot = context.currentSnapshot(artist);
+		assertEquals("Artist", snapshot.getEntityName());
+
 		assertTrue(snapshot.containsKey("ARTIST_NAME"));
 		assertNull(snapshot.get("ARTIST_NAME"));
 
@@ -220,6 +214,7 @@ public class DataContextIT extends ServerCase {
 		p1.setToArtist(artist);
 
 		DataRow s1 = context.currentSnapshot(p1);
+		assertEquals("Painting", s1.getEntityName());
 		Map<String, Object> idMap = artist.getObjectId().getIdSnapshot();
 		assertEquals(idMap.get("ARTIST_ID"), s1.get("ARTIST_ID"));
 	}
@@ -616,118 +611,6 @@ public class DataContextIT extends ServerCase {
 		}
 
 		assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
-	}
-
-	@Test
-	public void testIterate() throws Exception {
-
-		createArtistsDataSet();
-
-		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-
-		final int[] count = new int[1];
-
-		context.iterate(q1, new ResultIteratorCallback<Artist>() {
-
-			@Override
-			public void next(Artist object) {
-				assertNotNull(object.getArtistName());
-				count[0]++;
-			}
-		});
-
-		assertEquals(7, count[0]);
-	}
-
-	@Test
-	public void testIterateDataRows() throws Exception {
-
-		createArtistsDataSet();
-
-		SelectQuery<DataRow> q1 = SelectQuery.dataRowQuery(Artist.class, null);
-		final int[] count = new int[1];
-
-		context.iterate(q1, new ResultIteratorCallback<DataRow>() {
-
-			@Override
-			public void next(DataRow object) {
-				assertNotNull(object.get("ARTIST_ID"));
-				count[0]++;
-			}
-		});
-
-		assertEquals(7, count[0]);
-	}
-
-	@Test
-	public void testIterator() throws Exception {
-
-		createArtistsDataSet();
-
-		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-
-		try (ResultIterator<Artist> it = context.iterator(q1);) {
-			int count = 0;
-
-			for (Artist a : it) {
-				count++;
-			}
-
-			assertEquals(7, count);
-		}
-	}
-
-	@Test
-	public void testBatchIterator() throws Exception {
-		createLargeArtistsDataSet();
-
-		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-
-		try (ResultBatchIterator<Artist> it = context.batchIterator(q1, 5);) {
-			int count = 0;
-
-			for (List<Artist> artistList : it) {
-				count++;
-				assertEquals(5, artistList.size());
-			}
-
-			assertEquals(4, count);
-		}
-	}
-
-	@Test
-	public void testPerformIteratedQuery1() throws Exception {
-
-		createArtistsDataSet();
-
-		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-
-		try (ResultIterator<?> it = context.performIteratedQuery(q1);) {
-			int count = 0;
-			while (it.hasNextRow()) {
-				it.nextRow();
-				count++;
-			}
-
-			assertEquals(7, count);
-		}
-	}
-
-	@Test
-	public void testPerformIteratedQuery2() throws Exception {
-		createArtistsAndPaintingsDataSet();
-
-		try (ResultIterator<?> it = context.performIteratedQuery(SelectQuery.query(Artist.class));) {
-			while (it.hasNextRow()) {
-				DataRow row = (DataRow) it.nextRow();
-
-				// try instantiating an object and fetching its relationships
-				Artist artist = context.objectFromDataRow(Artist.class, row);
-				List<?> paintings = artist.getPaintingArray();
-				assertNotNull(paintings);
-				assertEquals("Expected one painting for artist: " + artist, 1, paintings.size());
-			}
-		}
 	}
 
 	/**

@@ -26,6 +26,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.CayenneTransaction;
 import org.apache.cayenne.tx.Transaction;
+import org.apache.cayenne.tx.TransactionListener;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -66,9 +67,9 @@ public class UserTransactionIT extends ServerCase {
 
     class TxWrapper implements Transaction {
 
-        private Transaction delegate;
         int commitCount;
         int connectionCount;
+        private Transaction delegate;
 
         TxWrapper(Transaction delegate) {
             this.delegate = delegate;
@@ -102,6 +103,11 @@ public class UserTransactionIT extends ServerCase {
         public void addConnection(String name, Connection connection) {
             connectionCount++;
             delegate.addConnection(name, connection);
+        }
+
+        @Override
+        public void addListener(TransactionListener listener) {
+            delegate.addListener(listener);
         }
     }
 

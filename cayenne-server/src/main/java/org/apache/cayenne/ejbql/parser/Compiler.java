@@ -18,14 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
@@ -48,6 +40,14 @@ import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Produces an {@link EJBQLCompiledExpression} out of an EJBQL expression tree.
@@ -615,6 +615,13 @@ class Compiler {
         public boolean visitAggregate(EJBQLExpression expression) {
             addResultSetColumn();
             expression.getChild(0).getChild(0).visit(pathVisitor);
+            return false;
+        }
+
+        @Override
+        public boolean visitDbPath(EJBQLExpression expression, int finishedChildIndex) {
+            addPath((EJBQLPath) expression);
+            addResultSetColumn();
             return false;
         }
 

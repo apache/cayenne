@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.unit.di.server;
 
+import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.commons.collections.ExtendedProperties;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.commons.collections.ExtendedProperties;
 
 /**
  * ConnectionProperties handles a set of DataSourceInfo objects using
@@ -34,6 +34,9 @@ import org.apache.commons.collections.ExtendedProperties;
  * purely a utility class. Its features are not used in deployment.
  */
 class ConnectionProperties {
+
+	static final int MIN_CONNECTIONS = 1;
+	static final int MAX_CONNECTIONS = 2;
 
 	private static final String ADAPTER_KEY = "adapter";
 	private static final String ADAPTER20_KEY = "cayenne.adapter";
@@ -85,6 +88,8 @@ class ConnectionProperties {
 		dsi.setPassword(props.getString(PASSWORD_KEY));
 		dsi.setDataSourceUrl(props.getString(URL_KEY));
 		dsi.setJdbcDriver(props.getString(DRIVER_KEY));
+		dsi.setMinConnections(MIN_CONNECTIONS);
+		dsi.setMaxConnections(MAX_CONNECTIONS);
 
 		return dsi;
 	}

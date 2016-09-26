@@ -21,9 +21,9 @@ package org.apache.cayenne.crypto.transformer.value;
 /**
  * @since 4.0
  */
-interface BytesConverter {
+public interface BytesConverter<T> {
 
-    Object fromBytes(byte[] bytes);
+    T fromBytes(byte[] bytes);
 
-    byte[] toBytes(Object value);
+    byte[] toBytes(T value);
 }

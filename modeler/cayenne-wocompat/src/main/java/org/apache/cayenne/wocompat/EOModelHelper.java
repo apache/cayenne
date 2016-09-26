@@ -273,9 +273,7 @@ public class EOModelHelper {
 
 					String attrName = (String) attrMap.get("name");
 
-					// TODO: why are we copying the original map? can we just
-					// use it as
-					// is?
+					// TODO: why are we copying the original map? can we just use it as is?
 					Map prototypeAttrMap = new HashMap();
 					prototypeValues.put(attrName, prototypeAttrMap);
 
@@ -287,6 +285,7 @@ public class EOModelHelper {
 					prototypeAttrMap.put("allowsNull", attrMap.get("allowsNull"));
 					prototypeAttrMap.put("scale", attrMap.get("scale"));
 					prototypeAttrMap.put("valueType", attrMap.get("valueType"));
+					prototypeAttrMap.put("externalType", attrMap.get("externalType"));
 				}
 			}
 		}

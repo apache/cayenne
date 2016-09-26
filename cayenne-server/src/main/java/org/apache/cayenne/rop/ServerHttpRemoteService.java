@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.rop;
 
-import com.caucho.services.server.ServiceContext;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Inject;
@@ -37,7 +36,7 @@ public class ServerHttpRemoteService extends HttpRemoteService {
 
 	@Override
 	protected HttpSession getSession(boolean create) {
-		HttpServletRequest request = (HttpServletRequest) ServiceContext.getContextRequest();
+		HttpServletRequest request = (HttpServletRequest) ROPRequestContext.getContextRequest();
 		if (request == null) {
 			throw new IllegalStateException(
 					"Attempt to access HttpSession outside the request scope.");

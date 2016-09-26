@@ -21,6 +21,7 @@ package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcActionBuilder;
+import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
@@ -32,6 +33,17 @@ class PostgresActionBuilder extends JdbcActionBuilder {
 
     public PostgresActionBuilder(DataNode dataNode) {
         super(dataNode);
+    }
+
+    @Override
+    public SQLAction batchAction(BatchQuery query) {
+        // check run strategy...
+
+        // optimistic locking is not supported in batches due to JDBC driver limitations
+        boolean useOptimisticLock = query.isUsingOptimisticLocking();
+
+        boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
+        return new PostgresBatchAction(query, dataNode, runningAsBatch);
     }
 
     @Override

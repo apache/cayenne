@@ -82,6 +82,7 @@ public class ClientObjectSelectIT extends ClientCase {
         assertFalse(list1.isEmpty());
 
         serverCaseDataChannelInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+            @Override
             public void execute() {
                 List<ClientMtTable1> list2 = objectSelect.select(context);
                 assertNotNull(list2);
@@ -93,10 +94,10 @@ public class ClientObjectSelectIT extends ClientCase {
 
     @Test
     public void testLimitSelect() throws Exception{
-        List<ClientMtTable1> list = ObjectSelect.query(ClientMtTable1.class).
-                offset(5).
-                limit(10).
-                select(context);
+        List<ClientMtTable1> list = ObjectSelect.query(ClientMtTable1.class)
+                .offset(5)
+                .limit(10)
+                .select(context);
 
         assertNotNull(list);
         assertEquals(10, list.size());
@@ -104,15 +105,16 @@ public class ClientObjectSelectIT extends ClientCase {
 
     @Test
     public void testCacheLimitSelect() throws Exception {
-        final ObjectSelect objectSelect = ObjectSelect.query(ClientMtTable1.class).
-                cacheStrategy(QueryCacheStrategy.SHARED_CACHE).
-                offset(5).
-                limit(10);
+        final ObjectSelect objectSelect = ObjectSelect.query(ClientMtTable1.class)
+                .cacheStrategy(QueryCacheStrategy.SHARED_CACHE)
+                .offset(5)
+                .limit(10);
 
         final List<ClientMtTable1> list1 = objectSelect.select(context);
         assertEquals(10, list1.size());
 
         serverCaseDataChannelInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+            @Override
             public void execute() {
                 List<ClientMtTable1> list2 = objectSelect.select(context);
                 assertNotNull(list2);
@@ -124,14 +126,24 @@ public class ClientObjectSelectIT extends ClientCase {
 
     @Test
     public void testPageSelect() throws Exception{
-        final ObjectSelect objectSelect = ObjectSelect.query(ClientMtTable1.class).
-                pageSize(5);
+        final ObjectSelect objectSelect = ObjectSelect.query(ClientMtTable1.class)
+                .pageSize(5);
 
-        List<ClientMtTable1> list = objectSelect.select(context);
+        final List<ClientMtTable1> list = objectSelect.select(context);
         assertNotNull(list);
         assertEquals(RemoteIncrementalFaultList.class, list.getClass());
-        assertEquals("globalAttr1", list.get(0).getGlobalAttribute1Direct());
-        assertEquals("globalAttr6", list.get(5).getGlobalAttribute1Direct());
+
+        int count = serverCaseDataChannelInterceptor.runWithQueryCounter(new UnitTestClosure() {
+            @Override
+            public void execute() {
+                assertNotNull(list.get(0));
+                assertNotNull(list.get(4));
+                assertNotNull(list.get(5));
+                assertNotNull(list.get(6));
+            }
+        });
+
+        assertEquals(1, count);
     }
 
 }

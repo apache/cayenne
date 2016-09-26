@@ -134,22 +134,14 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		return context.select(this);
 	}
 
-	/**
-	 * Since we are selecting by ID, multiple matched objects likely indicate a
-	 * database referential integrity problem.
-	 */
 	@Override
 	public T selectOne(ObjectContext context) {
 		return context.selectOne(this);
 	}
 
-	/**
-	 * Since we are selecting by ID, we don't need to limit fetch size. Multiple
-	 * matched objects likely indicate a database referential integrity problem.
-	 */
 	@Override
 	public T selectFirst(ObjectContext context) {
-		return selectFirst(context);
+		return context.selectFirst(this);
 	}
 
 	@Override

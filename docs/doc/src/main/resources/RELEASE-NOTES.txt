@@ -21,14 +21,34 @@ CAY-2063 ProcedureCall fluent query API
 CAY-2065 Pluggable serialization and connectivity layers for ROP
 CAY-2073 Ordering.orderedList methods
 CAY-2074 Support for catalogs in stored procedures
+CAY-2076 Implement Jetty HTTP/1.1 and HTTP/2 Client support for ROP Client
+CAY-2083 Implement Protostuff as serialization service for Cayenne ROP
+CAY-2090 Untangle HttpRemoteService from ServiceContext thread local setup
+CAY-2100 Add supporting generated keys for PostgreSQL
+CAY-2102 EJBQL: db: path not supported in select columns
+CAY-2103 cayenne-crypto: support for mapping non-String and non-binary types
+CAY-2106 cayenne-crypto: allow DI contribution of type converters inside ValueTransformerFactory
+CAY-2107 cayenne-crypto: Lazy initialization of crypto subsystem
+CAY-2111 Unbind transaction object from the current thread for iterated queries
+CAY-2112 Expose callback for "performInTransaction"
 
 Bug Fixes:
 
 CAY-2064 Issue with BeanAccessor for classes with complex inheritance
 CAY-2066 Fixes for inner enums handling in ExtendedTypeMap
 CAY-2067 Cayenne 4.0 connection pool is occasionally running out of connections
+CAY-2070 Modeler sync function adds extraneous ObjRelationships inside the class hierarchy
 CAY-2078 Client code gen bug. Unnecessary DataMap class generation setting datamap gen to false.
 CAY-2080 Cayenne doesn't pick up reverse engineering file changes
+CAY-2084 ObjectIdQuery - no cache access polymorphism
+CAY-2086 SelectById.selectFirst stack overflow
+CAY-2087 PostCommitFilter is confused about changes made by Pre* listeners
+CAY-2089 HTTP connections aren't always closed in new ROP implementation
+CAY-2097 NullPointerException while updating relationships for entities with vertical inheritance
+CAY-2101 DataContext.currentSnapshot() doesn't set snapshot entity name
+CAY-2105 Add missing elements to the reverseEngineering.xsd
+CAY-2108 cayenne-di: StackOverflow for decorator that takes Provider of the delegate
+CAY-2110 Obfuscated exception when processing iterated results
 
 ----------------------------------
 Release: 4.0.M3

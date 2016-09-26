@@ -18,21 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.unit;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.crypto.key.KeySource;
+import org.apache.cayenne.crypto.transformer.bytes.Header;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.zip.GZIPInputStream;
-
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-
-import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.crypto.key.KeySource;
-import org.apache.cayenne.crypto.transformer.bytes.Header;
 
 public class CryptoUnitUtils {
 
@@ -95,6 +95,27 @@ public class CryptoUnitUtils {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static byte[] toByteArray(int integer) {
+
+        if (integer <= Short.MAX_VALUE) {
+            return toByteArray((short) integer);
+        }
+
+        return ByteBuffer.allocate(4).putInt(integer).array();
+    }
+
+    public static byte[] toByteArray(short shortInt) {
+        if (shortInt <= Byte.MAX_VALUE) {
+            return toByteArray((byte) shortInt);
+        }
+
+        return ByteBuffer.allocate(2).putShort(shortInt).array();
+    }
+
+    public static byte[] toByteArray(byte byteInt) {
+        return new byte[]{byteInt};
     }
 
 }

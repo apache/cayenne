@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.Collections;
-
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
@@ -43,6 +35,10 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
+
+import java.sql.*;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @since 1.2
@@ -161,8 +157,7 @@ public class BatchAction extends BaseSQLAction {
 
 		DbAdapter adapter = dataNode.getAdapter();
 
-		try (PreparedStatement statement = (generatesKeys) ? connection.prepareStatement(queryStr,
-				Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(queryStr);) {
+		try (PreparedStatement statement = prepareStatement(connection, queryStr, adapter, generatesKeys)) {
 			for (BatchQueryRow row : query.getRows()) {
 
 				DbAttributeBinding[] bindings = translator.updateBindings(row);
@@ -185,6 +180,13 @@ public class BatchAction extends BaseSQLAction {
 				logger.logUpdateCount(updated);
 			}
 		}
+	}
+
+	protected PreparedStatement prepareStatement(Connection connection,	String queryStr,
+												 DbAdapter adapter,	boolean generatedKeys) throws SQLException {
+		return (generatedKeys)
+				? connection.prepareStatement(queryStr, Statement.RETURN_GENERATED_KEYS)
+				: connection.prepareStatement(queryStr);
 	}
 
 	/**

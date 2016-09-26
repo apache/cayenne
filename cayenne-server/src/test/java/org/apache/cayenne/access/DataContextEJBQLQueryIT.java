@@ -27,7 +27,6 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.test.junit.AssertExtras;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -137,8 +136,8 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         Object[] aggregates = (Object[]) data.get(0);
         assertEquals(new Long(2), aggregates[0]);
         assertEquals(new Long(2), aggregates[1]);
-        AssertExtras.assertEquals(new BigDecimal(5000d), aggregates[2], 0.01);
-        AssertExtras.assertEquals(new BigDecimal(8000d), aggregates[3], 0.01);
+        assertEquals(5000d, ((BigDecimal) aggregates[2]).doubleValue(), 0.00001);
+        assertEquals(8000d, ((BigDecimal) aggregates[3]).doubleValue(), 0.00001);
     }
 
     @Test
@@ -190,14 +189,47 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertTrue(data.get(0) instanceof Object[]);
         Object[] row0 = (Object[]) data.get(0);
         assertEquals(2, row0.length);
-        AssertExtras.assertEquals(new BigDecimal(3000d), row0[0], 0.01);
+        assertEquals(3000d, ((BigDecimal) row0[0]).doubleValue(), 0.00001);
         assertEquals("AA1", row0[1]);
 
         assertTrue(data.get(1) instanceof Object[]);
         Object[] row1 = (Object[]) data.get(1);
         assertEquals(2, row1.length);
-        AssertExtras.assertEquals(new BigDecimal(5000d), row1[0], 0.01);
+        assertEquals(5000d, ((BigDecimal) row1[0]).doubleValue(), 0.00001);
         assertEquals("AA2", row1[1]);
+    }
+
+    @Test
+    public void testSelectDbPath() throws Exception {
+        createFourArtistsTwoPaintings();
+
+        String ejbql = "select db:p.ESTIMATED_PRICE "
+                + "from Painting p order by p.estimatedPrice";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List<?> data = context.performQuery(query);
+        assertEquals(2, data.size());
+
+        assertEquals(3000d, ((BigDecimal) data.get(0)).doubleValue(), 0.00001);
+        assertEquals(5000d, ((BigDecimal) data.get(1)).doubleValue(), 0.00001);
+    }
+
+    @Test
+    public void testSelectDbPath_Relationship() throws Exception {
+        createFourArtistsTwoPaintings();
+
+        String ejbql = "select db:p.toArtist "
+                + "from Painting p order by p.estimatedPrice";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        List<?> data = context.performQuery(query);
+        assertEquals(2, data.size());
+
+        assertTrue(data.get(0) instanceof Artist);
+        assertEquals(33001, Cayenne.intPKForObject((Artist) data.get(0)));
+
+        assertTrue(data.get(1) instanceof Artist);
+        assertEquals(33002, Cayenne.intPKForObject((Artist) data.get(1)));
     }
 
     @Test
@@ -318,7 +350,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
 
         Painting p = (Painting) ps.get(0);
         assertEquals("P1", p.getPaintingTitle());
-        AssertExtras.assertEquals(new BigDecimal(3000d), p.getEstimatedPrice(), 0.01);
+        assertEquals(3000d, p.getEstimatedPrice().doubleValue(), 0.00001);
     }
 
     @Test
@@ -333,7 +365,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
 
         Painting p = (Painting) ps.get(0);
         assertEquals("P1", p.getPaintingTitle());
-        AssertExtras.assertEquals(new BigDecimal(3000d), p.getEstimatedPrice(), 0.01);
+        assertEquals(3000d, p.getEstimatedPrice().doubleValue(), 0.00001);
     }
 
     @Test
@@ -348,7 +380,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
 
         Painting p = (Painting) ps.get(0);
         assertEquals("P2", p.getPaintingTitle());
-        AssertExtras.assertEquals(new BigDecimal(5000d), p.getEstimatedPrice(), 0.01);
+        assertEquals(5000d, p.getEstimatedPrice().doubleValue(), 0.00001);
     }
 
     @Test
@@ -363,7 +395,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
 
         Painting p = (Painting) ps.get(0);
         assertEquals("P2", p.getPaintingTitle());
-        AssertExtras.assertEquals(new BigDecimal(5000d), p.getEstimatedPrice(), 0.01);
+        assertEquals(5000d, p.getEstimatedPrice().doubleValue(), 0.00001);
     }
 
     @Test
@@ -389,7 +421,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
 
         Painting p = (Painting) ps.get(0);
         assertEquals("P1", p.getPaintingTitle());
-        AssertExtras.assertEquals(new BigDecimal(3000d), p.getEstimatedPrice(), 0.01);
+        assertEquals(3000d, p.getEstimatedPrice().doubleValue(), 0.00001);
     }
 
     @Test

@@ -18,15 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import java.security.Key;
-import java.sql.Types;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
@@ -36,190 +27,148 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 
+import java.security.Key;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 /**
  * A {@link ValueTransformerFactory} that creates encryptors/decryptors that are
  * taking advantage of the JCE (Java Cryptography Extension) ciphers.
- * 
+ *
  * @since 4.0
  */
 public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 
-	private final Key defaultKey;
+    public static final String DB_TO_BYTE_CONVERTERS_KEY =
+            "org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactory.dbToBytes";
 
-	private final Map<String, BytesConverter> objectToBytes;
-	private final Map<Integer, BytesConverter> dbToBytes;
+    public static final String OBJECT_TO_BYTE_CONVERTERS_KEY =
+            "org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactory.objectToBytes";
 
-	private final Map<String, BytesConverter> bytesToObject;
-	private final Map<Integer, BytesConverter> bytesToDb;
+    private final Key defaultKey;
 
-	private final ConcurrentMap<DbAttribute, ValueEncryptor> encryptors;
-	private final ConcurrentMap<DbAttribute, ValueDecryptor> decryptors;
+    private final Map<String, BytesConverter<?>> objectToBytes;
+    private final Map<Integer, BytesConverter<?>> dbToBytes;
 
-	public DefaultValueTransformerFactory(@Inject KeySource keySource) {
-		this.defaultKey = keySource.getKey(keySource.getDefaultKeyAlias());
+    private final ConcurrentMap<DbAttribute, ValueEncryptor> encryptors;
+    private final ConcurrentMap<DbAttribute, ValueDecryptor> decryptors;
 
-		this.encryptors = new ConcurrentHashMap<DbAttribute, ValueEncryptor>();
-		this.decryptors = new ConcurrentHashMap<DbAttribute, ValueDecryptor>();
+    public DefaultValueTransformerFactory(@Inject KeySource keySource,
+                      @Inject(DB_TO_BYTE_CONVERTERS_KEY) Map<String, BytesConverter<?>> dbToBytes,
+                      @Inject(OBJECT_TO_BYTE_CONVERTERS_KEY) Map<String, BytesConverter<?>> objectToBytes) {
 
-		this.objectToBytes = createObjectToBytesConverters();
-		this.dbToBytes = createDbToBytesConverters();
-		this.bytesToObject = createBytesToObjectConverters();
-		this.bytesToDb = createBytesToDbConverters();
-	}
+        this.defaultKey = keySource.getKey(keySource.getDefaultKeyAlias());
 
-	@Override
-	public ValueDecryptor decryptor(DbAttribute a) {
-		ValueDecryptor e = decryptors.get(a);
+        this.encryptors = new ConcurrentHashMap<>();
+        this.decryptors = new ConcurrentHashMap<>();
 
-		if (e == null) {
+        this.objectToBytes = objectToBytes;
 
-			ValueDecryptor newTransformer = createDecryptor(a);
-			ValueDecryptor oldTransformer = decryptors.putIfAbsent(a, newTransformer);
+        Map<Integer, BytesConverter<?>> m = new HashMap<>();
+        for (Map.Entry<String, BytesConverter<?>> extraConverter : dbToBytes.entrySet()) {
+            m.put(Integer.valueOf(extraConverter.getKey()), extraConverter.getValue());
+        }
+        this.dbToBytes = m;
+    }
 
-			e = oldTransformer != null ? oldTransformer : newTransformer;
-		}
+    @Override
+    public ValueDecryptor decryptor(DbAttribute a) {
+        ValueDecryptor e = decryptors.get(a);
 
-		return e;
-	}
+        if (e == null) {
 
-	@Override
-	public ValueEncryptor encryptor(DbAttribute a) {
-		ValueEncryptor e = encryptors.get(a);
+            ValueDecryptor newTransformer = createDecryptor(a);
+            ValueDecryptor oldTransformer = decryptors.putIfAbsent(a, newTransformer);
 
-		if (e == null) {
+            e = oldTransformer != null ? oldTransformer : newTransformer;
+        }
 
-			ValueEncryptor newTransformer = createEncryptor(a);
-			ValueEncryptor oldTransformer = encryptors.putIfAbsent(a, newTransformer);
+        return e;
+    }
 
-			e = oldTransformer != null ? oldTransformer : newTransformer;
-		}
+    @Override
+    public ValueEncryptor encryptor(DbAttribute a) {
+        ValueEncryptor e = encryptors.get(a);
 
-		return e;
-	}
+        if (e == null) {
 
-	protected Map<Integer, BytesConverter> createDbToBytesConverters() {
-		Map<Integer, BytesConverter> map = new HashMap<Integer, BytesConverter>();
+            ValueEncryptor newTransformer = createEncryptor(a);
+            ValueEncryptor oldTransformer = encryptors.putIfAbsent(a, newTransformer);
 
-		map.put(Types.BINARY, BytesToBytesConverter.INSTANCE);
-		map.put(Types.BLOB, BytesToBytesConverter.INSTANCE);
-		map.put(Types.VARBINARY, BytesToBytesConverter.INSTANCE);
-		map.put(Types.LONGVARBINARY, BytesToBytesConverter.INSTANCE);
+            e = oldTransformer != null ? oldTransformer : newTransformer;
+        }
 
-		map.put(Types.CHAR, Base64StringConverter.INSTANCE);
-		map.put(Types.NCHAR, Base64StringConverter.INSTANCE);
-		map.put(Types.CLOB, Base64StringConverter.INSTANCE);
-		map.put(Types.NCLOB, Base64StringConverter.INSTANCE);
-		map.put(Types.LONGVARCHAR, Base64StringConverter.INSTANCE);
-		map.put(Types.LONGNVARCHAR, Base64StringConverter.INSTANCE);
-		map.put(Types.VARCHAR, Base64StringConverter.INSTANCE);
-		map.put(Types.NVARCHAR, Base64StringConverter.INSTANCE);
+        return e;
+    }
 
-		return map;
-	}
+    protected ValueEncryptor createEncryptor(DbAttribute a) {
 
-	protected Map<Integer, BytesConverter> createBytesToDbConverters() {
-		Map<Integer, BytesConverter> map = new HashMap<Integer, BytesConverter>();
+        String type = getJavaType(a);
 
-		map.put(Types.BINARY, BytesToBytesConverter.INSTANCE);
-		map.put(Types.BLOB, BytesToBytesConverter.INSTANCE);
-		map.put(Types.VARBINARY, BytesToBytesConverter.INSTANCE);
-		map.put(Types.LONGVARBINARY, BytesToBytesConverter.INSTANCE);
+        BytesConverter<?> toBytes = objectToBytes.get(type);
+        if (toBytes == null) {
+            throw new IllegalArgumentException("The type " + type + " for attribute " + a
+                    + " has no object-to-bytes conversion");
+        }
 
-		map.put(Types.CHAR, Base64StringConverter.INSTANCE);
-		map.put(Types.NCHAR, Base64StringConverter.INSTANCE);
-		map.put(Types.CLOB, Base64StringConverter.INSTANCE);
-		map.put(Types.NCLOB, Base64StringConverter.INSTANCE);
-		map.put(Types.LONGVARCHAR, Base64StringConverter.INSTANCE);
-		map.put(Types.LONGNVARCHAR, Base64StringConverter.INSTANCE);
-		map.put(Types.VARCHAR, Base64StringConverter.INSTANCE);
-		map.put(Types.NVARCHAR, Base64StringConverter.INSTANCE);
+        BytesConverter<?> fromBytes = dbToBytes.get(a.getType());
+        if (fromBytes == null) {
+            throw new IllegalArgumentException("The type " + TypesMapping.getSqlNameByType(a.getType())
+                    + " for attribute " + a + " has no bytes-to-db conversion");
+        }
 
-		return map;
-	}
+        return new DefaultValueEncryptor(toBytes, fromBytes);
+    }
 
-	protected Map<String, BytesConverter> createObjectToBytesConverters() {
-		Map<String, BytesConverter> map = new HashMap<>();
+    protected ValueDecryptor createDecryptor(DbAttribute a) {
 
-		map.put("byte[]", BytesToBytesConverter.INSTANCE);
-		map.put(String.class.getName(), Utf8StringConverter.INSTANCE);
+        BytesConverter<?> toBytes = dbToBytes.get(a.getType());
+        if (toBytes == null) {
+            throw new IllegalArgumentException("The type " + TypesMapping.getSqlNameByType(a.getType())
+                    + " for attribute " + a + " has no db-to-bytes conversion");
+        }
 
-		return map;
-	}
+        String type = getJavaType(a);
+        BytesConverter<?> fromBytes = objectToBytes.get(type);
+        if (fromBytes == null) {
+            throw new IllegalArgumentException("The type " + type + " for attribute " + a
+                    + " has no bytes-to-object conversion");
+        }
 
-	protected Map<String, BytesConverter> createBytesToObjectConverters() {
+        return new DefaultValueDecryptor(toBytes, fromBytes, defaultKey);
+    }
 
-		Map<String, BytesConverter> map = new HashMap<>();
+    // TODO: calculating Java type of ObjAttribute may become unneeded per
+    // CAY-1752, as DbAttribute will have it.
+    protected String getJavaType(DbAttribute a) {
 
-		map.put("byte[]", BytesToBytesConverter.INSTANCE);
-		map.put(String.class.getName(), Utf8StringConverter.INSTANCE);
+        DbEntity dbEntity = a.getEntity();
+        DataMap dataMap = dbEntity.getDataMap();
+        Collection<ObjEntity> objEntities = dataMap.getMappedEntities(dbEntity);
 
-		return map;
-	}
+        if (objEntities.size() != 1) {
+            return TypesMapping.getJavaBySqlType(a.getType());
+        }
 
-	protected ValueEncryptor createEncryptor(DbAttribute a) {
+        Collection<String> javaTypes = new HashSet<String>();
+        ObjEntity objEntity = objEntities.iterator().next();
+        for (ObjAttribute oa : objEntity.getAttributes()) {
 
-		String type = getJavaType(a);
+            // TODO: this won't pick up flattened attributes
+            if (a.getName().equals(oa.getDbAttributePath())) {
+                javaTypes.add(oa.getType());
+            }
+        }
 
-		BytesConverter toBytes = objectToBytes.get(type);
-		if (toBytes == null) {
-			throw new IllegalArgumentException("The type " + type + " for attribute " + a
-					+ " has no object-to-bytes conversion");
-		}
+        if (javaTypes.size() != 1) {
+            return TypesMapping.getJavaBySqlType(a.getType());
+        }
 
-		BytesConverter fromBytes = bytesToDb.get(a.getType());
-		if (fromBytes == null) {
-			throw new IllegalArgumentException("The type " + TypesMapping.getSqlNameByType(a.getType())
-					+ " for attribute " + a + " has no bytes-to-db conversion");
-		}
-
-		return new DefaultValueEncryptor(toBytes, fromBytes);
-	}
-
-	protected ValueDecryptor createDecryptor(DbAttribute a) {
-
-		BytesConverter toBytes = dbToBytes.get(a.getType());
-		if (toBytes == null) {
-			throw new IllegalArgumentException("The type " + TypesMapping.getSqlNameByType(a.getType())
-					+ " for attribute " + a + " has no db-to-bytes conversion");
-		}
-
-		String type = getJavaType(a);
-		BytesConverter fromBytes = bytesToObject.get(type);
-		if (fromBytes == null) {
-			throw new IllegalArgumentException("The type " + type + " for attribute " + a
-					+ " has no bytes-to-object conversion");
-		}
-
-		return new DefaultValueDecryptor(toBytes, fromBytes, defaultKey);
-	}
-
-	// TODO: calculating Java type of ObjAttribute may become unneeded per
-	// CAY-1752, as DbAttribute will have it.
-	protected String getJavaType(DbAttribute a) {
-
-		DbEntity dbEntity = a.getEntity();
-		DataMap dataMap = dbEntity.getDataMap();
-		Collection<ObjEntity> objEntities = dataMap.getMappedEntities(dbEntity);
-
-		if (objEntities.size() != 1) {
-			return TypesMapping.getJavaBySqlType(a.getType());
-		}
-
-		Collection<String> javaTypes = new HashSet<String>();
-		ObjEntity objEntity = objEntities.iterator().next();
-		for (ObjAttribute oa : objEntity.getAttributes()) {
-
-			// TODO: this won't pick up flattened attributes
-			if (a.getName().equals(oa.getDbAttributePath())) {
-				javaTypes.add(oa.getType());
-			}
-		}
-
-		if (javaTypes.size() != 1) {
-			return TypesMapping.getJavaBySqlType(a.getType());
-		}
-
-		return javaTypes.iterator().next();
-	}
+        return javaTypes.iterator().next();
+    }
 
 }

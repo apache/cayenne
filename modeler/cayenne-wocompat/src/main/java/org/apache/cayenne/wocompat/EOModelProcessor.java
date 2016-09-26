@@ -22,6 +22,7 @@ package org.apache.cayenne.wocompat;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,7 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.*;
@@ -57,6 +57,7 @@ public class EOModelProcessor {
 	public EOModelProcessor() {
 		prototypeChecker = new Predicate() {
 
+			@Override
 			public boolean evaluate(Object object) {
 				if (object == null) {
 					return false;
@@ -416,6 +417,11 @@ public class EOModelProcessor {
 
 		return objEntity;
 	}
+	
+	private static boolean externalTypeIsClob(String type) {
+		if( type == null ) return false;
+		return "CLOB".equalsIgnoreCase(type) || "TEXT".equalsIgnoreCase(type);
+	}
 
 	/**
 	 * Create ObjAttributes of the specified entity, as well as DbAttributes of
@@ -476,25 +482,11 @@ public class EOModelProcessor {
 			String prototypeName = (String) attrMap.get("prototypeName");
 			Map prototypeAttrMap = helper.getPrototypeAttributeMapFor(prototypeName);
 
-			String dbAttrName = (String) attrMap.get("columnName");
-			if (null == dbAttrName) {
-				dbAttrName = (String) prototypeAttrMap.get("columnName");
-			}
-
-			String attrName = (String) attrMap.get("name");
-			if (null == attrName) {
-				attrName = (String) prototypeAttrMap.get("name");
-			}
-
-			String attrType = (String) attrMap.get("valueClassName");
-			if (null == attrType) {
-				attrType = (String) prototypeAttrMap.get("valueClassName");
-			}
-
-			String valueType = (String) attrMap.get("valueType");
-			if (valueType == null) {
-				valueType = (String) prototypeAttrMap.get("valueType");
-			}
+			String dbAttrName = getStringValueFromMap( "columnName", attrMap, prototypeAttrMap );
+			String attrName = getStringValueFromMap( "name", attrMap, prototypeAttrMap );
+			String attrType = getStringValueFromMap( "valueClassName", attrMap, prototypeAttrMap );
+			String valueType = getStringValueFromMap( "valueType", attrMap, prototypeAttrMap );
+			String externalType = getStringValueFromMap( "externalType", attrMap, prototypeAttrMap );
 
 			String javaType = helper.javaTypeForEOModelerType(attrType, valueType);
 			EODbAttribute dbAttr = null;
@@ -504,21 +496,31 @@ public class EOModelProcessor {
 				// if inherited attribute, skip it for DbEntity...
 				if (!singleTableInheritance || dbEntity.getAttribute(dbAttrName) == null) {
 
-					// create DbAttribute...since EOF allows the same column
-					// name for
-					// more than one Java attribute, we need to check for name
-					// duplicates
+					// create DbAttribute...since EOF allows the same column name for
+					// more than one Java attribute, we need to check for name duplicates
 					int i = 0;
 					String dbAttributeBaseName = dbAttrName;
 					while (dbEntity.getAttribute(dbAttrName) != null) {
 						dbAttrName = dbAttributeBaseName + i++;
 					}
 
-					dbAttr = new EODbAttribute(dbAttrName, TypesMapping.getSqlTypeByJava(javaType), dbEntity);
+					int sqlType = TypesMapping.getSqlTypeByJava(javaType);
+					int width = getInt("width", attrMap, prototypeAttrMap, -1);
+					if (sqlType == Types.VARCHAR && width < 0 && externalTypeIsClob(externalType)) {
+						// CLOB, or TEXT as PostgreSQL calls it, is usally noted as having no width. In order to
+						// not mistake any VARCHAR columns that just happen to have no width set in the model
+						// for CLOB columns, use externalType as an additional check.
+						sqlType = Types.CLOB;
+					} else if(sqlType == TypesMapping.NOT_DEFINED && externalType != null) {
+						// At this point we usually hit a custom Java class through a prototype, which isn't resolvable
+						// with the model alone. But we can use the externalType as a hint. If that still doesn't match
+						// anything, sqlType will still be NOT_DEFINED.
+						sqlType = TypesMapping.getSqlTypeByName(externalType.toUpperCase());
+					}
+					dbAttr = new EODbAttribute(dbAttrName, sqlType, dbEntity);
 					dbAttr.setEoAttributeName(attrName);
 					dbEntity.addAttribute(dbAttr);
 
-					int width = getInt("width", attrMap, prototypeAttrMap, -1);
 					if (width >= 0) {
 						dbAttr.setMaxLength(width);
 					}
@@ -532,10 +534,8 @@ public class EOModelProcessor {
 						dbAttr.setPrimaryKey(true);
 
 					Object allowsNull = attrMap.get("allowsNull");
-					// TODO: Unclear that allowsNull should be inherited from
-					// EOPrototypes
-					// if (null == allowsNull) allowsNull =
-					// prototypeAttrMap.get("allowsNull");;
+					// TODO: Unclear that allowsNull should be inherited from EOPrototypes
+					// if (null == allowsNull) allowsNull = prototypeAttrMap.get("allowsNull");;
 
 					dbAttr.setMandatory(!"Y".equals(allowsNull));
 				}
@@ -558,6 +558,14 @@ public class EOModelProcessor {
 				objEntity.addAttribute(attr);
 			}
 		}
+	}
+
+	private String getStringValueFromMap( String key, Map attrMap, Map prototypeAttrMap ) {
+		String dbAttrName = (String) attrMap.get(key);
+		if (null == dbAttrName) {
+			dbAttrName = (String) prototypeAttrMap.get(key);
+		}
+		return dbAttrName;
 	}
 
 	int getInt(String key, Map map, Map prototypes, int defaultValue) {
@@ -816,6 +824,7 @@ public class EOModelProcessor {
 			this.dataMap = dataMap;
 		}
 
+		@Override
 		public int compare(Object o1, Object o2) {
 			if (o1 == null) {
 				return o2 != null ? -1 : 0;

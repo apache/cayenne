@@ -85,6 +85,19 @@ public class SelectById_RunIT extends ServerCase {
 		assertNotNull(a2);
 		assertEquals("artist2", a2.getArtistName());
 	}
+	
+	@Test
+	public void testIntPk_SelectFirst() throws Exception {
+		createTwoArtists();
+
+		Artist a3 = SelectById.query(Artist.class, 3).selectFirst(context);
+		assertNotNull(a3);
+		assertEquals("artist3", a3.getArtistName());
+
+		Artist a2 = SelectById.query(Artist.class, 2).selectFirst(context);
+		assertNotNull(a2);
+		assertEquals("artist2", a2.getArtistName());
+	}
 
 	@Test
 	public void testMapPk() throws Exception {
@@ -129,13 +142,13 @@ public class SelectById_RunIT extends ServerCase {
 
 	@Test
 	public void testMetadataCacheKey() throws Exception {
-		SelectById<Painting> q1 = SelectById.query(Painting.class, 4).useLocalCache();
+		SelectById<Painting> q1 = SelectById.query(Painting.class, 4).localCache();
 		QueryMetadata md1 = q1.getMetaData(resolver);
 		assertNotNull(md1);
 		assertNotNull(md1.getCacheKey());
 
 		SelectById<Painting> q2 = SelectById.query(Painting.class, singletonMap(Painting.PAINTING_ID_PK_COLUMN, 4))
-				.useLocalCache();
+				.localCache();
 		QueryMetadata md2 = q2.getMetaData(resolver);
 		assertNotNull(md2);
 		assertNotNull(md2.getCacheKey());
@@ -144,20 +157,20 @@ public class SelectById_RunIT extends ServerCase {
 		// cache entry
 		assertEquals(md1.getCacheKey(), md2.getCacheKey());
 
-		SelectById<Painting> q3 = SelectById.query(Painting.class, 5).useLocalCache();
+		SelectById<Painting> q3 = SelectById.query(Painting.class, 5).localCache();
 		QueryMetadata md3 = q3.getMetaData(resolver);
 		assertNotNull(md3);
 		assertNotNull(md3.getCacheKey());
 		assertNotEquals(md1.getCacheKey(), md3.getCacheKey());
 
-		SelectById<Artist> q4 = SelectById.query(Artist.class, 4).useLocalCache();
+		SelectById<Artist> q4 = SelectById.query(Artist.class, 4).localCache();
 		QueryMetadata md4 = q4.getMetaData(resolver);
 		assertNotNull(md4);
 		assertNotNull(md4.getCacheKey());
 		assertNotEquals(md1.getCacheKey(), md4.getCacheKey());
 
-		SelectById<Painting> q5 = SelectById.query(Painting.class,
-				new ObjectId("Painting", Painting.PAINTING_ID_PK_COLUMN, 4)).useLocalCache();
+		SelectById<Painting> q5 = SelectById
+				.query(Painting.class, new ObjectId("Painting", Painting.PAINTING_ID_PK_COLUMN, 4)).localCache();
 		QueryMetadata md5 = q5.getMetaData(resolver);
 		assertNotNull(md5);
 		assertNotNull(md5.getCacheKey());
@@ -177,7 +190,7 @@ public class SelectById_RunIT extends ServerCase {
 
 			@Override
 			public void execute() {
-				a3[0] = SelectById.query(Artist.class, 3).useLocalCache("g1").selectOne(context);
+				a3[0] = SelectById.query(Artist.class, 3).localCache("g1").selectOne(context);
 				assertNotNull(a3[0]);
 				assertEquals("artist3", a3[0].getArtistName());
 			}
@@ -187,7 +200,7 @@ public class SelectById_RunIT extends ServerCase {
 
 			@Override
 			public void execute() {
-				Artist a3cached = SelectById.query(Artist.class, 3).useLocalCache("g1").selectOne(context);
+				Artist a3cached = SelectById.query(Artist.class, 3).localCache("g1").selectOne(context);
 				assertSame(a3[0], a3cached);
 			}
 		});
@@ -198,7 +211,7 @@ public class SelectById_RunIT extends ServerCase {
 
 			@Override
 			public void execute() {
-				SelectById.query(Artist.class, 3).useLocalCache("g1").selectOne(context);
+				SelectById.query(Artist.class, 3).localCache("g1").selectOne(context);
 			}
 		}));
 	}
@@ -218,7 +231,7 @@ public class SelectById_RunIT extends ServerCase {
 				assertNotNull(a3);
 				assertEquals("artist3", a3.getArtistName());
 				assertEquals(2, a3.getPaintingArray().size());
-				
+
 				a3.getPaintingArray().get(0).getPaintingTitle();
 				a3.getPaintingArray().get(1).getPaintingTitle();
 			}

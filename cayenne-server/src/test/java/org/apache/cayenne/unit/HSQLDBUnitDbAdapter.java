@@ -56,4 +56,10 @@ public class HSQLDBUnitDbAdapter extends UnitDbAdapter {
             executeDDL(con, "hsqldb", "create-sp-aliases.sql");
         }
     }
+
+    @Override
+    public boolean supportsPKGeneratorConcurrency() {
+        // HSQL is not locking AUTO_PK_TABLE, so running PkGenerator in parallel may result in conflicting ranges
+        return false;
+    }
 }
