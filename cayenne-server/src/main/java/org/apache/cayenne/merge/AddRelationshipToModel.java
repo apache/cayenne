@@ -21,8 +21,8 @@ package org.apache.cayenne.merge;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-
-import static org.apache.cayenne.util.Util.join;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.util.EntityMergeSupport;
 
 public class AddRelationshipToModel extends AbstractToModelToken.Entity {
 
@@ -42,7 +42,15 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
     public void execute(MergerContext mergerContext) {
         getEntity().addRelationship(rel);
         // TODO: add reverse relationship as well if it does not exist
-        synchronizeWithObjEntity(getEntity());
+
+        // TODO: use EntityMergeSupport from DbImportConfiguration... otherwise we are ignoring a bunch of
+        // important settings
+
+        EntityMergeSupport entityMergeSupport =  new EntityMergeSupport(mergerContext.getDataMap());
+        for(ObjEntity e : getEntity().mappedObjEntities()) {
+            entityMergeSupport.synchronizeOnDbRelationshipAdded(e, rel);
+        }
+
         mergerContext.getModelMergeDelegate().dbRelationshipAdded(rel);
     }
 

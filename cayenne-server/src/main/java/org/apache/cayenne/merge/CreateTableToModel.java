@@ -22,7 +22,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.naming.NameConverter;
-import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.EntityMergeSupport;
 
 /**
  * A {@link MergerToken} to add a {@link DbEntity} to a {@link DataMap}
@@ -85,8 +85,12 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
         
         map.addObjEntity(objEntity);
 
-        synchronizeWithObjEntity(getEntity());
-        
+        // presumably there are no other ObjEntities pointing to this DbEntity, so syncing just this one...
+
+        // TODO: use EntityMergeSupport from DbImportConfiguration... otherwise we are ignoring a bunch of
+        // important settings
+        new EntityMergeSupport(map).synchronizeWithDbEntity(objEntity);
+
         mergerContext.getModelMergeDelegate().dbEntityAdded(getEntity());
         mergerContext.getModelMergeDelegate().objEntityAdded(objEntity);
     }

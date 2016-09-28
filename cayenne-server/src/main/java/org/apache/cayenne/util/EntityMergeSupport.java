@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -36,12 +29,19 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.naming.LegacyNameGenerator;
 import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.LegacyNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.map.naming.ObjectNameGenerator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implements methods for entity merging.
@@ -64,20 +64,17 @@ public class EntityMergeSupport {
     }
 
     private final DataMap map;
-
-    protected boolean removeMeaningfulFKs;
-    protected boolean removeMeaningfulPKs;
-    protected boolean usePrimitives;
-
     /**
      * Strategy for choosing names for entities, attributes and relationships
      */
     private final ObjectNameGenerator nameGenerator;
-
     /**
      * Listeners of merge process.
      */
     private final List<EntityMergeListener> listeners = new ArrayList<EntityMergeListener>();
+    protected boolean removeMeaningfulFKs;
+    protected boolean removeMeaningfulPKs;
+    protected boolean usePrimitives;
 
     public EntityMergeSupport(DataMap map) {
         this(map, new LegacyNameGenerator(), true);
@@ -102,7 +99,7 @@ public class EntityMergeSupport {
     /**
      * Updates each one of the collection of ObjEntities, adding attributes and
      * relationships based on the current state of its DbEntity.
-     * 
+     *
      * @return true if any ObjEntity has changed as a result of synchronization.
      * @since 1.2 changed signature to use Collection instead of List.
      */
@@ -134,7 +131,7 @@ public class EntityMergeSupport {
     /**
      * Updates ObjEntity attributes and relationships based on the current state
      * of its DbEntity.
-     * 
+     *
      * @return true if the ObjEntity has changed as a result of synchronization.
      */
     public boolean synchronizeWithDbEntity(ObjEntity entity) {
@@ -165,6 +162,32 @@ public class EntityMergeSupport {
         return changed;
     }
 
+    /**
+     * @since 4.0
+     */
+    public boolean synchronizeOnDbAttributeAdded(ObjEntity entity, DbAttribute dbAttribute) {
+
+        Collection<DbRelationship> incomingRels = getIncomingRelationships(dbAttribute.getEntity());
+        if (isMissingFromObjEntity(entity, dbAttribute, incomingRels)) {
+            addMissingAttribute(entity, dbAttribute);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @since 4.0
+     */
+    public boolean synchronizeOnDbRelationshipAdded(ObjEntity entity, DbRelationship dbRelationship) {
+
+        if (isMissingFromObjEntity(entity, dbRelationship)) {
+            addMissingRelationship(entity, dbRelationship);
+        }
+
+        return true;
+    }
+
     private boolean addMissingRelationships(ObjEntity entity) {
         List<DbRelationship> relationshipsToAdd = getRelationshipsToAdd(entity);
         if (relationshipsToAdd.isEmpty()) {
@@ -172,26 +195,9 @@ public class EntityMergeSupport {
         }
 
         for (DbRelationship dr : relationshipsToAdd) {
-            DbEntity targetEntity = dr.getTargetEntity();
-
-            Collection<ObjEntity> mappedObjEntities = map.getMappedEntities(targetEntity);
-            if (!mappedObjEntities.isEmpty()) {
-                for (Entity mappedTarget : mappedObjEntities) {
-                    createObjRelationship(entity, dr, mappedTarget.getName());
-                }
-            } else {
-                if (targetEntity == null) {
-                    targetEntity = new DbEntity(dr.getTargetEntityName());
-                }
-                if (dr.getTargetEntityName() != null) {
-                    boolean needGeneratedEntity = createObjRelationship(entity, dr, nameGenerator.createObjEntityName(targetEntity));
-                    if (needGeneratedEntity) {
-                        LOG.warn("Can't find ObjEntity for " + dr.getTargetEntityName());
-                        LOG.warn("Db Relationship (" + dr + ") will have GUESSED Obj Relationship reflection. ");
-                    }
-                }
-            }
+            addMissingRelationship(entity, dr);
         }
+
         return true;
     }
 
@@ -237,26 +243,55 @@ public class EntityMergeSupport {
 
     private boolean addMissingAttributes(ObjEntity entity) {
         boolean changed = false;
+
         for (DbAttribute da : getAttributesToAdd(entity)) {
-
-            String attrName = DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, entity,
-                    nameGenerator.createObjAttributeName(da));
-
-            String type = TypesMapping.getJavaBySqlType(da.getType());
-            if (usePrimitives) {
-                String primitive = CLASS_TO_PRIMITIVE.get(type);
-                if (primitive != null) {
-                    type = primitive;
-                }
-            }
-
-            ObjAttribute oa = new ObjAttribute(attrName, type, entity);
-            oa.setDbAttributePath(da.getName());
-            entity.addAttribute(oa);
-            fireAttributeAdded(oa);
+            addMissingAttribute(entity, da);
             changed = true;
         }
         return changed;
+    }
+
+    private void addMissingRelationship(ObjEntity entity, DbRelationship dbRelationship) {
+        DbEntity targetEntity = dbRelationship.getTargetEntity();
+
+        Collection<ObjEntity> mappedObjEntities = map.getMappedEntities(targetEntity);
+        if (!mappedObjEntities.isEmpty()) {
+            for (Entity mappedTarget : mappedObjEntities) {
+                createObjRelationship(entity, dbRelationship, mappedTarget.getName());
+            }
+        } else {
+
+            if (targetEntity == null) {
+                targetEntity = new DbEntity(dbRelationship.getTargetEntityName());
+            }
+
+            if (dbRelationship.getTargetEntityName() != null) {
+                boolean needGeneratedEntity = createObjRelationship(entity, dbRelationship,
+                        nameGenerator.createObjEntityName(targetEntity));
+                if (needGeneratedEntity) {
+                    LOG.warn("Can't find ObjEntity for " + dbRelationship.getTargetEntityName());
+                    LOG.warn("Db Relationship (" + dbRelationship + ") will have GUESSED Obj Relationship reflection. ");
+                }
+            }
+        }
+    }
+
+    private void addMissingAttribute(ObjEntity entity, DbAttribute da) {
+        String attrName = DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, entity,
+                nameGenerator.createObjAttributeName(da));
+
+        String type = TypesMapping.getJavaBySqlType(da.getType());
+        if (usePrimitives) {
+            String primitive = CLASS_TO_PRIMITIVE.get(type);
+            if (primitive != null) {
+                type = primitive;
+            }
+        }
+
+        ObjAttribute oa = new ObjAttribute(attrName, type, entity);
+        oa.setDbAttributePath(da.getName());
+        entity.addAttribute(oa);
+        fireAttributeAdded(oa);
     }
 
     private boolean getRidOfAttributesThatAreNowSrcAttributesForRelationships(ObjEntity entity) {
@@ -275,7 +310,7 @@ public class EntityMergeSupport {
 
     /**
      * Returns a list of DbAttributes that are mapped to foreign keys.
-     * 
+     *
      * @since 1.2
      */
     public Collection<DbAttribute> getMeaningfulFKs(ObjEntity objEntity) {
@@ -301,102 +336,106 @@ public class EntityMergeSupport {
         DbEntity dbEntity = objEntity.getDbEntity();
 
         List<DbAttribute> missing = new ArrayList<DbAttribute>();
-
-        Collection<DbRelationship> rels = dbEntity.getRelationships();
         Collection<DbRelationship> incomingRels = getIncomingRelationships(dbEntity);
 
         for (DbAttribute dba : dbEntity.getAttributes()) {
 
-            if (dba.getName() == null || objEntity.getAttributeForDbAttribute(dba) != null) {
-                continue;
+            if (isMissingFromObjEntity(objEntity, dba, incomingRels)) {
+                missing.add(dba);
             }
-
-            boolean removeMeaningfulPKs = removePK(dbEntity);
-            if (removeMeaningfulPKs && dba.isPrimaryKey()) {
-                continue;
-            }
-
-            // check FK's
-            boolean isFK = false;
-            Iterator<DbRelationship> rit = rels.iterator();
-            while (!isFK && rit.hasNext()) {
-                DbRelationship rel = rit.next();
-                for (DbJoin join : rel.getJoins()) {
-                    if (join.getSource() == dba) {
-                        isFK = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!removeMeaningfulPKs) {
-                if (!dba.isPrimaryKey() && isFK) {
-                    continue;
-                }
-            } else {
-                if (isFK) {
-                    continue;
-                }
-            }
-
-            // check incoming relationships
-            rit = incomingRels.iterator();
-            while (!isFK && rit.hasNext()) {
-                DbRelationship rel = rit.next();
-                for (DbJoin join : rel.getJoins()) {
-                    if (join.getTarget() == dba) {
-                        isFK = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!removeMeaningfulPKs) {
-                if (!dba.isPrimaryKey() && isFK) {
-                    continue;
-                }
-            } else {
-                if (isFK) {
-                    continue;
-                }
-            }
-
-            missing.add(dba);
         }
 
         return missing;
     }
 
-	private Collection<DbRelationship> getIncomingRelationships(DbEntity entity) {
-		Collection<DbRelationship> incoming = new ArrayList<DbRelationship>();
+    protected boolean isMissingFromObjEntity(ObjEntity entity, DbAttribute dbAttribute, Collection<DbRelationship> incomingRels) {
 
-		for (DbEntity nextEntity : entity.getDataMap().getDbEntities()) {
-			for (DbRelationship relationship : nextEntity.getRelationships()) {
+        if (dbAttribute.getName() == null || entity.getAttributeForDbAttribute(dbAttribute) != null) {
+            return false;
+        }
 
-				// TODO: PERFORMANCE 'getTargetEntity' is generally slow, called
-				// in this iterator it is showing (e.g. in YourKit profiles)..
-				// perhaps use cheaper 'getTargetEntityName()' or even better -
-				// pre-cache all relationships by target entity to avoid O(n)
-				// search ?
-				// (need to profile to prove the difference)
-				if (entity == relationship.getTargetEntity()) {
-					incoming.add(relationship);
-				}
-			}
-		}
+        boolean removeMeaningfulPKs = removePK(dbAttribute.getEntity());
+        if (removeMeaningfulPKs && dbAttribute.isPrimaryKey()) {
+            return false;
+        }
 
-		return incoming;
-	}
+        // check FK's
+        boolean isFK = false;
+        Iterator<DbRelationship> rit = dbAttribute.getEntity().getRelationships().iterator();
+        while (!isFK && rit.hasNext()) {
+            DbRelationship rel = rit.next();
+            for (DbJoin join : rel.getJoins()) {
+                if (join.getSource() == dbAttribute) {
+                    isFK = true;
+                    break;
+                }
+            }
+        }
+
+        if (!removeMeaningfulPKs) {
+            if (!dbAttribute.isPrimaryKey() && isFK) {
+                return false;
+            }
+        } else {
+            if (isFK) {
+                return false;
+            }
+        }
+
+        // check incoming relationships
+        rit = incomingRels.iterator();
+        while (!isFK && rit.hasNext()) {
+            DbRelationship rel = rit.next();
+            for (DbJoin join : rel.getJoins()) {
+                if (join.getTarget() == dbAttribute) {
+                    isFK = true;
+                    break;
+                }
+            }
+        }
+
+        if (!removeMeaningfulPKs) {
+            if (!dbAttribute.isPrimaryKey() && isFK) {
+                return false;
+            }
+        } else {
+            if (isFK) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected boolean isMissingFromObjEntity(ObjEntity entity, DbRelationship dbRelationship) {
+        return dbRelationship.getName() != null && entity.getRelationshipForDbRelationship(dbRelationship) == null;
+    }
+
+    private Collection<DbRelationship> getIncomingRelationships(DbEntity entity) {
+        Collection<DbRelationship> incoming = new ArrayList<DbRelationship>();
+
+        for (DbEntity nextEntity : entity.getDataMap().getDbEntities()) {
+            for (DbRelationship relationship : nextEntity.getRelationships()) {
+
+                // TODO: PERFORMANCE 'getTargetEntity' is generally slow, called
+                // in this iterator it is showing (e.g. in YourKit profiles)..
+                // perhaps use cheaper 'getTargetEntityName()' or even better -
+                // pre-cache all relationships by target entity to avoid O(n)
+                // search ?
+                // (need to profile to prove the difference)
+                if (entity == relationship.getTargetEntity()) {
+                    incoming.add(relationship);
+                }
+            }
+        }
+
+        return incoming;
+    }
 
     protected List<DbRelationship> getRelationshipsToAdd(ObjEntity objEntity) {
         List<DbRelationship> missing = new ArrayList<DbRelationship>();
         for (DbRelationship dbRel : objEntity.getDbEntity().getRelationships()) {
-            // check if adding it makes sense at all
-            if (dbRel.getName() == null) {
-                continue;
-            }
-
-            if (objEntity.getRelationshipForDbRelationship(dbRel) == null) {
+            if (isMissingFromObjEntity(objEntity, dbRel)) {
                 missing.add(dbRel);
             }
         }
@@ -472,8 +511,8 @@ public class EntityMergeSupport {
     }
 
     /**
-     * @since 4.0
      * @param usePrimitives
+     * @since 4.0
      */
     public void setUsePrimitives(boolean usePrimitives) {
         this.usePrimitives = usePrimitives;

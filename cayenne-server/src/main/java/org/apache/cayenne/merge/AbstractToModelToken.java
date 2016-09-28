@@ -23,7 +23,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.util.EntityMergeSupport;
 
 /**
  * Common abstract superclass for all {@link MergerToken}s going from the database to the
@@ -45,12 +44,6 @@ public abstract class AbstractToModelToken implements MergerToken {
 
     public final MergeDirection getDirection() {
         return MergeDirection.TO_MODEL;
-    }
-
-    protected void synchronizeWithObjEntity(DbEntity entity) {
-        for (ObjEntity objEntity : entity.mappedObjEntities()) {
-            new EntityMergeSupport(objEntity.getDataMap()).synchronizeWithDbEntity(objEntity);
-        }
     }
 
     protected static void remove(ModelMergeDelegate mergerContext, DbRelationship rel, boolean reverse) {
