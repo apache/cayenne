@@ -160,6 +160,18 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 		test("testOneToOne");
 	}
 
+	/**
+	 * Q: what happens if an attribute or relationship is unmapped in the object layer, but then the underlying table
+	 * changes.
+	 * A: it should not recreate unmapped attributes/relationships. Only add an attribute for the new column.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testPreserveCustomObjMappings() throws Exception {
+		test("testPreserveCustomObjMappings");
+	}
+
     /**
      * Q: what happens if a relationship existed over a column that was later deleted? and ‘skipRelLoading’ is true
      * A: it should remove relationship and column
