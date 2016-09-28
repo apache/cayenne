@@ -26,18 +26,16 @@ import org.apache.cayenne.validation.ValidationResult;
 /**
  * An object passed as an argument to {@link MergerToken#execute(MergerContext)}s that a
  * {@link MergerToken} can do its work.
- * 
  */
 public interface MergerContext {
 
-    public ModelMergeDelegate getModelMergeDelegate();
-    
-    public DbAdapter getAdapter();
+    ModelMergeDelegate getModelMergeDelegate();
 
-    public DataMap getDataMap();
-    
-    public DataNode getDataNode();
-    
-    public ValidationResult getValidationResult();
+    DbAdapter getAdapter();
 
+    DataMap getDataMap();
+
+    DataNode getDataNode();
+
+    ValidationResult getValidationResult();
 }

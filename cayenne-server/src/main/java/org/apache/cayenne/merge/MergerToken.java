@@ -18,26 +18,34 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
+/**
+ * Represents a minimal atomic synchronization operation between database and Cayenne model.
+ */
 public interface MergerToken {
 
-    public String getTokenName();
+    String getTokenName();
 
-    public String getTokenValue();
+    String getTokenValue();
 
     /**
      * The direction of this token. One of {@link MergeDirection#TO_DB} or
      * {@link MergeDirection#TO_MODEL}
      */
-    public MergeDirection getDirection();
+    MergeDirection getDirection();
 
     /**
-     * Create a token with the reverse direction. AddColumn in one direction becomes
+     * Create a complimentary token with the reverse direction. AddColumn in one direction becomes
      * DropColumn in the other direction.
      * <p>
      * Not all tokens are reversible.
      */
-    public MergerToken createReverse(MergerFactory factory);
+    MergerToken createReverse(MergerFactory factory);
 
-    public void execute(MergerContext mergerContext);
+    /**
+     * Executes synchronization operation.
+     *
+     * @param mergerContext operation context.
+     */
+    void execute(MergerContext mergerContext);
 
 }
