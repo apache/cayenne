@@ -45,20 +45,6 @@ public class CayenneDbSyncModule implements Module {
     @Override
     public void configure(Binder binder) {
 
-        // TODO: explicit binding before inserting into a map will be uneeded soon
-        binder.bind(DB2MergerTokenFactory.class).to(DB2MergerTokenFactory.class);
-        binder.bind(DerbyMergerTokenFactory.class).to(DerbyMergerTokenFactory.class);
-        binder.bind(FirebirdMergerTokenFactory.class).to(FirebirdMergerTokenFactory.class);
-        binder.bind(H2MergerTokenFactory.class).to(H2MergerTokenFactory.class);
-        binder.bind(HSQLMergerTokenFactory.class).to(HSQLMergerTokenFactory.class);
-        binder.bind(IngresMergerTokenFactory.class).to(IngresMergerTokenFactory.class);
-        binder.bind(MySQLMergerTokenFactory.class).to(MySQLMergerTokenFactory.class);
-        binder.bind(OpenBaseMergerTokenFactory.class).to(OpenBaseMergerTokenFactory.class);
-        binder.bind(OracleMergerTokenFactory.class).to(OracleMergerTokenFactory.class);
-        binder.bind(PostgresMergerTokenFactory.class).to(PostgresMergerTokenFactory.class);
-        binder.bind(SQLServerMergerTokenFactory.class).to(SQLServerMergerTokenFactory.class);
-        binder.bind(SybaseMergerTokenFactory.class).to(SybaseMergerTokenFactory.class);
-
         // default and per adapter merger factories...
         binder.bind(MergerTokenFactory.class).to(DefaultMergerTokenFactory.class);
         binder.bindMap(MERGER_FACTORIES_MAP)

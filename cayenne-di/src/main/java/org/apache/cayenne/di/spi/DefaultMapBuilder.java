@@ -18,14 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
+import org.apache.cayenne.di.*;
+
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.apache.cayenne.di.DIRuntimeException;
-import org.apache.cayenne.di.Key;
-import org.apache.cayenne.di.MapBuilder;
-import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.di.Scope;
 
 /**
  * @since 3.1
@@ -48,8 +44,26 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
     public MapBuilder<T> put(String key, Class<? extends T> interfaceType)
             throws DIRuntimeException {
 
+        Key<?> bindingKey = Key.get(interfaceType);
+        Binding<?> binding = injector.getBinding(bindingKey);
+
+        if (binding == null) {
+            return putWithBinding(key, interfaceType);
+        }
+
         // TODO: andrus 11/15/2009 - report overriding the key??
-        getMapProvider().put(key, injector.getProvider(interfaceType));
+        getMapProvider().put(key, binding.getScoped());
+        return this;
+    }
+
+    <K extends T> MapBuilder<T> putWithBinding(String key, Class<K> interfaceType) {
+        Key<K> bindingKey = Key.get(interfaceType);
+
+        Provider<K> provider0 = new ConstructorInjectingProvider<>(interfaceType, injector);
+        Provider<K> provider1 = new FieldInjectingProvider<>(provider0, injector);
+        injector.putBinding(bindingKey, provider1);
+
+        getMapProvider().put(key, injector.getProvider(bindingKey));
         return this;
     }
 
