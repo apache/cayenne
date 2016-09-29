@@ -230,12 +230,12 @@ public class DefaultDbImportAction implements DbImportAction {
 
         MergerContext mergerContext = MergerContext.builder(dataMap).delegate(mergeDelegate).build();
 
-        for (MergerToken tok : tokens) {
+        for (MergerToken token : tokens) {
             try {
-                tok.execute(mergerContext);
+                token.execute(mergerContext);
             } catch (Throwable th) {
-                String message = "Migration Error. Can't apply changes from token: " + tok.getTokenName()
-                        + " (" + tok.getTokenValue() + ")";
+                String message = "Migration Error. Can't apply changes from token: " + token.getTokenName()
+                        + " (" + token.getTokenValue() + ")";
 
                 logger.error(message, th);
                 mergerContext.getValidationResult().addFailure(new SimpleValidationFailure(th, message));

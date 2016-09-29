@@ -36,6 +36,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.Connection;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
@@ -60,14 +61,31 @@ public class DbLoaderIT extends ServerCase {
 
     private DbLoader loader;
 
+    private Connection connection;
+
+    private static String msgForTypeMismatch(DbAttribute origAttr, DbAttribute newAttr) {
+        return msgForTypeMismatch(origAttr.getType(), newAttr);
+    }
+
+    private static String msgForTypeMismatch(int origType, DbAttribute newAttr) {
+        String nt = TypesMapping.getSqlNameByType(newAttr.getType());
+        String ot = TypesMapping.getSqlNameByType(origType);
+        return attrMismatch(newAttr.getName(), "expected type: <" + ot + ">, but was <" + nt + ">");
+    }
+
+    private static String attrMismatch(String attrName, String msg) {
+        return "[Error loading attribute '" + attrName + "': " + msg + "]";
+    }
+
     @Before
-    public void setUp() throws Exception {
-        loader = new DbLoader(dataSourceFactory.getSharedDataSource().getConnection(), adapter, null);
+    public void before() throws Exception {
+        this.connection = dataSourceFactory.getSharedDataSource().getConnection();
+        this.loader = new DbLoader(connection, adapter, null);
     }
 
     @After
-    public void tearDown() throws Exception {
-        loader.getConnection().close();
+    public void after() throws Exception {
+        connection.close();
     }
 
     @Test
@@ -118,7 +136,7 @@ public class DbLoaderIT extends ServerCase {
                 FiltersConfig.create("WRONG", null, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING));
         List<DetectedDbEntity> tables = loader
                 .createTableLoader("WRONG", null, TableFilter.everything())
-                    .getDbEntities(TableFilter.everything(), new String[]{adapter.tableTypeForTable()});
+                .getDbEntities(TableFilter.everything(), new String[]{adapter.tableTypeForTable()});
 
         assertNotNull(tables);
         assertTrue(tables.isEmpty());
@@ -142,7 +160,7 @@ public class DbLoaderIT extends ServerCase {
     public void testLoadWithMeaningfulPK() throws Exception {
 
         DataMap map = new DataMap();
-        String[] tableLabel = { adapter.tableTypeForTable() };
+        String[] tableLabel = {adapter.tableTypeForTable()};
 
         loader.setCreatingMeaningfulPK(true);
 
@@ -412,19 +430,5 @@ public class DbLoaderIT extends ServerCase {
                 assertTrue(origAttr.getScale() <= newAttr.getScale());
             }
         }
-    }
-
-    private static String msgForTypeMismatch(DbAttribute origAttr, DbAttribute newAttr) {
-        return msgForTypeMismatch(origAttr.getType(), newAttr);
-    }
-
-    private static String msgForTypeMismatch(int origType, DbAttribute newAttr) {
-        String nt = TypesMapping.getSqlNameByType(newAttr.getType());
-        String ot = TypesMapping.getSqlNameByType(origType);
-        return attrMismatch(newAttr.getName(), "expected type: <" + ot + ">, but was <" + nt + ">");
-    }
-
-    private static String attrMismatch(String attrName, String msg) {
-        return "[Error loading attribute '" + attrName + "': " + msg + "]";
     }
 }

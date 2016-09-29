@@ -20,9 +20,9 @@ package org.apache.cayenne.dbsync.reverse;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
-import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.SchemaFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DataMap;
@@ -39,7 +39,6 @@ import org.apache.cayenne.map.naming.ExportedKey;
 import org.apache.cayenne.map.naming.LegacyNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.map.naming.ObjectNameGenerator;
-import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,8 +67,7 @@ public class DbLoader {
 
 	private static final Log LOGGER = LogFactory.getLog(DbLoader.class);
 
-	public static final String WILDCARD = "%";
-	public static final String WILDCARD_PATTERN = ".*";
+	private static final String WILDCARD = "%";
 
 	private final Connection connection;
 	private final DbAdapter adapter;
@@ -150,25 +148,7 @@ public class DbLoader {
 	public boolean isCreatingMeaningfulPK() {
 		return creatingMeaningfulPK;
 	}
-
-	/**
-	 * Returns database connection used by this DbLoader.
-	 *
-	 * @since 3.0
-	 */
-	public Connection getConnection() {
-		return connection;
-	}
-
-	/**
-	 * Returns DbAdapter associated with this DbLoader.
-	 *
-	 * @since 1.1
-	 */
-	public DbAdapter getAdapter() {
-		return adapter;
-	}
-
+	
 	/**
 	 * Retrieves catalogs for the database associated with this DbLoader.
 	 *
@@ -512,50 +492,6 @@ public class DbLoader {
 	}
 
 	/**
-	 * Performs database reverse engineering and generates DataMap that contains
-	 * default mapping of the tables and views. By default will include regular
-	 * tables and views.
-	 *
-	 * @since 1.0.7
-	 * @deprecated since 4.0 use
-	 *             {@link #load(DataMap, DbLoaderConfiguration)}
-	 *             method that supports catalogs.
-	 */
-	@Deprecated
-	public DataMap loadDataMapFromDB(String schemaPattern, String tablePattern, DataMap dataMap) throws SQLException {
-
-		DbLoaderConfiguration configuration = new DbLoaderConfiguration();
-		configuration.setFiltersConfig(FiltersConfig.create(null, schemaPattern, TableFilter.include(tablePattern),
-				PatternFilter.INCLUDE_NOTHING));
-
-		load(dataMap, configuration);
-		return dataMap;
-	}
-
-	/**
-	 * Performs database reverse engineering and generates DataMap object that
-	 * contains default mapping of the tables and views. Allows to limit types
-	 * of tables to read.
-	 *
-	 * @deprecated since 4.0 use
-	 *             {@link #load(DataMap, DbLoaderConfiguration)}
-	 *             method that supports catalogs.
-	 */
-	@Deprecated
-	public DataMap loadDataMapFromDB(String schemaPattern, String tablePattern, String[] tableTypes, DataMap dataMap)
-			throws SQLException {
-		dataMap.clear();
-
-		DbLoaderConfiguration config = new DbLoaderConfiguration();
-		config.setFiltersConfig(FiltersConfig.create(null, schemaPattern, TableFilter.include(tablePattern),
-				PatternFilter.INCLUDE_NOTHING));
-		config.setTableTypes(tableTypes);
-
-		load(dataMap, config);
-		return dataMap;
-	}
-
-	/**
 	 * Performs database reverse engineering based on the specified config and
 	 * fills the specified DataMap object with DB and object mapping info.
 	 *
@@ -589,7 +525,7 @@ public class DbLoader {
 				schema, getMetaData(), adapter, filter));
 	}
 
-	public void prepareObjLayer(DataMap dataMap, DbLoaderConfiguration config, Collection<DbEntity> entities) {
+	private void prepareObjLayer(DataMap dataMap, DbLoaderConfiguration config, Collection<DbEntity> entities) {
 		Collection<ObjEntity> loadedObjEntities = loadObjEntities(dataMap, config, entities);
 		flattenManyToManyRelationships(dataMap, loadedObjEntities, getNameGenerator());
 		fireObjEntitiesAddedEvents(loadedObjEntities);
@@ -609,28 +545,6 @@ public class DbLoader {
 		loadProcedures(dataMap, config);
 
 		return dataMap;
-	}
-
-	/**
-	 * Loads database stored procedures into the DataMap.
-	 * <p>
-	 * <i>As of 1.1 there is no boolean property or delegate method to make
-	 * procedure loading optional or to implement custom merging logic, so
-	 * currently this method is NOT CALLED from "loadDataMapFromDB" and should
-	 * be invoked explicitly by the user. </i>
-	 * </p>
-	 *
-	 * @since 1.1
-	 * @deprecated since 4.0 use loadProcedures(DataMap, String, String, String)
-	 *             that supports "catalog" pattern.
-	 */
-	@Deprecated
-	public void loadProceduresFromDB(String schemaPattern, String namePattern, DataMap dataMap) throws SQLException {
-		DbLoaderConfiguration configuration = new DbLoaderConfiguration();
-		configuration.setFiltersConfig(FiltersConfig.create(null, schemaPattern, TableFilter.everything(),
-				new PatternFilter().include(namePattern)));
-
-		loadProcedures(dataMap, configuration);
 	}
 
 	/**

@@ -81,7 +81,6 @@ public class ModelerDbImportAction implements DbImportAction {
 
             @Override
             protected void saveLoaded(DataMap dataMap) {
-                dbLoaderHelper.cleanup();
 
                 ProjectController mediator = dbLoaderHelper.getMediator();
 

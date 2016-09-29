@@ -163,7 +163,6 @@ public class DbLoaderHelper {
 
     protected void processException(final Throwable th, final String message) {
         logObj.info("Exception on reverse engineering", Util.unwindException(th));
-        cleanup();
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
@@ -173,16 +172,6 @@ public class DbLoaderHelper {
         });
     }
 
-    protected void cleanup() {
-        loadStatusNote = "Closing connection...";
-        try {
-            if (loader.getConnection() != null) {
-                loader.getConnection().close();
-            }
-        } catch (SQLException e) {
-            logObj.warn("Error closing connection.", e);
-        }
-    }
 
     private final class LoaderDelegate extends DefaultDbLoaderDelegate {
 
