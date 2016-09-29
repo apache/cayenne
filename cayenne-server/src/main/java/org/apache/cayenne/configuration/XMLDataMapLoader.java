@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
@@ -29,6 +25,9 @@ import org.apache.cayenne.resource.Resource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xml.sax.InputSource;
+
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  * @since 3.1
@@ -46,34 +45,13 @@ public class XMLDataMapLoader implements DataMapLoader {
         MapLoader mapLoader = new MapLoader();
         URL url = configurationResource.getURL();
 
-        InputStream in = null;
-
-        DataMap map;
-
-        try {
-            in = url.openStream();
-
-            map = mapLoader.loadDataMap(new InputSource(in));
-        }
-        catch (Exception e) {
+        try (InputStream in = url.openStream()) {
+            return mapLoader.loadDataMap(new InputSource(in));
+        } catch (Exception e) {
             throw new CayenneRuntimeException(
                     "Error loading configuration from %s",
                     e,
                     url);
         }
-        finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            }
-            catch (IOException ioex) {
-                logger.info(
-                        "failure closing input stream for " + url + ", ignoring",
-                        ioex);
-            }
-        }
-
-        return map;
     }
 }
