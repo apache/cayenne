@@ -105,6 +105,6 @@ public class MigrateAction extends DBWizardAction {
                 .makeAdapter(getApplication().getClassLoadingService());
         DataSource dataSource = connectWizard.getConnectionInfo()
                 .makeDataSource(getApplication().getClassLoadingService());
-        return new DbLoader(dataSource.getConnection(), dbAdapter, null).getSchemas();
+        return new DbLoader(dataSource.getConnection(), dbAdapter, null).loadSchemas();
     }
 }

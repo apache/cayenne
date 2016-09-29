@@ -57,42 +57,33 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 public class DbImportConfiguration {
 
     private static final String DATA_MAP_LOCATION_SUFFIX = ".map.xml";
-
+    private final DataSourceInfo dataSourceInfo = new DataSourceInfo();
+    /**
+     * DB schema to use for DB importing.
+     */
+    private final DbLoaderConfiguration dbLoaderConfiguration = new DbLoaderConfiguration();
     /**
      * DataMap XML file to use as a base for DB importing.
      */
     private File dataMapFile;
-
     /**
      * A default package for ObjEntity Java classes.
      */
     private String defaultPackage;
-
     /**
      * Indicates that the old mapping should be completely removed and replaced
      * with the new data based on reverse engineering.
      */
     private boolean overwrite;
-
     private String meaningfulPkTables;
-
     /**
      * Java class implementing org.apache.cayenne.dba.DbAdapter. This attribute
      * is optional, the default is AutoAdapter, i.e. Cayenne would try to guess
      * the DB type.
      */
     private String adapter;
-
     private boolean usePrimitives;
-
     private Log logger;
-
-    private final DataSourceInfo dataSourceInfo = new DataSourceInfo();
-
-    /**
-     * DB schema to use for DB importing.
-     */
-    private final DbLoaderConfiguration dbLoaderConfiguration = new DbLoaderConfiguration();
 
     public Log getLogger() {
         return logger;
@@ -173,7 +164,7 @@ public class DbImportConfiguration {
 
             @Override
             protected EntityMergeSupport createEntityMerger(DataMap map) {
-                EntityMergeSupport emSupport = new EntityMergeSupport(map, getNameGenerator(), true) {
+                EntityMergeSupport emSupport = new EntityMergeSupport(map, DbImportConfiguration.this.getNameGenerator(), true) {
 
                     @Override
                     protected boolean removePK(DbEntity dbEntity) {
@@ -192,45 +183,49 @@ public class DbImportConfiguration {
         return loader;
     }
 
-    public ObjectNameGenerator getNameGenerator() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public ObjectNameGenerator getNameGenerator() {
         String namingStrategy = getNamingStrategy();
         if (namingStrategy != null) {
-            return (ObjectNameGenerator) Class.forName(namingStrategy).newInstance();
+            try {
+                return (ObjectNameGenerator) Class.forName(namingStrategy).newInstance();
+            } catch (Exception e) {
+                throw new CayenneRuntimeException("Error creating name generator", e);
+            }
         }
 
         return new LegacyNameGenerator(); // TODO
-    }
-
-    public void setDriver(String jdbcDriver) {
-        dataSourceInfo.setJdbcDriver(jdbcDriver);
     }
 
     public String getDriver() {
         return dataSourceInfo.getJdbcDriver();
     }
 
-    public void setPassword(String password) {
-        dataSourceInfo.setPassword(password);
+    public void setDriver(String jdbcDriver) {
+        dataSourceInfo.setJdbcDriver(jdbcDriver);
     }
 
     public String getPassword() {
         return dataSourceInfo.getPassword();
     }
 
-    public void setUsername(String userName) {
-        dataSourceInfo.setUserName(userName);
+    public void setPassword(String password) {
+        dataSourceInfo.setPassword(password);
     }
 
     public String getUsername() {
         return dataSourceInfo.getUserName();
     }
 
-    public void setUrl(String dataSourceUrl) {
-        dataSourceInfo.setDataSourceUrl(dataSourceUrl);
+    public void setUsername(String userName) {
+        dataSourceInfo.setUserName(userName);
     }
 
     public String getUrl() {
         return dataSourceInfo.getDataSourceUrl();
+    }
+
+    public void setUrl(String dataSourceUrl) {
+        dataSourceInfo.setDataSourceUrl(dataSourceUrl);
     }
 
     public DataNodeDescriptor createDataNodeDescriptor() {

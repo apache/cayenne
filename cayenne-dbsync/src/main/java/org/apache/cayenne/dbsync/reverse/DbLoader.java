@@ -138,23 +138,13 @@ public class DbLoader {
 	public void setCreatingMeaningfulPK(boolean creatingMeaningfulPK) {
 		this.creatingMeaningfulPK = creatingMeaningfulPK;
 	}
-
-	/**
-	 * Returns true if the generator should map all primary key columns as
-	 * ObjAttributes.
-	 *
-	 * @since 3.0
-	 */
-	public boolean isCreatingMeaningfulPK() {
-		return creatingMeaningfulPK;
-	}
 	
 	/**
 	 * Retrieves catalogs for the database associated with this DbLoader.
 	 *
 	 * @return List with the catalog names, empty Array if none found.
 	 */
-	public List<String> getCatalogs() throws SQLException {
+	public List<String> loadCatalogs() throws SQLException {
 		try (ResultSet rs = getMetaData().getCatalogs()) {
 			return getStrings(rs);
 		}
@@ -165,7 +155,7 @@ public class DbLoader {
 	 *
 	 * @return List with the schema names, empty Array if none found.
 	 */
-	public List<String> getSchemas() throws SQLException {
+	public List<String> loadSchemas() throws SQLException {
 
 		try (ResultSet rs = getMetaData().getSchemas()) {
 			return getStrings(rs);
@@ -527,7 +517,7 @@ public class DbLoader {
 
 	private void prepareObjLayer(DataMap dataMap, DbLoaderConfiguration config, Collection<DbEntity> entities) {
 		Collection<ObjEntity> loadedObjEntities = loadObjEntities(dataMap, config, entities);
-		flattenManyToManyRelationships(dataMap, loadedObjEntities, getNameGenerator());
+		flattenManyToManyRelationships(dataMap, loadedObjEntities, nameGenerator);
 		fireObjEntitiesAddedEvents(loadedObjEntities);
 	}
 
@@ -731,13 +721,5 @@ public class DbLoader {
 		} else {
 			this.nameGenerator = strategy;
 		}
-	}
-
-	/**
-	 * @return naming strategy for reverse engineering
-	 * @since 3.0
-	 */
-	public ObjectNameGenerator getNameGenerator() {
-		return nameGenerator;
 	}
 }

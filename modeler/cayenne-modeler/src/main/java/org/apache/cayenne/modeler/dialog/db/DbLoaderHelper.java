@@ -294,7 +294,7 @@ public class DbLoaderHelper {
             loadStatusNote = "Loading available schemas...";
 
             try {
-                schemas = loader.getSchemas();
+                schemas = loader.loadSchemas();
             } catch (Throwable th) {
                 processException(th, "Error Loading Schemas");
             }
@@ -312,7 +312,7 @@ public class DbLoaderHelper {
             loadStatusNote = "Loading available catalogs...";
 
             try {
-                catalogs = loader.getCatalogs();
+                catalogs = loader.loadCatalogs();
             } catch (Throwable th) {
                 processException(th, "Error Loading Catalogs");
             }
