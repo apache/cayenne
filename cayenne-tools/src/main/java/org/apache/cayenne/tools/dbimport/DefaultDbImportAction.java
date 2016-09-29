@@ -66,7 +66,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
  *
  * @since 4.0
  */
-public class DbImportActionDefault implements DbImportAction {
+public class DefaultDbImportAction implements DbImportAction {
 
     private final ProjectSaver projectSaver;
     private final Log logger;
@@ -74,7 +74,7 @@ public class DbImportActionDefault implements DbImportAction {
     private final DbAdapterFactory adapterFactory;
     private final MapLoader mapLoader;
 
-    public DbImportActionDefault(@Inject Log logger,
+    public DefaultDbImportAction(@Inject Log logger,
                                  @Inject ProjectSaver projectSaver,
                                  @Inject DataSourceFactory dataSourceFactory,
                                  @Inject DbAdapterFactory adapterFactory,
@@ -86,13 +86,29 @@ public class DbImportActionDefault implements DbImportAction {
         this.mapLoader = mapLoader;
     }
 
+    protected static List<MergerToken> sort(List<MergerToken> reverse) {
+        Collections.sort(reverse, new Comparator<MergerToken>() {
+            @Override
+            public int compare(MergerToken o1, MergerToken o2) {
+                if (o1 instanceof AddRelationshipToDb && o2 instanceof AddRelationshipToDb) {
+                    return 0;
+                }
+
+                if (!(o1 instanceof AddRelationshipToDb || o2 instanceof AddRelationshipToDb)) {
+                    return o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());
+                }
+
+                return o1 instanceof AddRelationshipToDb ? 1 : -1;
+            }
+        });
+
+        return reverse;
+    }
+
     public void execute(DbImportConfiguration config) throws Exception {
 
         if (logger.isDebugEnabled()) {
             logger.debug("DB connection: " + config.getDataSourceInfo());
-        }
-
-        if (logger.isDebugEnabled()) {
             logger.debug(config);
         }
 
@@ -100,7 +116,11 @@ public class DbImportActionDefault implements DbImportAction {
         DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
         DbAdapter adapter = adapterFactory.createAdapter(dataNodeDescriptor, dataSource);
 
-        DataMap loadedFomDb = load(config, adapter, dataSource.getConnection());
+        DataMap loadedFomDb;
+        try(Connection connection = dataSource.getConnection()) {
+            loadedFomDb = load(config, adapter, connection);
+        }
+
         if (loadedFomDb == null) {
             logger.info("Nothing was loaded from db.");
             return;
@@ -162,25 +182,6 @@ public class DbImportActionDefault implements DbImportAction {
         }
     }
 
-    protected static List<MergerToken> sort(List<MergerToken> reverse) {
-        Collections.sort(reverse, new Comparator<MergerToken>() {
-            @Override
-            public int compare(MergerToken o1, MergerToken o2) {
-                if (o1 instanceof AddRelationshipToDb && o2 instanceof AddRelationshipToDb) {
-                    return 0;
-                }
-
-                if (!(o1 instanceof AddRelationshipToDb || o2 instanceof AddRelationshipToDb)) {
-                    return o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());
-                }
-
-                return o1 instanceof AddRelationshipToDb ? 1 : -1;
-            }
-        });
-
-        return reverse;
-    }
-
     private Collection<MergerToken> log(List<MergerToken> tokens) {
         logger.info("");
         if (tokens.isEmpty()) {
@@ -210,7 +211,7 @@ public class DbImportActionDefault implements DbImportAction {
     }
 
     private List<MergerToken> reverse(
-            MergerFactory mergerFactory, 
+            MergerFactory mergerFactory,
             Iterable<MergerToken> mergeTokens) throws IOException {
         List<MergerToken> tokens = new LinkedList<>();
         for (MergerToken token : mergeTokens) {
@@ -263,16 +264,8 @@ public class DbImportActionDefault implements DbImportAction {
 
     protected DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
         DataMap dataMap = config.createDataMap();
-
-        try {
-            DbLoader loader = config.createLoader(adapter, connection, config.createLoaderDelegate());
-            loader.load(dataMap, config.getDbLoaderConfig());
-        } finally {
-            if (connection != null) {
-                connection.close();
-            }
-        }
-
+        DbLoader loader = config.createLoader(adapter, connection, config.createLoaderDelegate());
+        loader.load(dataMap, config.getDbLoaderConfig());
         return dataMap;
     }
 }

@@ -38,27 +38,31 @@ class DbImportDbLoaderDelegate extends DefaultDbLoaderDelegate {
     private final List<ObjEntity> removedObjEntities;
 
     DbImportDbLoaderDelegate() {
-        addedDbEntities = new ArrayList<DbEntity>();
-        removedDbEntities = new ArrayList<DbEntity>();
-        addedObjEntities = new ArrayList<ObjEntity>();
-        removedObjEntities = new ArrayList<ObjEntity>();
+        addedDbEntities = new ArrayList<>();
+        removedDbEntities = new ArrayList<>();
+        addedObjEntities = new ArrayList<>();
+        removedObjEntities = new ArrayList<>();
     }
 
+    @Override
     public void dbEntityAdded(DbEntity ent) {
         ent.getDataMap().addDbEntity(ent);
         addedDbEntities.add(ent);
     }
 
+    @Override
     public void dbEntityRemoved(DbEntity ent) {
         ent.getDataMap().removeDbEntity(ent.getName());
         removedDbEntities.add(ent);
     }
 
+    @Override
     public void objEntityAdded(ObjEntity ent) {
         ent.getDataMap().addObjEntity(ent);
         addedObjEntities.add(ent);
     }
 
+    @Override
     public void objEntityRemoved(ObjEntity ent) {
         ent.getDataMap().removeObjEntity(ent.getName());
         removedObjEntities.add(ent);

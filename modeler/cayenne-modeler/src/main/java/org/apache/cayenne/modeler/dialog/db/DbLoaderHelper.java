@@ -374,7 +374,7 @@ public class DbLoaderHelper {
             config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.filtersConfig());
 
 
-            DbImportActionModeler importAction = new DbImportActionModeler(logObj, DbLoaderHelper.this);
+            ModelerDbImportAction importAction = new ModelerDbImportAction(logObj, DbLoaderHelper.this);
             Injector injector = DIBootstrap.createInjector(new ToolsModule(logObj), new DbImportModule());
             injector.injectMembers(importAction);
             try {

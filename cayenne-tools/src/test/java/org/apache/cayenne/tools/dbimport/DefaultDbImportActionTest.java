@@ -76,7 +76,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class DbImportActionTest {
+public class DefaultDbImportActionTest {
 
     public static final File FILE_STUB = new File("") {
         @Override
@@ -117,7 +117,7 @@ public class DbImportActionTest {
 		when(params.initializeDataMap(any(DataMap.class))).thenReturn(DATA_MAP);
 
         final boolean[] haveWeTriedToSave = {false};
-        DbImportActionDefault action = buildDbImportAction(new FileProjectSaver() {
+        DefaultDbImportAction action = buildDbImportAction(new FileProjectSaver() {
             @Override
             public void save(Project project) {
                 haveWeTriedToSave[0] = true;
@@ -165,7 +165,7 @@ public class DbImportActionTest {
 		when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
 
         final boolean[] haveWeTriedToSave = {false};
-        DbImportActionDefault action = buildDbImportAction(new FileProjectSaver() {
+        DefaultDbImportAction action = buildDbImportAction(new FileProjectSaver() {
             @Override
             public void save(Project project) {
                 haveWeTriedToSave[0] = true;
@@ -240,7 +240,7 @@ public class DbImportActionTest {
                         dbAttr("NAME").typeVarchar(100).mandatory()
                 )).build());
 
-        DbImportActionDefault action = buildDbImportAction(log, projectSaver, mapLoader);
+        DefaultDbImportAction action = buildDbImportAction(log, projectSaver, mapLoader);
 
 		action.execute(params);
 
@@ -264,7 +264,7 @@ public class DbImportActionTest {
 		MapLoader mapLoader = mock(MapLoader.class);
 		when(mapLoader.loadDataMap(any(InputSource.class))).thenReturn(null);
 
-        DbImportActionDefault action = buildDbImportAction(projectSaver, mapLoader);
+        DefaultDbImportAction action = buildDbImportAction(projectSaver, mapLoader);
 
 		try {
 			action.execute(params);
@@ -277,7 +277,7 @@ public class DbImportActionTest {
 		verify(mapLoader, never()).loadDataMap(any(InputSource.class));
 	}
 
-    private DbImportActionDefault buildDbImportAction(FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
+    private DefaultDbImportAction buildDbImportAction(FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
         Log log = mock(Log.class);
         when(log.isDebugEnabled()).thenReturn(true);
         when(log.isInfoEnabled()).thenReturn(true);
@@ -285,7 +285,7 @@ public class DbImportActionTest {
 		return buildDbImportAction(log, projectSaver, mapLoader);
 	}
 
-    private DbImportActionDefault buildDbImportAction(Log log, FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
+    private DefaultDbImportAction buildDbImportAction(Log log, FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
         DbAdapter dbAdapter = mock(DbAdapter.class);
         when(dbAdapter.mergerFactory()).thenReturn(new MergerFactory());
 
@@ -296,7 +296,7 @@ public class DbImportActionTest {
 		DataSource mock = mock(DataSource.class);
 		when(dataSourceFactory.getDataSource(any(DataNodeDescriptor.class))).thenReturn(mock);
 
-        return new DbImportActionDefault(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader);
+        return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader);
     }
 
 	@Test
@@ -304,7 +304,7 @@ public class DbImportActionTest {
 		Log log = mock(Log.class);
 		Injector i = DIBootstrap.createInjector(new ToolsModule(log), new DbImportModule());
 
-        DbImportActionDefault action = (DbImportActionDefault) i.getInstance(DbImportAction.class);
+        DefaultDbImportAction action = (DefaultDbImportAction) i.getInstance(DbImportAction.class);
 
 		String packagePath = getClass().getPackage().getName().replace('.', '/');
 		URL packageUrl = getClass().getClassLoader().getResource(packagePath);
@@ -335,7 +335,7 @@ public class DbImportActionTest {
 		tokens.add(new CreateTableToModel(null));
 
         assertEquals(asList("AddColumnToDb", "CreateTableToDb", "CreateTableToModel", "AddRelationshipToDb"),
-                toClasses(DbImportActionDefault.sort(tokens)));
+                toClasses(DefaultDbImportAction.sort(tokens)));
     }
 
 	private List<String> toClasses(List<MergerToken> sort) {

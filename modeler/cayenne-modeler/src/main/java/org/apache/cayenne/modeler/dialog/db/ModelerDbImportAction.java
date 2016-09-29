@@ -32,14 +32,14 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.tools.dbimport.DbImportAction;
-import org.apache.cayenne.tools.dbimport.DbImportActionDefault;
+import org.apache.cayenne.tools.dbimport.DefaultDbImportAction;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.commons.logging.Log;
 
 import java.io.File;
 import java.sql.Connection;
 
-public class DbImportActionModeler implements DbImportAction {
+public class ModelerDbImportAction implements DbImportAction {
 
     private final Log logger;
 
@@ -57,7 +57,7 @@ public class DbImportActionModeler implements DbImportAction {
     @Inject
     private MapLoader mapLoader;
 
-    public DbImportActionModeler(Log logger, DbLoaderHelper dbLoaderHelper) {
+    public ModelerDbImportAction(Log logger, DbLoaderHelper dbLoaderHelper) {
         this.logger = logger;
         this.dbLoaderHelper = dbLoaderHelper;
     }
@@ -68,7 +68,7 @@ public class DbImportActionModeler implements DbImportAction {
             throw new IllegalStateException("Before using execute method you must set dbLoaderHelper");
         }
 
-        new DbImportActionDefault(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader) {
+        new DefaultDbImportAction(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader) {
 
             @Override
             protected DataMap loadExistingDataMap(File dataMapFile) {
@@ -99,19 +99,8 @@ public class DbImportActionModeler implements DbImportAction {
             }
 
             @Override
-            protected DataMap load(DbImportConfiguration config, 
-                                   DbAdapter adapter, Connection connection) throws Exception {
-                DataMap dataMap;
-
-                try {
-                    dataMap = dbLoaderHelper.getLoader().load(config.getDbLoaderConfig());
-                } finally {
-                    if (connection != null) {
-                        connection.close();
-                    }
-                }
-
-                return dataMap;
+            protected DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
+               return dbLoaderHelper.getLoader().load(config.getDbLoaderConfig());
             }
         }.execute(config);
     }
