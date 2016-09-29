@@ -40,7 +40,15 @@ public class AddColumnToModel extends AbstractToModelToken.EntityAndColumn {
 
     public void execute(MergerContext mergerContext) {
         getEntity().addAttribute(getColumn());
-        synchronizeWithObjEntity(getEntity());
+
+        // TODO: use EntityMergeSupport from DbImportConfiguration... otherwise we are ignoring a bunch of
+        // important settings
+
+        EntityMergeSupport entityMergeSupport =  new EntityMergeSupport(mergerContext.getDataMap());
+        for(ObjEntity e : getEntity().mappedObjEntities()) {
+            entityMergeSupport.synchronizeOnDbAttributeAdded(e, getColumn());
+        }
+
         mergerContext.getModelMergeDelegate().dbAttributeAdded(getColumn());
     }
 

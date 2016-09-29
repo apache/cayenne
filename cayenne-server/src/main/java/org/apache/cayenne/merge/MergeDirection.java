@@ -19,8 +19,7 @@
 package org.apache.cayenne.merge;
 
 /**
- * Represent a merge direction that can be one of two. Either from the model to the db or
- * from the db to the model.
+ * Represent a merge direction that can be either from the model to the db or from the db to the model.
  */
 public enum MergeDirection {
 
@@ -36,7 +35,7 @@ public enum MergeDirection {
 
     private String name;
 
-    private MergeDirection(String name) {
+    MergeDirection(String name) {
         this.name = name;
     }
 
@@ -56,7 +55,7 @@ public enum MergeDirection {
     public String toString() {
         return getName();
     }
-    
+
     public MergeDirection reverseDirection() {
         switch (this) {
             case TO_DB:
