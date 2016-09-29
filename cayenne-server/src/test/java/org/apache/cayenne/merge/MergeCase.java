@@ -18,14 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import static org.junit.Assert.assertEquals;
-
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
@@ -47,6 +39,14 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
+
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public abstract class MergeCase extends ServerCase {
@@ -146,14 +146,14 @@ public abstract class MergeCase extends ServerCase {
 	}
 
 	protected void execute(List<MergerToken> tokens) {
-		MergerContext mergerContext = new ExecutingMergerContext(map, node);
+		MergerContext mergerContext = MergerContext.builder(map).dataNode(node).build();
 		for (MergerToken tok : tokens) {
 			tok.execute(mergerContext);
 		}
 	}
 
 	protected void execute(MergerToken token) throws Exception {
-		MergerContext mergerContext = new ExecutingMergerContext(map, node);
+		MergerContext mergerContext = MergerContext.builder(map).dataNode(node).build();
 		token.execute(mergerContext);
 	}
 

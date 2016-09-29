@@ -33,7 +33,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.merge.AbstractToModelToken;
 import org.apache.cayenne.merge.AddRelationshipToDb;
 import org.apache.cayenne.merge.DbMerger;
-import org.apache.cayenne.merge.ExecutingMergerContext;
 import org.apache.cayenne.merge.MergerContext;
 import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.merge.MergerToken;
@@ -227,8 +226,8 @@ public class DbImportActionDefault implements DbImportAction {
      * Performs configured schema operations via DbGenerator.
      */
     private DataMap execute(ModelMergeDelegate mergeDelegate, DataMap dataMap, Collection<MergerToken> tokens) {
-        MergerContext mergerContext = new ExecutingMergerContext(
-                dataMap, null, null, mergeDelegate);
+
+        MergerContext mergerContext = MergerContext.builder(dataMap).delegate(mergeDelegate).build();
 
         for (MergerToken tok : tokens) {
             try {
@@ -243,22 +242,17 @@ public class DbImportActionDefault implements DbImportAction {
         }
 
         ValidationResult failures = mergerContext.getValidationResult();
-        if (failures == null || !failures.hasFailures()) {
-            logger.info("Migration Complete Successfully.");
-        } else {
+        if (failures.hasFailures()) {
             logger.info("Migration Complete.");
-            logger.warn("Migration finished. The following problem(s) were ignored.");
+            logger.warn("Migration finished. The following problem(s) were encountered and ignored.");
             for (ValidationFailure failure : failures.getFailures()) {
                 logger.warn(failure.toString());
             }
+        } else {
+            logger.info("Migration Complete Successfully.");
         }
 
         return dataMap;
-    }
-
-    private DbLoader getLoader(DbImportConfiguration config, DbAdapter adapter, Connection connection) 
-            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        return config.createLoader(adapter, connection, config.createLoaderDelegate());
     }
 
     protected void saveLoaded(DataMap dataMap) throws FileNotFoundException {

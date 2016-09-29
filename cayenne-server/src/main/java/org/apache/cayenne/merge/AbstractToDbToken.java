@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.validation.SimpleValidationFailure;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 
 /**
  * Common abstract superclass for all {@link MergerToken}s going from the model
@@ -53,7 +53,7 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
 
 	@Override
 	public void execute(MergerContext mergerContext) {
-		for (String sql : createSql(mergerContext.getAdapter())) {
+		for (String sql : createSql(mergerContext.getDataNode().getAdapter())) {
 			executeSql(mergerContext, sql);
 		}
 	}

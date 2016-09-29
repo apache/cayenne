@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.merge;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.validation.SimpleValidationFailure;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class CreateTableToDb extends AbstractToDbToken.Entity {
 
@@ -46,7 +46,7 @@ public class CreateTableToDb extends AbstractToDbToken.Entity {
     public void execute(MergerContext mergerContext) {
         try {
             DataNode node = mergerContext.getDataNode();
-            DbAdapter adapter = mergerContext.getAdapter();
+            DbAdapter adapter = node.getAdapter();
             adapter.getPkGenerator().createAutoPk(
                     node,
                     Collections.singletonList(getEntity()));

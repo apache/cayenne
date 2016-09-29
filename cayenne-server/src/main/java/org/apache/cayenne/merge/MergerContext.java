@@ -23,19 +23,96 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.validation.ValidationResult;
 
+import javax.sql.DataSource;
+import java.util.Objects;
+
 /**
  * An object passed as an argument to {@link MergerToken#execute(MergerContext)}s that a
  * {@link MergerToken} can do its work.
  */
-public interface MergerContext {
+public class MergerContext {
 
-    ModelMergeDelegate getModelMergeDelegate();
+    private DataMap dataMap;
+    private DataNode dataNode;
+    private ValidationResult validationResult;
+    private ModelMergeDelegate delegate;
 
-    DbAdapter getAdapter();
+    protected MergerContext() {
+    }
 
-    DataMap getDataMap();
+    public static Builder builder(DataMap dataMap) {
+        return new Builder().dataMap(dataMap);
+    }
 
-    DataNode getDataNode();
+    /**
+     * @deprecated since 4.0 use {@link #getDataNode()} and its {@link DataNode#getAdapter()} method.
+     */
+    @Deprecated
+    public DbAdapter getAdapter() {
+        return getDataNode().getAdapter();
+    }
 
-    ValidationResult getValidationResult();
+    /**
+     * Returns the DataMap that is the target of a the merge operation.
+     *
+     * @return the DataMap that is the target of a the merge operation.
+     */
+    public DataMap getDataMap() {
+        return dataMap;
+    }
+
+    public DataNode getDataNode() {
+        return dataNode;
+    }
+
+    public ValidationResult getValidationResult() {
+        return validationResult;
+    }
+
+    /**
+     * Returns a callback object that is invoked as the merge proceeds through tokens, modifying the DataMap.
+     *
+     * @return a callback object that is invoked as the merge proceeds through tokens, modifying the DataMap.
+     */
+    public ModelMergeDelegate getModelMergeDelegate() {
+        return delegate;
+    }
+
+    public static class Builder {
+
+        private MergerContext context;
+
+        private Builder() {
+            this.context = new MergerContext();
+            this.context.validationResult = new ValidationResult();
+            this.context.delegate = new DefaultModelMergeDelegate();
+            this.context.dataNode = new DataNode();
+        }
+
+        public MergerContext build() {
+            return context;
+        }
+
+        public Builder delegate(ModelMergeDelegate delegate) {
+            context.delegate = Objects.requireNonNull(delegate);
+            return this;
+        }
+
+        public Builder dataNode(DataNode dataNode) {
+            this.context.dataNode = Objects.requireNonNull(dataNode);
+            return this;
+        }
+
+        public Builder syntheticDataNode(DataSource dataSource, DbAdapter adapter) {
+            DataNode dataNode = new DataNode();
+            dataNode.setDataSource(dataSource);
+            dataNode.setAdapter(adapter);
+            return dataNode(dataNode);
+        }
+
+        public Builder dataMap(DataMap dataMap) {
+            context.dataMap = Objects.requireNonNull(dataMap);
+            return this;
+        }
+    }
 }

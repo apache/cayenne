@@ -26,50 +26,63 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 
 /**
- * A default implementation of {@link ModelMergeDelegate} that does nothing by
- * itself.
+ * A default noop implementation of {@link ModelMergeDelegate}.
  */
 public class DefaultModelMergeDelegate implements ModelMergeDelegate {
 
+    @Override
     public void dbAttributeAdded(DbAttribute att) {
     }
 
+    @Override
     public void dbAttributeModified(DbAttribute att) {
     }
 
+    @Override
     public void dbAttributeRemoved(DbAttribute att) {
     }
 
+    @Override
     public void dbEntityAdded(DbEntity ent) {
     }
 
+    @Override
     public void dbEntityRemoved(DbEntity ent) {
     }
 
+    @Override
     public void dbRelationshipAdded(DbRelationship rel) {
     }
 
+    @Override
     public void dbRelationshipRemoved(DbRelationship rel) {
     }
 
+    @Override
     public void objAttributeAdded(ObjAttribute att) {
     }
 
+    @Override
     public void objAttributeModified(ObjAttribute att) {
     }
 
+    @Override
     public void objAttributeRemoved(ObjAttribute att) {
     }
 
+    @Override
     public void objEntityAdded(ObjEntity ent) {
     }
 
+    @Override
     public void objEntityRemoved(ObjEntity ent) {
     }
 
+    @Override
     public void objRelationshipAdded(ObjRelationship rel) {
     }
 
+    @Override
     public void objRelationshipRemoved(ObjRelationship rel) {
     }
 

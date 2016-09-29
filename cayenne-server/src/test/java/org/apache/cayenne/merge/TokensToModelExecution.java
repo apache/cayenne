@@ -43,7 +43,7 @@ public class TokensToModelExecution {
         assertTrue(dataMap.getDbEntityMap().isEmpty());
         assertTrue(dataMap.getObjEntityMap().isEmpty());
 
-        MergerContext context = new ExecutingMergerContext(dataMap, new DataNode());
+        MergerContext context = MergerContext.builder(dataMap).dataNode(new DataNode()).build();
         factory().createCreateTableToModel(entity).execute(context);
 
         assertEquals(1, dataMap.getDbEntityMap().size());
@@ -64,7 +64,7 @@ public class TokensToModelExecution {
         assertEquals(1, dataMap.getDbEntityMap().size());
         assertTrue(dataMap.getObjEntityMap().isEmpty());
 
-        MergerContext context = new ExecutingMergerContext(dataMap, new DataNode());
+        MergerContext context = MergerContext.builder(dataMap).dataNode(new DataNode()).build();
         factory().createAddColumnToModel(entity, attr).execute(context);
 
         assertEquals(1, dataMap.getDbEntityMap().size());

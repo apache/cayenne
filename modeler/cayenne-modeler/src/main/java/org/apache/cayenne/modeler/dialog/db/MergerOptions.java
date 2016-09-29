@@ -19,25 +19,10 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import java.awt.Component;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.sql.DataSource;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.apache.cayenne.access.loader.DbLoaderConfiguration;
-import org.apache.cayenne.access.loader.filters.TableFilter;
 import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.access.loader.filters.PatternFilter;
+import org.apache.cayenne.access.loader.filters.TableFilter;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -52,7 +37,6 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.merge.AbstractToDbToken;
 import org.apache.cayenne.merge.DbMerger;
-import org.apache.cayenne.merge.ExecutingMergerContext;
 import org.apache.cayenne.merge.MergeDirection;
 import org.apache.cayenne.merge.MergerContext;
 import org.apache.cayenne.merge.MergerToken;
@@ -69,6 +53,18 @@ import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.validation.ValidationResult;
+
+import javax.sql.DataSource;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.List;
 
 public class MergerOptions extends CayenneController {
 
@@ -416,10 +412,9 @@ public class MergerOptions extends CayenneController {
         try {
             DataSource dataSource = connectionInfo.makeDataSource(getApplication()
                     .getClassLoadingService());
-            // generator.runGenerator(dataSource);
 
-            MergerContext mergerContext = new ExecutingMergerContext(
-                    dataMap, dataSource, adapter, delegate);
+            MergerContext mergerContext = MergerContext.builder(dataMap).syntheticDataNode(dataSource, adapter)
+                    .delegate(delegate).build();
 
             boolean modelChanged = false;
             for (MergerToken tok : tokensToMigrate) {
