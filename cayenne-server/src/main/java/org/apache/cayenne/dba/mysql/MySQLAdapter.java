@@ -27,16 +27,23 @@ import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
-import org.apache.cayenne.access.types.*;
+import org.apache.cayenne.access.types.ByteArrayType;
+import org.apache.cayenne.access.types.CharType;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeFactory;
+import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.dba.*;
+import org.apache.cayenne.dba.DefaultQuotingStrategy;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
@@ -45,7 +52,13 @@ import org.apache.cayenne.resource.ResourceLocator;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * DbAdapter implementation for <a href="http://www.mysql.com">MySQL RDBMS</a>.
@@ -376,11 +389,6 @@ public class MySQLAdapter extends JdbcAdapter {
 		default:
 			return super.typeSupportsLength(type);
 		}
-	}
-
-	@Override
-	public MergerFactory mergerFactory() {
-		return new MySQLMergerFactory();
 	}
 
 	final class PKComparator implements Comparator<DbAttribute> {

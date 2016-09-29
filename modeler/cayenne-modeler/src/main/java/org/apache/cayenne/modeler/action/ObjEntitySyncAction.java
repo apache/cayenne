@@ -19,13 +19,8 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
@@ -34,7 +29,11 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.objentity.EntitySyncController;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.util.EntityMergeSupport;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 /**
  * Action that synchronizes a given ObjEntity with the current state of the underlying

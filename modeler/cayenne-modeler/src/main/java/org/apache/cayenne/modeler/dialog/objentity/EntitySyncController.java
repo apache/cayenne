@@ -19,19 +19,18 @@
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import java.awt.Component;
+import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.naming.ObjectNameGenerator;
+import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.Collections;
-
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.naming.DefaultNameGenerator;
-import org.apache.cayenne.map.naming.ObjectNameGenerator;
-import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
-import org.apache.cayenne.util.EntityMergeSupport;
 
 public class EntitySyncController extends CayenneController {
 

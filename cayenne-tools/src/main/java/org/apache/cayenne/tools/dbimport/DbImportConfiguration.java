@@ -19,28 +19,28 @@
 package org.apache.cayenne.tools.dbimport;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.access.loader.DbLoaderConfiguration;
-import org.apache.cayenne.access.DbLoaderDelegate;
-import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
-import org.apache.cayenne.access.loader.LoggingDbLoaderDelegate;
-import org.apache.cayenne.access.loader.NameFilter;
-import org.apache.cayenne.access.loader.filters.CatalogFilter;
-import org.apache.cayenne.access.loader.filters.FiltersConfig;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.merge.DbMergerConfig;
+import org.apache.cayenne.dbsync.merge.DefaultModelMergeDelegate;
+import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
+import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
+import org.apache.cayenne.dbsync.reverse.DbLoader;
+import org.apache.cayenne.dbsync.reverse.DbLoaderConfiguration;
+import org.apache.cayenne.dbsync.reverse.DbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.DefaultDbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.LoggingDbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.NameFilter;
+import org.apache.cayenne.dbsync.reverse.NamePatternMatcher;
+import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.naming.LegacyNameGenerator;
 import org.apache.cayenne.map.naming.ObjectNameGenerator;
-import org.apache.cayenne.merge.DbMergerConfig;
-import org.apache.cayenne.merge.DefaultModelMergeDelegate;
-import org.apache.cayenne.merge.ModelMergeDelegate;
 import org.apache.cayenne.resource.URLResource;
-import org.apache.cayenne.access.loader.NamePatternMatcher;
-import org.apache.cayenne.util.EntityMergeSupport;
 import org.apache.commons.logging.Log;
 
 import java.io.File;
@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.util.Collections;
-import java.util.List;
 
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 

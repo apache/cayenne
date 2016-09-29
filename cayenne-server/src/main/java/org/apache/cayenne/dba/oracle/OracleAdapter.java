@@ -26,7 +26,11 @@ import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
-import org.apache.cayenne.access.types.*;
+import org.apache.cayenne.access.types.ByteType;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeFactory;
+import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -35,12 +39,20 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.merge.MergerFactory;
-import org.apache.cayenne.query.*;
+import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
 import java.lang.reflect.Field;
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -329,10 +341,5 @@ public class OracleAdapter extends JdbcAdapter {
 			int i = st.getInt(index);
 			return st.wasNull() ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
 		}
-	}
-
-	@Override
-	public MergerFactory mergerFactory() {
-		return new OracleMergerFactory();
 	}
 }

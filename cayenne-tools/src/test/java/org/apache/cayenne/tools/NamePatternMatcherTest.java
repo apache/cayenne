@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.tools;
 
-import static org.apache.cayenne.access.loader.NamePatternMatcher.replaceWildcardInStringWithString;
-import static org.junit.Assert.assertEquals;
-
-import org.apache.cayenne.access.loader.NamePatternMatcher;
+import org.apache.cayenne.dbsync.reverse.NamePatternMatcher;
 import org.junit.Test;
+
+import static org.apache.cayenne.dbsync.reverse.NamePatternMatcher.replaceWildcardInStringWithString;
+import static org.junit.Assert.assertEquals;
 
 public class NamePatternMatcherTest {
 

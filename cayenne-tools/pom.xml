@@ -42,6 +42,13 @@
             <scope>test</scope>
             <type>test-jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-dbsync</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
 
         <dependency>
 			<groupId>org.apache.cayenne.build-tools</groupId>
@@ -93,6 +100,13 @@
 			<artifactId>cayenne-project</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-dbsync</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
 		<dependency>
 			<groupId>foundrylogic.vpp</groupId>

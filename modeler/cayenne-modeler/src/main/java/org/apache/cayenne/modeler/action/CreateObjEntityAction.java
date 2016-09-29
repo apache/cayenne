@@ -19,10 +19,9 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -37,7 +36,8 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateObjEntityUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.DeleteRuleUpdater;
-import org.apache.cayenne.util.EntityMergeSupport;
+
+import java.awt.event.ActionEvent;
 
 public class CreateObjEntityAction extends CayenneAction {
 

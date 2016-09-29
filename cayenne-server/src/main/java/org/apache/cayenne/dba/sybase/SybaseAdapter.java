@@ -21,7 +21,13 @@ package org.apache.cayenne.dba.sybase;
 
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
-import org.apache.cayenne.access.types.*;
+import org.apache.cayenne.access.types.ByteArrayType;
+import org.apache.cayenne.access.types.ByteType;
+import org.apache.cayenne.access.types.CharType;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeFactory;
+import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DefaultQuotingStrategy;
@@ -29,7 +35,6 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.resource.ResourceLocator;
 
 import java.sql.PreparedStatement;
@@ -121,10 +126,5 @@ public class SybaseAdapter extends JdbcAdapter {
         } else {
             super.bindParameter(statement, binding);
         }
-    }
-
-    @Override
-    public MergerFactory mergerFactory() {
-        return new SybaseMergerFactory();
     }
 }

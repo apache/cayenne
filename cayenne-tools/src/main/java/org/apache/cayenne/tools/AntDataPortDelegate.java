@@ -19,18 +19,18 @@
 
 package org.apache.cayenne.tools;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import org.apache.cayenne.access.DataPort;
 import org.apache.cayenne.access.DataPortDelegate;
-import org.apache.cayenne.access.loader.NamePatternMatcher;
+import org.apache.cayenne.dbsync.reverse.NamePatternMatcher;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * DataPortDelegate implementation that works in the context of Ant DataPortTask

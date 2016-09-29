@@ -29,8 +29,8 @@ import org.apache.cayenne.tools.configuration.ToolsModule;
 
 /**
  * A DI module that bootstraps {@link DbImportAction}. Should be used in
- * conjunction with {@link ToolsModule}.
- * 
+ * conjunction with {@link ToolsModule} and {@link org.apache.cayenne.dbsync.CayenneDbSyncModule}.
+ *
  * @since 4.0
  */
 public class DbImportModule implements Module {

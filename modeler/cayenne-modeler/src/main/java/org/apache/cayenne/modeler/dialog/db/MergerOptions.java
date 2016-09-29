@@ -19,13 +19,21 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import org.apache.cayenne.access.loader.DbLoaderConfiguration;
-import org.apache.cayenne.access.loader.filters.FiltersConfig;
-import org.apache.cayenne.access.loader.filters.PatternFilter;
-import org.apache.cayenne.access.loader.filters.TableFilter;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dbsync.merge.AbstractToDbToken;
+import org.apache.cayenne.dbsync.merge.DbMerger;
+import org.apache.cayenne.dbsync.merge.MergeDirection;
+import org.apache.cayenne.dbsync.merge.MergerContext;
+import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
+import org.apache.cayenne.dbsync.merge.MergerToken;
+import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
+import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
+import org.apache.cayenne.dbsync.reverse.DbLoaderConfiguration;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
+import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
+import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -35,12 +43,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.merge.AbstractToDbToken;
-import org.apache.cayenne.merge.DbMerger;
-import org.apache.cayenne.merge.MergeDirection;
-import org.apache.cayenne.merge.MergerContext;
-import org.apache.cayenne.merge.MergerToken;
-import org.apache.cayenne.merge.ModelMergeDelegate;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ValidationResultBrowser;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
@@ -79,11 +81,17 @@ public class MergerOptions extends CayenneController {
     protected DbMerger merger;
     protected MergerTokenSelectorController tokens;
     protected String defaultSchema;
-    
-    public MergerOptions(ProjectController parent, String title,
-            DBConnectionInfo connectionInfo, DataMap dataMap, String defaultSchema) {
+    private MergerTokenFactoryProvider mergerTokenFactoryProvider;
+
+    public MergerOptions(ProjectController parent,
+                         String title,
+                         DBConnectionInfo connectionInfo,
+                         DataMap dataMap,
+                         String defaultSchema,
+                         MergerTokenFactoryProvider mergerTokenFactoryProvider) {
         super(parent);
 
+        this.mergerTokenFactoryProvider = mergerTokenFactoryProvider;
         this.dataMap = dataMap;
         this.tokens = new MergerTokenSelectorController(parent);
         this.view = new MergerOptionsView(tokens.getView());
@@ -124,20 +132,6 @@ public class MergerOptions extends CayenneController {
 
         sqlBinding = builder.bindToTextArea(view.getSql(), "textForSQL");
 
-        /*
-         * optionBindings = new ObjectBinding[5]; optionBindings[0] =
-         * builder.bindToStateChangeAndAction(view.getCreateFK(),
-         * "generatorDefaults.createFK", "refreshSQLAction()"); optionBindings[1] =
-         * builder.bindToStateChangeAndAction(view.getCreatePK(),
-         * "generatorDefaults.createPK", "refreshSQLAction()"); optionBindings[2] =
-         * builder.bindToStateChangeAndAction(view.getCreateTables(),
-         * "generatorDefaults.createTables", "refreshSQLAction()"); optionBindings[3] =
-         * builder.bindToStateChangeAndAction(view.getDropPK(),
-         * "generatorDefaults.dropPK", "refreshSQLAction()"); optionBindings[4] =
-         * builder.bindToStateChangeAndAction(view.getDropTables(),
-         * "generatorDefaults.dropTables", "refreshSQLAction()");
-         */
-
         builder.bindToAction(view.getGenerateButton(), "generateSchemaAction()");
         builder.bindToAction(view.getSaveSqlButton(), "storeSQLAction()");
         builder.bindToAction(view.getCancelButton(), "closeAction()");
@@ -161,8 +155,11 @@ public class MergerOptions extends CayenneController {
     protected void prepareMigrator() {
         try {
             adapter = (JdbcAdapter) connectionInfo.makeAdapter(getApplication().getClassLoadingService());
-            tokens.setMergerFactory(adapter.mergerFactory());
-            merger = new DbMerger(adapter.mergerFactory());
+
+            MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
+
+            tokens.setMergerTokenFactory(mergerTokenFactory);
+            merger = new DbMerger(mergerTokenFactory);
 
             DbLoaderConfiguration config = new DbLoaderConfiguration();
             config.setFiltersConfig(FiltersConfig.create(null, defaultSchema, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING));
@@ -173,8 +170,7 @@ public class MergerOptions extends CayenneController {
                     dataMap,
                     config);
             tokens.setTokens(mergerTokens);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             reportError("Error loading adapter", ex);
         }
     }
@@ -451,15 +447,13 @@ public class MergerOptions extends CayenneController {
 
             if (failures == null || !failures.hasFailures()) {
                 JOptionPane.showMessageDialog(getView(), "Migration Complete.");
-            }
-            else {
+            } else {
                 new ValidationResultBrowser(this).startupAction(
                         "Migration Complete",
                         "Migration finished. The following problem(s) were ignored.",
                         failures);
             }
-        }
-        catch (Throwable th) {
+        } catch (Throwable th) {
             reportError("Migration Error", th);
         }
     }
@@ -488,8 +482,7 @@ public class MergerOptions extends CayenneController {
                 pw.print(textForSQL);
                 pw.flush();
                 pw.close();
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 reportError("Error Saving SQL", ex);
             }
         }

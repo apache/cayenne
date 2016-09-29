@@ -19,26 +19,28 @@
 package org.apache.cayenne.tools.dbimport;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.access.DbLoaderDelegate;
-import org.apache.cayenne.access.loader.DbLoaderConfiguration;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.CayenneDbSyncModule;
+import org.apache.cayenne.dbsync.merge.AddColumnToDb;
+import org.apache.cayenne.dbsync.merge.AddRelationshipToDb;
+import org.apache.cayenne.dbsync.merge.CreateTableToDb;
+import org.apache.cayenne.dbsync.merge.CreateTableToModel;
+import org.apache.cayenne.dbsync.merge.DefaultModelMergeDelegate;
+import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
+import org.apache.cayenne.dbsync.merge.MergerToken;
+import org.apache.cayenne.dbsync.merge.builders.DataMapBuilder;
+import org.apache.cayenne.dbsync.merge.factory.DefaultMergerTokenFactory;
+import org.apache.cayenne.dbsync.reverse.DbLoader;
+import org.apache.cayenne.dbsync.reverse.DbLoaderConfiguration;
+import org.apache.cayenne.dbsync.reverse.DbLoaderDelegate;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.merge.AddColumnToDb;
-import org.apache.cayenne.merge.AddRelationshipToDb;
-import org.apache.cayenne.merge.CreateTableToDb;
-import org.apache.cayenne.merge.CreateTableToModel;
-import org.apache.cayenne.merge.DefaultModelMergeDelegate;
-import org.apache.cayenne.merge.MergerFactory;
-import org.apache.cayenne.merge.MergerToken;
-import org.apache.cayenne.merge.builders.DataMapBuilder;
 import org.apache.cayenne.project.FileProjectSaver;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.URLResource;
@@ -57,10 +59,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.apache.cayenne.merge.builders.ObjectMother.dbAttr;
-import static org.apache.cayenne.merge.builders.ObjectMother.dbEntity;
-import static org.apache.cayenne.merge.builders.ObjectMother.objAttr;
-import static org.apache.cayenne.merge.builders.ObjectMother.objEntity;
+import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbAttr;
+import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbEntity;
+import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.objAttr;
+import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.objEntity;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -287,7 +289,6 @@ public class DefaultDbImportActionTest {
 
     private DefaultDbImportAction buildDbImportAction(Log log, FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
         DbAdapter dbAdapter = mock(DbAdapter.class);
-        when(dbAdapter.mergerFactory()).thenReturn(new MergerFactory());
 
 		DbAdapterFactory adapterFactory = mock(DbAdapterFactory.class);
 		when(adapterFactory.createAdapter(any(DataNodeDescriptor.class), any(DataSource.class))).thenReturn(dbAdapter);
@@ -296,13 +297,16 @@ public class DefaultDbImportActionTest {
 		DataSource mock = mock(DataSource.class);
 		when(dataSourceFactory.getDataSource(any(DataNodeDescriptor.class))).thenReturn(mock);
 
-        return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader);
+		MergerTokenFactoryProvider mergerTokenFactoryProvider = mock(MergerTokenFactoryProvider.class);
+		when(mergerTokenFactoryProvider.get(any(DbAdapter.class))).thenReturn(new DefaultMergerTokenFactory());
+
+        return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider);
     }
 
 	@Test
 	public void testSaveLoaded() throws Exception {
 		Log log = mock(Log.class);
-		Injector i = DIBootstrap.createInjector(new ToolsModule(log), new DbImportModule());
+		Injector i = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(log), new DbImportModule());
 
         DefaultDbImportAction action = (DefaultDbImportAction) i.getInstance(DbImportAction.class);
 

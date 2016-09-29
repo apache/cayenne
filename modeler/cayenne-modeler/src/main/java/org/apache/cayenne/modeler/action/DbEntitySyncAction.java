@@ -19,10 +19,8 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-import java.util.Iterator;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
@@ -32,7 +30,9 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.objentity.EntitySyncController;
 import org.apache.cayenne.modeler.undo.DbEntitySyncUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.util.EntityMergeSupport;
+
+import java.awt.event.ActionEvent;
+import java.util.Iterator;
 
 /**
  * Action that synchronizes all ObjEntities with the current state of the

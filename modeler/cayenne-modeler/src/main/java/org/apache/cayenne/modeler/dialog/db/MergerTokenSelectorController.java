@@ -18,27 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.db;
 
-import java.awt.Component;
+import org.apache.cayenne.dbsync.merge.MergeDirection;
+import org.apache.cayenne.dbsync.merge.MergerToken;
+import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.swing.BindingBuilder;
+import org.apache.cayenne.swing.ObjectBinding;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-
-import org.apache.cayenne.merge.MergeDirection;
-import org.apache.cayenne.merge.MergerFactory;
-import org.apache.cayenne.merge.MergerToken;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.swing.ObjectBinding;
 
 public class MergerTokenSelectorController extends CayenneController {
 
@@ -49,7 +47,7 @@ public class MergerTokenSelectorController extends CayenneController {
     protected int permanentlyExcludedCount;
     protected Set<MergerToken> excludedTokens;
     protected List<MergerToken> selectableTokensList;
-    protected MergerFactory mergerFactory;
+    protected MergerTokenFactory mergerTokenFactory;
 
     public MergerTokenSelectorController(CayenneController parent) {
         super(parent);
@@ -59,8 +57,8 @@ public class MergerTokenSelectorController extends CayenneController {
         initController();
     }
 
-    public void setMergerFactory(MergerFactory mergerFactory) {
-        this.mergerFactory = mergerFactory;
+    public void setMergerTokenFactory(MergerTokenFactory mergerTokenFactory) {
+        this.mergerTokenFactory = mergerTokenFactory;
     }
 
     public void setTokens(List<MergerToken> tokens) {
@@ -197,7 +195,7 @@ public class MergerTokenSelectorController extends CayenneController {
             return;
         }
         int i = selectableTokensList.indexOf(token);
-        MergerToken reverse = token.createReverse(mergerFactory);
+        MergerToken reverse = token.createReverse(mergerTokenFactory);
         selectableTokensList.set(i, reverse);
         if (excludedTokens.remove(token)) {
             excludedTokens.add(reverse);
@@ -228,7 +226,7 @@ public class MergerTokenSelectorController extends CayenneController {
         
         for (int i = 0; i < selectableTokensList.size(); i++) {
             MergerToken token = selectableTokensList.get(i);
-            MergerToken reverse = token.createReverse(mergerFactory);
+            MergerToken reverse = token.createReverse(mergerTokenFactory);
             selectableTokensList.set(i, reverse);
             if (excludedTokens.remove(token)) {
                 excludedTokens.add(reverse);

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.tools.dbimport;
 
-import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.DefaultDbLoaderDelegate;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 

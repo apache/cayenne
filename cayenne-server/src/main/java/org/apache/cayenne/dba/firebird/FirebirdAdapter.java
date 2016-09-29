@@ -76,11 +76,7 @@ public class FirebirdAdapter extends JdbcAdapter {
         map.registerType(new CharType(true, false));
         
     }
-    
-    public FirebirdMergerFactory mergerFactory() {
-        return new FirebirdMergerFactory();
-    }
-    
+
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
 
         String[] types = externalTypesForJdbcType(column.getType());

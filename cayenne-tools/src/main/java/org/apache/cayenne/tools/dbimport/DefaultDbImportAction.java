@@ -18,26 +18,27 @@
  */
 package org.apache.cayenne.tools.dbimport;
 
-import org.apache.cayenne.access.DbLoader;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.merge.AbstractToModelToken;
+import org.apache.cayenne.dbsync.merge.AddRelationshipToDb;
+import org.apache.cayenne.dbsync.merge.DbMerger;
+import org.apache.cayenne.dbsync.merge.MergerContext;
+import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
+import org.apache.cayenne.dbsync.merge.MergerToken;
+import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
+import org.apache.cayenne.dbsync.merge.ProxyModelMergeDelegate;
+import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
+import org.apache.cayenne.dbsync.reverse.DbLoader;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.merge.AbstractToModelToken;
-import org.apache.cayenne.merge.AddRelationshipToDb;
-import org.apache.cayenne.merge.DbMerger;
-import org.apache.cayenne.merge.MergerContext;
-import org.apache.cayenne.merge.MergerFactory;
-import org.apache.cayenne.merge.MergerToken;
-import org.apache.cayenne.merge.ModelMergeDelegate;
-import org.apache.cayenne.merge.ProxyModelMergeDelegate;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.URLResource;
@@ -73,17 +74,20 @@ public class DefaultDbImportAction implements DbImportAction {
     private final DataSourceFactory dataSourceFactory;
     private final DbAdapterFactory adapterFactory;
     private final MapLoader mapLoader;
+    private final MergerTokenFactoryProvider mergerTokenFactoryProvider;
 
     public DefaultDbImportAction(@Inject Log logger,
                                  @Inject ProjectSaver projectSaver,
                                  @Inject DataSourceFactory dataSourceFactory,
                                  @Inject DbAdapterFactory adapterFactory,
-                                 @Inject MapLoader mapLoader) {
+                                 @Inject MapLoader mapLoader,
+                                 @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider) {
         this.logger = logger;
         this.projectSaver = projectSaver;
         this.dataSourceFactory = dataSourceFactory;
         this.adapterFactory = adapterFactory;
         this.mapLoader = mapLoader;
+        this.mergerTokenFactoryProvider = mergerTokenFactoryProvider;
     }
 
     protected static List<MergerToken> sort(List<MergerToken> reverse) {
@@ -135,9 +139,9 @@ public class DefaultDbImportAction implements DbImportAction {
 
             saveLoaded(config.initializeDataMap(loadedFomDb));
         } else {
-            MergerFactory mergerFactory = adapter.mergerFactory();
+            MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
 
-            List<MergerToken> mergeTokens = new DbMerger(mergerFactory)
+            List<MergerToken> mergeTokens = new DbMerger(mergerTokenFactory)
                     .createMergeTokens(existing, loadedFomDb, config.getDbLoaderConfig());
             if (mergeTokens.isEmpty()) {
                 logger.info("");
@@ -157,7 +161,7 @@ public class DefaultDbImportAction implements DbImportAction {
                     super.objEntityAdded(ent);
                 }
 
-            }, existing, log(sort(reverse(mergerFactory, mergeTokens))));
+            }, existing, log(sort(reverse(mergerTokenFactory, mergeTokens))));
 
             DbLoader.flattenManyToManyRelationships(executed, loadedObjEntities, config.getNameGenerator());
             relationshipsSanity(executed);
@@ -207,14 +211,14 @@ public class DefaultDbImportAction implements DbImportAction {
     }
 
     private List<MergerToken> reverse(
-            MergerFactory mergerFactory,
+            MergerTokenFactory mergerTokenFactory,
             Iterable<MergerToken> mergeTokens) throws IOException {
         List<MergerToken> tokens = new LinkedList<>();
         for (MergerToken token : mergeTokens) {
             if (token instanceof AbstractToModelToken) {
                 continue;
             }
-            tokens.add(token.createReverse(mergerFactory));
+            tokens.add(token.createReverse(mergerTokenFactory));
         }
         return tokens;
     }

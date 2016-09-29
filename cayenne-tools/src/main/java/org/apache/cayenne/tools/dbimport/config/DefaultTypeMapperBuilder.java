@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.tools.dbimport.config;
 
-import org.apache.cayenne.access.loader.mapper.DbType;
-import org.apache.cayenne.access.loader.mapper.DefaultJdbc2JavaTypeMapper;
-import org.apache.cayenne.access.loader.mapper.Jdbc2JavaTypeMapper;
+import org.apache.cayenne.dbsync.reverse.mapper.DbType;
+import org.apache.cayenne.dbsync.reverse.mapper.DefaultJdbc2JavaTypeMapper;
+import org.apache.cayenne.dbsync.reverse.mapper.Jdbc2JavaTypeMapper;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.logging.Log;
 

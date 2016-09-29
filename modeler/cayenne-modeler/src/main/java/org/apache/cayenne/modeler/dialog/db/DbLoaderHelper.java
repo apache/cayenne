@@ -20,12 +20,13 @@
 package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbimport.FiltersConfigBuilder;
 import org.apache.cayenne.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbsync.CayenneDbSyncModule;
+import org.apache.cayenne.dbsync.reverse.DbLoader;
+import org.apache.cayenne.dbsync.reverse.DefaultDbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.FiltersConfigBuilder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
@@ -47,9 +48,7 @@ import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -375,7 +374,10 @@ public class DbLoaderHelper {
 
 
             ModelerDbImportAction importAction = new ModelerDbImportAction(logObj, DbLoaderHelper.this);
-            Injector injector = DIBootstrap.createInjector(new ToolsModule(logObj), new DbImportModule());
+
+            // TODO: we can keep all these things in the Modeler Injector instead of creating a new one?
+            // we already have CayenneDbSyncModule in there
+            Injector injector = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(logObj), new DbImportModule());
             injector.injectMembers(importAction);
             try {
                 importAction.execute(config);

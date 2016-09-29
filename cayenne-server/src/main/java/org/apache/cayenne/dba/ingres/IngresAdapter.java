@@ -37,7 +37,6 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
@@ -118,11 +117,6 @@ public class IngresAdapter extends JdbcAdapter {
 		} else {
 			super.bindParameter(statement, binding);
 		}
-	}
-
-	@Override
-	public MergerFactory mergerFactory() {
-		return new IngresMergerFactory();
 	}
 
 	@Override

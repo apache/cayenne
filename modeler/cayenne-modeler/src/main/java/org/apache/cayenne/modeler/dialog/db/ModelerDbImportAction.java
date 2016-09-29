@@ -23,6 +23,7 @@ import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
@@ -57,6 +58,9 @@ public class ModelerDbImportAction implements DbImportAction {
     @Inject
     private MapLoader mapLoader;
 
+    @Inject
+    private MergerTokenFactoryProvider mergerTokenFactoryProvider;
+
     public ModelerDbImportAction(Log logger, DbLoaderHelper dbLoaderHelper) {
         this.logger = logger;
         this.dbLoaderHelper = dbLoaderHelper;
@@ -68,7 +72,7 @@ public class ModelerDbImportAction implements DbImportAction {
             throw new IllegalStateException("Before using execute method you must set dbLoaderHelper");
         }
 
-        new DefaultDbImportAction(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader) {
+        new DefaultDbImportAction(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider) {
 
             @Override
             protected DataMap loadExistingDataMap(File dataMapFile) {

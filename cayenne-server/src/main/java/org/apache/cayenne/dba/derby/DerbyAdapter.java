@@ -25,7 +25,12 @@ import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
-import org.apache.cayenne.access.types.*;
+import org.apache.cayenne.access.types.ByteType;
+import org.apache.cayenne.access.types.CharType;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeFactory;
+import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -33,7 +38,6 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.resource.ResourceLocator;
 
 import java.sql.PreparedStatement;
@@ -44,14 +48,14 @@ import java.util.List;
 /**
  * DbAdapter implementation for the <a href="http://db.apache.org/derby/"> Derby RDBMS
  * </a>. Sample connection settings to use with Derby are shown below. <h3>Embedded</h3>
- * 
+ * <p>
  * <pre>
  *  test-derby.jdbc.url = jdbc:derby:testdb;create=true
  *  test-derby.jdbc.driver = org.apache.derby.jdbc.EmbeddedDriver
  * </pre>
- * 
+ * <p>
  * <h3>Network Server</h3>
- * 
+ * <p>
  * <pre>
  *  derbynet.jdbc.url = jdbc:derby://localhost/cayenne
  *  derbynet.jdbc.driver = org.apache.derby.jdbc.ClientDriver
@@ -103,7 +107,7 @@ public class DerbyAdapter extends JdbcAdapter {
     /**
      * Appends SQL for column creation to CREATE TABLE buffer. Only change for Derby is
      * that " NULL" is not supported.
-     * 
+     *
      * @since 1.2
      */
     @Override
@@ -116,7 +120,6 @@ public class DerbyAdapter extends JdbcAdapter {
             throw new CayenneRuntimeException("Undefined type for attribute '"
                     + entityName + "." + column.getName() + "': " + column.getType());
         }
-
 
 
         sqlBuffer.append(quotingStrategy.quotedName(column));
@@ -168,7 +171,7 @@ public class DerbyAdapter extends JdbcAdapter {
         translator.setCaseInsensitive(caseInsensitiveCollations);
         return translator;
     }
-    
+
     /**
      * @since 3.1
      */
@@ -177,11 +180,6 @@ public class DerbyAdapter extends JdbcAdapter {
         JdbcEJBQLTranslatorFactory translatorFactory = new DerbyEJBQLTranslatorFactory();
         translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
         return translatorFactory;
-    }
-
-    @Override
-    public MergerFactory mergerFactory() {
-        return new DerbyMergerFactory();
     }
 
     @Override
@@ -199,10 +197,14 @@ public class DerbyAdapter extends JdbcAdapter {
 
     private int convertNTypes(int sqlType) {
         switch (sqlType) {
-            case Types.NCHAR: return Types.CHAR;
-            case Types.NVARCHAR: return Types.VARCHAR;
-            case Types.LONGNVARCHAR: return Types.LONGVARCHAR;
-            case Types.NCLOB: return Types.CLOB;
+            case Types.NCHAR:
+                return Types.CHAR;
+            case Types.NVARCHAR:
+                return Types.VARCHAR;
+            case Types.LONGNVARCHAR:
+                return Types.LONGVARCHAR;
+            case Types.NCLOB:
+                return Types.CLOB;
 
             default:
                 return sqlType;

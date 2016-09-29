@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.db;
 
-import org.apache.cayenne.access.DbLoader;
-import org.apache.cayenne.access.loader.DbLoaderConfiguration;
-import org.apache.cayenne.access.loader.DefaultDbLoaderDelegate;
-import org.apache.cayenne.access.loader.filters.CatalogFilter;
-import org.apache.cayenne.access.loader.filters.SchemaFilter;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbimport.FiltersConfigBuilder;
 import org.apache.cayenne.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbsync.reverse.DbLoader;
+import org.apache.cayenne.dbsync.reverse.DbLoaderConfiguration;
+import org.apache.cayenne.dbsync.reverse.DefaultDbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.FiltersConfigBuilder;
+import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
+import org.apache.cayenne.dbsync.reverse.filters.SchemaFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -49,9 +49,8 @@ import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.SwingUtilities;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;

@@ -27,7 +27,6 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.resource.ResourceLocator;
 
 import java.util.List;
@@ -54,11 +53,6 @@ public class H2Adapter extends JdbcAdapter {
             @Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator) {
         super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator);
         setSupportsGeneratedKeys(true);
-    }
-
-    @Override
-    public MergerFactory mergerFactory() {
-        return new H2MergerFactory();
     }
 
     @Override

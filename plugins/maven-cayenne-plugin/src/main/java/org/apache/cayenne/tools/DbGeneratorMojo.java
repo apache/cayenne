@@ -19,13 +19,11 @@
 
 package org.apache.cayenne.tools;
 
-import java.io.File;
-import java.sql.Driver;
-
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dbsync.CayenneDbSyncModule;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -39,6 +37,9 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.xml.sax.InputSource;
+
+import java.io.File;
+import java.sql.Driver;
 
 /**
  * Maven mojo to perform class generation from data map. This class is a Maven
@@ -141,7 +142,7 @@ public class DbGeneratorMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         Log logger = new MavenLogger(this);
-        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger));
+        Injector injector = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(logger));
         AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
 
         logger.info(String.format("connection settings - [driver: %s, url: %s, username: %s]", driver, url, username));

@@ -19,12 +19,10 @@
 
 package org.apache.cayenne.tools;
 
-import java.sql.Driver;
-import java.util.Collections;
-
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.CayenneDbSyncModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
@@ -35,6 +33,9 @@ import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+
+import java.sql.Driver;
+import java.util.Collections;
 
 /**
  * An Ant Task that is a frontend to Cayenne DbGenerator allowing schema
@@ -68,7 +69,7 @@ public class DbGeneratorTask extends CayenneTask {
 		validateAttributes();
 
 		ClassLoader loader = null;
-		Injector injector = DIBootstrap.createInjector(new ToolsModule(logger));
+		Injector injector = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(logger));
 		try {
 			loader = Thread.currentThread().getContextClassLoader();
 			Thread.currentThread().setContextClassLoader(DbGeneratorTask.class.getClassLoader());

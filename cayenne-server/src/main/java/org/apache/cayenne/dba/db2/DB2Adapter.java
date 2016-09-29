@@ -24,7 +24,12 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
-import org.apache.cayenne.access.types.*;
+import org.apache.cayenne.access.types.BooleanType;
+import org.apache.cayenne.access.types.ByteArrayType;
+import org.apache.cayenne.access.types.CharType;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeFactory;
+import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -34,7 +39,6 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -220,11 +224,6 @@ public class DB2Adapter extends JdbcAdapter {
                 st.setNull(pos, type);
             }
         }
-    }
-
-    @Override
-    public MergerFactory mergerFactory() {
-        return new DB2MergerFactory();
     }
 
     @Override

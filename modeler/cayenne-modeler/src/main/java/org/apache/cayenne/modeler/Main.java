@@ -19,15 +19,8 @@
 
 package org.apache.cayenne.modeler;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.prefs.Preferences;
-
-import javax.swing.SwingUtilities;
-
 import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.dbsync.CayenneDbSyncModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
@@ -38,6 +31,13 @@ import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 import org.apache.cayenne.project.CayenneProjectModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.prefs.Preferences;
 
 /**
  * Main class responsible for starting CayenneModeler.
@@ -105,6 +105,7 @@ public class Main {
     protected Collection<Module> appendModules(Collection<Module> modules) {
         modules.add(new ServerModule("CayenneModeler"));
         modules.add(new CayenneProjectModule());
+        modules.add(new CayenneDbSyncModule());
         modules.add(new CayenneModelerModule());
 
         return modules;

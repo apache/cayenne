@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.db;
 
-import java.util.List;
+import org.apache.cayenne.dbsync.merge.MergeDirection;
+import org.apache.cayenne.dbsync.merge.MergerToken;
 
 import javax.swing.table.AbstractTableModel;
+import java.util.List;
 
-import org.apache.cayenne.merge.MergeDirection;
-import org.apache.cayenne.merge.MergerToken;
 
 public class MergerTokenTableModel extends AbstractTableModel {
 

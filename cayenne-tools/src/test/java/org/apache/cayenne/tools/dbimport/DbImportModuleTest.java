@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.tools.dbimport;
 
+import org.apache.cayenne.dbsync.CayenneDbSyncModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.tools.configuration.ToolsModule;
@@ -33,7 +34,7 @@ public class DbImportModuleTest {
     public void testModuleContents() {
 
         Log log = mock(Log.class);
-        Injector i = DIBootstrap.createInjector(new ToolsModule(log), new DbImportModule());
+        Injector i = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(log), new DbImportModule());
         assertTrue(i.getInstance(DbImportAction.class) instanceof DbImportAction);
     }
 }

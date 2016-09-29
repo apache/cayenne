@@ -31,7 +31,6 @@ import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
@@ -136,11 +135,6 @@ public class SQLServerAdapter extends SybaseAdapter {
 			// current limitation - we don't allow to set identity parameters...
 			sqlBuffer.append(" IDENTITY (1, 1)");
 		}
-	}
-
-	@Override
-	public MergerFactory mergerFactory() {
-		return new SQLServerMergerFactory();
 	}
 
 }

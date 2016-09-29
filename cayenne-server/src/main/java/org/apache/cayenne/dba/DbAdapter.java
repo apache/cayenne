@@ -29,7 +29,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
@@ -181,11 +180,6 @@ public interface DbAdapter {
 	 * <code>DatabaseMetaData.getTableTypes</code>) for a view table.
 	 */
 	String tableTypeForView();
-
-	/**
-	 * @since 3.0
-	 */
-	MergerFactory mergerFactory();
 
 	/**
 	 * Append the column type part of a "create table" to the given

@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
+import org.apache.cayenne.dbsync.reverse.NameFilter;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.ObjEntity;
+
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
-import org.apache.cayenne.access.loader.NameFilter;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.ObjEntity;
 
 /**
  * Performs entity filtering to build a collection of entities that should be used in

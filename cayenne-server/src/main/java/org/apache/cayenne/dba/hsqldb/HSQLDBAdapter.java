@@ -33,7 +33,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.merge.MergerFactory;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
@@ -225,10 +224,4 @@ public class HSQLDBAdapter extends JdbcAdapter {
 			super.createTableAppendColumn(sqlBuffer, column);
 		}
 	}
-
-	@Override
-	public MergerFactory mergerFactory() {
-		return new HSQLMergerFactory();
-	}
-
 }

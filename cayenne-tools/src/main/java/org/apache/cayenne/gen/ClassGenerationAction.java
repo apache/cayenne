@@ -18,18 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.loader.NamePatternMatcher;
+import org.apache.cayenne.dbsync.reverse.NamePatternMatcher;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
@@ -40,6 +30,16 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.log.NullLogSystem;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 public class ClassGenerationAction {
 	static final String TEMPLATES_DIR_NAME = "templates/v1_2/";

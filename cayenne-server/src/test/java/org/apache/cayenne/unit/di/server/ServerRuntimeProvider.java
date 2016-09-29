@@ -29,6 +29,9 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.UnitDbAdapter;
 
+import java.util.Collection;
+import java.util.Collections;
+
 public class ServerRuntimeProvider implements Provider<ServerRuntime> {
 
     private ServerCaseProperties properties;
@@ -48,6 +51,7 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
         this.unitDbAdapter = unitDbAdapter;
     }
 
+    @Override
     public ServerRuntime get() throws ConfigurationException {
 
         String configurationLocation = properties.getConfigurationLocation();
@@ -56,11 +60,18 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
                     + "annotate your test case with @UseServerRuntime");
         }
 
-        return new ServerRuntime(configurationLocation, new ServerExtraModule());
+        Collection<? extends Module> modules = getExtraModules();
+
+        return new ServerRuntime(configurationLocation, modules.toArray(new Module[modules.size()]));
+    }
+
+    protected Collection<? extends Module> getExtraModules() {
+        return Collections.singleton(new ServerExtraModule());
     }
 
     class ServerExtraModule implements Module {
 
+        @Override
         public void configure(Binder binder) {
 
             // these are the objects overriding standard ServerModule definitions or

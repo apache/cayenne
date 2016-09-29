@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.access.loader.filters.LegacyFilterConfigBridge;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.XMLDataMapLoader;
@@ -32,12 +31,14 @@ import org.apache.cayenne.dbimport.DefaultReverseEngineeringLoader;
 import org.apache.cayenne.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbimport.ExcludeProcedure;
 import org.apache.cayenne.dbimport.ExcludeTable;
-import org.apache.cayenne.dbimport.FiltersConfigBuilder;
 import org.apache.cayenne.dbimport.IncludeColumn;
 import org.apache.cayenne.dbimport.IncludeProcedure;
 import org.apache.cayenne.dbimport.IncludeTable;
 import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbimport.Schema;
+import org.apache.cayenne.dbsync.CayenneDbSyncModule;
+import org.apache.cayenne.dbsync.reverse.FiltersConfigBuilder;
+import org.apache.cayenne.dbsync.reverse.filters.LegacyFilterConfigBridge;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
@@ -91,7 +92,7 @@ public class DbImporterTask extends Task {
         config.setTableTypes(reverseEngineering.getTableTypes());
 
         if (isReverseEngineeringDefined) {
-            Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
+            Injector injector = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(logger), new DbImportModule());
 
             validateDbImportConfiguration(config, injector);
 
@@ -120,7 +121,7 @@ public class DbImporterTask extends Task {
                     XMLDataMapLoader xmlDataMapLoader = new XMLDataMapLoader();
                     DataMap dataMap = xmlDataMapLoader.load(resource);
                     if (dataMap.getReverseEngineering() != null) {
-                        Injector injector = DIBootstrap.createInjector(new ToolsModule(logger), new DbImportModule());
+                        Injector injector = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(logger), new DbImportModule());
                         try {
                             ConfigurationNameMapper nameMapper = injector.getInstance(ConfigurationNameMapper.class);
                             String reverseEngineeringLocation = nameMapper.configurationLocation(ReverseEngineering.class, dataMap.getReverseEngineering().getName());

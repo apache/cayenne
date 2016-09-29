@@ -20,10 +20,10 @@ package org.apache.cayenne.tools;
 
 import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.*;
 
-import org.apache.cayenne.access.loader.filters.FiltersConfig;
-import org.apache.cayenne.access.loader.filters.IncludeTableFilter;
-import org.apache.cayenne.access.loader.filters.PatternFilter;
-import org.apache.cayenne.access.loader.filters.TableFilter;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
+import org.apache.cayenne.dbsync.reverse.filters.IncludeTableFilter;
+import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
+import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbimport.Schema;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
