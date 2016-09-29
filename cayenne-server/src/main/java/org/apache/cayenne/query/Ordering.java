@@ -67,12 +67,12 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 * Orders a given list of objects, using a List of Orderings applied
 	 * according the default iteration order of the Orderings list. I.e. each
 	 * Ordering with lower index is more significant than any other Ordering
-	 * with higher index. List being ordered is modified in place.
+	 * with higher index. Returns a new list.
 	 * 
 	 * @since 4.0
 	 */
 	public static <E> List<E> orderedList(List<E> objects, List<? extends Ordering> orderings) {
-		List<E> newList = new ArrayList<E>(objects);
+		List<E> newList = new ArrayList<>(objects);
 		
 		orderList(newList, orderings);
 		
@@ -333,7 +333,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 * @since 4.0
 	 */
 	public <E> List<E> orderedList(List<E> objects) {
-		List<E> newList = new ArrayList<E>(objects);
+		List<E> newList = new ArrayList<>(objects);
 		
 		orderList(newList);
 		
@@ -434,4 +434,40 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	public SortOrder getSortOrder() {
 		return sortOrder;
 	}
+	
+	/**
+	 * Returns Orderings with this Ordering followed by the provided
+	 * next Ordering.
+	 * 
+	 * @param nextOrdering the next Ordering to chain to this
+	 * @return a new Orderings with both Ordering
+	 */
+	public Orderings then(Ordering nextOrdering) {
+		return new Orderings(this, nextOrdering);
+	}
+
+	/**
+	 * Returns Orderings with this Ordering followed by the provided
+	 * list of next Orderings.
+	 * 
+	 * @param nextOrderings the next Orderings to chain to this
+	 * @return an array of sort orderings
+	 */
+	public Orderings then(Orderings nextOrderings) {
+		Orderings newOrderings = new Orderings(this);
+		
+		return newOrderings.then(nextOrderings);
+	}
+	
+	/**
+	 * @see Orderings#then(Orderings)
+	 * @param nextOrderings
+	 * @return
+	 */
+	public Orderings then(List<Ordering> nextOrderings) {
+		Orderings newOrderings = new Orderings(this);
+		
+		return newOrderings.then(nextOrderings);
+	}
+
 }
