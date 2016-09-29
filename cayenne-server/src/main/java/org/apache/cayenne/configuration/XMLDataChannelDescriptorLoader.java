@@ -18,18 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dbimport.DefaultReverseEngineeringLoader;
 import org.apache.cayenne.dbimport.ReverseEngineering;
-import org.apache.cayenne.dbimport.ReverseEngineeringLoaderException;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
@@ -37,9 +30,17 @@ import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.xml.sax.*;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
-import javax.xml.parsers.ParserConfigurationException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * @since 3.1
@@ -224,10 +225,8 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
                         reverseEngineering.setConfigurationSource(reverseEngineeringResource);
                         dataMap.setReverseEngineering(reverseEngineering);
                     }
-                } catch (ReverseEngineeringLoaderException e) {
-                    logger.info(e.getMessage(), e);
                 } catch (IOException e) {
-                    logger.info(e.getMessage(), e);
+                    throw new CayenneRuntimeException("Error loading reverse engineering model", e);
                 }
 
                 descriptor.getDataMaps().add(dataMap);

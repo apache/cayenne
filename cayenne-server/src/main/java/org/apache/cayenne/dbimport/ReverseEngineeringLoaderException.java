@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dbimport;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,7 +26,7 @@ import javax.xml.parsers.ParserConfigurationException;
 /**
  * @since 4.0
  */
-public class ReverseEngineeringLoaderException extends RuntimeException {
+public class ReverseEngineeringLoaderException extends CayenneRuntimeException {
 
     public ReverseEngineeringLoaderException(String message, ParserConfigurationException e) {
         super(message, e);
