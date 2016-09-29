@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dbimport;
 
-import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
+import org.apache.cayenne.access.loader.filters.LegacyFilterConfigBridge;
 import org.apache.cayenne.access.loader.filters.CatalogFilter;
 import org.apache.cayenne.access.loader.filters.IncludeTableFilter;
 import org.apache.cayenne.access.loader.filters.SchemaFilter;
@@ -346,7 +346,7 @@ public final class FiltersConfigBuilder {
         }
     }
 
-    public FiltersConfigBuilder add(OldFilterConfigBridge build) {
+    public FiltersConfigBuilder add(LegacyFilterConfigBridge build) {
         if (!isBlank(build.catalog())) {
             engineering.addCatalog(new Catalog(build.catalog()));
         }

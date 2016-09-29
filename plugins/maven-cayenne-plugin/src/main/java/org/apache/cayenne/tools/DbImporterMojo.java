@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
+import org.apache.cayenne.access.loader.filters.LegacyFilterConfigBridge;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.XMLDataMapLoader;
@@ -149,7 +149,7 @@ public class DbImporterMojo extends AbstractMojo {
      */
     private boolean usePrimitives;
 
-    private final OldFilterConfigBridge filterBuilder = new OldFilterConfigBridge();
+    private final LegacyFilterConfigBridge filterBuilder = new LegacyFilterConfigBridge();
 
     /**
      * An object that contains reverse engineering rules.

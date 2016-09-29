@@ -154,17 +154,13 @@ public class DefaultDbImportAction implements DbImportAction {
                 @Override
                 public void objEntityAdded(ObjEntity ent) {
                     loadedObjEntities.add(ent);
-
                     super.objEntityAdded(ent);
                 }
 
             }, existing, log(sort(reverse(mergerFactory, mergeTokens))));
 
             DbLoader.flattenManyToManyRelationships(executed, loadedObjEntities, config.getNameGenerator());
-
             relationshipsSanity(executed);
-
-
             saveLoaded(executed);
         }
     }

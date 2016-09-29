@@ -21,9 +21,9 @@ package org.apache.cayenne.access.loader.filters;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
- * @since 3.2.
+ * @since 4.0
  */
-public class OldFilterConfigBridge {
+public class LegacyFilterConfigBridge {
 
     private String catalog;
     private String schema;
@@ -37,10 +37,10 @@ public class OldFilterConfigBridge {
 
     private boolean loadProcedures;
 
-    public OldFilterConfigBridge() {
+    public LegacyFilterConfigBridge() {
     }
 
-    public OldFilterConfigBridge catalog(String catalog) {
+    public LegacyFilterConfigBridge catalog(String catalog) {
         this.catalog = catalog;
         return this;
     }
@@ -49,7 +49,7 @@ public class OldFilterConfigBridge {
         return catalog;
     }
 
-    public OldFilterConfigBridge schema(String schema) {
+    public LegacyFilterConfigBridge schema(String schema) {
         this.schema = schema;
         return this;
     }
@@ -58,7 +58,7 @@ public class OldFilterConfigBridge {
         return schema;
     }
 
-    public OldFilterConfigBridge includeTables(String tableFilters) {
+    public LegacyFilterConfigBridge includeTables(String tableFilters) {
         if (isBlank(tableFilters)) {
             return this;
         }
@@ -67,7 +67,7 @@ public class OldFilterConfigBridge {
         return this;
     }
 
-    public OldFilterConfigBridge includeColumns(String columnFilters) {
+    public LegacyFilterConfigBridge includeColumns(String columnFilters) {
         if (isBlank(columnFilters)) {
             return this;
         }
@@ -76,7 +76,7 @@ public class OldFilterConfigBridge {
         return this;
     }
 
-    public OldFilterConfigBridge includeProcedures(String proceduresFilters) {
+    public LegacyFilterConfigBridge includeProcedures(String proceduresFilters) {
         if (isBlank(proceduresFilters)) {
             return this;
         }
@@ -85,7 +85,7 @@ public class OldFilterConfigBridge {
         return this;
     }
 
-    public OldFilterConfigBridge excludeTables(String tableFilters) {
+    public LegacyFilterConfigBridge excludeTables(String tableFilters) {
         if (isBlank(tableFilters)) {
             return this;
         }
@@ -94,7 +94,7 @@ public class OldFilterConfigBridge {
         return this;
     }
 
-    public OldFilterConfigBridge excludeColumns(String columnFilters) {
+    public LegacyFilterConfigBridge excludeColumns(String columnFilters) {
         if (isBlank(columnFilters)) {
             return this;
         }
@@ -103,7 +103,7 @@ public class OldFilterConfigBridge {
         return this;
     }
 
-    public OldFilterConfigBridge excludeProcedures(String proceduresFilters) {
+    public LegacyFilterConfigBridge excludeProcedures(String proceduresFilters) {
         if (isBlank(proceduresFilters)) {
             return this;
         }

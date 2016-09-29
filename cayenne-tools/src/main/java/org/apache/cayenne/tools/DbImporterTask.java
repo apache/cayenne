@@ -18,11 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import org.apache.cayenne.access.loader.filters.OldFilterConfigBridge;
+import org.apache.cayenne.access.loader.filters.LegacyFilterConfigBridge;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.XMLDataMapLoader;
@@ -30,7 +26,18 @@ import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbimport.*;
+import org.apache.cayenne.dbimport.AntNestedElement;
+import org.apache.cayenne.dbimport.Catalog;
+import org.apache.cayenne.dbimport.DefaultReverseEngineeringLoader;
+import org.apache.cayenne.dbimport.ExcludeColumn;
+import org.apache.cayenne.dbimport.ExcludeProcedure;
+import org.apache.cayenne.dbimport.ExcludeTable;
+import org.apache.cayenne.dbimport.FiltersConfigBuilder;
+import org.apache.cayenne.dbimport.IncludeColumn;
+import org.apache.cayenne.dbimport.IncludeProcedure;
+import org.apache.cayenne.dbimport.IncludeTable;
+import org.apache.cayenne.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbimport.Schema;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
@@ -48,6 +55,9 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
 import javax.sql.DataSource;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class DbImporterTask extends Task {
 
@@ -56,7 +66,7 @@ public class DbImporterTask extends Task {
     private final ReverseEngineering reverseEngineering = new ReverseEngineering();
     private boolean isReverseEngineeringDefined = false;
 
-    private final OldFilterConfigBridge filterBuilder = new OldFilterConfigBridge();
+    private final LegacyFilterConfigBridge filterBuilder = new LegacyFilterConfigBridge();
 
     public DbImporterTask() {
         config = new DbImportConfiguration();
