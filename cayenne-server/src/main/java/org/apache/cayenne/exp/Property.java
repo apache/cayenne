@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.query.Orderings;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.reflect.PropertyUtils;
@@ -82,7 +83,7 @@ public class Property<E> {
 	 *         existing property separated by a dot
 	 */
 	public Property<Object> dot(String property) {
-		return new Property<Object>(getName() + "." + property);
+		return new Property<>(getName() + "." + property);
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class Property<E> {
 	 *         existing property separated by a dot
 	 */
 	public <T> Property<T> dot(Property<T> property) {
-		return new Property<T>(getName() + "." + property.getName());
+		return new Property<>(getName() + "." + property.getName());
 	}
 
 	/**
@@ -408,10 +409,8 @@ public class Property<E> {
 	/**
 	 * @return Ascending sort orderings on this property.
 	 */
-	public List<Ordering> ascs() {
-		List<Ordering> result = new ArrayList<Ordering>(1);
-		result.add(asc());
-		return result;
+	public Orderings ascs() {
+		return new Orderings(asc());
 	}
 
 	/**
@@ -424,10 +423,8 @@ public class Property<E> {
 	/**
 	 * @return Ascending case insensitive sort orderings on this property.
 	 */
-	public List<Ordering> ascInsensitives() {
-		List<Ordering> result = new ArrayList<Ordering>(1);
-		result.add(ascInsensitive());
-		return result;
+	public Orderings ascInsensitives() {
+		return new Orderings(ascInsensitive());
 	}
 
 	/**
@@ -440,10 +437,8 @@ public class Property<E> {
 	/**
 	 * @return Descending sort orderings on this property.
 	 */
-	public List<Ordering> descs() {
-		List<Ordering> result = new ArrayList<Ordering>(1);
-		result.add(desc());
-		return result;
+	public Orderings descs() {
+		return new Orderings(desc());
 	}
 
 	/**
@@ -456,10 +451,8 @@ public class Property<E> {
 	/**
 	 * @return Descending case insensitive sort orderings on this property.
 	 */
-	public List<Ordering> descInsensitives() {
-		List<Ordering> result = new ArrayList<Ordering>(1);
-		result.add(descInsensitive());
-		return result;
+	public Orderings descInsensitives() {
+		return new Orderings(descInsensitive());
 	}
 
 	/**
@@ -505,7 +498,7 @@ public class Property<E> {
 	 * dot-separated property name path.
 	 */
 	public List<E> getFromAll(Collection<?> beans) {
-		List<E> result = new ArrayList<E>(beans.size());
+		List<E> result = new ArrayList<>(beans.size());
 		for (Object bean : beans) {
 			result.add(getFrom(bean));
 		}
