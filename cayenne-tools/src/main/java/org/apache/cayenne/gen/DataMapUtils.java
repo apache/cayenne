@@ -42,7 +42,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.PathComponent;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.map.naming.NameConverter;
+import org.apache.cayenne.dbsync.reverse.naming.NameConverter;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.commons.collections.set.ListOrderedSet;

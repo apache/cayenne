@@ -17,9 +17,8 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.util;
+package org.apache.cayenne.dbsync.reverse.naming;
 
-import org.apache.cayenne.map.naming.NameConverter;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.editor;
 import java.io.Serializable;
 
 import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.map.naming.NameConverter;
+import org.apache.cayenne.dbsync.reverse.naming.NameConverter;
 
 /**
  * Entity for callback type. Contains type and type name

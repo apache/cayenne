@@ -29,7 +29,7 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.naming.UniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
-import org.apache.cayenne.map.naming.NameConverter;
+import org.apache.cayenne.dbsync.reverse.naming.NameConverter;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;

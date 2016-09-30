@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.map.naming;
+package org.apache.cayenne.dbsync.reverse.naming;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +27,7 @@ import java.util.StringTokenizer;
  * Utility class to convert from different naming styles to Java convention. For example
  * names like "ABCD_EFG" can be converted to "abcdEfg".
  */
+// TODO: deprecate
 public class NameConverter {
 
     private static final Map<String, String> SPECIAL_CHAR_TO_JAVA_MAPPING = new HashMap<>();
@@ -36,11 +37,10 @@ public class NameConverter {
     }
 
     /**
-     * Converts a String name to a String forllowing java convention for the static final
+     * Converts a String name to a String following java convention for the static final
      * variables. E.g. "abcXyz" will be converted to "ABC_XYZ".
-     * 
-     * @since 1.0.3
      */
+    // TODO: move to the only user....
     public static String javaToUnderscored(String name) {
         if (name == null) {
             return null;
@@ -73,9 +73,10 @@ public class NameConverter {
      * Converts names like "ABCD_EFG_123" to Java-style names like "abcdEfg123". If
      * <code>capitalize</code> is true, returned name is capitalized (for instance if
      * this is a class name).
-     * 
+     *
      * @since 1.2
      */
+    // TODO: migrate users to ObjectNameGenerator
     public static String underscoredToJava(String name, boolean capitalize) {
         StringTokenizer st = new StringTokenizer(name, "_");
         StringBuilder buf = new StringBuilder();
@@ -98,8 +99,7 @@ public class NameConverter {
             for (int i = 0; i < len && !(hasUpperCase && hasLowerCase); i++) {
                 if (Character.isUpperCase(token.charAt(i))) {
                     hasUpperCase = true;
-                }
-                else if (Character.isLowerCase(token.charAt(i))) {
+                } else if (Character.isLowerCase(token.charAt(i))) {
                     hasLowerCase = true;
                 }
             }
@@ -114,12 +114,10 @@ public class NameConverter {
                 first = false;
                 if (capitalize) {
                     buf.append(Character.toUpperCase(token.charAt(0)));
-                }
-                else {
+                } else {
                     buf.append(Character.toLowerCase(token.charAt(0)));
                 }
-            }
-            else {
+            } else {
                 buf.append(Character.toUpperCase(token.charAt(0)));
             }
 
@@ -133,7 +131,7 @@ public class NameConverter {
     /**
      * Replaces special chars with human-readable and Java-id-compatible symbols.
      */
-    public static String specialCharsToJava(String string) {
+    static String specialCharsToJava(String string) {
         int len = string.length();
         if (len == 0) {
             return string;
@@ -145,8 +143,7 @@ public class NameConverter {
             char c = string.charAt(i);
             if (Character.isJavaIdentifierPart(c)) {
                 buffer.append(c);
-            }
-            else {
+            } else {
                 Object word = SPECIAL_CHAR_TO_JAVA_MAPPING.get(String.valueOf(c));
                 buffer.append(word != null ? word : "_");
             }

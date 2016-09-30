@@ -22,7 +22,7 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.naming.NameConverter;
+import org.apache.cayenne.dbsync.reverse.naming.NameConverter;
 
 /**
  * A {@link MergerToken} to add a {@link DbEntity} to a {@link DataMap}

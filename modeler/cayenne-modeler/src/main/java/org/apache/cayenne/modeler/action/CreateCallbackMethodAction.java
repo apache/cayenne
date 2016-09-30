@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.editor.CallbackType;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.CreateCallbackMethodUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.map.naming.NameConverter;
+import org.apache.cayenne.dbsync.reverse.naming.NameConverter;
 
 /**
  * Action class for creating callback methods on ObjEntity

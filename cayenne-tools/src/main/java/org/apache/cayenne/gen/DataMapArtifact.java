@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.gen;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
+import org.apache.cayenne.dbsync.reverse.naming.NameConverter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.naming.NameConverter;
 import org.apache.velocity.VelocityContext;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * {@link Artifact} facade for a DataMap.
@@ -58,8 +58,7 @@ public class DataMapArtifact implements Artifact {
     }
 
     public String getQualifiedClassName() {
-        return dataMap.getNameWithDefaultPackage(NameConverter
-                .underscoredToJava(NameConverter.specialCharsToJava(dataMap.getName()), true));
+        return dataMap.getNameWithDefaultPackage(NameConverter.underscoredToJava(dataMap.getName(), true));
     }
 
     public Object getObject() {
