@@ -15,6 +15,21 @@ UPGRADING TO 4.0.M4
   so if you were using org.apache.cayenne.configuration.rop.server.ROPHessianServlet in your web.xml configuration,
   you must change it to org.apache.cayenne.rop.ROPServlet
 
+* Per CAY-2118 we stopped a bunch of deprecated keys in cdbimport configuration, and also removed the ability to set
+  properties of "reverseEngineering" config object at the top level of configuration. So you will always need
+  <reverseEngineering></reverseEngineering> tag in Maven (but not Ant) to setup any DB filtering. Removed top-level
+  configuration keys:
+
+  1. catalog
+  2. schema (also schemaName)
+  3. excludeTables
+  4. includeTables
+  5. procedurePattern
+  6. tablePattern
+  7. importProcedures
+  8. meaningfulPk
+  9. overwrite
+
 UPGRADING TO 4.0.M3
 
 * Per CAY-2026 minimal Java version is now 1.7. If you are still need Java 1.6, you can use Cayenne 3.1 or 4.0.M2 until your
