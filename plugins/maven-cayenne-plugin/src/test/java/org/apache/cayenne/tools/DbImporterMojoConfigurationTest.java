@@ -18,33 +18,55 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.*;
-
+import org.apache.cayenne.dbimport.Catalog;
+import org.apache.cayenne.dbimport.Schema;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.IncludeTableFilter;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
-import org.apache.cayenne.dbimport.Schema;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
+
+import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertCatalog;
+import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertCatalogAndSchema;
+import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertFlat;
+import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertSchemaContent;
+import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertSkipPrimaryKeyLoading;
+import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertSkipRelationshipsLoading;
+import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertTableTypes;
 
 public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
 
     @Test
     public void testLoadCatalog() throws Exception {
-        assertCatalog(getCdbImport("pom-catalog.xml").getReverseEngineering().getCatalogs().iterator());
+        Map<String, Catalog> catalogs = new HashMap<>();
+        for (Catalog c : getCdbImport("pom-catalog.xml").getReverseEngineering().getCatalogs()) {
+            catalogs.put(c.getName(), c);
+        }
+
+        assertEquals(3, catalogs.size());
+        Catalog c3 = catalogs.get("catalog-name-03");
+        assertNotNull(c3);
+        assertCatalog(c3);
     }
 
     @Test
     public void testLoadSchema() throws Exception {
-        Schema schema = getCdbImport("pom-schema.xml").getReverseEngineering().getSchemas().iterator().next();
-        assertEquals("schema-name-03", schema.getName());
+        Map<String, Schema> schemas = new HashMap<>();
+        for (Schema s : getCdbImport("pom-schema.xml").getReverseEngineering().getSchemas()) {
+            schemas.put(s.getName(), s);
+        }
 
-        assertSchemaContent(schema);
+        assertEquals(3, schemas.size());
+        Schema s3 = schemas.get("schema-name-03");
+        assertNotNull(s3);
+        assertSchemaContent(s3);
     }
 
     @Test
@@ -52,10 +74,10 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
         FiltersConfig filters = getCdbImport("pom-schema-2.xml").toParameters()
                 .getDbLoaderConfig().getFiltersConfig();
 
-        TreeSet<IncludeTableFilter> includes = new TreeSet<IncludeTableFilter>();
+        TreeSet<IncludeTableFilter> includes = new TreeSet<>();
         includes.add(new IncludeTableFilter(null, new PatternFilter().exclude("^ETL_.*")));
 
-        TreeSet<Pattern> excludes = new TreeSet<Pattern>(PatternFilter.PATTERN_COMPARATOR);
+        TreeSet<Pattern> excludes = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
         excludes.add(PatternFilter.pattern("^ETL_.*"));
 
         assertEquals(filters.tableFilter(null, "NHL_STATS"),
@@ -66,12 +88,12 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
     public void testLoadCatalogAndSchema() throws Exception {
         assertCatalogAndSchema(getCdbImport("pom-catalog-and-schema.xml").getReverseEngineering());
     }
-    
-	@Test
-	public void testDefaultPackage() throws Exception {
-		DbImportConfiguration config = getCdbImport("pom-default-package.xml").toParameters();
-		assertEquals("com.example.test", config.getDefaultPackage());
-	}
+
+    @Test
+    public void testDefaultPackage() throws Exception {
+        DbImportConfiguration config = getCdbImport("pom-default-package.xml").toParameters();
+        assertEquals("com.example.test", config.getDefaultPackage());
+    }
 
     @Test
     public void testLoadFlat() throws Exception {

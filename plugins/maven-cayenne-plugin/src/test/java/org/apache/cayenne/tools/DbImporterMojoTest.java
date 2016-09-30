@@ -60,17 +60,18 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     private static DerbyManager derbyAssembly;
 
     @BeforeClass
-    public static void setUpClass() throws IOException, SQLException {
+    public static void beforeClass() throws IOException, SQLException {
         derbyAssembly = new DerbyManager("target/derby");
     }
 
     @AfterClass
-    public static void tearDownClass() throws IOException, SQLException {
+    public static void afterClass() throws IOException, SQLException {
         derbyAssembly.shutdown();
         derbyAssembly = null;
     }
 
-	public void testToParameters_MeaningfulPk() throws Exception {
+    @Test
+	public void testToParameters_MeaningfulPkTables() throws Exception {
 
 		DbImportConfiguration parameters1 = getCdbImport("dbimporter-pom1.xml").toParameters();
 		assertNull(parameters1.getMeaningfulPkTables());
@@ -113,11 +114,6 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     @Test
 	public void testImportAddTableAndColumn() throws Exception {
 		test("testImportAddTableAndColumn");
-	}
-
-    @Test
-	public void testSimpleFiltering() throws Exception {
-		test("testSimpleFiltering");
 	}
 
     @Test

@@ -18,24 +18,26 @@
   under the License.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
 	http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<name>DbImporterMojo Test1</name>	
+    <name>DbImporterMojo Test1</name>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-cayenne-plugin</artifactId>
-				<configuration>
-					<map>target/test-classes/org/apache/cayenne/tools/dbimport/testViewsExclude.map.xml</map>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-cayenne-plugin</artifactId>
+                <configuration>
+                    <map>target/test-classes/org/apache/cayenne/tools/dbimport/testViewsExclude.map.xml</map>
                     <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
                     <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
 
-                    <excludeTables>v_*</excludeTables>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+                    <reverseEngineering>
+                        <excludeTable>^V_.*</excludeTable>
+                    </reverseEngineering>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

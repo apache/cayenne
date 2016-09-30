@@ -36,11 +36,10 @@ public class DefaultReverseEngineeringLoaderTest {
         assertEquals("catalog-name-01", catalogs.next().getName());
         assertEquals("catalog-name-02", catalogs.next().getName());
 
-        assertCatalog(catalogs);
+        assertCatalog(catalogs.next());
     }
 
-    public static void assertCatalog(Iterator<Catalog> catalogs) {
-        Catalog catalog = catalogs.next();
+    public static void assertCatalog(Catalog catalog ) {
         assertEquals("catalog-name-03", catalog.getName());
 
         Iterator<IncludeTable> includeTables = catalog.getIncludeTables().iterator();

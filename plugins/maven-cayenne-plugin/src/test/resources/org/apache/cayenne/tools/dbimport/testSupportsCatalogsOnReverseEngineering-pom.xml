@@ -28,11 +28,16 @@
             <plugin>
                 <artifactId>maven-cayenne-plugin</artifactId>
                 <configuration>
-                    <map>target/test-classes/org/apache/cayenne/tools/dbimport/testSupportsCatalogsOnReverseEngineering.map.xml</map>
+                    <map>
+                        target/test-classes/org/apache/cayenne/tools/dbimport/testSupportsCatalogsOnReverseEngineering.map.xml
+                    </map>
                     <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
                     <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
                     <adapter>org.apache.cayenne.dba.postgres.PostgresAdapter</adapter>
-                    <catalog>DbImporterMojoTest1</catalog>
+
+                    <reverseEngineering>
+                        <catalog>DbImporterMojoTest1</catalog>
+                    </reverseEngineering>
                 </configuration>
             </plugin>
         </plugins>

@@ -18,6 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.db;
 
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
+import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
+import org.apache.cayenne.map.DbAttribute;
+
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -28,11 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
-import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DbAttribute;
 
 /**
  * Load all attributes for schema and return it for each table
@@ -74,6 +74,7 @@ public class DbAttributesPerSchemaLoader extends DbAttributesBaseLoader {
 				String tableName = rs.getString("TABLE_NAME");
 				String columnName = rs.getString("COLUMN_NAME");
 
+				// TODO: instead of elaborate filtering, can we just limit this to the tables that we already have?
 				PatternFilter columnFilter = filter.isIncludeTable(tableName);
 				/*
 				 * Here is possible optimization if filter will contain

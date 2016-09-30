@@ -28,55 +28,57 @@
                 <configuration>
                     <map>target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml</map>
 
-                    <schema>schema-name-01</schema>
+                    <reverseEngineering>
+                        <schema>schema-name-01</schema>
 
-                    <schema>
-                        <name>schema-name-02</name>
-                    </schema>
+                        <schema>
+                            <name>schema-name-02</name>
+                        </schema>
 
-                    <schema>
-                        <name>schema-name-03</name>
-                        <includeTable>includeTable-01</includeTable>
+                        <schema>
+                            <name>schema-name-03</name>
+                            <includeTable>includeTable-01</includeTable>
 
-                        <includeTable>
-                            <pattern>includeTable-02</pattern>
-                        </includeTable>
+                            <includeTable>
+                                <pattern>includeTable-02</pattern>
+                            </includeTable>
 
-                        <includeTable>
-                            <pattern>includeTable-03</pattern>
+                            <includeTable>
+                                <pattern>includeTable-03</pattern>
+
+                                <includeColumn>includeColumn-01</includeColumn>
+                                <excludeColumn>excludeColumn-01</excludeColumn>
+                            </includeTable>
+
+                            <excludeTable>excludeTable-01</excludeTable>
+                            <excludeTable>
+                                <pattern>excludeTable-02</pattern>
+                            </excludeTable>
+                            <excludeTable>excludeTable-03</excludeTable>
 
                             <includeColumn>includeColumn-01</includeColumn>
+                            <includeColumn>
+                                <pattern>includeColumn-02</pattern>
+                            </includeColumn>
+                            <includeColumn>includeColumn-03</includeColumn>
                             <excludeColumn>excludeColumn-01</excludeColumn>
-                        </includeTable>
+                            <excludeColumn>
+                                <pattern>excludeColumn-02</pattern>
+                            </excludeColumn>
+                            <excludeColumn>excludeColumn-03</excludeColumn>
 
-                        <excludeTable>excludeTable-01</excludeTable>
-                        <excludeTable>
-                            <pattern>excludeTable-02</pattern>
-                        </excludeTable>
-                        <excludeTable>excludeTable-03</excludeTable>
-
-                        <includeColumn>includeColumn-01</includeColumn>
-                        <includeColumn>
-                            <pattern>includeColumn-02</pattern>
-                        </includeColumn>
-                        <includeColumn>includeColumn-03</includeColumn>
-                        <excludeColumn>excludeColumn-01</excludeColumn>
-                        <excludeColumn>
-                            <pattern>excludeColumn-02</pattern>
-                        </excludeColumn>
-                        <excludeColumn>excludeColumn-03</excludeColumn>
-
-                        <includeProcedure>includeProcedure-01</includeProcedure>
-                        <includeProcedure>
-                            <pattern>includeProcedure-02</pattern>
-                        </includeProcedure>
-                        <includeProcedure>includeProcedure-03</includeProcedure>
-                        <excludeProcedure>excludeProcedure-01</excludeProcedure>
-                        <excludeProcedure>
-                            <pattern>excludeProcedure-02</pattern>
-                        </excludeProcedure>
-                        <excludeProcedure>excludeProcedure-03</excludeProcedure>
-                    </schema>
+                            <includeProcedure>includeProcedure-01</includeProcedure>
+                            <includeProcedure>
+                                <pattern>includeProcedure-02</pattern>
+                            </includeProcedure>
+                            <includeProcedure>includeProcedure-03</includeProcedure>
+                            <excludeProcedure>excludeProcedure-01</excludeProcedure>
+                            <excludeProcedure>
+                                <pattern>excludeProcedure-02</pattern>
+                            </excludeProcedure>
+                            <excludeProcedure>excludeProcedure-03</excludeProcedure>
+                        </schema>
+                    </reverseEngineering>
                 </configuration>
             </plugin>
         </plugins>

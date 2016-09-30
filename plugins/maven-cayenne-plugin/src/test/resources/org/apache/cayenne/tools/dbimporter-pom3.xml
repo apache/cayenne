@@ -28,8 +28,7 @@
 			<plugin>
 				<artifactId>maven-cayenne-plugin</artifactId>
 				<configuration>
-					<!-- this is a deprecated config, but it should work -->
-					<meaningfulPk>true</meaningfulPk>
+					<meaningfulPkTables>*</meaningfulPkTables>
 				</configuration>
 			</plugin>
 		</plugins>
