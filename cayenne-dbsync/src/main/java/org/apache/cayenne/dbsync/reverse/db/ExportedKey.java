@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map.naming;
+package org.apache.cayenne.dbsync.reverse.db;
 
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;

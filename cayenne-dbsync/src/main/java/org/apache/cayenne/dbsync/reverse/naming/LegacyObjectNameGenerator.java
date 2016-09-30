@@ -21,7 +21,7 @@ package org.apache.cayenne.dbsync.reverse.naming;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.naming.ExportedKey;
+import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
 import org.apache.cayenne.map.naming.NameConverter;
 
 /**

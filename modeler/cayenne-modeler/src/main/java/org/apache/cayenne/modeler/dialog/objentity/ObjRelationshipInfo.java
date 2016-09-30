@@ -27,7 +27,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.RelationshipEvent;
-import org.apache.cayenne.map.naming.ExportedKey;
+import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
 import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;

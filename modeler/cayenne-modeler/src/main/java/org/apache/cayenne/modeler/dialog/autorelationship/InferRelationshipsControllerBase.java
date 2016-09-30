@@ -30,7 +30,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.naming.ExportedKey;
+import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
 import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.commons.collections.Predicate;

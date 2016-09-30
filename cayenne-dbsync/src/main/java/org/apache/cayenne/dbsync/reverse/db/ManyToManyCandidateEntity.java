@@ -22,7 +22,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
-import org.apache.cayenne.map.naming.ExportedKey;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.commons.logging.Log;

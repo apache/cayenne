@@ -35,7 +35,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
-import org.apache.cayenne.map.naming.ExportedKey;
 import org.apache.cayenne.dbsync.reverse.naming.LegacyObjectNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
