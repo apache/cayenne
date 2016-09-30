@@ -20,7 +20,7 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dbsync.merge.builders.DbEntityBuilder;
 import org.apache.cayenne.dbsync.merge.factory.HSQLMergerTokenFactory;
-import org.apache.cayenne.dbsync.reverse.DbLoaderConfiguration;
+import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.junit.Test;

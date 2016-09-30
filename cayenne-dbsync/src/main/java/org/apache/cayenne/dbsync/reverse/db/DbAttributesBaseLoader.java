@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.reverse;
+package org.apache.cayenne.dbsync.reverse.db;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;

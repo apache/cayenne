@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
- * @since 4.0.
+ * @since 4.0
  */
 public final class FiltersConfigBuilder {
 
@@ -52,7 +52,7 @@ public final class FiltersConfigBuilder {
         this.engineering = engineering;
     }
 
-    public FiltersConfig filtersConfig() {
+    public FiltersConfig build() {
         compact();
 
         return new FiltersConfig(transformCatalogs(engineering.getCatalogs()));
@@ -120,6 +120,7 @@ public final class FiltersConfigBuilder {
     /**
      * Goal of this method transform ReverseEngineering config into more regular form
      * From
+     * <pre>
      *      ReverseEngineering
      *          Catalog
      *              Schema
@@ -156,9 +157,10 @@ public final class FiltersConfigBuilder {
      *          ExcludeProcedures
      *          IncludeColumn
      *          ExcludeColumn
-     *
+     * </pre>
      * Into
-     *      ReverseEngineering
+     * <pre>
+     *  ReverseEngineering
      *          Catalog
      *              Schema
      *                  IncludeTable
@@ -167,10 +169,9 @@ public final class FiltersConfigBuilder {
      *                  ExcludeTable
      *                  IncludeProcedures
      *                  ExcludeProcedures
-     *
-     *
-     * */
-    public void compact() {
+     * </pre>
+     */
+    void compact() {
         addEmptyElements();
 
         compactColumnFilters();

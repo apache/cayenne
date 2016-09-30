@@ -81,7 +81,7 @@ public class DbImporterTask extends Task {
         File dataMapFile = config.getDataMapFile();
         config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering)
                 .add(filterBuilder)
-                .filtersConfig());
+                .build());
 
         validateAttributes();
 
@@ -134,7 +134,7 @@ public class DbImporterTask extends Task {
                             dataMap.setReverseEngineering(reverseEngineering);
 
                             FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(dataMap.getReverseEngineering());
-                            config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.filtersConfig());
+                            config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.build());
                             validateDbImportConfiguration(config, injector);
                             injector.getInstance(DbImportAction.class).execute(config);
                         } catch (Exception ex) {

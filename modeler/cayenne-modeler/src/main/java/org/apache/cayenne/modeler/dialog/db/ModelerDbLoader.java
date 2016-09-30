@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.db;
 
-import org.apache.cayenne.dbsync.reverse.DbLoader;
-import org.apache.cayenne.dbsync.reverse.DbLoaderConfiguration;
-import org.apache.cayenne.dbsync.reverse.DefaultDbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.db.DbLoader;
+import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
+import org.apache.cayenne.dbsync.reverse.db.DefaultDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.SchemaFilter;
 import org.apache.cayenne.map.DataMap;
@@ -70,10 +70,8 @@ class ModelerDbLoader extends DbLoader {
     public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
         LOGGER.info("Schema loading...");
 
-        String[] types = config.getTableTypes();
-        if (types == null || types.length == 0) {
-            types = getDefaultTableTypes();
-        }
+        String[] types = getTableTypes(config);
+
         boolean isNullDetected = false;
         for (CatalogFilter catalog : config.getFiltersConfig().catalogs) {
             for (SchemaFilter schema : catalog.schemas) {

@@ -16,43 +16,44 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-package org.apache.cayenne.dbsync.reverse;
+package org.apache.cayenne.dbsync.reverse.db;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
- * DbLoaderDelegate defines API that allows to control the behavior of DbLoader
- * during the database reverse-engineering. Delegate is also notified of the
- * progress of reverse-engineering.
+ * @since 4.0.
  */
-public interface DbLoaderDelegate {
+public class DefaultDbLoaderDelegate implements DbLoaderDelegate {
 
-    void dbEntityAdded(DbEntity entity);
+    @Override
+    public void dbEntityAdded(DbEntity entity) {
 
-    void dbEntityRemoved(DbEntity entity);
+    }
 
-    /**
-     * Called before relationship loading for db-entity
-     * @param entity
-     *
-     * @return true in case you want process relationships for this entity
-     *         false otherwise
-     */
-    boolean dbRelationship(DbEntity entity);
+    @Override
+    public void dbEntityRemoved(DbEntity entity) {
 
-    /**
-     * Called before relationship will be added into db-entity but after it was loaded from db
-     * @param entity
-     *
-     * @return true in case you want add this relationship into entity
-     *         false otherwise
-     */
-    boolean dbRelationshipLoaded(DbEntity entity, DbRelationship relationship);
+    }
 
-    void objEntityAdded(ObjEntity entity);
+    @Override
+    public boolean dbRelationship(DbEntity entity) {
+        return true;
+    }
 
-    void objEntityRemoved(ObjEntity entity);
+    @Override
+    public boolean dbRelationshipLoaded(DbEntity entity, DbRelationship relationship) {
+        return true;
+    }
+
+    @Override
+    public void objEntityAdded(ObjEntity entity) {
+
+    }
+
+    @Override
+    public void objEntityRemoved(ObjEntity entity) {
+
+    }
 }

@@ -319,7 +319,7 @@ public class DbImporterMojo extends AbstractMojo {
                             dataMap.setReverseEngineering(reverseEngineering);
 
                             FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(dataMap.getReverseEngineering());
-                            config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.filtersConfig());
+                            config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.build());
                             validateDbImportConfiguration(config, injector);
                             injector.getInstance(DbImportAction.class).execute(config);
                         } catch (Exception ex) {
@@ -382,7 +382,7 @@ public class DbImporterMojo extends AbstractMojo {
         config.setUsername(username);
         config.setUsePrimitives(usePrimitives);
         config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering)
-                .add(filterBuilder).filtersConfig());
+                .add(filterBuilder).build());
         config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
         config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
         config.setTableTypes(reverseEngineering.getTableTypes());

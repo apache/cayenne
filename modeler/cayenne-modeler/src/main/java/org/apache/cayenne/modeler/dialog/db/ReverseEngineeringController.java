@@ -20,8 +20,8 @@ package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbimport.ReverseEngineering;
-import org.apache.cayenne.dbsync.reverse.DbLoader;
-import org.apache.cayenne.dbsync.reverse.DbLoaderConfiguration;
+import org.apache.cayenne.dbsync.reverse.db.DbLoader;
+import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.FiltersConfigBuilder;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
@@ -107,7 +107,7 @@ public class ReverseEngineeringController extends CayenneController {
 
             FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(reverseEngineering);
             DbLoaderConfiguration dbLoaderConfiguration = new DbLoaderConfiguration();
-            dbLoaderConfiguration.setFiltersConfig(filtersConfigBuilder.filtersConfig());
+            dbLoaderConfiguration.setFiltersConfig(filtersConfigBuilder.build());
 
             try(Connection connection = dataSource.getConnection()) {
                 DbLoader dbLoader = new ModelerDbLoader(this, treeEditor, connection);

@@ -17,8 +17,10 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dbsync.reverse;
+package org.apache.cayenne.dbsync.reverse.db;
 
+import org.apache.cayenne.dbsync.reverse.db.DbLoader;
+import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
@@ -86,24 +88,6 @@ public class DbLoaderIT extends ServerCase {
     @After
     public void after() throws Exception {
         connection.close();
-    }
-
-    @Test
-    public void testGetTableTypes() throws Exception {
-
-        List<?> tableTypes = loader.getTableTypes();
-
-        assertNotNull(tableTypes);
-
-        String tableLabel = adapter.tableTypeForTable();
-        if (tableLabel != null) {
-            assertTrue("Missing type for table '" + tableLabel + "' - " + tableTypes, tableTypes.contains(tableLabel));
-        }
-
-        String viewLabel = adapter.tableTypeForView();
-        if (viewLabel != null) {
-            assertTrue("Missing type for view '" + viewLabel + "' - " + tableTypes, tableTypes.contains(viewLabel));
-        }
     }
 
     @Test

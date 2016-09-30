@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.reverse;
+package org.apache.cayenne.dbsync.reverse.db;
 
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
@@ -36,28 +36,6 @@ public class DbLoaderConfiguration {
      *
      */
     private String genericClassName;
-
-/*
-    // TODO: Andrus, 10/29/2005 - this type of filtering should be delegated to adapter
-       TODO by default should skip name.startsWith("BIN$")
-
-    private NameFilter tableFilter = NamePatternMatcher.build(null, null, "BIN$");
-
-    private NameFilter columnFilter;
-
-    private NameFilter proceduresFilter = new NameFilter() {
-        private final Collection<String> excludedProcedures = Arrays.asList(
-                "auto_pk_for_table",
-                "auto_pk_for_table;1" // the last name is some Mac OS X Sybase artifact
-        );
-
-        @Override
-        public boolean isIncluded(String string) {
-            return !excludedProcedures.contains(string);
-        }
-    };
-*/
-
 
     /**
      * Java class implementing org.apache.cayenne.map.naming.NamingStrategy.

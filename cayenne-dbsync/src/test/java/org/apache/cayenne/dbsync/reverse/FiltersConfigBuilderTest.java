@@ -272,7 +272,7 @@ public class FiltersConfigBuilderTest {
     /*@Test
     public void testEmptyDbEntitiesFilters() throws Exception {
         ReverseEngineering engineering = new ReverseEngineering();
-        FiltersConfig executions = new FiltersConfigBuilder(engineering).filtersConfig();
+        FiltersConfig executions = new FiltersConfigBuilder(engineering).build();
 
         assertEquals("If nothing was configured we have to import everything. Filter %/%/% true/true/true",
                 new FiltersConfig(eFilters(path(), TRUE, TRUE, NULL)),
@@ -283,7 +283,7 @@ public class FiltersConfigBuilderTest {
     public void testOnlyOneCatalogDbEntitiesFilters() throws Exception {
         ReverseEngineering engineering = new ReverseEngineering();
         engineering.addCatalog(new Catalog("catalog_01"));
-        FiltersConfig executions = new FiltersConfigBuilder(engineering).filtersConfig();
+        FiltersConfig executions = new FiltersConfigBuilder(engineering).build();
 
 
         assertEquals(new FiltersConfig(eFilters(path("catalog_01", null), TRUE, TRUE, NULL)),
@@ -301,7 +301,7 @@ public class FiltersConfigBuilderTest {
         engineering.addCatalog(new Catalog("catalog_03").schema(new Schema("schema_01")));
         engineering.addCatalog(new Catalog("catalog_03").schema(new Schema("schema_01")));
         engineering.addCatalog(new Catalog("catalog_03").schema(new Schema("schema_01")));
-        FiltersConfig executions = new FiltersConfigBuilder(engineering).filtersConfig();
+        FiltersConfig executions = new FiltersConfigBuilder(engineering).build();
 
 
         assertEquals(new FiltersConfig(
@@ -320,7 +320,7 @@ public class FiltersConfigBuilderTest {
         engineering.addSchema(new Schema("schema_01"));
         engineering.addSchema(new Schema("schema_02"));
         engineering.addSchema(new Schema("schema_03"));
-        FiltersConfig executions = new FiltersConfigBuilder(engineering).filtersConfig();
+        FiltersConfig executions = new FiltersConfigBuilder(engineering).build();
 
 
         assertEquals(new FiltersConfig(
@@ -341,7 +341,7 @@ public class FiltersConfigBuilderTest {
         engineering.addExcludeColumn(new ExcludeColumn("ExcludeColumn"));
         engineering.addExcludeProcedure(new ExcludeProcedure("ExcludeProcedure"));
 
-        FiltersConfig executions = new FiltersConfigBuilder(engineering).filtersConfig();
+        FiltersConfig executions = new FiltersConfigBuilder(engineering).build();
 
         assertEquals(new FiltersConfig(
                         eFilters(path(),
@@ -367,7 +367,7 @@ public class FiltersConfigBuilderTest {
         ReverseEngineering engineering = new ReverseEngineering();
         engineering.addCatalog(catalog);
 
-        FiltersConfig executions = new FiltersConfigBuilder(engineering).filtersConfig();
+        FiltersConfig executions = new FiltersConfigBuilder(engineering).build();
 
         assertEquals(new FiltersConfig(
                         eFilters(path("catalog", "schema"), include("table"), NULL, NULL),
@@ -385,7 +385,7 @@ public class FiltersConfigBuilderTest {
         builder.add(new EntityFilters(path, NULL, NULL, NULL));
         builder.add(new EntityFilters(path, NULL, NULL, NULL));
 
-        EntityFilters filter = builder.filtersConfig().filter(path);
+        EntityFilters filter = builder.build().filter(path);
         assertFalse(filter.isEmpty());
     }*/
 }

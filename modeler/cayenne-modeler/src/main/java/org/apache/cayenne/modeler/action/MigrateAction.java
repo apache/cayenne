@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
-import org.apache.cayenne.dbsync.reverse.DbLoader;
+import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DataSourceController;

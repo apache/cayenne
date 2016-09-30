@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.reverse;
+package org.apache.cayenne.dbsync.reverse.db;
 
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
@@ -35,7 +35,7 @@ import java.util.List;
  * Class represent ObjEntity that may be optimized using flattened relationships
  * as many to many table
  */
-public class ManyToManyCandidateEntity {
+class ManyToManyCandidateEntity {
 
     private static final Log LOG = LogFactory.getLog(ManyToManyCandidateEntity.class);
 
@@ -68,6 +68,7 @@ public class ManyToManyCandidateEntity {
 
     /**
      * Method check - if current entity represent many to many temporary table
+     *
      * @return true if current entity is represent many to many table; otherwise returns false
      */
     public static ManyToManyCandidateEntity build(ObjEntity joinEntity) {

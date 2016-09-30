@@ -24,8 +24,8 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.CayenneDbSyncModule;
-import org.apache.cayenne.dbsync.reverse.DbLoader;
-import org.apache.cayenne.dbsync.reverse.DefaultDbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.db.DbLoader;
+import org.apache.cayenne.dbsync.reverse.db.DefaultDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.FiltersConfigBuilder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -359,7 +359,7 @@ public class DbLoaderHelper {
             }
 
             FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(reverseEngineering);
-            config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.filtersConfig());
+            config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.build());
 
 
             ModelerDbImportAction importAction = new ModelerDbImportAction(logObj, DbLoaderHelper.this);

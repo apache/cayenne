@@ -33,9 +33,9 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.MergerToken;
 import org.apache.cayenne.dbsync.merge.builders.DataMapBuilder;
 import org.apache.cayenne.dbsync.merge.factory.DefaultMergerTokenFactory;
-import org.apache.cayenne.dbsync.reverse.DbLoader;
-import org.apache.cayenne.dbsync.reverse.DbLoaderConfiguration;
-import org.apache.cayenne.dbsync.reverse.DbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.db.DbLoader;
+import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
+import org.apache.cayenne.dbsync.reverse.db.DbLoaderDelegate;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
@@ -100,11 +100,6 @@ public class DefaultDbImportActionTest {
 			public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
 				new DataMapBuilder(dataMap).withDbEntities(2).build();
 			}
-
-			@Override
-			public String[] getDefaultTableTypes() {
-				return null;
-			}
 		};
 
         DbImportConfiguration params = mock(DbImportConfiguration.class);
@@ -150,11 +145,6 @@ public class DefaultDbImportActionTest {
                                 objAttr("name").type(String.class).dbPath("NAME")
                         ));
             }
-
-			@Override
-			public String[] getDefaultTableTypes() {
-				return null;
-			}
 		};
 
         DbImportConfiguration params = mock(DbImportConfiguration.class);
@@ -213,11 +203,6 @@ public class DefaultDbImportActionTest {
                                 dbAttr("NAME").typeVarchar(100).mandatory()
                         ));
             }
-
-			@Override
-			public String[] getDefaultTableTypes() {
-				return null;
-			}
 		};
 
         DbImportConfiguration params = mock(DbImportConfiguration.class);
@@ -253,7 +238,6 @@ public class DefaultDbImportActionTest {
 	@Test
 	public void testImportWithDbError() throws Exception {
 		DbLoader dbLoader = mock(DbLoader.class);
-		when(dbLoader.getDefaultTableTypes()).thenReturn(null);
 		doThrow(new SQLException()).when(dbLoader).load(any(DataMap.class), any(DbLoaderConfiguration.class));
 
         DbImportConfiguration params = mock(DbImportConfiguration.class);
