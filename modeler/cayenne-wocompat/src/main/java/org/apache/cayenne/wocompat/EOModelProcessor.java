@@ -34,7 +34,7 @@ import java.util.StringTokenizer;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.*;
-import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.UniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.query.*;
 import org.apache.cayenne.wocompat.parser.Parser;
@@ -716,7 +716,7 @@ public class EOModelProcessor {
 			if (relationship.getReverseRelationship() == null) {
 				DbRelationship reverse = relationship.createReverseRelationship();
 
-				String name = DefaultUniqueNameGenerator.generate(NameCheckers.dbRelationship,
+				String name = UniqueNameGenerator.generate(NameCheckers.dbRelationship,
 						reverse.getSourceEntity(), relationship.getName() + "Reverse");
 				reverse.setName(name);
 				relationship.getTargetEntity().addRelationship(reverse);

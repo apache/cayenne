@@ -29,7 +29,7 @@ import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.UniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
@@ -119,7 +119,7 @@ public class QueryType extends CayenneController{
         String queryType = getSelectedQuery();
 
         // update query...
-        String queryName = DefaultUniqueNameGenerator.generate(NameCheckers.query, dataMap);
+        String queryName = UniqueNameGenerator.generate(NameCheckers.query, dataMap);
 
         QueryDescriptor query = QueryDescriptor.descriptor(queryType);
 

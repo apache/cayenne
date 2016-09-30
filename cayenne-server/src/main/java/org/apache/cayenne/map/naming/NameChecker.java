@@ -25,7 +25,6 @@ public interface NameChecker {
 
 	/**
 	 * Returns a base default name, like "UntitledEntity", etc.
-	 * 
 	 */
 	String baseName();
 

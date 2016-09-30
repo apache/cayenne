@@ -27,7 +27,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.UniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.map.naming.NameConverter;
 import org.apache.cayenne.modeler.Application;
@@ -69,7 +69,7 @@ public class CreateObjEntityAction extends CayenneAction {
         ProjectController mediator = getProjectController();
 
         DataMap dataMap = mediator.getCurrentDataMap();
-        ObjEntity entity = new ObjEntity(DefaultUniqueNameGenerator.generate(NameCheckers.objEntity, dataMap));
+        ObjEntity entity = new ObjEntity(UniqueNameGenerator.generate(NameCheckers.objEntity, dataMap));
 
         // init defaults
         entity.setSuperClassName(dataMap.getDefaultSuperclass());
@@ -79,7 +79,7 @@ public class CreateObjEntityAction extends CayenneAction {
         if (dbEntity != null) {
             entity.setDbEntity(dbEntity);
             String baseName = NameConverter.underscoredToJava(dbEntity.getName(), true);
-            entity.setName(DefaultUniqueNameGenerator.generate(NameCheckers.objEntity, dbEntity.getDataMap(), baseName));
+            entity.setName(UniqueNameGenerator.generate(NameCheckers.objEntity, dbEntity.getDataMap(), baseName));
         }
 
         entity.setClassName(dataMap.getNameWithDefaultPackage(entity.getName()));

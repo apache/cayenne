@@ -35,7 +35,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.UniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -335,8 +335,8 @@ public class DbLoaderHelper {
             DbLoaderHelper.this.existingMap = dataMap != null;
 
             if (!existingMap) {
-                dataMap = new DataMap(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap));
-                dataMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap, mediator.getProject().getRootNode()));
+                dataMap = new DataMap(UniqueNameGenerator.generate(NameCheckers.dataMap));
+                dataMap.setName(UniqueNameGenerator.generate(NameCheckers.dataMap, mediator.getProject().getRootNode()));
             }
 
             if (isCanceled()) {
@@ -351,7 +351,7 @@ public class DbLoaderHelper {
                     reverseEngineering.setConfigurationSource(dataMap.getReverseEngineering().getConfigurationSource());
                 }
             } else {
-                reverseEngineering.setName(DefaultUniqueNameGenerator.generate(NameCheckers.reverseEngineering, dataChannelDescriptor));
+                reverseEngineering.setName(UniqueNameGenerator.generate(NameCheckers.reverseEngineering, dataChannelDescriptor));
             }
 
             if (dataMap.getConfigurationSource() != null) {

@@ -31,7 +31,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
-import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.UniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -66,7 +66,7 @@ public class CreateRelationshipAction extends CayenneAction {
 		ObjEntity objEnt = getProjectController().getCurrentObjEntity();
 		if (objEnt != null) {
 
-			ObjRelationship rel = new ObjRelationship(DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship,
+			ObjRelationship rel = new ObjRelationship(UniqueNameGenerator.generate(NameCheckers.objRelationship,
 					objEnt));
 			createObjRelationship(objEnt, rel);
 
@@ -76,7 +76,7 @@ public class CreateRelationshipAction extends CayenneAction {
 			DbEntity dbEnt = getProjectController().getCurrentDbEntity();
 			if (dbEnt != null) {
 
-				DbRelationship rel = new DbRelationship(DefaultUniqueNameGenerator.generate(
+				DbRelationship rel = new DbRelationship(UniqueNameGenerator.generate(
 						NameCheckers.dbRelationship, dbEnt));
 				createDbRelationship(dbEnt, rel);
 

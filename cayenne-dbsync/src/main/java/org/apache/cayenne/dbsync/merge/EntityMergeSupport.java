@@ -29,7 +29,7 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.UniqueNameGenerator;
 import org.apache.cayenne.dbsync.reverse.naming.LegacyObjectNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
@@ -205,7 +205,7 @@ public class EntityMergeSupport {
 
     private boolean createObjRelationship(ObjEntity entity, DbRelationship dr, String targetEntityName) {
         String relationshipName = nameGenerator.createObjRelationshipName(dr);
-        relationshipName = DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, entity, relationshipName);
+        relationshipName = UniqueNameGenerator.generate(NameCheckers.objRelationship, entity, relationshipName);
 
         ObjRelationship or = new ObjRelationship(relationshipName);
         or.addDbRelationship(dr);
@@ -279,7 +279,7 @@ public class EntityMergeSupport {
     }
 
     private void addMissingAttribute(ObjEntity entity, DbAttribute da) {
-        String attrName = DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, entity,
+        String attrName = UniqueNameGenerator.generate(NameCheckers.objAttribute, entity,
                 nameGenerator.createObjAttributeName(da));
 
         String type = TypesMapping.getJavaBySqlType(da.getType());

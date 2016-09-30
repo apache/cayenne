@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.UniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -63,7 +63,7 @@ public class CreateDataMapAction extends CayenneAction {
                 .getProject()
                 .getRootNode();
 
-        DataMap map = new DataMap(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap, currentDomain));
+        DataMap map = new DataMap(UniqueNameGenerator.generate(NameCheckers.dataMap, currentDomain));
 
         createDataMap(map);
 

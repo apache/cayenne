@@ -19,6 +19,21 @@
 
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.event.EntityEvent;
+import org.apache.cayenne.map.event.ObjEntityListener;
+import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.commons.collections.Transformer;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,22 +46,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.event.EntityEvent;
-import org.apache.cayenne.map.event.ObjEntityListener;
-import org.apache.cayenne.map.naming.NameConverter;
-import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.cayenne.util.Util;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.commons.collections.Transformer;
 
 /**
  * ObjEntity is a mapping descriptor for a DataObject Java class. It contains
@@ -678,7 +677,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
 
             // create synthetic attribute
             if (attribute == null) {
-                attribute = new SyntheticPKObjAttribute(NameConverter.underscoredToJava(pk.getName(), false));
+                attribute = new SyntheticPKObjAttribute(pk.getName());
                 attribute.setDbAttributePath(pk.getName());
                 attribute.setType(TypesMapping.getJavaBySqlType(pk.getType()));
             }

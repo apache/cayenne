@@ -23,7 +23,7 @@ import java.awt.event.ActionEvent;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.UniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.editor.CallbackType;
@@ -78,7 +78,7 @@ public class CreateCallbackMethodAction extends CayenneAction {
 
         // generate methodName
         String methodNamePrefix = toMethodName(callbackType.getType());
-        String methodName = DefaultUniqueNameGenerator.generate(NameCheckers.objCallbackMethod, getProjectController().getCurrentObjEntity(), methodNamePrefix);
+        String methodName = UniqueNameGenerator.generate(NameCheckers.objCallbackMethod, getProjectController().getCurrentObjEntity(), methodNamePrefix);
 
         createCallbackMethod(callbackType, methodName);
         application.getUndoManager().addEdit(

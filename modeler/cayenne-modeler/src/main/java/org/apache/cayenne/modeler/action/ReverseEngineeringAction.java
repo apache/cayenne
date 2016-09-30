@@ -20,24 +20,16 @@
 package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
-import java.sql.Connection;
-
-import javax.swing.SwingUtilities;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.UniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.db.ReverseEngineeringController;
-import org.apache.cayenne.modeler.dialog.db.DbLoaderHelper;
-import org.apache.cayenne.modeler.dialog.db.ReverseEngineeringScrollPane;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
@@ -63,8 +55,8 @@ public class ReverseEngineeringAction extends CayenneAction {
         DataMap dataMap = projectController.getCurrentDataMap();
         DataChannelDescriptor dataChannelDescriptor = projectController.getCurrentDataChanel();
         if (dataMap == null) {
-            dataMap = new DataMap(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap));
-            dataMap.setName(DefaultUniqueNameGenerator.generate(NameCheckers.dataMap, projectController.getProject().getRootNode()));
+            dataMap = new DataMap(UniqueNameGenerator.generate(NameCheckers.dataMap));
+            dataMap.setName(UniqueNameGenerator.generate(NameCheckers.dataMap, projectController.getProject().getRootNode()));
             dataChannelDescriptor.getDataMaps().add(dataMap);
             getProjectController().fireDataMapEvent(new DataMapEvent(this, dataMap, MapEvent.ADD));
         }

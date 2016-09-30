@@ -47,35 +47,35 @@ public class NameCheckersTest {
         ObjEntity namingContainer = new ObjEntity();
 
         String baseName = maker.baseName();
-        String name = DefaultUniqueNameGenerator.generate(maker, namingContainer);
+        String name = UniqueNameGenerator.generate(maker, namingContainer);
         assertEquals(baseName, name);
         namingContainer.addAttribute(new ObjAttribute(name));
 
-        name = DefaultUniqueNameGenerator.generate(maker, namingContainer);
+        name = UniqueNameGenerator.generate(maker, namingContainer);
         assertEquals(baseName + "1", name);
         namingContainer.addAttribute(new ObjAttribute(name));
 
-        name = DefaultUniqueNameGenerator.generate(maker, namingContainer);
+        name = UniqueNameGenerator.generate(maker, namingContainer);
         assertEquals(baseName + "2", name);
         namingContainer.addAttribute(new ObjAttribute(name));
 
-        name = DefaultUniqueNameGenerator.generate(maker, namingContainer);
+        name = UniqueNameGenerator.generate(maker, namingContainer);
         assertEquals(baseName + "3", name);
         namingContainer.addAttribute(new ObjAttribute(name));
 
         maker = NameCheckers.objRelationship;
         baseName = maker.baseName();
-        name = DefaultUniqueNameGenerator.generate(maker, namingContainer);
+        name = UniqueNameGenerator.generate(maker, namingContainer);
         assertEquals(baseName, name);
         namingContainer.addRelationship(new ObjRelationship(name));
 
-        name = DefaultUniqueNameGenerator.generate(maker, namingContainer);
+        name = UniqueNameGenerator.generate(maker, namingContainer);
         assertEquals(baseName + "1", name);
         namingContainer.addRelationship(new ObjRelationship(name));
 
         maker = NameCheckers.objCallbackMethod;
         baseName = maker.baseName();
-        name = DefaultUniqueNameGenerator.generate(maker, namingContainer);
+        name = UniqueNameGenerator.generate(maker, namingContainer);
         assertEquals(baseName, name);
         namingContainer.addRelationship(new ObjRelationship(name));
     }
@@ -152,8 +152,8 @@ public class NameCheckersTest {
 
     private void checkNameAndOther(Object namingContainer, NameCheckers maker, String newName) {
         assertTrue(maker.isNameInUse(namingContainer, newName));
-        assertEquals(newName + "1", DefaultUniqueNameGenerator.generate(maker,namingContainer, newName));
-        assertEquals("other" + newName, DefaultUniqueNameGenerator.generate(maker,namingContainer, "other" + newName));
+        assertEquals(newName + "1", UniqueNameGenerator.generate(maker,namingContainer, newName));
+        assertEquals("other" + newName, UniqueNameGenerator.generate(maker,namingContainer, "other" + newName));
     }
 
     @Test
@@ -161,13 +161,13 @@ public class NameCheckersTest {
         ObjEntity namingContainer = new ObjEntity();
 
         namingContainer.addAttribute(new ObjAttribute("myName"));
-        Assert.assertEquals("getMyName1", DefaultUniqueNameGenerator.generate(NameCheckers.objCallbackMethod, namingContainer, "getMyName"));
+        Assert.assertEquals("getMyName1", UniqueNameGenerator.generate(NameCheckers.objCallbackMethod, namingContainer, "getMyName"));
 
         namingContainer.getCallbackMap().getPostAdd().addCallbackMethod("getSecondName");
-        Assert.assertEquals("SecondName1", DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, namingContainer, "SecondName"));
-        Assert.assertEquals("secondName1", DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, namingContainer, "secondName"));
-        Assert.assertEquals("SecondName1", DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, namingContainer, "SecondName"));
-        Assert.assertEquals("secondName1", DefaultUniqueNameGenerator.generate(NameCheckers.objRelationship, namingContainer, "secondName"));
+        Assert.assertEquals("SecondName1", UniqueNameGenerator.generate(NameCheckers.objAttribute, namingContainer, "SecondName"));
+        Assert.assertEquals("secondName1", UniqueNameGenerator.generate(NameCheckers.objAttribute, namingContainer, "secondName"));
+        Assert.assertEquals("SecondName1", UniqueNameGenerator.generate(NameCheckers.objRelationship, namingContainer, "SecondName"));
+        Assert.assertEquals("secondName1", UniqueNameGenerator.generate(NameCheckers.objRelationship, namingContainer, "secondName"));
     }
 
     @Test
@@ -179,8 +179,8 @@ public class NameCheckersTest {
         Assert.assertFalse(NameCheckers.objAttribute.isNameInUse(namingContainer, "MyName"));
 
         namingContainer.getCallbackMap().getPostAdd().addCallbackMethod("getSecondName");
-        Assert.assertEquals("SecondName1", DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, namingContainer, "SecondName"));
-        Assert.assertEquals("secondName1", DefaultUniqueNameGenerator.generate(NameCheckers.objAttribute, namingContainer, "secondName"));
+        Assert.assertEquals("SecondName1", UniqueNameGenerator.generate(NameCheckers.objAttribute, namingContainer, "SecondName"));
+        Assert.assertEquals("secondName1", UniqueNameGenerator.generate(NameCheckers.objAttribute, namingContainer, "secondName"));
     }
 
     @Test
@@ -189,16 +189,16 @@ public class NameCheckersTest {
 
         map.addEmbeddable(new Embeddable("name"));
         Assert.assertTrue(NameCheckers.embeddable.isNameInUse(map, "name"));
-        Assert.assertEquals("name1", DefaultUniqueNameGenerator.generate(NameCheckers.embeddable, map, "name"));
+        Assert.assertEquals("name1", UniqueNameGenerator.generate(NameCheckers.embeddable, map, "name"));
         Assert.assertFalse(NameCheckers.embeddable.isNameInUse(map, "other-name"));
 
         map.setDefaultPackage("package");
         Assert.assertFalse(NameCheckers.embeddable.isNameInUse(map, "name"));
-        Assert.assertEquals("package.name", DefaultUniqueNameGenerator.generate(NameCheckers.embeddable, map, "name"));
+        Assert.assertEquals("package.name", UniqueNameGenerator.generate(NameCheckers.embeddable, map, "name"));
         map.addEmbeddable(new Embeddable("package.name"));
 
         Assert.assertTrue(NameCheckers.embeddable.isNameInUse(map, "name"));
-        Assert.assertEquals("package.name1", DefaultUniqueNameGenerator.generate(NameCheckers.embeddable, map, "name"));
+        Assert.assertEquals("package.name1", UniqueNameGenerator.generate(NameCheckers.embeddable, map, "name"));
         Assert.assertFalse(NameCheckers.embeddable.isNameInUse(map, "other-name"));
     }
 }

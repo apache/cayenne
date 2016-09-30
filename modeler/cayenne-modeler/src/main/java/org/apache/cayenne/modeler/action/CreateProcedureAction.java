@@ -27,7 +27,7 @@ import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.UniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -52,7 +52,7 @@ public class CreateProcedureAction extends CayenneAction {
 		ProjectController mediator = getProjectController();
 		DataMap map = mediator.getCurrentDataMap();
 
-		Procedure procedure = new Procedure(DefaultUniqueNameGenerator.generate(NameCheckers.procedure, map));
+		Procedure procedure = new Procedure(UniqueNameGenerator.generate(NameCheckers.procedure, map));
 
 		createProcedure(map, procedure);
 

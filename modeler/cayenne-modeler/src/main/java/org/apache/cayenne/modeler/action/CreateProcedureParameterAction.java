@@ -27,7 +27,7 @@ import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
+import org.apache.cayenne.map.naming.UniqueNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -64,7 +64,7 @@ public class CreateProcedureParameterAction extends CayenneAction {
 	public void createProcedureParameter() {
 		Procedure procedure = getProjectController().getCurrentProcedure();
 
-		ProcedureParameter parameter = new ProcedureParameter(DefaultUniqueNameGenerator.generate(
+		ProcedureParameter parameter = new ProcedureParameter(UniqueNameGenerator.generate(
 				NameCheckers.procedureParameter, procedure));
 		procedure.addCallParameter(parameter);
 
