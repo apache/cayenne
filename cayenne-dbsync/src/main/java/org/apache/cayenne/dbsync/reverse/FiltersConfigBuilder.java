@@ -28,18 +28,18 @@ import org.apache.cayenne.dbimport.IncludeTable;
 import org.apache.cayenne.dbimport.PatternParam;
 import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbimport.Schema;
-import org.apache.cayenne.dbsync.reverse.filters.LegacyFilterConfigBridge;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.IncludeTableFilter;
+import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.SchemaFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
-import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
-import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
-
-import static org.apache.commons.lang.StringUtils.isBlank;
 
 /**
  * @since 4.0
@@ -355,40 +355,5 @@ public final class FiltersConfigBuilder {
                 schema.addIncludeTable(new IncludeTable());
             }
         }
-    }
-
-    public FiltersConfigBuilder add(LegacyFilterConfigBridge build) {
-        if (!isBlank(build.catalog())) {
-            engineering.addCatalog(new Catalog(build.catalog()));
-        }
-
-        if (!isBlank(build.schema())) {
-            engineering.addSchema(new Schema(build.schema()));
-        }
-
-        if (!isBlank(build.getIncludeTableFilters())) {
-            engineering.addIncludeTable(new IncludeTable(build.getIncludeTableFilters()));
-        }
-        if (!isBlank(build.getExcludeTableFilters())) {
-            engineering.addExcludeTable(new ExcludeTable(build.getExcludeTableFilters()));
-        }
-
-        if (!isBlank(build.getIncludeColumnFilters())) {
-            engineering.addIncludeColumn(new IncludeColumn(build.getIncludeColumnFilters()));
-        }
-        if (!isBlank(build.getExcludeColumnFilters())) {
-            engineering.addExcludeColumn(new ExcludeColumn(build.getExcludeColumnFilters()));
-        }
-
-        if (build.isLoadProcedures()) {
-            if (!isBlank(build.getIncludeProceduresFilters())) {
-                engineering.addIncludeProcedure(new IncludeProcedure(build.getIncludeProceduresFilters()));
-            }
-            if (!isBlank(build.getExcludeProceduresFilters())) {
-                engineering.addExcludeProcedure(new ExcludeProcedure(build.getExcludeProceduresFilters()));
-            }
-        }
-
-        return this;
     }
 }

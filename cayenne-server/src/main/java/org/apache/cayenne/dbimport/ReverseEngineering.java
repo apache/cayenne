@@ -39,15 +39,12 @@ public class ReverseEngineering extends FilterContainer implements Configuration
 
     private static final Log LOG = LogFactory.getLog(ReverseEngineering.class);
 
-    public ReverseEngineering(String name) {
-        this.name = name;
-    }
-
+    @XmlTransient
+    protected Resource configurationSource;
     @XmlTransient
     private String name;
 
     private Boolean skipRelationshipsLoading;
-
     private Boolean skipPrimaryKeyLoading;
 
     /*
@@ -64,11 +61,9 @@ public class ReverseEngineering extends FilterContainer implements Configuration
     @XmlElement(name = "schema")
     private Collection<Schema> schemas = new LinkedList<Schema>();
 
-    /**
-     * @since 4.0
-     */
-    @XmlTransient
-    protected Resource configurationSource;
+    public ReverseEngineering(String name) {
+        this.name = name;
+    }
 
     public ReverseEngineering() {
     }
