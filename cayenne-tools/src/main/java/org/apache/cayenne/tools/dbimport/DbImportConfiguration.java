@@ -250,7 +250,7 @@ public class DbImportConfiguration {
             // explicitly requested by the plugin caller, and the provided catalog is
             // not a pattern
             String catalog = catalogs[0].name;
-            if (defaultPackage != null && defaultPackage.length() > 0 && catalog.indexOf('%') < 0) {
+            if (catalog != null && catalog.length() > 0 && catalog.indexOf('%') < 0) {
                 dataMap.setDefaultCatalog(catalog);
             }
 
@@ -258,7 +258,7 @@ public class DbImportConfiguration {
             // explicitly requested by the plugin caller, and the provided schema is
             // not a pattern
             String schema = catalogs[0].schemas[0].name;
-            if (defaultPackage != null && defaultPackage.length() > 0 && schema.indexOf('%') < 0) {
+            if (schema != null && schema.length() > 0 && schema.indexOf('%') < 0) {
                 dataMap.setDefaultSchema(schema);
             }
         }
