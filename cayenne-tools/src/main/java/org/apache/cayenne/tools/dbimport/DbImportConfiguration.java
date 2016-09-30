@@ -26,13 +26,13 @@ import org.apache.cayenne.dbsync.merge.DbMergerConfig;
 import org.apache.cayenne.dbsync.merge.DefaultModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
+import org.apache.cayenne.dbsync.reverse.NameFilter;
+import org.apache.cayenne.dbsync.reverse.NamePatternMatcher;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.db.DefaultDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.db.LoggingDbLoaderDelegate;
-import org.apache.cayenne.dbsync.reverse.NameFilter;
-import org.apache.cayenne.dbsync.reverse.NamePatternMatcher;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.map.DataMap;
@@ -49,7 +49,6 @@ import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.util.Collections;
 
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 /**
  * @since 4.0
@@ -241,7 +240,7 @@ public class DbImportConfiguration {
         // do not override default package of existing DataMap unless it is
         // explicitly requested by the plugin caller
         String defaultPackage = getDefaultPackage();
-        if (isNotEmpty(defaultPackage)) {
+        if (defaultPackage != null && defaultPackage.length() > 0) {
             dataMap.setDefaultPackage(defaultPackage);
         }
 
@@ -251,7 +250,7 @@ public class DbImportConfiguration {
             // explicitly requested by the plugin caller, and the provided catalog is
             // not a pattern
             String catalog = catalogs[0].name;
-            if (isNotEmpty(catalog) && catalog.indexOf('%') < 0) {
+            if (defaultPackage != null && defaultPackage.length() > 0 && catalog.indexOf('%') < 0) {
                 dataMap.setDefaultCatalog(catalog);
             }
 
@@ -259,7 +258,7 @@ public class DbImportConfiguration {
             // explicitly requested by the plugin caller, and the provided schema is
             // not a pattern
             String schema = catalogs[0].schemas[0].name;
-            if (isNotEmpty(schema) && schema.indexOf('%') < 0) {
+            if (defaultPackage != null && defaultPackage.length() > 0 && schema.indexOf('%') < 0) {
                 dataMap.setDefaultSchema(schema);
             }
         }
