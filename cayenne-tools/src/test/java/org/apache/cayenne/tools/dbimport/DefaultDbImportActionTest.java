@@ -36,6 +36,7 @@ import org.apache.cayenne.dbsync.merge.factory.DefaultMergerTokenFactory;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
@@ -155,6 +156,7 @@ public class DefaultDbImportActionTest {
 		when(params.getDataMapFile()).thenReturn(FILE_STUB);
 		when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
 		when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
+		when(params.getNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
 
         final boolean[] haveWeTriedToSave = {false};
         DefaultDbImportAction action = buildDbImportAction(new FileProjectSaver() {
