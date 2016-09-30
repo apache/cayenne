@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.test.resource;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -29,6 +27,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import static org.junit.Assert.assertNotNull;
 
 public class ResourceUtil {
 
@@ -82,6 +82,12 @@ public class ResourceUtil {
 	}
 
 	public static boolean copyResourceToFile(URL from, File to) {
+
+		File dir = to.getParentFile();
+		if(dir != null) {
+			dir.mkdirs();
+		}
+
 		int bufSize = 8 * 1024;
 		try (BufferedInputStream urlin = new BufferedInputStream(from.openConnection().getInputStream(), bufSize);) {
 

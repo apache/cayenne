@@ -23,7 +23,7 @@
              classpath="${basedir}"/>
 
     <target name="dist">
-        <cdbimport map="dbimport/build-include-table.map.xml"
+        <cdbimport map="build-include-table.map.xml"
                    driver="org.apache.derby.jdbc.EmbeddedDriver"
                    url="jdbc:derby:memory:DbImporterMojoTest;create=true">
             <includeTable>Parent</includeTable>

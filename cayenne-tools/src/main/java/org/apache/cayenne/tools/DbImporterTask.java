@@ -74,46 +74,57 @@ public class DbImporterTask extends Task {
     }
 
     public void addIncludeColumn(IncludeColumn includeColumn) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addIncludeColumn(includeColumn);
     }
 
     public void addExcludeColumn(ExcludeColumn excludeColumn) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addExcludeColumn(excludeColumn);
     }
 
     public void addIncludeTable(IncludeTable includeTable) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addIncludeTable(includeTable);
     }
 
     public void addExcludeTable(ExcludeTable excludeTable) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addExcludeTable(excludeTable);
     }
 
     public void addIncludeProcedure(IncludeProcedure includeProcedure) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addIncludeProcedure(includeProcedure);
     }
 
     public void addExcludeProcedure(ExcludeProcedure excludeProcedure) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addExcludeProcedure(excludeProcedure);
     }
 
-    public void addSkipRelationshipsLoading(boolean skipRelationshipsLoading) {
+    public void setSkipRelationshipsLoading(boolean skipRelationshipsLoading) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.setSkipRelationshipsLoading(skipRelationshipsLoading);
     }
 
-    public void addSkipPrimaryKeyLoading(boolean skipPrimaryKeyLoading) {
+    public void setSkipPrimaryKeyLoading(boolean skipPrimaryKeyLoading) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.setSkipPrimaryKeyLoading(skipPrimaryKeyLoading);
     }
 
-    public void addTableType(String type) {
-        reverseEngineering.addTableType(type);
+    public void addConfiguredTableType(AntTableType type) {
+        isReverseEngineeringDefined = true;
+        reverseEngineering.addTableType(type.getName());
     }
 
     public void addConfiguredSchema(Schema schema) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addSchema(schema);
     }
 
     public void addCatalog(Catalog catalog) {
+        isReverseEngineeringDefined = true;
         reverseEngineering.addCatalog(catalog);
     }
 
