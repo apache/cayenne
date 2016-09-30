@@ -28,7 +28,7 @@ import org.apache.cayenne.map.naming.NameConverter;
  * BasicNamingStrategy is an naming strategy that creates names in Cayenne's
  * old-fashioned manner, i.e. the same way Cayenne did before 3.0
  * 
- * @since 3.0
+ * @since 4.0
  */
 public class LegacyObjectNameGenerator implements ObjectNameGenerator {
     public String createDbRelationshipName(
