@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
+import org.apache.cayenne.dbsync.reverse.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -86,7 +87,8 @@ public class EntityMergeSupportIT extends MergeCase {
 		objEntity2.setDbEntity(dbEntity2);
 		map.addObjEntity(objEntity2);
 
-		assertTrue(new EntityMergeSupport(map).synchronizeWithDbEntities(Arrays.asList(objEntity1, objEntity2)));
+		assertTrue(new EntityMergeSupport(map, new DefaultObjectNameGenerator(), true)
+				.synchronizeWithDbEntities(Arrays.asList(objEntity1, objEntity2)));
 		assertNotNull(objEntity1.getAttribute("name"));
 		assertNotNull(objEntity1.getRelationship("rel1To2"));
 		assertNotNull(objEntity2.getRelationship("rel2To1"));

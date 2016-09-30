@@ -28,48 +28,13 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
 
     public static final String COMMA_SEPARATOR = ", ";
     public static final int COMMA_SEPARATOR_LENGTH = COMMA_SEPARATOR.length();
-    private DbRelationship rel;
 
-    public AddRelationshipToModel(DbEntity entity, DbRelationship rel) {
+    private DbRelationship relationship;
+
+    public AddRelationshipToModel(DbEntity entity, DbRelationship relationship) {
         super("Add Relationship", entity);
-        this.rel = rel;
+        this.relationship = relationship;
     }
-
-    public MergerToken createReverse(MergerTokenFactory factory) {
-        return factory.createDropRelationshipToDb(getEntity(), rel);
-    }
-
-    public void execute(MergerContext mergerContext) {
-        getEntity().addRelationship(rel);
-        // TODO: add reverse relationship as well if it does not exist
-
-        // TODO: use EntityMergeSupport from DbImportConfiguration... otherwise we are ignoring a bunch of
-        // important settings
-
-        EntityMergeSupport entityMergeSupport =  new EntityMergeSupport(mergerContext.getDataMap());
-        for(ObjEntity e : getEntity().mappedObjEntities()) {
-            entityMergeSupport.synchronizeOnDbRelationshipAdded(e, rel);
-        }
-
-        mergerContext.getModelMergeDelegate().dbRelationshipAdded(rel);
-    }
-
-    @Override
-    public String getTokenValue() {
-        String attributes = "";
-        if (rel.getJoins().size() == 1) {
-            attributes = rel.getJoins().get(0).getTargetName();
-        } else {
-            for (DbJoin dbJoin : rel.getJoins()) {
-                attributes += dbJoin.getTargetName() + COMMA_SEPARATOR;
-            }
-
-            attributes = "{" + attributes.substring(0, attributes.length() - COMMA_SEPARATOR_LENGTH) + "}";
-        }
-
-        return rel.getName() + " " + rel.getSourceEntity().getName() + "->" + rel.getTargetEntityName() + "." + attributes;
-    }
-
 
     public static String getTokenValue(DbRelationship rel) {
         String attributes = "";
@@ -86,10 +51,38 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
         return rel.getName() + " " + rel.getSourceEntity().getName() + "->" + rel.getTargetEntityName() + "." + attributes;
     }
 
-    public DbRelationship getRelationship() {
-        return rel;
+    @Override
+    public MergerToken createReverse(MergerTokenFactory factory) {
+        return factory.createDropRelationshipToDb(getEntity(), relationship);
     }
 
+    @Override
+    public void execute(MergerContext context) {
 
+        getEntity().addRelationship(relationship);
 
+        // TODO: add reverse relationship as well if it does not exist
+
+        for (ObjEntity e : getEntity().mappedObjEntities()) {
+            context.getEntityMergeSupport().synchronizeOnDbRelationshipAdded(e, relationship);
+        }
+
+        context.getDelegate().dbRelationshipAdded(relationship);
+    }
+
+    @Override
+    public String getTokenValue() {
+        String attributes = "";
+        if (relationship.getJoins().size() == 1) {
+            attributes = relationship.getJoins().get(0).getTargetName();
+        } else {
+            for (DbJoin dbJoin : relationship.getJoins()) {
+                attributes += dbJoin.getTargetName() + COMMA_SEPARATOR;
+            }
+
+            attributes = "{" + attributes.substring(0, attributes.length() - COMMA_SEPARATOR_LENGTH) + "}";
+        }
+
+        return relationship.getName() + " " + relationship.getSourceEntity().getName() + "->" + relationship.getTargetEntityName() + "." + attributes;
+    }
 }

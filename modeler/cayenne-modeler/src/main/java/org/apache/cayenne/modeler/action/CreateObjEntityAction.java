@@ -24,6 +24,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
 import org.apache.cayenne.dbsync.naming.NameCheckers;
+import org.apache.cayenne.dbsync.reverse.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -92,7 +93,7 @@ public class CreateObjEntityAction extends CayenneAction {
         dataMap.addObjEntity(entity);
 
         // perform the merge
-        EntityMergeSupport merger = new EntityMergeSupport(dataMap);
+        EntityMergeSupport merger = new EntityMergeSupport(dataMap, new DefaultObjectNameGenerator(), true);
         merger.addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
         merger.synchronizeWithDbEntity(entity);
 

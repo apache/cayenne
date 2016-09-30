@@ -69,7 +69,7 @@ public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
             if (wasPrimaryKey != willBePrimaryKey) {
                 attr.setPrimaryKey(willBePrimaryKey);
                 e.dbAttributeChanged(new AttributeEvent(this, attr, e));
-                mergerContext.getModelMergeDelegate().dbAttributeModified(attr);
+                mergerContext.getDelegate().dbAttributeModified(attr);
             }
 
         }

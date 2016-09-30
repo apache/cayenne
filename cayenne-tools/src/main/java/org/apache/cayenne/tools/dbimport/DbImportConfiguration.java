@@ -35,11 +35,11 @@ import org.apache.cayenne.dbsync.reverse.db.DefaultDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.db.LoggingDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
+import org.apache.cayenne.dbsync.reverse.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.dbsync.reverse.naming.LegacyObjectNameGenerator;
-import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.commons.logging.Log;
 
@@ -163,23 +163,28 @@ public class DbImportConfiguration {
             }
         };
 
-        // TODO: load via DI AdhocObjectFactory
+
         loader.setNameGenerator(getNameGenerator());
 
         return loader;
     }
 
     public ObjectNameGenerator getNameGenerator() {
+
+        // TODO: load via DI AdhocObjectFactory
+
+        // TODO: not a singleton; called from different places...
+
         String namingStrategy = getNamingStrategy();
         if (namingStrategy != null) {
             try {
                 return (ObjectNameGenerator) Class.forName(namingStrategy).newInstance();
             } catch (Exception e) {
-                throw new CayenneRuntimeException("Error creating name generator", e);
+                throw new CayenneRuntimeException("Error creating name generator: " + namingStrategy, e);
             }
         }
 
-        return new LegacyObjectNameGenerator(); // TODO
+        return new DefaultObjectNameGenerator();
     }
 
     public String getDriver() {

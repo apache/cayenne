@@ -20,6 +20,8 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.reverse.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -36,12 +38,16 @@ public class MergerContext {
     private DataNode dataNode;
     private ValidationResult validationResult;
     private ModelMergeDelegate delegate;
+    private EntityMergeSupport entityMergeSupport;
 
     protected MergerContext() {
     }
 
+    /**
+     * @since 4.0
+     */
     public static Builder builder(DataMap dataMap) {
-        return new Builder().dataMap(dataMap);
+        return new Builder(dataMap);
     }
 
     /**
@@ -50,6 +56,13 @@ public class MergerContext {
     @Deprecated
     public DbAdapter getAdapter() {
         return getDataNode().getAdapter();
+    }
+
+    /**
+     * @since 4.0
+     */
+    public EntityMergeSupport getEntityMergeSupport() {
+        return entityMergeSupport;
     }
 
     /**
@@ -73,28 +86,58 @@ public class MergerContext {
      * Returns a callback object that is invoked as the merge proceeds through tokens, modifying the DataMap.
      *
      * @return a callback object that is invoked as the merge proceeds through tokens, modifying the DataMap.
+     * @since 4.0
      */
-    public ModelMergeDelegate getModelMergeDelegate() {
+    public ModelMergeDelegate getDelegate() {
         return delegate;
+    }
+
+    /**
+     * @deprecated since 4.0 in favor of {@link #getDelegate()}.
+     */
+    @Deprecated
+    public ModelMergeDelegate getModelMergeDelegate() {
+        return getDelegate();
     }
 
     public static class Builder {
 
         private MergerContext context;
 
-        private Builder() {
+        private Builder(DataMap dataMap) {
             this.context = new MergerContext();
+            this.context.dataMap = Objects.requireNonNull(dataMap);
             this.context.validationResult = new ValidationResult();
-            this.context.delegate = new DefaultModelMergeDelegate();
-            this.context.dataNode = new DataNode();
         }
 
         public MergerContext build() {
+
+            // init missing defaults ...
+
+            if (context.entityMergeSupport == null) {
+                nameGenerator(new DefaultObjectNameGenerator());
+            }
+
+            if (context.delegate == null) {
+                delegate(new DefaultModelMergeDelegate());
+            }
+
+            if (context.dataNode == null) {
+                dataNode(new DataNode());
+            }
+
             return context;
         }
 
         public Builder delegate(ModelMergeDelegate delegate) {
             context.delegate = Objects.requireNonNull(delegate);
+            return this;
+        }
+
+        public Builder nameGenerator(ObjectNameGenerator nameGenerator) {
+            context.entityMergeSupport = new EntityMergeSupport(context.getDataMap(),
+                    Objects.requireNonNull(nameGenerator),
+                    true);  // should the last argument also be a part of the builder?
             return this;
         }
 
@@ -108,11 +151,6 @@ public class MergerContext {
             dataNode.setDataSource(dataSource);
             dataNode.setAdapter(adapter);
             return dataNode(dataNode);
-        }
-
-        public Builder dataMap(DataMap dataMap) {
-            context.dataMap = Objects.requireNonNull(dataMap);
-            return this;
         }
     }
 }

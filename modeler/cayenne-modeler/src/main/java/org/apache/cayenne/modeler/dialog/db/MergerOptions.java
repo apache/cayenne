@@ -409,8 +409,10 @@ public class MergerOptions extends CayenneController {
             DataSource dataSource = connectionInfo.makeDataSource(getApplication()
                     .getClassLoadingService());
 
-            MergerContext mergerContext = MergerContext.builder(dataMap).syntheticDataNode(dataSource, adapter)
-                    .delegate(delegate).build();
+            MergerContext mergerContext = MergerContext.builder(dataMap)
+                    .syntheticDataNode(dataSource, adapter)
+                    .delegate(delegate)
+                    .build();
 
             boolean modelChanged = false;
             for (MergerToken tok : tokensToMigrate) {

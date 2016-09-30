@@ -46,8 +46,8 @@ public interface MergerToken {
     /**
      * Executes synchronization operation.
      *
-     * @param mergerContext operation context.
+     * @param context merge operation context.
      */
-    void execute(MergerContext mergerContext);
+    void execute(MergerContext context);
 
 }

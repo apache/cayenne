@@ -33,6 +33,7 @@ import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.ProxyModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
+import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
@@ -154,14 +155,19 @@ public class DefaultDbImportAction implements DbImportAction {
             }
 
             final Collection<ObjEntity> loadedObjEntities = new LinkedList<>();
-            DataMap executed = execute(new ProxyModelMergeDelegate(config.createMergeDelegate()) {
+
+            ModelMergeDelegate delegate = new ProxyModelMergeDelegate(config.createMergeDelegate()) {
                 @Override
                 public void objEntityAdded(ObjEntity ent) {
                     loadedObjEntities.add(ent);
                     super.objEntityAdded(ent);
                 }
+            };
 
-            }, existing, log(sort(reverse(mergerTokenFactory, mergeTokens))));
+            DataMap executed = execute(delegate,
+                    existing,
+                    log(sort(reverse(mergerTokenFactory, mergeTokens))),
+                    config.getNameGenerator());
 
             DbLoader.flattenManyToManyRelationships(executed, loadedObjEntities, config.getNameGenerator());
             relationshipsSanity(executed);
@@ -226,9 +232,15 @@ public class DefaultDbImportAction implements DbImportAction {
     /**
      * Performs configured schema operations via DbGenerator.
      */
-    private DataMap execute(ModelMergeDelegate mergeDelegate, DataMap dataMap, Collection<MergerToken> tokens) {
+    private DataMap execute(ModelMergeDelegate mergeDelegate,
+                            DataMap dataMap,
+                            Collection<MergerToken> tokens,
+                            ObjectNameGenerator nameGenerator) {
 
-        MergerContext mergerContext = MergerContext.builder(dataMap).delegate(mergeDelegate).build();
+        MergerContext mergerContext = MergerContext.builder(dataMap)
+                .delegate(mergeDelegate)
+                .nameGenerator(nameGenerator)
+                .build();
 
         for (MergerToken token : tokens) {
             try {

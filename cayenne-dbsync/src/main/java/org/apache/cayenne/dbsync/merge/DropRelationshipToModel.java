@@ -36,7 +36,7 @@ public class DropRelationshipToModel extends AbstractToModelToken.Entity {
     }
 
     public void execute(MergerContext mergerContext) {
-        remove(mergerContext.getModelMergeDelegate(), rel, true);
+        remove(mergerContext.getDelegate(), rel, true);
     }
 
     @Override

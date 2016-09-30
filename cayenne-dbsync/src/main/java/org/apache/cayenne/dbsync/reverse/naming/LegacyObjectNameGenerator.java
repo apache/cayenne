@@ -25,13 +25,14 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.util.Util;
 
 /**
- * BasicNamingStrategy is an naming strategy that creates names in Cayenne's
- * old-fashioned manner, i.e. the same way Cayenne did before 3.0
+ * An ObjectNameGenerator that creates names in Cayenne's old-fashioned style. I.e. the same way Cayenne did before 3.0,
+ * with "to" prefixes and "array" suffixes.
  *
  * @since 4.0
  */
 public class LegacyObjectNameGenerator implements ObjectNameGenerator {
 
+    @Override
     public String createDbRelationshipName(
             ExportedKey key,
             boolean toMany) {
@@ -40,14 +41,17 @@ public class LegacyObjectNameGenerator implements ObjectNameGenerator {
         return Util.underscoredToJava(uglyName, false);
     }
 
+    @Override
     public String createObjEntityName(DbEntity dbEntity) {
         return Util.underscoredToJava(dbEntity.getName(), true);
     }
 
+    @Override
     public String createObjAttributeName(DbAttribute attr) {
         return Util.underscoredToJava(attr.getName(), false);
     }
 
+    @Override
     public String createObjRelationshipName(DbRelationship dbRel) {
         return Util.underscoredToJava(dbRel.getName(), false);
     }

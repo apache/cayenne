@@ -26,7 +26,6 @@ import org.apache.cayenne.map.ObjEntity;
 /**
  * A {@link MergerToken} to add a {@link DbAttribute} to a {@link DbEntity}. The
  * {@link EntityMergeSupport} will be used to update the mapped {@link ObjEntity}
- * 
  */
 public class AddColumnToModel extends AbstractToModelToken.EntityAndColumn {
 
@@ -34,22 +33,20 @@ public class AddColumnToModel extends AbstractToModelToken.EntityAndColumn {
         super("Add Column", entity, column);
     }
 
+    @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createDropColumnToDb(getEntity(), getColumn());
     }
 
+    @Override
     public void execute(MergerContext mergerContext) {
         getEntity().addAttribute(getColumn());
 
-        // TODO: use EntityMergeSupport from DbImportConfiguration... otherwise we are ignoring a bunch of
-        // important settings
-
-        EntityMergeSupport entityMergeSupport =  new EntityMergeSupport(mergerContext.getDataMap());
-        for(ObjEntity e : getEntity().mappedObjEntities()) {
-            entityMergeSupport.synchronizeOnDbAttributeAdded(e, getColumn());
+        for (ObjEntity e : getEntity().mappedObjEntities()) {
+            mergerContext.getEntityMergeSupport().synchronizeOnDbAttributeAdded(e, getColumn());
         }
 
-        mergerContext.getModelMergeDelegate().dbAttributeAdded(getColumn());
+        mergerContext.getDelegate().dbAttributeAdded(getColumn());
     }
 
 }

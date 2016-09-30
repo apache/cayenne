@@ -20,6 +20,9 @@
 package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
+import org.apache.cayenne.dbsync.naming.NameCheckers;
+import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -29,10 +32,6 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.reverse.naming.LegacyObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
-import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.EntityMergeListener;
 import org.apache.commons.logging.Log;
@@ -77,11 +76,7 @@ public class EntityMergeSupport {
     protected boolean removeMeaningfulFKs;
     protected boolean removeMeaningfulPKs;
     protected boolean usePrimitives;
-
-    public EntityMergeSupport(DataMap map) {
-        this(map, new LegacyObjectNameGenerator(), true);
-    }
-
+    
     /**
      * @since 3.0
      */

@@ -38,6 +38,6 @@ public class SetAllowNullToModel extends AbstractToModelToken.EntityAndColumn {
 
     public void execute(MergerContext mergerContext) {
         getColumn().setMandatory(false);
-        mergerContext.getModelMergeDelegate().dbAttributeModified(getColumn());
+        mergerContext.getDelegate().dbAttributeModified(getColumn());
     }
 }

@@ -53,10 +53,11 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
         objEntityClassName = n;
     }
 
-    public void execute(MergerContext mergerContext) {
+    @Override
+    public void execute(MergerContext context) {
         DbEntity dbEntity = getEntity();
 
-        DataMap map = mergerContext.getDataMap();
+        DataMap map = context.getDataMap();
         map.addDbEntity(dbEntity);
 
         // create a ObjEntity
@@ -94,13 +95,10 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
         map.addObjEntity(objEntity);
 
         // presumably there are no other ObjEntities pointing to this DbEntity, so syncing just this one...
+        context.getEntityMergeSupport().synchronizeWithDbEntity(objEntity);
 
-        // TODO: use EntityMergeSupport from DbImportConfiguration... otherwise we are ignoring a bunch of
-        // important settings
-        new EntityMergeSupport(map).synchronizeWithDbEntity(objEntity);
-
-        mergerContext.getModelMergeDelegate().dbEntityAdded(getEntity());
-        mergerContext.getModelMergeDelegate().objEntityAdded(objEntity);
+        context.getDelegate().dbEntityAdded(getEntity());
+        context.getDelegate().objEntityAdded(objEntity);
     }
 
     public MergerToken createReverse(MergerTokenFactory factory) {

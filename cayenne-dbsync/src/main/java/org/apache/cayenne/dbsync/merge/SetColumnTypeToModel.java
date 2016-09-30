@@ -50,7 +50,7 @@ public class SetColumnTypeToModel extends AbstractToModelToken.Entity {
         columnOriginal.setMaxLength(columnNew.getMaxLength());
         columnOriginal.setAttributePrecision(columnNew.getAttributePrecision());
         columnOriginal.setScale(columnNew.getScale());
-        mergerContext.getModelMergeDelegate().dbAttributeModified(columnOriginal);
+        mergerContext.getDelegate().dbAttributeModified(columnOriginal);
     }
 
     @Override
