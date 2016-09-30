@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DropTableToDb extends AbstractToDbToken.Entity {
 
@@ -33,7 +33,7 @@ public class DropTableToDb extends AbstractToDbToken.Entity {
 
     @Override
     public List<String> createSql(DbAdapter adapter) {
-        List<String> sqls = new ArrayList<String>();
+        List<String> sqls = new ArrayList<>();
         // TODO: fix. some adapters drop the complete AUTO_PK_SUPPORT here
         /*
         sqls.addAll(adapter.getPkGenerator().dropAutoPkStatements(
@@ -43,6 +43,7 @@ public class DropTableToDb extends AbstractToDbToken.Entity {
         return sqls;
     }
 
+    @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createCreateTableToModel(getEntity());
     }

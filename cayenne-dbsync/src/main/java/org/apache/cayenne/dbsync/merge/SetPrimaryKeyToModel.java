@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.event.AttributeEvent;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
 
@@ -48,6 +48,7 @@ public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
         }
     }
 
+    @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createSetPrimaryKeyToDb(
                 getEntity(),
@@ -56,6 +57,7 @@ public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
                 detectedPrimaryKeyName);
     }
 
+    @Override
     public void execute(MergerContext mergerContext) {
         DbEntity e = getEntity();
 

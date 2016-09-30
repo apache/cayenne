@@ -18,15 +18,15 @@
  */
 package org.apache.cayenne.dbsync.merge;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+
+import java.util.Collections;
+import java.util.List;
 
 public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
 
@@ -58,8 +58,8 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
         return Collections.singletonList(sqlBuffer.toString());
     }
 
+    @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createDropColumnToModel(getEntity(), getColumn());
     }
-
 }

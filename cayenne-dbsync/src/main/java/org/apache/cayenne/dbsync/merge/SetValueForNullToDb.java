@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
-import java.util.List;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+
+import java.util.List;
 
 
 public class SetValueForNullToDb extends AbstractToDbToken.EntityAndColumn {
@@ -40,6 +40,7 @@ public class SetValueForNullToDb extends AbstractToDbToken.EntityAndColumn {
         return valueForNullProvider.createSql(getEntity(), getColumn());
     }
 
+    @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
         return new DummyReverseToken(this);
     }

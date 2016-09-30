@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
@@ -28,18 +25,21 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DbRelationshipDetected;
 
+import java.util.Collections;
+import java.util.List;
+
 public class DropRelationshipToDb extends AbstractToDbToken.Entity {
 
-    private DbRelationship rel;
+    private DbRelationship relationship;
 
-    public DropRelationshipToDb(DbEntity entity, DbRelationship rel) {
+    public DropRelationshipToDb(DbEntity entity, DbRelationship relationship) {
         super("Drop foreign key", entity);
-        this.rel = rel;
+        this.relationship = relationship;
     }
     
     public String getFkName() {
-        if (rel instanceof DbRelationshipDetected) {
-            return ((DbRelationshipDetected) rel).getFkName();
+        if (relationship instanceof DbRelationshipDetected) {
+            return ((DbRelationshipDetected) relationship).getFkName();
         }
         return null;
     }
@@ -57,16 +57,11 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
     }
 
     public MergerToken createReverse(MergerTokenFactory factory) {
-        return factory.createAddRelationshipToModel(getEntity(), rel);
+        return factory.createAddRelationshipToModel(getEntity(), relationship);
     }
 
     @Override
     public String getTokenValue() {
-        return rel.getSourceEntity().getName() + "->" + rel.getTargetEntityName();
+        return relationship.getSourceEntity().getName() + "->" + relationship.getTargetEntityName();
     }
-    
-    public DbRelationship getRelationship() {
-        return rel;
-    }
-
 }

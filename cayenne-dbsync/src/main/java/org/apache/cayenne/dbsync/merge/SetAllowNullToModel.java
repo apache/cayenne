@@ -32,10 +32,12 @@ public class SetAllowNullToModel extends AbstractToModelToken.EntityAndColumn {
         super("Set Allow Null", entity, column);
     }
 
+    @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createSetNotNullToDb(getEntity(), getColumn());
     }
 
+    @Override
     public void execute(MergerContext mergerContext) {
         getColumn().setMandatory(false);
         mergerContext.getDelegate().dbAttributeModified(getColumn());

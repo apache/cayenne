@@ -27,7 +27,6 @@ import org.apache.cayenne.map.ObjRelationship;
 /**
  * Common abstract superclass for all {@link MergerToken}s going from the database to the
  * model.
- * 
  */
 public abstract class AbstractToModelToken implements MergerToken {
 
@@ -35,15 +34,6 @@ public abstract class AbstractToModelToken implements MergerToken {
 
     protected AbstractToModelToken(String tokenName) {
         this.tokenName = tokenName;
-    }
-
-    @Override
-    public final String getTokenName() {
-        return tokenName;
-    }
-
-    public final MergeDirection getDirection() {
-        return MergeDirection.TO_MODEL;
     }
 
     protected static void remove(ModelMergeDelegate mergerContext, DbRelationship rel, boolean reverse) {
@@ -58,7 +48,7 @@ public abstract class AbstractToModelToken implements MergerToken {
         for (ObjEntity objEntity : dbEntity.mappedObjEntities()) {
             remove(mergerContext, objEntity.getRelationshipForDbRelationship(rel), true);
         }
-        
+
         rel.getSourceEntity().removeRelationship(rel.getName());
         mergerContext.dbRelationshipRemoved(rel);
     }
@@ -75,12 +65,22 @@ public abstract class AbstractToModelToken implements MergerToken {
     }
 
     @Override
+    public final String getTokenName() {
+        return tokenName;
+    }
+
+    @Override
+    public final MergeDirection getDirection() {
+        return MergeDirection.TO_MODEL;
+    }
+
+    @Override
     public String toString() {
         return getTokenName() + ' ' + getTokenValue() + ' ' + getDirection();
     }
-    
+
     abstract static class Entity extends AbstractToModelToken {
-        
+
         private final DbEntity entity;
 
         protected Entity(String tokenName, DbEntity entity) {
@@ -91,17 +91,17 @@ public abstract class AbstractToModelToken implements MergerToken {
         public DbEntity getEntity() {
             return entity;
         }
-        
+
         public String getTokenValue() {
             return getEntity().getName();
         }
-        
+
     }
-    
+
     abstract static class EntityAndColumn extends Entity {
-        
+
         private final DbAttribute column;
-        
+
         protected EntityAndColumn(String tokenName, DbEntity entity, DbAttribute column) {
             super(tokenName, entity);
             this.column = column;
@@ -115,8 +115,7 @@ public abstract class AbstractToModelToken implements MergerToken {
         public String getTokenValue() {
             return getEntity().getName() + "." + getColumn().getName();
         }
-        
-    }
 
+    }
 
 }

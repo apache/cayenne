@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -28,6 +25,9 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A {@link MergerToken} to remove a {@link DbAttribute} from a {@link DbEntity}.
@@ -39,10 +39,12 @@ public class DropColumnToModel extends AbstractToModelToken.EntityAndColumn {
         super("Drop Column", entity, column);
     }
 
+    @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createAddColumnToDb(getEntity(), getColumn());
     }
 
+    @Override
     public void execute(MergerContext mergerContext) {
 
         // remove relationships mapped to column. duplicate List to prevent

@@ -31,11 +31,13 @@ public class SetNotNullToModel extends AbstractToModelToken.EntityAndColumn {
     public SetNotNullToModel(DbEntity entity, DbAttribute column) {
         super("Set Not Null", entity, column);
     }
-    
+
+    @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createSetAllowNullToDb(getEntity(), getColumn());
     }
 
+    @Override
     public void execute(MergerContext mergerContext) {
         getColumn().setMandatory(true);
         mergerContext.getDelegate().dbAttributeModified(getColumn());

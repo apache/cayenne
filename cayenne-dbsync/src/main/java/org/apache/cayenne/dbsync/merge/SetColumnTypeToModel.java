@@ -34,17 +34,18 @@ public class SetColumnTypeToModel extends AbstractToModelToken.Entity {
     private DbAttribute columnOriginal;
     private DbAttribute columnNew;
 
-    public SetColumnTypeToModel(DbEntity entity, DbAttribute columnOriginal,
-            DbAttribute columnNew) {
+    public SetColumnTypeToModel(DbEntity entity, DbAttribute columnOriginal, DbAttribute columnNew) {
         super("Set Column Type", entity);
         this.columnOriginal = columnOriginal;
         this.columnNew = columnNew;
     }
 
+    @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createSetColumnTypeToDb(getEntity(), columnNew, columnOriginal);
     }
 
+    @Override
     public void execute(MergerContext mergerContext) {
         columnOriginal.setType(columnNew.getType());
         columnOriginal.setMaxLength(columnNew.getMaxLength());
@@ -89,14 +90,6 @@ public class SetColumnTypeToModel extends AbstractToModelToken.Entity {
         }
 
         return sb.toString();
-    }
-    
-    public DbAttribute getColumnOriginal() {
-        return columnOriginal;
-    }
-
-    public DbAttribute getColumnNew() {
-        return columnNew;
     }
     
 }

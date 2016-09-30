@@ -18,22 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 
+import java.util.Collections;
+import java.util.List;
+
 public class AddRelationshipToDb extends AbstractToDbToken.Entity {
 
-    private DbRelationship rel;
+    private DbRelationship relationship;
 
-    public AddRelationshipToDb(DbEntity entity, DbRelationship rel) {
+    public AddRelationshipToDb(DbEntity entity, DbRelationship relationship) {
         super("Add foreign key", entity);
-        this.rel = rel;
+        this.relationship = relationship;
     }
 
     /**
@@ -44,7 +44,7 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
         // TODO: skip FK to a different DB
 
         if (this.shouldGenerateFkConstraint()) {
-            String fksql = adapter.createFkConstraint(rel);
+            String fksql = adapter.createFkConstraint(relationship);
             if (fksql != null) {
                 return Collections.singletonList(fksql);
             }
@@ -53,26 +53,23 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
     }
 
     public boolean shouldGenerateFkConstraint() {
-        return !rel.isToMany()
-                && rel.isToPK() // TODO it is not necessary primary key it can be unique index
-                && !rel.isToDependentPK();
+        return !relationship.isToMany()
+                && relationship.isToPK() // TODO it is not necessary primary key it can be unique index
+                && !relationship.isToDependentPK();
     }
 
+    @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
-        return factory.createDropRelationshipToModel(getEntity(), rel);
+        return factory.createDropRelationshipToModel(getEntity(), relationship);
     }
 
     @Override
     public String getTokenValue() {
         if (this.shouldGenerateFkConstraint()) {
-            return rel.getSourceEntity().getName() + "->" + rel.getTargetEntityName();
+            return relationship.getSourceEntity().getName() + "->" + relationship.getTargetEntityName();
         } else {
             return "Skip. No sql representation.";
         }
-    }
-    
-    public DbRelationship getRelationship() {
-        return rel;
     }
     
     @Override

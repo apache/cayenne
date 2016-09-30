@@ -18,9 +18,6 @@
  */
 package org.apache.cayenne.dbsync.merge;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -28,6 +25,9 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * An {@link MergerToken} to use to set type, length and precision.
@@ -104,16 +104,8 @@ public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
         return sb.toString();
     }
 
+    @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createSetColumnTypeToModel(getEntity(), columnNew, columnOriginal);
     }
-
-    public DbAttribute getColumnOriginal() {
-        return columnOriginal;
-    }
-
-    public DbAttribute getColumnNew() {
-        return columnNew;
-    }
-
 }

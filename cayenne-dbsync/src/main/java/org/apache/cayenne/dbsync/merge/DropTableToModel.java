@@ -34,10 +34,12 @@ public class DropTableToModel extends AbstractToModelToken.Entity {
         super("Drop Table", entity);
     }
 
+    @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createCreateTableToDb(getEntity());
     }
 
+    @Override
     public void execute(MergerContext mergerContext) {
         for (ObjEntity objEntity : getEntity().mappedObjEntities()) {
             objEntity.getDataMap().removeObjEntity(objEntity.getName(), true);

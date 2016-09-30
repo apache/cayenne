@@ -33,28 +33,28 @@ class DummyReverseToken implements MergerToken {
         this.reverse = reverse;
     }
 
+    @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
         return reverse;
     }
 
+    @Override
     public void execute(MergerContext mergerContext) {
         // can not execute
     }
 
+    @Override
     public MergeDirection getDirection() {
         return reverse.getDirection().reverseDirection();
     }
 
+    @Override
     public String getTokenName() {
         return "Can not execute the reverse of " + reverse.getTokenName();
     }
 
+    @Override
     public String getTokenValue() {
         return reverse.getTokenValue();
     }
-
-    public boolean isReversible() {
-        return true;
-    }
-
 }

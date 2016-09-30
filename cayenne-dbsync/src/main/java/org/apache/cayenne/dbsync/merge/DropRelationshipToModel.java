@@ -24,28 +24,26 @@ import org.apache.cayenne.map.DbRelationship;
 
 public class DropRelationshipToModel extends AbstractToModelToken.Entity {
 
-    private final DbRelationship rel;
+    private final DbRelationship relationship;
 
-    public DropRelationshipToModel(DbEntity entity, DbRelationship rel) {
+    public DropRelationshipToModel(DbEntity entity, DbRelationship relationship) {
         super("Drop db-relationship ", entity);
-        this.rel = rel;
+        this.relationship = relationship;
     }
 
+    @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
-        return factory.createAddRelationshipToDb(getEntity(), rel);
+        return factory.createAddRelationshipToDb(getEntity(), relationship);
     }
 
+    @Override
     public void execute(MergerContext mergerContext) {
-        remove(mergerContext.getDelegate(), rel, true);
+        remove(mergerContext.getDelegate(), relationship, true);
     }
 
     @Override
     public String getTokenValue() {
-        return AddRelationshipToModel.getTokenValue(rel);
-    }
-    
-    public DbRelationship getRelationship() {
-        return rel;
+        return AddRelationshipToModel.getTokenValue(relationship);
     }
 
 }

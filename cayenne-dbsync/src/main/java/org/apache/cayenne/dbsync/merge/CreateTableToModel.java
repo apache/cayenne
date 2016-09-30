@@ -36,7 +36,7 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
      * special class name.
      * Setting this to <code>null</code>, because by default class name should be generated
      */
-    private String objEntityClassName = null; //CayenneDataObject.class.getName();
+    private String objEntityClassName;
 
     public CreateTableToModel(DbEntity entity) {
         super("Create Table", entity);

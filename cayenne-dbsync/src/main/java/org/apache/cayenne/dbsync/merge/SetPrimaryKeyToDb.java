@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
 
@@ -79,6 +79,7 @@ public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
         sqls.add(sql.toString());
     }
 
+    @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createSetPrimaryKeyToModel(getEntity(), primaryKeyNew, primaryKeyOriginal,
                 detectedPrimaryKeyName);
