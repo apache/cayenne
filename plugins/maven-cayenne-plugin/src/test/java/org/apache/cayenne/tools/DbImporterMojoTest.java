@@ -182,11 +182,11 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     /**
      * By default many-to-many are flattened during reverse engineering.
      * But if a user un-flattens a given N:M manually, we’d like this choice to be preserved on the next run
-     *
-     * @throws Exception
      */
     @Test
 	public void testUnFlattensManyToMany() throws Exception {
+		// TODO: this should be "xYs" : <db-relationship name="xIes"
+		// TODO: this should be aBs :  <db-relationship name="aBArray"
 		test("testUnFlattensManyToMany");
 	}
 

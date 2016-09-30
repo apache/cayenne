@@ -39,20 +39,20 @@
 	</obj-entity>
 	<obj-entity name="PlayerInfo" className="PlayerInfo" dbEntityName="PLAYER_INFO">
 	</obj-entity>
-	<db-relationship name="toPlayer" source="PICK_SCHEDULE" target="PLAYER" toMany="false">
+	<db-relationship name="selectedPlayer" source="PICK_SCHEDULE" target="PLAYER" toMany="false">
 		<db-attribute-pair source="SELECTED_PLAYER_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="pickScheduleArray" source="PLAYER" target="PICK_SCHEDULE" toMany="true">
+	<db-relationship name="pickSchedules" source="PLAYER" target="PICK_SCHEDULE" toMany="true">
 		<db-attribute-pair source="ID" target="SELECTED_PLAYER_ID"/>
 	</db-relationship>
-	<db-relationship name="toPlayer" source="PLAYER" target="PLAYER_INFO" toDependentPK="true" toMany="false">
+	<db-relationship name="player" source="PLAYER" target="PLAYER_INFO" toDependentPK="true" toMany="false">
 		<db-attribute-pair source="ID" target="PLAYER_ID"/>
 	</db-relationship>
-	<db-relationship name="toPlayer" source="PLAYER_INFO" target="PLAYER" toMany="false">
+	<db-relationship name="player" source="PLAYER_INFO" target="PLAYER" toMany="false">
 		<db-attribute-pair source="PLAYER_ID" target="ID"/>
 	</db-relationship>
-	<obj-relationship name="toPlayer" source="PickSchedule" target="Player" deleteRule="Nullify" db-relationship-path="toPlayer"/>
-	<obj-relationship name="pickScheduleArray" source="Player" target="PickSchedule" deleteRule="Deny" db-relationship-path="pickScheduleArray"/>
-	<obj-relationship name="toPlayer" source="Player" target="PlayerInfo" deleteRule="Nullify" db-relationship-path="toPlayer"/>
-	<obj-relationship name="toPlayer" source="PlayerInfo" target="Player" deleteRule="Nullify" db-relationship-path="toPlayer"/>
+	<obj-relationship name="selectedPlayer" source="PickSchedule" target="Player" deleteRule="Nullify" db-relationship-path="selectedPlayer"/>
+	<obj-relationship name="pickSchedules" source="Player" target="PickSchedule" deleteRule="Deny" db-relationship-path="pickSchedules"/>
+	<obj-relationship name="player" source="Player" target="PlayerInfo" deleteRule="Nullify" db-relationship-path="player"/>
+	<obj-relationship name="player" source="PlayerInfo" target="Player" deleteRule="Nullify" db-relationship-path="player"/>
 </data-map>
