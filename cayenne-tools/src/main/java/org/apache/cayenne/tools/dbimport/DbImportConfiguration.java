@@ -38,8 +38,8 @@ import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.naming.LegacyNameGenerator;
-import org.apache.cayenne.map.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.naming.LegacyObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.commons.logging.Log;
 
@@ -179,7 +179,7 @@ public class DbImportConfiguration {
             }
         }
 
-        return new LegacyNameGenerator(); // TODO
+        return new LegacyObjectNameGenerator(); // TODO
     }
 
     public String getDriver() {

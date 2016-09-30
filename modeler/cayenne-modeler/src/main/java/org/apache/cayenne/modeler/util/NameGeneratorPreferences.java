@@ -22,9 +22,9 @@ import java.util.Arrays;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
-import org.apache.cayenne.map.naming.LegacyNameGenerator;
-import org.apache.cayenne.map.naming.DefaultNameGenerator;
-import org.apache.cayenne.map.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.naming.LegacyObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.Application;
 
 /**
@@ -39,8 +39,8 @@ public class NameGeneratorPreferences {
      */
     private static final Vector<String> PREDEFINED_STRATEGIES = new Vector<String>();
     static {
-        PREDEFINED_STRATEGIES.add(DefaultNameGenerator.class.getCanonicalName());
-        PREDEFINED_STRATEGIES.add(LegacyNameGenerator.class.getCanonicalName());
+        PREDEFINED_STRATEGIES.add(DefaultObjectNameGenerator.class.getCanonicalName());
+        PREDEFINED_STRATEGIES.add(LegacyObjectNameGenerator.class.getCanonicalName());
     }
 
     static final NameGeneratorPreferences instance = new NameGeneratorPreferences();
@@ -100,6 +100,6 @@ public class NameGeneratorPreferences {
     }
 
     public static ObjectNameGenerator defaultNameGenerator() {
-        return new DefaultNameGenerator();
+        return new DefaultObjectNameGenerator();
     }
 }

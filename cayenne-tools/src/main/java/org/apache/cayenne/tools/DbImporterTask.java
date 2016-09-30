@@ -40,7 +40,7 @@ import org.apache.cayenne.dbsync.reverse.FiltersConfigBuilder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.naming.DefaultNameGenerator;
+import org.apache.cayenne.dbsync.reverse.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.tools.configuration.ToolsModule;
@@ -67,7 +67,7 @@ public class DbImporterTask extends Task {
     public DbImporterTask() {
         this.config = new DbImportConfiguration();
         this.config.setUsePrimitives(true);
-        this.config.setNamingStrategy(DefaultNameGenerator.class.getName());
+        this.config.setNamingStrategy(DefaultObjectNameGenerator.class.getName());
 
         // reverse engineering config is flattened into task...
         this.reverseEngineering = new ReverseEngineering();

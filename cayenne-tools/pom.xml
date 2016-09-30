@@ -113,10 +113,6 @@
 			<artifactId>vpp</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>net.java.dev.inflector</groupId>
-			<artifactId>inflector</artifactId>
-		</dependency>
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>

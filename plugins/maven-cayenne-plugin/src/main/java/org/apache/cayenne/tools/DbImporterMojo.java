@@ -107,7 +107,7 @@ public class DbImporterMojo extends AbstractMojo {
      * The default is a basic naming strategy.
      *
      * @parameter namingStrategy="namingStrategy"
-     * default-value="org.apache.cayenne.map.naming.DefaultNameGenerator"
+     * default-value="org.apache.cayenne.map.naming.DefaultObjectNameGenerator"
      */
     private String namingStrategy;
 

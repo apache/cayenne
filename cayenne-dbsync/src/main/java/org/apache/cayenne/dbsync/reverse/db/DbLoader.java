@@ -36,9 +36,9 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
 import org.apache.cayenne.map.naming.ExportedKey;
-import org.apache.cayenne.map.naming.LegacyNameGenerator;
+import org.apache.cayenne.dbsync.reverse.naming.LegacyObjectNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
-import org.apache.cayenne.map.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -87,7 +87,7 @@ public class DbLoader {
      * Creates new DbLoader.
      */
     public DbLoader(Connection connection, DbAdapter adapter, DbLoaderDelegate delegate) {
-        this(connection, adapter, delegate, new LegacyNameGenerator());
+        this(connection, adapter, delegate, new LegacyObjectNameGenerator());
     }
 
     /**
@@ -693,8 +693,8 @@ public class DbLoader {
      */
     public void setNameGenerator(ObjectNameGenerator strategy) {
         if (strategy == null) {
-            LOGGER.warn("Attempt to set null into NameGenerator. LegacyNameGenerator will be used.");
-            this.nameGenerator = new LegacyNameGenerator();
+            LOGGER.warn("Attempt to set null into NameGenerator. LegacyObjectNameGenerator will be used.");
+            this.nameGenerator = new LegacyObjectNameGenerator();
         } else {
             this.nameGenerator = strategy;
         }

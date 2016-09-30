@@ -36,7 +36,7 @@ import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.map.naming.LegacyNameGenerator;
+import org.apache.cayenne.dbsync.reverse.naming.LegacyObjectNameGenerator;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,7 +96,7 @@ public class ManyToManyCandidateEntityTest {
     public void testOptimisationForManyToManyEntity() {
         ObjEntity manyToManyEntity = map.getObjEntity("Table1Table2");
 
-        ManyToManyCandidateEntity.build(manyToManyEntity).optimizeRelationships(new LegacyNameGenerator());
+        ManyToManyCandidateEntity.build(manyToManyEntity).optimizeRelationships(new LegacyObjectNameGenerator());
 
         ObjEntity table1Entity = map.getObjEntity("Table1");
         ObjEntity table2Entity = map.getObjEntity("Table2");

@@ -30,9 +30,9 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.naming.DefaultUniqueNameGenerator;
-import org.apache.cayenne.map.naming.LegacyNameGenerator;
+import org.apache.cayenne.dbsync.reverse.naming.LegacyObjectNameGenerator;
 import org.apache.cayenne.map.naming.NameCheckers;
-import org.apache.cayenne.map.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.EntityMergeListener;
 import org.apache.commons.logging.Log;
@@ -79,7 +79,7 @@ public class EntityMergeSupport {
     protected boolean usePrimitives;
 
     public EntityMergeSupport(DataMap map) {
-        this(map, new LegacyNameGenerator(), true);
+        this(map, new LegacyObjectNameGenerator(), true);
     }
 
     /**

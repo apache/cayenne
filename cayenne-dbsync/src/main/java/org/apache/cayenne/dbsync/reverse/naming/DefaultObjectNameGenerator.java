@@ -16,21 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map.naming;
-
-import java.util.Locale;
+package org.apache.cayenne.dbsync.reverse.naming;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.naming.ExportedKey;
+import org.apache.cayenne.map.naming.NameConverter;
 import org.jvnet.inflector.Noun;
+
+import java.util.Locale;
 
 /**
  * A strategy for generating names of entities, attributes etc.
  * 
  * @since 4.0
  */
-public class DefaultNameGenerator implements ObjectNameGenerator {
+public class DefaultObjectNameGenerator implements ObjectNameGenerator {
 
 	@Override
 	public String createDbRelationshipName(ExportedKey key, boolean toMany) {

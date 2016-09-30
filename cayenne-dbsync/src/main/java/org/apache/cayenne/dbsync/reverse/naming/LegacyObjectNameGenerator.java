@@ -16,11 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map.naming;
+package org.apache.cayenne.dbsync.reverse.naming;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.naming.ExportedKey;
+import org.apache.cayenne.map.naming.NameConverter;
 
 /**
  * BasicNamingStrategy is an naming strategy that creates names in Cayenne's
@@ -28,7 +30,7 @@ import org.apache.cayenne.map.DbRelationship;
  * 
  * @since 3.0
  */
-public class LegacyNameGenerator implements ObjectNameGenerator {
+public class LegacyObjectNameGenerator implements ObjectNameGenerator {
     public String createDbRelationshipName(
             ExportedKey key,
             boolean toMany) {

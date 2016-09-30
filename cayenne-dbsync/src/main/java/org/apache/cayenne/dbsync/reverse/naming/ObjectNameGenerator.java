@@ -16,11 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map.naming;
+package org.apache.cayenne.dbsync.reverse.naming;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.naming.ExportedKey;
 
 /**
  * ObjectNameGenerator is a strategy for creating names for entities,
