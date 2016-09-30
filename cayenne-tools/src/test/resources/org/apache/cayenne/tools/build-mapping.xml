@@ -20,7 +20,7 @@
 <project name="MyProject" default="dist" basedir=".">
 
     <taskdef name="cdbimport" classname="org.apache.cayenne.tools.DbImporterTask" taskname="cdbimport"
-             classpath="${basedir}"  />
+             classpath="${basedir}"/>
 
     <target name="dist">
         <cdbimport map="${context.dir}/WEB-INF/DefaultMap.map.xml"
@@ -30,11 +30,11 @@
                    username="sa">
 
             <typeMapper mapperClassName="class" usePrimitives="false">
-                <type java="my.personal.type" jdbc="varchar" />
-                <type java="java-01" jdbc="jdbc-01" />
-                <type java="java-02" jdbc="jdbc-02" length="21" notNull="true" />
-                <type java="java-03" jdbc="jdbc-03" precision="5" scale="2" />
-                <type java="java-03" jdbc="jdbc-03" precision="7" notNull="true" />
+                <type java="my.personal.type" jdbc="varchar"/>
+                <type java="java-01" jdbc="jdbc-01"/>
+                <type java="java-02" jdbc="jdbc-02" length="21" notNull="true"/>
+                <type java="java-03" jdbc="jdbc-03" precision="5" scale="2"/>
+                <type java="java-03" jdbc="jdbc-03" precision="7" notNull="true"/>
             </typeMapper>
 
         </cdbimport>

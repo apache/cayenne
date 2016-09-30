@@ -70,11 +70,6 @@ public class DbImportConfiguration {
      * A default package for ObjEntity Java classes.
      */
     private String defaultPackage;
-    /**
-     * Indicates that the old mapping should be completely removed and replaced
-     * with the new data based on reverse engineering.
-     */
-    private boolean overwrite;
     private String meaningfulPkTables;
     /**
      * Java class implementing org.apache.cayenne.dba.DbAdapter. This attribute
@@ -107,14 +102,6 @@ public class DbImportConfiguration {
 
     public void setDefaultPackage(String defaultPackage) {
         this.defaultPackage = defaultPackage;
-    }
-
-    public boolean isOverwrite() {
-        return overwrite;
-    }
-
-    public void setOverwrite(boolean overwrite) {
-        this.overwrite = overwrite;
     }
 
     public String getNamingStrategy() {

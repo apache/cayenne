@@ -20,7 +20,7 @@
 <project name="MyProject" default="dist" basedir=".">
 
     <taskdef name="cdbimport" classname="org.apache.cayenne.tools.DbImporterTask" taskname="cdbimport"
-             classpath="${basedir}"  />
+             classpath="${basedir}"/>
 
     <target name="dist">
         <cdbimport map="${context.dir}/WEB-INF/DefaultMap.map.xml"
@@ -43,39 +43,38 @@
                 </includeTable>
 
                 <includeTable pattern="includeTable-03">
-                    <includeColumn pattern="includeColumn-01" />
-                    <excludeColumn pattern="excludeColumn-01" />
+                    <includeColumn pattern="includeColumn-01"/>
+                    <excludeColumn pattern="excludeColumn-01"/>
                 </includeTable>
 
                 <excludeTable>excludeTable-01</excludeTable>
                 <excludeTable>
                     <pattern>excludeTable-02</pattern>
                 </excludeTable>
-                <excludeTable pattern="excludeTable-03" />
+                <excludeTable pattern="excludeTable-03"/>
 
                 <includeColumn>includeColumn-01</includeColumn>
                 <includeColumn>
                     <pattern>includeColumn-02</pattern>
                 </includeColumn>
-                <includeColumn pattern="includeColumn-03" />
+                <includeColumn pattern="includeColumn-03"/>
                 <excludeColumn>excludeColumn-01</excludeColumn>
                 <excludeColumn>
                     <pattern>excludeColumn-02</pattern>
                 </excludeColumn>
-                <excludeColumn pattern="excludeColumn-03" />
+                <excludeColumn pattern="excludeColumn-03"/>
 
                 <includeProcedure>includeProcedure-01</includeProcedure>
                 <includeProcedure>
                     <pattern>includeProcedure-02</pattern>
                 </includeProcedure>
-                <includeProcedure pattern="includeProcedure-03" />
+                <includeProcedure pattern="includeProcedure-03"/>
                 <excludeProcedure>excludeProcedure-01</excludeProcedure>
                 <excludeProcedure>
                     <pattern>excludeProcedure-02</pattern>
                 </excludeProcedure>
-                <excludeProcedure pattern="excludeProcedure-03" />
+                <excludeProcedure pattern="excludeProcedure-03"/>
             </catalog>
-
         </cdbimport>
     </target>
 

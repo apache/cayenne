@@ -25,8 +25,16 @@ import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbimport.Catalog;
 import org.apache.cayenne.dbimport.DefaultReverseEngineeringLoader;
+import org.apache.cayenne.dbimport.ExcludeColumn;
+import org.apache.cayenne.dbimport.ExcludeProcedure;
+import org.apache.cayenne.dbimport.ExcludeTable;
+import org.apache.cayenne.dbimport.IncludeColumn;
+import org.apache.cayenne.dbimport.IncludeProcedure;
+import org.apache.cayenne.dbimport.IncludeTable;
 import org.apache.cayenne.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbimport.Schema;
 import org.apache.cayenne.dbsync.CayenneDbSyncModule;
 import org.apache.cayenne.dbsync.reverse.FiltersConfigBuilder;
 import org.apache.cayenne.di.DIBootstrap;
@@ -53,19 +61,65 @@ import java.net.URL;
 public class DbImporterTask extends Task {
 
     private final DbImportConfiguration config;
-    private final ReverseEngineering reverseEngineering = new ReverseEngineering();
-
+    private ReverseEngineering reverseEngineering;
     private boolean isReverseEngineeringDefined;
 
     public DbImporterTask() {
-        config = new DbImportConfiguration();
-        config.setOverwrite(true);
-        config.setUsePrimitives(true);
-        config.setNamingStrategy(DefaultNameGenerator.class.getName());
+        this.config = new DbImportConfiguration();
+        this.config.setUsePrimitives(true);
+        this.config.setNamingStrategy(DefaultNameGenerator.class.getName());
+
+        // reverse engineering config is flattened into task...
+        this.reverseEngineering = new ReverseEngineering();
+    }
+
+    public void addIncludeColumn(IncludeColumn includeColumn) {
+        reverseEngineering.addIncludeColumn(includeColumn);
+    }
+
+    public void addExcludeColumn(ExcludeColumn excludeColumn) {
+        reverseEngineering.addExcludeColumn(excludeColumn);
+    }
+
+    public void addIncludeTable(IncludeTable includeTable) {
+        reverseEngineering.addIncludeTable(includeTable);
+    }
+
+    public void addExcludeTable(ExcludeTable excludeTable) {
+        reverseEngineering.addExcludeTable(excludeTable);
+    }
+
+    public void addIncludeProcedure(IncludeProcedure includeProcedure) {
+        reverseEngineering.addIncludeProcedure(includeProcedure);
+    }
+
+    public void addExcludeProcedure(ExcludeProcedure excludeProcedure) {
+        reverseEngineering.addExcludeProcedure(excludeProcedure);
+    }
+
+    public void addSkipRelationshipsLoading(boolean skipRelationshipsLoading) {
+        reverseEngineering.setSkipRelationshipsLoading(skipRelationshipsLoading);
+    }
+
+    public void addSkipPrimaryKeyLoading(boolean skipPrimaryKeyLoading) {
+        reverseEngineering.setSkipPrimaryKeyLoading(skipPrimaryKeyLoading);
+    }
+
+    public void addTableType(String type) {
+        reverseEngineering.addTableType(type);
+    }
+
+    public void addConfiguredSchema(Schema schema) {
+        reverseEngineering.addSchema(schema);
+    }
+
+    public void addCatalog(Catalog catalog) {
+        reverseEngineering.addCatalog(catalog);
     }
 
     @Override
     public void execute() {
+
         File dataMapFile = config.getDataMapFile();
         config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering).build());
 
@@ -191,13 +245,6 @@ public class DbImporterTask extends Task {
         if (error.length() > 0) {
             throw new BuildException(error.toString());
         }
-    }
-
-    /**
-     * @since 4.0
-     */
-    public void setOverwrite(boolean overwrite) {
-        config.setOverwrite(overwrite);
     }
 
     /**

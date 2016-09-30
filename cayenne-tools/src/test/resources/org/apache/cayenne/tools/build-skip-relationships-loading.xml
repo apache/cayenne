@@ -20,16 +20,16 @@
 <project name="MyProject" default="dist" basedir=".">
 
     <taskdef name="cdbimport" classname="org.apache.cayenne.tools.DbImporterTask" taskname="cdbimport"
-             classpath="${basedir}"  />
+             classpath="${basedir}"/>
 
     <target name="dist">
         <cdbimport map="${context.dir}/WEB-INF/DefaultMap.map.xml"
                    adapter="org.apache.cayenne.dba.hsqldb.HSQLDBAdapter"
                    driver="org.hsqldb.jdbcDriver"
                    url="jdbc:hsqldb:hsql://localhost/bookmarker"
-                   username="sa"
-                   skipRelationshipsLoading="true">
+                   username="sa">
 
+            <skipRelationshipsLoading>true</skipRelationshipsLoading>
         </cdbimport>
     </target>
 

@@ -23,12 +23,15 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.XMLEncoder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-import javax.xml.bind.annotation.*;
-import java.io.*;
-import java.util.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * @since 4.0.
@@ -36,8 +39,6 @@ import java.util.*;
 @XmlRootElement(name = "reverseEngineering")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ReverseEngineering extends FilterContainer implements ConfigurationNode, Serializable {
-
-    private static final Log LOG = LogFactory.getLog(ReverseEngineering.class);
 
     @XmlTransient
     protected Resource configurationSource;
