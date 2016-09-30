@@ -49,4 +49,53 @@ public class StringUtilsTest {
         assertEquals(null, stringUtils.pluralize(null));
     }
 
+
+    @Test
+    public void testCapitalizedAsConstant1() throws Exception {
+        String expected = "LAST_NAME";
+        assertEquals(expected, stringUtils.capitalizedAsConstant("LastName"));
+    }
+
+    @Test
+    public void testCapitalizedAsConstant2() throws Exception {
+        String expected = "A_CLASS";
+        assertEquals(expected, stringUtils.capitalizedAsConstant("aClass"));
+    }
+
+    @Test
+    public void testCapitalizedAsConstant3() throws Exception {
+        String expected = "VAR_A";
+        assertEquals(expected, stringUtils.capitalizedAsConstant("varA"));
+    }
+
+    @Test
+    public void testCapitalizedAsConstant4() throws Exception {
+        String expected = "LAST_NAME";
+        assertEquals(expected, stringUtils.capitalizedAsConstant("LAST_NAME"));
+    }
+
+    @Test
+    public void testCapitalizedAsConstant5() throws Exception {
+        String expected = "ABC_A";
+        assertEquals(expected, stringUtils.capitalizedAsConstant("abc_A"));
+    }
+
+    @Test
+    public void testCapitalizedAsConstant6() throws Exception {
+        String expected = "A123";
+        assertEquals(expected, stringUtils.capitalizedAsConstant("a123"));
+    }
+
+    @Test
+    public void testCapitalizedAsConstant7() throws Exception {
+        String expected = "AB_CDEF";
+        assertEquals(expected, stringUtils.capitalizedAsConstant("abCDEF"));
+    }
+
+    @Test
+    public void testCapitalizedAsConstant8() throws Exception {
+        String expected = "AB_CE";
+        assertEquals(expected, stringUtils.capitalizedAsConstant("abCe"));
+    }
+
 }

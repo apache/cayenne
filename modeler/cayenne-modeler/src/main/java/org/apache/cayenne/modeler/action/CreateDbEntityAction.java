@@ -28,8 +28,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.UniqueNameGenerator;
-import org.apache.cayenne.map.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
+import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
@@ -63,7 +63,7 @@ public class CreateDbEntityAction extends CayenneAction {
 		ProjectController mediator = getProjectController();
 
 		DataMap map = mediator.getCurrentDataMap();
-		DbEntity entity = new DbEntity(UniqueNameGenerator.generate(NameCheckers.dbEntity, map));
+		DbEntity entity = new DbEntity(DuplicateNameResolver.resolve(NameCheckers.dbEntity, map));
 
 		createEntity(map, entity);
 

@@ -18,40 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import java.io.Serializable;
-
 import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.dbsync.reverse.naming.NameConverter;
+import org.apache.cayenne.util.Util;
+
+import java.io.Serializable;
 
 /**
  * Entity for callback type. Contains type and type name
- * 
+ *
  * @version 1.0 Oct 26, 2007
  */
 
 public class CallbackType implements Serializable {
 
     private LifecycleEvent type;
-
-    /**
-     * callback type name
-     */
     private String name;
-
-    /**
-     * methods counter
-     */
     private int counter;
 
-    /**
-     * constructor
-     * 
-     * @param type type id
-     * @param name name
-     */
     public CallbackType(LifecycleEvent type) {
         this.type = type;
-        this.name = NameConverter.underscoredToJava(type.name(), true);
+        this.name = Util.underscoredToJava(type.name(), true);
         this.counter = 0;
     }
 
@@ -78,7 +64,7 @@ public class CallbackType implements Serializable {
 
     /**
      * Method to specify counter value
-     * 
+     *
      * @param counter new coutner value
      */
     public void setCounter(int counter) {
@@ -91,11 +77,9 @@ public class CallbackType implements Serializable {
     public String toString() {
         if (counter <= 0) {
             return name;
-        }
-        else if (counter == 1) {
+        } else if (counter == 1) {
             return name + " (1 method)";
-        }
-        else {
+        } else {
             return name + " (" + counter + " methods)";
         }
     }

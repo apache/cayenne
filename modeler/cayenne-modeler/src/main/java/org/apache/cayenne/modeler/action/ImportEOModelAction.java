@@ -45,8 +45,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.UniqueNameGenerator;
-import org.apache.cayenne.map.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
+import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
@@ -302,7 +302,7 @@ public class ImportEOModelAction extends CayenneAction {
         else {
             // fix DataMap name, as there maybe a map with the same name already
             DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
-            map.setName(UniqueNameGenerator.generate(NameCheckers.dataMap, domain, map.getName()));
+            map.setName(DuplicateNameResolver.resolve(NameCheckers.dataMap, domain, map.getName()));
 
             // side effect of this operation is that if a node was created, this DataMap
             // will be linked with it...

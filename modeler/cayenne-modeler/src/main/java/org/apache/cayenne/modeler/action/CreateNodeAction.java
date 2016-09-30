@@ -29,8 +29,8 @@ import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.UniqueNameGenerator;
-import org.apache.cayenne.map.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
+import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
@@ -104,7 +104,7 @@ public class CreateNodeAction extends CayenneAction {
 	 * A factory method that makes a new DataNode.
 	 */
 	DataNodeDescriptor buildDataNode(DataChannelDescriptor domain) {
-		DataNodeDescriptor node = new DataNodeDescriptor(UniqueNameGenerator.generate(
+		DataNodeDescriptor node = new DataNodeDescriptor(DuplicateNameResolver.resolve(
 				NameCheckers.dataNodeDescriptor, domain));
 		node.setDataChannelDescriptor(domain);
 

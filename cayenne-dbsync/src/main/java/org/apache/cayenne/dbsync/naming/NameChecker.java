@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map.naming;
+package org.apache.cayenne.dbsync.naming;
 
 /**
  * @since 4.0

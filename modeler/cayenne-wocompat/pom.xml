@@ -46,6 +46,12 @@
 			<artifactId>cayenne-server</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-dbsync</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
     <profiles>

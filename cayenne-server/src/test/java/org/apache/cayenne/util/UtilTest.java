@@ -295,4 +295,42 @@ public class UtilTest {
 		assertEquals("1...78", Util.prettyTrim("12345678", 6));
 	}
 
+	@Test
+	public void testUnderscoredToJava1() throws Exception {
+		String expected = "ClassNameIdentifier";
+		assertEquals(expected, Util.underscoredToJava(
+				"_CLASS_NAME_IDENTIFIER_",
+				true));
+	}
+
+	@Test
+	public void testUnderscoredToJava2() throws Exception {
+		String expected = "propNameIdentifier123";
+		assertEquals(expected, Util.underscoredToJava(
+				"_prop_name_Identifier_123",
+				false));
+	}
+
+	@Test
+	public void testUnderscoredToJava3() throws Exception {
+		String expected = "lastName";
+		assertEquals(expected, Util.underscoredToJava("lastName", false));
+	}
+
+	@Test
+	public void testUnderscoredToJava4() throws Exception {
+		String expected = "lastName";
+		assertEquals(expected, Util.underscoredToJava("LastName", false));
+	}
+
+	@Test
+	public void testUnderscoredToJava5() throws Exception {
+		String expected = "LastName";
+		assertEquals(expected, Util.underscoredToJava("LastName", true));
+	}
+
+	@Test
+	public void testUnderscoredToJavaSpecialChars() throws Exception {
+		assertEquals("ABCpoundXyz", Util.underscoredToJava("ABC#_XYZ", true));
+	}
 }

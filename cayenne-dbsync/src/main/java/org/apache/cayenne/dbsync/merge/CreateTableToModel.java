@@ -19,21 +19,22 @@
 package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
+import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
+import org.apache.cayenne.dbsync.naming.NameCheckers;
+import org.apache.cayenne.dbsync.reverse.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.dbsync.reverse.naming.NameConverter;
 
 /**
  * A {@link MergerToken} to add a {@link DbEntity} to a {@link DataMap}
- * 
  */
 public class CreateTableToModel extends AbstractToModelToken.Entity {
 
     /**
      * className if {@link ObjEntity} should be generated with a
-     *  special class name.
-     * Setting this to <code>null</code>, because by default class name should be generated 
+     * special class name.
+     * Setting this to <code>null</code>, because by default class name should be generated
      */
     private String objEntityClassName = null; //CayenneDataObject.class.getName();
 
@@ -53,11 +54,18 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
     }
 
     public void execute(MergerContext mergerContext) {
+        DbEntity dbEntity = getEntity();
+
         DataMap map = mergerContext.getDataMap();
-        map.addDbEntity(getEntity());
+        map.addDbEntity(dbEntity);
 
         // create a ObjEntity
-        String objEntityName = NameConverter.underscoredToJava(getEntity().getName(), true);
+
+        // TODO: proper name generator must be injected
+
+        String objEntityName = new DefaultObjectNameGenerator().createObjEntityName(dbEntity);
+        objEntityName = DuplicateNameResolver.resolve(NameCheckers.objEntity, dbEntity.getDataMap(), objEntityName);
+
         // this loop will terminate even if no valid name is found
         // to prevent loader from looping forever (though such case is very unlikely)
         String baseName = objEntityName;
@@ -77,12 +85,12 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
 
         objEntity.setClassName(className);
         objEntity.setSuperClassName(map.getDefaultSuperclass());
-        
+
         if (map.isClientSupported()) {
             objEntity.setClientClassName(map.getNameWithDefaultClientPackage(objEntity.getName()));
             objEntity.setClientSuperClassName(map.getDefaultClientSuperclass());
         }
-        
+
         map.addObjEntity(objEntity);
 
         // presumably there are no other ObjEntities pointing to this DbEntity, so syncing just this one...

@@ -22,20 +22,20 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
+import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
+import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.UniqueNameGenerator;
-import org.apache.cayenne.map.naming.NameCheckers;
-import org.apache.cayenne.dbsync.reverse.naming.NameConverter;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateObjEntityUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.DeleteRuleUpdater;
+import org.apache.cayenne.util.Util;
 
 import java.awt.event.ActionEvent;
 
@@ -69,7 +69,7 @@ public class CreateObjEntityAction extends CayenneAction {
         ProjectController mediator = getProjectController();
 
         DataMap dataMap = mediator.getCurrentDataMap();
-        ObjEntity entity = new ObjEntity(UniqueNameGenerator.generate(NameCheckers.objEntity, dataMap));
+        ObjEntity entity = new ObjEntity(DuplicateNameResolver.resolve(NameCheckers.objEntity, dataMap));
 
         // init defaults
         entity.setSuperClassName(dataMap.getDefaultSuperclass());
@@ -78,8 +78,8 @@ public class CreateObjEntityAction extends CayenneAction {
         DbEntity dbEntity = mediator.getCurrentDbEntity();
         if (dbEntity != null) {
             entity.setDbEntity(dbEntity);
-            String baseName = NameConverter.underscoredToJava(dbEntity.getName(), true);
-            entity.setName(UniqueNameGenerator.generate(NameCheckers.objEntity, dbEntity.getDataMap(), baseName));
+            String baseName = Util.underscoredToJava(dbEntity.getName(), true);
+            entity.setName(DuplicateNameResolver.resolve(NameCheckers.objEntity, dbEntity.getDataMap(), baseName));
         }
 
         entity.setClassName(dataMap.getNameWithDefaultPackage(entity.getName()));

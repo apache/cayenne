@@ -31,8 +31,8 @@ import javax.swing.JOptionPane;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.map.naming.UniqueNameGenerator;
-import org.apache.cayenne.map.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
+import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -85,9 +85,9 @@ public class ImportDataMapAction extends CayenneAction {
 			DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController().getProject().getRootNode();
 
 			if (newMap.getName() != null) {
-				newMap.setName(UniqueNameGenerator.generate(NameCheckers.dataMap, domain, newMap.getName()));
+				newMap.setName(DuplicateNameResolver.resolve(NameCheckers.dataMap, domain, newMap.getName()));
 			} else {
-				newMap.setName(UniqueNameGenerator.generate(NameCheckers.dataMap, domain));
+				newMap.setName(DuplicateNameResolver.resolve(NameCheckers.dataMap, domain));
 			}
 
 			Resource baseResource = domain.getConfigurationSource();

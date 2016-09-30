@@ -19,6 +19,23 @@
 
 package org.apache.cayenne.util;
 
+import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
+import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
+import org.apache.cayenne.reflect.ArcProperty;
+import org.apache.cayenne.reflect.AttributeProperty;
+import org.apache.cayenne.reflect.PropertyVisitor;
+import org.apache.cayenne.reflect.ToManyProperty;
+import org.apache.cayenne.reflect.ToOneProperty;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -42,30 +59,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.regex.Pattern;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
-import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.AttributeProperty;
-import org.apache.cayenne.reflect.PropertyVisitor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 /**
  * Contains various unorganized static utility methods used across Cayenne.
  */
 public class Util {
+
+	private static final Map<String, String> SPECIAL_CHAR_TO_JAVA_MAPPING = new HashMap<>();
+	static {
+		SPECIAL_CHAR_TO_JAVA_MAPPING.put("#", "pound");
+	}
 
 	@Deprecated
 	private static DefaultAdhocObjectFactory objectFactory;
@@ -506,6 +511,91 @@ public class Util {
 	@Deprecated
 	public static Class<?> getJavaClass(String className) throws ClassNotFoundException {
 		return objectFactory.getJavaClass(className);
+	}
+
+	/**
+	 * Converts names like "ABCD_EFG_123" to Java-style names like "abcdEfg123". If
+	 * <code>capitalize</code> is true, returned name is capitalized (for instance if
+	 * this is a class name).
+	 *
+	 * @since 4.0
+	 */
+	// TODO: trace direct users and switch over to ObjectNameGenerator
+	public static String underscoredToJava(String name, boolean capitalize) {
+		StringTokenizer st = new StringTokenizer(name, "_");
+		StringBuilder buf = new StringBuilder();
+
+		boolean first = true;
+		while (st.hasMoreTokens()) {
+			String token = st.nextToken();
+
+			// clear of non-java chars
+			token = specialCharsToJava(token);
+
+			int len = token.length();
+			if (len == 0) {
+				continue;
+			}
+
+			// sniff mixed case vs. single case styles
+			boolean hasLowerCase = false;
+			boolean hasUpperCase = false;
+			for (int i = 0; i < len && !(hasUpperCase && hasLowerCase); i++) {
+				if (Character.isUpperCase(token.charAt(i))) {
+					hasUpperCase = true;
+				} else if (Character.isLowerCase(token.charAt(i))) {
+					hasLowerCase = true;
+				}
+			}
+
+			// if mixed case, preserve it, if all upper, convert to lower
+			if (hasUpperCase && !hasLowerCase) {
+				token = token.toLowerCase();
+			}
+
+			if (first) {
+				// apply explicit capitalization rules, if this is the first token
+				first = false;
+				if (capitalize) {
+					buf.append(Character.toUpperCase(token.charAt(0)));
+				} else {
+					buf.append(Character.toLowerCase(token.charAt(0)));
+				}
+			} else {
+				buf.append(Character.toUpperCase(token.charAt(0)));
+			}
+
+			if (len > 1) {
+				buf.append(token.substring(1, len));
+			}
+		}
+		return buf.toString();
+	}
+
+	/**
+	 * Replaces special chars with human-readable and Java-id-compatible symbols.
+	 *
+	 * @since 4.0
+	 */
+	public static String specialCharsToJava(String string) {
+		int len = string.length();
+		if (len == 0) {
+			return string;
+		}
+
+		StringBuilder buffer = new StringBuilder(len);
+		for (int i = 0; i < len; i++) {
+
+			char c = string.charAt(i);
+			if (Character.isJavaIdentifierPart(c)) {
+				buffer.append(c);
+			} else {
+				Object word = SPECIAL_CHAR_TO_JAVA_MAPPING.get(String.valueOf(c));
+				buffer.append(word != null ? word : "_");
+			}
+		}
+
+		return buffer.toString();
 	}
 
 	static void setReverse(final Persistent sourceObject, String propertyName, final Persistent targetObject) {

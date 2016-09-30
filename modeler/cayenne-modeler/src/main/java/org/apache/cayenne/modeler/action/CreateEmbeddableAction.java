@@ -27,8 +27,8 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.UniqueNameGenerator;
-import org.apache.cayenne.map.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
+import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
@@ -56,7 +56,7 @@ public class CreateEmbeddableAction extends CayenneAction {
 
         DataMap dataMap = mediator.getCurrentDataMap();
 
-        Embeddable embeddable = new Embeddable(UniqueNameGenerator.generate(NameCheckers.embeddable, mediator.getCurrentDataMap()));
+        Embeddable embeddable = new Embeddable(DuplicateNameResolver.resolve(NameCheckers.embeddable, mediator.getCurrentDataMap()));
         createEmbeddable(dataMap, embeddable);
 
         application.getUndoManager().addEdit(

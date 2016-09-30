@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.dbsync.reverse.naming.NameConverter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.util.Util;
@@ -46,6 +45,6 @@ public class ClientDataMapArtifact extends DataMapArtifact {
             clientPrefix = "Client_";
         }
 
-        return dataMap.getNameWithDefaultClientPackage(NameConverter.underscoredToJava(clientPrefix + dataMap.getName(), true));
+        return dataMap.getNameWithDefaultClientPackage(Util.underscoredToJava(clientPrefix + dataMap.getName(), true));
     }
 }

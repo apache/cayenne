@@ -29,8 +29,8 @@ import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.UniqueNameGenerator;
-import org.apache.cayenne.map.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
+import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateQueryUndoableEdit;
@@ -119,7 +119,7 @@ public class QueryType extends CayenneController{
         String queryType = getSelectedQuery();
 
         // update query...
-        String queryName = UniqueNameGenerator.generate(NameCheckers.query, dataMap);
+        String queryName = DuplicateNameResolver.resolve(NameCheckers.query, dataMap);
 
         QueryDescriptor query = QueryDescriptor.descriptor(queryType);
 

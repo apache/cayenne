@@ -18,19 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
+import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
+import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.UniqueNameGenerator;
-import org.apache.cayenne.map.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.editor.CallbackType;
 import org.apache.cayenne.modeler.event.CallbackMethodEvent;
 import org.apache.cayenne.modeler.undo.CreateCallbackMethodUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.cayenne.dbsync.reverse.naming.NameConverter;
+import org.apache.cayenne.util.Util;
+
+import java.awt.event.ActionEvent;
 
 /**
  * Action class for creating callback methods on ObjEntity
@@ -76,9 +76,8 @@ public class CreateCallbackMethodAction extends CayenneAction {
     public final void performAction(ActionEvent e) {
         CallbackType callbackType = getProjectController().getCurrentCallbackType();
 
-        // generate methodName
         String methodNamePrefix = toMethodName(callbackType.getType());
-        String methodName = UniqueNameGenerator.generate(NameCheckers.objCallbackMethod, getProjectController().getCurrentObjEntity(), methodNamePrefix);
+        String methodName = DuplicateNameResolver.resolve(NameCheckers.objCallbackMethod, getProjectController().getCurrentObjEntity(), methodNamePrefix);
 
         createCallbackMethod(callbackType, methodName);
         application.getUndoManager().addEdit(
@@ -102,7 +101,7 @@ public class CreateCallbackMethodAction extends CayenneAction {
     }
 
     private String toMethodName(LifecycleEvent event) {
-        return "on" + NameConverter.underscoredToJava(event.name(), true);
+        return "on" + Util.underscoredToJava(event.name(), true);
     }
     
     public static String getActionName() {

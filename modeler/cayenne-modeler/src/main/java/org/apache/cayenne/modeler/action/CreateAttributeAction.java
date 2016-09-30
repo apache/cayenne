@@ -36,8 +36,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EmbeddableAttributeEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.UniqueNameGenerator;
-import org.apache.cayenne.map.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
+import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
@@ -77,7 +77,7 @@ public class CreateAttributeAction extends CayenneAction {
             Embeddable embeddable = mediator.getCurrentEmbeddable();
 
             EmbeddableAttribute attr = new EmbeddableAttribute();
-            attr.setName(UniqueNameGenerator.generate(NameCheckers.embeddableAttribute, embeddable));
+            attr.setName(DuplicateNameResolver.resolve(NameCheckers.embeddableAttribute, embeddable));
 
             createEmbAttribute(embeddable, attr);
 
@@ -89,7 +89,7 @@ public class CreateAttributeAction extends CayenneAction {
 
             ObjEntity objEntity = mediator.getCurrentObjEntity();
 
-            ObjAttribute attr = new ObjAttribute(UniqueNameGenerator.generate(NameCheckers.objAttribute, objEntity), null, objEntity);
+            ObjAttribute attr = new ObjAttribute(DuplicateNameResolver.resolve(NameCheckers.objAttribute, objEntity), null, objEntity);
 
             createObjAttribute(mediator.getCurrentDataMap(), objEntity, attr);
 
@@ -99,7 +99,7 @@ public class CreateAttributeAction extends CayenneAction {
         } else if (getProjectController().getCurrentDbEntity() != null) {
             DbEntity dbEntity = getProjectController().getCurrentDbEntity();
 
-            DbAttribute attr = new DbAttribute(UniqueNameGenerator.generate(NameCheckers.dbAttribute, dbEntity),
+            DbAttribute attr = new DbAttribute(DuplicateNameResolver.resolve(NameCheckers.dbAttribute, dbEntity),
                     TypesMapping.NOT_DEFINED, dbEntity);
 
             createDbAttribute(mediator.getCurrentDataMap(), dbEntity, attr);

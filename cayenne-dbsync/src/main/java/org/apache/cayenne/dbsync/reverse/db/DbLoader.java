@@ -34,9 +34,9 @@ import org.apache.cayenne.map.DbRelationshipDetected;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.naming.UniqueNameGenerator;
+import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
 import org.apache.cayenne.dbsync.reverse.naming.LegacyObjectNameGenerator;
-import org.apache.cayenne.map.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.commons.logging.Log;
@@ -133,7 +133,7 @@ public class DbLoader {
                 continue;
             }
 
-            String objEntityName = UniqueNameGenerator.generate(NameCheckers.objEntity, map,
+            String objEntityName = DuplicateNameResolver.resolve(NameCheckers.objEntity, map,
                     nameGenerator.createObjEntityName(dbEntity));
 
             ObjEntity objEntity = new ObjEntity(objEntityName);
@@ -439,7 +439,7 @@ public class DbLoader {
 
     private String generateName(DbEntity entity, ExportedKey key, boolean toMany) {
         String forwardPreferredName = nameGenerator.createDbRelationshipName(key, toMany);
-        return UniqueNameGenerator.generate(NameCheckers.dbRelationship, entity, forwardPreferredName);
+        return DuplicateNameResolver.resolve(NameCheckers.dbRelationship, entity, forwardPreferredName);
     }
 
     private void fireObjEntitiesAddedEvents(Collection<ObjEntity> loadedObjEntities) {

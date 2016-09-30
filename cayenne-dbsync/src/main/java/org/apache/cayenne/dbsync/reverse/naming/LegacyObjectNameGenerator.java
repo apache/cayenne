@@ -18,35 +18,37 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.naming;
 
+import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
+import org.apache.cayenne.util.Util;
 
 /**
  * BasicNamingStrategy is an naming strategy that creates names in Cayenne's
  * old-fashioned manner, i.e. the same way Cayenne did before 3.0
- * 
+ *
  * @since 4.0
  */
 public class LegacyObjectNameGenerator implements ObjectNameGenerator {
+
     public String createDbRelationshipName(
             ExportedKey key,
             boolean toMany) {
-        
+
         String uglyName = (toMany) ? key.getFKTableName() + "_ARRAY" : "to_" + key.getPKTableName();
-        return NameConverter.underscoredToJava(uglyName, false);
+        return Util.underscoredToJava(uglyName, false);
     }
 
     public String createObjEntityName(DbEntity dbEntity) {
-        return NameConverter.underscoredToJava(dbEntity.getName(), true);
+        return Util.underscoredToJava(dbEntity.getName(), true);
     }
 
     public String createObjAttributeName(DbAttribute attr) {
-        return NameConverter.underscoredToJava(attr.getName(), false);
+        return Util.underscoredToJava(attr.getName(), false);
     }
 
     public String createObjRelationshipName(DbRelationship dbRel) {
-        return NameConverter.underscoredToJava(dbRel.getName(), false);
+        return Util.underscoredToJava(dbRel.getName(), false);
     }
 }

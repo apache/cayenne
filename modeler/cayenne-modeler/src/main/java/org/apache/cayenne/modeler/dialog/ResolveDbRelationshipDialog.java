@@ -46,8 +46,8 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
-import org.apache.cayenne.map.naming.UniqueNameGenerator;
-import org.apache.cayenne.map.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
+import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
@@ -292,7 +292,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         }
 
         if (sourceEntityName == null) {
-            sourceEntityName = UniqueNameGenerator.generate(NameCheckers.dbRelationship, relationship.getSourceEntity());
+            sourceEntityName = DuplicateNameResolver.resolve(NameCheckers.dbRelationship, relationship.getSourceEntity());
         }
 
         if (!validateName(relationship.getSourceEntity(), relationship, sourceEntityName)) {
@@ -305,7 +305,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         }
 
         if (targetEntityName == null) {
-            targetEntityName = UniqueNameGenerator.generate(NameCheckers.dbRelationship, relationship.getTargetEntity());
+            targetEntityName = DuplicateNameResolver.resolve(NameCheckers.dbRelationship, relationship.getTargetEntity());
         }
 
         // check if reverse name is valid

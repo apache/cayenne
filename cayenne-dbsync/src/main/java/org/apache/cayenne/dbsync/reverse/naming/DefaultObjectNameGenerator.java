@@ -18,10 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.naming;
 
+import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
+import org.apache.cayenne.util.Util;
 import org.jvnet.inflector.Noun;
 
 import java.util.Locale;
@@ -73,21 +74,21 @@ public class DefaultObjectNameGenerator implements ObjectNameGenerator {
 			}
 		}
 
-		return NameConverter.underscoredToJava(name, false);
+		return Util.underscoredToJava(name, false);
 	}
 
 	@Override
 	public String createObjEntityName(DbEntity dbEntity) {
-		return NameConverter.underscoredToJava(dbEntity.getName(), true);
+		return Util.underscoredToJava(dbEntity.getName(), true);
 	}
 
 	@Override
 	public String createObjAttributeName(DbAttribute attr) {
-		return NameConverter.underscoredToJava(attr.getName(), false);
+		return Util.underscoredToJava(attr.getName(), false);
 	}
 
 	@Override
 	public String createObjRelationshipName(DbRelationship dbRel) {
-		return NameConverter.underscoredToJava(dbRel.getName(), false);
+		return Util.underscoredToJava(dbRel.getName(), false);
 	}
 }

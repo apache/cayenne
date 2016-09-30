@@ -20,7 +20,6 @@
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.project.validation.NameValidationHelper;
-import org.apache.cayenne.dbsync.reverse.naming.NameConverter;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -112,7 +111,27 @@ public class StringUtils {
         if (name == null || name.length() == 0)
             return name;
 
-        return NameConverter.javaToUnderscored(name);
+        // clear of non-java chars. While the method name implies that a passed identifier
+        // is pure Java, it is used to build pk columns names and such, so extra safety
+        // check is a good idea
+        name = Util.specialCharsToJava(name);
+
+        char charArray[] = name.toCharArray();
+        StringBuilder buffer = new StringBuilder();
+
+        for (int i = 0; i < charArray.length; i++) {
+            if ((Character.isUpperCase(charArray[i])) && (i != 0)) {
+
+                char prevChar = charArray[i - 1];
+                if ((Character.isLowerCase(prevChar))) {
+                    buffer.append("_");
+                }
+            }
+
+            buffer.append(Character.toUpperCase(charArray[i]));
+        }
+
+        return buffer.toString();
     }
 
     /**

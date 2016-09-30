@@ -19,17 +19,6 @@
 
 package org.apache.cayenne.gen;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionParameter;
@@ -42,10 +31,21 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.PathComponent;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.dbsync.reverse.naming.NameConverter;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.cayenne.util.Util;
 import org.apache.commons.collections.set.ListOrderedSet;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Attributes and Methods for working with Queries.
@@ -64,7 +64,7 @@ public class DataMapUtils {
 	 * @return Method name that perform query.
 	 */
 	public String getQueryMethodName(QueryDescriptor query) {
-		return NameConverter.underscoredToJava(query.getName(), true);
+		return Util.underscoredToJava(query.getName(), true);
 	}
 
 	/**
@@ -136,7 +136,7 @@ public class DataMapUtils {
 		Matcher matcher = pattern.matcher(qualifierString);
 		while (matcher.find()) {
 			String name = matcher.group();
-			result.add(NameConverter.underscoredToJava(name.substring(1), false));
+			result.add(Util.underscoredToJava(name.substring(1), false));
 		}
 
 		return result;
@@ -209,7 +209,7 @@ public class DataMapUtils {
 			}
 
 			for (String name : names) {
-				types.put(NameConverter.underscoredToJava(name, false), typeName);
+				types.put(Util.underscoredToJava(name, false), typeName);
 			}
 
 			return types;

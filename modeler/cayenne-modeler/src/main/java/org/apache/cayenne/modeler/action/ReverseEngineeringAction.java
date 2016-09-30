@@ -25,8 +25,8 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.map.naming.UniqueNameGenerator;
-import org.apache.cayenne.map.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
+import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.ProjectController;
@@ -55,8 +55,8 @@ public class ReverseEngineeringAction extends CayenneAction {
         DataMap dataMap = projectController.getCurrentDataMap();
         DataChannelDescriptor dataChannelDescriptor = projectController.getCurrentDataChanel();
         if (dataMap == null) {
-            dataMap = new DataMap(UniqueNameGenerator.generate(NameCheckers.dataMap));
-            dataMap.setName(UniqueNameGenerator.generate(NameCheckers.dataMap, projectController.getProject().getRootNode()));
+            dataMap = new DataMap(DuplicateNameResolver.resolve(NameCheckers.dataMap));
+            dataMap.setName(DuplicateNameResolver.resolve(NameCheckers.dataMap, projectController.getProject().getRootNode()));
             dataChannelDescriptor.getDataMaps().add(dataMap);
             getProjectController().fireDataMapEvent(new DataMapEvent(this, dataMap, MapEvent.ADD));
         }

@@ -19,6 +19,30 @@
 
 package org.apache.cayenne.wocompat;
 
+import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
+import org.apache.cayenne.dbsync.naming.NameCheckers;
+import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.wocompat.parser.Parser;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
@@ -31,19 +55,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.map.*;
-import org.apache.cayenne.map.naming.UniqueNameGenerator;
-import org.apache.cayenne.map.naming.NameCheckers;
-import org.apache.cayenne.query.*;
-import org.apache.cayenne.wocompat.parser.Parser;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.PredicateUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Class for converting stored Apple EOModel mapping files to Cayenne DataMaps.
@@ -716,7 +727,7 @@ public class EOModelProcessor {
 			if (relationship.getReverseRelationship() == null) {
 				DbRelationship reverse = relationship.createReverseRelationship();
 
-				String name = UniqueNameGenerator.generate(NameCheckers.dbRelationship,
+				String name = DuplicateNameResolver.resolve(NameCheckers.dbRelationship,
 						reverse.getSourceEntity(), relationship.getName() + "Reverse");
 				reverse.setName(name);
 				relationship.getTargetEntity().addRelationship(reverse);
