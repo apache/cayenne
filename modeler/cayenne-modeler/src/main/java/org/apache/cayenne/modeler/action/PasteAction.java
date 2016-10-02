@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -34,9 +35,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
@@ -48,11 +48,10 @@ import org.apache.cayenne.modeler.undo.PasteUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTransferable;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.map.QueryDescriptor;
 
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import javax.swing.undo.UndoableEdit;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.FlavorEvent;
 import java.awt.datatransfer.FlavorListener;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -69,10 +68,6 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
     private static final String COPY_PATTERN = "Copy of %s (%d)";
 
-    public static String getActionName() {
-        return "Paste";
-    }
-
     /**
      * Constructor for PasteAction
      */
@@ -82,6 +77,10 @@ public class PasteAction extends CayenneAction implements FlavorListener {
         // add listener, so that button state would update event if clipboard was filled
         // by other app
         Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(this);
+    }
+
+    public static String getActionName() {
+        return "Paste";
     }
 
     @Override
@@ -125,19 +124,16 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                                 currentObject,
                                 o));
                     }
-                }
-                else {
+                } else {
                     paste(currentObject, content);
                     undoableEdit = new PasteUndoableEdit(domain, map, currentObject, content);
                 }
 
                 application.getUndoManager().addEdit(undoableEdit);
             }
-        }
-        catch (UnsupportedFlavorException ufe) {
+        } catch (UnsupportedFlavorException ufe) {
             // do nothing
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ErrorDebugDialog.guiException(ex);
         }
     }
@@ -154,7 +150,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
     public void paste(
             Object where,
             Object content,
-            DataChannelDescriptor domain,
+            DataChannelDescriptor dataChannelDescriptor,
             DataMap map) {
         final ProjectController mediator = getProjectController();
 
@@ -171,7 +167,11 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             // paste DataMap to DataDomain or DataNode
             DataMap dataMap = ((DataMap) content);
 
-            dataMap.setName(DuplicateNameResolver.resolve(NameCheckers.dataMap, COPY_PATTERN, domain, dataMap.getName()));
+            dataMap.setName(NameBuilder
+                    .builder(dataMap, dataChannelDescriptor)
+                    .baseName(dataMap.getName())
+                    .dupesPattern(COPY_PATTERN)
+                    .name());
 
             /**
              * Update all names in the new DataMap, so that they would not conflict with
@@ -182,20 +182,28 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             // to it as well
             Map<String, String> renamedDbEntities = new HashMap<>();
             Map<String, String> renamedObjEntities = new HashMap<>();
-
             Map<String, String> renamedEmbeddables = new HashMap<>();
 
             for (DbEntity dbEntity : dataMap.getDbEntities()) {
                 String oldName = dbEntity.getName();
-                dbEntity.setName(DuplicateNameResolver.resolve(NameCheckers.dbEntity, COPY_PATTERN, dataMap, dbEntity.getName()));
+                dbEntity.setName(NameBuilder
+                        .builder(dbEntity, dataMap)
+                        .baseName(dbEntity.getName())
+                        .dupesPattern(COPY_PATTERN)
+                        .name());
 
                 if (!oldName.equals(dbEntity.getName())) {
                     renamedDbEntities.put(oldName, dbEntity.getName());
                 }
             }
+
             for (ObjEntity objEntity : dataMap.getObjEntities()) {
                 String oldName = objEntity.getName();
-                objEntity.setName(DuplicateNameResolver.resolve(NameCheckers.objEntity, COPY_PATTERN, dataMap, objEntity.getName()));
+                objEntity.setName(NameBuilder
+                        .builder(objEntity, dataMap)
+                        .baseName(objEntity.getName())
+                        .dupesPattern(COPY_PATTERN)
+                        .name());
 
                 if (!oldName.equals(objEntity.getName())) {
                     renamedObjEntities.put(oldName, objEntity.getName());
@@ -204,7 +212,11 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
             for (Embeddable embeddable : dataMap.getEmbeddables()) {
                 String oldName = embeddable.getClassName();
-                embeddable.setClassName(DuplicateNameResolver.resolve(NameCheckers.embeddable, COPY_PATTERN, dataMap, embeddable.getClassName()));
+                embeddable.setClassName(NameBuilder
+                        .builder(embeddable, dataMap)
+                        .baseName(embeddable.getClassName())
+                        .dupesPattern(COPY_PATTERN)
+                        .name());
 
                 if (!oldName.equals(embeddable.getClassName())) {
                     renamedEmbeddables.put(oldName, embeddable.getClassName());
@@ -212,10 +224,18 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             }
 
             for (Procedure procedure : dataMap.getProcedures()) {
-                procedure.setName(DuplicateNameResolver.resolve(NameCheckers.procedure, COPY_PATTERN, dataMap, procedure.getName()));
+                procedure.setName(NameBuilder
+                        .builder(procedure, dataMap)
+                        .baseName(procedure.getName())
+                        .dupesPattern(COPY_PATTERN)
+                        .name());
             }
+
             for (QueryDescriptor query : dataMap.getQueryDescriptors()) {
-                query.setName(DuplicateNameResolver.resolve(NameCheckers.query, COPY_PATTERN, dataMap, query.getName()));
+                query.setName(NameBuilder.builder(query, dataMap)
+                        .baseName(query.getName())
+                        .dupesPattern(COPY_PATTERN)
+                        .name());
             }
 
             // if an entity was renamed, we rename all links to it too
@@ -247,8 +267,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
             }
 
             mediator.addDataMap(this, dataMap);
-        }
-        else if (where instanceof DataMap) {
+        } else if (where instanceof DataMap) {
             // paste DbEntity to DataMap
             final DataMap dataMap = ((DataMap) where);
 
@@ -257,15 +276,21 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
             if (content instanceof DbEntity) {
                 DbEntity dbEntity = (DbEntity) content;
-                dbEntity.setName(DuplicateNameResolver.resolve(NameCheckers.dbEntity, COPY_PATTERN, dataMap, dbEntity.getName()));
+                dbEntity.setName(NameBuilder
+                        .builder(dbEntity, dataMap)
+                        .baseName(dbEntity.getName())
+                        .dupesPattern(COPY_PATTERN)
+                        .name());
 
                 dataMap.addDbEntity(dbEntity);
                 CreateDbEntityAction.fireDbEntityEvent(this, mediator, dbEntity);
-            }
-            else if (content instanceof ObjEntity) {
+            } else if (content instanceof ObjEntity) {
                 // paste ObjEntity to DataMap
                 ObjEntity objEntity = (ObjEntity) content;
-                objEntity.setName(DuplicateNameResolver.resolve(NameCheckers.objEntity, COPY_PATTERN, dataMap, objEntity.getName()));
+                objEntity.setName(NameBuilder.builder(objEntity, dataMap)
+                        .baseName(objEntity.getName())
+                        .dupesPattern(COPY_PATTERN)
+                        .name());
 
                 dataMap.addObjEntity(objEntity);
                 CreateObjEntityAction.fireObjEntityEvent(
@@ -273,11 +298,14 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                         mediator,
                         dataMap,
                         objEntity);
-            }
-            else if (content instanceof Embeddable) {
+            } else if (content instanceof Embeddable) {
                 // paste Embeddable to DataMap
                 Embeddable embeddable = (Embeddable) content;
-                embeddable.setClassName(DuplicateNameResolver.resolve(NameCheckers.embeddable, COPY_PATTERN, dataMap, embeddable.getClassName()));
+                embeddable.setClassName(NameBuilder
+                        .builder(embeddable, dataMap)
+                        .baseName(embeddable.getClassName())
+                        .dupesPattern(COPY_PATTERN)
+                        .name());
 
                 dataMap.addEmbeddable(embeddable);
                 CreateEmbeddableAction.fireEmbeddableEvent(
@@ -285,20 +313,26 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                         mediator,
                         dataMap,
                         embeddable);
-            }
-            else if (content instanceof QueryDescriptor) {
+            } else if (content instanceof QueryDescriptor) {
                 QueryDescriptor query = (QueryDescriptor) content;
 
-                query.setName(DuplicateNameResolver.resolve(NameCheckers.query, COPY_PATTERN, dataMap, query.getName()));
+                query.setName(NameBuilder
+                        .builder(query, dataMap)
+                        .dupesPattern(COPY_PATTERN)
+                        .baseName(query.getName())
+                        .name());
                 query.setDataMap(dataMap);
 
                 dataMap.addQueryDescriptor(query);
                 QueryType.fireQueryEvent(this, mediator, dataMap, query);
-            }
-            else if (content instanceof Procedure) {
+            } else if (content instanceof Procedure) {
                 // paste Procedure to DataMap
                 Procedure procedure = (Procedure) content;
-                procedure.setName(DuplicateNameResolver.resolve(NameCheckers.procedure, COPY_PATTERN, dataMap, procedure.getName()));
+                procedure.setName(NameBuilder
+                        .builder(procedure, dataMap)
+                        .dupesPattern(COPY_PATTERN)
+                        .baseName(procedure.getName())
+                        .name());
 
                 dataMap.addProcedure(procedure);
                 CreateProcedureAction.fireProcedureEvent(
@@ -307,21 +341,27 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                         dataMap,
                         procedure);
             }
-        }
-        else if (where instanceof DbEntity) {
+        } else if (where instanceof DbEntity) {
             final DbEntity dbEntity = (DbEntity) where;
 
             if (content instanceof DbAttribute) {
                 DbAttribute attr = (DbAttribute) content;
-                attr.setName(DuplicateNameResolver.resolve(NameCheckers.dbAttribute, COPY_PATTERN, dbEntity, attr.getName()));
+                attr.setName(NameBuilder
+                        .builder(attr, dbEntity)
+                        .dupesPattern(COPY_PATTERN)
+                        .baseName(attr.getName())
+                        .name());
 
                 dbEntity.addAttribute(attr);
                 CreateAttributeAction.fireDbAttributeEvent(this, mediator, mediator
                         .getCurrentDataMap(), dbEntity, attr);
-            }
-            else if (content instanceof DbRelationship) {
+            } else if (content instanceof DbRelationship) {
                 DbRelationship rel = (DbRelationship) content;
-                rel.setName(DuplicateNameResolver.resolve(NameCheckers.dbRelationship, COPY_PATTERN, dbEntity, rel.getName()));
+                rel.setName(NameBuilder
+                        .builder(rel, dbEntity)
+                        .baseName(rel.getName())
+                        .dupesPattern(COPY_PATTERN)
+                        .name());
 
                 dbEntity.addRelationship(rel);
                 CreateRelationshipAction.fireDbRelationshipEvent(
@@ -330,22 +370,27 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                         dbEntity,
                         rel);
             }
-        }
-        else if (where instanceof ObjEntity) {
-            final ObjEntity objEntity = (ObjEntity) where;
-
+        } else if (where instanceof ObjEntity) {
+            ObjEntity objEntity = (ObjEntity) where;
 
             if (content instanceof ObjAttribute) {
                 ObjAttribute attr = (ObjAttribute) content;
-                attr.setName(DuplicateNameResolver.resolve(NameCheckers.objAttribute, COPY_PATTERN, objEntity, attr.getName()));
+                attr.setName(NameBuilder
+                        .builder(attr, objEntity)
+                        .baseName(attr.getName())
+                        .dupesPattern(COPY_PATTERN)
+                        .name());
 
                 objEntity.addAttribute(attr);
                 CreateAttributeAction.fireObjAttributeEvent(this, mediator, mediator
                         .getCurrentDataMap(), objEntity, attr);
-            }
-            else if (content instanceof ObjRelationship) {
+            } else if (content instanceof ObjRelationship) {
                 ObjRelationship rel = (ObjRelationship) content;
-                rel.setName(DuplicateNameResolver.resolve(NameCheckers.objRelationship, COPY_PATTERN, objEntity, rel.getName()));
+                rel.setName(NameBuilder
+                        .builder(rel, objEntity)
+                        .baseName(rel.getName())
+                        .dupesPattern(COPY_PATTERN)
+                        .name());
 
                 objEntity.addRelationship(rel);
                 CreateRelationshipAction.fireObjRelationshipEvent(
@@ -353,13 +398,18 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                         mediator,
                         objEntity,
                         rel);
-            }
-            else if(content instanceof ObjCallbackMethod) {
+            } else if (content instanceof ObjCallbackMethod) {
                 ObjCallbackMethod method = (ObjCallbackMethod) content;
 
-                method.setName(DuplicateNameResolver.resolve(NameCheckers.objCallbackMethod, COPY_PATTERN, objEntity, method.getName()));
-                
-                objEntity.getCallbackMap().getCallbackDescriptor(mediator.getCurrentCallbackType().getType()).addCallbackMethod(method.getName());
+                method.setName(NameBuilder
+                        .builderForCallbackMethod(objEntity)
+                        .baseName(method.getName())
+                        .dupesPattern(COPY_PATTERN)
+                        .name());
+
+                objEntity.getCallbackMap()
+                        .getCallbackDescriptor(mediator.getCurrentCallbackType().getType())
+                        .addCallbackMethod(method.getName());
 
                 CallbackMethodEvent ce = new CallbackMethodEvent(
                         this,
@@ -369,14 +419,16 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
                 getProjectController().fireCallbackMethodEvent(ce);
             }
-        }
-
-        else if (where instanceof Embeddable) {
+        } else if (where instanceof Embeddable) {
             final Embeddable embeddable = (Embeddable) where;
 
             if (content instanceof EmbeddableAttribute) {
                 EmbeddableAttribute attr = (EmbeddableAttribute) content;
-                attr.setName(DuplicateNameResolver.resolve(NameCheckers.embeddableAttribute, COPY_PATTERN, embeddable, attr.getName()));
+                attr.setName(NameBuilder
+                        .builder(attr, embeddable)
+                        .baseName(attr.getName())
+                        .dupesPattern(COPY_PATTERN)
+                        .name());
 
                 embeddable.addAttribute(attr);
                 CreateAttributeAction.fireEmbeddableAttributeEvent(
@@ -386,16 +438,18 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                         attr);
             }
 
-        }
-
-        else if (where instanceof Procedure) {
+        } else if (where instanceof Procedure) {
             // paste param to procedure
             final Procedure procedure = (Procedure) where;
 
             if (content instanceof ProcedureParameter) {
                 ProcedureParameter param = (ProcedureParameter) content;
 
-                param.setName(DuplicateNameResolver.resolve(NameCheckers.procedureParameter, COPY_PATTERN, procedure, param.getName()));
+                param.setName(NameBuilder
+                        .builder(param, procedure)
+                        .baseName(param.getName())
+                        .dupesPattern(COPY_PATTERN)
+                        .name());
 
                 procedure.addCallParameter(param);
                 CreateProcedureParameterAction.fireProcedureParameterEvent(
@@ -476,9 +530,8 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                     (currentObject instanceof Procedure
                             && (content instanceof ProcedureParameter || isTreeLeaf(content)) ||
 
-                    (currentObject instanceof Query && isTreeLeaf(content)));
-        }
-        catch (Exception ex) {
+                            (currentObject instanceof Query && isTreeLeaf(content)));
+        } catch (Exception ex) {
             return false;
         }
     }

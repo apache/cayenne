@@ -19,35 +19,16 @@
 
 package org.apache.cayenne.modeler.dialog;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.TableColumn;
-
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
@@ -58,9 +39,15 @@ import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.util.Util;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.*;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Editor of DbRelationship joins.
@@ -156,7 +143,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         builder.add(buttons, cc.xywh(5, 9, 1, 3));
 
         getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
-        getContentPane().add(PanelFactory.createButtonPanel(new JButton[] {
+        getContentPane().add(PanelFactory.createButtonPanel(new JButton[]{
                 saveButton, cancelButton
         }), BorderLayout.SOUTH);
     }
@@ -286,44 +273,19 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         stopEditing();
 
         // extract names...
-        String sourceEntityName = name.getText();
-        if (sourceEntityName.length() == 0) {
-            sourceEntityName = null;
-        }
-
-        if (sourceEntityName == null) {
-            sourceEntityName = DuplicateNameResolver.resolve(NameCheckers.dbRelationship, relationship.getSourceEntity());
-        }
-
-        if (!validateName(relationship.getSourceEntity(), relationship, sourceEntityName)) {
-            return;
-        }
-
-        String targetEntityName = reverseName.getText().trim();
-        if (targetEntityName.length() == 0) {
-            targetEntityName = null;
-        }
-
-        if (targetEntityName == null) {
-            targetEntityName = DuplicateNameResolver.resolve(NameCheckers.dbRelationship, relationship.getTargetEntity());
-        }
+        String sourceEntityName = NameBuilder
+                .builder(relationship, relationship.getSourceEntity())
+                .baseName(name.getText().trim())
+                .name();
 
         // check if reverse name is valid
         DbJoinTableModel model = (DbJoinTableModel) table.getModel();
         boolean updatingReverse = model.getObjectList().size() > 0;
 
-        if (updatingReverse
-                && !validateName(
-                        relationship.getTargetEntity(),
-                        reverseRelationship,
-                        targetEntityName)) {
-            return;
-        }
-
         // handle name update
         if (!Util.nullSafeEquals(sourceEntityName, relationship.getName())) {
             String oldName = relationship.getName();
-            
+
             relationship.setName(sourceEntityName);
 
             undo.addNameUndo(relationship, oldName, sourceEntityName);
@@ -347,7 +309,12 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
 
             // If didn't find anything, create reverseDbRel
             if (reverseRelationship == null) {
-                reverseRelationship = new DbRelationship(targetEntityName);
+                reverseRelationship = new DbRelationship();
+                reverseRelationship.setName(NameBuilder
+                        .builder(reverseRelationship, relationship.getTargetEntity())
+                        .baseName(reverseName.getText().trim())
+                        .name());
+
                 reverseRelationship.setSourceEntity(relationship.getTargetEntity());
                 reverseRelationship.setTargetEntityName(relationship.getSourceEntity());
                 reverseRelationship.setToMany(!relationship.isToMany());
@@ -363,22 +330,26 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
                                     reverseRelationship.getSourceEntity(),
                                     MapEvent.ADD));
                 }
-            }
-            else if (!Util
-                    .nullSafeEquals(targetEntityName, reverseRelationship.getName())) {
+            } else {
 
-                String oldName = reverseRelationship.getName();
-                
-                reverseRelationship.setName(targetEntityName);
+                String targetEntityName = NameBuilder
+                        .builder(reverseRelationship, relationship.getTargetEntity())
+                        .baseName(reverseName.getText().trim())
+                        .name();
 
-                undo.addNameUndo(reverseRelationship, oldName, targetEntityName);
+                if (!Util.nullSafeEquals(targetEntityName, reverseRelationship.getName())) {
 
-                getMediator().fireDbRelationshipEvent(
-                        new RelationshipEvent(
-                                this,
-                                reverseRelationship,
-                                reverseRelationship.getSourceEntity(),
-                                oldName));
+                    String oldName = reverseRelationship.getName();
+                    reverseRelationship.setName(targetEntityName);
+                    undo.addNameUndo(reverseRelationship, oldName, targetEntityName);
+
+                    getMediator().fireDbRelationshipEvent(
+                            new RelationshipEvent(
+                                    this,
+                                    reverseRelationship,
+                                    reverseRelationship.getSourceEntity(),
+                                    oldName));
+                }
             }
 
             Collection reverseJoins = getReverseJoins();
@@ -396,20 +367,6 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
                 .fireDbRelationshipEvent(
                         new RelationshipEvent(this, relationship, relationship
                                 .getSourceEntity()));
-    }
-
-    private boolean validateName(Entity entity, Relationship aRelationship, String newName) {
-        Relationship existing = entity.getRelationship(newName);
-        if (existing != null && (aRelationship == null || aRelationship != existing)) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "There is an existing relationship named \""
-                            + newName
-                            + "\". Select a different name.");
-            return false;
-        }
-
-        return true;
     }
 
     private Collection getReverseJoins() {

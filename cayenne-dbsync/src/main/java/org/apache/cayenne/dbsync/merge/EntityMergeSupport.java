@@ -20,8 +20,7 @@
 package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -199,10 +198,11 @@ public class EntityMergeSupport {
     }
 
     private boolean createObjRelationship(ObjEntity entity, DbRelationship dr, String targetEntityName) {
-        String relationshipName = nameGenerator.createObjRelationshipName(dr);
-        relationshipName = DuplicateNameResolver.resolve(NameCheckers.objRelationship, entity, relationshipName);
+        ObjRelationship or = new ObjRelationship();
+        or.setName(NameBuilder.builder(or, entity)
+                .baseName(nameGenerator.createObjRelationshipName(dr))
+                .name());
 
-        ObjRelationship or = new ObjRelationship(relationshipName);
         or.addDbRelationship(dr);
         Map<String, ObjEntity> objEntities = entity.getDataMap().getSubclassesForObjEntity(entity);
 
@@ -274,8 +274,11 @@ public class EntityMergeSupport {
     }
 
     private void addMissingAttribute(ObjEntity entity, DbAttribute da) {
-        String attrName = DuplicateNameResolver.resolve(NameCheckers.objAttribute, entity,
-                nameGenerator.createObjAttributeName(da));
+        ObjAttribute oa = new ObjAttribute();
+        oa.setName(NameBuilder.builder(oa, entity)
+                .baseName(nameGenerator.createObjAttributeName(da))
+                .name());
+        oa.setEntity(entity);
 
         String type = TypesMapping.getJavaBySqlType(da.getType());
         if (usePrimitives) {
@@ -284,8 +287,7 @@ public class EntityMergeSupport {
                 type = primitive;
             }
         }
-
-        ObjAttribute oa = new ObjAttribute(attrName, type, entity);
+        oa.setType(type);
         oa.setDbAttributePath(da.getName());
         entity.addAttribute(oa);
         fireAttributeAdded(oa);

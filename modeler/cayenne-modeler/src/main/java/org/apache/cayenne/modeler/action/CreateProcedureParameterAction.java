@@ -19,78 +19,78 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
+import java.awt.event.ActionEvent;
+
 public class CreateProcedureParameterAction extends CayenneAction {
 
-	public static String getActionName() {
-		return "Create Parameter";
-	}
+    /**
+     * Constructor for CreateProcedureParameterAction.
+     */
+    public CreateProcedureParameterAction(Application application) {
+        super(getActionName(), application);
+    }
 
-	/**
-	 * Constructor for CreateProcedureParameterAction.
-	 * 
-	 */
-	public CreateProcedureParameterAction(Application application) {
-		super(getActionName(), application);
-	}
+    public static String getActionName() {
+        return "Create Parameter";
+    }
 
-	public String getIconName() {
-		return "icon-plus.gif";
-	}
+    /**
+     * Fires events when an proc parameter was added
+     */
+    static void fireProcedureParameterEvent(Object src, ProjectController mediator, Procedure procedure,
+                                            ProcedureParameter parameter) {
+        mediator.fireProcedureParameterEvent(new ProcedureParameterEvent(src, parameter, MapEvent.ADD));
 
-	/**
-	 * Creates ProcedureParameter depending on context.
-	 */
-	public void performAction(ActionEvent e) {
-		if (getProjectController().getCurrentProcedure() != null) {
-			createProcedureParameter();
-		}
-	}
+        mediator.fireProcedureParameterDisplayEvent(new ProcedureParameterDisplayEvent(src, parameter, procedure,
+                mediator.getCurrentDataMap(), (DataChannelDescriptor) mediator.getProject().getRootNode()));
+    }
 
-	public void createProcedureParameter() {
-		Procedure procedure = getProjectController().getCurrentProcedure();
+    @Override
+    public String getIconName() {
+        return "icon-plus.gif";
+    }
 
-		ProcedureParameter parameter = new ProcedureParameter(DuplicateNameResolver.resolve(
-				NameCheckers.procedureParameter, procedure));
-		procedure.addCallParameter(parameter);
+    /**
+     * Creates ProcedureParameter depending on context.
+     */
+    @Override
+    public void performAction(ActionEvent e) {
+        if (getProjectController().getCurrentProcedure() != null) {
+            createProcedureParameter();
+        }
+    }
 
-		ProjectController mediator = getProjectController();
-		fireProcedureParameterEvent(this, mediator, procedure, parameter);
-	}
+    public void createProcedureParameter() {
+        Procedure procedure = getProjectController().getCurrentProcedure();
 
-	/**
-	 * Fires events when an proc parameter was added
-	 */
-	static void fireProcedureParameterEvent(Object src, ProjectController mediator, Procedure procedure,
-			ProcedureParameter parameter) {
-		mediator.fireProcedureParameterEvent(new ProcedureParameterEvent(src, parameter, MapEvent.ADD));
+        ProcedureParameter parameter = new ProcedureParameter();
+        parameter.setName(NameBuilder.builder(parameter, procedure).name());
+        procedure.addCallParameter(parameter);
 
-		mediator.fireProcedureParameterDisplayEvent(new ProcedureParameterDisplayEvent(src, parameter, procedure,
-				mediator.getCurrentDataMap(), (DataChannelDescriptor) mediator.getProject().getRootNode()));
-	}
+        ProjectController mediator = getProjectController();
+        fireProcedureParameterEvent(this, mediator, procedure, parameter);
+    }
 
-	/**
-	 * Returns <code>true</code> if path contains a Procedure object.
-	 */
-	public boolean enableForPath(ConfigurationNode object) {
-		if (object == null) {
-			return false;
-		}
+    /**
+     * Returns <code>true</code> if path contains a Procedure object.
+     */
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
+            return false;
+        }
 
-		return ((ProcedureParameter) object).getProcedure() != null;
-	}
+        return ((ProcedureParameter) object).getProcedure() != null;
+    }
 }

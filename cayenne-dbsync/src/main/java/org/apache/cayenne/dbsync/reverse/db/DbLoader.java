@@ -21,23 +21,21 @@ package org.apache.cayenne.dbsync.reverse.db;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.SchemaFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
+import org.apache.cayenne.dbsync.reverse.naming.LegacyObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.DbRelationshipDetected;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.reverse.naming.LegacyObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
-import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -133,10 +131,12 @@ public class DbLoader {
                 continue;
             }
 
-            String objEntityName = DuplicateNameResolver.resolve(NameCheckers.objEntity, map,
-                    nameGenerator.createObjEntityName(dbEntity));
+            ObjEntity objEntity = new ObjEntity();
+            objEntity.setName(NameBuilder
+                    .builder(objEntity, map)
+                    .baseName(nameGenerator.createObjEntityName(dbEntity))
+                    .name());
 
-            ObjEntity objEntity = new ObjEntity(objEntityName);
             objEntity.setDbEntity(dbEntity);
             objEntity.setClassName(config.getGenericClassName() != null ? config.getGenericClassName() : map
                     .getNameWithDefaultPackage(objEntity.getName()));
@@ -315,13 +315,26 @@ public class DbLoader {
             }
 
             // forwardRelationship is a reference from table with primary key
-            DbRelationship forwardRelationship = new DbRelationship(generateName(pkEntity, key, true));
+            DbRelationship forwardRelationship = new DbRelationship();
+            forwardRelationship.setName(NameBuilder
+                    .builder(forwardRelationship, pkEntity)
+                    .baseName(nameGenerator.createDbRelationshipName(key, true))
+                    .name());
+
             forwardRelationship.setSourceEntity(pkEntity);
             forwardRelationship.setTargetEntityName(fkEntity);
 
             // forwardRelationship is a reference from table with foreign key,
             // it is what exactly we load from db
-            DbRelationshipDetected reverseRelationship = new DbRelationshipDetected(generateName(fkEntity, key, false));
+
+            // TODO: dirty and non-transparent... using DbRelationshipDetected for the benefit of the merge package.
+            // This info is available from joins....
+            DbRelationshipDetected reverseRelationship = new DbRelationshipDetected();
+            reverseRelationship.setName(NameBuilder
+                    .builder(reverseRelationship, fkEntity)
+                    .baseName(nameGenerator.createDbRelationshipName(key, false))
+                    .name());
+
             reverseRelationship.setFkName(key.getFKName());
             reverseRelationship.setSourceEntity(fkEntity);
             reverseRelationship.setTargetEntityName(pkEntity);
@@ -336,7 +349,12 @@ public class DbLoader {
                     && fkEntity.getPrimaryKeys().size() == forwardRelationship.getJoins().size();
 
             forwardRelationship.setToMany(!isOneToOne);
-            forwardRelationship.setName(generateName(pkEntity, key, !isOneToOne));
+
+            // TODO: can we avoid resetting the name twice? Do we need a placeholder name above?
+            forwardRelationship.setName(NameBuilder
+                            .builder(forwardRelationship, pkEntity)
+                            .baseName(nameGenerator.createDbRelationshipName(key, !isOneToOne))
+                            .name());
 
             if (delegate.dbRelationshipLoaded(fkEntity, reverseRelationship)) {
                 fkEntity.addRelationship(reverseRelationship);
@@ -358,7 +376,7 @@ public class DbLoader {
     }
 
     private void createAndAppendJoins(Set<ExportedKey> exportedKeys, DbEntity pkEntity, DbEntity fkEntity,
-                                      DbRelationship forwardRelationship, DbRelationshipDetected reverseRelationship) {
+                                      DbRelationship forwardRelationship, DbRelationship reverseRelationship) {
         for (ExportedKey exportedKey : exportedKeys) {
             // Create and append joins
             String pkName = exportedKey.getPKColumnName();
@@ -435,11 +453,6 @@ public class DbLoader {
 
     private void skipRelationLog(ExportedKey key, String tableName) {
         LOGGER.info("Skip relation: '" + key + "' because table '" + tableName + "' not found");
-    }
-
-    private String generateName(DbEntity entity, ExportedKey key, boolean toMany) {
-        String forwardPreferredName = nameGenerator.createDbRelationshipName(key, toMany);
-        return DuplicateNameResolver.resolve(NameCheckers.dbRelationship, entity, forwardPreferredName);
     }
 
     private void fireObjEntitiesAddedEvents(Collection<ObjEntity> loadedObjEntities) {

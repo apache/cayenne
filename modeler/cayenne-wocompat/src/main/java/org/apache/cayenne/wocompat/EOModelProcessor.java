@@ -20,8 +20,7 @@
 package org.apache.cayenne.wocompat;
 
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -726,10 +725,10 @@ public class EOModelProcessor {
 
 			if (relationship.getReverseRelationship() == null) {
 				DbRelationship reverse = relationship.createReverseRelationship();
-
-				String name = DuplicateNameResolver.resolve(NameCheckers.dbRelationship,
-						reverse.getSourceEntity(), relationship.getName() + "Reverse");
-				reverse.setName(name);
+				reverse.setName(NameBuilder.builder(reverse, reverse.getSourceEntity())
+						// TODO: we can do better with ObjectNameGenerator
+						.baseName(relationship.getName() + "Reverse")
+						.name());
 				relationship.getTargetEntity().addRelationship(reverse);
 			}
 		}

@@ -18,12 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.db;
 
+import org.apache.cayenne.dbsync.naming.NameBuilder;
+import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
-import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -113,8 +112,10 @@ class ManyToManyCandidateEntity {
                 (short) 1);
 
         ObjRelationship newRelationship = new ObjRelationship();
-        newRelationship.setName(DuplicateNameResolver.resolve(NameCheckers.objRelationship, srcEntity,
-                nameGenerator.createDbRelationshipName(key, true)));
+        newRelationship.setName(NameBuilder
+                .builder(newRelationship, srcEntity)
+                .baseName(nameGenerator.createDbRelationshipName(key, true))
+                .name());
 
         newRelationship.setSourceEntity(srcEntity);
         newRelationship.setTargetEntityName(dstEntity);

@@ -16,13 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map;
+package org.apache.cayenne.dbsync.reverse.db;
 
+
+import org.apache.cayenne.map.DbRelationship;
 
 /**
  * A subclass of {@link DbRelationship} to hold some extra runtime information.
- * 
  */
+// TODO: dirty ... can we lookup fkName via joins?
 public class DbRelationshipDetected extends DbRelationship {
 
     private String fkName;
@@ -31,11 +33,7 @@ public class DbRelationshipDetected extends DbRelationship {
         super(uniqueRelName);
     }
 
-    /**
-     * Set the name of the underlying foreign key. Typically FK_NAME from jdbc metadata.
-     */
-    public void setFkName(String fkName) {
-        this.fkName = fkName;
+    public DbRelationshipDetected() {
     }
 
     /**
@@ -43,6 +41,13 @@ public class DbRelationshipDetected extends DbRelationship {
      */
     public String getFkName() {
         return fkName;
+    }
+
+    /**
+     * Set the name of the underlying foreign key. Typically FK_NAME from jdbc metadata.
+     */
+    public void setFkName(String fkName) {
+        this.fkName = fkName;
     }
 
 }

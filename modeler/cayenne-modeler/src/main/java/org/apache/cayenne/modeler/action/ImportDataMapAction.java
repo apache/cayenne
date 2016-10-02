@@ -19,20 +19,11 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
-
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -42,91 +33,95 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xml.sax.InputSource;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
+
 /**
  * Modeler action that imports a DataMap into a project from an arbitrary
  * location.
- * 
+ *
  * @since 1.1
  */
 public class ImportDataMapAction extends CayenneAction {
 
-	private static Log logObj = LogFactory.getLog(ImportDataMapAction.class);
+    private static Log logObj = LogFactory.getLog(ImportDataMapAction.class);
 
-	public static String getActionName() {
-		return "Import DataMap";
-	}
+    public ImportDataMapAction(Application application) {
+        super(getActionName(), application);
+    }
 
-	public ImportDataMapAction(Application application) {
-		super(getActionName(), application);
-	}
+    public static String getActionName() {
+        return "Import DataMap";
+    }
 
-	public void performAction(ActionEvent e) {
-		importDataMap();
-	}
+    public void performAction(ActionEvent e) {
+        importDataMap();
+    }
 
-	protected void importDataMap() {
-		File dataMapFile = selectDataMap(Application.getFrame());
-		if (dataMapFile == null) {
-			return;
-		}
+    protected void importDataMap() {
+        File dataMapFile = selectDataMap(Application.getFrame());
+        if (dataMapFile == null) {
+            return;
+        }
 
-		DataMap newMap;
+        DataMap newMap;
 
-		try {
+        try {
+            URL url = dataMapFile.toURI().toURL();
 
-			URL url = dataMapFile.toURI().toURL();
+            try (InputStream in = url.openStream();) {
+                InputSource inSrc = new InputSource(in);
+                inSrc.setSystemId(dataMapFile.getAbsolutePath());
+                newMap = new MapLoader().loadDataMap(inSrc);
+            }
 
-			try (InputStream in = url.openStream();) {
-				InputSource inSrc = new InputSource(in);
-				inSrc.setSystemId(dataMapFile.getAbsolutePath());
-				newMap = new MapLoader().loadDataMap(inSrc);
-			}
+            ConfigurationNode root = getProjectController().getProject().getRootNode();
+            newMap.setName(NameBuilder
+                    .builder(newMap, root)
+                    .baseName(newMap.getName())
+                    .name());
 
-			DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController().getProject().getRootNode();
+            Resource baseResource = ((DataChannelDescriptor) root).getConfigurationSource();
 
-			if (newMap.getName() != null) {
-				newMap.setName(DuplicateNameResolver.resolve(NameCheckers.dataMap, domain, newMap.getName()));
-			} else {
-				newMap.setName(DuplicateNameResolver.resolve(NameCheckers.dataMap, domain));
-			}
+            if (baseResource != null) {
+                Resource dataMapResource = baseResource.getRelativeResource(newMap.getName());
+                newMap.setConfigurationSource(dataMapResource);
+            }
 
-			Resource baseResource = domain.getConfigurationSource();
+            getProjectController().addDataMap(this, newMap);
+        } catch (Exception ex) {
+            logObj.info("Error importing DataMap.", ex);
+            JOptionPane.showMessageDialog(Application.getFrame(), "Error reading DataMap: " + ex.getMessage(),
+                    "Can't Open DataMap", JOptionPane.OK_OPTION);
+        }
+    }
 
-			if (baseResource != null) {
-				Resource dataMapResource = baseResource.getRelativeResource(newMap.getName());
-				newMap.setConfigurationSource(dataMapResource);
-			}
+    protected File selectDataMap(Frame f) {
 
-			getProjectController().addDataMap(this, newMap);
-		} catch (Exception ex) {
-			logObj.info("Error importing DataMap.", ex);
-			JOptionPane.showMessageDialog(Application.getFrame(), "Error reading DataMap: " + ex.getMessage(),
-					"Can't Open DataMap", JOptionPane.OK_OPTION);
-		}
-	}
+        // find start directory in preferences
+        FSPath lastDir = getApplication().getFrameController().getLastDirectory();
 
-	protected File selectDataMap(Frame f) {
+        // configure dialog
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        lastDir.updateChooser(chooser);
 
-		// find start directory in preferences
-		FSPath lastDir = getApplication().getFrameController().getLastDirectory();
+        chooser.addChoosableFileFilter(FileFilters.getDataMapFilter());
 
-		// configure dialog
-		JFileChooser chooser = new JFileChooser();
-		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		lastDir.updateChooser(chooser);
+        int status = chooser.showDialog(f, "Select DataMap");
+        if (status == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
 
-		chooser.addChoosableFileFilter(FileFilters.getDataMapFilter());
+            // save to preferences...
+            lastDir.updateFromChooser(chooser);
 
-		int status = chooser.showDialog(f, "Select DataMap");
-		if (status == JFileChooser.APPROVE_OPTION) {
-			File file = chooser.getSelectedFile();
+            return file;
+        }
 
-			// save to preferences...
-			lastDir.updateFromChooser(chooser);
-
-			return file;
-		}
-
-		return null;
-	}
+        return null;
+    }
 }

@@ -19,10 +19,9 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
@@ -31,8 +30,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
@@ -40,111 +37,113 @@ import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 
+import java.awt.event.ActionEvent;
+
 public class CreateRelationshipAction extends CayenneAction {
 
-	public static String getActionName() {
-		return "Create Relationship";
-	}
+    /**
+     * Constructor for CreateRelationshipAction.
+     */
+    public CreateRelationshipAction(Application application) {
+        super(getActionName(), application);
+    }
 
-	/**
-	 * Constructor for CreateRelationshipAction.
-	 */
-	public CreateRelationshipAction(Application application) {
-		super(getActionName(), application);
-	}
+    public static String getActionName() {
+        return "Create Relationship";
+    }
 
-	@Override
-	public String getIconName() {
-		return "icon-relationship.gif";
-	}
+    /**
+     * Fires events when a obj rel was added
+     */
+    static void fireObjRelationshipEvent(Object src, ProjectController mediator, ObjEntity objEntity,
+                                         ObjRelationship rel) {
 
-	/**
-	 * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
-	 */
-	@Override
-	public void performAction(ActionEvent e) {
-		ObjEntity objEnt = getProjectController().getCurrentObjEntity();
-		if (objEnt != null) {
+        mediator.fireObjRelationshipEvent(new RelationshipEvent(src, rel, objEntity, MapEvent.ADD));
 
-			ObjRelationship rel = new ObjRelationship(DuplicateNameResolver.resolve(NameCheckers.objRelationship,
-					objEnt));
-			createObjRelationship(objEnt, rel);
+        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, objEntity, mediator.getCurrentDataMap(),
+                (DataChannelDescriptor) mediator.getProject().getRootNode());
 
-			application.getUndoManager().addEdit(
-					new CreateRelationshipUndoableEdit(objEnt, new ObjRelationship[] { rel }));
-		} else {
-			DbEntity dbEnt = getProjectController().getCurrentDbEntity();
-			if (dbEnt != null) {
+        mediator.fireObjRelationshipDisplayEvent(rde);
+    }
 
-				DbRelationship rel = new DbRelationship(DuplicateNameResolver.resolve(
-						NameCheckers.dbRelationship, dbEnt));
-				createDbRelationship(dbEnt, rel);
+    /**
+     * Fires events when a db rel was added
+     */
+    static void fireDbRelationshipEvent(Object src, ProjectController mediator, DbEntity dbEntity, DbRelationship rel) {
 
-				application.getUndoManager().addEdit(
-						new CreateRelationshipUndoableEdit(dbEnt, new DbRelationship[] { rel }));
-			}
-		}
-	}
+        mediator.fireDbRelationshipEvent(new RelationshipEvent(src, rel, dbEntity, MapEvent.ADD));
 
-	public void createObjRelationship(ObjEntity objEntity, ObjRelationship rel) {
-		ProjectController mediator = getProjectController();
+        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, dbEntity, mediator.getCurrentDataMap(),
+                (DataChannelDescriptor) mediator.getProject().getRootNode());
 
-		rel.setSourceEntity(objEntity);
-		DeleteRuleUpdater.updateObjRelationship(rel);
+        mediator.fireDbRelationshipDisplayEvent(rde);
+    }
 
-		objEntity.addRelationship(rel);
-		fireObjRelationshipEvent(this, mediator, objEntity, rel);
-	}
+    @Override
+    public String getIconName() {
+        return "icon-relationship.gif";
+    }
 
-	/**
-	 * Fires events when a obj rel was added
-	 */
-	static void fireObjRelationshipEvent(Object src, ProjectController mediator, ObjEntity objEntity,
-			ObjRelationship rel) {
+    /**
+     * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
+     */
+    @Override
+    public void performAction(ActionEvent e) {
+        ObjEntity objEnt = getProjectController().getCurrentObjEntity();
+        if (objEnt != null) {
 
-		mediator.fireObjRelationshipEvent(new RelationshipEvent(src, rel, objEntity, MapEvent.ADD));
+            ObjRelationship rel = new ObjRelationship();
+            rel.setName(NameBuilder.builder(rel, objEnt).name());
+            createObjRelationship(objEnt, rel);
 
-		RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, objEntity, mediator.getCurrentDataMap(),
-				(DataChannelDescriptor) mediator.getProject().getRootNode());
+            application.getUndoManager().addEdit(
+                    new CreateRelationshipUndoableEdit(objEnt, new ObjRelationship[]{rel}));
+        } else {
+            DbEntity dbEnt = getProjectController().getCurrentDbEntity();
+            if (dbEnt != null) {
 
-		mediator.fireObjRelationshipDisplayEvent(rde);
-	}
+                DbRelationship rel = new DbRelationship();
+                rel.setName(NameBuilder.builder(rel, dbEnt).name());
+                createDbRelationship(dbEnt, rel);
 
-	public void createDbRelationship(DbEntity dbEntity, DbRelationship rel) {
-		ProjectController mediator = getProjectController();
+                application.getUndoManager().addEdit(
+                        new CreateRelationshipUndoableEdit(dbEnt, new DbRelationship[]{rel}));
+            }
+        }
+    }
 
-		rel.setSourceEntity(dbEntity);
-		dbEntity.addRelationship(rel);
+    public void createObjRelationship(ObjEntity objEntity, ObjRelationship rel) {
+        ProjectController mediator = getProjectController();
 
-		fireDbRelationshipEvent(this, mediator, dbEntity, rel);
-	}
+        rel.setSourceEntity(objEntity);
+        DeleteRuleUpdater.updateObjRelationship(rel);
 
-	/**
-	 * Fires events when a db rel was added
-	 */
-	static void fireDbRelationshipEvent(Object src, ProjectController mediator, DbEntity dbEntity, DbRelationship rel) {
+        objEntity.addRelationship(rel);
+        fireObjRelationshipEvent(this, mediator, objEntity, rel);
+    }
 
-		mediator.fireDbRelationshipEvent(new RelationshipEvent(src, rel, dbEntity, MapEvent.ADD));
+    public void createDbRelationship(DbEntity dbEntity, DbRelationship rel) {
+        ProjectController mediator = getProjectController();
 
-		RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, rel, dbEntity, mediator.getCurrentDataMap(),
-				(DataChannelDescriptor) mediator.getProject().getRootNode());
+        rel.setSourceEntity(dbEntity);
+        dbEntity.addRelationship(rel);
 
-		mediator.fireDbRelationshipDisplayEvent(rde);
-	}
+        fireDbRelationshipEvent(this, mediator, dbEntity, rel);
+    }
 
-	/**
-	 * Returns <code>true</code> if path contains an Entity object.
-	 */
-	@Override
-	public boolean enableForPath(ConfigurationNode object) {
-		if (object == null) {
-			return false;
-		}
+    /**
+     * Returns <code>true</code> if path contains an Entity object.
+     */
+    @Override
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
+            return false;
+        }
 
-		if (object instanceof Relationship) {
-			return ((Relationship) object).getParent() != null && ((Relationship) object).getParent() instanceof Entity;
-		}
+        if (object instanceof Relationship) {
+            return ((Relationship) object).getParent() != null && ((Relationship) object).getParent() instanceof Entity;
+        }
 
-		return false;
-	}
+        return false;
+    }
 }

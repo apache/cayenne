@@ -18,8 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.event.MapEvent;
@@ -34,11 +33,9 @@ import java.awt.event.ActionEvent;
 
 /**
  * Action class for creating callback methods on ObjEntity
- *
- * @version 1.0 Oct 30, 2007
  */
 public class CreateCallbackMethodAction extends CayenneAction {
-    
+
     /**
      * unique action name
      */
@@ -46,12 +43,25 @@ public class CreateCallbackMethodAction extends CayenneAction {
 
     /**
      * Constructor.
-     * 
-     * @param actionName unique action name
+     *
+     * @param actionName  unique action name
      * @param application Application instance
      */
     public CreateCallbackMethodAction(String actionName, Application application) {
         super(actionName, application);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param application Application instance
+     */
+    public CreateCallbackMethodAction(Application application) {
+        super(ACTION_NAME, application);
+    }
+
+    public static String getActionName() {
+        return ACTION_NAME;
     }
 
     /**
@@ -60,7 +70,7 @@ public class CreateCallbackMethodAction extends CayenneAction {
     public CallbackMap getCallbackMap() {
         return getProjectController().getCurrentObjEntity().getCallbackMap();
     }
-    
+
     /**
      * @return icon file name for button
      */
@@ -70,14 +80,16 @@ public class CreateCallbackMethodAction extends CayenneAction {
 
     /**
      * performs adding new callback method
-     * 
+     *
      * @param e event
      */
     public final void performAction(ActionEvent e) {
         CallbackType callbackType = getProjectController().getCurrentCallbackType();
 
-        String methodNamePrefix = toMethodName(callbackType.getType());
-        String methodName = DuplicateNameResolver.resolve(NameCheckers.objCallbackMethod, getProjectController().getCurrentObjEntity(), methodNamePrefix);
+        String methodName = NameBuilder
+                .builderForCallbackMethod(getProjectController().getCurrentObjEntity())
+                .baseName(toMethodName(callbackType.getType()))
+                .name();
 
         createCallbackMethod(callbackType, methodName);
         application.getUndoManager().addEdit(
@@ -102,19 +114,6 @@ public class CreateCallbackMethodAction extends CayenneAction {
 
     private String toMethodName(LifecycleEvent event) {
         return "on" + Util.underscoredToJava(event.name(), true);
-    }
-    
-    public static String getActionName() {
-        return ACTION_NAME;
-    }
-    
-    /**
-     * Constructor.
-     *
-     * @param application Application instance
-     */
-    public CreateCallbackMethodAction(Application application) {
-        super(ACTION_NAME, application);
     }
 }
 

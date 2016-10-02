@@ -18,23 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.query;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.WindowConstants;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.QueryEvent;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateQueryUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneController;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
 public class QueryType extends CayenneController{
@@ -119,11 +117,8 @@ public class QueryType extends CayenneController{
         String queryType = getSelectedQuery();
 
         // update query...
-        String queryName = DuplicateNameResolver.resolve(NameCheckers.query, dataMap);
-
         QueryDescriptor query = QueryDescriptor.descriptor(queryType);
-
-        query.setName(queryName);
+        query.setName(NameBuilder.builder(query, dataMap).name());
         query.setDataMap(dataMap);
         
         dataMap.addQueryDescriptor(query);

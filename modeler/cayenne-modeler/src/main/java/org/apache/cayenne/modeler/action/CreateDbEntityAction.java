@@ -19,88 +19,84 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateDbEntityUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
+import java.awt.event.ActionEvent;
+
 public class CreateDbEntityAction extends CayenneAction {
 
-	public static String getActionName() {
-		return "Create DbEntity";
-	}
+    /**
+     * Constructor for CreateDbEntityAction.
+     */
+    public CreateDbEntityAction(Application application) {
+        super(getActionName(), application);
+    }
 
-	/**
-	 * Constructor for CreateDbEntityAction.
-	 */
-	public CreateDbEntityAction(Application application) {
-		super(getActionName(), application);
-	}
+    public static String getActionName() {
+        return "Create DbEntity";
+    }
 
-	public String getIconName() {
-		return "icon-dbentity.gif";
-	}
+    /**
+     * Fires events when a db entity was added
+     */
+    static void fireDbEntityEvent(Object src, ProjectController mediator, DbEntity entity) {
+        mediator.fireDbEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
+        EntityDisplayEvent displayEvent = new EntityDisplayEvent(src, entity, mediator.getCurrentDataMap(),
+                mediator.getCurrentDataNode(), (DataChannelDescriptor) mediator.getProject().getRootNode());
+        displayEvent.setMainTabFocus(true);
+        mediator.fireDbEntityDisplayEvent(displayEvent);
+    }
 
-	/**
-	 * Creates new DbEntity, adds it to the current DataMap, fires DbEntityEvent
-	 * and DbEntityDisplayEvent.
-	 * 
-	 * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
-	 */
-	public void performAction(ActionEvent e) {
-		ProjectController mediator = getProjectController();
+    public String getIconName() {
+        return "icon-dbentity.gif";
+    }
 
-		DataMap map = mediator.getCurrentDataMap();
-		DbEntity entity = new DbEntity(DuplicateNameResolver.resolve(NameCheckers.dbEntity, map));
+    /**
+     * Creates new DbEntity, adds it to the current DataMap, fires DbEntityEvent and DbEntityDisplayEvent.
+     */
+    public void performAction(ActionEvent e) {
+        ProjectController mediator = getProjectController();
 
-		createEntity(map, entity);
+        DataMap map = mediator.getCurrentDataMap();
+        DbEntity entity = new DbEntity();
+        entity.setName(NameBuilder.builder(entity, map).name());
+        createEntity(map, entity);
 
-		application.getUndoManager().addEdit(new CreateDbEntityUndoableEdit(map, entity));
-	}
+        application.getUndoManager().addEdit(new CreateDbEntityUndoableEdit(map, entity));
+    }
 
-	/**
-	 * Fires events when a db entity was added
-	 */
-	static void fireDbEntityEvent(Object src, ProjectController mediator, DbEntity entity) {
-		mediator.fireDbEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
-		EntityDisplayEvent displayEvent = new EntityDisplayEvent(src, entity, mediator.getCurrentDataMap(),
-				mediator.getCurrentDataNode(), (DataChannelDescriptor) mediator.getProject().getRootNode());
-		displayEvent.setMainTabFocus(true);
-		mediator.fireDbEntityDisplayEvent(displayEvent);
-	}
+    /**
+     * Constructs and returns a new DbEntity. Entity returned is added to the
+     * DataMap.
+     */
+    public void createEntity(DataMap map, DbEntity entity) {
+        ProjectController mediator = getProjectController();
+        entity.setCatalog(map.getDefaultCatalog());
+        entity.setSchema(map.getDefaultSchema());
+        map.addDbEntity(entity);
+        fireDbEntityEvent(this, mediator, entity);
+    }
 
-	/**
-	 * Constructs and returns a new DbEntity. Entity returned is added to the
-	 * DataMap.
-	 */
-	public void createEntity(DataMap map, DbEntity entity) {
-		ProjectController mediator = getProjectController();
-		entity.setCatalog(map.getDefaultCatalog());
-		entity.setSchema(map.getDefaultSchema());
-		map.addDbEntity(entity);
-		fireDbEntityEvent(this, mediator, entity);
-	}
+    /**
+     * Returns <code>true</code> if path contains a DataMap object.
+     */
+    public boolean enableForPath(ConfigurationNode object) {
+        if (object == null) {
+            return false;
+        }
 
-	/**
-	 * Returns <code>true</code> if path contains a DataMap object.
-	 */
-	public boolean enableForPath(ConfigurationNode object) {
-		if (object == null) {
-			return false;
-		}
-
-		return ((Entity) object).getDataMap() != null;
-	}
+        return ((Entity) object).getDataMap() != null;
+    }
 }

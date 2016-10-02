@@ -22,9 +22,8 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.undo.CreateDataMapUndoableEdit;
@@ -34,7 +33,6 @@ import java.awt.event.ActionEvent;
 
 /**
  * Action that creates new DataMap in the project.
- * 
  */
 public class CreateDataMapAction extends CayenneAction {
 
@@ -59,16 +57,15 @@ public class CreateDataMapAction extends CayenneAction {
     public void performAction(ActionEvent e) {
         ProjectController mediator = getProjectController();
 
-        DataChannelDescriptor currentDomain = (DataChannelDescriptor) mediator
+        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) mediator
                 .getProject()
                 .getRootNode();
 
-        DataMap map = new DataMap(DuplicateNameResolver.resolve(NameCheckers.dataMap, currentDomain));
-
+        DataMap map = new DataMap();
+        map.setName(NameBuilder.builder(map, dataChannelDescriptor).name());
         createDataMap(map);
 
-        application.getUndoManager().addEdit(
-                new CreateDataMapUndoableEdit(currentDomain, map));
+        application.getUndoManager().addEdit(new CreateDataMapUndoableEdit(dataChannelDescriptor, map));
     }
 
     /**

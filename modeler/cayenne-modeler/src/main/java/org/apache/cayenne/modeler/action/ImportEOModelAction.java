@@ -19,20 +19,7 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.Component;
-import java.awt.HeadlessException;
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
@@ -41,12 +28,12 @@ import org.apache.cayenne.configuration.server.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
@@ -56,11 +43,21 @@ import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;
-import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.wocompat.EOModelProcessor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Action handler for WebObjects EOModel import function.
@@ -301,8 +298,11 @@ public class ImportEOModelAction extends CayenneAction {
         }
         else {
             // fix DataMap name, as there maybe a map with the same name already
-            DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
-            map.setName(DuplicateNameResolver.resolve(NameCheckers.dataMap, domain, map.getName()));
+            ConfigurationNode root = (DataChannelDescriptor) mediator.getProject().getRootNode();
+            map.setName(NameBuilder
+                    .builder(map, root)
+                    .baseName(map.getName())
+                    .name());
 
             // side effect of this operation is that if a node was created, this DataMap
             // will be linked with it...

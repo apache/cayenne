@@ -22,8 +22,7 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.reverse.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -36,15 +35,10 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateObjEntityUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.DeleteRuleUpdater;
-import org.apache.cayenne.util.Util;
 
 import java.awt.event.ActionEvent;
 
 public class CreateObjEntityAction extends CayenneAction {
-
-    public static String getActionName() {
-        return "Create ObjEntity";
-    }
 
     /**
      * Constructor for CreateObjEntityAction.
@@ -53,14 +47,32 @@ public class CreateObjEntityAction extends CayenneAction {
         super(getActionName(), application);
     }
 
+    public static String getActionName() {
+        return "Create ObjEntity";
+    }
+
+
+    static void fireObjEntityEvent(
+            Object src,
+            ProjectController mediator,
+            DataMap dataMap,
+            ObjEntity entity) {
+        mediator.fireObjEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
+        EntityDisplayEvent displayEvent = new EntityDisplayEvent(
+                src,
+                entity,
+                dataMap,
+                mediator.getCurrentDataNode(),
+                (DataChannelDescriptor) mediator.getProject().getRootNode());
+        displayEvent.setMainTabFocus(true);
+        mediator.fireObjEntityDisplayEvent(displayEvent);
+    }
+
     @Override
     public String getIconName() {
         return "icon-new_objentity.gif";
     }
 
-    /**
-     * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
-     */
     @Override
     public void performAction(ActionEvent e) {
         createObjEntity();
@@ -70,7 +82,10 @@ public class CreateObjEntityAction extends CayenneAction {
         ProjectController mediator = getProjectController();
 
         DataMap dataMap = mediator.getCurrentDataMap();
-        ObjEntity entity = new ObjEntity(DuplicateNameResolver.resolve(NameCheckers.objEntity, dataMap));
+        ObjEntity entity = new ObjEntity();
+        entity.setName(NameBuilder
+                .builder(entity, dataMap)
+                .name());
 
         // init defaults
         entity.setSuperClassName(dataMap.getDefaultSuperclass());
@@ -79,8 +94,13 @@ public class CreateObjEntityAction extends CayenneAction {
         DbEntity dbEntity = mediator.getCurrentDbEntity();
         if (dbEntity != null) {
             entity.setDbEntity(dbEntity);
-            String baseName = Util.underscoredToJava(dbEntity.getName(), true);
-            entity.setName(DuplicateNameResolver.resolve(NameCheckers.objEntity, dbEntity.getDataMap(), baseName));
+
+            // TODO: use injectable name generator
+            String baseName = new DefaultObjectNameGenerator().createObjEntityName(dbEntity);
+            entity.setName(NameBuilder
+                    .builder(entity, dbEntity.getDataMap())
+                    .baseName(baseName)
+                    .name());
         }
 
         entity.setClassName(dataMap.getNameWithDefaultPackage(entity.getName()));
@@ -107,25 +127,6 @@ public class CreateObjEntityAction extends CayenneAction {
         ProjectController mediator = getProjectController();
         dataMap.addObjEntity(entity);
         fireObjEntityEvent(this, mediator, dataMap, entity);
-    }
-
-    /**
-     * Fires events when a obj entity was added
-     */
-    static void fireObjEntityEvent(
-            Object src,
-            ProjectController mediator,
-            DataMap dataMap,
-            ObjEntity entity) {
-        mediator.fireObjEntityEvent(new EntityEvent(src, entity, MapEvent.ADD));
-        EntityDisplayEvent displayEvent = new EntityDisplayEvent(
-                src,
-                entity,
-                dataMap,
-                mediator.getCurrentDataNode(),
-                (DataChannelDescriptor) mediator.getProject().getRootNode());
-        displayEvent.setMainTabFocus(true);
-        mediator.fireObjEntityDisplayEvent(displayEvent);
     }
 
     /**

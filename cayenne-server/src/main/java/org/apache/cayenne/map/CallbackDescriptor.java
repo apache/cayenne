@@ -74,7 +74,7 @@ public class CallbackDescriptor implements Serializable {
     }
 
     /**
-     * moves specified callback method to the specified position
+     * Moves specified callback method to the specified position
      * 
      * @param callbackMethod callbacm method name (should exist)
      * @param destinationIndex destinationi index (should be valid)

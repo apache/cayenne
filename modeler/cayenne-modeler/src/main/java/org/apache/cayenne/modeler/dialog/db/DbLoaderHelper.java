@@ -20,13 +20,15 @@
 package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.CayenneDbSyncModule;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
+import org.apache.cayenne.dbsync.reverse.FiltersConfigBuilder;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DefaultDbLoaderDelegate;
-import org.apache.cayenne.dbsync.reverse.FiltersConfigBuilder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
@@ -35,8 +37,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
@@ -61,13 +61,11 @@ import java.util.List;
  */
 public class DbLoaderHelper {
 
-    private static Log logObj = LogFactory.getLog(DbLoaderHelper.class);
-
     // TODO: this is a temp hack... need to delegate to DbAdapter, or
     // configurable in
     // preferences...
     private static final Collection<String> EXCLUDED_TABLES = Arrays.asList("AUTO_PK_SUPPORT", "auto_pk_support");
-
+    private static Log logObj = LogFactory.getLog(DbLoaderHelper.class);
     protected boolean stoppingReverseEngineering;
     protected boolean existingMap;
 
@@ -116,12 +114,12 @@ public class DbLoaderHelper {
         }
     }
 
-    public void setStoppingReverseEngineering(boolean stopReverseEngineering) {
-        this.stoppingReverseEngineering = stopReverseEngineering;
-    }
-
     public boolean isStoppingReverseEngineering() {
         return stoppingReverseEngineering;
+    }
+
+    public void setStoppingReverseEngineering(boolean stopReverseEngineering) {
+        this.stoppingReverseEngineering = stopReverseEngineering;
     }
 
     public DataMap getDataMap() {
@@ -172,6 +170,13 @@ public class DbLoaderHelper {
         });
     }
 
+    protected ProjectController getMediator() {
+        return mediator;
+    }
+
+    protected DbLoader getLoader() {
+        return loader;
+    }
 
     private final class LoaderDelegate extends DefaultDbLoaderDelegate {
 
@@ -319,7 +324,6 @@ public class DbLoaderHelper {
         }
     }
 
-
     public final class LoadDataMapTask extends DbLoaderTask {
 
         public LoadDataMapTask(JFrame frame, String title) {
@@ -335,8 +339,11 @@ public class DbLoaderHelper {
             DbLoaderHelper.this.existingMap = dataMap != null;
 
             if (!existingMap) {
-                dataMap = new DataMap(DuplicateNameResolver.resolve(NameCheckers.dataMap));
-                dataMap.setName(DuplicateNameResolver.resolve(NameCheckers.dataMap, mediator.getProject().getRootNode()));
+
+                ConfigurationNode root = mediator.getProject().getRootNode();
+
+                dataMap = new DataMap();
+                dataMap.setName(NameBuilder.builder(dataMap, root).name());
             }
 
             if (isCanceled()) {
@@ -351,7 +358,7 @@ public class DbLoaderHelper {
                     reverseEngineering.setConfigurationSource(dataMap.getReverseEngineering().getConfigurationSource());
                 }
             } else {
-                reverseEngineering.setName(DuplicateNameResolver.resolve(NameCheckers.reverseEngineering, dataChannelDescriptor));
+                reverseEngineering.setName(NameBuilder.builder(reverseEngineering, dataChannelDescriptor).name());
             }
 
             if (dataMap.getConfigurationSource() != null) {
@@ -377,12 +384,4 @@ public class DbLoaderHelper {
         }
     }
 
-    protected ProjectController getMediator() {
-        return mediator;
-    }
-
-    protected DbLoader getLoader() {
-        return loader;
-    }
-	
 }

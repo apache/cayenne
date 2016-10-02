@@ -18,22 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateEmbeddableUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
+
+import java.awt.event.ActionEvent;
 
 public class CreateEmbeddableAction extends CayenneAction {
 
@@ -56,11 +55,11 @@ public class CreateEmbeddableAction extends CayenneAction {
 
         DataMap dataMap = mediator.getCurrentDataMap();
 
-        Embeddable embeddable = new Embeddable(DuplicateNameResolver.resolve(NameCheckers.embeddable, mediator.getCurrentDataMap()));
+        Embeddable embeddable = new Embeddable();
+        embeddable.setClassName(NameBuilder.builder(embeddable, dataMap).name());
         createEmbeddable(dataMap, embeddable);
 
-        application.getUndoManager().addEdit(
-                new CreateEmbeddableUndoableEdit(dataMap, embeddable));
+        application.getUndoManager().addEdit(new CreateEmbeddableUndoableEdit(dataMap, embeddable));
     }
 
     public void createEmbeddable(DataMap dataMap, Embeddable embeddable) {

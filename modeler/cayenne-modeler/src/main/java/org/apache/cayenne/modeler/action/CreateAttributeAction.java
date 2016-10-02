@@ -19,11 +19,10 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -36,8 +35,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EmbeddableAttributeEvent;
 import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
@@ -46,19 +43,60 @@ import org.apache.cayenne.modeler.undo.CreateAttributeUndoableEdit;
 import org.apache.cayenne.modeler.undo.CreateEmbAttributeUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
+import java.awt.event.ActionEvent;
+
 /**
  */
 public class CreateAttributeAction extends CayenneAction {
-
-    public static String getActionName() {
-        return "Create Attribute";
-    }
 
     /**
      * Constructor for CreateAttributeAction.
      */
     public CreateAttributeAction(Application application) {
         super(getActionName(), application);
+    }
+
+    public static String getActionName() {
+        return "Create Attribute";
+    }
+
+    static void fireEmbeddableAttributeEvent(Object src, ProjectController mediator, Embeddable embeddable,
+                                             EmbeddableAttribute attr) {
+
+        mediator.fireEmbeddableAttributeEvent(new EmbeddableAttributeEvent(src, attr, embeddable, MapEvent.ADD));
+
+        EmbeddableAttributeDisplayEvent e = new EmbeddableAttributeDisplayEvent(src, embeddable, attr,
+                mediator.getCurrentDataMap(), (DataChannelDescriptor) mediator.getProject().getRootNode());
+
+        mediator.fireEmbeddableAttributeDisplayEvent(e);
+    }
+
+    /**
+     * Fires events when an obj attribute was added
+     */
+    static void fireObjAttributeEvent(Object src, ProjectController mediator, DataMap map, ObjEntity objEntity,
+                                      ObjAttribute attr) {
+
+        mediator.fireObjAttributeEvent(new AttributeEvent(src, attr, objEntity, MapEvent.ADD));
+
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
+
+        AttributeDisplayEvent ade = new AttributeDisplayEvent(src, attr, objEntity, map, domain);
+
+        mediator.fireObjAttributeDisplayEvent(ade);
+    }
+
+    /**
+     * Fires events when a db attribute was added
+     */
+    static void fireDbAttributeEvent(Object src, ProjectController mediator, DataMap map, DbEntity dbEntity,
+                                     DbAttribute attr) {
+        mediator.fireDbAttributeEvent(new AttributeEvent(src, attr, dbEntity, MapEvent.ADD));
+
+        AttributeDisplayEvent ade = new AttributeDisplayEvent(src, attr, dbEntity, map,
+                (DataChannelDescriptor) mediator.getProject().getRootNode());
+
+        mediator.fireDbAttributeDisplayEvent(ade);
     }
 
     @Override
@@ -77,19 +115,22 @@ public class CreateAttributeAction extends CayenneAction {
             Embeddable embeddable = mediator.getCurrentEmbeddable();
 
             EmbeddableAttribute attr = new EmbeddableAttribute();
-            attr.setName(DuplicateNameResolver.resolve(NameCheckers.embeddableAttribute, embeddable));
+            attr.setName(NameBuilder
+                    .builder(attr, embeddable)
+                    .name());
 
             createEmbAttribute(embeddable, attr);
 
             application.getUndoManager().addEdit(
-                    new CreateEmbAttributeUndoableEdit(embeddable, new EmbeddableAttribute[] { attr }));
+                    new CreateEmbAttributeUndoableEdit(embeddable, new EmbeddableAttribute[]{attr}));
         }
 
         if (getProjectController().getCurrentObjEntity() != null) {
 
             ObjEntity objEntity = mediator.getCurrentObjEntity();
 
-            ObjAttribute attr = new ObjAttribute(DuplicateNameResolver.resolve(NameCheckers.objAttribute, objEntity), null, objEntity);
+            ObjAttribute attr = new ObjAttribute();
+            attr.setName(NameBuilder.builder(attr, objEntity).name());
 
             createObjAttribute(mediator.getCurrentDataMap(), objEntity, attr);
 
@@ -99,8 +140,10 @@ public class CreateAttributeAction extends CayenneAction {
         } else if (getProjectController().getCurrentDbEntity() != null) {
             DbEntity dbEntity = getProjectController().getCurrentDbEntity();
 
-            DbAttribute attr = new DbAttribute(DuplicateNameResolver.resolve(NameCheckers.dbAttribute, dbEntity),
-                    TypesMapping.NOT_DEFINED, dbEntity);
+            DbAttribute attr = new DbAttribute();
+            attr.setName(NameBuilder.builder(attr, dbEntity).name());
+            attr.setType(TypesMapping.NOT_DEFINED);
+            attr.setEntity(dbEntity);
 
             createDbAttribute(mediator.getCurrentDataMap(), dbEntity, attr);
 
@@ -116,17 +159,6 @@ public class CreateAttributeAction extends CayenneAction {
         fireEmbeddableAttributeEvent(this, mediator, embeddable, attr);
     }
 
-    static void fireEmbeddableAttributeEvent(Object src, ProjectController mediator, Embeddable embeddable,
-            EmbeddableAttribute attr) {
-
-        mediator.fireEmbeddableAttributeEvent(new EmbeddableAttributeEvent(src, attr, embeddable, MapEvent.ADD));
-
-        EmbeddableAttributeDisplayEvent e = new EmbeddableAttributeDisplayEvent(src, embeddable, attr,
-                mediator.getCurrentDataMap(), (DataChannelDescriptor) mediator.getProject().getRootNode());
-
-        mediator.fireEmbeddableAttributeDisplayEvent(e);
-    }
-
     public void createObjAttribute(DataMap map, ObjEntity objEntity, ObjAttribute attr) {
 
         ProjectController mediator = getProjectController();
@@ -134,38 +166,10 @@ public class CreateAttributeAction extends CayenneAction {
         fireObjAttributeEvent(this, mediator, map, objEntity, attr);
     }
 
-    /**
-     * Fires events when an obj attribute was added
-     */
-    static void fireObjAttributeEvent(Object src, ProjectController mediator, DataMap map, ObjEntity objEntity,
-            ObjAttribute attr) {
-
-        mediator.fireObjAttributeEvent(new AttributeEvent(src, attr, objEntity, MapEvent.ADD));
-
-        DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
-
-        AttributeDisplayEvent ade = new AttributeDisplayEvent(src, attr, objEntity, map, domain);
-
-        mediator.fireObjAttributeDisplayEvent(ade);
-    }
-
     public void createDbAttribute(DataMap map, DbEntity dbEntity, DbAttribute attr) {
         dbEntity.addAttribute(attr);
         ProjectController mediator = getProjectController();
         fireDbAttributeEvent(this, mediator, map, dbEntity, attr);
-    }
-
-    /**
-     * Fires events when a db attribute was added
-     */
-    static void fireDbAttributeEvent(Object src, ProjectController mediator, DataMap map, DbEntity dbEntity,
-            DbAttribute attr) {
-        mediator.fireDbAttributeEvent(new AttributeEvent(src, attr, dbEntity, MapEvent.ADD));
-
-        AttributeDisplayEvent ade = new AttributeDisplayEvent(src, attr, dbEntity, map,
-                (DataChannelDescriptor) mediator.getProject().getRootNode());
-
-        mediator.fireDbAttributeDisplayEvent(ade);
     }
 
     /**

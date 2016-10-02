@@ -19,8 +19,7 @@
 package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.reverse.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -62,26 +61,21 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
 
         // create a ObjEntity
 
-        // TODO: proper name generator must be injected
+        // TODO: name generator must be injected...
+        // TODO: should we use DbEntity name as a basis instead of generic name like "ObjEntity1"?
+        String baseName = new DefaultObjectNameGenerator().createObjEntityName(dbEntity);
 
-        String objEntityName = new DefaultObjectNameGenerator().createObjEntityName(dbEntity);
-        objEntityName = DuplicateNameResolver.resolve(NameCheckers.objEntity, dbEntity.getDataMap(), objEntityName);
+        ObjEntity objEntity = new ObjEntity();
 
-        // this loop will terminate even if no valid name is found
-        // to prevent loader from looping forever (though such case is very unlikely)
-        String baseName = objEntityName;
-        for (int i = 1; i < 1000 && map.getObjEntity(objEntityName) != null; i++) {
-            objEntityName = baseName + i;
-        }
-
-        ObjEntity objEntity = new ObjEntity(objEntityName);
+        String name = NameBuilder.builder(objEntity, dbEntity.getDataMap()).baseName(baseName).name();
+        objEntity.setName(name);
         objEntity.setDbEntity(getEntity());
 
         // try to find a class name for the ObjEntity
         String className = objEntityClassName;
         if (className == null) {
             // we should generate a className based on the objEntityName
-            className = map.getNameWithDefaultPackage(objEntityName);
+            className = map.getNameWithDefaultPackage(name);
         }
 
         objEntity.setClassName(className);

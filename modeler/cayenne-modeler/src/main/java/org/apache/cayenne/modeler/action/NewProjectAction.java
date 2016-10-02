@@ -19,23 +19,19 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.KeyStroke;
-
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.dbsync.naming.DuplicateNameResolver;
-import org.apache.cayenne.dbsync.naming.NameCheckers;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.project.Project;
 
-/**
- */
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
 public class NewProjectAction extends ProjectAction {
 
     public static String getActionName() {
@@ -66,17 +62,18 @@ public class NewProjectAction extends ProjectAction {
             return;
         }
 
-        DataChannelDescriptor domain = new DataChannelDescriptor();
+        DataChannelDescriptor dataChannelDescriptor = new DataChannelDescriptor();
 
-        domain.setName(DuplicateNameResolver.resolve(NameCheckers.dataChannelDescriptor, domain));
+        dataChannelDescriptor.setName(NameBuilder
+                .builder(dataChannelDescriptor)
+                .name());
 
         Project project = new Project(
-                new ConfigurationTree<DataChannelDescriptor>(domain));
+                new ConfigurationTree<DataChannelDescriptor>(dataChannelDescriptor));
 
         controller.projectOpenedAction(project);
 
         // select default domain
-        getProjectController().fireDomainDisplayEvent(
-                new DomainDisplayEvent(this, domain));
+        getProjectController().fireDomainDisplayEvent(new DomainDisplayEvent(this, dataChannelDescriptor));
     }
 }
