@@ -39,11 +39,11 @@ class CallbackNameBuilder extends NameBuilder {
                 ? this.baseName
                 : "onEvent";
 
-        return new DeduplicationVisitor(namingContext, baseName, dupesPattern).resolve(new DeduplicationVisitor.Predicate() {
+        return new DeduplicationVisitor(parent, baseName, dupesPattern).resolve(new DeduplicationVisitor.Predicate() {
             @Override
             public boolean isNameInUse(String name) {
 
-                ObjEntity entity = (ObjEntity) namingContext;
+                ObjEntity entity = (ObjEntity) parent;
 
                 if (entity.getCallbackMethods().contains(name)) {
                     return true;
