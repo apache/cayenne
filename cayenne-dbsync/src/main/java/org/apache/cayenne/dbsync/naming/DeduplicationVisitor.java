@@ -44,12 +44,12 @@ import java.util.Objects;
 // TODO: swap inner classes for lambdas when we are on java 8
 class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
 
-    private ConfigurationNode namingContext;
+    private ConfigurationNode parent;
     private String baseName;
     private String dupesPattern;
 
-    DeduplicationVisitor(ConfigurationNode context, String baseName, String dupesPattern) {
-        this.namingContext = context;
+    DeduplicationVisitor(ConfigurationNode parent, String baseName, String dupesPattern) {
+        this.parent = parent;
         this.baseName = Objects.requireNonNull(baseName);
         this.dupesPattern = Objects.requireNonNull(dupesPattern);
     }
@@ -66,7 +66,7 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
             @Override
             public boolean isNameInUse(String name) {
 
-                DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) namingContext;
+                DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) parent;
                 for (DataNodeDescriptor dataNodeDescriptor : dataChannelDescriptor.getNodeDescriptors()) {
                     if (dataNodeDescriptor.getName().equals(name)) {
                         return true;
@@ -86,12 +86,12 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
 
                 // null context is a situation when DataMap is a
                 // top level object of the project
-                if (namingContext == null) {
+                if (parent == null) {
                     return false;
                 }
 
-                if (namingContext instanceof DataChannelDescriptor) {
-                    DataChannelDescriptor domain = (DataChannelDescriptor) namingContext;
+                if (parent instanceof DataChannelDescriptor) {
+                    DataChannelDescriptor domain = (DataChannelDescriptor) parent;
                     return domain.getDataMap(name) != null;
                 }
                 return false;
@@ -104,7 +104,7 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
         return resolve(new Predicate() {
             @Override
             public boolean isNameInUse(String name) {
-                DataMap map = (DataMap) namingContext;
+                DataMap map = (DataMap) parent;
                 return map.getObjEntity(name) != null;
             }
         });
@@ -115,7 +115,7 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
         return resolve(new Predicate() {
             @Override
             public boolean isNameInUse(String name) {
-                DataMap map = (DataMap) namingContext;
+                DataMap map = (DataMap) parent;
                 return map.getDbEntity(name) != null;
             }
         });
@@ -126,7 +126,7 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
         return resolve(new Predicate() {
             @Override
             public boolean isNameInUse(String name) {
-                DataMap map = (DataMap) namingContext;
+                DataMap map = (DataMap) parent;
                 return map.getEmbeddable(map.getNameWithDefaultPackage(name)) != null;
             }
         });
@@ -137,7 +137,7 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
         return resolve(new Predicate() {
             @Override
             public boolean isNameInUse(String name) {
-                Embeddable emb = (Embeddable) namingContext;
+                Embeddable emb = (Embeddable) parent;
                 return emb.getAttribute(name) != null;
             }
         });
@@ -168,7 +168,7 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
         return resolve(new Predicate() {
             @Override
             public boolean isNameInUse(String name) {
-                DataMap map = (DataMap) namingContext;
+                DataMap map = (DataMap) parent;
                 return map.getProcedure(name) != null;
             }
         });
@@ -183,7 +183,7 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
                 // it doesn't matter if we create a parameter with a duplicate name.. parameters are positional anyway..
                 // still try to use unique names for visual consistency
 
-                Procedure procedure = (Procedure) namingContext;
+                Procedure procedure = (Procedure) parent;
                 for (ProcedureParameter parameter : procedure.getCallParameters()) {
                     if (name.equals(parameter.getName())) {
                         return true;
@@ -200,7 +200,7 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
         return resolve(new Predicate() {
             @Override
             public boolean isNameInUse(String name) {
-                DataMap map = (DataMap) namingContext;
+                DataMap map = (DataMap) parent;
                 return map.getQueryDescriptor(name) != null;
             }
         });
@@ -212,11 +212,11 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
             @Override
             public boolean isNameInUse(String name) {
 
-                if (namingContext == null) {
+                if (parent == null) {
                     return false;
                 }
 
-                DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) namingContext;
+                DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) parent;
                 for (DataMap dataMap : dataChannelDescriptor.getDataMaps()) {
                     if (dataMap != null && dataMap.getReverseEngineering() != null &&
                             dataMap.getReverseEngineering().getName() != null
@@ -244,7 +244,7 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
             @Override
             public boolean isNameInUse(String name) {
 
-                DbEntity entity = (DbEntity) namingContext;
+                DbEntity entity = (DbEntity) parent;
 
                 // check if either attribute or relationship name matches...
                 return entity.getAttribute(name) != null || entity.getRelationship(name) != null;
@@ -257,7 +257,7 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
             @Override
             public boolean isNameInUse(String name) {
 
-                ObjEntity entity = (ObjEntity) namingContext;
+                ObjEntity entity = (ObjEntity) parent;
 
                 // check if either attribute or relationship name matches...
                 if (entity.getAttribute(name) != null || entity.getRelationship(name) != null) {
