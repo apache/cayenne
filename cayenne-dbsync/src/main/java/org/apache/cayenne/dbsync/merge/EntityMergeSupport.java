@@ -21,7 +21,7 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
-import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -200,7 +200,7 @@ public class EntityMergeSupport {
     private boolean createObjRelationship(ObjEntity entity, DbRelationship dr, String targetEntityName) {
         ObjRelationship or = new ObjRelationship();
         or.setName(NameBuilder.builder(or, entity)
-                .baseName(nameGenerator.createObjRelationshipName(dr))
+                .baseName(nameGenerator.objRelationshipName(dr))
                 .name());
 
         or.addDbRelationship(dr);
@@ -264,7 +264,7 @@ public class EntityMergeSupport {
 
             if (dbRelationship.getTargetEntityName() != null) {
                 boolean needGeneratedEntity = createObjRelationship(entity, dbRelationship,
-                        nameGenerator.createObjEntityName(targetEntity));
+                        nameGenerator.objEntityName(targetEntity));
                 if (needGeneratedEntity) {
                     LOG.warn("Can't find ObjEntity for " + dbRelationship.getTargetEntityName());
                     LOG.warn("Db Relationship (" + dbRelationship + ") will have GUESSED Obj Relationship reflection. ");
@@ -276,7 +276,7 @@ public class EntityMergeSupport {
     private void addMissingAttribute(ObjEntity entity, DbAttribute da) {
         ObjAttribute oa = new ObjAttribute();
         oa.setName(NameBuilder.builder(oa, entity)
-                .baseName(nameGenerator.createObjAttributeName(da))
+                .baseName(nameGenerator.objAttributeName(da))
                 .name());
         oa.setEntity(entity);
 

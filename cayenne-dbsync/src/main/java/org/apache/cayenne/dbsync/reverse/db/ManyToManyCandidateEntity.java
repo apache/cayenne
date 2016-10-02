@@ -19,7 +19,7 @@
 package org.apache.cayenne.dbsync.reverse.db;
 
 import org.apache.cayenne.dbsync.naming.NameBuilder;
-import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -114,7 +114,7 @@ class ManyToManyCandidateEntity {
         ObjRelationship newRelationship = new ObjRelationship();
         newRelationship.setName(NameBuilder
                 .builder(newRelationship, srcEntity)
-                .baseName(nameGenerator.createDbRelationshipName(key, true))
+                .baseName(nameGenerator.dbRelationshipName(key, true))
                 .name());
 
         newRelationship.setSourceEntity(srcEntity);

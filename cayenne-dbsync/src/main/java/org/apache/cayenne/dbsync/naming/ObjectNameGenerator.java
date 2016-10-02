@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.reverse.naming;
+package org.apache.cayenne.dbsync.naming;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -24,30 +24,31 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
 
 /**
- * ObjectNameGenerator is a strategy for creating names for entities,
- * attributes, relationships from DB metadata.
- * 
+ * A strategy for creating names for object layer metadata artifacts based on their DB counterpart naming. Generated
+ * names should normally be further cleaned by passing them through {@link org.apache.cayenne.dbsync.naming.NameBuilder},
+ * that will resolve duplication conflicts.
+ *
  * @since 4.0
  */
 public interface ObjectNameGenerator {
 
-	/**
-	 * Creates new name for ObjEntity
-	 */
-	String createObjEntityName(DbEntity entity);
+    /**
+     * Generates a name for ObjEntity derived from DbEntity name.
+     */
+    String objEntityName(DbEntity dbEntity);
 
-	/**
-	 * Creates new name for ObjAttribute
-	 */
-	String createObjAttributeName(DbAttribute attr);
+    /**
+     * Generates a name for ObjAttribute derived from DbAttribute name.
+     */
+    String objAttributeName(DbAttribute dbAttribute);
 
-	/**
-	 * Creates new name for DbRelationship
-	 */
-	String createDbRelationshipName(ExportedKey key, boolean toMany);
+    /**
+     * Generates a name for DbRelationship derived from the DB foreign key name.
+     */
+    String dbRelationshipName(ExportedKey key, boolean toMany);
 
-	/**
-	 * Creates new name for ObjRelationship
-	 */
-	String createObjRelationshipName(DbRelationship dbRel);
+    /**
+     * Generates a name for ObjRelationship derived from DbRelationship name.
+     */
+    String objRelationshipName(DbRelationship dbRelationship);
 }

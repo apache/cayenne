@@ -26,8 +26,8 @@ import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.SchemaFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
-import org.apache.cayenne.dbsync.reverse.naming.LegacyObjectNameGenerator;
-import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.LegacyObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -134,7 +134,7 @@ public class DbLoader {
             ObjEntity objEntity = new ObjEntity();
             objEntity.setName(NameBuilder
                     .builder(objEntity, map)
-                    .baseName(nameGenerator.createObjEntityName(dbEntity))
+                    .baseName(nameGenerator.objEntityName(dbEntity))
                     .name());
 
             objEntity.setDbEntity(dbEntity);
@@ -318,7 +318,7 @@ public class DbLoader {
             DbRelationship forwardRelationship = new DbRelationship();
             forwardRelationship.setName(NameBuilder
                     .builder(forwardRelationship, pkEntity)
-                    .baseName(nameGenerator.createDbRelationshipName(key, true))
+                    .baseName(nameGenerator.dbRelationshipName(key, true))
                     .name());
 
             forwardRelationship.setSourceEntity(pkEntity);
@@ -332,7 +332,7 @@ public class DbLoader {
             DbRelationshipDetected reverseRelationship = new DbRelationshipDetected();
             reverseRelationship.setName(NameBuilder
                     .builder(reverseRelationship, fkEntity)
-                    .baseName(nameGenerator.createDbRelationshipName(key, false))
+                    .baseName(nameGenerator.dbRelationshipName(key, false))
                     .name());
 
             reverseRelationship.setFkName(key.getFKName());
@@ -353,7 +353,7 @@ public class DbLoader {
             // TODO: can we avoid resetting the name twice? Do we need a placeholder name above?
             forwardRelationship.setName(NameBuilder
                             .builder(forwardRelationship, pkEntity)
-                            .baseName(nameGenerator.createDbRelationshipName(key, !isOneToOne))
+                            .baseName(nameGenerator.dbRelationshipName(key, !isOneToOne))
                             .name());
 
             if (delegate.dbRelationshipLoaded(fkEntity, reverseRelationship)) {

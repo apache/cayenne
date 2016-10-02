@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
-import org.apache.cayenne.dbsync.reverse.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -96,7 +96,7 @@ public class CreateObjEntityAction extends CayenneAction {
             entity.setDbEntity(dbEntity);
 
             // TODO: use injectable name generator
-            String baseName = new DefaultObjectNameGenerator().createObjEntityName(dbEntity);
+            String baseName = new DefaultObjectNameGenerator().objEntityName(dbEntity);
             entity.setName(NameBuilder
                     .builder(entity, dbEntity.getDataMap())
                     .baseName(baseName)

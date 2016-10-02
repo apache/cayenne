@@ -36,7 +36,7 @@ import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.dbsync.reverse.naming.LegacyObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.LegacyObjectNameGenerator;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.Before;
 import org.junit.Test;

@@ -20,7 +20,7 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
-import org.apache.cayenne.dbsync.reverse.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -60,22 +60,20 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
         map.addDbEntity(dbEntity);
 
         // create a ObjEntity
-
-        // TODO: name generator must be injected...
-        // TODO: should we use DbEntity name as a basis instead of generic name like "ObjEntity1"?
-        String baseName = new DefaultObjectNameGenerator().createObjEntityName(dbEntity);
-
         ObjEntity objEntity = new ObjEntity();
 
-        String name = NameBuilder.builder(objEntity, dbEntity.getDataMap()).baseName(baseName).name();
-        objEntity.setName(name);
+        objEntity.setName(NameBuilder
+                .builder(objEntity, dbEntity.getDataMap())
+                // TODO: name generator must be injected...
+                .baseName(new DefaultObjectNameGenerator().objEntityName(dbEntity))
+                .name());
         objEntity.setDbEntity(getEntity());
 
         // try to find a class name for the ObjEntity
         String className = objEntityClassName;
         if (className == null) {
-            // we should generate a className based on the objEntityName
-            className = map.getNameWithDefaultPackage(name);
+            // generate a className based on the objEntityName
+            className = map.getNameWithDefaultPackage(objEntity.getName());
         }
 
         objEntity.setClassName(className);

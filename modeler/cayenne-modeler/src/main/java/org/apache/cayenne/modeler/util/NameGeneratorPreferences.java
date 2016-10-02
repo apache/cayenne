@@ -22,9 +22,9 @@ import java.util.Arrays;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
-import org.apache.cayenne.dbsync.reverse.naming.LegacyObjectNameGenerator;
-import org.apache.cayenne.dbsync.reverse.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.LegacyObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.Application;
 
 /**

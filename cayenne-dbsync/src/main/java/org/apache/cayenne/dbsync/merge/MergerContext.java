@@ -20,8 +20,8 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.reverse.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.validation.ValidationResult;
 

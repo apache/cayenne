@@ -28,7 +28,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
-import org.apache.cayenne.dbsync.reverse.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
@@ -342,7 +342,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         dbRelationship.setName(createNamingStrategy(NameGeneratorPreferences
                 .getInstance()
                 .getLastUsedStrategies()
-                .get(0)).createDbRelationshipName(
+                .get(0)).dbRelationshipName(
                 new ExportedKey(targetModel.getSource().getName(), null, null,
                                 targetModel.getTarget().getName(), null, null, (short) 1),
                 targetModel.isToMany()));

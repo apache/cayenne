@@ -16,8 +16,9 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.reverse.naming;
+package org.apache.cayenne.dbsync.naming;
 
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -26,29 +27,35 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class LegacyObjectNameGeneratorTest {
+public class DefaultObjectNameGeneratorTest {
 
     @Test
     public void testStrategy() throws Exception {
-        LegacyObjectNameGenerator strategy = new LegacyObjectNameGenerator();
+        DefaultObjectNameGenerator strategy = new DefaultObjectNameGenerator();
         
         ExportedKey key = new ExportedKey("ARTIST", "ARTIST_ID", null,
                 "PAINTING", "ARTIST_ID", null, (short) 1);
-        assertEquals(strategy.createDbRelationshipName(key, false), "toArtist"); 
-        assertEquals(strategy.createDbRelationshipName(key, true), "paintingArray");
+        assertEquals(strategy.dbRelationshipName(key, false), "artist");
+        assertEquals(strategy.dbRelationshipName(key, true), "paintings");
         
         key = new ExportedKey("PERSON", "PERSON_ID", null,
                 "PERSON", "MOTHER_ID", null, (short) 1);
-        assertEquals(strategy.createDbRelationshipName(key, false), "toPerson"); 
-        assertEquals(strategy.createDbRelationshipName(key, true), "personArray");
+        assertEquals(strategy.dbRelationshipName(key, false), "mother");
+        assertEquals(strategy.dbRelationshipName(key, true), "people");
         
-        assertEquals(strategy.createObjEntityName(new DbEntity("ARTIST")), "Artist");
-        assertEquals(strategy.createObjEntityName(new DbEntity("ARTIST_WORK")), "ArtistWork");
+        key = new ExportedKey("PERSON", "PERSON_ID", null,
+                "ADDRESS", "SHIPPING_ADDRESS_ID", null, (short) 1);
+        assertEquals(strategy.dbRelationshipName(key, false), "shippingAddress");
+        assertEquals(strategy.dbRelationshipName(key, true), "addresses");
         
-        assertEquals(strategy.createObjAttributeName(new DbAttribute("NAME")), "name");
-        assertEquals(strategy.createObjAttributeName(new DbAttribute("ARTIST_NAME")), "artistName");
+        assertEquals(strategy.objEntityName(new DbEntity("ARTIST")), "Artist");
+        assertEquals(strategy.objEntityName(new DbEntity("ARTIST_WORK")), "ArtistWork");
         
-        assertEquals(strategy.createObjRelationshipName(new DbRelationship("toArtist")), "toArtist");
-        assertEquals(strategy.createObjRelationshipName(new DbRelationship("paintingArray")), "paintingArray");
+        assertEquals(strategy.objAttributeName(new DbAttribute("NAME")), "name");
+        assertEquals(strategy.objAttributeName(new DbAttribute("ARTIST_NAME")), "artistName");
+        
+        assertEquals(strategy.objRelationshipName(new DbRelationship("mother")), "mother");
+        assertEquals(strategy.objRelationshipName(new DbRelationship("persons")), "persons");
     }
+
 }

@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.reverse.naming;
+package org.apache.cayenne.dbsync.naming;
 
 import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
 import org.apache.cayenne.map.DbAttribute;
@@ -35,7 +35,7 @@ import java.util.Locale;
 public class DefaultObjectNameGenerator implements ObjectNameGenerator {
 
 	@Override
-	public String createDbRelationshipName(ExportedKey key, boolean toMany) {
+	public String dbRelationshipName(ExportedKey key, boolean toMany) {
 
 		String name;
 
@@ -78,17 +78,17 @@ public class DefaultObjectNameGenerator implements ObjectNameGenerator {
 	}
 
 	@Override
-	public String createObjEntityName(DbEntity dbEntity) {
+	public String objEntityName(DbEntity dbEntity) {
 		return Util.underscoredToJava(dbEntity.getName(), true);
 	}
 
 	@Override
-	public String createObjAttributeName(DbAttribute attr) {
+	public String objAttributeName(DbAttribute attr) {
 		return Util.underscoredToJava(attr.getName(), false);
 	}
 
 	@Override
-	public String createObjRelationshipName(DbRelationship dbRel) {
+	public String objRelationshipName(DbRelationship dbRel) {
 		return Util.underscoredToJava(dbRel.getName(), false);
 	}
 }
