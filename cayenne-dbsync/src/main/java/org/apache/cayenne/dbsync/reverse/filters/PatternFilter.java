@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.filters;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.cayenne.util.Util;
 
 import java.util.Comparator;
 import java.util.SortedSet;
@@ -38,7 +38,7 @@ public class PatternFilter {
         }
 
         @Override
-        public StringBuilder toString(StringBuilder res) {
+        protected StringBuilder toString(StringBuilder res) {
             return res.append("ALL");
         }
     };
@@ -50,7 +50,7 @@ public class PatternFilter {
         }
 
         @Override
-        public StringBuilder toString(StringBuilder res) {
+        protected StringBuilder toString(StringBuilder res) {
             return res.append("NONE");
         }
     };
@@ -147,17 +147,17 @@ public class PatternFilter {
         return includes.hashCode();
     }
 
-    public StringBuilder toString(StringBuilder res) {
+    protected StringBuilder toString(StringBuilder res) {
         if (includes.isEmpty()) {
             // Do nothing.
         } else if (includes.size() > 1) {
-            res.append("(").append(StringUtils.join(includes, " OR ")).append(")");
+            res.append("(").append(Util.join(includes, " OR ")).append(")");
         } else {
             res.append(includes.first().pattern());
         }
 
         if (!excludes.isEmpty()) {
-            res.append(" AND NOT (").append(StringUtils.join(includes, " OR ")).append(")");
+            res.append(" AND NOT (").append(Util.join(includes, " OR ")).append(")");
         }
 
         return res;

@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.filters;
 
-import org.apache.commons.lang.StringUtils;
+
+import org.apache.cayenne.util.Util;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 /**
- * TableFilter contain at least one IncludeTable always
- *
+ * TableFilter contain at least one IncludeTable always.
  */
 public class TableFilter {
 
@@ -34,7 +34,7 @@ public class TableFilter {
     private final SortedSet<Pattern> excludes;
 
     /**
-     * Includes can contain only One includetable
+     * Includes can contain only one include table
      *
      * @param includes
      * @param excludes
@@ -101,7 +101,7 @@ public class TableFilter {
         }
 
         if (!excludes.isEmpty()) {
-            res.append(prefix).append("  ").append(StringUtils.join(excludes, " OR ")).append("\n");
+            res.append(prefix).append("  ").append(Util.join(excludes, " OR ")).append("\n");
         }
 
         return res;

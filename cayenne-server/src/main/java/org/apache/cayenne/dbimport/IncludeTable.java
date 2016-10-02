@@ -24,8 +24,6 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import static org.apache.commons.lang.StringUtils.join;
-
 /**
  * @since 4.0.
  */

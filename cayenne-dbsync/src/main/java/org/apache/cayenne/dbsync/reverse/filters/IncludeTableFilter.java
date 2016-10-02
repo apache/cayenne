@@ -55,7 +55,6 @@ public class IncludeTableFilter implements Comparable<IncludeTableFilter> {
 
     }
 
-
     @Override
     public String toString() {
         return toString(new StringBuilder(), "").toString();
