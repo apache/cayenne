@@ -47,17 +47,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
+import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 
 public class DbImporterMojoTest extends AbstractMojoTestCase {
 
-	static {
-		XMLUnit.setIgnoreWhitespace(true);
-	}
-
     private static DerbyManager derbyAssembly;
+
+    static {
+        XMLUnit.setIgnoreWhitespace(true);
+    }
 
     @BeforeClass
     public static void beforeClass() throws IOException, SQLException {
@@ -71,102 +72,102 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     }
 
     @Test
-	public void testToParameters_MeaningfulPkTables() throws Exception {
+    public void testToParameters_MeaningfulPkTables() throws Exception {
 
-		DbImportConfiguration parameters1 = getCdbImport("dbimporter-pom1.xml").toParameters();
-		assertNull(parameters1.getMeaningfulPkTables());
-		assertPathEquals("target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml", parameters1.getDataMapFile()
-				.getPath());
+        DbImportConfiguration parameters1 = getCdbImport("dbimporter-pom1.xml").toParameters();
+        assertNull(parameters1.getMeaningfulPkTables());
+        assertPathEquals("target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml", parameters1.getDataMapFile()
+                .getPath());
 
-		assertEquals("x,b*", getCdbImport("dbimporter-pom2.xml").toParameters().getMeaningfulPkTables());
-		assertEquals("*", getCdbImport("dbimporter-pom3.xml").toParameters().getMeaningfulPkTables());
-	}
+        assertEquals("x,b*", getCdbImport("dbimporter-pom2.xml").toParameters().getMeaningfulPkTables());
+        assertEquals("*", getCdbImport("dbimporter-pom3.xml").toParameters().getMeaningfulPkTables());
+    }
 
-	public void testToParameters_Map() throws Exception {
+    public void testToParameters_Map() throws Exception {
 
-		DbImportConfiguration parameters1 = getCdbImport("dbimporter-pom1.xml").toParameters();
-		assertNotNull(parameters1.getDataMapFile());
-		assertPathEquals("target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml", parameters1.getDataMapFile()
-				.getPath());
+        DbImportConfiguration parameters1 = getCdbImport("dbimporter-pom1.xml").toParameters();
+        assertNotNull(parameters1.getDataMapFile());
+        assertPathEquals("target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml", parameters1.getDataMapFile()
+                .getPath());
 
-		assertNull(getCdbImport("dbimporter-pom2.xml").toParameters().getDataMapFile());
-	}
+        assertNull(getCdbImport("dbimporter-pom2.xml").toParameters().getDataMapFile());
+    }
 
     private DbImporterMojo getCdbImport(String pomFileName) throws Exception {
         return (DbImporterMojo) lookupMojo("cdbimport",
                 getTestFile("src/test/resources/org/apache/cayenne/tools/" + pomFileName));
     }
 
-	private void assertPathEquals(String expectedPath, String actualPath) {
-		assertEquals(new File(expectedPath), new File(actualPath));
-	}
+    private void assertPathEquals(String expectedPath, String actualPath) {
+        assertEquals(new File(expectedPath), new File(actualPath));
+    }
 
     @Test
-	public void testImportNewDataMap() throws Exception {
-		test("testImportNewDataMap");
-	}
+    public void testImportNewDataMap() throws Exception {
+        test("testImportNewDataMap");
+    }
 
     @Test
-	public void testImportWithoutChanges() throws Exception {
-		test("testImportWithoutChanges");
-	}
+    public void testImportWithoutChanges() throws Exception {
+        test("testImportWithoutChanges");
+    }
 
     @Test
-	public void testImportAddTableAndColumn() throws Exception {
-		test("testImportAddTableAndColumn");
-	}
+    public void testImportAddTableAndColumn() throws Exception {
+        test("testImportAddTableAndColumn");
+    }
 
     @Test
-	public void testFilteringWithSchema() throws Exception {
-		test("testFilteringWithSchema");
-	}
+    public void testFilteringWithSchema() throws Exception {
+        test("testFilteringWithSchema");
+    }
 
     @Test
-	public void testSchemasAndTableExclude() throws Exception {
-		test("testSchemasAndTableExclude");
-	}
+    public void testSchemasAndTableExclude() throws Exception {
+        test("testSchemasAndTableExclude");
+    }
 
     @Test
-	public void testViewsExclude() throws Exception {
-		test("testViewsExclude");
-	}
+    public void testViewsExclude() throws Exception {
+        test("testViewsExclude");
+    }
 
     @Test
-	public void testTableTypes() throws Exception {
-		test("testTableTypes");
-	}
+    public void testTableTypes() throws Exception {
+        test("testTableTypes");
+    }
 
     @Test
-	public void testDefaultPackage() throws Exception {
-		test("testDefaultPackage");
-	}
+    public void testDefaultPackage() throws Exception {
+        test("testDefaultPackage");
+    }
 
     @Test
-	public void testSkipRelationshipsLoading() throws Exception {
-		test("testSkipRelationshipsLoading");
-	}
+    public void testSkipRelationshipsLoading() throws Exception {
+        test("testSkipRelationshipsLoading");
+    }
 
     @Test
-	public void testSkipPrimaryKeyLoading() throws Exception {
-		test("testSkipPrimaryKeyLoading");
-	}
+    public void testSkipPrimaryKeyLoading() throws Exception {
+        test("testSkipPrimaryKeyLoading");
+    }
 
     @Test
-	public void testOneToOne() throws Exception {
-		test("testOneToOne");
-	}
+    public void testOneToOne() throws Exception {
+        test("testOneToOne");
+    }
 
-	/**
-	 * Q: what happens if an attribute or relationship is unmapped in the object layer, but then the underlying table
-	 * changes.
-	 * A: it should not recreate unmapped attributes/relationships. Only add an attribute for the new column.
-	 *
-	 * @throws Exception
-	 */
-	@Test
-	public void testPreserveCustomObjMappings() throws Exception {
-		test("testPreserveCustomObjMappings");
-	}
+    /**
+     * Q: what happens if an attribute or relationship is unmapped in the object layer, but then the underlying table
+     * changes.
+     * A: it should not recreate unmapped attributes/relationships. Only add an attribute for the new column.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testPreserveCustomObjMappings() throws Exception {
+        test("testPreserveCustomObjMappings");
+    }
 
     /**
      * Q: what happens if a relationship existed over a column that was later deleted? and ‘skipRelLoading’ is true
@@ -175,47 +176,46 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
      * @throws Exception
      */
     @Test
-	public void testPreserveRelationships() throws Exception {
-		test("testPreserveRelationships");
-	}
+    public void testPreserveRelationships() throws Exception {
+        test("testPreserveRelationships");
+    }
 
     /**
      * By default many-to-many are flattened during reverse engineering.
      * But if a user un-flattens a given N:M manually, we’d like this choice to be preserved on the next run
      */
     @Test
-	public void testUnFlattensManyToMany() throws Exception {
-		// TODO: this should be "xYs" : <db-relationship name="xIes"
-		// TODO: this should be aBs :  <db-relationship name="aBArray"
-		test("testUnFlattensManyToMany");
-	}
+    public void testUnFlattensManyToMany() throws Exception {
+        // TODO: this should be "xYs" : <db-relationship name="xIes"
+        test("testUnFlattensManyToMany");
+    }
 
     /**
      * CREATE TABLE APP.A (
-     *      id INTEGER NOT NULL,
-     *
-     *      PRIMARY KEY (id)
+     * id INTEGER NOT NULL,
+     * <p>
+     * PRIMARY KEY (id)
      * );
-     *
+     * <p>
      * CREATE TABLE APP.A_A (
-     *      A1_ID INTEGER NOT NULL,
-     *      A2_ID INTEGER NOT NULL,
-     *
-     *      PRIMARY KEY (A1_ID, A2_ID),
-     *      CONSTRAINT A_A1 FOREIGN KEY (A1_ID) REFERENCES APP.A (ID),
-     *      CONSTRAINT A_A2 FOREIGN KEY (A2_ID) REFERENCES APP.A (ID)
+     * A1_ID INTEGER NOT NULL,
+     * A2_ID INTEGER NOT NULL,
+     * <p>
+     * PRIMARY KEY (A1_ID, A2_ID),
+     * CONSTRAINT A_A1 FOREIGN KEY (A1_ID) REFERENCES APP.A (ID),
+     * CONSTRAINT A_A2 FOREIGN KEY (A2_ID) REFERENCES APP.A (ID)
      * );
-     *
+     * <p>
      * If one table has many-to-many relationship with it self ObjEntity should have two
-     *  collection attributes in both directions
+     * collection attributes in both directions
      *
      * @throws Exception
      */
     @Test
     @Ignore("Investigate why on different environment entity relationships order are different.")
-	public void te_stFlattensManyToManyWithRecursiveLink() throws Exception {
-		test("testFlattensManyToManyWithRecursiveLink");
-	}
+    public void te_stFlattensManyToManyWithRecursiveLink() throws Exception {
+        test("testFlattensManyToManyWithRecursiveLink");
+    }
 
     @Test
     public void testFilteringConfig() throws Exception {
@@ -291,44 +291,44 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     }
 
     private void test(String name) throws Exception {
-		DbImporterMojo cdbImport = getCdbImport("dbimport/" + name + "-pom.xml");
-		File mapFile = cdbImport.getMap();
-		File mapFileCopy = new File(mapFile.getParentFile(), "copy-" + mapFile.getName());
-		if (mapFile.exists()) {
-			FileUtils.copyFile(mapFile, mapFileCopy);
-			cdbImport.setMap(mapFileCopy);
-		} else {
-			mapFileCopy = mapFile;
-		}
+        DbImporterMojo cdbImport = getCdbImport("dbimport/" + name + "-pom.xml");
+        File mapFile = cdbImport.getMap();
+        File mapFileCopy = new File(mapFile.getParentFile(), "copy-" + mapFile.getName());
+        if (mapFile.exists()) {
+            FileUtils.copyFile(mapFile, mapFileCopy);
+            cdbImport.setMap(mapFileCopy);
+        } else {
+            mapFileCopy = mapFile;
+        }
 
         DbImportConfiguration parameters = cdbImport.toParameters();
         prepareDatabase(name, parameters);
 
-		cdbImport.setIsReverseEngineeringDefined(true);
-		try {
-			cdbImport.execute();
-			verifyResult(mapFile, mapFileCopy);
-		} finally {
-			cleanDb(parameters);
-		}
-	}
+        cdbImport.setIsReverseEngineeringDefined(true);
+        try {
+            cdbImport.execute();
+            verifyResult(mapFile, mapFileCopy);
+        } finally {
+            cleanDb(parameters);
+        }
+    }
 
-	private void cleanDb(DbImportConfiguration dbImportConfiguration) throws ClassNotFoundException,
-			IllegalAccessException, InstantiationException, SQLException {
-		Class.forName(dbImportConfiguration.getDriver()).newInstance();
-		// Get a connection
-		Connection connection = DriverManager.getConnection(dbImportConfiguration.getUrl());
-		Statement stmt = connection.createStatement();
+    private void cleanDb(DbImportConfiguration dbImportConfiguration) throws ClassNotFoundException,
+            IllegalAccessException, InstantiationException, SQLException {
+        Class.forName(dbImportConfiguration.getDriver()).newInstance();
+        // Get a connection
+        Connection connection = DriverManager.getConnection(dbImportConfiguration.getUrl());
+        Statement stmt = connection.createStatement();
 
-		ResultSet views = connection.getMetaData().getTables(null, null, null, new String[] { "VIEW" });
-		while (views.next()) {
-			String schema = views.getString("TABLE_SCHEM");
+        ResultSet views = connection.getMetaData().getTables(null, null, null, new String[]{"VIEW"});
+        while (views.next()) {
+            String schema = views.getString("TABLE_SCHEM");
             execute(stmt, "DROP VIEW " + (isBlank(schema) ? "" : schema + ".") + views.getString("TABLE_NAME"));
-		}
+        }
 
-		ResultSet tables = connection.getMetaData().getTables(null, null, null, new String[] { "TABLE" });
-		while (tables.next()) {
-			String schema = tables.getString("TABLE_SCHEM");
+        ResultSet tables = connection.getMetaData().getTables(null, null, null, new String[]{"TABLE"});
+        while (tables.next()) {
+            String schema = tables.getString("TABLE_SCHEM");
             String tableName = tables.getString("TABLE_NAME");
             String tableNameFull = (isBlank(schema) ? "" : schema + ".") + tableName;
 
@@ -339,54 +339,57 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 
             String sql = "DROP TABLE " + tableNameFull;
             execute(stmt, sql);
-		}
+        }
 
-		ResultSet schemas = connection.getMetaData().getSchemas();
-		while (schemas.next()) {
-			String schem = schemas.getString("TABLE_SCHEM");
-			if (schem.startsWith("SCHEMA")) {
-				execute(stmt, "DROP SCHEMA " + schem + " RESTRICT");
-			}
-		}
-	}
+        ResultSet schemas = connection.getMetaData().getSchemas();
+        while (schemas.next()) {
+            String schem = schemas.getString("TABLE_SCHEM");
+            if (schem.startsWith("SCHEMA")) {
+                execute(stmt, "DROP SCHEMA " + schem + " RESTRICT");
+            }
+        }
+    }
 
     private void execute(Statement stmt, String sql) throws SQLException {
         stmt.execute(sql);
     }
 
     private void verifyResult(File map, File mapFileCopy) {
-		try {
-			FileReader control = new FileReader(map.getAbsolutePath() + "-result");
-			FileReader test = new FileReader(mapFileCopy);
+        try {
+            FileReader control = new FileReader(map.getAbsolutePath() + "-result");
+            FileReader test = new FileReader(mapFileCopy);
 
             Diff prototype = new Diff(control, test);
             prototype.overrideElementQualifier(new ElementNameAndAttributeQualifier());
             DetailedDiff diff = new DetailedDiff(prototype);
 
-			if (!diff.similar()) {
-				fail(diff.toString());
-			}
+            if (!diff.similar()) {
+                fail(diff.toString());
+            }
 
-		} catch (SAXException e) {
-			e.printStackTrace();
-			fail();
-		} catch (IOException e) {
-			e.printStackTrace();
-			fail();
-		}
-	}
+        } catch (SAXException e) {
+            e.printStackTrace();
+            fail();
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail();
+        }
+    }
 
-	private void prepareDatabase(String sqlFile, DbImportConfiguration dbImportConfiguration) throws Exception {
+    private void prepareDatabase(String sqlFile, DbImportConfiguration dbImportConfiguration) throws Exception {
 
-		URL sqlUrl = ResourceUtil.getResource(getClass(), "dbimport/" + sqlFile + ".sql");
-		assertNotNull(sqlUrl);
+        URL dbUrl = Objects.requireNonNull(ResourceUtil.getResource(getClass(), "dbimport/" + sqlFile + ".sql"));
 
-		Class.forName(dbImportConfiguration.getDriver()).newInstance();
-		// Get a connection
-		Statement stmt = DriverManager.getConnection(dbImportConfiguration.getUrl()).createStatement();
+        // TODO: refactor to common DB management code... E.g. bootique-jdbc-test?
 
-		for (String sql : SQLReader.statements(sqlUrl, ";")) {
-			stmt.execute(sql);
-		}
-	}
+        Class.forName(dbImportConfiguration.getDriver()).newInstance();
+
+        try (Connection connection = DriverManager.getConnection(dbImportConfiguration.getUrl())) {
+            try (Statement stmt = connection.createStatement();) {
+                for (String sql : SQLReader.statements(dbUrl, ";")) {
+                    stmt.execute(sql);
+                }
+            }
+        }
+    }
 }
