@@ -16,10 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.reverse.db;
+package org.apache.cayenne.tools.dbimport;
 
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -30,8 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class represent ObjEntity that may be optimized using flattened relationships
- * as many to many table
+ * An ObjEntity that may be removed as a result of flattenning relationships.
  */
 class ManyToManyCandidateEntity {
 

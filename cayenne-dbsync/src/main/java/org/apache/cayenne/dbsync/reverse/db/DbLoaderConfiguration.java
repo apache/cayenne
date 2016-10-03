@@ -28,15 +28,6 @@ import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 public class DbLoaderConfiguration {
 
 
-    private String genericClassName;
-
-    /**
-     * Java class implementing org.apache.cayenne.map.naming.NamingStrategy.
-     * This is used to specify how ObjEntities will be mapped from the imported
-     * DB schema.
-     */
-    private String namingStrategy;
-
     private Boolean skipRelationshipsLoading;
 
     private Boolean skipPrimaryKeyLoading;
@@ -45,34 +36,12 @@ public class DbLoaderConfiguration {
 
     private FiltersConfig filtersConfig;
 
-    /**
-     * Returns a name of a generic class that should be used for all ObjEntities. The most common generic class is
-     * {@link org.apache.cayenne.CayenneDataObject}. If generic class name is
-     * null (which is the default), DbLoader will assign each entity a unique
-     * class name derived from the table name.
-     */
-    public String getGenericClassName() {
-        return genericClassName;
-    }
-
-    public void setGenericClassName(String genericClassName) {
-        this.genericClassName = genericClassName;
-    }
-
     public String[] getTableTypes() {
         return tableTypes;
     }
 
     public void setTableTypes(String[] tableTypes) {
         this.tableTypes = tableTypes;
-    }
-
-    public String getNamingStrategy() {
-        return namingStrategy;
-    }
-
-    public void setNamingStrategy(String namingStrategy) {
-        this.namingStrategy = namingStrategy;
     }
 
     public FiltersConfig getFiltersConfig() {
@@ -99,16 +68,16 @@ public class DbLoaderConfiguration {
         this.skipRelationshipsLoading = skipRelationshipsLoading;
     }
 
-    public void setSkipPrimaryKeyLoading(Boolean skipPrimaryKeyLoading) {
-        this.skipPrimaryKeyLoading = skipPrimaryKeyLoading;
-    }
-
     public boolean getSkipPrimaryKeyLoading() {
         return skipPrimaryKeyLoading;
     }
 
     public boolean isSkipPrimaryKeyLoading() {
         return skipPrimaryKeyLoading != null && skipPrimaryKeyLoading;
+    }
+
+    public void setSkipPrimaryKeyLoading(Boolean skipPrimaryKeyLoading) {
+        this.skipPrimaryKeyLoading = skipPrimaryKeyLoading;
     }
 
     @Override

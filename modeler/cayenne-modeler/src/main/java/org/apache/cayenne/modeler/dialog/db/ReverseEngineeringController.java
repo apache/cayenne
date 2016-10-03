@@ -23,6 +23,7 @@ import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.FiltersConfigBuilder;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.db.model.DBModel;
@@ -111,7 +112,9 @@ public class ReverseEngineeringController extends CayenneController {
 
             try(Connection connection = dataSource.getConnection()) {
                 DbLoader dbLoader = new ModelerDbLoader(this, treeEditor, connection);
-                dbLoader.load(dbLoaderConfiguration);
+
+                // TODO: counterintuitive... we never use the DataMap that we loaded...
+                dbLoader.load(new DataMap(), dbLoaderConfiguration);
             }
 
             String mapName = projectController.getCurrentDataMap().getName();

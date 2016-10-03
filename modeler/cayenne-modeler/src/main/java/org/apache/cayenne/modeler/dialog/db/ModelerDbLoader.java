@@ -62,16 +62,15 @@ class ModelerDbLoader extends DbLoader {
     }
 
     @Override
-    public DataMap load(DbLoaderConfiguration config) throws SQLException {
-        DataMap dataMap = new DataMap();
+    public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
         Map<String, Procedure> procedureMap = loadProcedures(dataMap, config);
         load(dataMap, config);
         addProcedures(procedureMap);
-        return dataMap;
     }
 
     @Override
-    public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
+    protected void loadDbEntities(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
+
         LOGGER.info("Schema loading...");
 
         String[] types = getTableTypes(config);

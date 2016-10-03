@@ -107,13 +107,13 @@ public abstract class MergeCase extends DbSyncCase {
         DbLoaderConfiguration loaderConfiguration = new DbLoaderConfiguration();
         loaderConfiguration.setFiltersConfig(filters);
 
-        DataMap dbImport;
+        DataMap dbImport = new DataMap();
         try (Connection conn = node.getDataSource().getConnection();) {
-            dbImport = new DbLoader(conn,
+            new DbLoader(conn,
                     node.getAdapter(),
                     new LoggingDbLoaderDelegate(LogFactory.getLog(DbLoader.class)),
                     new DefaultObjectNameGenerator())
-                    .load(loaderConfiguration);
+                    .load(dbImport, loaderConfiguration);
 
         } catch (SQLException e) {
             throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);

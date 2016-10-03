@@ -176,15 +176,15 @@ public class MergerOptions extends CayenneController {
             DbLoaderConfiguration config = new DbLoaderConfiguration();
             config.setFiltersConfig(filters);
 
-            DataSource dataSource  = connectionInfo.makeDataSource(getApplication().getClassLoadingService());
+            DataSource dataSource = connectionInfo.makeDataSource(getApplication().getClassLoadingService());
 
-            DataMap dbImport;
+            DataMap dbImport = new DataMap();
             try (Connection conn = dataSource.getConnection();) {
-                dbImport =  new DbLoader(conn,
+                new DbLoader(conn,
                         adapter,
                         new LoggingDbLoaderDelegate(LogFactory.getLog(DbLoader.class)),
                         new DefaultObjectNameGenerator())
-                        .load(config);
+                        .load(dbImport, config);
 
             } catch (SQLException e) {
                 throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);

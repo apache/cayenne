@@ -103,7 +103,9 @@ public class ModelerDbImportAction implements DbImportAction {
 
             @Override
             protected DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
-               return dbLoaderHelper.getLoader().load(config.getDbLoaderConfig());
+                DataMap dataMap = new DataMap();
+                dbLoaderHelper.getLoader().load(dataMap, config.getDbLoaderConfig());
+                return dataMap;
             }
         }.execute(config);
     }

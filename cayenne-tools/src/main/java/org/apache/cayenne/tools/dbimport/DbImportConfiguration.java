@@ -72,6 +72,7 @@ public class DbImportConfiguration {
     private String adapter;
     private boolean usePrimitives;
     private Log logger;
+    private String namingStrategy;
 
     public Log getLogger() {
         return logger;
@@ -98,11 +99,11 @@ public class DbImportConfiguration {
     }
 
     public String getNamingStrategy() {
-        return dbLoaderConfiguration.getNamingStrategy();
+        return namingStrategy;
     }
 
     public void setNamingStrategy(String namingStrategy) {
-        dbLoaderConfiguration.setNamingStrategy(namingStrategy);
+        this.namingStrategy = namingStrategy;
     }
 
     public String getAdapter() {

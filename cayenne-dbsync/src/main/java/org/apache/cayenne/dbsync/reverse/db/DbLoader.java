@@ -1,21 +1,21 @@
-/*****************************************************************
- *   Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ *    or more contributor license agreements.  See the NOTICE file
+ *    distributed with this work for additional information
+ *    regarding copyright ownership.  The ASF licenses this file
+ *    to you under the Apache License, Version 2.0 (the
+ *    "License"); you may not use this file except in compliance
+ *    with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- ****************************************************************/
+ *    Unless required by applicable law or agreed to in writing,
+ *    software distributed under the License is distributed on an
+ *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *    KIND, either express or implied.  See the License for the
+ *    specific language governing permissions and limitations
+ *    under the License.
+ */
 package org.apache.cayenne.dbsync.reverse.db;
 
 import org.apache.cayenne.dba.DbAdapter;
@@ -44,9 +44,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -85,74 +83,6 @@ public class DbLoader {
         }
 
         return strings;
-    }
-
-    private static Collection<ObjEntity> loadObjEntities(
-            DataMap map,
-            DbLoaderConfiguration config,
-            Collection<DbEntity> entities,
-            ObjectNameGenerator nameGenerator) {
-
-        if (entities.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        Collection<ObjEntity> loadedEntities = new ArrayList<>(entities.size());
-
-        // doLoad empty ObjEntities for all the tables
-        for (DbEntity dbEntity : entities) {
-
-            // check if there are existing entities
-
-            // TODO: performance. This is an O(n^2) search and it shows on
-            // YourKit profiles. Pre-cache mapped entities perhaps (?)
-            Collection<ObjEntity> existing = map.getMappedEntities(dbEntity);
-            if (!existing.isEmpty()) {
-                loadedEntities.addAll(existing);
-                continue;
-            }
-
-            ObjEntity objEntity = new ObjEntity();
-            objEntity.setName(NameBuilder
-                    .builder(objEntity, map)
-                    .baseName(nameGenerator.objEntityName(dbEntity))
-                    .name());
-
-            objEntity.setDbEntity(dbEntity);
-            objEntity.setClassName(config.getGenericClassName() != null ? config.getGenericClassName() : map
-                    .getNameWithDefaultPackage(objEntity.getName()));
-
-            map.addObjEntity(objEntity);
-            loadedEntities.add(objEntity);
-        }
-
-        return loadedEntities;
-    }
-
-    /**
-     * Flattens many-to-many relationships in the generated model.
-     */
-    public static void flattenManyToManyRelationships(DataMap map, Collection<ObjEntity> loadedObjEntities,
-                                                      ObjectNameGenerator objectNameGenerator) {
-        if (loadedObjEntities.isEmpty()) {
-            return;
-        }
-        Collection<ObjEntity> entitiesForDelete = new LinkedList<>();
-
-        for (ObjEntity curEntity : loadedObjEntities) {
-            ManyToManyCandidateEntity entity = ManyToManyCandidateEntity.build(curEntity);
-
-            if (entity != null) {
-                entity.optimizeRelationships(objectNameGenerator);
-                entitiesForDelete.add(curEntity);
-            }
-        }
-
-        // remove needed entities
-        for (ObjEntity curDeleteEntity : entitiesForDelete) {
-            map.removeObjEntity(curDeleteEntity.getName(), true);
-        }
-        loadedObjEntities.removeAll(entitiesForDelete);
     }
 
     private static int getDirection(short type) {
@@ -442,13 +372,18 @@ public class DbLoader {
     }
 
     /**
-     * Performs database reverse engineering based on the specified config and
-     * fills the specified DataMap object with DB and object mapping info.
+     * Performs database reverse engineering to match the specified catalog,
+     * schema, table name and table type patterns and fills the specified
+     * DataMap object with DB and object mapping info.
      *
      * @since 4.0
      */
     public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
-        LOGGER.info("Schema loading...");
+        loadDbEntities(dataMap, config);
+        loadProcedures(dataMap, config);
+    }
+
+    protected void loadDbEntities(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
 
         String[] types = getTableTypes(config);
 
@@ -469,21 +404,6 @@ public class DbLoader {
                 new DbAttributesPerSchemaLoader(catalog, schema, getMetaData(), adapter, filter));
     }
 
-    /**
-     * Performs database reverse engineering to match the specified catalog,
-     * schema, table name and table type patterns and fills the specified
-     * DataMap object with DB and object mapping info.
-     *
-     * @since 4.0
-     */
-    public DataMap load(DbLoaderConfiguration config) throws SQLException {
-
-        DataMap dataMap = new DataMap();
-        load(dataMap, config);
-        loadProcedures(dataMap, config);
-
-        return dataMap;
-    }
 
     /**
      * Loads database stored procedures into the DataMap.

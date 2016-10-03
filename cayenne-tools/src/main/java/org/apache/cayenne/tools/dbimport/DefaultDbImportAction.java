@@ -283,7 +283,7 @@ public class DefaultDbImportAction implements DbImportAction {
             logger.info("Migration Complete Successfully.");
         }
 
-        DbLoader.flattenManyToManyRelationships(targetDataMap, loadedObjEntities, nameGenerator);
+        flattenManyToManyRelationships(targetDataMap, loadedObjEntities, nameGenerator);
         relationshipsSanity(targetDataMap);
         return true;
     }
@@ -299,5 +299,31 @@ public class DefaultDbImportAction implements DbImportAction {
         DbLoader loader = config.createLoader(adapter, connection, config.createLoaderDelegate());
         loader.load(dataMap, config.getDbLoaderConfig());
         return dataMap;
+    }
+
+    /**
+     * Flattens many-to-many relationships in the generated model.
+     */
+    protected static void flattenManyToManyRelationships(DataMap map, Collection<ObjEntity> loadedObjEntities,
+                                                      ObjectNameGenerator objectNameGenerator) {
+        if (loadedObjEntities.isEmpty()) {
+            return;
+        }
+        Collection<ObjEntity> entitiesForDelete = new LinkedList<>();
+
+        for (ObjEntity curEntity : loadedObjEntities) {
+            ManyToManyCandidateEntity entity = ManyToManyCandidateEntity.build(curEntity);
+
+            if (entity != null) {
+                entity.optimizeRelationships(objectNameGenerator);
+                entitiesForDelete.add(curEntity);
+            }
+        }
+
+        // remove needed entities
+        for (ObjEntity curDeleteEntity : entitiesForDelete) {
+            map.removeObjEntity(curDeleteEntity.getName(), true);
+        }
+        loadedObjEntities.removeAll(entitiesForDelete);
     }
 }
