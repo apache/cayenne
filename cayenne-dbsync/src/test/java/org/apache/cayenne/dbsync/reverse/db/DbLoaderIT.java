@@ -22,7 +22,6 @@ package org.apache.cayenne.dbsync.reverse.db;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
@@ -93,11 +92,7 @@ public class DbLoaderIT extends ServerCase {
     }
 
     private DbLoader createDbLoader(boolean meaningfulPK, boolean meaningfulFK) {
-        EntityMergeSupport emSupport = new EntityMergeSupport(new DefaultObjectNameGenerator(),
-                !meaningfulPK,
-                !meaningfulFK);
-
-        return new DbLoader(connection, adapter, null, emSupport);
+        return new DbLoader(connection, adapter, null, new DefaultObjectNameGenerator());
     }
 
     @After
@@ -159,27 +154,6 @@ public class DbLoaderIT extends ServerCase {
 
         assertNotNull(tables);
         assertTrue(tables.isEmpty());
-    }
-
-    @Test
-    public void testLoadWithMeaningfulPK() throws Exception {
-
-        DbLoader loader = createDbLoader(true, false);
-
-        DataMap map = new DataMap();
-        String[] tableLabel = {adapter.tableTypeForTable()};
-
-        List<DbEntity> entities = loader
-                .createTableLoader(null, null, TableFilter.everything())
-                .loadDbEntities(map, CONFIG, tableLabel);
-
-        loader.loadObjEntities(map, CONFIG, entities);
-
-        ObjEntity artist = map.getObjEntity("Artist");
-        assertNotNull(artist);
-
-        ObjAttribute id = artist.getAttribute("artistId");
-        assertNotNull(id);
     }
 
     /**
@@ -244,14 +218,8 @@ public class DbLoaderIT extends ServerCase {
             }
         }
 
-        // *** TESTING THIS ***
-        loader.loadObjEntities(map, CONFIG, entities);
-
-        assertObjEntities(map);
-
         // now when the map is loaded, test
-        // various things
-        // selectively check how different types were processed
+        // various things selectively check how different types were processed
         if (accessStackAdapter.supportsColumnTypeReengineering()) {
             checkTypes(map);
         }

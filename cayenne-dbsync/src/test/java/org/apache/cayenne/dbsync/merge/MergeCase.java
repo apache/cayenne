@@ -112,7 +112,7 @@ public abstract class MergeCase extends DbSyncCase {
             dbImport = new DbLoader(conn,
                     node.getAdapter(),
                     new LoggingDbLoaderDelegate(LogFactory.getLog(DbLoader.class)),
-                    new EntityMergeSupport(new DefaultObjectNameGenerator(), true, true))
+                    new DefaultObjectNameGenerator())
                     .load(loaderConfiguration);
 
         } catch (SQLException e) {

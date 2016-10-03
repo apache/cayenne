@@ -23,12 +23,9 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.DefaultModelMergeDelegate;
-import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
-import org.apache.cayenne.dbsync.reverse.NameFilter;
-import org.apache.cayenne.dbsync.reverse.NamePatternMatcher;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderDelegate;
@@ -37,7 +34,6 @@ import org.apache.cayenne.dbsync.reverse.db.LoggingDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.commons.logging.Log;
@@ -140,20 +136,7 @@ public class DbImportConfiguration {
 
     public DbLoader createLoader(DbAdapter adapter, Connection connection, DbLoaderDelegate loaderDelegate)
             throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-
-        final NameFilter meaningfulPkFilter = NamePatternMatcher.build(logger, getMeaningfulPkTables(),
-                getMeaningfulPkTables() != null ? null : "*");
-
-        EntityMergeSupport emSupport = new EntityMergeSupport(getNameGenerator(), true, true) {
-
-            @Override
-            protected boolean removePK(DbEntity dbEntity) {
-                return !meaningfulPkFilter.isIncluded(dbEntity.getName());
-            }
-        };
-
-        emSupport.setUsingPrimitives(isUsePrimitives());
-        return new DbLoader(connection, adapter, loaderDelegate, emSupport);
+        return new DbLoader(connection, adapter, loaderDelegate, getNameGenerator());
     }
 
     public ObjectNameGenerator getNameGenerator() {

@@ -18,15 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.db;
 
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DataMap;
@@ -36,6 +27,15 @@ import org.apache.cayenne.map.DetectedDbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @since 4.0
@@ -70,7 +70,6 @@ public class DbTableLoader {
 	 *
 	 * @param types
 	 *            The types of table names to retrieve, null returns all types.
-	 * @return
 	 * @since 4.0
 	 */
 	public List<DetectedDbEntity> getDbEntities(TableFilter filters, String[] types) throws SQLException {
@@ -130,7 +129,7 @@ public class DbTableLoader {
 
 		List<DetectedDbEntity> tables = getDbEntities(config.getFiltersConfig().tableFilter(catalog, schema), types);
 
-		List<DbEntity> dbEntities = new ArrayList<DbEntity>();
+		List<DbEntity> dbEntities = new ArrayList<>();
 		for (DbEntity dbEntity : tables) {
 			DbEntity oldEnt = map.getDbEntity(dbEntity.getName());
 			if (oldEnt != null) {

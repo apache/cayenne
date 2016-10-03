@@ -20,7 +20,6 @@ package org.apache.cayenne.dbsync.reverse.db;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
@@ -55,8 +54,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Performs reverse engineering of the database. It can create
- * DataMaps using database meta data obtained via JDBC driver.
+ * Performs reverse engineering of the database, loading DB metadata in provided DataMap.
  *
  * @since 4.0
  */
@@ -69,14 +67,13 @@ public class DbLoader {
     private final Connection connection;
     private final DbAdapter adapter;
     private final DbLoaderDelegate delegate;
-
-    private EntityMergeSupport entityMergeSupport;
+    private ObjectNameGenerator nameGenerator;
     private DatabaseMetaData metaData;
 
-    public DbLoader(Connection connection, DbAdapter adapter, DbLoaderDelegate delegate, EntityMergeSupport entityMergeSupport) {
+    public DbLoader(Connection connection, DbAdapter adapter, DbLoaderDelegate delegate, ObjectNameGenerator nameGenerator) {
         this.adapter = Objects.requireNonNull(adapter);
         this.connection = Objects.requireNonNull(connection);
-        this.entityMergeSupport = Objects.requireNonNull(entityMergeSupport);
+        this.nameGenerator = Objects.requireNonNull(nameGenerator);
         this.delegate = delegate == null ? new DefaultDbLoaderDelegate() : delegate;
     }
 
@@ -224,20 +221,6 @@ public class DbLoader {
         }
     }
 
-    /**
-     * Creates an ObjEntity for each DbEntity in the map.
-     */
-    Collection<ObjEntity> loadObjEntities(DataMap map, DbLoaderConfiguration config,
-                                          Collection<DbEntity> entities) {
-        Collection<ObjEntity> loadedEntities = DbLoader
-                .loadObjEntities(map, config, entities, entityMergeSupport.getNameGenerator());
-
-        entityMergeSupport.synchronizeWithDbEntities(loadedEntities);
-
-        return loadedEntities;
-    }
-
-
     protected void loadDbRelationships(DbLoaderConfiguration config, String catalog, String schema,
                                        List<DbEntity> tables) throws SQLException {
         if (config.isSkipRelationshipsLoading()) {
@@ -249,8 +232,6 @@ public class DbLoader {
         for (DbEntity table : tables) {
             tablesMap.put(table.getName(), table);
         }
-
-        ObjectNameGenerator nameGenerator = entityMergeSupport.getNameGenerator();
 
         Map<String, Set<ExportedKey>> keys = loadExportedKeys(config, catalog, schema, tablesMap);
         for (Map.Entry<String, Set<ExportedKey>> entry : keys.entrySet()) {
@@ -473,28 +454,19 @@ public class DbLoader {
 
         for (CatalogFilter catalog : config.getFiltersConfig().catalogs) {
             for (SchemaFilter schema : catalog.schemas) {
-
                 List<DbEntity> entities = createTableLoader(catalog.name, schema.name, schema.tables).loadDbEntities(
                         dataMap, config, types);
-
-                if (entities != null) {
-                    loadDbRelationships(config, catalog.name, schema.name, entities);
-
-                    prepareObjLayer(dataMap, config, entities);
-                }
+                loadDbRelationships(config, catalog.name, schema.name, entities);
             }
         }
     }
 
     protected DbTableLoader createTableLoader(String catalog, String schema, TableFilter filter) throws SQLException {
-        return new DbTableLoader(catalog, schema, getMetaData(), delegate, new DbAttributesPerSchemaLoader(catalog,
-                schema, getMetaData(), adapter, filter));
-    }
-
-    private void prepareObjLayer(DataMap dataMap, DbLoaderConfiguration config, Collection<DbEntity> entities) {
-        Collection<ObjEntity> loadedObjEntities = loadObjEntities(dataMap, config, entities);
-        flattenManyToManyRelationships(dataMap, loadedObjEntities, entityMergeSupport.getNameGenerator());
-        fireObjEntitiesAddedEvents(loadedObjEntities);
+        return new DbTableLoader(catalog,
+                schema,
+                getMetaData(),
+                delegate,
+                new DbAttributesPerSchemaLoader(catalog, schema, getMetaData(), adapter, filter));
     }
 
     /**

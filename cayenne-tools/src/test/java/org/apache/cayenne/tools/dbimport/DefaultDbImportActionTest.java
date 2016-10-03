@@ -29,15 +29,15 @@ import org.apache.cayenne.dbsync.merge.AddRelationshipToDb;
 import org.apache.cayenne.dbsync.merge.CreateTableToDb;
 import org.apache.cayenne.dbsync.merge.CreateTableToModel;
 import org.apache.cayenne.dbsync.merge.DefaultModelMergeDelegate;
-import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
-import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.MergerToken;
 import org.apache.cayenne.dbsync.merge.builders.DataMapBuilder;
 import org.apache.cayenne.dbsync.merge.factory.DefaultMergerTokenFactory;
+import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderDelegate;
-import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
@@ -99,20 +99,20 @@ public class DefaultDbImportActionTest {
     private DbAdapter mockAdapter;
     private Connection mockConnection;
     private DbLoaderDelegate mockDelegate;
-    private EntityMergeSupport mockEmSupport;
+    private ObjectNameGenerator mockNameGenerator;
 
     @Before
     public void before() {
         mockAdapter = mock(DbAdapter.class);
         mockConnection = mock(Connection.class);
         mockDelegate = mock(DbLoaderDelegate.class);
-        mockEmSupport = mock(EntityMergeSupport.class);
+        mockNameGenerator = mock(ObjectNameGenerator.class);
     }
 
     @Test
     public void testNewDataMapImport() throws Exception {
 
-        DbLoader dbLoader = new DbLoader(mockConnection, mockAdapter, mockDelegate, mockEmSupport) {
+        DbLoader dbLoader = new DbLoader(mockConnection, mockAdapter, mockDelegate, mockNameGenerator) {
             @Override
             public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
                 new DataMapBuilder(dataMap).withDbEntities(2).build();
@@ -146,7 +146,7 @@ public class DefaultDbImportActionTest {
 
     @Test
     public void testImportWithFieldChanged() throws Exception {
-        DbLoader dbLoader = new DbLoader(mockConnection, mockAdapter, mockDelegate, mockEmSupport) {
+        DbLoader dbLoader = new DbLoader(mockConnection, mockAdapter, mockDelegate, mockNameGenerator) {
             @Override
             public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
                 new DataMapBuilder(dataMap).with(
@@ -211,7 +211,7 @@ public class DefaultDbImportActionTest {
 
     @Test
     public void testImportWithoutChanges() throws Exception {
-        DbLoader dbLoader = new DbLoader(mockConnection, mockAdapter, mockDelegate, mockEmSupport) {
+        DbLoader dbLoader = new DbLoader(mockConnection, mockAdapter, mockDelegate, mockNameGenerator) {
             @Override
             public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
                 new DataMapBuilder(dataMap).with(

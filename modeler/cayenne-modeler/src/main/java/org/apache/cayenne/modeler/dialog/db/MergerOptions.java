@@ -25,7 +25,6 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dbsync.merge.AbstractToDbToken;
 import org.apache.cayenne.dbsync.merge.DbMerger;
-import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.dbsync.merge.MergeDirection;
 import org.apache.cayenne.dbsync.merge.MergerContext;
 import org.apache.cayenne.dbsync.merge.MergerToken;
@@ -184,7 +183,7 @@ public class MergerOptions extends CayenneController {
                 dbImport =  new DbLoader(conn,
                         adapter,
                         new LoggingDbLoaderDelegate(LogFactory.getLog(DbLoader.class)),
-                        new EntityMergeSupport(new DefaultObjectNameGenerator(), true, true))
+                        new DefaultObjectNameGenerator())
                         .load(config);
 
             } catch (SQLException e) {
