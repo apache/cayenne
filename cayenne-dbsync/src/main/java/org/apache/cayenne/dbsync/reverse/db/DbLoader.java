@@ -22,12 +22,11 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.SchemaFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
-import org.apache.cayenne.dbsync.naming.LegacyObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -51,6 +50,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -70,38 +70,18 @@ public class DbLoader {
     private final DbAdapter adapter;
     private final DbLoaderDelegate delegate;
 
-    private boolean creatingMeaningfulPK;
-
-    /**
-     * Strategy for choosing names for entities, attributes and relationships
-     */
-    private ObjectNameGenerator nameGenerator;
-
+    private EntityMergeSupport entityMergeSupport;
     private DatabaseMetaData metaData;
 
-
-    /**
-     * Creates new DbLoader.
-     */
-    public DbLoader(Connection connection, DbAdapter adapter, DbLoaderDelegate delegate) {
-        this(connection, adapter, delegate, new LegacyObjectNameGenerator());
-    }
-
-    /**
-     * Creates new DbLoader with specified naming strategy.
-     *
-     * @since 3.0
-     */
-    public DbLoader(Connection connection, DbAdapter adapter, DbLoaderDelegate delegate, ObjectNameGenerator strategy) {
-        this.adapter = adapter;
-        this.connection = connection;
+    public DbLoader(Connection connection, DbAdapter adapter, DbLoaderDelegate delegate, EntityMergeSupport entityMergeSupport) {
+        this.adapter = Objects.requireNonNull(adapter);
+        this.connection = Objects.requireNonNull(connection);
+        this.entityMergeSupport = Objects.requireNonNull(entityMergeSupport);
         this.delegate = delegate == null ? new DefaultDbLoaderDelegate() : delegate;
-
-        setNameGenerator(strategy);
     }
 
     private static List<String> getStrings(ResultSet rs) throws SQLException {
-        List<String> strings = new ArrayList<String>();
+        List<String> strings = new ArrayList<>();
 
         while (rs.next()) {
             strings.add(rs.getString(1));
@@ -110,8 +90,12 @@ public class DbLoader {
         return strings;
     }
 
-    private static Collection<ObjEntity> loadObjEntities(DataMap map, DbLoaderConfiguration config,
-                                                         Collection<DbEntity> entities, ObjectNameGenerator nameGenerator) {
+    private static Collection<ObjEntity> loadObjEntities(
+            DataMap map,
+            DbLoaderConfiguration config,
+            Collection<DbEntity> entities,
+            ObjectNameGenerator nameGenerator) {
+
         if (entities.isEmpty()) {
             return Collections.emptyList();
         }
@@ -156,7 +140,7 @@ public class DbLoader {
         if (loadedObjEntities.isEmpty()) {
             return;
         }
-        Collection<ObjEntity> entitiesForDelete = new LinkedList<ObjEntity>();
+        Collection<ObjEntity> entitiesForDelete = new LinkedList<>();
 
         for (ObjEntity curEntity : loadedObjEntities) {
             ManyToManyCandidateEntity entity = ManyToManyCandidateEntity.build(curEntity);
@@ -218,13 +202,6 @@ public class DbLoader {
     }
 
     /**
-     * @since 3.0
-     */
-    public void setCreatingMeaningfulPK(boolean creatingMeaningfulPK) {
-        this.creatingMeaningfulPK = creatingMeaningfulPK;
-    }
-
-    /**
      * Retrieves catalogs for the database associated with this DbLoader.
      *
      * @return List with the catalog names, empty Array if none found.
@@ -252,19 +229,14 @@ public class DbLoader {
      */
     Collection<ObjEntity> loadObjEntities(DataMap map, DbLoaderConfiguration config,
                                           Collection<DbEntity> entities) {
-        Collection<ObjEntity> loadedEntities = DbLoader.loadObjEntities(map, config, entities, nameGenerator);
+        Collection<ObjEntity> loadedEntities = DbLoader
+                .loadObjEntities(map, config, entities, entityMergeSupport.getNameGenerator());
 
-        createEntityMerger(map).synchronizeWithDbEntities(loadedEntities);
+        entityMergeSupport.synchronizeWithDbEntities(loadedEntities);
 
         return loadedEntities;
     }
 
-    /**
-     * @since 4.0
-     */
-    protected EntityMergeSupport createEntityMerger(DataMap map) {
-        return new EntityMergeSupport(map, nameGenerator, !creatingMeaningfulPK);
-    }
 
     protected void loadDbRelationships(DbLoaderConfiguration config, String catalog, String schema,
                                        List<DbEntity> tables) throws SQLException {
@@ -277,6 +249,8 @@ public class DbLoader {
         for (DbEntity table : tables) {
             tablesMap.put(table.getName(), table);
         }
+
+        ObjectNameGenerator nameGenerator = entityMergeSupport.getNameGenerator();
 
         Map<String, Set<ExportedKey>> keys = loadExportedKeys(config, catalog, schema, tablesMap);
         for (Map.Entry<String, Set<ExportedKey>> entry : keys.entrySet()) {
@@ -352,9 +326,9 @@ public class DbLoader {
 
             // TODO: can we avoid resetting the name twice? Do we need a placeholder name above?
             forwardRelationship.setName(NameBuilder
-                            .builder(forwardRelationship, pkEntity)
-                            .baseName(nameGenerator.dbRelationshipName(key, !isOneToOne))
-                            .name());
+                    .builder(forwardRelationship, pkEntity)
+                    .baseName(nameGenerator.dbRelationshipName(key, !isOneToOne))
+                    .name());
 
             if (delegate.dbRelationshipLoaded(fkEntity, reverseRelationship)) {
                 fkEntity.addRelationship(reverseRelationship);
@@ -519,7 +493,7 @@ public class DbLoader {
 
     private void prepareObjLayer(DataMap dataMap, DbLoaderConfiguration config, Collection<DbEntity> entities) {
         Collection<ObjEntity> loadedObjEntities = loadObjEntities(dataMap, config, entities);
-        flattenManyToManyRelationships(dataMap, loadedObjEntities, nameGenerator);
+        flattenManyToManyRelationships(dataMap, loadedObjEntities, entityMergeSupport.getNameGenerator());
         fireObjEntitiesAddedEvents(loadedObjEntities);
     }
 
@@ -696,19 +670,5 @@ public class DbLoader {
             }
         }
         return procedures;
-    }
-
-    /**
-     * Sets new naming strategy for reverse engineering
-     *
-     * @since 3.0
-     */
-    public void setNameGenerator(ObjectNameGenerator strategy) {
-        if (strategy == null) {
-            LOGGER.warn("Attempt to set null into NameGenerator. LegacyObjectNameGenerator will be used.");
-            this.nameGenerator = new LegacyObjectNameGenerator();
-        } else {
-            this.nameGenerator = strategy;
-        }
     }
 }

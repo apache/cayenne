@@ -62,10 +62,11 @@ import java.util.List;
 public class DbLoaderHelper {
 
     // TODO: this is a temp hack... need to delegate to DbAdapter, or
-    // configurable in
-    // preferences...
+    // configurable in preferences...
     private static final Collection<String> EXCLUDED_TABLES = Arrays.asList("AUTO_PK_SUPPORT", "auto_pk_support");
-    private static Log logObj = LogFactory.getLog(DbLoaderHelper.class);
+
+    private static Log LOGGER = LogFactory.getLog(DbLoaderHelper.class);
+
     protected boolean stoppingReverseEngineering;
     protected boolean existingMap;
 
@@ -91,7 +92,7 @@ public class DbLoaderHelper {
         try {
             this.dbCatalog = connection.getCatalog();
         } catch (SQLException e) {
-            logObj.warn("Error getting catalog.", e);
+            LOGGER.warn("Error getting catalog.", e);
         }
         this.adapter = adapter;
         this.reverseEngineering = reverseEngineering;
@@ -105,7 +106,7 @@ public class DbLoaderHelper {
         try {
             this.dbCatalog = connection.getCatalog();
         } catch (SQLException e) {
-            logObj.warn("Error getting catalog.", e);
+            LOGGER.warn("Error getting catalog.", e);
         }
         try {
             this.loader = config.createLoader(adapter, connection, new LoaderDelegate());
@@ -152,15 +153,12 @@ public class DbLoaderHelper {
             return;
         }
 
-        this.loader.setCreatingMeaningfulPK(true);
-
         LongRunningTask loadDataMapTask = new LoadDataMapTask(Application.getFrame(), "Reengineering DB");
         loadDataMapTask.startAndWait();
-
     }
 
     protected void processException(final Throwable th, final String message) {
-        logObj.info("Exception on reverse engineering", Util.unwindException(th));
+        LOGGER.info("Exception on reverse engineering", Util.unwindException(th));
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
@@ -369,11 +367,11 @@ public class DbLoaderHelper {
             config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.build());
 
 
-            ModelerDbImportAction importAction = new ModelerDbImportAction(logObj, DbLoaderHelper.this);
+            ModelerDbImportAction importAction = new ModelerDbImportAction(LOGGER, DbLoaderHelper.this);
 
             // TODO: we can keep all these things in the Modeler Injector instead of creating a new one?
             // we already have CayenneDbSyncModule in there
-            Injector injector = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(logObj), new DbImportModule());
+            Injector injector = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(LOGGER), new DbImportModule());
             injector.injectMembers(importAction);
             try {
                 importAction.execute(config);

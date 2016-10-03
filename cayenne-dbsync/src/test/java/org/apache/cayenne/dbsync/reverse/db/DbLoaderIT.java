@@ -19,16 +19,22 @@
 
 package org.apache.cayenne.dbsync.reverse.db;
 
-import org.apache.cayenne.dbsync.reverse.db.DbLoader;
-import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
-import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
-import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
-import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
+import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
+import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.*;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.DetectedDbEntity;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -43,7 +49,11 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DbLoaderIT extends ServerCase {
@@ -60,8 +70,6 @@ public class DbLoaderIT extends ServerCase {
 
     @Inject
     private UnitDbAdapter accessStackAdapter;
-
-    private DbLoader loader;
 
     private Connection connection;
 
@@ -82,7 +90,14 @@ public class DbLoaderIT extends ServerCase {
     @Before
     public void before() throws Exception {
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();
-        this.loader = new DbLoader(connection, adapter, null);
+    }
+
+    private DbLoader createDbLoader(boolean meaningfulPK, boolean meaningfulFK) {
+        EntityMergeSupport emSupport = new EntityMergeSupport(new DefaultObjectNameGenerator(),
+                !meaningfulPK,
+                !meaningfulFK);
+
+        return new DbLoader(connection, adapter, null, emSupport);
     }
 
     @After
@@ -94,6 +109,8 @@ public class DbLoaderIT extends ServerCase {
     public void testGetTables() throws Exception {
 
         String tableLabel = adapter.tableTypeForTable();
+
+        DbLoader loader = createDbLoader(false, false);
 
         List<DetectedDbEntity> tables = loader.createTableLoader(null, null, TableFilter.everything())
                 .getDbEntities(TableFilter.everything(), new String[]{tableLabel});
@@ -115,6 +132,8 @@ public class DbLoaderIT extends ServerCase {
     @Test
     public void testGetTablesWithWrongCatalog() throws Exception {
 
+        DbLoader loader = createDbLoader(false, false);
+
         DbLoaderConfiguration config = new DbLoaderConfiguration();
         config.setFiltersConfig(
                 FiltersConfig.create("WRONG", null, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING));
@@ -128,6 +147,8 @@ public class DbLoaderIT extends ServerCase {
 
     @Test
     public void testGetTablesWithWrongSchema() throws Exception {
+
+        DbLoader loader = createDbLoader(false, false);
 
         DbLoaderConfiguration config = new DbLoaderConfiguration();
         config.setFiltersConfig(
@@ -143,10 +164,10 @@ public class DbLoaderIT extends ServerCase {
     @Test
     public void testLoadWithMeaningfulPK() throws Exception {
 
+        DbLoader loader = createDbLoader(true, false);
+
         DataMap map = new DataMap();
         String[] tableLabel = {adapter.tableTypeForTable()};
-
-        loader.setCreatingMeaningfulPK(true);
 
         List<DbEntity> entities = loader
                 .createTableLoader(null, null, TableFilter.everything())
@@ -168,6 +189,7 @@ public class DbLoaderIT extends ServerCase {
      */
     @Test
     public void testLoad() throws Exception {
+        DbLoader loader = createDbLoader(false, false);
 
         boolean supportsUnique = runtime.getDataDomain().getDataNodes().iterator().next().getAdapter()
                 .supportsUniqueConstraints();
@@ -223,7 +245,6 @@ public class DbLoaderIT extends ServerCase {
         }
 
         // *** TESTING THIS ***
-        loader.setCreatingMeaningfulPK(false);
         loader.loadObjEntities(map, CONFIG, entities);
 
         assertObjEntities(map);

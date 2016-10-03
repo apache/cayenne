@@ -135,9 +135,8 @@ public class MergerContext {
         }
 
         public Builder nameGenerator(ObjectNameGenerator nameGenerator) {
-            context.entityMergeSupport = new EntityMergeSupport(context.getDataMap(),
-                    Objects.requireNonNull(nameGenerator),
-                    true);  // should the last argument also be a part of the builder?
+            // should the last argument also be a part of the builder?
+            context.entityMergeSupport = new EntityMergeSupport(Objects.requireNonNull(nameGenerator), true, true);
             return this;
         }
 

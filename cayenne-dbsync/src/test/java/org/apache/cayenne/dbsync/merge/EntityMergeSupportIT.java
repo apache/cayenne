@@ -87,7 +87,7 @@ public class EntityMergeSupportIT extends MergeCase {
 		objEntity2.setDbEntity(dbEntity2);
 		map.addObjEntity(objEntity2);
 
-		assertTrue(new EntityMergeSupport(map, new DefaultObjectNameGenerator(), true)
+		assertTrue(new EntityMergeSupport(new DefaultObjectNameGenerator(), true, true)
 				.synchronizeWithDbEntities(Arrays.asList(objEntity1, objEntity2)));
 		assertNotNull(objEntity1.getAttribute("name"));
 		assertNotNull(objEntity1.getRelationship("rel1To2"));

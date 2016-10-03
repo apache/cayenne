@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.db;
 
+import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.db.DefaultDbLoaderDelegate;
@@ -52,7 +54,10 @@ class ModelerDbLoader extends DbLoader {
     private ReverseEngineeringController reverseEngineeringController;
 
     public ModelerDbLoader(ReverseEngineeringController reverseEngineeringController, TreeEditor treeEditor, Connection connection) {
-        super(connection, reverseEngineeringController.adapter, new DefaultDbLoaderDelegate());
+        super(connection,
+                reverseEngineeringController.adapter,
+                new DefaultDbLoaderDelegate(),
+                new EntityMergeSupport(new DefaultObjectNameGenerator(), true, true));
         this.treeEditor = treeEditor;
         this.reverseEngineeringController = reverseEngineeringController;
     }

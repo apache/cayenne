@@ -146,27 +146,16 @@ public class DbImportConfiguration {
         final NameFilter meaningfulPkFilter = NamePatternMatcher.build(logger, getMeaningfulPkTables(),
                 getMeaningfulPkTables() != null ? null : "*");
 
-        DbLoader loader = new DbLoader(connection, adapter, loaderDelegate) {
+        EntityMergeSupport emSupport = new EntityMergeSupport(getNameGenerator(), true, true) {
 
             @Override
-            protected EntityMergeSupport createEntityMerger(DataMap map) {
-                EntityMergeSupport emSupport = new EntityMergeSupport(map, DbImportConfiguration.this.getNameGenerator(), true) {
-
-                    @Override
-                    protected boolean removePK(DbEntity dbEntity) {
-                        return !meaningfulPkFilter.isIncluded(dbEntity.getName());
-                    }
-                };
-
-                emSupport.setUsePrimitives(DbImportConfiguration.this.isUsePrimitives());
-                return emSupport;
+            protected boolean removePK(DbEntity dbEntity) {
+                return !meaningfulPkFilter.isIncluded(dbEntity.getName());
             }
         };
 
-
-        loader.setNameGenerator(getNameGenerator());
-
-        return loader;
+        emSupport.setUsingPrimitives(isUsePrimitives());
+        return new DbLoader(connection, adapter, loaderDelegate, emSupport);
     }
 
     public ObjectNameGenerator getNameGenerator() {

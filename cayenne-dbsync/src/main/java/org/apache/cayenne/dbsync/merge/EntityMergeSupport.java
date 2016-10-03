@@ -48,7 +48,7 @@ import java.util.Map;
  */
 public class EntityMergeSupport {
 
-    private static final Log LOG = LogFactory.getLog(EntityMergeSupport.class);
+    private static final Log LOGGER = LogFactory.getLog(EntityMergeSupport.class);
 
     private static final Map<String, String> CLASS_TO_PRIMITIVE;
 
@@ -63,33 +63,29 @@ public class EntityMergeSupport {
         CLASS_TO_PRIMITIVE.put(Integer.class.getName(), "int");
     }
 
-    private final DataMap map;
-    /**
-     * Strategy for choosing names for entities, attributes and relationships
-     */
     private final ObjectNameGenerator nameGenerator;
-    /**
-     * Listeners of merge process.
-     */
-    private final List<EntityMergeListener> listeners = new ArrayList<EntityMergeListener>();
-    protected boolean removeMeaningfulFKs;
-    protected boolean removeMeaningfulPKs;
-    protected boolean usePrimitives;
-    
-    /**
-     * @since 3.0
-     */
-    public EntityMergeSupport(DataMap map, ObjectNameGenerator nameGenerator, boolean removeMeaningfulPKs) {
-        this.map = map;
-        this.nameGenerator = nameGenerator;
-        this.removeMeaningfulFKs = true;
-        this.removeMeaningfulPKs = removeMeaningfulPKs;
+    private final List<EntityMergeListener> listeners;
+    protected boolean removingMeaningfulFKs;
+    protected boolean removingMeaningfulPKs;
+    protected boolean usingPrimitives;
 
-        /**
-         * Adding a listener, so that all created ObjRelationships would have
-         * default delete rule
-         */
+    public EntityMergeSupport(ObjectNameGenerator nameGenerator, boolean removingMeaningfulPKs, boolean removingMeaningfulFKs) {
+        this.listeners = new ArrayList<>();
+        this.nameGenerator = nameGenerator;
+        this.removingMeaningfulFKs = removingMeaningfulFKs;
+        this.removingMeaningfulPKs = removingMeaningfulPKs;
+
+        // will ensure that all created ObjRelationships would have
+        // default delete rule
         addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
+    }
+
+    public boolean isRemovingMeaningfulFKs() {
+        return removingMeaningfulFKs;
+    }
+
+    public boolean isRemovingMeaningfulPKs() {
+        return removingMeaningfulPKs;
     }
 
     /**
@@ -97,7 +93,6 @@ public class EntityMergeSupport {
      * relationships based on the current state of its DbEntity.
      *
      * @return true if any ObjEntity has changed as a result of synchronization.
-     * @since 1.2 changed signature to use Collection instead of List.
      */
     public boolean synchronizeWithDbEntities(Iterable<ObjEntity> objEntities) {
         boolean changed = false;
@@ -114,14 +109,14 @@ public class EntityMergeSupport {
      * @since 4.0
      */
     protected boolean removePK(DbEntity dbEntity) {
-        return removeMeaningfulPKs;
+        return removingMeaningfulPKs;
     }
 
     /**
      * @since 4.0
      */
     protected boolean removeFK(DbEntity dbEntity) {
-        return removeMeaningfulFKs;
+        return removingMeaningfulFKs;
     }
 
     /**
@@ -143,17 +138,12 @@ public class EntityMergeSupport {
 
         boolean changed = false;
 
-        // synchronization on DataMap is some (weak) protection
-        // against simultaneous modification of the map (like double-clicking on sync button)
-        synchronized (map) {
-
-            if (removeFK(dbEntity)) {
-                changed = getRidOfAttributesThatAreNowSrcAttributesForRelationships(entity);
-            }
-
-            changed |= addMissingAttributes(entity);
-            changed |= addMissingRelationships(entity);
+        if (removeFK(dbEntity)) {
+            changed = getRidOfAttributesThatAreNowSrcAttributesForRelationships(entity);
         }
+
+        changed |= addMissingAttributes(entity);
+        changed |= addMissingRelationships(entity);
 
         return changed;
     }
@@ -249,15 +239,14 @@ public class EntityMergeSupport {
     }
 
     private void addMissingRelationship(ObjEntity entity, DbRelationship dbRelationship) {
+
+        // getting DataMap from DbRelationship's source entity. This is the only object in our arguments that
+        // is guaranteed to be a part of the map....
+        DataMap dataMap = dbRelationship.getSourceEntity().getDataMap();
+
         DbEntity targetEntity = dbRelationship.getTargetEntity();
-
-        Collection<ObjEntity> mappedObjEntities = map.getMappedEntities(targetEntity);
-        if (!mappedObjEntities.isEmpty()) {
-            for (Entity mappedTarget : mappedObjEntities) {
-                createObjRelationship(entity, dbRelationship, mappedTarget.getName());
-            }
-        } else {
-
+        Collection<ObjEntity> mappedObjEntities = dataMap.getMappedEntities(targetEntity);
+        if (mappedObjEntities.isEmpty()) {
             if (targetEntity == null) {
                 targetEntity = new DbEntity(dbRelationship.getTargetEntityName());
             }
@@ -266,9 +255,13 @@ public class EntityMergeSupport {
                 boolean needGeneratedEntity = createObjRelationship(entity, dbRelationship,
                         nameGenerator.objEntityName(targetEntity));
                 if (needGeneratedEntity) {
-                    LOG.warn("Can't find ObjEntity for " + dbRelationship.getTargetEntityName());
-                    LOG.warn("Db Relationship (" + dbRelationship + ") will have GUESSED Obj Relationship reflection. ");
+                    LOGGER.warn("Can't find ObjEntity for " + dbRelationship.getTargetEntityName());
+                    LOGGER.warn("Db Relationship (" + dbRelationship + ") will have GUESSED Obj Relationship reflection. ");
                 }
+            }
+        } else {
+            for (Entity mappedTarget : mappedObjEntities) {
+                createObjRelationship(entity, dbRelationship, mappedTarget.getName());
             }
         }
     }
@@ -281,7 +274,7 @@ public class EntityMergeSupport {
         oa.setEntity(entity);
 
         String type = TypesMapping.getJavaBySqlType(da.getType());
-        if (usePrimitives) {
+        if (usingPrimitives) {
             String primitive = CLASS_TO_PRIMITIVE.get(type);
             if (primitive != null) {
                 type = primitive;
@@ -313,7 +306,7 @@ public class EntityMergeSupport {
      * @since 1.2
      */
     public Collection<DbAttribute> getMeaningfulFKs(ObjEntity objEntity) {
-        List<DbAttribute> fks = new ArrayList<DbAttribute>(2);
+        List<DbAttribute> fks = new ArrayList<>(2);
 
         for (ObjAttribute property : objEntity.getAttributes()) {
             DbAttribute column = property.getDbAttribute();
@@ -334,7 +327,7 @@ public class EntityMergeSupport {
     protected List<DbAttribute> getAttributesToAdd(ObjEntity objEntity) {
         DbEntity dbEntity = objEntity.getDbEntity();
 
-        List<DbAttribute> missing = new ArrayList<DbAttribute>();
+        List<DbAttribute> missing = new ArrayList<>();
         Collection<DbRelationship> incomingRels = getIncomingRelationships(dbEntity);
 
         for (DbAttribute dba : dbEntity.getAttributes()) {
@@ -443,20 +436,6 @@ public class EntityMergeSupport {
     }
 
     /**
-     * @since 1.2
-     */
-    public boolean isRemoveMeaningfulFKs() {
-        return removeMeaningfulFKs;
-    }
-
-    /**
-     * @since 1.2
-     */
-    public void setRemoveMeaningfulFKs(boolean removeMeaningfulFKs) {
-        this.removeMeaningfulFKs = removeMeaningfulFKs;
-    }
-
-    /**
      * Registers new EntityMergeListener
      */
     public void addEntityMergeListener(EntityMergeListener listener) {
@@ -496,7 +475,7 @@ public class EntityMergeSupport {
     }
 
     /**
-     * @return naming strategy for reverse engineering
+     * @return a strategy for naming object layer artifacts based on their DB names.
      */
     public ObjectNameGenerator getNameGenerator() {
         return nameGenerator;
@@ -505,15 +484,15 @@ public class EntityMergeSupport {
     /**
      * @since 4.0
      */
-    public boolean isUsePrimitives() {
-        return usePrimitives;
+    public boolean isUsingPrimitives() {
+        return usingPrimitives;
     }
 
     /**
-     * @param usePrimitives
+     * @param usingPrimitives
      * @since 4.0
      */
-    public void setUsePrimitives(boolean usePrimitives) {
-        this.usePrimitives = usePrimitives;
+    public void setUsingPrimitives(boolean usingPrimitives) {
+        this.usingPrimitives = usingPrimitives;
     }
 }

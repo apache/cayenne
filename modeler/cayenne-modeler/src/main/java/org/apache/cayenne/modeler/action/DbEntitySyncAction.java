@@ -89,7 +89,7 @@ public class DbEntitySyncAction extends CayenneAction {
 
 				merger.addEntityMergeListener(listener);
 
-				if (merger.isRemoveMeaningfulFKs()) {
+				if (merger.isRemovingMeaningfulFKs()) {
 					undoableEdit.addEdit(undoableEdit.new MeaningfulFKsUndoableEdit(entity, merger
 							.getMeaningfulFKs(entity)));
 				}

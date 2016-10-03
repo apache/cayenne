@@ -1,21 +1,21 @@
-/*****************************************************************
- *   Licensed to the Apache Software Foundation (ASF) under one
- *  or more contributor license agreements.  See the NOTICE file
- *  distributed with this work for additional information
- *  regarding copyright ownership.  The ASF licenses this file
- *  to you under the Apache License, Version 2.0 (the
- *  "License"); you may not use this file except in compliance
- *  with the License.  You may obtain a copy of the License at
+/*
+ *    Licensed to the Apache Software Foundation (ASF) under one
+ *    or more contributor license agreements.  See the NOTICE file
+ *    distributed with this work for additional information
+ *    regarding copyright ownership.  The ASF licenses this file
+ *    to you under the Apache License, Version 2.0 (the
+ *    "License"); you may not use this file except in compliance
+ *    with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an
- *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *  KIND, either express or implied.  See the License for the
- *  specific language governing permissions and limitations
- *  under the License.
- ****************************************************************/
+ *    Unless required by applicable law or agreed to in writing,
+ *    software distributed under the License is distributed on an
+ *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *    KIND, either express or implied.  See the License for the
+ *    specific language governing permissions and limitations
+ *    under the License.
+ */
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
@@ -66,16 +66,14 @@ public class EntitySyncController extends CayenneController {
             namingStrategy = NameGeneratorPreferences.getInstance().createNamingStrategy(application);
         } catch (Throwable e) {
             namingStrategy = NameGeneratorPreferences.defaultNameGenerator();
-
-            // TODO log exception
         }
 
-        EntityMergeSupport merger = new EntityMergeSupport(dbEntity.getDataMap(), namingStrategy, true);
+        EntityMergeSupport merger = new EntityMergeSupport(namingStrategy, true, true);
 
         // see if we need to remove meaningful attributes...
         for (ObjEntity entity : entities) {
             if (!merger.getMeaningfulFKs(entity).isEmpty()) {
-                return configureMerger(merger);
+                return confirmMeaningfulFKs(namingStrategy);
             }
         }
 
@@ -83,19 +81,20 @@ public class EntitySyncController extends CayenneController {
     }
 
     /**
-     * Displays a nerger config dialog, returning a merger configured by the user. Returns
+     * Displays merger config dialog, returning a merger configured by the user. Returns
      * null if the dialog was canceled.
      */
-    protected EntityMergeSupport configureMerger(final EntityMergeSupport merger) {
+    protected EntityMergeSupport confirmMeaningfulFKs(ObjectNameGenerator namingStrategy) {
 
-        final boolean[] cancel = new boolean[1];
+        final boolean[] cancel = {false};
+        final boolean[] removeFKs = {true};
 
         view = new EntitySyncDialog();
 
         view.getUpdateButton().addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                merger.setRemoveMeaningfulFKs(view.getRemoveFKs().isSelected());
+                removeFKs[0] = view.getRemoveFKs().isSelected();
                 view.dispose();
             }
         });
@@ -114,7 +113,7 @@ public class EntitySyncController extends CayenneController {
         makeCloseableOnEscape();
         view.setVisible(true);
 
-        return cancel[0] ? null : merger;
+        return cancel[0] ? null : new EntityMergeSupport(namingStrategy, true, removeFKs[0]);
     }
 
     @Override
@@ -124,7 +123,7 @@ public class EntitySyncController extends CayenneController {
 
     protected Collection<ObjEntity> getObjEntities() {
         return objEntity == null ? dbEntity.getDataMap().getMappedEntities(dbEntity)
-                    : Collections.singleton(objEntity);
+                : Collections.singleton(objEntity);
     }
 
 }

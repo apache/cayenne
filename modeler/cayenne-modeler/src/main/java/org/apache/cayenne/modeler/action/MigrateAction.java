@@ -20,7 +20,9 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
@@ -105,6 +107,8 @@ public class MigrateAction extends DBWizardAction {
                 .makeAdapter(getApplication().getClassLoadingService());
         DataSource dataSource = connectWizard.getConnectionInfo()
                 .makeDataSource(getApplication().getClassLoadingService());
-        return new DbLoader(dataSource.getConnection(), dbAdapter, null).loadSchemas();
+
+        EntityMergeSupport emSupport = new EntityMergeSupport(new DefaultObjectNameGenerator(), true, true);
+        return new DbLoader(dataSource.getConnection(), dbAdapter, null, emSupport).loadSchemas();
     }
 }
