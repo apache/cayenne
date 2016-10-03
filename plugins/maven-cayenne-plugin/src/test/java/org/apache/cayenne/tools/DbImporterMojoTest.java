@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.test.jdbc.SQLReader;
-import org.apache.cayenne.test.resource.ResourceUtil;
-import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbimport.Catalog;
 import org.apache.cayenne.dbimport.IncludeTable;
 import org.apache.cayenne.dbimport.Schema;
+import org.apache.cayenne.test.jdbc.SQLReader;
+import org.apache.cayenne.test.resource.ResourceUtil;
+import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.codehaus.plexus.util.FileUtils;
@@ -315,37 +315,47 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 
     private void cleanDb(DbImportConfiguration dbImportConfiguration) throws ClassNotFoundException,
             IllegalAccessException, InstantiationException, SQLException {
+
+        // TODO: refactor to common DB management code... E.g. bootique-jdbc-test?
+        // TODO: with in-memory Derby, it is easier to just stop and delete the database.. again see bootique-jdbc-test
+
         Class.forName(dbImportConfiguration.getDriver()).newInstance();
-        // Get a connection
-        Connection connection = DriverManager.getConnection(dbImportConfiguration.getUrl());
-        Statement stmt = connection.createStatement();
 
-        ResultSet views = connection.getMetaData().getTables(null, null, null, new String[]{"VIEW"});
-        while (views.next()) {
-            String schema = views.getString("TABLE_SCHEM");
-            execute(stmt, "DROP VIEW " + (isBlank(schema) ? "" : schema + ".") + views.getString("TABLE_NAME"));
-        }
+        try (Connection connection = DriverManager.getConnection(dbImportConfiguration.getUrl())) {
 
-        ResultSet tables = connection.getMetaData().getTables(null, null, null, new String[]{"TABLE"});
-        while (tables.next()) {
-            String schema = tables.getString("TABLE_SCHEM");
-            String tableName = tables.getString("TABLE_NAME");
-            String tableNameFull = (isBlank(schema) ? "" : schema + ".") + tableName;
+            try (Statement stmt = connection.createStatement();) {
 
-            ResultSet keys = connection.getMetaData().getExportedKeys(null, schema, tableName);
-            while (keys.next()) {
-                execute(stmt, "ALTER TABLE " + keys.getString("FKTABLE_NAME") + " DROP CONSTRAINT " + keys.getString("FK_NAME"));
-            }
+                try (ResultSet views = connection.getMetaData().getTables(null, null, null, new String[]{"VIEW"});) {
+                    while (views.next()) {
+                        String schema = views.getString("TABLE_SCHEM");
+                        execute(stmt, "DROP VIEW " + (isBlank(schema) ? "" : schema + ".") + views.getString("TABLE_NAME"));
+                    }
+                }
 
-            String sql = "DROP TABLE " + tableNameFull;
-            execute(stmt, sql);
-        }
+                try (ResultSet tables = connection.getMetaData().getTables(null, null, null, new String[]{"TABLE"});) {
+                    while (tables.next()) {
+                        String schema = tables.getString("TABLE_SCHEM");
+                        String tableName = tables.getString("TABLE_NAME");
+                        String tableNameFull = (isBlank(schema) ? "" : schema + ".") + tableName;
 
-        ResultSet schemas = connection.getMetaData().getSchemas();
-        while (schemas.next()) {
-            String schem = schemas.getString("TABLE_SCHEM");
-            if (schem.startsWith("SCHEMA")) {
-                execute(stmt, "DROP SCHEMA " + schem + " RESTRICT");
+                        ResultSet keys = connection.getMetaData().getExportedKeys(null, schema, tableName);
+                        while (keys.next()) {
+                            execute(stmt, "ALTER TABLE " + keys.getString("FKTABLE_NAME") + " DROP CONSTRAINT " + keys.getString("FK_NAME"));
+                        }
+
+                        String sql = "DROP TABLE " + tableNameFull;
+                        execute(stmt, sql);
+                    }
+                }
+
+                try (ResultSet schemas = connection.getMetaData().getSchemas();) {
+                    while (schemas.next()) {
+                        String schem = schemas.getString("TABLE_SCHEM");
+                        if (schem.startsWith("SCHEMA")) {
+                            execute(stmt, "DROP SCHEMA " + schem + " RESTRICT");
+                        }
+                    }
+                }
             }
         }
     }
@@ -378,7 +388,7 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 
     private void prepareDatabase(String sqlFile, DbImportConfiguration dbImportConfiguration) throws Exception {
 
-        URL dbUrl = Objects.requireNonNull(ResourceUtil.getResource(getClass(), "dbimport/" + sqlFile + ".sql"));
+        URL sqlUrl = Objects.requireNonNull(ResourceUtil.getResource(getClass(), "dbimport/" + sqlFile + ".sql"));
 
         // TODO: refactor to common DB management code... E.g. bootique-jdbc-test?
 
@@ -386,7 +396,7 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 
         try (Connection connection = DriverManager.getConnection(dbImportConfiguration.getUrl())) {
             try (Statement stmt = connection.createStatement();) {
-                for (String sql : SQLReader.statements(dbUrl, ";")) {
+                for (String sql : SQLReader.statements(sqlUrl, ";")) {
                     stmt.execute(sql);
                 }
             }
