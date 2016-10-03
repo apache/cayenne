@@ -124,7 +124,7 @@ public class DefaultDbImportAction implements DbImportAction {
         DbAdapter adapter = adapterFactory.createAdapter(dataNodeDescriptor, dataSource);
 
         DataMap loadedFomDb;
-        try(Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             loadedFomDb = load(config, adapter, connection);
         }
 
@@ -172,7 +172,7 @@ public class DefaultDbImportAction implements DbImportAction {
                 }
             };
 
-            DataMap executed = execute(delegate,
+            DataMap executed = applyTokens(delegate,
                     existing,
                     log(sort(reverse(mergerTokenFactory, mergeTokens))),
                     config.getNameGenerator());
@@ -224,9 +224,9 @@ public class DefaultDbImportAction implements DbImportAction {
         return null;
     }
 
-    private List<MergerToken> reverse(
-            MergerTokenFactory mergerTokenFactory,
-            Iterable<MergerToken> mergeTokens) throws IOException {
+    private List<MergerToken> reverse(MergerTokenFactory mergerTokenFactory, Iterable<MergerToken> mergeTokens)
+            throws IOException {
+
         List<MergerToken> tokens = new LinkedList<>();
         for (MergerToken token : mergeTokens) {
             if (token instanceof AbstractToModelToken) {
@@ -237,10 +237,7 @@ public class DefaultDbImportAction implements DbImportAction {
         return tokens;
     }
 
-    /**
-     * Performs configured schema operations via DbGenerator.
-     */
-    private DataMap execute(ModelMergeDelegate mergeDelegate,
+    private DataMap applyTokens(ModelMergeDelegate mergeDelegate,
                             DataMap dataMap,
                             Collection<MergerToken> tokens,
                             ObjectNameGenerator nameGenerator) {
