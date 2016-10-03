@@ -100,7 +100,7 @@ public class DbLoader {
             return Collections.emptyList();
         }
 
-        Collection<ObjEntity> loadedEntities = new ArrayList<ObjEntity>(entities.size());
+        Collection<ObjEntity> loadedEntities = new ArrayList<>(entities.size());
 
         // doLoad empty ObjEntities for all the tables
         for (DbEntity dbEntity : entities) {

@@ -27,14 +27,7 @@ import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
  */
 public class DbLoaderConfiguration {
 
-    /**
-     * Returns a name of a generic class that should be used for all
-     * ObjEntities. The most common generic class is
-     * {@link org.apache.cayenne.CayenneDataObject}. If generic class name is
-     * null (which is the default), DbLoader will assign each entity a unique
-     * class name derived from the table name.
-     *
-     */
+
     private String genericClassName;
 
     /**
@@ -52,6 +45,12 @@ public class DbLoaderConfiguration {
 
     private FiltersConfig filtersConfig;
 
+    /**
+     * Returns a name of a generic class that should be used for all ObjEntities. The most common generic class is
+     * {@link org.apache.cayenne.CayenneDataObject}. If generic class name is
+     * null (which is the default), DbLoader will assign each entity a unique
+     * class name derived from the table name.
+     */
     public String getGenericClassName() {
         return genericClassName;
     }
