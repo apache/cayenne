@@ -61,8 +61,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
 /**
  * A thin wrapper around {@link DbLoader} that encapsulates DB import logic for
  * the benefit of Ant and Maven db importers.
@@ -119,6 +117,7 @@ public class DefaultDbImportAction implements DbImportAction {
             logger.debug(config);
         }
 
+        boolean hasChanges = false;
         DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
         DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
         DbAdapter adapter = adapterFactory.createAdapter(dataNodeDescriptor, dataSource);
@@ -133,54 +132,52 @@ public class DefaultDbImportAction implements DbImportAction {
             return;
         }
 
-        DataMap existing = loadExistingDataMap(config.getDataMapFile());
-        if (existing == null) {
-            logger.info("");
+        DataMap targetDataMap = loadExistingDataMap(config.getDataMapFile());
+        if (targetDataMap == null) {
+
+            hasChanges = true;
             File file = config.getDataMapFile();
+            logger.info("");
             logger.info("Map file does not exist. Loaded db model will be saved into '"
                     + (file == null ? "null" : file.getAbsolutePath() + "'"));
 
-            saveLoaded(config.initializeDataMap(loadedFomDb));
-        } else {
-            MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
-
-            DbLoaderConfiguration loaderConfig = config.getDbLoaderConfig();
-            List<MergerToken> mergeTokens = DbMerger.builder(mergerTokenFactory)
-                    .filters(loaderConfig.getFiltersConfig())
-                    .skipPKTokens(loaderConfig.isSkipPrimaryKeyLoading())
-                    .skipRelationshipsTokens(loaderConfig.isSkipRelationshipsLoading())
-                    .build()
-                    .createMergeTokens(existing, loadedFomDb);
-
-            if (mergeTokens.isEmpty()) {
-                logger.info("");
-                logger.info("Detected changes: No changes to import.");
-                return;
-            }
-
-            if (!isBlank(config.getDefaultPackage())) {
-                existing.setDefaultPackage(config.getDefaultPackage());
-            }
-
-            final Collection<ObjEntity> loadedObjEntities = new LinkedList<>();
-
-            ModelMergeDelegate delegate = new ProxyModelMergeDelegate(config.createMergeDelegate()) {
-                @Override
-                public void objEntityAdded(ObjEntity ent) {
-                    loadedObjEntities.add(ent);
-                    super.objEntityAdded(ent);
-                }
-            };
-
-            DataMap executed = applyTokens(delegate,
-                    existing,
-                    log(sort(reverse(mergerTokenFactory, mergeTokens))),
-                    config.getNameGenerator());
-
-            DbLoader.flattenManyToManyRelationships(executed, loadedObjEntities, config.getNameGenerator());
-            relationshipsSanity(executed);
-            saveLoaded(executed);
+            targetDataMap = config.createDataMap();
         }
+
+        MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
+
+        DbLoaderConfiguration loaderConfig = config.getDbLoaderConfig();
+        List<MergerToken> tokens = DbMerger.builder(mergerTokenFactory)
+                .filters(loaderConfig.getFiltersConfig())
+                .skipPKTokens(loaderConfig.isSkipPrimaryKeyLoading())
+                .skipRelationshipsTokens(loaderConfig.isSkipRelationshipsLoading())
+                .build()
+                .createMergeTokens(targetDataMap, loadedFomDb);
+
+        hasChanges |= syncDataMapProperties(targetDataMap, config);
+        hasChanges |= applyTokens(config.createMergeDelegate(),
+                targetDataMap,
+                log(sort(reverse(mergerTokenFactory, tokens))),
+                config.getNameGenerator());
+
+        if (hasChanges) {
+            saveLoaded(targetDataMap);
+        }
+    }
+
+    private boolean syncDataMapProperties(DataMap targetDataMap, DbImportConfiguration config) {
+
+        String defaultPackage = config.getDefaultPackage();
+        if (defaultPackage == null || defaultPackage.trim().length() == 0) {
+            return false;
+        }
+
+        if (defaultPackage.equals(targetDataMap.getDefaultPackage())) {
+            return false;
+        }
+
+        targetDataMap.setDefaultPackage(defaultPackage);
+        return true;
     }
 
     private void relationshipsSanity(DataMap executed) {
@@ -237,12 +234,28 @@ public class DefaultDbImportAction implements DbImportAction {
         return tokens;
     }
 
-    private DataMap applyTokens(ModelMergeDelegate mergeDelegate,
-                            DataMap dataMap,
-                            Collection<MergerToken> tokens,
-                            ObjectNameGenerator nameGenerator) {
+    private boolean applyTokens(ModelMergeDelegate mergeDelegate,
+                                DataMap targetDataMap,
+                                Collection<MergerToken> tokens,
+                                ObjectNameGenerator nameGenerator) {
 
-        MergerContext mergerContext = MergerContext.builder(dataMap)
+        if (tokens.isEmpty()) {
+            logger.info("");
+            logger.info("Detected changes: No changes to import.");
+            return false;
+        }
+
+        final Collection<ObjEntity> loadedObjEntities = new LinkedList<>();
+
+        mergeDelegate = new ProxyModelMergeDelegate(mergeDelegate) {
+            @Override
+            public void objEntityAdded(ObjEntity ent) {
+                loadedObjEntities.add(ent);
+                super.objEntityAdded(ent);
+            }
+        };
+
+        MergerContext mergerContext = MergerContext.builder(targetDataMap)
                 .delegate(mergeDelegate)
                 .nameGenerator(nameGenerator)
                 .build();
@@ -270,7 +283,9 @@ public class DefaultDbImportAction implements DbImportAction {
             logger.info("Migration Complete Successfully.");
         }
 
-        return dataMap;
+        DbLoader.flattenManyToManyRelationships(targetDataMap, loadedObjEntities, nameGenerator);
+        relationshipsSanity(targetDataMap);
+        return true;
     }
 
     protected void saveLoaded(DataMap dataMap) throws FileNotFoundException {

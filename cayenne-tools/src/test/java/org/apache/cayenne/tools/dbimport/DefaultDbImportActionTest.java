@@ -69,6 +69,7 @@ import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.objEntity;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -118,16 +119,14 @@ public class DefaultDbImportActionTest {
             }
         };
 
-        DbImportConfiguration params = mock(DbImportConfiguration.class);
-        when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
+        DbImportConfiguration config = mock(DbImportConfiguration.class);
+        when(config.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
                 .thenReturn(dbLoader);
 
-        when(params.createDataMap()).thenReturn(new DataMap("testImport"));
-        when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
-        when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
-
-        final DataMap DATA_MAP = new DataMap();
-        when(params.initializeDataMap(any(DataMap.class))).thenReturn(DATA_MAP);
+        final DataMap dataMap = new DataMap();
+        when(config.createDataMap()).thenReturn(dataMap);
+        when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
+        when(config.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
 
         final boolean[] haveWeTriedToSave = {false};
         DefaultDbImportAction action = buildDbImportAction(new FileProjectSaver() {
@@ -136,11 +135,11 @@ public class DefaultDbImportActionTest {
                 haveWeTriedToSave[0] = true;
 
                 // Validation phase
-                assertEquals(DATA_MAP, project.getRootNode());
+                assertSame(dataMap, project.getRootNode());
             }
         }, null);
 
-        action.execute(params);
+        action.execute(config);
 
         assertTrue("We should try to save.", haveWeTriedToSave[0]);
     }
@@ -248,6 +247,7 @@ public class DefaultDbImportActionTest {
 
         action.execute(params);
 
+        // no changes - we still
         verify(projectSaver, never()).save(any(Project.class));
         verify(mapLoader, times(1)).loadDataMap(any(InputSource.class));
     }

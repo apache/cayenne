@@ -219,10 +219,12 @@ public class DbImportConfiguration {
             throw new NullPointerException("Null DataMap File.");
         }
 
-        return initializeDataMap(new DataMap());
+        DataMap dataMap = new DataMap();
+        initializeDataMap(dataMap);
+        return  dataMap;
     }
 
-    public DataMap initializeDataMap(DataMap dataMap) throws MalformedURLException {
+    public void initializeDataMap(DataMap dataMap) throws MalformedURLException {
         dataMap.setName(getDataMapName());
         dataMap.setConfigurationSource(new URLResource(dataMapFile.toURI().toURL()));
         dataMap.setNamespace(new EntityResolver(Collections.singleton(dataMap)));
@@ -254,8 +256,6 @@ public class DbImportConfiguration {
                 dataMap.setDefaultSchema(schema);
             }
         }
-
-        return dataMap;
     }
 
     public String getDataMapName() {
