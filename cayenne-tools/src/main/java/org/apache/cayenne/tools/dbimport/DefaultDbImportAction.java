@@ -26,15 +26,15 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.AbstractToModelToken;
 import org.apache.cayenne.dbsync.merge.AddRelationshipToDb;
 import org.apache.cayenne.dbsync.merge.DbMerger;
-import org.apache.cayenne.dbsync.merge.EmptyValueForNullProvider;
 import org.apache.cayenne.dbsync.merge.MergerContext;
-import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.MergerToken;
 import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.ProxyModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
-import org.apache.cayenne.dbsync.reverse.db.DbLoader;
+import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.db.DbLoader;
+import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
@@ -144,8 +144,14 @@ public class DefaultDbImportAction implements DbImportAction {
         } else {
             MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
 
-            List<MergerToken> mergeTokens = new DbMerger(mergerTokenFactory, new EmptyValueForNullProvider())
-                    .createMergeTokens(existing, loadedFomDb, config.getDbLoaderConfig());
+            DbLoaderConfiguration loaderConfig = config.getDbLoaderConfig();
+            List<MergerToken> mergeTokens = DbMerger.builder(mergerTokenFactory)
+                    .filters(loaderConfig.getFiltersConfig())
+                    .skipPKTokens(loaderConfig.isSkipPrimaryKeyLoading())
+                    .skipRelationshipsTokens(loaderConfig.isSkipRelationshipsLoading())
+                    .build()
+                    .createMergeTokens(existing, loadedFomDb);
+
             if (mergeTokens.isEmpty()) {
                 logger.info("");
                 logger.info("Detected changes: No changes to import.");

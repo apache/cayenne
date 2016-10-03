@@ -31,32 +31,32 @@ import org.apache.cayenne.map.ObjRelationship;
  */
 public interface ModelMergeDelegate {
 
-    public void dbEntityAdded(DbEntity ent);
+    void dbEntityAdded(DbEntity ent);
 
-    public void dbEntityRemoved(DbEntity ent);
+    void dbEntityRemoved(DbEntity ent);
 
-    public void objEntityAdded(ObjEntity ent);
+    void objEntityAdded(ObjEntity ent);
 
-    public void objEntityRemoved(ObjEntity ent);
+    void objEntityRemoved(ObjEntity ent);
 
-    public void dbAttributeAdded(DbAttribute att);
+    void dbAttributeAdded(DbAttribute att);
 
-    public void dbAttributeRemoved(DbAttribute att);
+    void dbAttributeRemoved(DbAttribute att);
 
-    public void dbAttributeModified(DbAttribute att);
+    void dbAttributeModified(DbAttribute att);
 
-    public void objAttributeAdded(ObjAttribute att);
+    void objAttributeAdded(ObjAttribute att);
 
-    public void objAttributeRemoved(ObjAttribute att);
+    void objAttributeRemoved(ObjAttribute att);
 
-    public void objAttributeModified(ObjAttribute att);
+    void objAttributeModified(ObjAttribute att);
 
-    public void dbRelationshipAdded(DbRelationship rel);
+    void dbRelationshipAdded(DbRelationship rel);
 
-    public void dbRelationshipRemoved(DbRelationship rel);
+    void dbRelationshipRemoved(DbRelationship rel);
 
-    public void objRelationshipAdded(ObjRelationship rel);
+    void objRelationshipAdded(ObjRelationship rel);
 
-    public void objRelationshipRemoved(ObjRelationship rel);
+    void objRelationshipRemoved(ObjRelationship rel);
 
 }

@@ -25,7 +25,6 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dbsync.merge.AbstractToDbToken;
 import org.apache.cayenne.dbsync.merge.DbMerger;
-import org.apache.cayenne.dbsync.merge.EmptyValueForNullProvider;
 import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.dbsync.merge.MergeDirection;
 import org.apache.cayenne.dbsync.merge.MergerContext;
@@ -165,12 +164,18 @@ public class MergerOptions extends CayenneController {
             adapter = (JdbcAdapter) connectionInfo.makeAdapter(getApplication().getClassLoadingService());
 
             MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
-
             tokens.setMergerTokenFactory(mergerTokenFactory);
-            DbMerger merger = new DbMerger(mergerTokenFactory, new EmptyValueForNullProvider());
+
+
+            FiltersConfig filters = FiltersConfig.create(null, defaultSchema, TableFilter.everything(),
+                    PatternFilter.INCLUDE_NOTHING);
+
+            DbMerger merger = DbMerger.builder(mergerTokenFactory)
+                    .filters(filters)
+                    .build();
 
             DbLoaderConfiguration config = new DbLoaderConfiguration();
-            config.setFiltersConfig(FiltersConfig.create(null, defaultSchema, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING));
+            config.setFiltersConfig(filters);
 
             DataSource dataSource  = connectionInfo.makeDataSource(getApplication().getClassLoadingService());
 
@@ -186,7 +191,7 @@ public class MergerOptions extends CayenneController {
                 throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);
             }
 
-            tokens.setTokens(merger.createMergeTokens(dataMap, dbImport, config));
+            tokens.setTokens(merger.createMergeTokens(dataMap, dbImport));
         } catch (Exception ex) {
             reportError("Error loading adapter", ex);
         }

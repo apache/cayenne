@@ -26,10 +26,8 @@ import java.util.List;
 
 /**
  * A dummy {@link ValueForNullProvider} that are not able to provide any values.
- *
- * @since 4.0
  */
-public class EmptyValueForNullProvider implements ValueForNullProvider {
+class EmptyValueForNullProvider implements ValueForNullProvider {
 
     public List<String> createSql(DbEntity entity, DbAttribute column) {
         return Collections.emptyList();

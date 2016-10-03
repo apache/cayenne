@@ -20,8 +20,9 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
-import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
+import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
+import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -41,18 +42,26 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Traverse a {@link DataNode} and a {@link DataMap} and create a group of
- * {@link MergerToken}s to alter the {@link DataNode} data store to match the
- * {@link DataMap}.
+ * Wraps an algorithm to traverse a {@link DataMap} and create a group of {@link MergerToken}s that can be used to
+ * synchronize data store and Cayenne model.
  */
 public class DbMerger {
 
-    private final MergerTokenFactory factory;
-    private final ValueForNullProvider valueForNull;
+    private MergerTokenFactory tokenFactory;
+    private ValueForNullProvider valueForNull;
+    private boolean skipRelationshipsTokens;
+    private boolean skipPKTokens;
+    private FiltersConfig filters;
 
-    public DbMerger(MergerTokenFactory factory, ValueForNullProvider valueForNull) {
-        this.factory = Objects.requireNonNull(factory);
-        this.valueForNull = Objects.requireNonNull(valueForNull);
+    private DbMerger() {
+    }
+
+    public static Builder builder(MergerTokenFactory tokenFactory) {
+        return new Builder(tokenFactory);
+    }
+
+    public static DbMerger build(MergerTokenFactory tokenFactory) {
+        return builder(tokenFactory).build();
     }
 
     /**
@@ -99,12 +108,11 @@ public class DbMerger {
      * Create and return a {@link List} of {@link MergerToken}s to alter the
      * given {@link DataNode} to match the given {@link DataMap}
      */
-    public List<MergerToken> createMergeTokens(DataMap existing, DataMap loadedFomDb, DbLoaderConfiguration config) {
+    public List<MergerToken> createMergeTokens(DataMap existing, DataMap loadedFomDb) {
 
         loadedFomDb.setQuotingSQLIdentifiers(existing.isQuotingSQLIdentifiers());
 
-        List<MergerToken> tokens = createMergeTokens(filter(existing, config.getFiltersConfig()),
-                loadedFomDb.getDbEntities(), config);
+        List<MergerToken> tokens = createMergeTokens(filter(existing, filters), loadedFomDb.getDbEntities());
 
         // sort. use a custom Comparator since only toDb tokens are comparable
         // by now
@@ -123,7 +131,7 @@ public class DbMerger {
     }
 
     private Collection<DbEntity> filter(DataMap existing, FiltersConfig filtersConfig) {
-        Collection<DbEntity> existingFiltered = new LinkedList<DbEntity>();
+        Collection<DbEntity> existingFiltered = new LinkedList<>();
         for (DbEntity entity : existing.getDbEntities()) {
             if (filtersConfig.tableFilter(entity.getCatalog(), entity.getSchema()).isIncludeTable(entity.getName()) != null) {
                 existingFiltered.add(entity);
@@ -132,9 +140,7 @@ public class DbMerger {
         return existingFiltered;
     }
 
-    protected List<MergerToken> createMergeTokens(Collection<DbEntity> existing,
-                                                  Collection<DbEntity> loadedFromDb,
-                                                  DbLoaderConfiguration config) {
+    protected List<MergerToken> createMergeTokens(Collection<DbEntity> existing, Collection<DbEntity> loadedFromDb) {
         Collection<DbEntity> dbEntitiesToDrop = new LinkedList<>(loadedFromDb);
 
         List<MergerToken> tokens = new LinkedList<>();
@@ -144,10 +150,10 @@ public class DbMerger {
             // look for table
             DbEntity detectedEntity = findDbEntity(loadedFromDb, tableName);
             if (detectedEntity == null) {
-                tokens.add(factory.createCreateTableToDb(dbEntity));
+                tokens.add(tokenFactory.createCreateTableToDb(dbEntity));
                 // TODO: does this work properly with createReverse?
                 for (DbRelationship rel : dbEntity.getRelationships()) {
-                    tokens.add(factory.createAddRelationshipToDb(dbEntity, rel));
+                    tokens.add(tokenFactory.createAddRelationshipToDb(dbEntity, rel));
                 }
                 continue;
             }
@@ -155,12 +161,12 @@ public class DbMerger {
             dbEntitiesToDrop.remove(detectedEntity);
 
             tokens.addAll(checkRelationshipsToDrop(dbEntity, detectedEntity));
-            if (!config.isSkipRelationshipsLoading()) {
+            if (!skipRelationshipsTokens) {
                 tokens.addAll(checkRelationshipsToAdd(dbEntity, detectedEntity));
             }
             tokens.addAll(checkRows(dbEntity, detectedEntity));
 
-            if (!config.isSkipPrimaryKeyLoading()) {
+            if (!skipPKTokens) {
                 MergerToken token = checkPrimaryKeyChange(dbEntity, detectedEntity);
                 if (token != null) {
                     tokens.add(token);
@@ -172,11 +178,11 @@ public class DbMerger {
         // TODO: support drop table. currently, too many tables are marked for
         // drop
         for (DbEntity e : dbEntitiesToDrop) {
-            tokens.add(factory.createDropTableToDb(e));
+            tokens.add(tokenFactory.createDropTableToDb(e));
             for (DbRelationship relationship : e.getRelationships()) {
                 DbEntity detectedEntity = findDbEntity(existing, relationship.getTargetEntityName());
                 if (detectedEntity != null) {
-                    tokens.add(factory.createDropRelationshipToDb(detectedEntity, relationship.getReverseRelationship()));
+                    tokens.add(tokenFactory.createDropRelationshipToDb(detectedEntity, relationship.getReverseRelationship()));
                 }
             }
         }
@@ -190,7 +196,7 @@ public class DbMerger {
         // columns to drop
         for (DbAttribute detected : loadedFromDb.getAttributes()) {
             if (findDbAttribute(existing, detected.getName()) == null) {
-                tokens.add(factory.createDropColumnToDb(existing, detected));
+                tokens.add(tokenFactory.createDropColumnToDb(existing, detected));
             }
         }
 
@@ -201,12 +207,12 @@ public class DbMerger {
             DbAttribute detected = findDbAttribute(loadedFromDb, columnName);
 
             if (detected == null) {
-                tokens.add(factory.createAddColumnToDb(existing, attr));
+                tokens.add(tokenFactory.createAddColumnToDb(existing, attr));
                 if (attr.isMandatory()) {
                     if (valueForNull.hasValueFor(existing, attr)) {
-                        tokens.add(factory.createSetValueForNullToDb(existing, attr, valueForNull));
+                        tokens.add(tokenFactory.createSetValueForNullToDb(existing, attr, valueForNull));
                     }
-                    tokens.add(factory.createSetNotNullToDb(existing, attr));
+                    tokens.add(tokenFactory.createSetNotNullToDb(existing, attr));
                 }
                 continue;
             }
@@ -215,11 +221,11 @@ public class DbMerger {
             if (attr.isMandatory() != detected.isMandatory()) {
                 if (attr.isMandatory()) {
                     if (valueForNull.hasValueFor(existing, attr)) {
-                        tokens.add(factory.createSetValueForNullToDb(existing, attr, valueForNull));
+                        tokens.add(tokenFactory.createSetValueForNullToDb(existing, attr, valueForNull));
                     }
-                    tokens.add(factory.createSetNotNullToDb(existing, attr));
+                    tokens.add(tokenFactory.createSetNotNullToDb(existing, attr));
                 } else {
-                    tokens.add(factory.createSetAllowNullToDb(existing, attr));
+                    tokens.add(tokenFactory.createSetAllowNullToDb(existing, attr));
                 }
             }
 
@@ -229,7 +235,7 @@ public class DbMerger {
                 case Types.VARCHAR:
                 case Types.CHAR:
                     if (attr.getMaxLength() != detected.getMaxLength()) {
-                        tokens.add(factory.createSetColumnTypeToDb(existing, detected, attr));
+                        tokens.add(tokenFactory.createSetColumnTypeToDb(existing, detected, attr));
                     }
                     break;
             }
@@ -270,12 +276,12 @@ public class DbMerger {
                     }
                 }
 
-                MergerToken token = factory.createDropRelationshipToDb(dbEntity, detected);
+                MergerToken token = tokenFactory.createDropRelationshipToDb(dbEntity, detected);
                 if (detected.isToMany()) {
                     // default toModel as we can not do drop a toMany in the db.
                     // only
                     // toOne are represented using foreign key
-                    token = token.createReverse(factory);
+                    token = token.createReverse(tokenFactory);
                 }
                 tokens.add(token);
             }
@@ -290,7 +296,7 @@ public class DbMerger {
 
         for (DbRelationship rel : dbEntity.getRelationships()) {
             if (findDbRelationship(detectedEntity, rel) == null) {
-                AddRelationshipToDb token = (AddRelationshipToDb) factory.createAddRelationshipToDb(dbEntity, rel);
+                AddRelationshipToDb token = (AddRelationshipToDb) tokenFactory.createAddRelationshipToDb(dbEntity, rel);
 
                 if (token.shouldGenerateFkConstraint()) {
                     // TODO I guess we should add relationship always; in order
@@ -319,7 +325,7 @@ public class DbMerger {
             return null;
         }
 
-        return factory.createSetPrimaryKeyToDb(dbEntity, primaryKeyOriginal, primaryKeyNew, primaryKeyName);
+        return tokenFactory.createSetPrimaryKeyToDb(dbEntity, primaryKeyOriginal, primaryKeyNew, primaryKeyName);
     }
 
     private Set<String> upperCaseEntityNames(Collection<? extends Attribute> attrs) {
@@ -368,5 +374,48 @@ public class DbMerger {
             }
         }
         return null;
+    }
+
+    public static class Builder {
+        private DbMerger merger;
+
+        private Builder(MergerTokenFactory tokenFactory) {
+            this.merger = new DbMerger();
+            this.merger.tokenFactory = Objects.requireNonNull(tokenFactory);
+        }
+
+        public DbMerger build() {
+
+            if (merger.valueForNull == null) {
+                merger.valueForNull = new EmptyValueForNullProvider();
+            }
+
+            if(merger.filters == null) {
+                // default: match all tables, no stored procedures
+                merger.filters = FiltersConfig.create(null, null, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING);
+            }
+
+            return merger;
+        }
+
+        public Builder valueForNullProvider(ValueForNullProvider provider) {
+            merger.valueForNull = provider;
+            return this;
+        }
+
+        public Builder skipRelationshipsTokens(boolean flag) {
+            merger.skipRelationshipsTokens = flag;
+            return this;
+        }
+
+        public Builder skipPKTokens(boolean flag) {
+            merger.skipPKTokens = flag;
+            return this;
+        }
+
+        public Builder filters(FiltersConfig filters) {
+            merger.filters = Objects.requireNonNull(filters);
+            return this;
+        }
     }
 }

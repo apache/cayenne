@@ -95,22 +95,21 @@ public abstract class MergeCase extends DbSyncCase {
         assertTokensAndExecute(0, 0);
     }
 
-    protected DbMerger createMerger() {
-        return createMerger(null);
-    }
-
-    protected DbMerger createMerger(ValueForNullProvider valueForNullProvider) {
-        return new DbMerger(mergerFactory(), valueForNullProvider);
+    protected DbMerger.Builder merger() {
+        return DbMerger.builder(mergerFactory());
     }
 
     protected List<MergerToken> createMergeTokens() {
+
+        FiltersConfig filters = FiltersConfig.create(null, null,
+                TableFilter.include("ARTIST|GALLERY|PAINTING|NEW_TABLE2?"), PatternFilter.INCLUDE_NOTHING);
+
         DbLoaderConfiguration loaderConfiguration = new DbLoaderConfiguration();
-        loaderConfiguration.setFiltersConfig(FiltersConfig.create(null, null,
-                TableFilter.include("ARTIST|GALLERY|PAINTING|NEW_TABLE2?"), PatternFilter.INCLUDE_NOTHING));
+        loaderConfiguration.setFiltersConfig(filters);
 
         DataMap dbImport;
         try (Connection conn = node.getDataSource().getConnection();) {
-            dbImport =  new DbLoader(conn,
+            dbImport = new DbLoader(conn,
                     node.getAdapter(),
                     new LoggingDbLoaderDelegate(LogFactory.getLog(DbLoader.class)),
                     new EntityMergeSupport(new DefaultObjectNameGenerator(), true, true))
@@ -120,7 +119,7 @@ public abstract class MergeCase extends DbSyncCase {
             throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);
         }
 
-        return createMerger().createMergeTokens(map, dbImport, loaderConfiguration);
+        return merger().filters(filters).build().createMergeTokens(map, dbImport);
     }
 
     /**

@@ -20,7 +20,6 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dbsync.merge.builders.DbEntityBuilder;
 import org.apache.cayenne.dbsync.merge.factory.HSQLMergerTokenFactory;
-import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.junit.Test;
@@ -37,8 +36,7 @@ public class DbMergerTest {
 
     @Test
     public void testEmptyDataMap() throws Exception {
-        assertEquals(0, dbMerger().createMergeTokens(new ArrayList<DbEntity>(0),
-                new ArrayList<DbEntity>(0), new DbLoaderConfiguration()).size());
+        assertEquals(0, dbMerger().createMergeTokens(new ArrayList<DbEntity>(0), new ArrayList<DbEntity>(0)).size());
     }
 
     @Test
@@ -49,8 +47,7 @@ public class DbMergerTest {
         );
         DataMap existing = dataMap().with(dbEntity).build();
 
-        List<MergerToken> tokens = dbMerger().createMergeTokens(existing.getDbEntities(),
-                new ArrayList<DbEntity>(0), new DbLoaderConfiguration());
+        List<MergerToken> tokens = dbMerger().createMergeTokens(existing.getDbEntities(), new ArrayList<DbEntity>(0));
 
         assertEquals(1, tokens.size());
         assertEquals(factory().createCreateTableToDb(dbEntity.build()).getTokenValue(),
@@ -64,8 +61,7 @@ public class DbMergerTest {
                 dbAttr("attr01").typeInt()
         )).build();
 
-        List<MergerToken> tokens = dbMerger().createMergeTokens(new ArrayList<DbEntity>(0),
-                db.getDbEntities(), new DbLoaderConfiguration());
+        List<MergerToken> tokens = dbMerger().createMergeTokens(new ArrayList<DbEntity>(0), db.getDbEntities());
 
         assertEquals(1, tokens.size());
         assertEquals(factory().createDropTableToDb(db.getDbEntity("table1")).getTokenValue(),
@@ -85,8 +81,7 @@ public class DbMergerTest {
                 dbAttr("attr01").typeInt()
         )).build();
 
-        List<MergerToken> tokens = dbMerger().createMergeTokens(existing.getDbEntities(),
-                db.getDbEntities(), new DbLoaderConfiguration());
+        List<MergerToken> tokens = dbMerger().createMergeTokens(existing.getDbEntities(), db.getDbEntities());
 
         assertEquals(1, tokens.size());
 
@@ -120,8 +115,7 @@ public class DbMergerTest {
          .build();
 
 
-        List<MergerToken> tokens = dbMerger().createMergeTokens(existing.getDbEntities(),
-                db.getDbEntities(), new DbLoaderConfiguration());
+        List<MergerToken> tokens = dbMerger().createMergeTokens(existing.getDbEntities(), db.getDbEntities());
 
         assertEquals(1, tokens.size());
 
@@ -159,8 +153,7 @@ public class DbMergerTest {
          .build();
 
 
-        List<MergerToken> tokens = dbMerger().createMergeTokens(existing.getDbEntities(),
-                db.getDbEntities(), new DbLoaderConfiguration());
+        List<MergerToken> tokens = dbMerger().createMergeTokens(existing.getDbEntities(), db.getDbEntities());
 
         assertEquals(2, tokens.size());
 
@@ -198,7 +191,7 @@ public class DbMergerTest {
          .build();
 
 
-        List<MergerToken> tokens = dbMerger().createMergeTokens(existing.getDbEntities(), db.getDbEntities(), new DbLoaderConfiguration());
+        List<MergerToken> tokens = dbMerger().createMergeTokens(existing.getDbEntities(), db.getDbEntities());
 
         assertEquals(1, tokens.size());
 
@@ -220,8 +213,7 @@ public class DbMergerTest {
                 dbAttr("attr02").typeInt()
         )).build();
 
-        List<MergerToken> tokens = dbMerger().createMergeTokens(existing.getDbEntities(),
-                db.getDbEntities(), new DbLoaderConfiguration());
+        List<MergerToken> tokens = dbMerger().createMergeTokens(existing.getDbEntities(), db.getDbEntities());
 
         assertEquals(1, tokens.size());
 
@@ -247,12 +239,11 @@ public class DbMergerTest {
         )).build();
 
 
-        assertEquals(0, dbMerger().createMergeTokens(dataMap1.getDbEntities(),
-                dataMap2.getDbEntities(), new DbLoaderConfiguration()).size());
+        assertEquals(0, dbMerger().createMergeTokens(dataMap1.getDbEntities(), dataMap2.getDbEntities()).size());
     }
 
     private DbMerger dbMerger() {
-        return new DbMerger(factory(), new EmptyValueForNullProvider());
+        return DbMerger.build(factory());
     }
 
     private HSQLMergerTokenFactory factory() {

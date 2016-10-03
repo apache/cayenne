@@ -22,10 +22,11 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.merge.DbMergerConfig;
 import org.apache.cayenne.dbsync.merge.DefaultModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.NameFilter;
 import org.apache.cayenne.dbsync.reverse.NamePatternMatcher;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
@@ -35,8 +36,6 @@ import org.apache.cayenne.dbsync.reverse.db.DefaultDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.db.LoggingDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
-import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -48,7 +47,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.util.Collections;
-
 
 /**
  * @since 4.0
@@ -313,13 +311,5 @@ public class DbImportConfiguration {
 
     public void setTableTypes(String[] tableTypes) {
         dbLoaderConfiguration.setTableTypes(tableTypes);
-    }
-
-    public DbMergerConfig getDbMergerConfig() {
-        return new DbMergerConfig(
-                getDbLoaderConfig().getFiltersConfig(),
-                getDbLoaderConfig().getSkipRelationshipsLoading(),
-                getDbLoaderConfig().getSkipPrimaryKeyLoading()
-        );
     }
 }
