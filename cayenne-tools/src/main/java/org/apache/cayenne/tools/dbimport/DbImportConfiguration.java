@@ -208,7 +208,7 @@ public class DbImportConfiguration {
         return  dataMap;
     }
 
-    public void initializeDataMap(DataMap dataMap) throws MalformedURLException {
+    protected void initializeDataMap(DataMap dataMap) throws MalformedURLException {
         dataMap.setName(getDataMapName());
         dataMap.setConfigurationSource(new URLResource(dataMapFile.toURI().toURL()));
         dataMap.setNamespace(new EntityResolver(Collections.singleton(dataMap)));
