@@ -18,16 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
- * A dummy {@link ValueForNullProvider} that are not able to provide any values
+ * A dummy {@link ValueForNullProvider} that are not able to provide any values.
+ *
+ * @since 4.0
  */
-class EmptyValueForNullProvider implements ValueForNullProvider {
+public class EmptyValueForNullProvider implements ValueForNullProvider {
 
     public List<String> createSql(DbEntity entity, DbAttribute column) {
         return Collections.emptyList();

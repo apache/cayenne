@@ -26,6 +26,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.AbstractToModelToken;
 import org.apache.cayenne.dbsync.merge.AddRelationshipToDb;
 import org.apache.cayenne.dbsync.merge.DbMerger;
+import org.apache.cayenne.dbsync.merge.EmptyValueForNullProvider;
 import org.apache.cayenne.dbsync.merge.MergerContext;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.MergerToken;
@@ -143,7 +144,7 @@ public class DefaultDbImportAction implements DbImportAction {
         } else {
             MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
 
-            List<MergerToken> mergeTokens = new DbMerger(mergerTokenFactory)
+            List<MergerToken> mergeTokens = new DbMerger(mergerTokenFactory, new EmptyValueForNullProvider())
                     .createMergeTokens(existing, loadedFomDb, config.getDbLoaderConfig());
             if (mergeTokens.isEmpty()) {
                 logger.info("");

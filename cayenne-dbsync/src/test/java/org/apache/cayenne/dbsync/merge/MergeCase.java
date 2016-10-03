@@ -18,12 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
+import org.apache.cayenne.dbsync.reverse.db.LoggingDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
@@ -43,6 +47,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -103,7 +108,19 @@ public abstract class MergeCase extends DbSyncCase {
         loaderConfiguration.setFiltersConfig(FiltersConfig.create(null, null,
                 TableFilter.include("ARTIST|GALLERY|PAINTING|NEW_TABLE2?"), PatternFilter.INCLUDE_NOTHING));
 
-        return createMerger().createMergeTokens(node.getDataSource(), node.getAdapter(), map, loaderConfiguration);
+        DataMap dbImport;
+        try (Connection conn = node.getDataSource().getConnection();) {
+            dbImport =  new DbLoader(conn,
+                    node.getAdapter(),
+                    new LoggingDbLoaderDelegate(LogFactory.getLog(DbLoader.class)),
+                    new EntityMergeSupport(new DefaultObjectNameGenerator(), true, true))
+                    .load(loaderConfiguration);
+
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);
+        }
+
+        return createMerger().createMergeTokens(map, dbImport, loaderConfiguration);
     }
 
     /**

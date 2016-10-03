@@ -18,25 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
-import java.util.List;
-
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
+import java.util.List;
+
 /**
- * Class that will be used to set value for null on not
- * null columns
+ * Class that will be used to set value for null on not null columns
  */
 public interface ValueForNullProvider {
-    
+
     /**
      * @return true if there exist a value that should be inserted for null values
      */
-    public boolean hasValueFor(DbEntity entity, DbAttribute column);
+    boolean hasValueFor(DbEntity entity, DbAttribute column);
 
     /**
      * @return a {@link List} of sql to set value for null
      */
-    public List<String> createSql(DbEntity entity, DbAttribute column);
+    List<String> createSql(DbEntity entity, DbAttribute column);
 
 }

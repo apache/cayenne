@@ -252,7 +252,7 @@ public class DbMergerTest {
     }
 
     private DbMerger dbMerger() {
-        return new DbMerger(factory());
+        return new DbMerger(factory(), new EmptyValueForNullProvider());
     }
 
     private HSQLMergerTokenFactory factory() {

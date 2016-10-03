@@ -18,14 +18,9 @@
  */
 package org.apache.cayenne.dbsync.merge;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
-import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
-import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
-import org.apache.cayenne.dbsync.reverse.db.LoggingDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
@@ -34,12 +29,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DetectedDbEntity;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,6 +37,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -56,19 +47,12 @@ import java.util.Set;
  */
 public class DbMerger {
 
-    private static final Log LOGGER = LogFactory.getLog(DbMerger.class);
-
     private final MergerTokenFactory factory;
-
     private final ValueForNullProvider valueForNull;
 
-    public DbMerger(MergerTokenFactory factory) {
-        this(factory, null);
-    }
-
     public DbMerger(MergerTokenFactory factory, ValueForNullProvider valueForNull) {
-        this.factory = factory;
-        this.valueForNull = valueForNull == null ? new EmptyValueForNullProvider() : valueForNull;
+        this.factory = Objects.requireNonNull(factory);
+        this.valueForNull = Objects.requireNonNull(valueForNull);
     }
 
     /**
@@ -115,15 +99,6 @@ public class DbMerger {
      * Create and return a {@link List} of {@link MergerToken}s to alter the
      * given {@link DataNode} to match the given {@link DataMap}
      */
-    public List<MergerToken> createMergeTokens(DataSource dataSource, DbAdapter adapter, DataMap existingDataMap,
-                                               DbLoaderConfiguration config) {
-        return createMergeTokens(existingDataMap, loadDataMapFromDb(dataSource, adapter, config), config);
-    }
-
-    /**
-     * Create and return a {@link List} of {@link MergerToken}s to alter the
-     * given {@link DataNode} to match the given {@link DataMap}
-     */
     public List<MergerToken> createMergeTokens(DataMap existing, DataMap loadedFomDb, DbLoaderConfiguration config) {
 
         loadedFomDb.setQuotingSQLIdentifiers(existing.isQuotingSQLIdentifiers());
@@ -157,30 +132,12 @@ public class DbMerger {
         return existingFiltered;
     }
 
-    protected EntityMergeSupport createEntityMergeSupport() {
-        return new EntityMergeSupport(new DefaultObjectNameGenerator(), true, true);
-    }
+    protected List<MergerToken> createMergeTokens(Collection<DbEntity> existing,
+                                                  Collection<DbEntity> loadedFromDb,
+                                                  DbLoaderConfiguration config) {
+        Collection<DbEntity> dbEntitiesToDrop = new LinkedList<>(loadedFromDb);
 
-    private DataMap loadDataMapFromDb(DataSource dataSource, DbAdapter adapter, DbLoaderConfiguration config) {
-
-
-        try (Connection conn = dataSource.getConnection();) {
-
-            return new DbLoader(conn,
-                    adapter,
-                    new LoggingDbLoaderDelegate(LOGGER),
-                    createEntityMergeSupport()).load(config);
-
-        } catch (SQLException e) {
-            throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);
-        }
-    }
-
-    public List<MergerToken> createMergeTokens(Collection<DbEntity> existing, Collection<DbEntity> loadedFromDb,
-                                               DbLoaderConfiguration config) {
-        Collection<DbEntity> dbEntitiesToDrop = new LinkedList<DbEntity>(loadedFromDb);
-
-        List<MergerToken> tokens = new LinkedList<MergerToken>();
+        List<MergerToken> tokens = new LinkedList<>();
         for (DbEntity dbEntity : existing) {
             String tableName = dbEntity.getName();
 
