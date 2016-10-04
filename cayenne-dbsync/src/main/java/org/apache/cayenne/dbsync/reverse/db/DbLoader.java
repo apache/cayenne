@@ -541,7 +541,7 @@ public class DbLoader {
                 procedure.setCatalog(rs.getString("PROCEDURE_CAT"));
                 procedure.setSchema(rs.getString("PROCEDURE_SCHEM"));
 
-                if (!filters.proceduresFilter(procedure.getCatalog(), procedure.getSchema()).isInclude(
+                if (!filters.proceduresFilter(procedure.getCatalog(), procedure.getSchema()).isIncluded(
                         procedure.getName())) {
                     LOGGER.info("skipping Cayenne PK procedure: " + name);
                     continue;

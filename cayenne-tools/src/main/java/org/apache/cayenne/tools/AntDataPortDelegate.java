@@ -21,7 +21,7 @@ package org.apache.cayenne.tools;
 
 import org.apache.cayenne.access.DataPort;
 import org.apache.cayenne.access.DataPortDelegate;
-import org.apache.cayenne.dbsync.reverse.NamePatternMatcher;
+import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;

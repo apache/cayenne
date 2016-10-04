@@ -33,7 +33,7 @@ public class PatternFilter {
     public static final PatternFilter INCLUDE_EVERYTHING = new PatternFilter() {
 
         @Override
-        public boolean isInclude(String obj) {
+        public boolean isIncluded(String obj) {
             return true;
         }
 
@@ -45,7 +45,7 @@ public class PatternFilter {
 
     public static final PatternFilter INCLUDE_NOTHING = new PatternFilter() {
         @Override
-        public boolean isInclude(String obj) {
+        public boolean isIncluded(String obj) {
             return false;
         }
 
@@ -102,7 +102,7 @@ public class PatternFilter {
         return exclude(pattern(p));
     }
 
-    public boolean isInclude(String obj) {
+    public boolean isIncluded(String obj) {
         boolean include = includes.isEmpty();
         for (Pattern p : includes) {
             if (p != null) {

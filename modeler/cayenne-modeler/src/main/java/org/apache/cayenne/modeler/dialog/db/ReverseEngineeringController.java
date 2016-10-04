@@ -22,7 +22,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
-import org.apache.cayenne.dbsync.reverse.FiltersConfigBuilder;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;

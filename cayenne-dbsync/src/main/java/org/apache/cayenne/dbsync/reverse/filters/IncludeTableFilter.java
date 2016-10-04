@@ -38,7 +38,7 @@ public class IncludeTableFilter implements Comparable<IncludeTableFilter> {
     }
 
     public boolean isIncludeColumn (String name) {
-        return columnsFilter.isInclude(name);
+        return columnsFilter.isIncluded(name);
     }
 
     @Override

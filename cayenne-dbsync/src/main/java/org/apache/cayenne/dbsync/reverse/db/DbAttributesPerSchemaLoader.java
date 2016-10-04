@@ -82,7 +82,7 @@ public class DbAttributesPerSchemaLoader extends DbAttributesBaseLoader {
 				 * loading since already done pattern matching once and exactly
 				 * know all tables that we want to process
 				 */
-				if (columnFilter == null || !columnFilter.isInclude(columnName)) {
+				if (columnFilter == null || !columnFilter.isIncluded(columnName)) {
 					if (LOGGER.isDebugEnabled()) {
 						LOGGER.debug("Skip column '" + tableName + "." + columnName + "' (Path: " + getCatalog() + "/"
 								+ getSchema() + "; Filter: " + columnFilter + ")");

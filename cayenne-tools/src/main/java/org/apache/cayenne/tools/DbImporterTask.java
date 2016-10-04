@@ -36,7 +36,7 @@ import org.apache.cayenne.dbimport.IncludeTable;
 import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbimport.Schema;
 import org.apache.cayenne.dbsync.CayenneDbSyncModule;
-import org.apache.cayenne.dbsync.reverse.FiltersConfigBuilder;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;

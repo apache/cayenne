@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.dbsync.reverse.NamePatternMatcher;
+import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;

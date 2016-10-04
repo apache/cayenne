@@ -17,16 +17,16 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dbsync.reverse;
+package org.apache.cayenne.dbsync.filter;
+
+import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.commons.logging.Log;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.commons.logging.Log;
 
 /**
  * Provides name pattern matching functionality.

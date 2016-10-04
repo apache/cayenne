@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.dbsync.reverse.NameFilter;
+import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;

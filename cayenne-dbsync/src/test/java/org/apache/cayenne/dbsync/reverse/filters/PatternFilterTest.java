@@ -27,17 +27,17 @@ public class PatternFilterTest extends TestCase {
                 .include("aaa")
                 .include("bbb");
 
-        assertTrue(filter.isInclude("aaa"));
-        assertTrue(filter.isInclude("bbb"));
-        assertFalse(filter.isInclude("aaaa"));
-        assertFalse(filter.isInclude("aa"));
-        assertFalse(filter.isInclude("abb"));
+        assertTrue(filter.isIncluded("aaa"));
+        assertTrue(filter.isIncluded("bbb"));
+        assertFalse(filter.isIncluded("aaaa"));
+        assertFalse(filter.isIncluded("aa"));
+        assertFalse(filter.isIncluded("abb"));
 
         filter = new PatternFilter().include("^v_.*$");
-        assertTrue(filter.isInclude("v_new_view"));
-        assertFalse(filter.isInclude("new_view"));
-        assertFalse(filter.isInclude("view"));
-        assertFalse(filter.isInclude("girl"));
+        assertTrue(filter.isIncluded("v_new_view"));
+        assertFalse(filter.isIncluded("new_view"));
+        assertFalse(filter.isIncluded("view"));
+        assertFalse(filter.isIncluded("girl"));
     }
 
     public void testExclude() throws Exception {
@@ -45,11 +45,11 @@ public class PatternFilterTest extends TestCase {
                 .exclude("aaa")
                 .exclude("bbb");
 
-        assertFalse(filter.isInclude("aaa"));
-        assertFalse(filter.isInclude("bbb"));
-        assertTrue(filter.isInclude("aaaa"));
-        assertTrue(filter.isInclude("aa"));
-        assertTrue(filter.isInclude("abb"));
+        assertFalse(filter.isIncluded("aaa"));
+        assertFalse(filter.isIncluded("bbb"));
+        assertTrue(filter.isIncluded("aaaa"));
+        assertTrue(filter.isIncluded("aa"));
+        assertTrue(filter.isIncluded("abb"));
     }
 
     public void testIncludeExclude() throws Exception {
@@ -57,22 +57,22 @@ public class PatternFilterTest extends TestCase {
                 .include("aa.*")
                 .exclude("aaa");
 
-        assertFalse(filter.isInclude("aaa"));
-        assertFalse(filter.isInclude("bbb"));
-        assertTrue(filter.isInclude("aaaa"));
-        assertTrue(filter.isInclude("aa"));
-        assertFalse(filter.isInclude("abb"));
+        assertFalse(filter.isIncluded("aaa"));
+        assertFalse(filter.isIncluded("bbb"));
+        assertTrue(filter.isIncluded("aaaa"));
+        assertTrue(filter.isIncluded("aa"));
+        assertFalse(filter.isIncluded("abb"));
     }
 
     public void testIncludeAllFilter() {
-        assertTrue(PatternFilter.INCLUDE_EVERYTHING.isInclude("qwe"));
-        assertTrue(PatternFilter.INCLUDE_EVERYTHING.isInclude(""));
-        assertTrue(PatternFilter.INCLUDE_EVERYTHING.isInclude(null));
+        assertTrue(PatternFilter.INCLUDE_EVERYTHING.isIncluded("qwe"));
+        assertTrue(PatternFilter.INCLUDE_EVERYTHING.isIncluded(""));
+        assertTrue(PatternFilter.INCLUDE_EVERYTHING.isIncluded(null));
     }
 
     public void testIncludeNoneFilter() {
-        assertFalse(PatternFilter.INCLUDE_NOTHING.isInclude("qwe"));
-        assertFalse(PatternFilter.INCLUDE_NOTHING.isInclude(""));
-        assertFalse(PatternFilter.INCLUDE_NOTHING.isInclude(null));
+        assertFalse(PatternFilter.INCLUDE_NOTHING.isIncluded("qwe"));
+        assertFalse(PatternFilter.INCLUDE_NOTHING.isIncluded(""));
+        assertFalse(PatternFilter.INCLUDE_NOTHING.isIncluded(null));
     }
 }

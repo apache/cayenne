@@ -17,7 +17,7 @@
  *    under the License.
  */
 
-package org.apache.cayenne.dbsync.reverse;
+package org.apache.cayenne.dbsync.reverse.filters;
 
 import org.apache.cayenne.dbimport.Catalog;
 import org.apache.cayenne.dbimport.ExcludeColumn;
@@ -28,6 +28,7 @@ import org.apache.cayenne.dbimport.IncludeProcedure;
 import org.apache.cayenne.dbimport.IncludeTable;
 import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbimport.Schema;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
