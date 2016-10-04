@@ -158,7 +158,8 @@ public class DefaultDbImportAction implements DbImportAction {
         hasChanges |= applyTokens(config.createMergeDelegate(),
                 targetDataMap,
                 log(sort(reverse(mergerTokenFactory, tokens))),
-                config.getNameGenerator());
+                config.getNameGenerator(),
+                config.isUsePrimitives());
 
         if (hasChanges) {
             saveLoaded(targetDataMap);
@@ -237,7 +238,8 @@ public class DefaultDbImportAction implements DbImportAction {
     private boolean applyTokens(ModelMergeDelegate mergeDelegate,
                                 DataMap targetDataMap,
                                 Collection<MergerToken> tokens,
-                                ObjectNameGenerator nameGenerator) {
+                                ObjectNameGenerator nameGenerator,
+                                boolean usingPrimitives) {
 
         if (tokens.isEmpty()) {
             logger.info("");
@@ -258,6 +260,7 @@ public class DefaultDbImportAction implements DbImportAction {
         MergerContext mergerContext = MergerContext.builder(targetDataMap)
                 .delegate(mergeDelegate)
                 .nameGenerator(nameGenerator)
+                .usingPrimitives(usingPrimitives)
                 .build();
 
         for (MergerToken token : tokens) {

@@ -116,10 +116,6 @@ public class MergerContext {
 
             // init missing defaults ...
 
-            if (context.entityMergeSupport == null) {
-                nameGenerator(new DefaultObjectNameGenerator());
-            }
-
             if (context.delegate == null) {
                 delegate(new DefaultModelMergeDelegate());
             }
