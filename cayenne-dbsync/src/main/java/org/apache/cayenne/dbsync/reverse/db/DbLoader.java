@@ -372,9 +372,8 @@ public class DbLoader {
     }
 
     /**
-     * Performs database reverse engineering to match the specified catalog,
-     * schema, table name and table type patterns and fills the specified
-     * DataMap object with DB and object mapping info.
+     * Performs database reverse engineering based on provided configuration. Stores the resulting {@link DbEntity}
+     * and {@link Procedure} objects in provided DataMap.
      *
      * @since 4.0
      */
@@ -416,7 +415,7 @@ public class DbLoader {
      *
      * @since 4.0
      */
-    public Map<String, Procedure> loadProcedures(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
+    protected Map<String, Procedure> loadProcedures(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
 
         Map<String, Procedure> procedures = loadProcedures(config);
         if (procedures.isEmpty()) {

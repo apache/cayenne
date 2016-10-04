@@ -61,7 +61,7 @@ class ModelerDbLoader extends DbLoader {
     }
 
     @Override
-    public Map<String, Procedure> loadProcedures(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
+    protected Map<String, Procedure> loadProcedures(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
         Map<String, Procedure>  procedures = super.loadProcedures(dataMap, config);
         addProcedures(procedures);
         return procedures;

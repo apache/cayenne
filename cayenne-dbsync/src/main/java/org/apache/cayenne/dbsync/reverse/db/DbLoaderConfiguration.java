@@ -27,7 +27,6 @@ import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
  */
 public class DbLoaderConfiguration {
 
-
     private Boolean skipRelationshipsLoading;
 
     private Boolean skipPrimaryKeyLoading;
@@ -60,16 +59,8 @@ public class DbLoaderConfiguration {
         return skipRelationshipsLoading != null && skipRelationshipsLoading;
     }
 
-    public Boolean getSkipRelationshipsLoading() {
-        return skipRelationshipsLoading;
-    }
-
     public void setSkipRelationshipsLoading(Boolean skipRelationshipsLoading) {
         this.skipRelationshipsLoading = skipRelationshipsLoading;
-    }
-
-    public boolean getSkipPrimaryKeyLoading() {
-        return skipPrimaryKeyLoading;
     }
 
     public boolean isSkipPrimaryKeyLoading() {
