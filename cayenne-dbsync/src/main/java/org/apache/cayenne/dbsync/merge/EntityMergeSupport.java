@@ -19,6 +19,7 @@
 package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
@@ -65,18 +66,18 @@ public class EntityMergeSupport {
     private final ObjectNameGenerator nameGenerator;
     private final List<EntityMergeListener> listeners;
     private final boolean removingMeaningfulFKs;
-    private final boolean removingMeaningfulPKs;
+    private final NameFilter meaningfulPKsFilter;
     private final boolean usingPrimitives;
 
     public EntityMergeSupport(ObjectNameGenerator nameGenerator,
-                              boolean removingMeaningfulPKs,
+                              NameFilter meaningfulPKsFilter,
                               boolean removingMeaningfulFKs,
                               boolean usingPrimitives) {
 
         this.listeners = new ArrayList<>();
         this.nameGenerator = nameGenerator;
         this.removingMeaningfulFKs = removingMeaningfulFKs;
-        this.removingMeaningfulPKs = removingMeaningfulPKs;
+        this.meaningfulPKsFilter = meaningfulPKsFilter;
         this.usingPrimitives = usingPrimitives;
 
         // will ensure that all created ObjRelationships would have
@@ -88,9 +89,6 @@ public class EntityMergeSupport {
         return removingMeaningfulFKs;
     }
 
-    public boolean isRemovingMeaningfulPKs() {
-        return removingMeaningfulPKs;
-    }
 
     /**
      * Updates each one of the collection of ObjEntities, adding attributes and
@@ -107,20 +105,6 @@ public class EntityMergeSupport {
         }
 
         return changed;
-    }
-
-    /**
-     * @since 4.0
-     */
-    protected boolean removePK(DbEntity dbEntity) {
-        return removingMeaningfulPKs;
-    }
-
-    /**
-     * @since 4.0
-     */
-    protected boolean removeFK(DbEntity dbEntity) {
-        return removingMeaningfulFKs;
     }
 
     /**
@@ -142,7 +126,7 @@ public class EntityMergeSupport {
 
         boolean changed = false;
 
-        if (removeFK(dbEntity)) {
+        if (removingMeaningfulFKs) {
             changed = getRidOfAttributesThatAreNowSrcAttributesForRelationships(entity);
         }
 
@@ -158,7 +142,7 @@ public class EntityMergeSupport {
     public boolean synchronizeOnDbAttributeAdded(ObjEntity entity, DbAttribute dbAttribute) {
 
         Collection<DbRelationship> incomingRels = getIncomingRelationships(dbAttribute.getEntity());
-        if (isMissingFromObjEntity(entity, dbAttribute, incomingRels)) {
+        if (shouldAddToObjEntity(entity, dbAttribute, incomingRels)) {
             addMissingAttribute(entity, dbAttribute);
             return true;
         }
@@ -171,7 +155,7 @@ public class EntityMergeSupport {
      */
     public boolean synchronizeOnDbRelationshipAdded(ObjEntity entity, DbRelationship dbRelationship) {
 
-        if (isMissingFromObjEntity(entity, dbRelationship)) {
+        if (shouldAddToObjEntity(entity, dbRelationship)) {
             addMissingRelationship(entity, dbRelationship);
         }
 
@@ -336,7 +320,7 @@ public class EntityMergeSupport {
 
         for (DbAttribute dba : dbEntity.getAttributes()) {
 
-            if (isMissingFromObjEntity(objEntity, dba, incomingRels)) {
+            if (shouldAddToObjEntity(objEntity, dba, incomingRels)) {
                 missing.add(dba);
             }
         }
@@ -344,14 +328,15 @@ public class EntityMergeSupport {
         return missing;
     }
 
-    protected boolean isMissingFromObjEntity(ObjEntity entity, DbAttribute dbAttribute, Collection<DbRelationship> incomingRels) {
+    protected boolean shouldAddToObjEntity(ObjEntity entity, DbAttribute dbAttribute, Collection<DbRelationship> incomingRels) {
 
         if (dbAttribute.getName() == null || entity.getAttributeForDbAttribute(dbAttribute) != null) {
             return false;
         }
 
-        boolean removeMeaningfulPKs = removePK(dbAttribute.getEntity());
-        if (removeMeaningfulPKs && dbAttribute.isPrimaryKey()) {
+        boolean addMeaningfulPK = meaningfulPKsFilter.isIncluded(entity.getDbEntityName());
+
+        if (dbAttribute.isPrimaryKey() && !addMeaningfulPK) {
             return false;
         }
 
@@ -368,7 +353,7 @@ public class EntityMergeSupport {
             }
         }
 
-        if (!removeMeaningfulPKs) {
+        if (addMeaningfulPK) {
             if (!dbAttribute.isPrimaryKey() && isFK) {
                 return false;
             }
@@ -390,7 +375,7 @@ public class EntityMergeSupport {
             }
         }
 
-        if (!removeMeaningfulPKs) {
+        if (addMeaningfulPK) {
             if (!dbAttribute.isPrimaryKey() && isFK) {
                 return false;
             }
@@ -403,7 +388,7 @@ public class EntityMergeSupport {
         return true;
     }
 
-    protected boolean isMissingFromObjEntity(ObjEntity entity, DbRelationship dbRelationship) {
+    protected boolean shouldAddToObjEntity(ObjEntity entity, DbRelationship dbRelationship) {
         return dbRelationship.getName() != null && entity.getRelationshipForDbRelationship(dbRelationship) == null;
     }
 
@@ -431,7 +416,7 @@ public class EntityMergeSupport {
     protected List<DbRelationship> getRelationshipsToAdd(ObjEntity objEntity) {
         List<DbRelationship> missing = new ArrayList<DbRelationship>();
         for (DbRelationship dbRel : objEntity.getDbEntity().getRelationships()) {
-            if (isMissingFromObjEntity(objEntity, dbRel)) {
+            if (shouldAddToObjEntity(objEntity, dbRel)) {
                 missing.add(dbRel);
             }
         }

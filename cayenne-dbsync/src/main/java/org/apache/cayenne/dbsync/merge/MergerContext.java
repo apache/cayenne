@@ -20,6 +20,8 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.filter.NameFilter;
+import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
@@ -105,6 +107,7 @@ public class MergerContext {
         private MergerContext context;
         private ObjectNameGenerator nameGenerator;
         private boolean usingPrimitives;
+        private NameFilter meaningfulPKsFilter;
 
         private Builder(DataMap dataMap) {
             this.context = new MergerContext();
@@ -128,7 +131,11 @@ public class MergerContext {
                 nameGenerator = new DefaultObjectNameGenerator();
             }
 
-            context.entityMergeSupport = new EntityMergeSupport(nameGenerator, true, true, usingPrimitives);
+            if(meaningfulPKsFilter == null) {
+                meaningfulPKsFilter = NamePatternMatcher.EXCLUDE_ALL;
+            }
+
+            context.entityMergeSupport = new EntityMergeSupport(nameGenerator, meaningfulPKsFilter, true, usingPrimitives);
 
             return context;
         }
@@ -150,6 +157,11 @@ public class MergerContext {
 
         public Builder dataNode(DataNode dataNode) {
             this.context.dataNode = Objects.requireNonNull(dataNode);
+            return this;
+        }
+
+        public Builder meaningfulPKFilter(NameFilter filter) {
+            this.meaningfulPKsFilter = Objects.requireNonNull(filter);
             return this;
         }
 

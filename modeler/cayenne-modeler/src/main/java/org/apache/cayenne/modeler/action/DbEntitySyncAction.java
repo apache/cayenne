@@ -89,6 +89,8 @@ public class DbEntitySyncAction extends CayenneAction {
 
 				merger.addEntityMergeListener(listener);
 
+				// TODO: addition or removal of model objects should be reflected in listener callbacks...
+				// we should not be trying to introspect the merger
 				if (merger.isRemovingMeaningfulFKs()) {
 					undoableEdit.addEdit(undoableEdit.new MeaningfulFKsUndoableEdit(entity, merger
 							.getMeaningfulFKs(entity)));

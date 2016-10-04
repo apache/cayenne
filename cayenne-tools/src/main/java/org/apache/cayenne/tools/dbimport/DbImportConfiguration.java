@@ -22,6 +22,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.filter.NameFilter;
+import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.merge.DefaultModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
@@ -43,6 +45,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.util.Collections;
+import java.util.regex.Pattern;
 
 /**
  * @since 4.0
@@ -140,6 +143,22 @@ public class DbImportConfiguration {
         return new DbLoader(connection, adapter, loaderDelegate, getNameGenerator());
     }
 
+    public NameFilter getMeaningfulPKFilter() {
+
+        if (meaningfulPkTables == null) {
+            return NamePatternMatcher.EXCLUDE_ALL;
+        }
+
+        // TODO: this filter can't handle table names with comma in them
+        String[] patternStrings = meaningfulPkTables.split(",");
+        Pattern[] patterns = new Pattern[patternStrings.length];
+        for (int i = 0; i < patterns.length; i++) {
+            patterns[i] = Pattern.compile(patternStrings[i]);
+        }
+
+        return new NamePatternMatcher(patterns, new Pattern[0]);
+    }
+
     public ObjectNameGenerator getNameGenerator() {
 
         // TODO: load via DI AdhocObjectFactory
@@ -205,7 +224,7 @@ public class DbImportConfiguration {
 
         DataMap dataMap = new DataMap();
         initializeDataMap(dataMap);
-        return  dataMap;
+        return dataMap;
     }
 
     protected void initializeDataMap(DataMap dataMap) throws MalformedURLException {

@@ -19,10 +19,11 @@
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
+import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 
@@ -69,7 +70,7 @@ public class EntitySyncController extends CayenneController {
         }
 
         // TODO: Modeler-controlled defaults for all the hardcoded boolean flags here.
-        EntityMergeSupport merger = new EntityMergeSupport(namingStrategy, true, true, true);
+        EntityMergeSupport merger = new EntityMergeSupport(namingStrategy, NamePatternMatcher.EXCLUDE_ALL, true, true);
 
         // see if we need to remove meaningful attributes...
         for (ObjEntity entity : entities) {
@@ -114,8 +115,8 @@ public class EntitySyncController extends CayenneController {
         makeCloseableOnEscape();
         view.setVisible(true);
 
-        // TODO: Modeler-controlled defaults for all the hardcoded boolean flags here.
-        return cancel[0] ? null : new EntityMergeSupport(namingStrategy, true, removeFKs[0], true);
+        // TODO: Modeler-controlled defaults for all the hardcoded flags here.
+        return cancel[0] ? null : new EntityMergeSupport(namingStrategy, NamePatternMatcher.EXCLUDE_ALL, removeFKs[0], true);
     }
 
     @Override

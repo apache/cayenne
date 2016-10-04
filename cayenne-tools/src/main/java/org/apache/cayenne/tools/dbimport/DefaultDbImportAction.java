@@ -23,6 +23,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.dbsync.merge.AbstractToModelToken;
 import org.apache.cayenne.dbsync.merge.AddRelationshipToDb;
 import org.apache.cayenne.dbsync.merge.DbMerger;
@@ -159,6 +160,7 @@ public class DefaultDbImportAction implements DbImportAction {
                 targetDataMap,
                 log(sort(reverse(mergerTokenFactory, tokens))),
                 config.getNameGenerator(),
+                config.getMeaningfulPKFilter(),
                 config.isUsePrimitives());
 
         if (hasChanges) {
@@ -239,6 +241,7 @@ public class DefaultDbImportAction implements DbImportAction {
                                 DataMap targetDataMap,
                                 Collection<MergerToken> tokens,
                                 ObjectNameGenerator nameGenerator,
+                                NameFilter meaningfulPKFilter,
                                 boolean usingPrimitives) {
 
         if (tokens.isEmpty()) {
@@ -261,6 +264,7 @@ public class DefaultDbImportAction implements DbImportAction {
                 .delegate(mergeDelegate)
                 .nameGenerator(nameGenerator)
                 .usingPrimitives(usingPrimitives)
+                .meaningfulPKFilter(meaningfulPKFilter)
                 .build();
 
         for (MergerToken token : tokens) {

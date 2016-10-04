@@ -32,6 +32,7 @@ CAY-2107 cayenne-crypto: Lazy initialization of crypto subsystem
 CAY-2111 Unbind transaction object from the current thread for iterated queries
 CAY-2112 Expose callback for "performInTransaction"
 CAY-2113 cdbimport: Reverse-engineering reinstates previously ignored columns
+CAY-2114 cdbimport: object layer settings are not respected
 CAY-2115 DbLoader - allow loading DataMap without Obj layer
 CAY-2116 Split schema synchronization code in a separate module
 CAY-2118 cdbimport: drop support for the old style of table filtering

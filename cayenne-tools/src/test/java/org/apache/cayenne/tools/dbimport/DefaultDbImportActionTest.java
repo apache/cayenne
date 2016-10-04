@@ -24,6 +24,7 @@ import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.CayenneDbSyncModule;
+import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.merge.AddColumnToDb;
 import org.apache.cayenne.dbsync.merge.AddRelationshipToDb;
 import org.apache.cayenne.dbsync.merge.CreateTableToDb;
@@ -171,6 +172,7 @@ public class DefaultDbImportActionTest {
         when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
         when(params.getNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
+        when(params.getMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
 
         final boolean[] haveWeTriedToSave = {false};
         DefaultDbImportAction action = buildDbImportAction(new FileProjectSaver() {

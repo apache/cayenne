@@ -35,6 +35,14 @@ import java.util.regex.PatternSyntaxException;
  */
 public class NamePatternMatcher implements NameFilter {
 
+    public static final NameFilter EXCLUDE_ALL = new NameFilter() {
+
+        @Override
+        public boolean isIncluded(String obj) {
+            return false;
+        }
+    };
+
     private static final String[] EMPTY_ARRAY = new String[0];
     private static final Pattern COMMA = Pattern.compile(",");
 
