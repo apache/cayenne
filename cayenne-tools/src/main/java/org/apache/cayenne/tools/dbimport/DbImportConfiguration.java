@@ -222,7 +222,7 @@ public class DbImportConfiguration {
             dataMap.setDefaultPackage(defaultPackage);
         }
 
-        CatalogFilter[] catalogs = dbLoaderConfiguration.getFiltersConfig().catalogs;
+        CatalogFilter[] catalogs = dbLoaderConfiguration.getFiltersConfig().getCatalogs();
         if (catalogs.length > 0) {
             // do not override default catalog of existing DataMap unless it is
             // explicitly requested by the plugin caller, and the provided catalog is

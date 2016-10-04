@@ -76,7 +76,7 @@ class ModelerDbLoader extends DbLoader {
         String[] types = getTableTypes(config);
 
         boolean isNullDetected = false;
-        for (CatalogFilter catalog : config.getFiltersConfig().catalogs) {
+        for (CatalogFilter catalog : config.getFiltersConfig().getCatalogs()) {
             for (SchemaFilter schema : catalog.schemas) {
                 if (schema.name == null && catalog.name == null) {
                     isNullDetected = true;
@@ -141,7 +141,7 @@ class ModelerDbLoader extends DbLoader {
         DBElement currentDBCatalog = null;
         DBElement currentDBSchema = null;
 
-        for (CatalogFilter catalog : config.getFiltersConfig().catalogs) {
+        for (CatalogFilter catalog : config.getFiltersConfig().getCatalogs()) {
             for (SchemaFilter schema : catalog.schemas) {
                 List<DbEntity> entityList =
                         createTableLoader(catalog.name, schema.name, schema.tables)
@@ -198,7 +198,7 @@ class ModelerDbLoader extends DbLoader {
         DBElement currentDBCatalog;
         DBElement currentDBSchema;
 
-        for (CatalogFilter catalog : config.getFiltersConfig().catalogs) {
+        for (CatalogFilter catalog : config.getFiltersConfig().getCatalogs()) {
             for (SchemaFilter schema : catalog.schemas) {
                 List<DbEntity> entityList =
                         createTableLoader(catalog.name, schema.name, schema.tables)

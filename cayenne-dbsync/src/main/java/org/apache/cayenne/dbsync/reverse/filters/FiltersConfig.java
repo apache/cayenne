@@ -26,7 +26,7 @@ import java.util.Arrays;
  */
 public class FiltersConfig {
 
-    public final CatalogFilter[] catalogs;
+    private final CatalogFilter[] catalogs;
 
     public FiltersConfig(CatalogFilter ... catalogs) {
         if (catalogs == null || catalogs.length == 0) {
@@ -34,6 +34,10 @@ public class FiltersConfig {
         }
 
         this.catalogs = catalogs;
+    }
+
+    public CatalogFilter[] getCatalogs() {
+        return catalogs;
     }
 
     public PatternFilter proceduresFilter(String catalog, String schema) {

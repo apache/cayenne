@@ -387,7 +387,7 @@ public class DbLoader {
 
         String[] types = getTableTypes(config);
 
-        for (CatalogFilter catalog : config.getFiltersConfig().catalogs) {
+        for (CatalogFilter catalog : config.getFiltersConfig().getCatalogs()) {
             for (SchemaFilter schema : catalog.schemas) {
                 List<DbEntity> entities = createTableLoader(catalog.name, schema.name, schema.tables).loadDbEntities(
                         dataMap, config, types);
@@ -435,7 +435,7 @@ public class DbLoader {
     private void loadProceduresColumns(DbLoaderConfiguration config, Map<String, Procedure> procedures)
             throws SQLException {
 
-        for (CatalogFilter catalog : config.getFiltersConfig().catalogs) {
+        for (CatalogFilter catalog : config.getFiltersConfig().getCatalogs()) {
             for (SchemaFilter schema : catalog.schemas) {
                 loadProceduresColumns(procedures, catalog.name, schema.name);
             }
@@ -516,7 +516,7 @@ public class DbLoader {
         Map<String, Procedure> procedures = new HashMap<>();
 
         FiltersConfig filters = config.getFiltersConfig();
-        for (CatalogFilter catalog : filters.catalogs) {
+        for (CatalogFilter catalog : filters.getCatalogs()) {
             for (SchemaFilter schema : catalog.schemas) {
                 if (filters.proceduresFilter(catalog.name, schema.name).isEmpty()) {
                     continue;
