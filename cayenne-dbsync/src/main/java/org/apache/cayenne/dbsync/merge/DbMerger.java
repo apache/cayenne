@@ -18,7 +18,6 @@
  */
 package org.apache.cayenne.dbsync.merge;
 
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
@@ -105,14 +104,13 @@ public class DbMerger {
     }
 
     /**
-     * Create and return a {@link List} of {@link MergerToken}s to alter the
-     * given {@link DataNode} to match the given {@link DataMap}
+     * Create MergerTokens that represent the difference between two {@link DataMap} objects.
      */
-    public List<MergerToken> createMergeTokens(DataMap existing, DataMap loadedFomDb) {
+    public List<MergerToken> createMergeTokens(DataMap dataMap, DataMap dbImport) {
 
-        loadedFomDb.setQuotingSQLIdentifiers(existing.isQuotingSQLIdentifiers());
+        dbImport.setQuotingSQLIdentifiers(dataMap.isQuotingSQLIdentifiers());
 
-        List<MergerToken> tokens = createMergeTokens(filter(existing, filters), loadedFomDb.getDbEntities());
+        List<MergerToken> tokens = createMergeTokens(filter(dataMap, filters), dbImport.getDbEntities());
 
         // sort. use a custom Comparator since only toDb tokens are comparable
         // by now
@@ -140,15 +138,15 @@ public class DbMerger {
         return existingFiltered;
     }
 
-    protected List<MergerToken> createMergeTokens(Collection<DbEntity> existing, Collection<DbEntity> loadedFromDb) {
-        Collection<DbEntity> dbEntitiesToDrop = new LinkedList<>(loadedFromDb);
+    protected List<MergerToken> createMergeTokens(Collection<DbEntity> entities, Collection<DbEntity> dbImportedEntities) {
+        Collection<DbEntity> dbEntitiesToDrop = new LinkedList<>(dbImportedEntities);
 
         List<MergerToken> tokens = new LinkedList<>();
-        for (DbEntity dbEntity : existing) {
+        for (DbEntity dbEntity : entities) {
             String tableName = dbEntity.getName();
 
             // look for table
-            DbEntity detectedEntity = findDbEntity(loadedFromDb, tableName);
+            DbEntity detectedEntity = findDbEntity(dbImportedEntities, tableName);
             if (detectedEntity == null) {
                 tokens.add(tokenFactory.createCreateTableToDb(dbEntity));
                 // TODO: does this work properly with createReverse?
@@ -180,7 +178,7 @@ public class DbMerger {
         for (DbEntity e : dbEntitiesToDrop) {
             tokens.add(tokenFactory.createDropTableToDb(e));
             for (DbRelationship relationship : e.getRelationships()) {
-                DbEntity detectedEntity = findDbEntity(existing, relationship.getTargetEntityName());
+                DbEntity detectedEntity = findDbEntity(entities, relationship.getTargetEntityName());
                 if (detectedEntity != null) {
                     tokens.add(tokenFactory.createDropRelationshipToDb(detectedEntity, relationship.getReverseRelationship()));
                 }
@@ -390,7 +388,7 @@ public class DbMerger {
                 merger.valueForNull = new EmptyValueForNullProvider();
             }
 
-            if(merger.filters == null) {
+            if (merger.filters == null) {
                 // default: match all tables, no stored procedures
                 merger.filters = FiltersConfig.create(null, null, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING);
             }
