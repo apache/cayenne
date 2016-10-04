@@ -190,6 +190,14 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         test("testUnFlattensManyToMany");
     }
 
+	/**
+	 * Make sure any merges preserve custom object layer settings, like "usePrimitives", PK mapping as attribute, etc.
+	 */
+	@Test
+	public void testCustomObjectLayerSettings() throws Exception {
+		test("testCustomObjectLayerSettings");
+	}
+
     /**
      * CREATE TABLE APP.A (
      * id INTEGER NOT NULL,
