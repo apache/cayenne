@@ -26,15 +26,14 @@ import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.SchemaFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.modeler.dialog.db.model.DBCatalog;
-import org.apache.cayenne.modeler.dialog.db.model.DBColumn;
-import org.apache.cayenne.modeler.dialog.db.model.DBElement;
-import org.apache.cayenne.modeler.dialog.db.model.DBEntity;
-import org.apache.cayenne.modeler.dialog.db.model.DBModel;
-import org.apache.cayenne.modeler.dialog.db.model.DBProcedure;
-import org.apache.cayenne.modeler.dialog.db.model.DBSchema;
+import org.apache.cayenne.modeler.dialog.db.model.DbCatalog;
+import org.apache.cayenne.modeler.dialog.db.model.DbColumn;
+import org.apache.cayenne.modeler.dialog.db.model.DbElement;
+import org.apache.cayenne.modeler.dialog.db.model.DbEntity;
+import org.apache.cayenne.modeler.dialog.db.model.DbModel;
+import org.apache.cayenne.modeler.dialog.db.model.DbProcedure;
+import org.apache.cayenne.modeler.dialog.db.model.DbSchema;
 import org.apache.cayenne.modeler.dialog.pref.TreeEditor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,10 +61,10 @@ class ModelerDbLoader extends DbLoader {
     }
 
     @Override
-    public void load(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
-        Map<String, Procedure> procedureMap = loadProcedures(dataMap, config);
-        load(dataMap, config);
-        addProcedures(procedureMap);
+    public Map<String, Procedure> loadProcedures(DataMap dataMap, DbLoaderConfiguration config) throws SQLException {
+        Map<String, Procedure>  procedures = super.loadProcedures(dataMap, config);
+        addProcedures(procedures);
+        return procedures;
     }
 
     @Override
@@ -91,43 +90,43 @@ class ModelerDbLoader extends DbLoader {
     }
 
     private void addProcedures(Map<String, Procedure> procedureMap) throws SQLException {
-        DBElement currentDBCatalog;
-        DBElement currentDBSchema;
+        DbElement currentDBCatalog;
+        DbElement currentDBSchema;
         for (Map.Entry<String, Procedure> procedure : procedureMap.entrySet()) {
             if (supportCatalogs()) {
                 String dbCatalogName = procedure.getValue().getCatalog();
-                DBElement dbCatalog = reverseEngineeringController.dbModel.getExistingElement(dbCatalogName);
+                DbElement dbCatalog = reverseEngineeringController.dbModel.getExistingElement(dbCatalogName);
                 if (dbCatalog != null) {
                     currentDBCatalog = dbCatalog;
                 } else {
-                    currentDBCatalog = new DBCatalog(dbCatalogName);
+                    currentDBCatalog = new DbCatalog(dbCatalogName);
                     reverseEngineeringController.dbModel.addElement(currentDBCatalog);
                 }
                 if (supportSchemas()) {
                     String dbSchemaName = procedure.getValue().getSchema();
-                    DBElement dbSchema = currentDBCatalog.getExistingElement(dbSchemaName);
+                    DbElement dbSchema = currentDBCatalog.getExistingElement(dbSchemaName);
                     if (dbSchema != null) {
                         currentDBSchema = dbSchema;
                     } else {
-                        currentDBSchema = new DBSchema(dbSchemaName);
+                        currentDBSchema = new DbSchema(dbSchemaName);
                         currentDBCatalog.addElement(currentDBSchema);
                     }
-                    DBProcedure currentProcedure = new DBProcedure(procedure.getValue().getName());
+                    DbProcedure currentProcedure = new DbProcedure(procedure.getValue().getName());
                     currentDBSchema.addElement(currentProcedure);
                 } else {
-                    DBProcedure currentProcedure = new DBProcedure(procedure.getValue().getName());
+                    DbProcedure currentProcedure = new DbProcedure(procedure.getValue().getName());
                     currentDBCatalog.addElement(currentProcedure);
                 }
             } else if (supportSchemas()) {
                 String dbSchemaName = procedure.getValue().getSchema();
-                DBElement dbSchema = reverseEngineeringController.dbModel.getExistingElement(dbSchemaName);
+                DbElement dbSchema = reverseEngineeringController.dbModel.getExistingElement(dbSchemaName);
                 if (dbSchema != null) {
                     currentDBSchema = dbSchema;
                 } else {
-                    currentDBSchema = new DBSchema(dbSchemaName);
+                    currentDBSchema = new DbSchema(dbSchemaName);
                     reverseEngineeringController.dbModel.addElement(currentDBSchema);
                 }
-                DBProcedure currentProcedure = new DBProcedure(procedure.getValue().getName());
+                DbProcedure currentProcedure = new DbProcedure(procedure.getValue().getName());
                 currentDBSchema.addElement(currentProcedure);
             }
         }
@@ -136,27 +135,27 @@ class ModelerDbLoader extends DbLoader {
     private void createIfNotNull(DataMap dataMap, DbLoaderConfiguration config,
                                  String[] types) throws SQLException {
         treeEditor.setRoot(reverseEngineeringController.dataSourceKey);
-        reverseEngineeringController.dbModel = new DBModel(reverseEngineeringController.dataSourceKey);
+        reverseEngineeringController.dbModel = new DbModel(reverseEngineeringController.dataSourceKey);
         boolean catalogSetted = false;
-        DBElement currentDBCatalog = null;
-        DBElement currentDBSchema = null;
+        DbElement currentDBCatalog = null;
+        DbElement currentDBSchema = null;
 
         for (CatalogFilter catalog : config.getFiltersConfig().getCatalogs()) {
             for (SchemaFilter schema : catalog.schemas) {
-                List<DbEntity> entityList =
+                List<org.apache.cayenne.map.DbEntity> entityList =
                         createTableLoader(catalog.name, schema.name, schema.tables)
                                 .loadDbEntities(dataMap, config, types);
-                DbEntity entityFromLoader = entityList.get(0);
+                org.apache.cayenne.map.DbEntity entityFromLoader = entityList.get(0);
 
                 if (entityFromLoader != null) {
                     if (!catalogSetted && entityFromLoader.getCatalog() != null) {
-                        currentDBCatalog = new DBCatalog(entityFromLoader.getCatalog());
+                        currentDBCatalog = new DbCatalog(entityFromLoader.getCatalog());
                         reverseEngineeringController.dbModel.addElement(currentDBCatalog);
                         catalogSetted = true;
                     }
 
                     if (entityFromLoader.getSchema() != null) {
-                        currentDBSchema = new DBSchema(entityFromLoader.getSchema());
+                        currentDBSchema = new DbSchema(entityFromLoader.getSchema());
                         if (currentDBCatalog != null) {
                             currentDBCatalog.addElement(currentDBSchema);
                         } else {
@@ -165,20 +164,20 @@ class ModelerDbLoader extends DbLoader {
                     }
                 }
 
-                DBEntity currentDBEntity;
+                DbEntity currentDBEntity;
                 if (currentDBSchema != null) {
-                    for (DbEntity dbEntity : entityList) {
-                        currentDBEntity = new DBEntity(dbEntity.getName());
+                    for (org.apache.cayenne.map.DbEntity dbEntity : entityList) {
+                        currentDBEntity = new DbEntity(dbEntity.getName());
                         currentDBSchema.addElement(currentDBEntity);
                         for (DbAttribute dbColumn : dbEntity.getAttributes()) {
-                            currentDBEntity.addElement(new DBColumn(dbColumn.getName()));
+                            currentDBEntity.addElement(new DbColumn(dbColumn.getName()));
                         }
                     }
                 } else {
-                    for (DbEntity dbEntity : entityList) {
-                        currentDBEntity = new DBEntity(dbEntity.getName());
+                    for (org.apache.cayenne.map.DbEntity dbEntity : entityList) {
+                        currentDBEntity = new DbEntity(dbEntity.getName());
                         for (DbAttribute dbColumn : dbEntity.getAttributes()) {
-                            currentDBEntity.addElement(new DBColumn(dbColumn.getName()));
+                            currentDBEntity.addElement(new DbColumn(dbColumn.getName()));
                         }
                         currentDBCatalog.addElement(currentDBEntity);
                     }
@@ -194,61 +193,61 @@ class ModelerDbLoader extends DbLoader {
                               String[] types) throws SQLException {
 
         treeEditor.setRoot(reverseEngineeringController.dataSourceKey);
-        reverseEngineeringController.dbModel = new DBModel(reverseEngineeringController.dataSourceKey);
-        DBElement currentDBCatalog;
-        DBElement currentDBSchema;
+        reverseEngineeringController.dbModel = new DbModel(reverseEngineeringController.dataSourceKey);
+        DbElement currentDBCatalog;
+        DbElement currentDBSchema;
 
         for (CatalogFilter catalog : config.getFiltersConfig().getCatalogs()) {
             for (SchemaFilter schema : catalog.schemas) {
-                List<DbEntity> entityList =
+                List<org.apache.cayenne.map.DbEntity> entityList =
                         createTableLoader(catalog.name, schema.name, schema.tables)
                                 .loadDbEntities(dataMap, config, types);
 
-                for (DbEntity dbEntity : entityList) {
+                for (org.apache.cayenne.map.DbEntity dbEntity : entityList) {
                     if (supportCatalogs()) {
                         String dbCatalogName = dbEntity.getCatalog();
-                        DBElement dbCatalog = reverseEngineeringController.dbModel.getExistingElement(dbCatalogName);
+                        DbElement dbCatalog = reverseEngineeringController.dbModel.getExistingElement(dbCatalogName);
                         if (dbCatalog != null) {
                             currentDBCatalog = dbCatalog;
                         } else {
-                            currentDBCatalog = new DBCatalog(dbCatalogName);
+                            currentDBCatalog = new DbCatalog(dbCatalogName);
                             reverseEngineeringController.dbModel.addElement(currentDBCatalog);
                         }
                         if (supportSchemas()) {
                             String dbSchemaName = dbEntity.getSchema();
-                            DBElement dbSchema = currentDBCatalog.getExistingElement(dbSchemaName);
+                            DbElement dbSchema = currentDBCatalog.getExistingElement(dbSchemaName);
                             if (dbSchema != null) {
                                 currentDBSchema = dbSchema;
                             } else {
-                                currentDBSchema = new DBSchema(dbSchemaName);
+                                currentDBSchema = new DbSchema(dbSchemaName);
                                 currentDBCatalog.addElement(currentDBSchema);
                             }
-                            DBEntity currentDBEntity = new DBEntity(dbEntity.getName());
+                            DbEntity currentDBEntity = new DbEntity(dbEntity.getName());
                             currentDBSchema.addElement(currentDBEntity);
                             for (DbAttribute dbColumn : dbEntity.getAttributes()) {
-                                currentDBEntity.addElement(new DBColumn(dbColumn.getName()));
+                                currentDBEntity.addElement(new DbColumn(dbColumn.getName()));
                             }
                         } else {
-                            DBEntity currentDBEntity = new DBEntity(dbEntity.getName());
+                            DbEntity currentDBEntity = new DbEntity(dbEntity.getName());
                             currentDBCatalog.addElement(currentDBEntity);
                             for (DbAttribute dbColumn : dbEntity.getAttributes()) {
-                                currentDBEntity.addElement(new DBColumn(dbColumn.getName()));
+                                currentDBEntity.addElement(new DbColumn(dbColumn.getName()));
                             }
                         }
                     } else {
                         if (supportSchemas()) {
                             String dbSchemaName = dbEntity.getSchema();
-                            DBElement dbSchema = reverseEngineeringController.dbModel.getExistingElement(dbSchemaName);
+                            DbElement dbSchema = reverseEngineeringController.dbModel.getExistingElement(dbSchemaName);
                             if (dbSchema != null) {
                                 currentDBSchema = dbSchema;
                             } else {
-                                currentDBSchema = new DBSchema(dbSchemaName);
+                                currentDBSchema = new DbSchema(dbSchemaName);
                                 reverseEngineeringController.dbModel.addElement(currentDBSchema);
                             }
-                            DBEntity currentDBEntity = new DBEntity(dbEntity.getName());
+                            DbEntity currentDBEntity = new DbEntity(dbEntity.getName());
                             currentDBSchema.addElement(currentDBEntity);
                             for (DbAttribute dbColumn : dbEntity.getAttributes()) {
-                                currentDBEntity.addElement(new DBColumn(dbColumn.getName()));
+                                currentDBEntity.addElement(new DbColumn(dbColumn.getName()));
                             }
                         }
                     }

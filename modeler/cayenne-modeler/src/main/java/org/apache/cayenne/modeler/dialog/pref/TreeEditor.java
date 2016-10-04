@@ -18,11 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.pref;
 
-import org.apache.cayenne.modeler.dialog.db.model.DBCatalog;
-import org.apache.cayenne.modeler.dialog.db.model.DBElement;
-import org.apache.cayenne.modeler.dialog.db.model.DBEntity;
-import org.apache.cayenne.modeler.dialog.db.model.DBModel;
-import org.apache.cayenne.modeler.dialog.db.model.DBSchema;
+import org.apache.cayenne.modeler.dialog.db.model.DbCatalog;
+import org.apache.cayenne.modeler.dialog.db.model.DbElement;
+import org.apache.cayenne.modeler.dialog.db.model.DbEntity;
+import org.apache.cayenne.modeler.dialog.db.model.DbModel;
+import org.apache.cayenne.modeler.dialog.db.model.DbSchema;
 import org.apache.cayenne.modeler.util.CayenneController;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -52,14 +52,14 @@ public class TreeEditor extends CayenneController {
         model.setRoot(root);
     }
 
-    public void convertTreeViewIntoTreeNode(DBModel dbModel) {
+    public void convertTreeViewIntoTreeNode(DbModel dbModel) {
         DefaultMutableTreeNode modelNode = new DefaultMutableTreeNode(dbModel);
-        for (DBElement dbElement: dbModel.getDbElements()) {
+        for (DbElement dbElement: dbModel.getElements()) {
             DefaultMutableTreeNode elementNode = new DefaultMutableTreeNode(dbElement);
-            if (dbElement instanceof DBCatalog) {
+            if (dbElement instanceof DbCatalog) {
                 parseCatalog(dbElement, elementNode);
             }
-            if (dbElement instanceof DBSchema) {
+            if (dbElement instanceof DbSchema) {
                 parseSchema(dbElement, elementNode);
             }
             modelNode.add(elementNode);
@@ -69,31 +69,31 @@ public class TreeEditor extends CayenneController {
         model.setRoot(root);
     }
 
-    public void parseCatalog(DBElement catalog, DefaultMutableTreeNode elementNode) {
-        for (DBElement dbElement: catalog.getDbElements()) {
+    public void parseCatalog(DbElement catalog, DefaultMutableTreeNode elementNode) {
+        for (DbElement dbElement: catalog.getElements()) {
             DefaultMutableTreeNode element = new DefaultMutableTreeNode(dbElement);
-            if (dbElement instanceof DBSchema) {
+            if (dbElement instanceof DbSchema) {
                 parseSchema(dbElement, element);
             }
-            if (dbElement instanceof DBEntity){
+            if (dbElement instanceof DbEntity){
                 parseEntity(dbElement, element);
             }
             elementNode.add(element);
         }
     }
 
-    public void parseSchema(DBElement schema, DefaultMutableTreeNode elementNode) {
-        for (DBElement element: schema.getDbElements()) {
+    public void parseSchema(DbElement schema, DefaultMutableTreeNode elementNode) {
+        for (DbElement element: schema.getElements()) {
             DefaultMutableTreeNode entityNode = new DefaultMutableTreeNode(element);
-            if (element instanceof DBEntity) {
+            if (element instanceof DbEntity) {
                 parseEntity(element, entityNode);
             }
             elementNode.add(entityNode);
         }
     }
 
-    private void parseEntity(DBElement entity, DefaultMutableTreeNode entityNode) {
-        for (DBElement column: entity.getDbElements()) {
+    private void parseEntity(DbElement entity, DefaultMutableTreeNode entityNode) {
+        for (DbElement column: entity.getElements()) {
             DefaultMutableTreeNode columnNode = new DefaultMutableTreeNode(column);
             entityNode.add(columnNode);
         }

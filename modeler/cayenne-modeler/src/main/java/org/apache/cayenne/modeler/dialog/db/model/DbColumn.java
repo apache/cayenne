@@ -21,18 +21,14 @@ package org.apache.cayenne.modeler.dialog.db.model;
 /**
  * @since 4.0
  */
-public class DBModel extends DBElement {
-    public DBModel(String name) {
+public class DbColumn extends DbElement {
+
+    public DbColumn(String name) {
         super(name);
     }
 
     @Override
-    public void addElement(DBElement dbElement) {
-        dbElements.add(dbElement);
-    }
-
-    @Override
-    public String toString() {
-        return name;
+    public void addElement(DbElement dbElement) {
+        throw new UnsupportedOperationException();
     }
 }

@@ -18,11 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.pref;
 
-import org.apache.cayenne.modeler.dialog.db.model.DBCatalog;
-import org.apache.cayenne.modeler.dialog.db.model.DBColumn;
-import org.apache.cayenne.modeler.dialog.db.model.DBEntity;
-import org.apache.cayenne.modeler.dialog.db.model.DBProcedure;
-import org.apache.cayenne.modeler.dialog.db.model.DBSchema;
+import org.apache.cayenne.modeler.dialog.db.model.DbCatalog;
+import org.apache.cayenne.modeler.dialog.db.model.DbColumn;
+import org.apache.cayenne.modeler.dialog.db.model.DbEntity;
+import org.apache.cayenne.modeler.dialog.db.model.DbProcedure;
+import org.apache.cayenne.modeler.dialog.db.model.DbSchema;
 import org.apache.cayenne.modeler.util.CellRenderers;
 
 import javax.swing.ImageIcon;
@@ -55,28 +55,28 @@ public class FilteredTreeCellRenderer extends DefaultTreeCellRenderer {
                     .getUserObject();
             ImageIcon imageIcon = CellRenderers.iconForObject(userObject);
 
-            if (userObject instanceof DBCatalog) {
-                setText(((DBCatalog) userObject).getName());
+            if (userObject instanceof DbCatalog) {
+                setText(((DbCatalog) userObject).getName());
                 setIcon(imageIcon);
             }
 
-            if (userObject instanceof DBSchema) {
-                setText(((DBSchema) userObject).getName());
+            if (userObject instanceof DbSchema) {
+                setText(((DbSchema) userObject).getName());
                 setIcon(imageIcon);
             }
 
-            if (userObject instanceof DBEntity) {
-                setText(((DBEntity) userObject).getName());
+            if (userObject instanceof DbEntity) {
+                setText(((DbEntity) userObject).getName());
                 setIcon(imageIcon);
             }
 
-            if (userObject instanceof DBColumn) {
-                setText(((DBColumn) userObject).getName());
+            if (userObject instanceof DbColumn) {
+                setText(((DbColumn) userObject).getName());
                 setIcon(imageIcon);
             }
 
-            if (userObject instanceof DBProcedure) {
-                setText(((DBProcedure) userObject).getName());
+            if (userObject instanceof DbProcedure) {
+                setText(((DbProcedure) userObject).getName());
                 setIcon(imageIcon);
             }
         }

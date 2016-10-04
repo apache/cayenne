@@ -26,7 +26,7 @@ import org.apache.cayenne.dbsync.reverse.FiltersConfigBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.db.model.DBModel;
+import org.apache.cayenne.modeler.dialog.db.model.DbModel;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.modeler.dialog.pref.TreeEditor;
 import org.apache.cayenne.modeler.dialog.pref.XMLFileEditor;
@@ -57,7 +57,7 @@ public class ReverseEngineeringController extends CayenneController {
     protected ProjectController projectController;
     protected ReverseEngineeringView view;
     protected Map<String, DataMapViewModel> reverseEngineeringMap;
-    protected DBModel dbModel;
+    protected DbModel dbModel;
 
     protected DataSource dataSource;
     protected DbAdapter adapter;
@@ -119,7 +119,7 @@ public class ReverseEngineeringController extends CayenneController {
 
             String mapName = projectController.getCurrentDataMap().getName();
 
-            DataMapViewModel dataMapViewModel = new DataMapViewModel(mapName);
+            DataMapViewModel dataMapViewModel = new DataMapViewModel();
             dataMapViewModel.setReverseEngineeringTree(dbModel);
             dataMapViewModel.setReverseEngineeringText(xmlFileEditor.getView().getEditorPane().getText());
             reverseEngineeringMap.put(mapName, dataMapViewModel);

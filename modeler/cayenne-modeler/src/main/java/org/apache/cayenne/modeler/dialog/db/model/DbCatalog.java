@@ -21,17 +21,10 @@ package org.apache.cayenne.modeler.dialog.db.model;
 /**
  * @since 4.0
  */
-public class DBEntity extends DBElement{
-    public DBEntity(String name) {
+public class DbCatalog extends DbElement {
+
+    public DbCatalog(String name) {
         super(name);
     }
 
-    public void addElement(DBElement dbElement){
-        dbElements.add(dbElement);
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
 }

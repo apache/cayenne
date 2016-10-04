@@ -18,20 +18,15 @@
  */
 package org.apache.cayenne.modeler.dialog.db;
 
-import org.apache.cayenne.modeler.dialog.db.model.DBModel;
+import org.apache.cayenne.modeler.dialog.db.model.DbModel;
 
 /**
  * @since 4.0
  */
 public class DataMapViewModel {
-    private final String dataMapName;
 
     private String reverseEngineeringText;
-    private DBModel reverseEngineeringTree;
-
-    public DataMapViewModel(String dataMapName) {
-        this.dataMapName = dataMapName;
-    }
+    private DbModel reverseEngineeringTree;
 
     public String getReverseEngineeringText() {
         return reverseEngineeringText;
@@ -41,11 +36,11 @@ public class DataMapViewModel {
         this.reverseEngineeringText = reverseEngineeringText;
     }
 
-    public DBModel getReverseEngineeringTree() {
+    public DbModel getReverseEngineeringTree() {
         return reverseEngineeringTree;
     }
 
-    public void setReverseEngineeringTree(DBModel reverseEngineeringTree) {
+    public void setReverseEngineeringTree(DbModel reverseEngineeringTree) {
         this.reverseEngineeringTree = reverseEngineeringTree;
     }
 }

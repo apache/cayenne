@@ -27,7 +27,7 @@ import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.db.model.DBModel;
+import org.apache.cayenne.modeler.dialog.db.model.DbModel;
 import org.apache.cayenne.modeler.dialog.pref.TreeEditor;
 import org.apache.cayenne.modeler.dialog.pref.XMLFileEditor;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
@@ -170,7 +170,7 @@ public class ReverseEngineeringView extends JPanel {
 
                 if (tempDataMap != null) {
                     String mapName = tempDataMap.getName();
-                    DataMapViewModel dataMapViewModel = new DataMapViewModel(mapName);
+                    DataMapViewModel dataMapViewModel = new DataMapViewModel();
                     String xmlText = xmlFileEditor.getView().getEditorPane().getText();
                     dataMapViewModel.setReverseEngineeringText(xmlText);
                     if (reverseEngineeringViewMap.containsKey(mapName)) {
@@ -178,10 +178,10 @@ public class ReverseEngineeringView extends JPanel {
                         if (dataMapViewPrevious.getReverseEngineeringTree() != null) {
                             dataMapViewModel.setReverseEngineeringTree(dataMapViewPrevious.getReverseEngineeringTree());
                         } else {
-                            dataMapViewModel.setReverseEngineeringTree(new DBModel(""));
+                            dataMapViewModel.setReverseEngineeringTree(new DbModel(""));
                         }
                     } else {
-                        dataMapViewModel.setReverseEngineeringTree(new DBModel(""));
+                        dataMapViewModel.setReverseEngineeringTree(new DbModel(""));
                     }
                     reverseEngineeringViewMap.put(mapName, dataMapViewModel);
                 }
@@ -222,7 +222,7 @@ public class ReverseEngineeringView extends JPanel {
 
                 if (reverseEngineeringViewMap.containsKey(dataMap.getName())) {
                     if (reverseEngineeringViewMap.get(dataMap.getName()).getReverseEngineeringTree() != null) {
-                        DBModel loadedPreviousTree = reverseEngineeringViewMap
+                        DbModel loadedPreviousTree = reverseEngineeringViewMap
                                 .get(dataMap.getName()).getReverseEngineeringTree();
                         treeEditor.convertTreeViewIntoTreeNode(loadedPreviousTree);
                     } else {

@@ -18,42 +18,16 @@
  */
 package org.apache.cayenne.modeler.dialog.db.model;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * @since 4.0
  */
-public abstract class DBElement {
-    protected String name;
-    protected List<DBElement> dbElements;
-
-    public DBElement(String name) {
-        this.name = name;
-        dbElements = new LinkedList<>();
-    }
-
-    public List<DBElement> getDbElements() {
-        return dbElements;
-    }
-
-    public DBElement getExistingElement(String name) {
-        for (DBElement dbElement : dbElements) {
-            if (dbElement.name.equals(name)) {
-                return dbElement;
-            }
-        }
-        return null;
-    }
-
-    public abstract void addElement(DBElement dbElement);
-
-    public String getName() {
-        return name;
+public class DbProcedure extends DbElement {
+    public DbProcedure(String name) {
+        super(name);
     }
 
     @Override
-    public String toString() {
-        return name;
+    public void addElement(DbElement dbElement) {
+        throw new UnsupportedOperationException();
     }
 }

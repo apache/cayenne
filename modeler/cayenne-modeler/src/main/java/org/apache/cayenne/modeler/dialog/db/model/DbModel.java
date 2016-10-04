@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  *    or more contributor license agreements.  See the NOTICE file
@@ -19,30 +18,12 @@
  */
 package org.apache.cayenne.modeler.dialog.db.model;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * @since 4.0
  */
-public class DBSchema extends DBElement{
-    public List<DBElement> getDbElements() {
-        return dbElements;
-    }
+public class DbModel extends DbElement {
 
-    protected List<DBElement> dbElements;
-
-    public DBSchema(String name) {
+    public DbModel(String name) {
         super(name);
-        dbElements = new LinkedList<>();
-    }
-
-    public void addElement(DBElement dbElement){
-        dbElements.add(dbElement);
-    }
-
-    @Override
-    public String toString() {
-        return name;
     }
 }

@@ -37,7 +37,6 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.MappingNamespace;
@@ -100,7 +99,7 @@ public final class CellRenderers {
         }
         else if (object instanceof Entity) {
             Entity entity = (Entity) object;
-            if (entity instanceof DbEntity) {
+            if (entity instanceof org.apache.cayenne.map.DbEntity) {
                 return dbEntityIcon;
             }
             else if (entity instanceof ObjEntity) {
@@ -122,16 +121,16 @@ public final class CellRenderers {
         else if (object instanceof Embeddable) {
             return embeddableIcon;
         }
-        else if (object instanceof DBColumn) {
+        else if (object instanceof DbColumn) {
             return attributeIcon;
         }
-        else if (object instanceof DBProcedure) {
+        else if (object instanceof DbProcedure) {
             return procedureIcon;
         }
-        else if (object instanceof DBEntity) {
+        else if (object instanceof DbEntity) {
             return dbEntityIcon;
         }
-        else if (object instanceof DBCatalog) {
+        else if (object instanceof DbCatalog) {
             return catalogIcon;
         }
         return null;
