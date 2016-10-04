@@ -111,8 +111,8 @@ public class CreateObjEntityAction extends CayenneAction {
 
         dataMap.addObjEntity(entity);
 
-        // perform the merge
-        EntityMergeSupport merger = new EntityMergeSupport(new DefaultObjectNameGenerator(), true, true);
+        // TODO: Modeler-controlled defaults for all the hardcoded boolean flags here.
+        EntityMergeSupport merger = new EntityMergeSupport(new DefaultObjectNameGenerator(), true, true, true);
         merger.addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
         merger.synchronizeWithDbEntity(entity);
 

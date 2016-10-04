@@ -68,7 +68,8 @@ public class EntitySyncController extends CayenneController {
             namingStrategy = NameGeneratorPreferences.defaultNameGenerator();
         }
 
-        EntityMergeSupport merger = new EntityMergeSupport(namingStrategy, true, true);
+        // TODO: Modeler-controlled defaults for all the hardcoded boolean flags here.
+        EntityMergeSupport merger = new EntityMergeSupport(namingStrategy, true, true, true);
 
         // see if we need to remove meaningful attributes...
         for (ObjEntity entity : entities) {
@@ -113,7 +114,8 @@ public class EntitySyncController extends CayenneController {
         makeCloseableOnEscape();
         view.setVisible(true);
 
-        return cancel[0] ? null : new EntityMergeSupport(namingStrategy, true, removeFKs[0]);
+        // TODO: Modeler-controlled defaults for all the hardcoded boolean flags here.
+        return cancel[0] ? null : new EntityMergeSupport(namingStrategy, true, removeFKs[0], true);
     }
 
     @Override

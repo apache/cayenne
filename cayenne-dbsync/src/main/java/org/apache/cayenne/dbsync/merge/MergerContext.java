@@ -103,6 +103,8 @@ public class MergerContext {
     public static class Builder {
 
         private MergerContext context;
+        private ObjectNameGenerator nameGenerator;
+        private boolean usingPrimitives;
 
         private Builder(DataMap dataMap) {
             this.context = new MergerContext();
@@ -126,6 +128,12 @@ public class MergerContext {
                 dataNode(new DataNode());
             }
 
+            if(nameGenerator == null) {
+                nameGenerator = new DefaultObjectNameGenerator();
+            }
+
+            context.entityMergeSupport = new EntityMergeSupport(nameGenerator, true, true, usingPrimitives);
+
             return context;
         }
 
@@ -135,8 +143,12 @@ public class MergerContext {
         }
 
         public Builder nameGenerator(ObjectNameGenerator nameGenerator) {
-            // should the last argument also be a part of the builder?
-            context.entityMergeSupport = new EntityMergeSupport(Objects.requireNonNull(nameGenerator), true, true);
+            this.nameGenerator = Objects.requireNonNull(nameGenerator);
+            return this;
+        }
+
+        public Builder usingPrimitives(boolean flag) {
+            this.usingPrimitives = flag;
             return this;
         }
 
