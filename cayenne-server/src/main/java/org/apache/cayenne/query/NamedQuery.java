@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.query;
 
-import java.util.*;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
@@ -29,12 +27,18 @@ import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.Util;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * A query that is a reference to a named parameterized query stored in the mapping. The
  * actual query is resolved during execution.
  * 
  * @since 1.2
- * @deprecated since 4.0 you should use {@link MappedQuery} instead
+ * @deprecated since 4.0 you should use {@link MappedSelect} instead
  */
 public class NamedQuery extends IndirectQuery {
 
