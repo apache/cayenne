@@ -34,12 +34,13 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * A query that is a reference to a named parameterized query stored in the mapping. The
- * actual query is resolved during execution.
+ * A query that is a reference to a named parameterized query stored in the mapping. The actual query is resolved
+ * during execution.
  * 
  * @since 1.2
- * @deprecated since 4.0 you should use {@link MappedSelect} instead
+ * @deprecated since 4.0 you should use {@link MappedSelect} or {@link MappedExec} instead.
  */
+@Deprecated
 public class NamedQuery extends IndirectQuery {
 
     protected Map<String, Object> parameters;
