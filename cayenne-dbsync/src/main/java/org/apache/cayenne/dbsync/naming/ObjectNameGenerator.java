@@ -45,6 +45,7 @@ public interface ObjectNameGenerator {
     /**
      * Generates a name for DbRelationship derived from the DB foreign key name.
      */
+    // TODO: the class is called Object* , but here it is generating a DB-layer name... Better naming?
     String dbRelationshipName(ExportedKey key, boolean toMany);
 
     /**
