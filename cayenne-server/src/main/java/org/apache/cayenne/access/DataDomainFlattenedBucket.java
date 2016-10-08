@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -34,6 +26,14 @@ import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A sync bucket that holds flattened queries.
@@ -97,12 +97,22 @@ class DataDomainFlattenedBucket {
      * @param queries
      */
     void appendInserts(Collection<Query> queries) {
+
+        // TODO: see "O(N) lookups" TODO's below. The first is relatively benign, as N is the number of DbEntities in the
+        // preceeding DataDomainInsertBucket processing. The second nested one is potentially much worse, as it may
+        // result in a linear scan of thousands of objects. E.g. it will affect cases with vertical inheritance with
+        // relationships in subclasses...
+
+        // The fix to the above is to merge this code into DataDomainInsertBucket, so that we can combine regular and
+        // flattened snapshots at the point of InsertBatchQuery creation.
+
         for (Map.Entry<DbEntity, List<FlattenedArcKey>> entry : insertArcKeys.entrySet()) {
             DbEntity dbEntity = entry.getKey();
             List<FlattenedArcKey> flattenedArcKeys = entry.getValue();
 
             DataNode node = parent.getDomain().lookupDataNode(dbEntity.getDataMap());
 
+            // TODO: O(N) lookup
             InsertBatchQuery existingQuery = findInsertBatchQuery(queries, dbEntity);
             InsertBatchQuery newQuery = new InsertBatchQuery(dbEntity, 50);
 
@@ -110,6 +120,8 @@ class DataDomainFlattenedBucket {
                 Map<String, Object> snapshot = flattenedArcKey.buildJoinSnapshotForInsert(node);
 
                 if (existingQuery != null) {
+
+                    // TODO: O(N) lookup
                     BatchQueryRow existingRow = findRowForObjectId(existingQuery.getRows(), flattenedArcKey.id1.getSourceId());
                     // todo: do we need to worry about flattenedArcKey.id2 ?
 
