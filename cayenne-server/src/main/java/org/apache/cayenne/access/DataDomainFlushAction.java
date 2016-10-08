@@ -111,7 +111,7 @@ class DataDomainFlushAction {
     }
 
     void addFlattenedInsert(DbEntity flattenedEntity, FlattenedArcKey flattenedInsertInfo) {
-        flattenedBucket.addFlattenedInsert(flattenedEntity, flattenedInsertInfo);
+        flattenedBucket.addInsertArcKey(flattenedEntity, flattenedInsertInfo);
     }
 
     void addFlattenedDelete(DbEntity flattenedEntity, FlattenedArcKey flattenedDeleteInfo) {

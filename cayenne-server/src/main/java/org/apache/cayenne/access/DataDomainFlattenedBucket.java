@@ -27,8 +27,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
@@ -41,31 +43,28 @@ import org.apache.cayenne.query.Query;
 class DataDomainFlattenedBucket {
 
     final DataDomainFlushAction parent;
-    final Map<DbEntity, InsertBatchQuery> flattenedInsertQueries;
+    final Map<DbEntity, List<FlattenedArcKey>> insertArcKeys;
     final Map<DbEntity, DeleteBatchQuery> flattenedDeleteQueries;
 
     DataDomainFlattenedBucket(DataDomainFlushAction parent) {
         this.parent = parent;
-        this.flattenedInsertQueries = new HashMap<DbEntity, InsertBatchQuery>();
+        this.insertArcKeys = new HashMap<DbEntity, List<FlattenedArcKey>>();
         this.flattenedDeleteQueries = new HashMap<DbEntity, DeleteBatchQuery>();
     }
 
     boolean isEmpty() {
-        return flattenedInsertQueries.isEmpty() && flattenedDeleteQueries.isEmpty();
+        return insertArcKeys.isEmpty() && flattenedDeleteQueries.isEmpty();
     }
 
-    void addFlattenedInsert(DbEntity flattenedEntity, FlattenedArcKey flattenedArcKey) {
+    void addInsertArcKey(DbEntity flattenedEntity, FlattenedArcKey flattenedArcKey) {
+        List<FlattenedArcKey> arcKeys = insertArcKeys.get(flattenedEntity);
 
-        InsertBatchQuery relationInsertQuery = flattenedInsertQueries.get(flattenedEntity);
-
-        if (relationInsertQuery == null) {
-            relationInsertQuery = new InsertBatchQuery(flattenedEntity, 50);
-            flattenedInsertQueries.put(flattenedEntity, relationInsertQuery);
+        if (arcKeys == null) {
+            arcKeys = new ArrayList<FlattenedArcKey>();
+            insertArcKeys.put(flattenedEntity, arcKeys);
         }
 
-        DataNode node = parent.getDomain().lookupDataNode(flattenedEntity.getDataMap());
-        Map flattenedSnapshot = flattenedArcKey.buildJoinSnapshotForInsert(node);
-        relationInsertQuery.add(flattenedSnapshot);
+        arcKeys.add(flattenedArcKey);
     }
 
     void addFlattenedDelete(DbEntity flattenedEntity, FlattenedArcKey flattenedDeleteInfo) {
@@ -90,9 +89,50 @@ class DataDomainFlattenedBucket {
         }
     }
 
+    /**
+     * responsible for adding the flattened Insert Queries. Its possible an insert query for the same DbEntity/ObjectId
+     * already has been added from the insert bucket queries if that Object also has an attribute. So we want to merge
+     * the data for each insert into a single insert.
+     *
+     * @param queries
+     */
     void appendInserts(Collection<Query> queries) {
-        if (!flattenedInsertQueries.isEmpty()) {
-            queries.addAll(flattenedInsertQueries.values());
+        for (Map.Entry<DbEntity, List<FlattenedArcKey>> entry : insertArcKeys.entrySet()) {
+            DbEntity dbEntity = entry.getKey();
+            List<FlattenedArcKey> flattenedArcKeys = entry.getValue();
+
+            DataNode node = parent.getDomain().lookupDataNode(dbEntity.getDataMap());
+
+            InsertBatchQuery existingQuery = findInsertBatchQuery(queries, dbEntity);
+            InsertBatchQuery newQuery = new InsertBatchQuery(dbEntity, 50);
+
+            for (FlattenedArcKey flattenedArcKey : flattenedArcKeys) {
+                Map<String, Object> snapshot = flattenedArcKey.buildJoinSnapshotForInsert(node);
+
+                if (existingQuery != null) {
+                    BatchQueryRow existingRow = findRowForObjectId(existingQuery.getRows(), flattenedArcKey.id1.getSourceId());
+                    // todo: do we need to worry about flattenedArcKey.id2 ?
+
+                    if (existingRow != null) {
+                        List<DbAttribute> existingQueryDbAttributes = existingQuery.getDbAttributes();
+
+                        for(int i=0; i < existingQueryDbAttributes.size(); i++) {
+                            Object value = existingRow.getValue(i);
+                            if (value != null) {
+                                snapshot.put(existingQueryDbAttributes.get(i).getName(), value);
+                            }
+                        }
+                    }
+                }
+
+                newQuery.add(snapshot);
+            }
+
+            if (existingQuery != null) {
+                queries.remove(existingQuery);
+            }
+
+            queries.add(newQuery);
         }
     }
 
@@ -100,5 +140,26 @@ class DataDomainFlattenedBucket {
         if (!flattenedDeleteQueries.isEmpty()) {
             queries.addAll(flattenedDeleteQueries.values());
         }
+    }
+
+    private InsertBatchQuery findInsertBatchQuery(Collection<Query> queries, DbEntity dbEntity) {
+        for(Query query : queries) {
+            if (query instanceof InsertBatchQuery) {
+                InsertBatchQuery insertBatchQuery = (InsertBatchQuery)query;
+                if (insertBatchQuery.getDbEntity().equals(dbEntity)) {
+                    return insertBatchQuery;
+                }
+            }
+        }
+        return null;
+    }
+
+    private BatchQueryRow findRowForObjectId(List<BatchQueryRow> rows, ObjectId objectId) {
+        for (BatchQueryRow row : rows) {
+            if (row.getObjectId().equals(objectId)) {
+                return row;
+            }
+        }
+        return null;
     }
 }

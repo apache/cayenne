@@ -544,4 +544,17 @@ public class VerticalInheritanceIT extends ServerCase {
 		context.commitChanges();
 	}
 
+	@Test
+	public void testInsertWithAttributeAndRelationship() {
+		IvOther other = context.newObject(IvOther.class);
+		other.setName("other");
+
+		IvImpl impl = context.newObject(IvImpl.class);
+		impl.setName("Impl 1");
+		impl.setAttr1("attr1");
+		impl.setOther(other);
+
+		context.commitChanges();
+	}
+
 }
