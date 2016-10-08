@@ -19,15 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
@@ -41,6 +32,15 @@ import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.tx.BaseTransaction;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A stateful commit handler used by DataContext to perform commit operation.
@@ -187,7 +187,12 @@ class DataDomainFlushAction {
         new DataDomainIndirectDiffBuilder(this).processIndirectChanges(changes);
 
         insertBucket.appendQueries(queries);
+
+        // TODO: the following line depends on the "queries" collection filled by insertBucket.. Moreover it may
+        // potentially remove values from the passed collection. Replace with something with fewer unobvious
+        // side-effects...
         flattenedBucket.appendInserts(queries);
+
         updateBucket.appendQueries(queries);
         flattenedBucket.appendDeletes(queries);
         deleteBucket.appendQueries(queries);
