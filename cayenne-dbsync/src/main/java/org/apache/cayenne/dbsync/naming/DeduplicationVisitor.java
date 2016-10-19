@@ -22,7 +22,6 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -202,29 +201,6 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
             public boolean isNameInUse(String name) {
                 DataMap map = (DataMap) parent;
                 return map.getQueryDescriptor(name) != null;
-            }
-        });
-    }
-
-    @Override
-    public String visitReverseEngineering(ReverseEngineering reverseEngineering) {
-        return resolve(new Predicate() {
-            @Override
-            public boolean isNameInUse(String name) {
-
-                if (parent == null) {
-                    return false;
-                }
-
-                DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) parent;
-                for (DataMap dataMap : dataChannelDescriptor.getDataMaps()) {
-                    if (dataMap != null && dataMap.getReverseEngineering() != null &&
-                            dataMap.getReverseEngineering().getName() != null
-                            && dataMap.getReverseEngineering().getName().equals(name)) {
-                        return true;
-                    }
-                }
-                return false;
             }
         });
     }

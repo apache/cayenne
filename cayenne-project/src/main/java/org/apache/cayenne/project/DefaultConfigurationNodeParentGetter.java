@@ -22,7 +22,6 @@ import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -34,7 +33,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.QueryDescriptor;
 
 public class DefaultConfigurationNodeParentGetter implements ConfigurationNodeParentGetter {
 
@@ -108,16 +106,6 @@ public class DefaultConfigurationNodeParentGetter implements ConfigurationNodePa
         @Override
         public ConfigurationNode visitProcedureParameter(ProcedureParameter parameter) {
             return (ConfigurationNode) parameter.getParent();
-        }
-
-        @Override
-        public ConfigurationNode visitQuery(QueryDescriptor query) {
-            return query.getDataMap();
-        }
-
-        @Override
-        public ConfigurationNode visitReverseEngineering(ReverseEngineering reverseEngineering) {
-            return reverseEngineering;
         }
     }
 }

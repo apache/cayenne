@@ -21,14 +21,13 @@ package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbimport.*;
 import org.apache.cayenne.dbsync.CayenneDbSyncModule;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
-import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DefaultDbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
@@ -42,6 +41,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.LongRunningTask;
 import org.apache.cayenne.tools.configuration.ToolsModule;
+import org.apache.cayenne.tools.dbimport.DbImportAction;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.cayenne.tools.dbimport.DbImportModule;
 import org.apache.cayenne.util.Util;
@@ -80,6 +80,7 @@ public class DbLoaderHelper {
     protected DbImportConfiguration config;
     protected ReverseEngineering reverseEngineering;
     protected String loadStatusNote;
+    protected String dbUserName;
 
     /**
      * ObjEntities which were added to project during reverse engineering
@@ -89,6 +90,7 @@ public class DbLoaderHelper {
     public DbLoaderHelper(ProjectController mediator, Connection connection, DbAdapter adapter,
                           DBConnectionInfo dbConnectionInfo, ReverseEngineering reverseEngineering) {
         this.mediator = mediator;
+        this.dbUserName = dbConnectionInfo.getUserName();
         try {
             this.dbCatalog = connection.getCatalog();
         } catch (SQLException e) {
@@ -152,6 +154,35 @@ public class DbLoaderHelper {
         if (stoppingReverseEngineering) {
             return;
         }
+
+        final DbLoaderOptionsDialog dialog = new DbLoaderOptionsDialog(schemas, catalogs, dbUserName, dbCatalog);
+
+        try {
+            // since we are not inside EventDispatcher Thread, must run it via
+            // SwingUtilities
+            SwingUtilities.invokeAndWait(new Runnable() {
+
+                public void run() {
+                    dialog.setVisible(true);
+                    dialog.dispose();
+                }
+            });
+        } catch (Throwable th) {
+            processException(th, "Error Reengineering Database");
+            return;
+        }
+
+        if (dialog.getChoice() == DbLoaderOptionsDialog.CANCEL) {
+            return;
+        }
+
+        reverseEngineering.addCatalog(new Catalog(dialog.getSelectedCatalog()));
+        reverseEngineering.addSchema(new Schema(dialog.getSelectedSchema()));
+        reverseEngineering.addIncludeTable(new IncludeTable(dialog.getTableNamePattern()));
+        reverseEngineering.addIncludeProcedure(new IncludeProcedure(dialog.getProcedureNamePattern()));
+
+        config.setMeaningfulPkTables(dialog.getMeaningfulPk());
+        config.setNamingStrategy(dialog.getNamingStrategy());
 
         LongRunningTask loadDataMapTask = new LoadDataMapTask(Application.getFrame(), "Reengineering DB");
         loadDataMapTask.startAndWait();
@@ -323,6 +354,7 @@ public class DbLoaderHelper {
     }
 
     public final class LoadDataMapTask extends DbLoaderTask {
+        private DbImportAction importAction;
 
         public LoadDataMapTask(JFrame frame, String title) {
             super(frame, title);
@@ -348,17 +380,6 @@ public class DbLoaderHelper {
                 return;
             }
 
-            DataMap dataMap = mediator.getCurrentDataMap();
-            DataChannelDescriptor dataChannelDescriptor = mediator.getCurrentDataChanel();
-            if (dataMap.getReverseEngineering() != null) {
-                if (dataMap.getReverseEngineering().getName() != null) {
-                    reverseEngineering.setName(dataMap.getReverseEngineering().getName());
-                    reverseEngineering.setConfigurationSource(dataMap.getReverseEngineering().getConfigurationSource());
-                }
-            } else {
-                reverseEngineering.setName(NameBuilder.builder(reverseEngineering, dataChannelDescriptor).name());
-            }
-
             if (dataMap.getConfigurationSource() != null) {
                 config.setDataMapFile(new File(dataMap.getConfigurationSource().getURL().getPath()));
             }
@@ -375,7 +396,6 @@ public class DbLoaderHelper {
             injector.injectMembers(importAction);
             try {
                 importAction.execute(config);
-                dataMap.setReverseEngineering(reverseEngineering);
             } catch (Exception e) {
                 processException(e, "Error importing database schema.");
             }

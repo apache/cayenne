@@ -19,16 +19,9 @@
 package org.apache.cayenne.dbimport;
 
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.util.XMLEncoder;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -38,7 +31,7 @@ import java.util.LinkedList;
  */
 @XmlRootElement(name = "reverseEngineering")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ReverseEngineering extends FilterContainer implements ConfigurationNode, Serializable {
+public class ReverseEngineering extends FilterContainer implements Serializable {
 
     @XmlTransient
     protected Resource configurationSource;
@@ -164,16 +157,6 @@ public class ReverseEngineering extends FilterContainer implements Configuration
         }
 
         return super.toString(res, "  ").toString();
-    }
-
-    @Override
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
-        return visitor.visitReverseEngineering(this);
-    }
-
-    public void encodeAsXML(XMLEncoder encoder) {
-        DefaultReverseEngineeringWriter defaultReverseEngineeringWriter = new DefaultReverseEngineeringWriter();
-        defaultReverseEngineeringWriter.write(this, encoder.getPrintWriter());
     }
 
     /**

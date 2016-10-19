@@ -24,7 +24,6 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -65,7 +64,6 @@ public class DefaultProjectValidator implements ProjectValidator {
     private ProcedureQueryValidator procedureQueryValidator;
     private EJBQLQueryValidator ejbqlQueryValidator;
     private SQLTemplateValidator sqlTemplateValidator;
-    private ReverseEngineeringValidator reverseEngineeringValidator;
 
     DefaultProjectValidator() {
         dataChannelValidator = new DataChannelValidator();
@@ -85,7 +83,6 @@ public class DefaultProjectValidator implements ProjectValidator {
         procedureQueryValidator = new ProcedureQueryValidator();
         ejbqlQueryValidator = new EJBQLQueryValidator();
         sqlTemplateValidator = new SQLTemplateValidator();
-        reverseEngineeringValidator = new ReverseEngineeringValidator();
     }
 
     public ValidationResult validate(ConfigurationNode node) {
@@ -271,11 +268,6 @@ public class DefaultProjectValidator implements ProjectValidator {
                     break;
             }
 
-            return validationResult;
-        }
-
-        public ValidationResult visitReverseEngineering(ReverseEngineering reverseEngineering) {
-            reverseEngineeringValidator.validate(reverseEngineering, validationResult);
             return validationResult;
         }
     }
