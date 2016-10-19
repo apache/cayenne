@@ -46,11 +46,6 @@ public class MapLoader extends DefaultHandler {
 
 	public static final String DATA_MAP_TAG = "data-map";
 
-	/**
-	 * @since 4.0
-	 */
-	public static final String REVERSE_ENGINEERING = "reverse-engineering-config";
-
 	public static final String PROPERTY_TAG = "property";
 
 	/**
@@ -152,7 +147,6 @@ public class MapLoader extends DefaultHandler {
 	private Procedure procedure;
 	private QueryDescriptorLoader queryBuilder;
 	private String sqlKey;
-	private ReverseEngineering reverseEngineering;
 
 	private String descending;
 	private String ignoreCase;
@@ -176,15 +170,6 @@ public class MapLoader extends DefaultHandler {
 				processStartDataMap(attributes);
 			}
 		});
-
-		startTagOpMap.put(REVERSE_ENGINEERING, new StartClosure() {
-
-			@Override
-			void execute(Attributes attributes) throws SAXException {
-				processStartReverseEngineering(attributes);
-			}
-		});
-
 		
 		startTagOpMap.put(DB_ENTITY_TAG, new StartClosure() {
 
@@ -576,13 +561,6 @@ public class MapLoader extends DefaultHandler {
 				processEndQueryPrefetch();
 			}
 		});
-	}
-
-	private void processStartReverseEngineering(Attributes attributes) {
-		reverseEngineering = new ReverseEngineering();
-		reverseEngineering.setName(attributes.getValue("", "name"));
-
-		dataMap.setReverseEngineering(reverseEngineering);
 	}
 	
 	private void processStartDataMap(Attributes attributes) {

@@ -312,7 +312,6 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         DbImportConfiguration parameters = cdbImport.toParameters();
         prepareDatabase(name, parameters);
 
-        cdbImport.setIsReverseEngineeringDefined(true);
         try {
             cdbImport.execute();
             verifyResult(mapFile, mapFileCopy);

@@ -20,23 +20,16 @@ package org.apache.cayenne.modeler.editor;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.db.ReverseEngineeringScrollPane;
-import org.apache.cayenne.modeler.dialog.db.ReverseEngineeringView;
-
-import java.awt.event.ActionEvent;
 
 
 /**
  * Data map editing tabs container
  *
  */
-public class DataMapTabbedView extends JTabbedPane implements ChangeListener {
+public class DataMapTabbedView extends JTabbedPane {
     ProjectController mediator;
-    private ReverseEngineeringScrollPane reverseEngineeringScrollPane;
 
     /**
      * constructor
@@ -62,18 +55,6 @@ public class DataMapTabbedView extends JTabbedPane implements ChangeListener {
         JScrollPane dataMapView = new JScrollPane(new DataMapView(mediator));
         addTab("DataMap", dataMapView);
 
-        ReverseEngineeringView reverseEngineeringView = new ReverseEngineeringView(mediator);
-        reverseEngineeringScrollPane = new ReverseEngineeringScrollPane(reverseEngineeringView);
-        addTab("Reverse Engineering", reverseEngineeringScrollPane);
-        addChangeListener(this);
-    }
-
-    @Override
-    public void stateChanged(ChangeEvent changeEvent) {
-        if (getSelectedComponent().equals(reverseEngineeringScrollPane)) {
-            ActionEvent actionEvent = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "");
-            actionEvent.setSource(reverseEngineeringScrollPane);
-        }
     }
 }
 
