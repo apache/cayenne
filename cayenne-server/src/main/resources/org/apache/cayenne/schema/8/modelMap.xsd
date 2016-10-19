@@ -31,7 +31,6 @@
 	<xs:element name="data-map">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="0" maxOccurs="1" ref="cay:reverse-engineering-config"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:property"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:embeddable"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:procedure"/>
@@ -206,12 +205,6 @@
 	</xs:element>
 
 	<xs:element name="ejbql" type="xs:string"/>
-
-	<xs:element name="reverse-engineering-config">
-		<xs:complexType>
-			<xs:attribute name="name" use="required" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
 
 	<xs:element name="property">
 		<xs:annotation>

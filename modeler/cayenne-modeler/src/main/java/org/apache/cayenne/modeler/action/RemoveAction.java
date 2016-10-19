@@ -451,10 +451,6 @@ public class RemoveAction extends CayenneAction {
             URL mapURL = map.getConfigurationSource().getURL();
             Collection<URL> unusedResources = getCurrentProject().getUnusedResources();
             unusedResources.add(mapURL);
-            if (map.getReverseEngineering() != null && map.getReverseEngineering().getConfigurationSource() != null) {
-                URL reverseEngineeringURL = map.getReverseEngineering().getConfigurationSource().getURL();
-                unusedResources.add(reverseEngineeringURL);
-            }
         }
         
         Iterator<DataNodeDescriptor> iterator = domain.getNodeDescriptors().iterator();

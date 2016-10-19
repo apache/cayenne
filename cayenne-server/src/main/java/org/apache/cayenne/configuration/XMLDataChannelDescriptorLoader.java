@@ -18,11 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.dbimport.DefaultReverseEngineeringLoader;
-import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
@@ -213,21 +210,6 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 				dataMap.setLocation(dataMapLocation);
 				dataMap.setConfigurationSource(dataMapResource);
 				dataMap.setDataChannelDescriptor(descriptor);
-
-                try {
-                    if (dataMap.getReverseEngineering() != null) {
-                        String reverseEngineeringName = dataMap.getReverseEngineering().getName();
-                        String reverseEngineeringLocation = nameMapper.configurationLocation(ReverseEngineering.class, reverseEngineeringName);
-                        Resource reverseEngineeringResource = baseResource.getRelativeResource(reverseEngineeringLocation);
-                        DefaultReverseEngineeringLoader reverseEngineeringLoader = new DefaultReverseEngineeringLoader();
-                        ReverseEngineering reverseEngineering = reverseEngineeringLoader.load(reverseEngineeringResource.getURL().openStream());
-                        reverseEngineering.setName(reverseEngineeringName);
-                        reverseEngineering.setConfigurationSource(reverseEngineeringResource);
-                        dataMap.setReverseEngineering(reverseEngineering);
-                    }
-                } catch (IOException e) {
-                    throw new CayenneRuntimeException("Error loading reverse engineering model", e);
-                }
 
                 descriptor.getDataMaps().add(dataMap);
             } else if (localName.equals(NODE_TAG)) {
