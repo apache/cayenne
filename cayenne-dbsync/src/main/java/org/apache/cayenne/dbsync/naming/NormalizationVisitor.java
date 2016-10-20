@@ -21,7 +21,6 @@ package org.apache.cayenne.dbsync.naming;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -113,11 +112,6 @@ class NormalizationVisitor implements ConfigurationNodeVisitor<String> {
 
     @Override
     public String visitQuery(QueryDescriptor query) {
-        return baseName;
-    }
-
-    @Override
-    public String visitReverseEngineering(ReverseEngineering reverseEngineering) {
         return baseName;
     }
 }

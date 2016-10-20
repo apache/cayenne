@@ -46,7 +46,6 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.db.model.*;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
@@ -120,18 +119,6 @@ public final class CellRenderers {
         }
         else if (object instanceof Embeddable) {
             return embeddableIcon;
-        }
-        else if (object instanceof DbColumn) {
-            return attributeIcon;
-        }
-        else if (object instanceof DbProcedure) {
-            return procedureIcon;
-        }
-        else if (object instanceof DbEntity) {
-            return dbEntityIcon;
-        }
-        else if (object instanceof DbCatalog) {
-            return catalogIcon;
         }
         return null;
     }

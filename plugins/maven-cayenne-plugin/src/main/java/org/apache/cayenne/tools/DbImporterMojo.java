@@ -149,95 +149,29 @@ public class DbImporterMojo extends AbstractMojo {
      */
     private String username;
 
-
-    /**
-     * Flag which defines from where to take the configuration of cdbImport. If
-     * we define the config of cdbImport in pom.xml we should set it to true or
-     * it will be set to true automatically if we define some configuration
-     * parameters in pom.xml. Else it remains default(false) and for cdbImport
-     * we use the configuration defined in signed dataMap
-     *
-     * @parameter isReverseEngineeringDefined="isReverseEngineeringDefined"
-     * default-value="false"
-     */
-    // TODO: get rid of this fork...
-    private boolean isReverseEngineeringDefined = false;
-
-    public void setIsReverseEngineeringDefined(boolean isReverseEngineeringDefined) {
-        this.isReverseEngineeringDefined = isReverseEngineeringDefined;
-    }
-
-    @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         Log logger = new MavenLogger(this);
 
         DbImportConfiguration config = toParameters();
         config.setLogger(logger);
-        File dataMapFile = config.getDataMapFile();
+        Injector injector = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(logger), new DbImportModule());
 
-        if (isReverseEngineeringDefined) {
-            Injector injector = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(logger), new DbImportModule());
+        validateDbImportConfiguration(config, injector);
 
-            validateDbImportConfiguration(config, injector);
+        try {
+            injector.getInstance(DbImportAction.class).execute(config);
+        } catch (Exception ex) {
+            Throwable th = Util.unwindException(ex);
 
-            try {
-                injector.getInstance(DbImportAction.class).execute(config);
-            } catch (Exception ex) {
-                Throwable th = Util.unwindException(ex);
+            String message = "Error importing database schema";
 
-                String message = "Error importing database schema";
-
-                if (th.getLocalizedMessage() != null) {
-                    message += ": " + th.getLocalizedMessage();
-                }
-
-                getLog().error(message);
-                throw new MojoExecutionException(message, th);
+            if (th.getLocalizedMessage() != null) {
+                message += ": " + th.getLocalizedMessage();
             }
-        } else {
-            if (dataMapFile.exists()) {
-                try {
-                    URL url = dataMapFile.toURI().toURL();
-                    URLResource resource = new URLResource(url);
 
-                    XMLDataMapLoader xmlDataMapLoader = new XMLDataMapLoader();
-                    DataMap dataMap = xmlDataMapLoader.load(resource);
-                    if (dataMap.getReverseEngineering() != null) {
-                        try {
-                            Injector injector = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(logger), new DbImportModule());
-                            ConfigurationNameMapper nameMapper = injector.getInstance(ConfigurationNameMapper.class);
-                            String reverseEngineeringLocation = nameMapper.configurationLocation(ReverseEngineering.class, dataMap.getReverseEngineering().getName());
-                            Resource reverseEngineeringResource = new URLResource(dataMapFile.toURI().toURL()).getRelativeResource(reverseEngineeringLocation);
-
-                            DefaultReverseEngineeringLoader reverseEngineeringLoader = new DefaultReverseEngineeringLoader();
-                            ReverseEngineering reverseEngineering = reverseEngineeringLoader.load(reverseEngineeringResource.getURL().openStream());
-                            reverseEngineering.setName(dataMap.getReverseEngineering().getName());
-                            reverseEngineering.setConfigurationSource(reverseEngineeringResource);
-                            dataMap.setReverseEngineering(reverseEngineering);
-
-                            FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(dataMap.getReverseEngineering());
-                            config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.build());
-                            validateDbImportConfiguration(config, injector);
-                            injector.getInstance(DbImportAction.class).execute(config);
-                        } catch (Exception ex) {
-                            Throwable th = Util.unwindException(ex);
-
-                            String message = "Error importing database schema";
-
-                            if (th.getLocalizedMessage() != null) {
-                                message += ": " + th.getLocalizedMessage();
-                            }
-
-                            getLog().error(message);
-                            throw new MojoExecutionException(message, th);
-                        }
-                    }
-                } catch (MalformedURLException e) {
-                    getLog().error(e);
-                    throw new MojoExecutionException(e.getMessage(), e);
-                }
-            }
+            getLog().error(message);
+            throw new MojoExecutionException(message, th);
         }
     }
 
@@ -309,11 +243,6 @@ public class DbImporterMojo extends AbstractMojo {
 
     public ReverseEngineering getReverseEngineering() {
         return reverseEngineering;
-    }
-
-    public void setReverseEngineering(ReverseEngineering reverseEngineering) {
-        isReverseEngineeringDefined = true;
-        this.reverseEngineering = reverseEngineering;
     }
 }
 

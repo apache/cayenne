@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -67,6 +66,4 @@ public interface ConfigurationNodeVisitor<T> {
     T visitProcedureParameter(ProcedureParameter parameter);
 
     T visitQuery(QueryDescriptor query);
-
-    T visitReverseEngineering(ReverseEngineering reverseEngineering);
 }
