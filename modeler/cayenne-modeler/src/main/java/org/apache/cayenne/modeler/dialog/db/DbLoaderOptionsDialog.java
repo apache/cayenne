@@ -110,7 +110,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         builder.append("Table Name Pattern:", tableNamePatternField);
         procedureLabel = builder.append("Procedure Name Pattern:", procNamePatternField);
         builder.append("Naming Strategy:", strategyCombo);
-        builder.append("Meaningful PK", meaningfulPk);
+        builder.append("Tables with Meaningful PK Pattern:", meaningfulPk);
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
@@ -146,7 +146,6 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         this.choice = CANCEL;
         this.tableNamePatternField.setText(WILDCARD_PATTERN);
         this.procNamePatternField.setText(WILDCARD_PATTERN);
-        this.meaningfulPk.setText(WILDCARD_PATTERN);
 
         Vector<String> arr = NameGeneratorPreferences
                 .getInstance()
