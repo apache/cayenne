@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<reverseEngineering xsi:schemaLocation="http://cayenne.apache.org/schema/8/reverseEngineering http://cayenne.apache.org/schema/8/reverseEngineering.xsd" xmlns="http://cayenne.apache.org/schema/8/reverseEngineering" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <skipRelationshipsLoading>false</skipRelationshipsLoading>
+    <skipPrimaryKeyLoading>false</skipPrimaryKeyLoading>
+    <catalog>
+        <schema>
+            <includeTable/>
+            <includeProcedure pattern=".*"/>
+        </schema>
+    </catalog>
+</reverseEngineering>
