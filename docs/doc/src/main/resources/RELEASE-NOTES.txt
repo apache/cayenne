@@ -54,6 +54,7 @@ CAY-2101 DataContext.currentSnapshot() doesn't set snapshot entity name
 CAY-2105 Add missing elements to the reverseEngineering.xsd
 CAY-2108 cayenne-di: StackOverflow for decorator that takes Provider of the delegate
 CAY-2110 Obfuscated exception when processing iterated results
+CAY-2119 ProjectUpgrader test failure (Windows)
 CAY-2122 Vertical Inheritance: Cannot Insert Record For Implementing Class with Attribute And Relationship
 
 ----------------------------------

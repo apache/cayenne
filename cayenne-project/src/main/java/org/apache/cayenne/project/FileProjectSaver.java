@@ -207,6 +207,10 @@ public class FileProjectSaver implements ProjectSaver {
 
 			File targetFile = unit.targetFile;
 
+			// Per CAY-2119, this is an ugly hack to force Windows to unlock the file that was previously locked by
+			// our process. Without it, the delete operation downstream would fail
+			System.gc();
+
 			if (targetFile.exists()) {
 				if (!targetFile.delete()) {
 					throw new CayenneRuntimeException("Unable to remove old master file '%s'",
