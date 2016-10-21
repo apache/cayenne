@@ -43,9 +43,9 @@ public class GzipDecryptorTest {
 	@Test
 	public void testGunzip_Large() throws IOException {
 
-		byte[] input1 = readResource("plainbytes.gz");
+		byte[] input1 = readResource("plain.gz");
 		byte[] output1 = GzipDecryptor.gunzip(input1);
-		byte[] expectedOutput1 = readResource("plainbytes");
+		byte[] expectedOutput1 = readResource("plain");
 
 		assertArrayEquals(expectedOutput1, output1);
 	}
