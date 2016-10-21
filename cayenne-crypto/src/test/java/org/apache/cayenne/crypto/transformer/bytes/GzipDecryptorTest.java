@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.bytes;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
+import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
+import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
-import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class GzipDecryptorTest {
 
@@ -43,9 +43,9 @@ public class GzipDecryptorTest {
 	@Test
 	public void testGunzip_Large() throws IOException {
 
-		byte[] input1 = readResource("plain.txt.gz");
+		byte[] input1 = readResource("plainbytes.gz");
 		byte[] output1 = GzipDecryptor.gunzip(input1);
-		byte[] expectedOutput1 = readResource("plain.txt");
+		byte[] expectedOutput1 = readResource("plainbytes");
 
 		assertArrayEquals(expectedOutput1, output1);
 	}
