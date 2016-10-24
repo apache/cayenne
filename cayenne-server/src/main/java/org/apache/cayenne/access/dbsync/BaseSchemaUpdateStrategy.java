@@ -25,6 +25,8 @@ import java.sql.SQLException;
 /**
  * @since 3.0
  */
+// Note that this object must be scoped by DataNode. An attempt to share it between nodes will result in ignoring
+// schema update for all but one node (see CAY-2125)
 public abstract class BaseSchemaUpdateStrategy implements SchemaUpdateStrategy {
 
     protected volatile boolean run;
