@@ -19,21 +19,8 @@
 
 package org.apache.cayenne.access;
 
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
-import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
@@ -58,6 +45,17 @@ import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.util.ToStringBuilder;
 
+import javax.sql.DataSource;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
+
 /**
  * An abstraction of a single physical data storage. This is usually a database
  * server, but can potentially be some other storage type like an LDAP server,
@@ -70,7 +68,6 @@ public class DataNode implements QueryEngine {
 	protected DbAdapter adapter;
 	protected String dataSourceLocation;
 	protected String dataSourceFactory;
-	protected String schemaUpdateStrategyName;
 	protected EntityResolver entityResolver;
 	protected SchemaUpdateStrategy schemaUpdateStrategy;
 	protected Map<String, DataMap> dataMaps;
@@ -101,23 +98,6 @@ public class DataNode implements QueryEngine {
 
 		// make sure logger is not null
 		this.jdbcEventLogger = NoopJdbcEventLogger.getInstance();
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public String getSchemaUpdateStrategyName() {
-		if (schemaUpdateStrategyName == null) {
-			schemaUpdateStrategyName = SkipSchemaUpdateStrategy.class.getName();
-		}
-		return schemaUpdateStrategyName;
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public void setSchemaUpdateStrategyName(String schemaUpdateStrategyName) {
-		this.schemaUpdateStrategyName = schemaUpdateStrategyName;
 	}
 
 	/**

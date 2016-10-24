@@ -6,6 +6,10 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 -------------------------------------------------------------------------------
 UPGRADING TO 4.0.M4
 
+* Per CAY-2125 we no longer inject SchemaUpdateStrategy directly. Instead SchemaUpgradeStrategyFactory is injected.
+  If you have your own modules with SchemaUpdateStrategy injection, it will be ignored. So please review your
+  DI code and update it to use SchemaUpgradeStrategyFactory (or likely its subclass).
+
 * Per CAY-2060 4.0.M4 changes the way queries are stored in the mapping files, so all existing *.map.xml files should be upgraded.
   To do that open each of your existing projects in the new CayenneModeler. Agree to perform an upgrade when asked. 
 

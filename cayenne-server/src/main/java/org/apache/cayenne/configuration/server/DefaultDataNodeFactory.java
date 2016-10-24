@@ -18,10 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import javax.sql.DataSource;
-
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
+import org.apache.cayenne.access.dbsync.SchemaUpdateStrategyFactory;
 import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
@@ -30,6 +28,8 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
+
+import javax.sql.DataSource;
 
 /**
  * @since 4.0
@@ -58,7 +58,7 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
     protected AdhocObjectFactory objectFactory;
 
     @Inject
-    protected SchemaUpdateStrategy defaultSchemaUpdateStrategy;
+    protected SchemaUpdateStrategyFactory schemaUpdateStrategyFactory;
     
     @Inject
     protected SQLTemplateProcessor sqlTemplateProcessor;
@@ -81,20 +81,8 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
         dataNode.setDataSourceFactory(nodeDescriptor.getDataSourceFactoryType());
         dataNode.setDataSource(dataSource);
 
-        // schema update strategy
-        String schemaUpdateStrategyType = nodeDescriptor.getSchemaUpdateStrategyType();
+        dataNode.setSchemaUpdateStrategy(schemaUpdateStrategyFactory.create(nodeDescriptor));
 
-        if (schemaUpdateStrategyType == null) {
-            dataNode.setSchemaUpdateStrategy(defaultSchemaUpdateStrategy);
-            dataNode.setSchemaUpdateStrategyName(defaultSchemaUpdateStrategy.getClass().getName());
-        } else {
-            SchemaUpdateStrategy strategy = objectFactory.newInstance(SchemaUpdateStrategy.class,
-                    schemaUpdateStrategyType);
-            dataNode.setSchemaUpdateStrategyName(schemaUpdateStrategyType);
-            dataNode.setSchemaUpdateStrategy(strategy);
-        }
-
-        // DbAdapter
         dataNode.setAdapter(adapterFactory.createAdapter(nodeDescriptor, dataSource));
 
         return dataNode;

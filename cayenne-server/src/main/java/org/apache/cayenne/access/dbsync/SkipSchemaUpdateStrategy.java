@@ -23,14 +23,12 @@ import org.apache.cayenne.access.DataNode;
 /**
  * A SchemaUpdateStrategy that does nothing. This is usually the default strategy, as in
  * most cases DB schema management is outside the scope of Cayenne.
- * 
+ *
  * @since 3.0
  */
 public class SkipSchemaUpdateStrategy implements SchemaUpdateStrategy {
 
-    /**
-     * @since 3.0
-     */
+    @Override
     public void updateSchema(DataNode dataNode) {
         // does nothing
     }

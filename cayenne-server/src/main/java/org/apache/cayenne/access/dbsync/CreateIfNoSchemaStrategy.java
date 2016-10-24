@@ -18,14 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.dbsync;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
@@ -34,73 +26,80 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * @since 3.0
  */
 public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
 
-	final static Log logger = LogFactory.getLog(CreateIfNoSchemaStrategy.class);
+    private final static Log LOGGER = LogFactory.getLog(CreateIfNoSchemaStrategy.class);
 
-	@Override
-	protected void processSchemaUpdate(DataNode dataNode) throws SQLException {
 
-		Map<String, Boolean> nameTables = getNameTablesInDB(dataNode);
-		Collection<DbEntity> entities = dataNode.getEntityResolver().getDbEntities();
-		boolean generate = true;
-		Iterator<DbEntity> it = entities.iterator();
-		while (it.hasNext()) {
-			if (nameTables.get(it.next().getName()) != null) {
-				generate = false;
-				break;
-			}
-		}
+    @Override
+    protected void processSchemaUpdate(DataNode dataNode) throws SQLException {
 
-		if (generate) {
-			logger.info("No schema detected, will create mapped tables");
-			generate(dataNode);
-		} else {
-			logger.info("Full or partial schema detected, skipping tables creation");
-		}
-	}
+        Map<String, Boolean> nameTables = getNameTablesInDB(dataNode);
+        Collection<DbEntity> entities = dataNode.getEntityResolver().getDbEntities();
+        boolean generate = true;
+        Iterator<DbEntity> it = entities.iterator();
+        while (it.hasNext()) {
+            if (nameTables.get(it.next().getName()) != null) {
+                generate = false;
+                break;
+            }
+        }
 
-	private void generate(DataNode dataNode) {
-		Collection<DataMap> map = dataNode.getDataMaps();
-		Iterator<DataMap> iterator = map.iterator();
-		while (iterator.hasNext()) {
-			DbGenerator gen = new DbGenerator(dataNode.getAdapter(), iterator.next(), dataNode.getJdbcEventLogger());
-			gen.setShouldCreateTables(true);
-			gen.setShouldDropTables(false);
-			gen.setShouldCreateFKConstraints(true);
-			gen.setShouldCreatePKSupport(true);
-			gen.setShouldDropPKSupport(false);
-			try {
-				gen.runGenerator(dataNode.getDataSource());
-			} catch (Exception e) {
-				throw new CayenneRuntimeException(e);
-			}
-		}
-	}
+        if (generate) {
+            LOGGER.info("No schema detected, will create mapped tables");
+            generate(dataNode);
+        } else {
+            LOGGER.info("Full or partial schema detected, skipping tables creation");
+        }
+    }
 
-	/**
-	 * Returns all the table names in database.
-	 * 
-	 * @throws SQLException
-	 */
-	protected Map<String, Boolean> getNameTablesInDB(DataNode dataNode) throws SQLException {
-		String tableLabel = dataNode.getAdapter().tableTypeForTable();
-		Map<String, Boolean> nameTables = new HashMap<>();
+    private void generate(DataNode dataNode) {
+        Collection<DataMap> map = dataNode.getDataMaps();
+        Iterator<DataMap> iterator = map.iterator();
+        while (iterator.hasNext()) {
+            DbGenerator gen = new DbGenerator(dataNode.getAdapter(), iterator.next(), dataNode.getJdbcEventLogger());
+            gen.setShouldCreateTables(true);
+            gen.setShouldDropTables(false);
+            gen.setShouldCreateFKConstraints(true);
+            gen.setShouldCreatePKSupport(true);
+            gen.setShouldDropPKSupport(false);
+            try {
+                gen.runGenerator(dataNode.getDataSource());
+            } catch (Exception e) {
+                throw new CayenneRuntimeException(e);
+            }
+        }
+    }
 
-		try (Connection con = dataNode.getDataSource().getConnection();) {
+    /**
+     * Returns all the table names in database.
+     */
+    protected Map<String, Boolean> getNameTablesInDB(DataNode dataNode) throws SQLException {
+        String tableLabel = dataNode.getAdapter().tableTypeForTable();
+        Map<String, Boolean> nameTables = new HashMap<>();
 
-			try (ResultSet rs = con.getMetaData().getTables(null, null, "%", new String[] { tableLabel });) {
+        try (Connection con = dataNode.getDataSource().getConnection();) {
 
-				while (rs.next()) {
-					String name = rs.getString("TABLE_NAME");
-					nameTables.put(name, false);
-				}
-			}
-		}
+            try (ResultSet rs = con.getMetaData().getTables(null, null, "%", new String[]{tableLabel});) {
 
-		return nameTables;
-	}
+                while (rs.next()) {
+                    String name = rs.getString("TABLE_NAME");
+                    nameTables.put(name, false);
+                }
+            }
+        }
+
+        return nameTables;
+    }
 }

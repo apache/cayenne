@@ -22,7 +22,8 @@ import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
+import org.apache.cayenne.access.dbsync.DefaultSchemaUpdateStrategyFactory;
+import org.apache.cayenne.access.dbsync.SchemaUpdateStrategyFactory;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
 import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
@@ -157,6 +158,7 @@ public class DataDomainProviderTest {
 
 				binder.bind(EventManager.class).toInstance(eventManager);
 				binder.bind(EntitySorter.class).toInstance(new AshwoodEntitySorter());
+				binder.bind(SchemaUpdateStrategyFactory.class).to(DefaultSchemaUpdateStrategyFactory.class);
 
 				final ResourceLocator locator = new ClassLoaderResourceLocator(classLoaderManager) {
 
@@ -179,7 +181,6 @@ public class DataDomainProviderTest {
 				binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
 				binder.bind(DataChannelDescriptorMerger.class).to(DefaultDataChannelDescriptorMerger.class);
 				binder.bind(DataChannelDescriptorLoader.class).toInstance(testLoader);
-				binder.bind(SchemaUpdateStrategy.class).toInstance(new SkipSchemaUpdateStrategy());
 				binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
 				binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
 				binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
@@ -221,7 +222,6 @@ public class DataDomainProviderTest {
 		assertNotNull(node1.getDataSource());
 		assertEquals(nodeDescriptor1.getParameters(), node1.getDataSourceLocation());
 
-		assertEquals(nodeDescriptor1.getSchemaUpdateStrategyType(), node1.getSchemaUpdateStrategyName());
 		assertNotNull(node1.getSchemaUpdateStrategy());
 		assertEquals(nodeDescriptor1.getSchemaUpdateStrategyType(), node1.getSchemaUpdateStrategy().getClass()
 				.getName());
@@ -237,7 +237,6 @@ public class DataDomainProviderTest {
 		assertNull(node2.getDataSourceFactory());
 		assertNotNull(node2.getDataSource());
 		assertEquals(nodeDescriptor2.getParameters(), node2.getDataSourceLocation());
-		assertEquals(SkipSchemaUpdateStrategy.class.getName(), node2.getSchemaUpdateStrategyName());
 		assertNotNull(node2.getSchemaUpdateStrategy());
 		assertEquals(SkipSchemaUpdateStrategy.class.getName(), node2.getSchemaUpdateStrategy().getClass().getName());
 

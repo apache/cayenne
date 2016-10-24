@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.access.dbsync;
 
-import java.sql.SQLException;
-
 import org.apache.cayenne.access.DataNode;
+
+import java.sql.SQLException;
 
 /**
  * A strategy for auto generating a database schema on the application startup.

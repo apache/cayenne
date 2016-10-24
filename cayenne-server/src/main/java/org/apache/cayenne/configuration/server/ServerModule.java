@@ -22,9 +22,8 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
-import org.apache.cayenne.tx.TransactionFilter;
-import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
-import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
+import org.apache.cayenne.access.dbsync.DefaultSchemaUpdateStrategyFactory;
+import org.apache.cayenne.access.dbsync.SchemaUpdateStrategyFactory;
 import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
@@ -99,6 +98,7 @@ import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
+import org.apache.cayenne.tx.TransactionFilter;
 import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.velocity.VelocitySQLTemplateProcessor;
 
@@ -207,10 +207,7 @@ public class ServerModule implements Module {
 		// call depending on DataNodeDescriptor data and the environment
 		binder.bind(DataSourceFactory.class).to(DelegatingDataSourceFactory.class);
 
-		// a default SchemaUpdateStrategy (used when no explicit strategy is
-		// specified in
-		// XML)
-		binder.bind(SchemaUpdateStrategy.class).to(SkipSchemaUpdateStrategy.class);
+		binder.bind(SchemaUpdateStrategyFactory.class).to(DefaultSchemaUpdateStrategyFactory.class);
 
 		// a default DBAdapterFactory used to load custom and automatic
 		// DbAdapters

@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.access.dbsync;
 
-import java.sql.SQLException;
-
 import org.apache.cayenne.access.DataNode;
+
+import java.sql.SQLException;
 
 /**
  * @since 3.0
@@ -31,18 +31,20 @@ public abstract class BaseSchemaUpdateStrategy implements SchemaUpdateStrategy {
     protected volatile ThreadLocal<Boolean> threadRunInProgress;
 
     public BaseSchemaUpdateStrategy() {
-        super();
-        threadRunInProgress = new ThreadLocal<Boolean>();
+
+        // this barrier is needed to prevent stack overflow in the same thread
+        // (getConnection/updateSchema/getConnection/...)
+        this.threadRunInProgress = new ThreadLocal<>();
+        this.threadRunInProgress.set(false);
     }
 
-    /**
-     * @since 3.0
-     */
+    @Override
     public void updateSchema(DataNode dataNode) throws SQLException {
 
-        if (!run && (threadRunInProgress.get() == null || !threadRunInProgress.get())) {
+        if (!run && !threadRunInProgress.get()) {
             synchronized (this) {
                 if (!run) {
+
                     try {
                         threadRunInProgress.set(true);
                         processSchemaUpdate(dataNode);

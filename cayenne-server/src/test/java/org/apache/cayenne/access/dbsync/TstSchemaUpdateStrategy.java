@@ -19,16 +19,10 @@
 package org.apache.cayenne.access.dbsync;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 
 public class TstSchemaUpdateStrategy implements SchemaUpdateStrategy {
 
-    public TstSchemaUpdateStrategy() {
-    }
-
+    @Override
     public void updateSchema(DataNode dataNode) {
-    }
-
-    public void generateUpdateSchema(DataNode dataNode) {
     }
 }

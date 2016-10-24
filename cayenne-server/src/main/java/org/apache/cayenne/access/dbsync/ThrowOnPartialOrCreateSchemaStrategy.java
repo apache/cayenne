@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.dbsync;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
@@ -30,13 +25,18 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * @since 3.0
  */
 public class ThrowOnPartialOrCreateSchemaStrategy extends ThrowOnPartialSchemaStrategy {
 
-    final static Log logger = LogFactory
-            .getLog(ThrowOnPartialOrCreateSchemaStrategy.class);
+    private final static Log LOGGER = LogFactory.getLog(ThrowOnPartialOrCreateSchemaStrategy.class);
+
 
     @Override
     protected void processSchemaUpdate(
@@ -46,14 +46,14 @@ public class ThrowOnPartialOrCreateSchemaStrategy extends ThrowOnPartialSchemaSt
             int entitiesSize) throws SQLException {
 
         if (mergerOnlyTable.size() == 0 && errorMessage == null) {
-            logger.info("Full schema is present");
+            LOGGER.info("Full schema is present");
         }
         else if (mergerOnlyTable.size() == entitiesSize) {
-            logger.info("No schema detected, will create mapped tables");
+            LOGGER.info("No schema detected, will create mapped tables");
             generate(dataNode);
         }
         else {
-            logger.info("Error - partial schema detected");
+            LOGGER.info("Error - partial schema detected");
 
             StringBuilder buffer = new StringBuilder("Schema mismatch detected");
 
