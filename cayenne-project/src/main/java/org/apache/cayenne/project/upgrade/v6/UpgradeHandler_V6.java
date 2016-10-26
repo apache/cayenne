@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project.upgrade.v6;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -32,9 +27,13 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.upgrade.BaseUpgradeHandler;
 import org.apache.cayenne.project.upgrade.UpgradeMetaData;
-import org.apache.cayenne.project.upgrade.UpgradeType;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @since 3.1
@@ -42,7 +41,6 @@ import org.apache.cayenne.util.Util;
 class UpgradeHandler_V6 extends BaseUpgradeHandler {
 
     static final String TO_VERSION = "6";
-    static final String MIN_SUPPORTED_VERSION = "3.0.0.1";
 
     /**
      * Notice that the loader is statically typed, intentionally not using DI to ensure
@@ -60,34 +58,6 @@ class UpgradeHandler_V6 extends BaseUpgradeHandler {
     UpgradeHandler_V6(Resource source) {
         super(source);
         this.projectLoader = new XMLDataChannelDescriptorLoader_V3_0_0_1();
-    }
-
-    @Override
-    protected UpgradeMetaData loadMetaData() {
-        String version = loadProjectVersion();
-
-        UpgradeMetaData metadata = new UpgradeMetaData();
-        metadata.setSupportedVersion(TO_VERSION);
-        metadata.setProjectVersion(version);
-
-        int c1 = compareVersions(version, MIN_SUPPORTED_VERSION);
-        int c2 = compareVersions(TO_VERSION, version);
-
-        if (c1 < 0) {
-            metadata.setIntermediateUpgradeVersion(MIN_SUPPORTED_VERSION);
-            metadata.setUpgradeType(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED);
-        }
-        else if (c2 < 0) {
-            metadata.setUpgradeType(UpgradeType.DOWNGRADE_NEEDED);
-        }
-        else if (c2 == 0) {
-            metadata.setUpgradeType(UpgradeType.UPGRADE_NOT_NEEDED);
-        }
-        else {
-            metadata.setUpgradeType(UpgradeType.UPGRADE_NEEDED);
-        }
-
-        return metadata;
     }
 
     @Override
@@ -140,4 +110,10 @@ class UpgradeHandler_V6 extends BaseUpgradeHandler {
         // configurations...
         return domains.get(0).getConfigurationSource();
     }
+
+    @Override
+    protected String getToVersion() {
+        return TO_VERSION;
+    }
+
 }

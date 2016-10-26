@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project.upgrade;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -34,6 +30,9 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.io.InputStream;
+import java.net.URL;
+
 /**
  * A common superclass of UpgradeHandlers.
  * 
@@ -45,6 +44,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public abstract class BaseUpgradeHandler implements UpgradeHandler {
 
 	static final String UNKNOWN_VERSION = "0";
+	static final String MIN_SUPPORTED_VERSION = "3.0.0.1";
 
 	protected Resource projectSource;
 	protected UpgradeMetaData metaData;
@@ -90,14 +90,14 @@ public abstract class BaseUpgradeHandler implements UpgradeHandler {
 	public Resource performUpgrade() throws ConfigurationException {
 		UpgradeMetaData metaData = getUpgradeMetaData();
 		switch (metaData.getUpgradeType()) {
-		case DOWNGRADE_NEEDED:
-			throw new ConfigurationException("Downgrade can not be performed");
-		case INTERMEDIATE_UPGRADE_NEEDED:
-			throw new ConfigurationException("Upgrade can not be performed - intermediate version upgrade needed");
-		case UPGRADE_NEEDED:
-			return doPerformUpgrade(metaData);
-		default:
-			return getProjectSource();
+			case DOWNGRADE_NEEDED:
+				throw new ConfigurationException("Downgrade can not be performed");
+			case INTERMEDIATE_UPGRADE_NEEDED:
+				throw new ConfigurationException("Upgrade can not be performed - intermediate version upgrade needed");
+			case UPGRADE_NEEDED:
+				return doPerformUpgrade(metaData);
+			default:
+				return getProjectSource();
 		}
 	}
 
@@ -110,10 +110,34 @@ public abstract class BaseUpgradeHandler implements UpgradeHandler {
 	 */
 	protected abstract Resource doPerformUpgrade(UpgradeMetaData metaData) throws ConfigurationException;
 
+	protected abstract String getToVersion();
+
 	/**
 	 * Creates a metadata object describing the type of upgrade needed.
 	 */
-	protected abstract UpgradeMetaData loadMetaData();
+	protected UpgradeMetaData loadMetaData() {
+		String version = loadProjectVersion();
+
+		UpgradeMetaData metadata = new UpgradeMetaData();
+		metadata.setSupportedVersion(getToVersion());
+		metadata.setProjectVersion(version);
+
+		int c1 = compareVersions(version, MIN_SUPPORTED_VERSION);
+		int c2 = compareVersions(getToVersion(), version);
+
+		if (c1 < 0) {
+			metadata.setIntermediateUpgradeVersion(MIN_SUPPORTED_VERSION);
+			metadata.setUpgradeType(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED);
+		} else if (c2 < 0) {
+			metadata.setUpgradeType(UpgradeType.DOWNGRADE_NEEDED);
+		} else if (c2 == 0) {
+			metadata.setUpgradeType(UpgradeType.UPGRADE_NOT_NEEDED);
+		} else {
+			metadata.setUpgradeType(UpgradeType.UPGRADE_NEEDED);
+		}
+
+		return metadata;
+	}
 
 	/**
 	 * A default method for quick extraction of the project version from an XML

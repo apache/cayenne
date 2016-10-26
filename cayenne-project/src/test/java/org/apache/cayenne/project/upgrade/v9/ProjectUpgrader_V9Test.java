@@ -30,6 +30,8 @@ import org.apache.cayenne.project.FileProjectSaver;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.unit.Project2Case;
 import org.apache.cayenne.project.upgrade.UpgradeHandler;
+import org.apache.cayenne.project.upgrade.UpgradeMetaData;
+import org.apache.cayenne.project.upgrade.UpgradeType;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.test.file.FileUtil;
@@ -47,13 +49,75 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ProjectUpgrader_V9Test extends Project2Case {
+
+    @Test
+    public void testMetadata_3_0_0_1() {
+
+        String baseUrl = getClass().getPackage().getName().replace('.', '/');
+        URL url = getClass().getClassLoader().getResource(baseUrl + "/3_0_0_1a/cayenne.xml");
+        assertNotNull(url);
+
+        Module testModule = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+            }
+        };
+
+        ProjectUpgrader_V9 upgrader = new ProjectUpgrader_V9();
+        Injector injector = DIBootstrap.createInjector(testModule);
+        injector.injectMembers(upgrader);
+
+        Resource source = new URLResource(url);
+        UpgradeHandler handler = upgrader.getUpgradeHandler(source);
+
+        assertNotNull(handler);
+        assertSame(source, handler.getProjectSource());
+
+        UpgradeMetaData md = handler.getUpgradeMetaData();
+        assertNotNull(md);
+
+        assertSame(UpgradeType.UPGRADE_NEEDED, md.getUpgradeType());
+        assertNull(md.getIntermediateUpgradeVersion());
+        assertEquals("3.0.0.1", md.getProjectVersion());
+        assertEquals("9", md.getSupportedVersion());
+    }
+
+    @Test
+    public void testMetadata_Type6() {
+        String baseUrl = getClass().getPackage().getName().replace('.', '/');
+        URL url = getClass().getClassLoader().getResource(baseUrl + "/6a/cayenne-PROJECT1.xml");
+        assertNotNull(url);
+
+        Module testModule = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+            }
+        };
+
+        ProjectUpgrader_V9 upgrader = new ProjectUpgrader_V9();
+        Injector injector = DIBootstrap.createInjector(testModule);
+        injector.injectMembers(upgrader);
+
+        Resource source = new URLResource(url);
+        UpgradeHandler handler = upgrader.getUpgradeHandler(source);
+
+        assertNotNull(handler);
+        assertSame(source, handler.getProjectSource());
+
+        UpgradeMetaData md = handler.getUpgradeMetaData();
+        assertNotNull(md);
+        assertSame(UpgradeType.UPGRADE_NEEDED, md.getUpgradeType());
+        assertNull(md.getIntermediateUpgradeVersion());
+        assertEquals("6", md.getProjectVersion());
+        assertEquals("9", md.getSupportedVersion());
+    }
 
     protected File setupTestDirectory(String subfolder) {
         String classPath = getClass().getName().replace('.', '/');

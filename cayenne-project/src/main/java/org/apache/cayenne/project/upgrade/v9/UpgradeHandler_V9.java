@@ -29,7 +29,6 @@ import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.upgrade.BaseUpgradeHandler;
 import org.apache.cayenne.project.upgrade.UpgradeHandler;
 import org.apache.cayenne.project.upgrade.UpgradeMetaData;
-import org.apache.cayenne.project.upgrade.UpgradeType;
 import org.apache.cayenne.project.upgrade.v8.ProjectUpgrader_V8;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
@@ -51,8 +50,8 @@ import java.io.InputStream;
 
 public class UpgradeHandler_V9 extends BaseUpgradeHandler {
 
+    static final String PREVIOUS_VERSION = "8";
     static final String TO_VERSION = "9";
-    static final String MIN_SUPPORTED_VERSION = "8";
 
     @Inject
     protected Injector injector;
@@ -66,7 +65,7 @@ public class UpgradeHandler_V9 extends BaseUpgradeHandler {
 
     @Override
     protected Resource doPerformUpgrade(UpgradeMetaData metaData) throws ConfigurationException {
-        if (compareVersions(metaData.getProjectVersion(), MIN_SUPPORTED_VERSION) == 0) {
+        if (compareVersions(metaData.getProjectVersion(), PREVIOUS_VERSION) == -1) {
             ProjectUpgrader_V8 upgraderV8 = new ProjectUpgrader_V8();
             injector.injectMembers(upgraderV8);
             UpgradeHandler handlerV8 = upgraderV8.getUpgradeHandler(projectSource);
@@ -139,28 +138,8 @@ public class UpgradeHandler_V9 extends BaseUpgradeHandler {
     }
 
     @Override
-    protected UpgradeMetaData loadMetaData() {
-        String version = loadProjectVersion();
-
-        UpgradeMetaData metadata = new UpgradeMetaData();
-        metadata.setSupportedVersion(TO_VERSION);
-        metadata.setProjectVersion(version);
-
-        int c1 = compareVersions(version, MIN_SUPPORTED_VERSION);
-        int c2 = compareVersions(TO_VERSION, version);
-
-        if (c1 < 0) {
-            metadata.setIntermediateUpgradeVersion(MIN_SUPPORTED_VERSION);
-            metadata.setUpgradeType(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED);
-        } else if (c2 < 0) {
-            metadata.setUpgradeType(UpgradeType.DOWNGRADE_NEEDED);
-        } else if (c2 == 0) {
-            metadata.setUpgradeType(UpgradeType.UPGRADE_NOT_NEEDED);
-        } else {
-            metadata.setUpgradeType(UpgradeType.UPGRADE_NEEDED);
-        }
-
-        return metadata;
+    protected String getToVersion() {
+        return TO_VERSION;
     }
 
 }

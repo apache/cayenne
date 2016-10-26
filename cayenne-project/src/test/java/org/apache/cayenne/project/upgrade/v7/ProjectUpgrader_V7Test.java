@@ -83,7 +83,6 @@ public class ProjectUpgrader_V7Test extends Project2Case {
 		assertNotNull(md);
 
 		assertSame(UpgradeType.UPGRADE_NEEDED, md.getUpgradeType());
-		// assertEquals("6", md.getIntermediateUpgradeVersion());
 		assertNull(md.getIntermediateUpgradeVersion());
 		assertEquals("3.0.0.1", md.getProjectVersion());
 		assertEquals("7", md.getSupportedVersion());

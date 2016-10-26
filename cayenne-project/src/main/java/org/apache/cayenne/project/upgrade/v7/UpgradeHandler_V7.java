@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project.upgrade.v7;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -35,14 +32,16 @@ import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.upgrade.BaseUpgradeHandler;
 import org.apache.cayenne.project.upgrade.UpgradeHandler;
 import org.apache.cayenne.project.upgrade.UpgradeMetaData;
-import org.apache.cayenne.project.upgrade.UpgradeType;
 import org.apache.cayenne.project.upgrade.v6.ProjectUpgrader_V6;
 import org.apache.cayenne.resource.Resource;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class UpgradeHandler_V7 extends BaseUpgradeHandler {
 
+    static final String PREVIOUS_VERSION = "6";
     static final String TO_VERSION = "7";
-    static final String MIN_SUPPORTED_VERSION = "3.0.0.1";
 
     // this will be removed from DataDomain soon. So caching this property name
     // in the upgrade handler
@@ -60,7 +59,7 @@ class UpgradeHandler_V7 extends BaseUpgradeHandler {
 
     @Override
     protected Resource doPerformUpgrade(UpgradeMetaData metaData) throws ConfigurationException {
-        if (compareVersions(metaData.getProjectVersion(), MIN_SUPPORTED_VERSION) == 0) {
+        if (compareVersions(metaData.getProjectVersion(), PREVIOUS_VERSION) == -1) {
             ProjectUpgrader_V6 upgraderV6 = new ProjectUpgrader_V6();
             injector.injectMembers(upgraderV6);
             UpgradeHandler handlerV6 = upgraderV6.getUpgradeHandler(projectSource);
@@ -131,28 +130,8 @@ class UpgradeHandler_V7 extends BaseUpgradeHandler {
     }
 
     @Override
-    protected UpgradeMetaData loadMetaData() {
-        String version = loadProjectVersion();
-
-        UpgradeMetaData metadata = new UpgradeMetaData();
-        metadata.setSupportedVersion(TO_VERSION);
-        metadata.setProjectVersion(version);
-
-        int c1 = compareVersions(version, MIN_SUPPORTED_VERSION);
-        int c2 = compareVersions(TO_VERSION, version);
-
-        if (c1 < 0) {
-            metadata.setIntermediateUpgradeVersion(MIN_SUPPORTED_VERSION);
-            metadata.setUpgradeType(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED);
-        } else if (c2 < 0) {
-            metadata.setUpgradeType(UpgradeType.DOWNGRADE_NEEDED);
-        } else if (c2 == 0) {
-            metadata.setUpgradeType(UpgradeType.UPGRADE_NOT_NEEDED);
-        } else {
-            metadata.setUpgradeType(UpgradeType.UPGRADE_NEEDED);
-        }
-
-        return metadata;
+    protected String getToVersion() {
+        return TO_VERSION;
     }
 
 }
