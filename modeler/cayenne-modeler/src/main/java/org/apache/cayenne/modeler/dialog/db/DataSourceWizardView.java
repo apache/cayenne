@@ -33,7 +33,7 @@ import java.awt.*;
  */
 public class DataSourceWizardView extends JDialog {
 
-    protected JComboBox dataSources;
+    protected JComboBox<String> dataSources;
     protected JButton configButton;
     protected JButton okButton;
     protected JButton cancelButton;
@@ -42,7 +42,7 @@ public class DataSourceWizardView extends JDialog {
     public DataSourceWizardView(CayenneController controller) {
         super(Application.getFrame());
         
-        this.dataSources = new JComboBox();
+        this.dataSources = new JComboBox<>();
 
         this.configButton = new JButton("...");
         this.configButton.setToolTipText("configure local DataSource");
@@ -72,7 +72,7 @@ public class DataSourceWizardView extends JDialog {
         setTitle("DB Connection Info");
     }
 
-    public JComboBox getDataSources() {
+    public JComboBox<String> getDataSources() {
         return dataSources;
     }
 

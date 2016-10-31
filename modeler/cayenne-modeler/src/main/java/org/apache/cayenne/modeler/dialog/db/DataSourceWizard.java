@@ -46,7 +46,7 @@ public class DataSourceWizard extends CayenneController {
 	protected DBConnectionInfo altDataSource;
 	protected String altDataSourceKey;
 	protected ObjectBinding dataSourceBinding;
-	protected Map dataSources;
+	protected Map<String, DBConnectionInfo> dataSources;
 
 	protected String dataSourceKey;
 
@@ -202,9 +202,9 @@ public class DataSourceWizard extends CayenneController {
 			dataSources.put(altDataSourceKey, altDataSource);
 		}
 
-		Object[] keys = dataSources.keySet().toArray();
+		String[] keys = dataSources.keySet().toArray(new String[0]);
 		Arrays.sort(keys);
-		view.getDataSources().setModel(new DefaultComboBoxModel(keys));
+		view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
 
 		if (getDataSourceKey() == null) {
 			String key = null;
@@ -212,11 +212,13 @@ public class DataSourceWizard extends CayenneController {
 			if (altDataSourceKey != null) {
 				key = altDataSourceKey;
 			} else if (keys.length > 0) {
-				key = keys[0].toString();
+				key = keys[0];
 			}
 
 			setDataSourceKey(key);
 			dataSourceBinding.updateView();
 		}
+
+		view.getDataSources().setSelectedItem(getDataSourceKey());
 	}
 }
