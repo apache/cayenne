@@ -26,61 +26,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * ExportedKey is an representation of relationship between two tables 
- * in database. It can be used for creating names for relationships
+ * ExportedKey is an representation of relationship between two tables in database. It can be used for creating names
+ * for relationships.
  *
- * Example:
- *  Table A with primary key ID
- *  Table B with primary key ID and foreign key A_ID
- *
- *  In that case ExportedKey will be:
- *      pkTable:  A
- *      pkColumn: A.ID
- *      fkTable:  B
- *      fkColumn: B.A_ID
- *      fkName:   name of foreign key
- *      pkName:
- *      keySeq: TODO
- * 
+ * @since 4.0
  */
 public class ExportedKey implements Comparable {
 
-    public final String pkCatalog;
-    public final String pkSchema;
-    /**
-     * Name of source table
-     */
-    public final String pkTable;
-
-    /**
-     * Name of source column
-     */
-    public final String pkColumn;
-
-    public final String fkCatalog;
-    public final String fkSchema;
-    /**
-     * Name of destination table
-     */
-    public final String fkTable;
-    
-    /**
-     * Name of destination column
-     */
-    public final String fkColumn;
-    
-    /**
-     * Name of foreign key (might be null)
-     */
-    public final String fkName;
-
-    /**
-     * Name of primary key (might be null)
-     */
-    public final String pkName;
-
-
-    public final short keySeq;
+    private final String pkCatalog;
+    private final String pkSchema;
+    private final String pkTable;
+    private final String pkColumn;
+    private final String fkCatalog;
+    private final String fkSchema;
+    private final String fkTable;
+    private final String fkColumn;
+    private final String fkName;
+    private final String pkName;
+    private final short keySeq;
 
     public ExportedKey(String pkTable, String pkColumn, String pkName,
                        String fkTable, String fkColumn, String fkName, short keySeq) {
@@ -89,25 +52,25 @@ public class ExportedKey implements Comparable {
 
     public ExportedKey(String pkCatalog, String pkSchema, String pkTable, String pkColumn, String pkName,
                        String fkCatalog, String fkSchema, String fkTable, String fkColumn, String fkName, short keySeq) {
-       this.pkCatalog  = pkCatalog;
-       this.pkSchema  = pkSchema;
-       this.pkTable  = pkTable;
-       this.pkColumn = pkColumn;
-       this.pkName   = pkName;
-       this.fkCatalog  = fkCatalog;
-       this.fkSchema  = fkSchema;
-       this.fkTable  = fkTable;
-       this.fkColumn = fkColumn;
-       this.fkName   = fkName;
-       this.keySeq = keySeq;
+        this.pkCatalog = pkCatalog;
+        this.pkSchema = pkSchema;
+        this.pkTable = pkTable;
+        this.pkColumn = pkColumn;
+        this.pkName = pkName;
+        this.fkCatalog = fkCatalog;
+        this.fkSchema = fkSchema;
+        this.fkTable = fkTable;
+        this.fkColumn = fkColumn;
+        this.fkName = fkName;
+        this.keySeq = keySeq;
     }
-    
+
     /**
      * Extracts data from a resultset pointing to a exported key to
      * ExportedKey class instance
-     * 
+     *
      * @param rs ResultSet pointing to a exported key, fetched using
-     * DataBaseMetaData.getExportedKeys(...) 
+     *           DataBaseMetaData.getExportedKeys(...)
      */
     public static ExportedKey extractData(ResultSet rs) throws SQLException {
         return new ExportedKey(
@@ -148,35 +111,35 @@ public class ExportedKey implements Comparable {
     public String getPKTableName() {
         return pkTable;
     }
-    
+
     /**
      * @return destination table name
      */
     public String getFKTableName() {
         return fkTable;
     }
-    
+
     /**
      * @return source column name
      */
     public String getPKColumnName() {
         return pkColumn;
     }
-    
+
     /**
      * @return destination column name
      */
     public String getFKColumnName() {
         return fkColumn;
     }
-    
+
     /**
      * @return PK name
      */
     public String getPKName() {
         return pkName;
     }
-    
+
     /**
      * @return FK name
      */

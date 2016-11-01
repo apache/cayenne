@@ -187,14 +187,14 @@ public class DbLoader {
                 continue;
             }
 
-            if (!new EqualsBuilder().append(pkEntity.getCatalog(), key.pkCatalog)
-                    .append(pkEntity.getSchema(), key.pkSchema).append(fkEntity.getCatalog(), key.fkCatalog)
-                    .append(fkEntity.getSchema(), key.fkSchema).isEquals()) {
+            if (!new EqualsBuilder().append(pkEntity.getCatalog(), key.getPkCatalog())
+                    .append(pkEntity.getSchema(), key.getPkSchema()).append(fkEntity.getCatalog(), key.getFkCatalog())
+                    .append(fkEntity.getSchema(), key.getFkSchema()).isEquals()) {
 
                 LOGGER.info("Skip relation: '" + key + "' because it related to objects from other catalog/schema");
-                LOGGER.info("     relation primary key: '" + key.pkCatalog + "." + key.pkSchema + "'");
+                LOGGER.info("     relation primary key: '" + key.getPkCatalog() + "." + key.getPkSchema() + "'");
                 LOGGER.info("       primary key entity: '" + pkEntity.getCatalog() + "." + pkEntity.getSchema() + "'");
-                LOGGER.info("     relation foreign key: '" + key.fkCatalog + "." + key.fkSchema + "'");
+                LOGGER.info("     relation foreign key: '" + key.getFkCatalog() + "." + key.getFkSchema() + "'");
                 LOGGER.info("       foreign key entity: '" + fkEntity.getCatalog() + "." + fkEntity.getSchema() + "'");
                 continue;
             }

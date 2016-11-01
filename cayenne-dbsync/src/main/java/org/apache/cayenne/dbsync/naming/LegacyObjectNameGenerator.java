@@ -26,7 +26,7 @@ import org.apache.cayenne.util.Util;
 
 /**
  * An ObjectNameGenerator that creates names in Cayenne's old-fashioned style. I.e. the same way Cayenne did before 3.0,
- * with "to" prefixes and "array" suffixes.
+ * with relationship "to" prefixes and "Array" suffixes.
  *
  * @since 4.0
  */
