@@ -186,14 +186,10 @@ public class DataSourceWizard extends CayenneController {
 				.getChildrenPreferences();
 
 		// 1.2 migration fix - update data source adapter names
-		Iterator it = dataSources.values().iterator();
-
 		final String _12package = "org.objectstyle.cayenne.";
-		while (it.hasNext()) {
-			DBConnectionInfo info = (DBConnectionInfo) it.next();
+		for(DBConnectionInfo info : dataSources.values()) {
 			if (info.getDbAdapter() != null && info.getDbAdapter().startsWith(_12package)) {
 				info.setDbAdapter("org.apache.cayenne." + info.getDbAdapter().substring(_12package.length()));
-
 				// info.getObjectContext().commitChanges();
 			}
 		}
@@ -206,19 +202,16 @@ public class DataSourceWizard extends CayenneController {
 		Arrays.sort(keys);
 		view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
 
-		if (getDataSourceKey() == null) {
-			String key = null;
-
+		String key = null;
+		if (getDataSourceKey() == null || !dataSources.containsKey(getDataSourceKey())) {
 			if (altDataSourceKey != null) {
 				key = altDataSourceKey;
 			} else if (keys.length > 0) {
 				key = keys[0];
 			}
-
-			setDataSourceKey(key);
-			dataSourceBinding.updateView();
 		}
 
-		view.getDataSources().setSelectedItem(getDataSourceKey());
+		setDataSourceKey(key != null ? key : getDataSourceKey());
+		dataSourceBinding.updateView();
 	}
 }
