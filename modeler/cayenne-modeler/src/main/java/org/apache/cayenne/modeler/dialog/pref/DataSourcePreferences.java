@@ -37,7 +37,10 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 import org.apache.cayenne.datasource.DriverDataSource;
+import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.FileClassLoadingService;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.event.DataSourceModificationEvent;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
@@ -137,6 +140,7 @@ public class DataSourcePreferences extends CayenneController {
 			view.getDataSources().setModel(new DefaultComboBoxModel(keys));
 			view.getDataSources().setSelectedItem(creatorWizard.getName());
 			editDataSourceAction();
+			fireEvent(creatorWizard.getName(), MapEvent.ADD);
 		}
 	}
 
@@ -158,6 +162,7 @@ public class DataSourcePreferences extends CayenneController {
 				view.getDataSources().setModel(new DefaultComboBoxModel(keys));
 				view.getDataSources().setSelectedItem(wizard.getName());
 				editDataSourceAction();
+				fireEvent(wizard.getName(), MapEvent.ADD);
 			}
 		}
 	}
@@ -175,7 +180,13 @@ public class DataSourcePreferences extends CayenneController {
 			Arrays.sort(keys);
 			view.getDataSources().setModel(new DefaultComboBoxModel(keys));
 			editDataSourceAction(keys.length > 0 ? keys[0] : null);
+			fireEvent(key, MapEvent.REMOVE);
 		}
+	}
+
+	private void fireEvent(String dataSourceKey, int eventId) {
+		DataSourceModificationEvent event = new DataSourceModificationEvent(this, dataSourceKey, eventId);
+		getApplication().getFrameController().getProjectController().fireDataSourceModificationEvent(event);
 	}
 
 	/**
