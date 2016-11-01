@@ -35,6 +35,12 @@ public class GeneralPreferences extends CayenneController {
 	public static final String AUTO_LOAD_PROJECT_PREFERENCE = "autoLoadProject";
 	public static final String DELETE_PROMPT_PREFERENCE = "deletePrompt";
 	public static final String ENCODING_PREFERENCE = "encoding";
+	/**
+	 * Favourite data source preference
+	 * Currently used in reengineering dialog where it's selected by default
+	 * It's not present in preferences dialog hence can't be modified directly
+	 */
+	public static final String FAVOURITE_DATA_SOURCE = "favouriteDataSource";
 
 	protected GeneralPreferencesView view;
 	protected CayennePreferenceEditor editor;

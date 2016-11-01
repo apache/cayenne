@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.modeler.ClassLoadingService;
+import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.modeler.event.DataSourceModificationEvent;
 import org.apache.cayenne.modeler.event.DataSourceModificationListener;
@@ -34,6 +35,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.prefs.Preferences;
 
 /**
  * A subclass of ConnectionWizard that tests configured DataSource, but does not
@@ -106,6 +108,15 @@ public class DataSourceWizard extends CayenneController {
 				.addDataSourceModificationListener(dataSourceListener);
 	}
 
+	protected void initFavouriteDataSource() {
+		Preferences pref = getApplication().getPreferencesNode(GeneralPreferences.class, "");
+		String favouriteDataSource = pref.get(GeneralPreferences.FAVOURITE_DATA_SOURCE, null);
+		if(favouriteDataSource != null && dataSources.containsKey(favouriteDataSource)) {
+			setDataSourceKey(favouriteDataSource);
+			dataSourceBinding.updateView();
+		}
+	}
+
 	protected void removeDataSourceListener() {
 		getApplication().getFrameController().getProjectController()
 				.removeDataSourceModificationListener(dataSourceListener);
@@ -119,7 +130,7 @@ public class DataSourceWizard extends CayenneController {
 		this.dataSourceKey = dataSourceKey;
 
 		// update a clone object that will be used to obtain connection...
-		DBConnectionInfo currentInfo = (DBConnectionInfo) dataSources.get(dataSourceKey);
+		DBConnectionInfo currentInfo = dataSources.get(dataSourceKey);
 		if (currentInfo != null) {
 			currentInfo.copyTo(connectionInfo);
 		} else {
@@ -137,6 +148,7 @@ public class DataSourceWizard extends CayenneController {
 		this.canceled = true;
 
 		refreshDataSources();
+		initFavouriteDataSource();
 
 		view.pack();
 		view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -197,6 +209,10 @@ public class DataSourceWizard extends CayenneController {
 		this.canceled = canceled;
 		view.dispose();
 		removeDataSourceListener();
+		if(!canceled) {
+			Preferences pref = getApplication().getPreferencesNode(GeneralPreferences.class, "");
+			pref.put(GeneralPreferences.FAVOURITE_DATA_SOURCE, getDataSourceKey());
+		}
 	}
 
 	/**
