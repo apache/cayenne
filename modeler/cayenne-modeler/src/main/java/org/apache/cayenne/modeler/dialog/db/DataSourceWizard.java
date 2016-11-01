@@ -21,6 +21,8 @@ package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
+import org.apache.cayenne.modeler.event.DataSourceModificationEvent;
+import org.apache.cayenne.modeler.event.DataSourceModificationListener;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
@@ -31,7 +33,6 @@ import java.awt.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -57,6 +58,8 @@ public class DataSourceWizard extends CayenneController {
 
 	protected boolean canceled;
 
+	protected DataSourceModificationListener dataSourceListener;
+
 	public DataSourceWizard(CayenneController parent, String title, String altDataSourceKey,
                             DBConnectionInfo altDataSource) {
 		super(parent);
@@ -68,6 +71,7 @@ public class DataSourceWizard extends CayenneController {
 		this.connectionInfo = new DBConnectionInfo();
 
 		initBindings();
+		initDataSourceListener();
 	}
 
 	/**
@@ -85,6 +89,26 @@ public class DataSourceWizard extends CayenneController {
 		builder.bindToAction(view.getCancelButton(), "cancelAction()");
 		builder.bindToAction(view.getOkButton(), "okAction()");
 		builder.bindToAction(view.getConfigButton(), "dataSourceConfigAction()");
+	}
+
+	protected void initDataSourceListener() {
+		dataSourceListener = new DataSourceModificationListener() {
+			@Override
+			public void callbackDataSourceRemoved(DataSourceModificationEvent e) {}
+
+			@Override
+			public void callbackDataSourceAdded(DataSourceModificationEvent e) {
+				setDataSourceKey(e.getDataSourceName());
+				refreshDataSources();
+			}
+		};
+		getApplication().getFrameController().getProjectController()
+				.addDataSourceModificationListener(dataSourceListener);
+	}
+
+	protected void removeDataSourceListener() {
+		getApplication().getFrameController().getProjectController()
+				.removeDataSourceModificationListener(dataSourceListener);
 	}
 
 	public String getDataSourceKey() {
@@ -158,14 +182,21 @@ public class DataSourceWizard extends CayenneController {
 			return;
 		}
 
-		// set success flag, and unblock the caller...
-		canceled = false;
-		view.dispose();
+		onClose(false);
 	}
 
 	public void cancelAction() {
-		canceled = true;
+		onClose(true);
+	}
+
+	/**
+	 * On close handler. Introduced to remove data source listener.
+	 */
+	protected void onClose(boolean canceled) {
+		// set success flag, and unblock the caller...
+		this.canceled = canceled;
 		view.dispose();
+		removeDataSourceListener();
 	}
 
 	/**

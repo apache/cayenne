@@ -67,10 +67,8 @@ public class ConnectionWizard extends DataSourceWizard {
             reportError("Connection Error", th);
             return;
         }
-        
-        // set success flag, and unblock the caller...
-        canceled = false;
-        view.dispose();
+
+        onClose(false);
     }
 
     /**
