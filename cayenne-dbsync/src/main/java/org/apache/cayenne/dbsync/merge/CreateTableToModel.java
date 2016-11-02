@@ -20,7 +20,6 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
-import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -64,8 +63,7 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
 
         objEntity.setName(NameBuilder
                 .builder(objEntity, dbEntity.getDataMap())
-                // TODO: name generator must be injected...
-                .baseName(new DefaultObjectNameGenerator().objEntityName(dbEntity))
+                .baseName(context.getEntityMergeSupport().getNameGenerator().objEntityName(dbEntity))
                 .name());
         objEntity.setDbEntity(getEntity());
 
