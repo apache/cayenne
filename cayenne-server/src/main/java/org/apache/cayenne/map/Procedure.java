@@ -124,6 +124,13 @@ public class Procedure implements ConfigurationNode, CayenneMapEntry, XMLSeriali
      * Returns procedure name including schema and catalog, if present.
      */
     public String getFullyQualifiedName() {
+        return generateFullyQualifiedName(catalog, schema, name);
+    }
+
+    /**
+    * Utility function to generate fully qualified name for procedure
+    */
+    public static String generateFullyQualifiedName(String catalog, String schema, String name) {
         return (catalog != null ? catalog + '.' : "")
                 + (schema != null ? schema + '.' : "")
                 + name;
