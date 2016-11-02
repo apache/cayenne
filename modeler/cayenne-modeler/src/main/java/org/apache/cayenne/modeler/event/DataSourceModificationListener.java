@@ -26,7 +26,8 @@ import java.util.EventListener;
  */
 public interface DataSourceModificationListener extends EventListener {
 
-    //TODO change events not supported for now
+    // change events not supported for now
+    // There is no good place to catch data source modification
     //void callbackDataSourceChanged(DataSourceModificationEvent e);
 
     void callbackDataSourceAdded(DataSourceModificationEvent e);
