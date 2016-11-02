@@ -1761,7 +1761,7 @@ public class ProjectController extends CayenneController {
                 case MapEvent.ADD:
                     listener.callbackDataSourceAdded(e);
                     break;
-                // TODO Change event not supported for now. Nikita Timofeev
+                // Change event not supported for now
                 // There is no good place to catch data source modification
                 /*case MapEvent.CHANGE:
                     listener.callbackDataSourceChanged(e);
