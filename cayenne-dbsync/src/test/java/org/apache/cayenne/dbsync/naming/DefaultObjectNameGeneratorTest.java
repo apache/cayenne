@@ -18,44 +18,73 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.naming;
 
-import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 public class DefaultObjectNameGeneratorTest {
 
+    private DefaultObjectNameGenerator generator = new DefaultObjectNameGenerator();
+
+
     @Test
-    public void testStrategy() throws Exception {
-        DefaultObjectNameGenerator strategy = new DefaultObjectNameGenerator();
-        
+    public void testDbRelationshipName_LowerCase_Underscores() {
+
+        ExportedKey key = new ExportedKey("artist", "artist_id", null,
+                "painting", "artist_id", null, (short) 1);
+        assertEquals("artist", generator.dbRelationshipName(key, false));
+        assertEquals("paintings", generator.dbRelationshipName(key, true));
+
+        key = new ExportedKey("person", "person_id", null,
+                "person", "mother_id", null, (short) 1);
+        assertEquals("mother", generator.dbRelationshipName(key, false));
+        assertEquals("people", generator.dbRelationshipName(key, true));
+
+        key = new ExportedKey("person", "person_id", null,
+                "address", "shipping_address_id", null, (short) 1);
+        assertEquals("shippingAddress", generator.dbRelationshipName(key, false));
+        assertEquals("addresses", generator.dbRelationshipName(key, true));
+    }
+
+    @Test
+    public void testDbRelationshipName_UpperCase_Underscores() {
+
         ExportedKey key = new ExportedKey("ARTIST", "ARTIST_ID", null,
                 "PAINTING", "ARTIST_ID", null, (short) 1);
-        assertEquals(strategy.dbRelationshipName(key, false), "artist");
-        assertEquals(strategy.dbRelationshipName(key, true), "paintings");
-        
+        assertEquals("artist", generator.dbRelationshipName(key, false));
+        assertEquals("paintings", generator.dbRelationshipName(key, true));
+
         key = new ExportedKey("PERSON", "PERSON_ID", null,
                 "PERSON", "MOTHER_ID", null, (short) 1);
-        assertEquals(strategy.dbRelationshipName(key, false), "mother");
-        assertEquals(strategy.dbRelationshipName(key, true), "people");
-        
+        assertEquals("mother", generator.dbRelationshipName(key, false));
+        assertEquals("people", generator.dbRelationshipName(key, true));
+
         key = new ExportedKey("PERSON", "PERSON_ID", null,
                 "ADDRESS", "SHIPPING_ADDRESS_ID", null, (short) 1);
-        assertEquals(strategy.dbRelationshipName(key, false), "shippingAddress");
-        assertEquals(strategy.dbRelationshipName(key, true), "addresses");
-        
-        assertEquals(strategy.objEntityName(new DbEntity("ARTIST")), "Artist");
-        assertEquals(strategy.objEntityName(new DbEntity("ARTIST_WORK")), "ArtistWork");
-        
-        assertEquals(strategy.objAttributeName(new DbAttribute("NAME")), "name");
-        assertEquals(strategy.objAttributeName(new DbAttribute("ARTIST_NAME")), "artistName");
-        
-        assertEquals(strategy.objRelationshipName(new DbRelationship("mother")), "mother");
-        assertEquals(strategy.objRelationshipName(new DbRelationship("persons")), "persons");
+        assertEquals("shippingAddress", generator.dbRelationshipName(key, false));
+        assertEquals("addresses", generator.dbRelationshipName(key, true));
+    }
+
+    @Test
+    public void testObjEntityName() {
+        assertEquals("Artist", generator.objEntityName(new DbEntity("ARTIST")));
+        assertEquals("ArtistWork", generator.objEntityName(new DbEntity("ARTIST_WORK")));
+    }
+
+    @Test
+    public void testObjAttributeName() {
+        assertEquals("name", generator.objAttributeName(new DbAttribute("NAME")));
+        assertEquals("artistName", generator.objAttributeName(new DbAttribute("ARTIST_NAME")));
+    }
+
+    @Test
+    public void testObjRelationshipName() {
+        assertEquals("mother", generator.objRelationshipName(new DbRelationship("mother")));
+        assertEquals("persons", generator.objRelationshipName(new DbRelationship("persons")));
     }
 
 }
