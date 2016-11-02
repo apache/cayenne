@@ -446,10 +446,10 @@ public class DbLoader {
 
         try (ResultSet columnsRS = getMetaData().getProcedureColumns(catalog, schema, null, null);) {
             while (columnsRS.next()) {
-
-                String s = columnsRS.getString("PROCEDURE_SCHEM");
+                String procSchema = columnsRS.getString("PROCEDURE_SCHEM");
+                String procCatalog = columnsRS.getString("PROCEDURE_CAT");
                 String name = columnsRS.getString("PROCEDURE_NAME");
-                String key = (s == null ? "" : s + '.') + name;
+                String key = Procedure.generateFullyQualifiedName(procCatalog, procSchema, name);
                 Procedure procedure = procedures.get(key);
                 if (procedure == null) {
                     continue;
