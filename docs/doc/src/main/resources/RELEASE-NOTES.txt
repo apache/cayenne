@@ -58,6 +58,7 @@ CAY-2119 ProjectUpgrader test failure (Windows)
 CAY-2122 Vertical Inheritance: Cannot Insert Record For Implementing Class with Attribute And Relationship
 CAY-2125 SchemaUpdateStrategy doesn't work with multiple DataNodes
 CAY-2126 Modeler cannot upgrade project from v7 to v9
+CAY-2128 Modeler stored procedures are not imported
 
 ----------------------------------
 Release: 4.0.M3
