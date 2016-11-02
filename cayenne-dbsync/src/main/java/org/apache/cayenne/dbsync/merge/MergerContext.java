@@ -41,6 +41,7 @@ public class MergerContext {
     private ValidationResult validationResult;
     private ModelMergeDelegate delegate;
     private EntityMergeSupport entityMergeSupport;
+    private ObjectNameGenerator nameGenerator;
 
     protected MergerContext() {
     }
@@ -50,14 +51,6 @@ public class MergerContext {
      */
     public static Builder builder(DataMap dataMap) {
         return new Builder(dataMap);
-    }
-
-    /**
-     * @deprecated since 4.0 use {@link #getDataNode()} and its {@link DataNode#getAdapter()} method.
-     */
-    @Deprecated
-    public DbAdapter getAdapter() {
-        return getDataNode().getAdapter();
     }
 
     /**
@@ -95,17 +88,15 @@ public class MergerContext {
     }
 
     /**
-     * @deprecated since 4.0 in favor of {@link #getDelegate()}.
+     * @since 4.0
      */
-    @Deprecated
-    public ModelMergeDelegate getModelMergeDelegate() {
-        return getDelegate();
+    public ObjectNameGenerator getNameGenerator() {
+        return nameGenerator;
     }
 
     public static class Builder {
 
         private MergerContext context;
-        private ObjectNameGenerator nameGenerator;
         private boolean usingPrimitives;
         private NameFilter meaningfulPKsFilter;
 
@@ -127,15 +118,18 @@ public class MergerContext {
                 dataNode(new DataNode());
             }
 
-            if(nameGenerator == null) {
-                nameGenerator = new DefaultObjectNameGenerator();
+            if(context.nameGenerator == null) {
+                context.nameGenerator = new DefaultObjectNameGenerator();
             }
 
             if(meaningfulPKsFilter == null) {
                 meaningfulPKsFilter = NamePatternMatcher.EXCLUDE_ALL;
             }
 
-            context.entityMergeSupport = new EntityMergeSupport(nameGenerator, meaningfulPKsFilter, true, usingPrimitives);
+            context.entityMergeSupport = new EntityMergeSupport(context.nameGenerator,
+                    meaningfulPKsFilter,
+                    true,
+                    usingPrimitives);
 
             return context;
         }
@@ -146,7 +140,7 @@ public class MergerContext {
         }
 
         public Builder nameGenerator(ObjectNameGenerator nameGenerator) {
-            this.nameGenerator = Objects.requireNonNull(nameGenerator);
+            this.context.nameGenerator = Objects.requireNonNull(nameGenerator);
             return this;
         }
 

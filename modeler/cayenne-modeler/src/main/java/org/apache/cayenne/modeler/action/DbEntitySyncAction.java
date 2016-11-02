@@ -32,7 +32,7 @@ import org.apache.cayenne.modeler.undo.DbEntitySyncUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 import java.awt.event.ActionEvent;
-import java.util.Iterator;
+import java.util.Collection;
 
 /**
  * Action that synchronizes all ObjEntities with the current state of the
@@ -66,8 +66,8 @@ public class DbEntitySyncAction extends CayenneAction {
 
 		if (dbEntity != null) {
 
-			Iterator it = dbEntity.getDataMap().getMappedEntities(dbEntity).iterator();
-			if (!it.hasNext()) {
+			Collection<ObjEntity> entities = dbEntity.getDataMap().getMappedEntities(dbEntity);
+			if (entities.isEmpty()) {
 				return;
 			}
 
@@ -81,8 +81,8 @@ public class DbEntitySyncAction extends CayenneAction {
 			DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit((DataChannelDescriptor) mediator
 					.getProject().getRootNode(), mediator.getCurrentDataMap());
 
-			while (it.hasNext()) {
-				ObjEntity entity = (ObjEntity) it.next();
+
+			for(ObjEntity entity : entities) {
 
 				DbEntitySyncUndoableEdit.EntitySyncUndoableListener listener = undoableEdit.new EntitySyncUndoableListener(
 						entity);
