@@ -164,7 +164,7 @@ public class DefaultDbImportAction implements DbImportAction {
         if (targetDataMap == null) {
             logger.info("");
             logger.info("Map file does not exist. Loaded db model will be saved into '"
-                    + (config.getDataMapFile() == null ? "null" : config.getDataMapFile().getAbsolutePath() + "'"));
+                    + (config.getTargetDataMap() == null ? "null" : config.getTargetDataMap().getAbsolutePath() + "'"));
 
             hasChanges = true;
             targetDataMap = newTargetDataMap(config);
@@ -239,7 +239,7 @@ public class DefaultDbImportAction implements DbImportAction {
 
     protected DataMap existingTargetMap(DbImportConfiguration configuration) throws IOException {
 
-        File file = configuration.getDataMapFile();
+        File file = configuration.getTargetDataMap();
         if (file != null && file.exists() && file.canRead()) {
             DataMap dataMap = mapLoader.loadDataMap(new InputSource(file.getCanonicalPath()));
             dataMap.setNamespace(new EntityResolver(Collections.singleton(dataMap)));
@@ -256,7 +256,7 @@ public class DefaultDbImportAction implements DbImportAction {
         DataMap dataMap = new DataMap();
 
         dataMap.setName(config.getDataMapName());
-        dataMap.setConfigurationSource(new URLResource(config.getDataMapFile().toURI().toURL()));
+        dataMap.setConfigurationSource(new URLResource(config.getTargetDataMap().toURI().toURL()));
         dataMap.setNamespace(new EntityResolver(Collections.singleton(dataMap)));
 
         // update map defaults
@@ -368,7 +368,7 @@ public class DefaultDbImportAction implements DbImportAction {
     }
 
     protected DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
-        DataMap dataMap = config.createDataMap();
+        DataMap dataMap = new DataMap("_import_source_");
         DbLoader loader = config.createLoader(adapter, connection, config.createLoaderDelegate());
         loader.load(dataMap, config.getDbLoaderConfig());
         return dataMap;

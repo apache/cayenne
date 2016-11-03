@@ -48,7 +48,7 @@ public class DbImportConfiguration {
     private static final String DATA_MAP_LOCATION_SUFFIX = ".map.xml";
     private final DataSourceInfo dataSourceInfo = new DataSourceInfo();
     private final DbLoaderConfiguration dbLoaderConfiguration = new DbLoaderConfiguration();
-    private File dataMapFile;
+    private File targetDataMap;
     /**
      * A default package for ObjEntity Java classes.
      */
@@ -70,12 +70,12 @@ public class DbImportConfiguration {
     /**
      * Retruns DataMap XML file representing the target of the DB import operation.
      */
-    public File getDataMapFile() {
-        return dataMapFile;
+    public File getTargetDataMap() {
+        return targetDataMap;
     }
 
-    public void setDataMapFile(File map) {
-        this.dataMapFile = map;
+    public void setTargetDataMap(File map) {
+        this.targetDataMap = map;
     }
 
     public String getDefaultPackage() {
@@ -207,7 +207,7 @@ public class DbImportConfiguration {
     }
 
     public String getDataMapName() {
-        String name = dataMapFile.getName();
+        String name = targetDataMap.getName();
         if (!name.endsWith(DATA_MAP_LOCATION_SUFFIX)) {
             throw new CayenneRuntimeException("DataMap file name must end with '%s': '%s'", DATA_MAP_LOCATION_SUFFIX,
                     name);

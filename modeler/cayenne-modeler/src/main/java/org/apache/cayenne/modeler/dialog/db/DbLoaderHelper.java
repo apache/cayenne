@@ -381,7 +381,7 @@ public class DbLoaderHelper {
             }
 
             if (dataMap.getConfigurationSource() != null) {
-                config.setDataMapFile(new File(dataMap.getConfigurationSource().getURL().getPath()));
+                config.setTargetDataMap(new File(dataMap.getConfigurationSource().getURL().getPath()));
             }
 
             FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(reverseEngineering);

@@ -33,11 +33,11 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.tools.dbimport.DbImportAction;
-import org.apache.cayenne.tools.dbimport.DefaultDbImportAction;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
+import org.apache.cayenne.tools.dbimport.DefaultDbImportAction;
 import org.apache.commons.logging.Log;
 
-import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 
 public class ModelerDbImportAction implements DbImportAction {
@@ -75,7 +75,7 @@ public class ModelerDbImportAction implements DbImportAction {
         new DefaultDbImportAction(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider) {
 
             @Override
-            protected DataMap loadExistingDataMap(File dataMapFile) {
+            protected DataMap existingTargetMap(DbImportConfiguration configuration) throws IOException {
                 return dbLoaderHelper.getDataMap();
             }
 

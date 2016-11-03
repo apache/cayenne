@@ -70,7 +70,6 @@ import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.objEntity;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -124,10 +123,11 @@ public class DefaultDbImportActionTest {
         when(config.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
                 .thenReturn(dbLoader);
 
-        final DataMap dataMap = new DataMap();
-        when(config.createDataMap()).thenReturn(dataMap);
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(config.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
+        when(config.getTargetDataMap()).thenReturn(new File("xyz.map.xml"));
+        when(config.getNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
+        when(config.getMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
 
         final boolean[] haveWeTriedToSave = {false};
         DefaultDbImportAction action = buildDbImportAction(new FileProjectSaver() {
@@ -136,7 +136,7 @@ public class DefaultDbImportActionTest {
                 haveWeTriedToSave[0] = true;
 
                 // Validation phase
-                assertSame(dataMap, project.getRootNode());
+                assertTrue(project.getRootNode() instanceof DataMap);
             }
         }, null);
 
@@ -167,8 +167,7 @@ public class DefaultDbImportActionTest {
         when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
                 .thenReturn(dbLoader);
 
-        when(params.createDataMap()).thenReturn(new DataMap("testImport"));
-        when(params.getDataMapFile()).thenReturn(FILE_STUB);
+        when(params.getTargetDataMap()).thenReturn(FILE_STUB);
         when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
         when(params.getNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
@@ -227,8 +226,7 @@ public class DefaultDbImportActionTest {
         when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
                 .thenReturn(dbLoader);
 
-        when(params.createDataMap()).thenReturn(new DataMap("testImport"));
-        when(params.getDataMapFile()).thenReturn(FILE_STUB);
+        when(params.getTargetDataMap()).thenReturn(FILE_STUB);
         when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
 

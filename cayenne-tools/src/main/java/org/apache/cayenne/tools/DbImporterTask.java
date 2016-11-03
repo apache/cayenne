@@ -161,7 +161,7 @@ public class DbImporterTask extends Task {
     protected void validateAttributes() throws BuildException {
         StringBuilder error = new StringBuilder("");
 
-        if (config.getDataMapFile() == null) {
+        if (config.getTargetDataMap() == null) {
             error.append("The 'map' attribute must be set.\n");
         }
 
@@ -222,11 +222,11 @@ public class DbImporterTask extends Task {
     }
 
     public File getMap() {
-        return config.getDataMapFile();
+        return config.getTargetDataMap();
     }
 
     public void setMap(File map) {
-        config.setDataMapFile(map);
+        config.setTargetDataMap(map);
     }
 
     public DbImportConfiguration toParameters() {

@@ -18,21 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.XMLDataMapLoader;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbimport.DefaultReverseEngineeringLoader;
 import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.CayenneDbSyncModule;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.tools.dbimport.DbImportAction;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
@@ -45,8 +39,6 @@ import org.apache.maven.plugin.MojoFailureException;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Maven mojo to reverse engineer datamap from DB.
@@ -202,7 +194,7 @@ public class DbImporterMojo extends AbstractMojo {
         config.setAdapter(adapter);
         config.setDefaultPackage(defaultPackage);
         config.setDriver(driver);
-        config.setDataMapFile(map);
+        config.setTargetDataMap(map);
         config.setMeaningfulPkTables(meaningfulPkTables);
         config.setNamingStrategy(namingStrategy);
         config.setPassword(password);
