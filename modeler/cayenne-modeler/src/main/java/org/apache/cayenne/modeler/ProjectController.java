@@ -68,40 +68,7 @@ import org.apache.cayenne.modeler.action.SaveAction;
 import org.apache.cayenne.modeler.action.SaveAsAction;
 import org.apache.cayenne.modeler.editor.CallbackType;
 import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
-import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.CallbackMethodEvent;
-import org.apache.cayenne.modeler.event.CallbackMethodListener;
-import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.event.DataMapDisplayListener;
-import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
-import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
-import org.apache.cayenne.modeler.event.DbAttributeDisplayListener;
-import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
-import org.apache.cayenne.modeler.event.DbRelationshipDisplayListener;
-import org.apache.cayenne.modeler.event.DisplayEvent;
-import org.apache.cayenne.modeler.event.DomainDisplayEvent;
-import org.apache.cayenne.modeler.event.DomainDisplayListener;
-import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayListener;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayListener;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityListenerEvent;
-import org.apache.cayenne.modeler.event.EntityListenerListener;
-import org.apache.cayenne.modeler.event.MultipleObjectsDisplayEvent;
-import org.apache.cayenne.modeler.event.MultipleObjectsDisplayListener;
-import org.apache.cayenne.modeler.event.ObjAttributeDisplayListener;
-import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
-import org.apache.cayenne.modeler.event.ObjRelationshipDisplayListener;
-import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
-import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
-import org.apache.cayenne.modeler.event.ProcedureParameterDisplayListener;
-import org.apache.cayenne.modeler.event.ProjectOnSaveEvent;
-import org.apache.cayenne.modeler.event.ProjectOnSaveListener;
-import org.apache.cayenne.modeler.event.QueryDisplayEvent;
-import org.apache.cayenne.modeler.event.QueryDisplayListener;
-import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.event.*;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
@@ -1778,7 +1745,34 @@ public class ProjectController extends CayenneController {
     		ProjectOnSaveListener temp = (ProjectOnSaveListener) listener;
     		temp.beforeSaveChanges(e);
     	}
-    	
+    }
+
+    public void addDataSourceModificationListener(DataSourceModificationListener listener) {
+        listenerList.add(DataSourceModificationListener.class, listener);
+    }
+
+    public void removeDataSourceModificationListener(DataSourceModificationListener listener) {
+        listenerList.remove(DataSourceModificationListener.class, listener);
+    }
+
+    public void fireDataSourceModificationEvent(DataSourceModificationEvent e) {
+        for (DataSourceModificationListener listener : listenerList.getListeners(DataSourceModificationListener.class)) {
+            switch (e.getId()) {
+                case MapEvent.ADD:
+                    listener.callbackDataSourceAdded(e);
+                    break;
+                // Change event not supported for now
+                // There is no good place to catch data source modification
+                /*case MapEvent.CHANGE:
+                    listener.callbackDataSourceChanged(e);
+                    break;*/
+                case MapEvent.REMOVE:
+                    listener.callbackDataSourceRemoved(e);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid RelationshipEvent type: " + e.getId());
+            }
+        }
     }
 
     public ArrayList<Embeddable> getEmbeddablesInCurrentDataDomain() {
