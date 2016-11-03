@@ -36,6 +36,7 @@ CAY-2114 cdbimport: object layer settings are not respected
 CAY-2115 DbLoader - allow loading DataMap without Obj layer
 CAY-2116 Split schema synchronization code in a separate module
 CAY-2118 cdbimport: drop support for the old style of table filtering
+CAY-2129 Modeler: reengineer dialog improvements
 
 Bug Fixes:
 

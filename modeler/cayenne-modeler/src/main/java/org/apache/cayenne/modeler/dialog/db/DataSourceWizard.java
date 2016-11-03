@@ -20,7 +20,10 @@
 package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.modeler.ClassLoadingService;
+import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
+import org.apache.cayenne.modeler.event.DataSourceModificationEvent;
+import org.apache.cayenne.modeler.event.DataSourceModificationListener;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
@@ -31,8 +34,8 @@ import java.awt.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.prefs.Preferences;
 
 /**
  * A subclass of ConnectionWizard that tests configured DataSource, but does not
@@ -46,7 +49,7 @@ public class DataSourceWizard extends CayenneController {
 	protected DBConnectionInfo altDataSource;
 	protected String altDataSourceKey;
 	protected ObjectBinding dataSourceBinding;
-	protected Map dataSources;
+	protected Map<String, DBConnectionInfo> dataSources;
 
 	protected String dataSourceKey;
 
@@ -56,6 +59,8 @@ public class DataSourceWizard extends CayenneController {
 	protected DBConnectionInfo connectionInfo;
 
 	protected boolean canceled;
+
+	protected DataSourceModificationListener dataSourceListener;
 
 	public DataSourceWizard(CayenneController parent, String title, String altDataSourceKey,
                             DBConnectionInfo altDataSource) {
@@ -68,6 +73,7 @@ public class DataSourceWizard extends CayenneController {
 		this.connectionInfo = new DBConnectionInfo();
 
 		initBindings();
+		initDataSourceListener();
 	}
 
 	/**
@@ -87,6 +93,35 @@ public class DataSourceWizard extends CayenneController {
 		builder.bindToAction(view.getConfigButton(), "dataSourceConfigAction()");
 	}
 
+	protected void initDataSourceListener() {
+		dataSourceListener = new DataSourceModificationListener() {
+			@Override
+			public void callbackDataSourceRemoved(DataSourceModificationEvent e) {}
+
+			@Override
+			public void callbackDataSourceAdded(DataSourceModificationEvent e) {
+				setDataSourceKey(e.getDataSourceName());
+				refreshDataSources();
+			}
+		};
+		getApplication().getFrameController().getProjectController()
+				.addDataSourceModificationListener(dataSourceListener);
+	}
+
+	protected void initFavouriteDataSource() {
+		Preferences pref = getApplication().getPreferencesNode(GeneralPreferences.class, "");
+		String favouriteDataSource = pref.get(GeneralPreferences.FAVOURITE_DATA_SOURCE, null);
+		if(favouriteDataSource != null && dataSources.containsKey(favouriteDataSource)) {
+			setDataSourceKey(favouriteDataSource);
+			dataSourceBinding.updateView();
+		}
+	}
+
+	protected void removeDataSourceListener() {
+		getApplication().getFrameController().getProjectController()
+				.removeDataSourceModificationListener(dataSourceListener);
+	}
+
 	public String getDataSourceKey() {
 		return dataSourceKey;
 	}
@@ -95,7 +130,7 @@ public class DataSourceWizard extends CayenneController {
 		this.dataSourceKey = dataSourceKey;
 
 		// update a clone object that will be used to obtain connection...
-		DBConnectionInfo currentInfo = (DBConnectionInfo) dataSources.get(dataSourceKey);
+		DBConnectionInfo currentInfo = dataSources.get(dataSourceKey);
 		if (currentInfo != null) {
 			currentInfo.copyTo(connectionInfo);
 		} else {
@@ -113,6 +148,7 @@ public class DataSourceWizard extends CayenneController {
 		this.canceled = true;
 
 		refreshDataSources();
+		initFavouriteDataSource();
 
 		view.pack();
 		view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -158,14 +194,25 @@ public class DataSourceWizard extends CayenneController {
 			return;
 		}
 
-		// set success flag, and unblock the caller...
-		canceled = false;
-		view.dispose();
+		onClose(false);
 	}
 
 	public void cancelAction() {
-		canceled = true;
+		onClose(true);
+	}
+
+	/**
+	 * On close handler. Introduced to remove data source listener.
+	 */
+	protected void onClose(boolean canceled) {
+		// set success flag, and unblock the caller...
+		this.canceled = canceled;
 		view.dispose();
+		removeDataSourceListener();
+		if(!canceled) {
+			Preferences pref = getApplication().getPreferencesNode(GeneralPreferences.class, "");
+			pref.put(GeneralPreferences.FAVOURITE_DATA_SOURCE, getDataSourceKey());
+		}
 	}
 
 	/**
@@ -186,14 +233,10 @@ public class DataSourceWizard extends CayenneController {
 				.getChildrenPreferences();
 
 		// 1.2 migration fix - update data source adapter names
-		Iterator it = dataSources.values().iterator();
-
 		final String _12package = "org.objectstyle.cayenne.";
-		while (it.hasNext()) {
-			DBConnectionInfo info = (DBConnectionInfo) it.next();
+		for(DBConnectionInfo info : dataSources.values()) {
 			if (info.getDbAdapter() != null && info.getDbAdapter().startsWith(_12package)) {
 				info.setDbAdapter("org.apache.cayenne." + info.getDbAdapter().substring(_12package.length()));
-
 				// info.getObjectContext().commitChanges();
 			}
 		}
@@ -202,21 +245,20 @@ public class DataSourceWizard extends CayenneController {
 			dataSources.put(altDataSourceKey, altDataSource);
 		}
 
-		Object[] keys = dataSources.keySet().toArray();
+		String[] keys = dataSources.keySet().toArray(new String[0]);
 		Arrays.sort(keys);
-		view.getDataSources().setModel(new DefaultComboBoxModel(keys));
+		view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
 
-		if (getDataSourceKey() == null) {
-			String key = null;
-
+		String key = null;
+		if (getDataSourceKey() == null || !dataSources.containsKey(getDataSourceKey())) {
 			if (altDataSourceKey != null) {
 				key = altDataSourceKey;
 			} else if (keys.length > 0) {
-				key = keys[0].toString();
+				key = keys[0];
 			}
-
-			setDataSourceKey(key);
-			dataSourceBinding.updateView();
 		}
+
+		setDataSourceKey(key != null ? key : getDataSourceKey());
+		dataSourceBinding.updateView();
 	}
 }
