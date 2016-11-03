@@ -33,18 +33,11 @@ import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.db.DefaultDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.db.LoggingDbLoaderDelegate;
-import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.resource.URLResource;
 import org.apache.commons.logging.Log;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.sql.Connection;
-import java.util.Collections;
 import java.util.regex.Pattern;
 
 /**
@@ -54,24 +47,13 @@ public class DbImportConfiguration {
 
     private static final String DATA_MAP_LOCATION_SUFFIX = ".map.xml";
     private final DataSourceInfo dataSourceInfo = new DataSourceInfo();
-    /**
-     * DB schema to use for DB importing.
-     */
     private final DbLoaderConfiguration dbLoaderConfiguration = new DbLoaderConfiguration();
-    /**
-     * DataMap XML file to use as a base for DB importing.
-     */
     private File dataMapFile;
     /**
      * A default package for ObjEntity Java classes.
      */
     private String defaultPackage;
     private String meaningfulPkTables;
-    /**
-     * Java class implementing org.apache.cayenne.dba.DbAdapter. This attribute
-     * is optional, the default is AutoAdapter, i.e. Cayenne would try to guess
-     * the DB type.
-     */
     private String adapter;
     private boolean usePrimitives;
     private Log logger;
@@ -85,6 +67,9 @@ public class DbImportConfiguration {
         this.logger = logger;
     }
 
+    /**
+     * Retruns DataMap XML file representing the target of the DB import operation.
+     */
     public File getDataMapFile() {
         return dataMapFile;
     }
@@ -109,6 +94,10 @@ public class DbImportConfiguration {
         this.namingStrategy = namingStrategy;
     }
 
+    /**
+     * Returns the name of a Java class implementing {@link DbAdapter}. This attribute is optional, the default is
+     * {@link org.apache.cayenne.dba.AutoAdapter}, i.e. Cayenne will try to guess the DB type.
+     */
     public String getAdapter() {
         return adapter;
     }
@@ -217,50 +206,6 @@ public class DbImportConfiguration {
         return nodeDescriptor;
     }
 
-    public DataMap createDataMap() throws IOException {
-        if (dataMapFile == null) {
-            throw new NullPointerException("Null DataMap File.");
-        }
-
-        DataMap dataMap = new DataMap();
-        initializeDataMap(dataMap);
-        return dataMap;
-    }
-
-    protected void initializeDataMap(DataMap dataMap) throws MalformedURLException {
-        dataMap.setName(getDataMapName());
-        dataMap.setConfigurationSource(new URLResource(dataMapFile.toURI().toURL()));
-        dataMap.setNamespace(new EntityResolver(Collections.singleton(dataMap)));
-
-        // update map defaults
-
-        // do not override default package of existing DataMap unless it is
-        // explicitly requested by the plugin caller
-        String defaultPackage = getDefaultPackage();
-        if (defaultPackage != null && defaultPackage.length() > 0) {
-            dataMap.setDefaultPackage(defaultPackage);
-        }
-
-        CatalogFilter[] catalogs = dbLoaderConfiguration.getFiltersConfig().getCatalogs();
-        if (catalogs.length > 0) {
-            // do not override default catalog of existing DataMap unless it is
-            // explicitly requested by the plugin caller, and the provided catalog is
-            // not a pattern
-            String catalog = catalogs[0].name;
-            if (catalog != null && catalog.length() > 0 && catalog.indexOf('%') < 0) {
-                dataMap.setDefaultCatalog(catalog);
-            }
-
-            // do not override default schema of existing DataMap unless it is
-            // explicitly requested by the plugin caller, and the provided schema is
-            // not a pattern
-            String schema = catalogs[0].schemas[0].name;
-            if (schema != null && schema.length() > 0 && schema.indexOf('%') < 0) {
-                dataMap.setDefaultSchema(schema);
-            }
-        }
-    }
-
     public String getDataMapName() {
         String name = dataMapFile.getName();
         if (!name.endsWith(DATA_MAP_LOCATION_SUFFIX)) {
@@ -282,6 +227,9 @@ public class DbImportConfiguration {
         }
     }
 
+    /**
+     * Returns configuration that should be used for DB import stage when the schema is loaded from the database.
+     */
     public DbLoaderConfiguration getDbLoaderConfig() {
         return dbLoaderConfiguration;
     }
