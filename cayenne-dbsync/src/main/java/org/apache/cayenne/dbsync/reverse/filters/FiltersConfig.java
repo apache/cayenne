@@ -41,11 +41,13 @@ public class FiltersConfig {
     }
 
     public PatternFilter proceduresFilter(String catalog, String schema) {
-        return getSchemaFilter(catalog, schema).procedures;
+        SchemaFilter schemaFilter = getSchemaFilter(catalog, schema);
+        return schemaFilter == null ? null : schemaFilter.procedures;
     }
 
     public TableFilter tableFilter(String catalog, String schema) {
-        return getSchemaFilter(catalog, schema).tables;
+        SchemaFilter schemaFilter = getSchemaFilter(catalog, schema);
+        return schemaFilter == null ? null : schemaFilter.tables;
     }
 
     protected SchemaFilter getSchemaFilter(String catalog, String schema) {
