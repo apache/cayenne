@@ -37,12 +37,15 @@ import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
+import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.URLResource;
@@ -187,6 +190,7 @@ public class DefaultDbImportAction implements DbImportAction {
                 config.getNameGenerator(),
                 config.getMeaningfulPKFilter(),
                 config.isUsePrimitives());
+        hasChanges |= syncProcedures(targetDataMap, loadedFomDb, loaderConfig.getFiltersConfig());
 
         if (hasChanges) {
             saveLoaded(targetDataMap);
@@ -359,6 +363,33 @@ public class DefaultDbImportAction implements DbImportAction {
         flattenManyToManyRelationships(targetDataMap, loadedObjEntities, nameGenerator);
         relationshipsSanity(targetDataMap);
         return true;
+    }
+
+    private boolean syncProcedures(DataMap targetDataMap, DataMap loadedDataMap, FiltersConfig filters) {
+        Collection<Procedure> procedures = loadedDataMap.getProcedures();
+        if (procedures.isEmpty()) {
+            return false;
+        }
+
+        boolean hasChanges = false;
+        for (Procedure procedure : procedures) {
+            PatternFilter proceduresFilter = filters.proceduresFilter(procedure.getCatalog(), procedure.getSchema());
+            if (proceduresFilter == null || !proceduresFilter.isIncluded(procedure.getName())) {
+                continue;
+            }
+
+            Procedure oldProcedure = targetDataMap.getProcedure(procedure.getName());
+            // maybe we need to compare oldProcedure's and procedure's fully qualified names?
+            if (oldProcedure != null) {
+                targetDataMap.removeProcedure(procedure.getName());
+                logger.info("Replace procedure " + procedure.getName());
+            } else {
+                logger.info("Add new procedure " + procedure.getName());
+            }
+            targetDataMap.addProcedure(procedure);
+            hasChanges = true;
+        }
+        return hasChanges;
     }
 
     protected void saveLoaded(DataMap dataMap) throws FileNotFoundException {
