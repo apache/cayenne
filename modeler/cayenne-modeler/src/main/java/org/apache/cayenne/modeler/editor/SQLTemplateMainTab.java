@@ -263,5 +263,13 @@ public class SQLTemplateMainTab extends JPanel {
 
             return null;
         }
+
+        @Override
+        protected void setFetchingDataObjects(boolean dataObjects) {
+            super.setFetchingDataObjects(dataObjects);
+            if(!dataObjects) {
+                setEntity(null);
+            }
+        }
     };
 }
