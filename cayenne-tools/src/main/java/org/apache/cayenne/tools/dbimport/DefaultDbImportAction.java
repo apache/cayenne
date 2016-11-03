@@ -63,8 +63,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A thin wrapper around {@link DbLoader} that encapsulates DB import logic for
- * the benefit of Ant and Maven db importers.
+ * A default implementation of {@link DbImportAction} that can load DB schema and merge it to a new or an existing
+ * DataMap.
  *
  * @since 4.0
  */

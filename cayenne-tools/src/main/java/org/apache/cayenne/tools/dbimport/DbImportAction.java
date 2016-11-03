@@ -19,6 +19,8 @@
 package org.apache.cayenne.tools.dbimport;
 
 /**
+ * An API of a strategy that can load DB schema and merge it to a new or an existing DataMap.
+ *
  * @since 4.0
  */
 public interface DbImportAction {
