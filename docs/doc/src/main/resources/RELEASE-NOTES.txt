@@ -61,6 +61,7 @@ CAY-2122 Vertical Inheritance: Cannot Insert Record For Implementing Class with 
 CAY-2125 SchemaUpdateStrategy doesn't work with multiple DataNodes
 CAY-2126 Modeler cannot upgrade project from v7 to v9
 CAY-2128 Modeler stored procedures are not imported
+CAY-2131 Modeler NullPointerException in reverse engineering when importing different catalogs in one datamap
 
 ----------------------------------
 Release: 4.0.M3

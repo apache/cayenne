@@ -131,7 +131,8 @@ public class DbMerger {
     private Collection<DbEntity> filter(DataMap existing, FiltersConfig filtersConfig) {
         Collection<DbEntity> existingFiltered = new LinkedList<>();
         for (DbEntity entity : existing.getDbEntities()) {
-            if (filtersConfig.tableFilter(entity.getCatalog(), entity.getSchema()).isIncludeTable(entity.getName()) != null) {
+            TableFilter tableFilter = filtersConfig.tableFilter(entity.getCatalog(), entity.getSchema());
+            if (tableFilter != null && tableFilter.isIncludeTable(entity.getName()) != null) {
                 existingFiltered.add(entity);
             }
         }
