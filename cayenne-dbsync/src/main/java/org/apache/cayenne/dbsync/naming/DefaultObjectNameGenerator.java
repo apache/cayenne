@@ -18,14 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.naming;
 
-import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.util.Util;
 import org.jvnet.inflector.Noun;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * The default strategy for converting DB-layer to Object-layer names.
@@ -36,37 +38,73 @@ public class DefaultObjectNameGenerator implements ObjectNameGenerator {
 
 
     @Override
-    public String dbRelationshipName(ExportedKey key, boolean toMany) {
-        String name = toMany ? toManyRelationshipName(key) : toOneRelationshipName(key);
+    public String relationshipName(DbRelationship... relationshipChain) {
+
+        if (relationshipChain == null || relationshipChain.length < 1) {
+            throw new IllegalArgumentException("At least on relationship is expected: " + relationshipChain);
+        }
+
+        // ignore the name of DbRelationship itself (FWIW we may be generating a new name for it here)...
+        // generate the name based on join semantics...
+
+        String name = isToMany(relationshipChain)
+                ? toManyRelationshipName(relationshipChain)
+                : toOneRelationshipName(relationshipChain);
+
         return Util.underscoredToJava(name, false);
     }
 
-    protected String toManyRelationshipName(ExportedKey key) {
+    protected boolean isToMany(DbRelationship... relationshipChain) {
+
+        for(DbRelationship r : relationshipChain) {
+            if(r.isToMany()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected String toManyRelationshipName(DbRelationship... relationshipChain) {
+
+        DbRelationship last = relationshipChain[relationshipChain.length - 1];
+
         try {
             // by default we use English rules here...
-            return Noun.pluralOf(key.getFKTableName().toLowerCase(), Locale.ENGLISH);
+            return Noun.pluralOf(last.getTargetEntityName().toLowerCase(), Locale.ENGLISH);
         } catch (Exception inflectorError) {
             //  seems that Inflector cannot be trusted. For instance, it
             // throws an exception when invoked for word "ADDRESS" (although
             // lower case works fine). To feel safe, we use superclass'
             // behavior if something's gone wrong
-            return key.getFKTableName();
+            return last.getTargetEntityName();
         }
     }
 
-    protected String toOneRelationshipName(ExportedKey key) {
-        String fkColName = key.getFKColumnName();
+    protected String toOneRelationshipName(DbRelationship... relationshipChain) {
 
-        if (fkColName == null) {
-            return key.getPKTableName();
+        DbRelationship first = relationshipChain[0];
+        DbRelationship last = relationshipChain[relationshipChain.length - 1];
+
+        List<DbJoin> joins = first.getJoins();
+        if (joins.isEmpty()) {
+            throw new IllegalArgumentException("No joins for relationship. Can't generate a name");
         }
-        // trim "ID" in the end
-        else if (fkColName.toUpperCase().endsWith("_ID") && fkColName.length() > 3) {
+
+        DbJoin join1 = joins.get(0);
+
+        // TODO: multi-join relationships
+
+        // return the name of the FK column sans ID
+        String fkColName = join1.getSourceName();
+        if (fkColName == null) {
+            return Objects.requireNonNull(last.getTargetEntityName());
+        } else if (fkColName.toUpperCase().endsWith("_ID") && fkColName.length() > 3) {
             return fkColName.substring(0, fkColName.length() - 3);
         } else if (fkColName.toUpperCase().endsWith("ID") && fkColName.length() > 2) {
             return fkColName.substring(0, fkColName.length() - 2);
         } else {
-            return key.getPKTableName();
+            return Objects.requireNonNull(last.getTargetEntityName());
         }
     }
 
@@ -78,10 +116,5 @@ public class DefaultObjectNameGenerator implements ObjectNameGenerator {
     @Override
     public String objAttributeName(DbAttribute attr) {
         return Util.underscoredToJava(attr.getName(), false);
-    }
-
-    @Override
-    public String objRelationshipName(DbRelationship dbRel) {
-        return Util.underscoredToJava(dbRel.getName(), false);
     }
 }

@@ -199,10 +199,6 @@ public class DbLoader {
 
             // forwardRelationship is a reference from table with primary key
             DbRelationship forwardRelationship = new DbRelationship();
-            forwardRelationship.setName(NameBuilder
-                    .builder(forwardRelationship, pkEntity)
-                    .baseName(nameGenerator.dbRelationshipName(key, true))
-                    .name());
 
             forwardRelationship.setSourceEntity(pkEntity);
             forwardRelationship.setTargetEntityName(fkEntity);
@@ -213,10 +209,7 @@ public class DbLoader {
             // TODO: dirty and non-transparent... using DbRelationshipDetected for the benefit of the merge package.
             // This info is available from joins....
             DbRelationshipDetected reverseRelationship = new DbRelationshipDetected();
-            reverseRelationship.setName(NameBuilder
-                    .builder(reverseRelationship, fkEntity)
-                    .baseName(nameGenerator.dbRelationshipName(key, false))
-                    .name());
+
 
             reverseRelationship.setFkName(key.getFKName());
             reverseRelationship.setSourceEntity(fkEntity);
@@ -233,10 +226,16 @@ public class DbLoader {
 
             forwardRelationship.setToMany(!isOneToOne);
 
-            // TODO: can we avoid resetting the name twice? Do we need a placeholder name above?
+            // set relationship names only after their joins are ready ... generator logic is based on relationship
+            // state...
             forwardRelationship.setName(NameBuilder
                     .builder(forwardRelationship, pkEntity)
-                    .baseName(nameGenerator.dbRelationshipName(key, !isOneToOne))
+                    .baseName(nameGenerator.relationshipName(forwardRelationship))
+                    .name());
+
+            reverseRelationship.setName(NameBuilder
+                    .builder(reverseRelationship, fkEntity)
+                    .baseName(nameGenerator.relationshipName(reverseRelationship))
                     .name());
 
             if (delegate.dbRelationshipLoaded(fkEntity, reverseRelationship)) {

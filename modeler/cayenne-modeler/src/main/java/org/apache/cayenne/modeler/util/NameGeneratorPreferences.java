@@ -18,14 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.util;
 
-import java.util.Arrays;
-import java.util.Vector;
-import java.util.prefs.Preferences;
-
-import org.apache.cayenne.dbsync.naming.LegacyObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.Application;
+
+import java.util.Arrays;
+import java.util.Vector;
+import java.util.prefs.Preferences;
 
 /**
  * Helper class to store/read information about naming strategies have been used
@@ -40,7 +39,6 @@ public class NameGeneratorPreferences {
     private static final Vector<String> PREDEFINED_STRATEGIES = new Vector<String>();
     static {
         PREDEFINED_STRATEGIES.add(DefaultObjectNameGenerator.class.getCanonicalName());
-        PREDEFINED_STRATEGIES.add(LegacyObjectNameGenerator.class.getCanonicalName());
     }
 
     static final NameGeneratorPreferences instance = new NameGeneratorPreferences();

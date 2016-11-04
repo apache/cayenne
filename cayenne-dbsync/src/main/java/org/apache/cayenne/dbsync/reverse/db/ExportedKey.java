@@ -26,12 +26,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * ExportedKey is an representation of relationship between two tables in database. It can be used for creating names
+ * A representation of relationship between two tables in database. It can be used for creating names
  * for relationships.
  *
  * @since 4.0
  */
-public class ExportedKey implements Comparable {
+class ExportedKey implements Comparable {
 
     private final String pkCatalog;
     private final String pkSchema;

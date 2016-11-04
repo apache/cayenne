@@ -88,14 +88,17 @@ public class EntityMergeSupportIT extends MergeCase {
 		objEntity2.setDbEntity(dbEntity2);
 		map.addObjEntity(objEntity2);
 
-		assertTrue(new EntityMergeSupport(new DefaultObjectNameGenerator(), NamePatternMatcher.EXCLUDE_ALL, true, true)
-				.synchronizeWithDbEntities(Arrays.asList(objEntity1, objEntity2)));
+		EntityMergeSupport entityMergeSupport = new EntityMergeSupport(new DefaultObjectNameGenerator(),
+				NamePatternMatcher.EXCLUDE_ALL,
+				true,
+				true);
+		assertTrue(entityMergeSupport.synchronizeWithDbEntities(Arrays.asList(objEntity1, objEntity2)));
 		assertNotNull(objEntity1.getAttribute("name"));
-		assertNotNull(objEntity1.getRelationship("rel1To2"));
-		assertNotNull(objEntity2.getRelationship("rel2To1"));
+		assertNotNull(objEntity1.getRelationship("newTable2s"));
+		assertNotNull(objEntity2.getRelationship("newTable"));
 
-		assertEquals(objEntity1.getRelationship("rel1To2").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_MANY);
-		assertEquals(objEntity2.getRelationship("rel2To1").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_ONE);
+		assertEquals(objEntity1.getRelationship("newTable2s").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_MANY);
+		assertEquals(objEntity2.getRelationship("newTable").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_ONE);
 
 		map.removeObjEntity(objEntity2.getName());
 		map.removeObjEntity(objEntity1.getName());

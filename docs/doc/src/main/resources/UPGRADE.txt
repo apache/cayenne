@@ -6,6 +6,10 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 -------------------------------------------------------------------------------
 UPGRADING TO 4.0.M4
 
+* Per CAY-2133, LegacyObjectNameGenerator is no longer provided, as it wasn't possible to maintain it in a fully backwards-
+  compatible manner. Embrace the new naming scheme, or provide your own ObjectNameGenerator if you absolutely need the
+  old names.
+
 * Per CAY-2125 we no longer inject SchemaUpdateStrategy directly. Instead SchemaUpgradeStrategyFactory is injected.
   If you have your own modules with SchemaUpdateStrategy injection, it will be ignored. So please review your
   DI code and update it to use SchemaUpgradeStrategyFactory (or likely its subclass).

@@ -178,7 +178,7 @@ public class EntityMergeSupport {
     private boolean createObjRelationship(ObjEntity entity, DbRelationship dr, String targetEntityName) {
         ObjRelationship or = new ObjRelationship();
         or.setName(NameBuilder.builder(or, entity)
-                .baseName(nameGenerator.objRelationshipName(dr))
+                .baseName(nameGenerator.relationshipName(dr))
                 .name());
 
         or.addDbRelationship(dr);
