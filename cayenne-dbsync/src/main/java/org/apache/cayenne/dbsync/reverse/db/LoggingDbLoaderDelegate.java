@@ -20,7 +20,6 @@ package org.apache.cayenne.dbsync.reverse.db;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.commons.logging.Log;
 
 /**
@@ -58,19 +57,5 @@ public class LoggingDbLoaderDelegate extends DefaultDbLoaderDelegate {
         logger.info("    " + relationship);
 
         return true;
-    }
-
-    @Override
-    public void objEntityAdded(ObjEntity entity) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("  Class: " + entity.getName());
-        }
-    }
-
-    @Override
-    public void objEntityRemoved(ObjEntity entity) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("  Class removed: " + entity.getName());
-        }
     }
 }

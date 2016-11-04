@@ -23,7 +23,9 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
- * @since 4.0.
+ * A noop {@link DbLoaderDelegate}.
+ *
+ * @since 4.0
  */
 public class DefaultDbLoaderDelegate implements DbLoaderDelegate {
 
@@ -47,11 +49,13 @@ public class DefaultDbLoaderDelegate implements DbLoaderDelegate {
         return true;
     }
 
+    @Deprecated
     @Override
     public void objEntityAdded(ObjEntity entity) {
 
     }
 
+    @Deprecated
     @Override
     public void objEntityRemoved(ObjEntity entity) {
 
