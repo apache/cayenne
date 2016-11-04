@@ -145,8 +145,7 @@ public class DbImporterMojo extends AbstractMojo {
 
         Log logger = new MavenLogger(this);
 
-        DbImportConfiguration config = toParameters();
-        config.setLogger(logger);
+        DbImportConfiguration config = createConfig(logger);
         Injector injector = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(logger), new DbImportModule());
 
         validateDbImportConfiguration(config, injector);
@@ -188,7 +187,7 @@ public class DbImporterMojo extends AbstractMojo {
         }
     }
 
-    DbImportConfiguration toParameters() {
+    DbImportConfiguration createConfig(Log logger) {
 
         DbImportConfiguration config = new DbImportConfiguration();
         config.setAdapter(adapter);
@@ -205,6 +204,7 @@ public class DbImporterMojo extends AbstractMojo {
         config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
         config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
         config.setTableTypes(reverseEngineering.getTableTypes());
+        config.setLogger(logger);
 
         return config;
     }
