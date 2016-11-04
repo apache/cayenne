@@ -280,7 +280,9 @@ public class DbMerger {
                     // default toModel as we can not do drop a toMany in the db.
                     // only
                     // toOne are represented using foreign key
-                    token = token.createReverse(tokenFactory);
+                    tokens.addAll(token.createReverse(tokenFactory));
+                } else {
+                    tokens.add(token);
                 }
                 tokens.add(token);
             }

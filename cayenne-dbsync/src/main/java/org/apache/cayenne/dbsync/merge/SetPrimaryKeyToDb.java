@@ -24,10 +24,7 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
 
@@ -80,8 +77,8 @@ public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
     }
 
     @Override
-    public MergerToken createReverse(MergerTokenFactory factory) {
-        return factory.createSetPrimaryKeyToModel(getEntity(), primaryKeyNew, primaryKeyOriginal,
-                detectedPrimaryKeyName);
+    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
+        return Collections.singleton(factory.createSetPrimaryKeyToModel(getEntity(), primaryKeyNew, primaryKeyOriginal,
+                detectedPrimaryKeyName));
     }
 }

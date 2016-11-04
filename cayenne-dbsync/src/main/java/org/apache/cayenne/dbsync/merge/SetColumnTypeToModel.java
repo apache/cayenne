@@ -23,6 +23,9 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * A {@link MergerToken} that modifies one original {@link DbAttribute} to match another
  * new {@link DbAttribute}s type, maxLength and precision. The name and mandatory fields
@@ -41,8 +44,8 @@ public class SetColumnTypeToModel extends AbstractToModelToken.Entity {
     }
 
     @Override
-    public MergerToken createReverse(MergerTokenFactory factory) {
-        return factory.createSetColumnTypeToDb(getEntity(), columnNew, columnOriginal);
+    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
+        return Collections.singleton(factory.createSetColumnTypeToDb(getEntity(), columnNew, columnOriginal));
     }
 
     @Override

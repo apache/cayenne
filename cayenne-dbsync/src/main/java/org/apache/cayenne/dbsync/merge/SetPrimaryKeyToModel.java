@@ -24,6 +24,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.event.AttributeEvent;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,12 +50,12 @@ public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
     }
 
     @Override
-    public MergerToken createReverse(MergerTokenFactory factory) {
-        return factory.createSetPrimaryKeyToDb(
+    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
+        return Collections.singleton(factory.createSetPrimaryKeyToDb(
                 getEntity(),
                 primaryKeyNew,
                 primaryKeyOriginal,
-                detectedPrimaryKeyName);
+                detectedPrimaryKeyName));
     }
 
     @Override

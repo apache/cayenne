@@ -20,6 +20,9 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * The reverse of a {@link MergerToken} that can not be reversed.. This will not execute
  * any thing, but {@link #createReverse(MergerTokenFactory)} will get back the reverse that
@@ -34,8 +37,8 @@ class DummyReverseToken implements MergerToken {
     }
 
     @Override
-    public MergerToken createReverse(MergerTokenFactory factory) {
-        return reverse;
+    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
+        return Collections.singleton(reverse);
     }
 
     @Override

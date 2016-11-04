@@ -20,6 +20,8 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 
+import java.util.Collection;
+
 /**
  * Represents a minimal atomic synchronization operation between database and Cayenne model.
  */
@@ -41,7 +43,7 @@ public interface MergerToken {
      * <p>
      * Not all tokens are reversible.
      */
-    MergerToken createReverse(MergerTokenFactory factory);
+    Collection<MergerToken> createReverse(MergerTokenFactory factory);
 
     /**
      * Executes synchronization operation.

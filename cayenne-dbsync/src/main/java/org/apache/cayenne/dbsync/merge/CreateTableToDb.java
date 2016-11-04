@@ -25,6 +25,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -59,8 +60,8 @@ public class CreateTableToDb extends AbstractToDbToken.Entity {
         }
     }
 
-    public MergerToken createReverse(MergerTokenFactory factory) {
-        return factory.createDropTableToModel(getEntity());
+    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
+        return Collections.singleton(factory.createDropTableToModel(getEntity()));
     }
 
 }

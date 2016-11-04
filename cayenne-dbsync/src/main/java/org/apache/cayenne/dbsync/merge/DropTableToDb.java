@@ -23,6 +23,8 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbEntity;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class DropTableToDb extends AbstractToDbToken.Entity {
@@ -44,8 +46,8 @@ public class DropTableToDb extends AbstractToDbToken.Entity {
     }
 
     @Override
-    public MergerToken createReverse(MergerTokenFactory factory) {
-        return factory.createCreateTableToModel(getEntity());
+    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
+        return Collections.singleton(factory.createCreateTableToModel(getEntity()));
     }
 
 }

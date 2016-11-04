@@ -27,6 +27,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.Collections;
 
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbAttr;
@@ -76,7 +77,9 @@ public class TokensReversTest {
     }
 
     private void test(MergerToken token1) {
-        MergerToken token2 = token1.createReverse(factory()).createReverse(factory());
+        MergerToken token2 = token1.createReverse(factory()).iterator().next()
+                                    .createReverse(factory()).iterator().next();
+
 
         Assert.assertEquals(token1.getTokenName(), token2.getTokenName());
         Assert.assertEquals(token1.getTokenValue(), token2.getTokenValue());

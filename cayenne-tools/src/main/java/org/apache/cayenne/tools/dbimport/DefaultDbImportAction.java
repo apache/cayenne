@@ -297,7 +297,7 @@ public class DefaultDbImportAction implements DbImportAction {
             if (token instanceof AbstractToModelToken) {
                 continue;
             }
-            tokens.add(token.createReverse(mergerTokenFactory));
+            tokens.addAll(token.createReverse(mergerTokenFactory));
         }
         return tokens;
     }

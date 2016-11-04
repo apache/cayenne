@@ -25,6 +25,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.dbsync.reverse.db.DbRelationshipDetected;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,8 +58,11 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
                 "ALTER TABLE " + context.quotedFullyQualifiedName(getEntity()) + " DROP CONSTRAINT " + fkName);
     }
 
-    public MergerToken createReverse(MergerTokenFactory factory) {
-        return factory.createAddRelationshipToModel(getEntity(), relationship);
+    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
+        Collection<MergerToken> result = new ArrayList<>();
+        result.add(factory.createAddRelationshipToModel(getEntity(), relationship));
+        result.add(factory.createAddRelationshipToModel(relationship.getTargetEntity(), relationship.createReverseRelationship()));
+        return result;
     }
 
     @Override

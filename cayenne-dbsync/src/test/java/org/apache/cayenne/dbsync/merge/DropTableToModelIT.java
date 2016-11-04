@@ -72,7 +72,7 @@ public class DropTableToModelIT extends MergeCase {
 		assertEquals(1, tokens.size());
 		token = tokens.get(0);
 		if (token.getDirection().isToDb()) {
-			token = token.createReverse(mergerFactory());
+			token = token.createReverse(mergerFactory()).iterator().next();
 		}
 		assertTrue(token instanceof DropTableToModel);
 		execute(token);

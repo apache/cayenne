@@ -58,7 +58,7 @@ public class CreateTableToModelIT extends MergeCase {
 		assertEquals(1, tokens.size());
 		MergerToken token = tokens.get(0);
 		if (token.getDirection().isToDb()) {
-			token = token.createReverse(mergerFactory());
+			token = token.createReverse(mergerFactory()).iterator().next();
 		}
 		assertTrue(token.getClass().getName(), token instanceof CreateTableToModel);
 
