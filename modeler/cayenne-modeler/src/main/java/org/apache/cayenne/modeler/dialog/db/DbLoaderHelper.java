@@ -226,31 +226,11 @@ public class DbLoaderHelper {
         }
 
         @Override
-        public void objEntityAdded(ObjEntity entity) {
-            checkCanceled();
-
-            loadStatusNote = "Creating ObjEntity '" + entity.getName() + "'...";
-
-            if (existingMap) {
-                mediator.fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.ADD));
-            }
-        }
-
-        @Override
         public void dbEntityRemoved(DbEntity entity) {
             checkCanceled();
 
             if (existingMap) {
                 mediator.fireDbEntityEvent(new EntityEvent(Application.getFrame(), entity, MapEvent.REMOVE));
-            }
-        }
-
-        @Override
-        public void objEntityRemoved(ObjEntity entity) {
-            checkCanceled();
-
-            if (existingMap) {
-                mediator.fireObjEntityEvent(new EntityEvent(Application.getFrame(), entity, MapEvent.REMOVE));
             }
         }
 
