@@ -153,12 +153,12 @@ public class DefaultDbImportAction implements DbImportAction {
         DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
         DbAdapter adapter = adapterFactory.createAdapter(dataNodeDescriptor, dataSource);
 
-        DataMap loadedFomDb;
+        DataMap sourceDataMap;
         try (Connection connection = dataSource.getConnection()) {
-            loadedFomDb = load(config, adapter, connection);
+            sourceDataMap = load(config, adapter, connection);
         }
 
-        if (loadedFomDb == null) {
+        if (sourceDataMap == null) {
             logger.info("Nothing was loaded from db.");
             return;
         }
@@ -181,7 +181,7 @@ public class DefaultDbImportAction implements DbImportAction {
                 .skipPKTokens(loaderConfig.isSkipPrimaryKeyLoading())
                 .skipRelationshipsTokens(loaderConfig.isSkipRelationshipsLoading())
                 .build()
-                .createMergeTokens(targetDataMap, loadedFomDb);
+                .createMergeTokens(targetDataMap, sourceDataMap);
 
         hasChanges |= syncDataMapProperties(targetDataMap, config);
         hasChanges |= applyTokens(config.createMergeDelegate(),
@@ -190,7 +190,7 @@ public class DefaultDbImportAction implements DbImportAction {
                 config.getNameGenerator(),
                 config.getMeaningfulPKFilter(),
                 config.isUsePrimitives());
-        hasChanges |= syncProcedures(targetDataMap, loadedFomDb, loaderConfig.getFiltersConfig());
+        hasChanges |= syncProcedures(targetDataMap, sourceDataMap, loaderConfig.getFiltersConfig());
 
         if (hasChanges) {
             saveLoaded(targetDataMap);
