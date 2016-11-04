@@ -23,9 +23,9 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 
 /**
- * A strategy for creating names for object layer metadata artifacts based on their DB counterpart naming. Generated
- * names should normally be further cleaned by passing them through {@link org.apache.cayenne.dbsync.naming.NameBuilder},
- * that will resolve duplication conflicts.
+ * A strategy for creating names for object layer metadata artifacts based on their DB counterpart naming or structure.
+ * Generated names should normally be further cleaned by passing them through
+ * {@link org.apache.cayenne.dbsync.naming.NameBuilder}, that will resolve duplication conflicts.
  *
  * @since 4.0
  */
