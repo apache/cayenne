@@ -126,8 +126,8 @@ public class DefaultDbImportActionTest {
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(config.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
         when(config.getTargetDataMap()).thenReturn(new File("xyz.map.xml"));
-        when(config.getNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
-        when(config.getMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
+        when(config.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
+        when(config.createMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
 
         final boolean[] haveWeTriedToSave = {false};
         DefaultDbImportAction action = buildDbImportAction(new FileProjectSaver() {
@@ -170,8 +170,8 @@ public class DefaultDbImportActionTest {
         when(params.getTargetDataMap()).thenReturn(FILE_STUB);
         when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
-        when(params.getNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
-        when(params.getMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
+        when(params.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
+        when(params.createMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
 
         final boolean[] haveWeTriedToSave = {false};
         DefaultDbImportAction action = buildDbImportAction(new FileProjectSaver() {

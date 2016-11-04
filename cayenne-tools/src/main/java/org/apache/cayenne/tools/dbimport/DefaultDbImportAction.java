@@ -182,8 +182,8 @@ public class DefaultDbImportAction implements DbImportAction {
         hasChanges |= applyTokens(config.createMergeDelegate(),
                 targetDataMap,
                 log(sort(reverse(mergerTokenFactory, tokens))),
-                config.getNameGenerator(),
-                config.getMeaningfulPKFilter(),
+                config.createNameGenerator(),
+                config.createMeaningfulPKFilter(),
                 config.isUsePrimitives());
         hasChanges |= syncProcedures(targetDataMap, sourceDataMap, loaderConfig.getFiltersConfig());
 

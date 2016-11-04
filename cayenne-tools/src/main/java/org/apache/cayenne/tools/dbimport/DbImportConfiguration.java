@@ -135,10 +135,10 @@ public class DbImportConfiguration {
 
     public DbLoader createLoader(DbAdapter adapter, Connection connection, DbLoaderDelegate loaderDelegate)
             throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        return new DbLoader(connection, adapter, loaderDelegate, getNameGenerator());
+        return new DbLoader(connection, adapter, loaderDelegate, createNameGenerator());
     }
 
-    public NameFilter getMeaningfulPKFilter() {
+    public NameFilter createMeaningfulPKFilter() {
 
         if (meaningfulPkTables == null) {
             return NamePatternMatcher.EXCLUDE_ALL;
@@ -154,7 +154,7 @@ public class DbImportConfiguration {
         return new NamePatternMatcher(patterns, new Pattern[0]);
     }
 
-    public ObjectNameGenerator getNameGenerator() {
+    public ObjectNameGenerator createNameGenerator() {
 
         // TODO: load via DI AdhocObjectFactory
 
