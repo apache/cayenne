@@ -24,7 +24,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DetectedDbEntity;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -33,7 +32,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -133,15 +131,6 @@ public class DbTableLoader {
 		for (DbEntity dbEntity : tables) {
 			DbEntity oldEnt = map.getDbEntity(dbEntity.getName());
 			if (oldEnt != null) {
-				Collection<ObjEntity> oldObjEnt = map.getMappedEntities(oldEnt);
-				if (!oldObjEnt.isEmpty()) {
-					for (ObjEntity objEntity : oldObjEnt) {
-						LOGGER.debug("Delete ObjEntity: " + objEntity.getName());
-						map.removeObjEntity(objEntity.getName(), true);
-						delegate.objEntityRemoved(objEntity);
-					}
-				}
-
 				LOGGER.debug("Overwrite DbEntity: " + oldEnt.getName());
 				map.removeDbEntity(oldEnt.getName(), true);
 				delegate.dbEntityRemoved(oldEnt);

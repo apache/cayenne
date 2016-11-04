@@ -31,7 +31,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.util.EqualsBuilder;
@@ -43,7 +42,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -340,14 +338,6 @@ public class DbLoader {
         LOGGER.info("Skip relation: '" + key + "' because table '" + tableName + "' not found");
     }
 
-    private void fireObjEntitiesAddedEvents(Collection<ObjEntity> loadedObjEntities) {
-        for (ObjEntity curEntity : loadedObjEntities) {
-            // notify delegate
-            if (delegate != null) {
-                delegate.objEntityAdded(curEntity);
-            }
-        }
-    }
 
     protected String[] getTableTypes(DbLoaderConfiguration config) {
 

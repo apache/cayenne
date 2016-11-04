@@ -24,9 +24,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
- * DbLoaderDelegate defines API that allows to control the behavior of DbLoader
- * during the database reverse-engineering. Delegate is also notified of the
- * progress of reverse-engineering.
+ * Defines API for progress tracking and altering the folow of reverse-engineering.
  */
 public interface DbLoaderDelegate {
 
@@ -36,23 +34,31 @@ public interface DbLoaderDelegate {
 
     /**
      * Called before relationship loading for db-entity
-     * @param entity
      *
+     * @param entity
      * @return true in case you want process relationships for this entity
-     *         false otherwise
+     * false otherwise
      */
     boolean dbRelationship(DbEntity entity);
 
     /**
      * Called before relationship will be added into db-entity but after it was loaded from db
-     * @param entity
      *
+     * @param entity
      * @return true in case you want add this relationship into entity
-     *         false otherwise
+     * false otherwise
      */
     boolean dbRelationshipLoaded(DbEntity entity, DbRelationship relationship);
 
+    /**
+     * @deprecated since 4.0 no longer invoked as DbLoader does not deal with object layer anymore.
+     */
+    @Deprecated
     void objEntityAdded(ObjEntity entity);
 
+    /**
+     * @deprecated since 4.0 no longer invoked as DbLoader does not deal with object layer anymore.
+     */
+    @Deprecated
     void objEntityRemoved(ObjEntity entity);
 }

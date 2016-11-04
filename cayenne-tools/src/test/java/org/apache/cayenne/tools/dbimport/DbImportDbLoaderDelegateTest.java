@@ -74,29 +74,4 @@ public class DbImportDbLoaderDelegateTest {
 
         assertEquals(Arrays.asList(dbEntity), delegate.getRemovedDbEntities());
     }
-
-    @Test
-    public void testObjEntityAdded() {
-        delegate.objEntityAdded(objEntity);
-
-        List<ObjEntity> entities = Arrays.asList(objEntity);
-
-        assertEquals(1, dataMap.getObjEntities().size());
-        assertTrue(dataMap.getObjEntities().containsAll(entities));
-
-        assertEquals(entities, delegate.getAddedObjEntities());
-    }
-
-    @Test
-    public void testObjEntityRemoved() {
-        // Make sure the entity is in the datamap to start.
-        dataMap.addObjEntity(objEntity);
-
-        delegate.objEntityRemoved(objEntity);
-
-        // The entity should no longer be in the map.
-        assertEquals(0, dataMap.getObjEntities().size());
-
-        assertEquals(Arrays.asList(objEntity), delegate.getRemovedObjEntities());
-    }
 }
