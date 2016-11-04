@@ -19,6 +19,7 @@
 package org.apache.cayenne.modeler.dialog.objentity;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
@@ -27,8 +28,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.RelationshipEvent;
-import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
-import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
@@ -42,12 +41,11 @@ import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -339,18 +337,15 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         }
 
         DbRelationship dbRelationship = new DbRelationship();
-        dbRelationship.setName(createNamingStrategy(NameGeneratorPreferences
-                .getInstance()
-                .getLastUsedStrategies()
-                .get(0)).dbRelationshipName(
-                new ExportedKey(targetModel.getSource().getName(), null, null,
-                                targetModel.getTarget().getName(), null, null, (short) 1),
-                targetModel.isToMany()));
-
-        // note: NamedObjectFactory doesn't set source or target, just the name
         dbRelationship.setSourceEntity(targetModel.getSource());
         dbRelationship.setTargetEntityName(targetModel.getTarget());
         dbRelationship.setToMany(targetModel.isToMany());
+
+        dbRelationship.setName(createNamingStrategy(NameGeneratorPreferences
+                .getInstance()
+                .getLastUsedStrategies()
+                .get(0)).relationshipName(dbRelationship));
+
         targetModel.getSource().addRelationship(dbRelationship);
 
         // TODO: creating relationship outside of ResolveDbRelationshipDialog

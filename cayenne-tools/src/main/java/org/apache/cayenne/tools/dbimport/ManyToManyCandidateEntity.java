@@ -20,7 +20,6 @@ package org.apache.cayenne.tools.dbimport;
 
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
-import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -102,19 +101,10 @@ class ManyToManyCandidateEntity {
             return;
         }
 
-        ExportedKey key = new ExportedKey(
-                rel1.getSourceEntity().getName(),
-                rel1.getSourceAttributes().iterator().next().getName(),
-                null,
-                rel2.getTargetEntity().getName(),
-                rel2.getTargetAttributes().iterator().next().getName(),
-                null,
-                (short) 1);
-
         ObjRelationship newRelationship = new ObjRelationship();
         newRelationship.setName(NameBuilder
                 .builder(newRelationship, srcEntity)
-                .baseName(nameGenerator.dbRelationshipName(key, true))
+                .baseName(nameGenerator.relationshipName(rel1, rel2))
                 .name());
 
         newRelationship.setSourceEntity(srcEntity);

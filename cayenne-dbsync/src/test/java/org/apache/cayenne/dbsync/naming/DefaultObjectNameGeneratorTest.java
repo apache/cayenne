@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.naming;
 
-import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.junit.Test;
 
@@ -31,42 +31,60 @@ public class DefaultObjectNameGeneratorTest {
     private DefaultObjectNameGenerator generator = new DefaultObjectNameGenerator();
 
 
-    @Test
-    public void testDbRelationshipName_LowerCase_Underscores() {
+    private DbRelationship makeRelationship(String srcEntity, String srcKey, String targetEntity, String targetKey,
+                                            boolean toMany) {
 
-        ExportedKey key = new ExportedKey("artist", "artist_id", null,
-                "painting", "artist_id", null, (short) 1);
-        assertEquals("artist", generator.dbRelationshipName(key, false));
-        assertEquals("paintings", generator.dbRelationshipName(key, true));
+        DbRelationship relationship = new DbRelationship();
+        relationship.addJoin(new DbJoin(relationship, srcKey, targetKey));
+        relationship.setToMany(toMany);
+        relationship.setSourceEntity(new DbEntity(srcEntity));
+        relationship.setTargetEntityName(targetEntity);
 
-        key = new ExportedKey("person", "person_id", null,
-                "person", "mother_id", null, (short) 1);
-        assertEquals("mother", generator.dbRelationshipName(key, false));
-        assertEquals("people", generator.dbRelationshipName(key, true));
-
-        key = new ExportedKey("person", "person_id", null,
-                "address", "shipping_address_id", null, (short) 1);
-        assertEquals("shippingAddress", generator.dbRelationshipName(key, false));
-        assertEquals("addresses", generator.dbRelationshipName(key, true));
+        return relationship;
     }
 
     @Test
-    public void testDbRelationshipName_UpperCase_Underscores() {
+    public void testRelationshipName_LowerCase_Underscores() {
 
-        ExportedKey key = new ExportedKey("ARTIST", "ARTIST_ID", null,
-                "PAINTING", "ARTIST_ID", null, (short) 1);
-        assertEquals("artist", generator.dbRelationshipName(key, false));
-        assertEquals("paintings", generator.dbRelationshipName(key, true));
+        DbRelationship r1 = makeRelationship("painting", "artist_id", "artist", "artist_id", false);
+        assertEquals("artist", generator.relationshipName(r1));
 
-        key = new ExportedKey("PERSON", "PERSON_ID", null,
-                "PERSON", "MOTHER_ID", null, (short) 1);
-        assertEquals("mother", generator.dbRelationshipName(key, false));
-        assertEquals("people", generator.dbRelationshipName(key, true));
+        DbRelationship r2 = makeRelationship("artist", "artist_id", "painting", "artist_id", true);
+        assertEquals("paintings", generator.relationshipName(r2));
 
-        key = new ExportedKey("PERSON", "PERSON_ID", null,
-                "ADDRESS", "SHIPPING_ADDRESS_ID", null, (short) 1);
-        assertEquals("shippingAddress", generator.dbRelationshipName(key, false));
-        assertEquals("addresses", generator.dbRelationshipName(key, true));
+        DbRelationship r3 = makeRelationship("person", "mother_id", "person", "person_id", false);
+        assertEquals("mother", generator.relationshipName(r3));
+
+        DbRelationship r4 = makeRelationship("person", "person_id", "person", "mother_id", true);
+        assertEquals("people", generator.relationshipName(r4));
+
+        DbRelationship r5 = makeRelationship("person", "shipping_address_id", "address", "id", false);
+        assertEquals("shippingAddress", generator.relationshipName(r5));
+
+        DbRelationship r6 = makeRelationship("person", "id", "address", "person_id", true);
+        assertEquals("addresses", generator.relationshipName(r6));
+    }
+
+    @Test
+    public void testRelationshipName_UpperCase_Underscores() {
+
+        DbRelationship r1 = makeRelationship("PAINTING", "ARTIST_ID", "ARTIST", "ARTIST_ID", false);
+        assertEquals("artist", generator.relationshipName(r1));
+
+        DbRelationship r2 = makeRelationship("ARTIST", "ARTIST_ID", "PAINTING", "ARTIST_ID", true);
+        assertEquals("paintings", generator.relationshipName(r2));
+
+        DbRelationship r3 = makeRelationship("PERSON", "MOTHER_ID", "PERSON", "PERSON_ID", false);
+        assertEquals("mother", generator.relationshipName(r3));
+
+        DbRelationship r4 = makeRelationship("PERSON", "PERSON_ID", "PERSON", "MOTHER_ID", true);
+        assertEquals("people", generator.relationshipName(r4));
+
+        DbRelationship r5 = makeRelationship("PERSON", "SHIPPING_ADDRESS_ID", "ADDRESS", "ID", false);
+        assertEquals("shippingAddress", generator.relationshipName(r5));
+
+        DbRelationship r6 = makeRelationship("PERSON", "ID", "ADDRESS", "PERSON_ID", true);
+        assertEquals("addresses", generator.relationshipName(r6));
     }
 
     @Test
@@ -80,11 +98,4 @@ public class DefaultObjectNameGeneratorTest {
         assertEquals("name", generator.objAttributeName(new DbAttribute("NAME")));
         assertEquals("artistName", generator.objAttributeName(new DbAttribute("ARTIST_NAME")));
     }
-
-    @Test
-    public void testObjRelationshipName() {
-        assertEquals("mother", generator.objRelationshipName(new DbRelationship("mother")));
-        assertEquals("persons", generator.objRelationshipName(new DbRelationship("persons")));
-    }
-
 }

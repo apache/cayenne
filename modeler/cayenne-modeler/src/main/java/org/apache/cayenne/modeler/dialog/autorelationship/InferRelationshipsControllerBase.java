@@ -18,22 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.autorelationship;
 
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
-import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.commons.collections.Predicate;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class InferRelationshipsControllerBase extends CayenneController {
 
@@ -49,18 +48,17 @@ public class InferRelationshipsControllerBase extends CayenneController {
     protected ObjectNameGenerator strategy;
 
     protected transient InferredRelationship currentEntity;
-    protected transient Integer entityNumber;
 
     public InferRelationshipsControllerBase(CayenneController parent, DataMap dataMap) {
         super(parent);
 
         this.dataMap = dataMap;
-        this.entities = new ArrayList<DbEntity>(dataMap.getDbEntities());
-        this.selectedEntities = new HashSet<InferredRelationship>();
+        this.entities = new ArrayList<>(dataMap.getDbEntities());
+        this.selectedEntities = new HashSet<>();
     }
 
     public void setRelationships() {
-        inferredRelationships = new ArrayList<InferredRelationship>();
+        inferredRelationships = new ArrayList<>();
 
         for (DbEntity entity : entities) {
             createRelationships(entity);
@@ -198,29 +196,29 @@ public class InferRelationshipsControllerBase extends CayenneController {
 
     protected void createNames() {
 
-        ExportedKey key = null;
-        for (InferredRelationship myir : inferredRelationships) {
-            if (myir.getJoinSource().isPrimaryKey()) {
-                key = getExportedKey(myir.getSource().getName(),
-                                     myir.getJoinSource().getName(),
-                                     myir.getTarget().getName(),
-                                     myir.getJoinTarget().getName());
-            } else {
-                key = getExportedKey(myir.getTarget().getName(),
-                                     myir.getJoinTarget().getName(),
-                                     myir.getSource().getName(),
-                                     myir.getJoinSource().getName());
-            }
-            myir.setName(strategy.dbRelationshipName(key, myir.isToMany()));
-        }
-    }
 
-    protected ExportedKey getExportedKey(
-            String pkTable,
-            String pkColumn,
-            String fkTable,
-            String fkColumn) {
-        return new ExportedKey(pkTable, pkColumn, null, fkTable, fkColumn, null, (short) 1);
+        for (InferredRelationship myir : inferredRelationships) {
+
+            DbRelationship localRelationship = new DbRelationship();
+            localRelationship.setToMany(myir.isToMany());
+
+            if (myir.getJoinSource().isPrimaryKey()) {
+
+                localRelationship.addJoin(
+                        new DbJoin(localRelationship, myir.getJoinSource().getName(), myir.getJoinTarget().getName())
+                );
+                localRelationship.setSourceEntity(myir.getSource());
+                localRelationship.setTargetEntityName(myir.getTarget().getName());
+            } else {
+                localRelationship.addJoin(
+                        new DbJoin(localRelationship, myir.getJoinTarget().getName(), myir.getJoinSource().getName())
+                );
+                localRelationship.setSourceEntity(myir.getTarget());
+                localRelationship.setTargetEntityName(myir.getSource().getName());
+            }
+
+            myir.setName(strategy.relationshipName(localRelationship));
+        }
     }
 
     public List<InferredRelationship> getSelectedEntities() {

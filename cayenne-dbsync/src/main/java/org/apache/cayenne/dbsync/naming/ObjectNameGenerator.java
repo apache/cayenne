@@ -21,7 +21,6 @@ package org.apache.cayenne.dbsync.naming;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.dbsync.reverse.db.ExportedKey;
 
 /**
  * A strategy for creating names for object layer metadata artifacts based on their DB counterpart naming. Generated
@@ -43,13 +42,16 @@ public interface ObjectNameGenerator {
     String objAttributeName(DbAttribute dbAttribute);
 
     /**
-     * Generates a name for DbRelationship derived from the DB foreign key name.
+     * Generates a String that can be used as a name of an ObjRelationship, derived from join semantics of a chain of
+     * connected DbRelationships. The chain must contain at least one relationship.
+     *
+     * <p>If we are dealing with a flattened
+     * relationship, extra relationships can be passed. They must be in the same order as they will be in a flattened
+     * relationship.
+     *
+     * <p>Generated name can be usually applied to either ObjRelationship or DbRelationship (in which case the chain
+     * must have exactly one parameter).
      */
-    // TODO: the class is called Object* , but here it is generating a DB-layer name... Better naming?
-    String dbRelationshipName(ExportedKey key, boolean toMany);
+    String relationshipName(DbRelationship... relationshipChain);
 
-    /**
-     * Generates a name for ObjRelationship derived from DbRelationship name.
-     */
-    String objRelationshipName(DbRelationship dbRelationship);
 }
