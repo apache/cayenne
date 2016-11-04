@@ -158,11 +158,6 @@ public class DefaultDbImportAction implements DbImportAction {
             sourceDataMap = load(config, adapter, connection);
         }
 
-        if (sourceDataMap == null) {
-            logger.info("Nothing was loaded from db.");
-            return;
-        }
-
         DataMap targetDataMap = existingTargetMap(config);
         if (targetDataMap == null) {
             logger.info("");
