@@ -22,7 +22,11 @@ package org.apache.cayenne.modeler.dialog.db;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbimport.*;
+import org.apache.cayenne.dbimport.Catalog;
+import org.apache.cayenne.dbimport.IncludeProcedure;
+import org.apache.cayenne.dbimport.IncludeTable;
+import org.apache.cayenne.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbimport.Schema;
 import org.apache.cayenne.dbsync.CayenneDbSyncModule;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
@@ -33,7 +37,6 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
@@ -81,11 +84,6 @@ public class DbLoaderHelper {
     protected ReverseEngineering reverseEngineering;
     protected String loadStatusNote;
     protected String dbUserName;
-
-    /**
-     * ObjEntities which were added to project during reverse engineering
-     */
-    protected List<ObjEntity> addedObjEntities;
 
     public DbLoaderHelper(ProjectController mediator, Connection connection, DbAdapter adapter,
                           DBConnectionInfo dbConnectionInfo, ReverseEngineering reverseEngineering) {
