@@ -297,8 +297,7 @@ public class DbLoader {
                 rs = getMetaData().getExportedKeys(catalog, schema, dbEntity.getName());
             } catch (SQLException cay182Ex) {
                 // Sybase-specific - the line above blows on VIEWS, see CAY-182.
-                LOGGER.info(
-                        "Error getting relationships for '" + catalog + "." + schema + "', ignoring. "
+                LOGGER.info("Error getting relationships for '" + catalog + "." + schema + "', ignoring. "
                                 + cay182Ex.getMessage(), cay182Ex);
                 return new HashMap<>();
             }

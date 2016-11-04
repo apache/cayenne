@@ -33,11 +33,10 @@ public interface DbLoaderDelegate {
     void dbEntityRemoved(DbEntity entity);
 
     /**
-     * Called before relationship loading for db-entity
+     * Called before relationship loading for a {@link DbEntity}.
      *
-     * @param entity
-     * @return true in case you want process relationships for this entity
-     * false otherwise
+     * @param entity DbEntity for which {@link DbRelationship} is about to be loaded.
+     * @return true in case you want process relationships for this entity, false otherwise.
      */
     boolean dbRelationship(DbEntity entity);
 

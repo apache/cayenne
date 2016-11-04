@@ -28,11 +28,8 @@ import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 public class DbLoaderConfiguration {
 
     private Boolean skipRelationshipsLoading;
-
     private Boolean skipPrimaryKeyLoading;
-
     private String[] tableTypes;
-
     private FiltersConfig filtersConfig;
 
     public String[] getTableTypes() {

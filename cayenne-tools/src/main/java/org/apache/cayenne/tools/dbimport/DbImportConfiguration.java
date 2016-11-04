@@ -46,18 +46,21 @@ import java.util.regex.Pattern;
 public class DbImportConfiguration {
 
     private static final String DATA_MAP_LOCATION_SUFFIX = ".map.xml";
-    private final DataSourceInfo dataSourceInfo = new DataSourceInfo();
-    private final DbLoaderConfiguration dbLoaderConfiguration = new DbLoaderConfiguration();
+
+    private final DataSourceInfo dataSourceInfo;
+    private final DbLoaderConfiguration dbLoaderConfiguration;
     private File targetDataMap;
-    /**
-     * A default package for ObjEntity Java classes.
-     */
     private String defaultPackage;
     private String meaningfulPkTables;
     private String adapter;
     private boolean usePrimitives;
     private Log logger;
     private String namingStrategy;
+
+    public DbImportConfiguration() {
+        this.dataSourceInfo = new DataSourceInfo();
+        this.dbLoaderConfiguration = new DbLoaderConfiguration();
+    }
 
     public Log getLogger() {
         return logger;
@@ -68,7 +71,7 @@ public class DbImportConfiguration {
     }
 
     /**
-     * Retruns DataMap XML file representing the target of the DB import operation.
+     * Returns DataMap XML file representing the target of the DB import operation.
      */
     public File getTargetDataMap() {
         return targetDataMap;
@@ -78,6 +81,9 @@ public class DbImportConfiguration {
         this.targetDataMap = map;
     }
 
+    /**
+     * Returns a default package for ObjEntity Java classes.
+     */
     public String getDefaultPackage() {
         return defaultPackage;
     }
