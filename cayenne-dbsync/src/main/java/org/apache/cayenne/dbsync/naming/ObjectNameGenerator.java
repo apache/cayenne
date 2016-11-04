@@ -47,8 +47,7 @@ public interface ObjectNameGenerator {
      * <p>The chain must contain at least one relationship. Though if we are dealing with a flattened
      * relationship, more than one can be passed, in the same order as they are present in a flattened
      * relationship.
-     * <p>Generated name can be usually applied to either ObjRelationship or DbRelationship (in which case the chain
-     * must have exactly one parameter).
+     * <p>Generated name can be used for DbRelationship itself (in which case the chain must have exactly one parameter).
      */
     String relationshipName(DbRelationship... relationshipChain);
 
