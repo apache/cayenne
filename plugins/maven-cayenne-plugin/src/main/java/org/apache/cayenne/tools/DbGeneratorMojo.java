@@ -23,7 +23,7 @@ import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dbsync.CayenneDbSyncModule;
+import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -142,7 +142,7 @@ public class DbGeneratorMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         Log logger = new MavenLogger(this);
-        Injector injector = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(logger));
+        Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(logger));
         AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
 
         logger.info(String.format("connection settings - [driver: %s, url: %s, username: %s]", driver, url, username));

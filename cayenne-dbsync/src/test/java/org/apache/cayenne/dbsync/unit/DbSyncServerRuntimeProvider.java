@@ -19,7 +19,7 @@
 package org.apache.cayenne.dbsync.unit;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.CayenneDbSyncModule;
+import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
@@ -44,7 +44,7 @@ public class DbSyncServerRuntimeProvider extends ServerRuntimeProvider {
     protected Collection<? extends Module> getExtraModules() {
         Collection<Module> modules = new ArrayList<>();
         modules.addAll(super.getExtraModules());
-        modules.add(new CayenneDbSyncModule());
+        modules.add(new DbSyncModule());
         return modules;
     }
 }

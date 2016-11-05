@@ -20,6 +20,7 @@ package org.apache.cayenne.tools.dbimport;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
+import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.MapLoader;
@@ -29,7 +30,7 @@ import org.apache.cayenne.tools.configuration.ToolsModule;
 
 /**
  * A DI module that bootstraps {@link DbImportAction}. Should be used in
- * conjunction with {@link ToolsModule} and {@link org.apache.cayenne.dbsync.CayenneDbSyncModule}.
+ * conjunction with {@link ToolsModule} and {@link DbSyncModule}.
  *
  * @since 4.0
  */
@@ -41,4 +42,6 @@ public class DbImportModule implements Module {
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
         binder.bind(MapLoader.class).to(MapLoader.class);
     }
+
+
 }

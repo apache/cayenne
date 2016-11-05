@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.configuration.server.ServerModule;
-import org.apache.cayenne.dbsync.CayenneDbSyncModule;
+import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
@@ -105,7 +105,7 @@ public class Main {
     protected Collection<Module> appendModules(Collection<Module> modules) {
         modules.add(new ServerModule("CayenneModeler"));
         modules.add(new CayenneProjectModule());
-        modules.add(new CayenneDbSyncModule());
+        modules.add(new DbSyncModule());
         modules.add(new CayenneModelerModule());
 
         return modules;

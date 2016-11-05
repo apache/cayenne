@@ -27,7 +27,7 @@ import org.apache.cayenne.dbimport.IncludeProcedure;
 import org.apache.cayenne.dbimport.IncludeTable;
 import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbimport.Schema;
-import org.apache.cayenne.dbsync.CayenneDbSyncModule;
+import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DefaultDbLoaderDelegate;
@@ -369,8 +369,8 @@ public class DbLoaderHelper {
             ModelerDbImportAction importAction = new ModelerDbImportAction(LOGGER, DbLoaderHelper.this);
 
             // TODO: we can keep all these things in the Modeler Injector instead of creating a new one?
-            // we already have CayenneDbSyncModule in there
-            Injector injector = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(LOGGER), new DbImportModule());
+            // we already have DbSyncModule in there
+            Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(LOGGER), new DbImportModule());
             injector.injectMembers(importAction);
             try {
                 importAction.execute(config);

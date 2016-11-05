@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.CayenneDbSyncModule;
+import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.merge.AddColumnToDb;
 import org.apache.cayenne.dbsync.merge.AddRelationshipToDb;
@@ -307,7 +307,7 @@ public class DefaultDbImportActionTest {
     @Test
     public void testSaveLoaded() throws Exception {
         Log log = mock(Log.class);
-        Injector i = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(log), new DbImportModule());
+        Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
 
         DefaultDbImportAction action = (DefaultDbImportAction) i.getInstance(DbImportAction.class);
 
