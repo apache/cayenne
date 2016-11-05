@@ -19,17 +19,13 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JFrame;
-import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * A base class for monitoring progress of long running tasks. It can runshowing the exact
@@ -42,9 +38,9 @@ import org.apache.commons.logging.LogFactory;
  * </p>
  * 
  */
-public abstract class LongRunningTask {
+public abstract class LongRunningTask<T> {
 
-    private static Log logObj = LogFactory.getLog(LongRunningTask.class);
+    private static final Log LOGGER = LogFactory.getLog(LongRunningTask.class);
 
     protected static final int DEFAULT_MS_TO_DECIDE_TO_POPUP = 500;
 
@@ -56,6 +52,7 @@ public abstract class LongRunningTask {
     protected int minValue;
     protected int maxValue;
     protected boolean finished;
+    protected T result;
 
     public LongRunningTask(JFrame frame, String title) {
         this.frame = frame;
@@ -65,7 +62,7 @@ public abstract class LongRunningTask {
     /**
      * Starts current task, and blocks current thread until the task is done.
      */
-    public synchronized void startAndWait() {
+    public synchronized T startAndWait() {
         // running from Event Dispatch Thread is bad, as this will block the timers...
         if (SwingUtilities.isEventDispatchThread()) {
             throw new CayenneRuntimeException(
@@ -75,7 +72,7 @@ public abstract class LongRunningTask {
         start();
 
         if (finished) {
-            return;
+            return result;
         }
 
         try {
@@ -86,6 +83,7 @@ public abstract class LongRunningTask {
         }
 
         notifyAll();
+        return result;
     }
 
     /**
@@ -124,7 +122,7 @@ public abstract class LongRunningTask {
      * Starts progress dialog if the task is not finished yet.
      */
     protected synchronized void showProgress() {
-        logObj.debug("will show progress...");
+        LOGGER.debug("will show progress...");
 
         if (finished) {
             return;
@@ -134,7 +132,7 @@ public abstract class LongRunningTask {
 
         if (!isCanceled() && currentValue < getMaxValue()) {
 
-            logObj.debug("task still in progress, will show progress dialog...");
+            LOGGER.debug("task still in progress, will show progress dialog...");
             this.dialog = new ProgressDialog(frame, "Progress...", title);
             this.dialog.getCancelButton().addActionListener(new ActionListener() {
 
@@ -204,7 +202,7 @@ public abstract class LongRunningTask {
 
     public void setCanceled(boolean b) {
         if (b) {
-            logObj.debug("task canceled");
+            LOGGER.debug("task canceled");
         }
 
         this.canceled = b;
@@ -216,7 +214,7 @@ public abstract class LongRunningTask {
         }
         catch (Throwable th) {
             setCanceled(true);
-            logObj.warn("task error", th);
+            LOGGER.warn("task error", th);
         }
         finally {
             stop();

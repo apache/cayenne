@@ -21,6 +21,8 @@ package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbimport.Catalog;
 import org.apache.cayenne.dbimport.IncludeProcedure;
@@ -28,6 +30,7 @@ import org.apache.cayenne.dbimport.IncludeTable;
 import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbimport.Schema;
 import org.apache.cayenne.dbsync.DbSyncModule;
+import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DefaultDbLoaderDelegate;
@@ -37,10 +40,12 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.dialog.DbImportProjectSaver;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.LongRunningTask;
 import org.apache.cayenne.tools.configuration.ToolsModule;
@@ -57,6 +62,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -72,30 +78,20 @@ public class DbLoaderHelper {
 
     protected boolean stoppingReverseEngineering;
     protected boolean existingMap;
-
-    protected ProjectController mediator;
-    protected String dbCatalog;
-    protected DbLoader loader;
+    protected ProjectController projectController;
+    protected Connection connection;
     protected DataMap dataMap;
-    protected List<String> schemas;
-    protected List<String> catalogs;
     protected DbAdapter adapter;
     protected DbImportConfiguration config;
-    protected ReverseEngineering reverseEngineering;
     protected String loadStatusNote;
-    protected String dbUserName;
 
-    public DbLoaderHelper(ProjectController mediator, Connection connection, DbAdapter adapter,
-                          DBConnectionInfo dbConnectionInfo, ReverseEngineering reverseEngineering) {
-        this.mediator = mediator;
-        this.dbUserName = dbConnectionInfo.getUserName();
-        try {
-            this.dbCatalog = connection.getCatalog();
-        } catch (SQLException e) {
-            LOGGER.warn("Error getting catalog.", e);
-        }
+    public DbLoaderHelper(ProjectController projectController,
+                          Connection connection,
+                          DbAdapter adapter,
+                          DBConnectionInfo dbConnectionInfo) {
+
+        this.projectController = projectController;
         this.adapter = adapter;
-        this.reverseEngineering = reverseEngineering;
 
         this.config = new DbImportConfiguration();
         this.config.setAdapter(adapter.getClass().getName());
@@ -103,16 +99,8 @@ public class DbLoaderHelper {
         this.config.setPassword(dbConnectionInfo.getPassword());
         this.config.setDriver(dbConnectionInfo.getJdbcDriver());
         this.config.setUrl(dbConnectionInfo.getUrl());
-        try {
-            this.dbCatalog = connection.getCatalog();
-        } catch (SQLException e) {
-            LOGGER.warn("Error getting catalog.", e);
-        }
-        try {
-            this.loader = config.createLoader(adapter, connection, new LoaderDelegate());
-        } catch (Throwable th) {
-            processException(th, "Error creating DbLoader.");
-        }
+
+        this.connection = connection;
     }
 
     public boolean isStoppingReverseEngineering() {
@@ -136,9 +124,9 @@ public class DbLoaderHelper {
         stoppingReverseEngineering = false;
 
         // load catalogs...
+        List<String> catalogs = Collections.emptyList();
         if (adapter.supportsCatalogsOnReverseEngineering()) {
-            LongRunningTask loadCatalogsTask = new LoadCatalogsTask(Application.getFrame(), "Loading Catalogs");
-            loadCatalogsTask.startAndWait();
+            catalogs = new LoadCatalogsTask(Application.getFrame(), "Loading Catalogs").startAndWait();
         }
 
         if (stoppingReverseEngineering) {
@@ -146,18 +134,36 @@ public class DbLoaderHelper {
         }
 
         // load schemas...
-        LongRunningTask loadSchemasTask = new LoadSchemasTask(Application.getFrame(), "Loading Schemas");
-        loadSchemasTask.startAndWait();
+        List<String> schemas = new LoadSchemasTask(Application.getFrame(), "Loading Schemas").startAndWait();
 
         if (stoppingReverseEngineering) {
             return;
         }
 
-        final DbLoaderOptionsDialog dialog = new DbLoaderOptionsDialog(schemas, catalogs, dbUserName, dbCatalog);
+        // use this catalog as the default...
+        String currentCatalog = null;
+        try {
+            currentCatalog = connection.getCatalog();
+        } catch (SQLException e) {
+            LOGGER.warn("Error getting catalog.", e);
+        }
+
+        String currentSchema = null;
+        try {
+            // 'getSchema' is Java 1.7 API ... hope this works with all drivers...
+            currentSchema = connection.getSchema();
+        } catch (SQLException e) {
+            LOGGER.warn("Error getting schema.", e);
+        }
+
+        final DbLoaderOptionsDialog dialog = new DbLoaderOptionsDialog(
+                schemas,
+                catalogs,
+                currentSchema,
+                currentCatalog);
 
         try {
-            // since we are not inside EventDispatcher Thread, must run it via
-            // SwingUtilities
+            // since we are not inside EventDispatcher Thread, must run it via SwingUtilities
             SwingUtilities.invokeAndWait(new Runnable() {
 
                 public void run() {
@@ -174,6 +180,8 @@ public class DbLoaderHelper {
             return;
         }
 
+        ReverseEngineering reverseEngineering = new ReverseEngineering();
+
         reverseEngineering.addCatalog(new Catalog(dialog.getSelectedCatalog()));
         reverseEngineering.addSchema(new Schema(dialog.getSelectedSchema()));
         reverseEngineering.addIncludeTable(new IncludeTable(dialog.getTableNamePattern()));
@@ -182,8 +190,9 @@ public class DbLoaderHelper {
         config.setMeaningfulPkTables(dialog.getMeaningfulPk());
         config.setNamingStrategy(dialog.getNamingStrategy());
 
-        LongRunningTask loadDataMapTask = new LoadDataMapTask(Application.getFrame(), "Reengineering DB");
-        loadDataMapTask.startAndWait();
+        // TODO: change DbLoader naming strategy here... or better start with a fresh DbLoader over the same connection
+
+        new LoadDataMapTask(Application.getFrame(), "Reengineering DB", reverseEngineering).startAndWait();
     }
 
     protected void processException(final Throwable th, final String message) {
@@ -197,12 +206,8 @@ public class DbLoaderHelper {
         });
     }
 
-    protected ProjectController getMediator() {
-        return mediator;
-    }
-
-    protected DbLoader getLoader() {
-        return loader;
+    protected DbLoader createDbLoader(DbImportConfiguration configuration) {
+        return new DbLoader(connection, adapter, new LoaderDelegate(), configuration.createNameGenerator());
     }
 
     private final class LoaderDelegate extends DefaultDbLoaderDelegate {
@@ -214,12 +219,11 @@ public class DbLoaderHelper {
             loadStatusNote = "Importing table '" + entity.getName() + "'...";
 
             // TODO: hack to prevent PK tables from being visible... this should
-            // really be
-            // delegated to DbAdapter to decide...
+            // really be delegated to DbAdapter to decide...
             if (EXCLUDED_TABLES.contains(entity.getName()) && entity.getDataMap() != null) {
                 entity.getDataMap().removeDbEntity(entity.getName());
             } else if (existingMap) {
-                mediator.fireDbEntityEvent(new EntityEvent(this, entity, MapEvent.ADD));
+                projectController.fireDbEntityEvent(new EntityEvent(this, entity, MapEvent.ADD));
             }
         }
 
@@ -228,7 +232,7 @@ public class DbLoaderHelper {
             checkCanceled();
 
             if (existingMap) {
-                mediator.fireDbEntityEvent(new EntityEvent(Application.getFrame(), entity, MapEvent.REMOVE));
+                projectController.fireDbEntityEvent(new EntityEvent(Application.getFrame(), entity, MapEvent.REMOVE));
             }
         }
 
@@ -257,7 +261,7 @@ public class DbLoaderHelper {
         }
     }
 
-    abstract class DbLoaderTask extends LongRunningTask {
+    abstract class DbLoaderTask<T> extends LongRunningTask<T> {
 
         public DbLoaderTask(JFrame frame, String title) {
             super(frame, title);
@@ -295,25 +299,7 @@ public class DbLoaderHelper {
         }
     }
 
-    final class LoadSchemasTask extends DbLoaderTask {
-
-        public LoadSchemasTask(JFrame frame, String title) {
-            super(frame, title);
-        }
-
-        @Override
-        protected void execute() {
-            loadStatusNote = "Loading available schemas...";
-
-            try {
-                schemas = loader.loadSchemas();
-            } catch (Throwable th) {
-                processException(th, "Error Loading Schemas");
-            }
-        }
-    }
-
-    final class LoadCatalogsTask extends DbLoaderTask {
+    final class LoadCatalogsTask extends DbLoaderTask<List<String>> {
 
         public LoadCatalogsTask(JFrame frame, String title) {
             super(frame, title);
@@ -324,18 +310,38 @@ public class DbLoaderHelper {
             loadStatusNote = "Loading available catalogs...";
 
             try {
-                catalogs = loader.loadCatalogs();
+                result = createDbLoader(config).loadCatalogs();
             } catch (Throwable th) {
                 processException(th, "Error Loading Catalogs");
             }
         }
     }
 
-    public final class LoadDataMapTask extends DbLoaderTask {
-        private DbImportAction importAction;
+    final class LoadSchemasTask extends DbLoaderTask<List<String>> {
 
-        public LoadDataMapTask(JFrame frame, String title) {
+        public LoadSchemasTask(JFrame frame, String title) {
             super(frame, title);
+        }
+
+        @Override
+        protected void execute() {
+            loadStatusNote = "Loading available schemas...";
+
+            try {
+                result = createDbLoader(config).loadSchemas();
+            } catch (Throwable th) {
+                processException(th, "Error Loading Schemas");
+            }
+        }
+    }
+
+    public final class LoadDataMapTask extends DbLoaderTask {
+
+        private ReverseEngineering reverseEngineering;
+
+        public LoadDataMapTask(JFrame frame, String title, ReverseEngineering reverseEngineering) {
+            super(frame, title);
+            this.reverseEngineering = reverseEngineering;
         }
 
         @Override
@@ -343,12 +349,12 @@ public class DbLoaderHelper {
 
             loadStatusNote = "Preparing...";
 
-            DbLoaderHelper.this.dataMap = mediator.getCurrentDataMap();
+            DbLoaderHelper.this.dataMap = projectController.getCurrentDataMap();
             DbLoaderHelper.this.existingMap = dataMap != null;
 
             if (!existingMap) {
 
-                ConfigurationNode root = mediator.getProject().getRootNode();
+                ConfigurationNode root = projectController.getProject().getRootNode();
 
                 dataMap = new DataMap();
                 dataMap.setName(NameBuilder.builder(dataMap, root).name());
@@ -365,18 +371,28 @@ public class DbLoaderHelper {
             FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(reverseEngineering);
             config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.build());
 
-
-            ModelerDbImportAction importAction = new ModelerDbImportAction(LOGGER, DbLoaderHelper.this);
-
-            // TODO: we can keep all these things in the Modeler Injector instead of creating a new one?
-            // we already have DbSyncModule in there
-            Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(LOGGER), new DbImportModule());
-            injector.injectMembers(importAction);
+            DbImportAction importAction = createAction(dataMap);
             try {
                 importAction.execute(config);
             } catch (Exception e) {
                 processException(e, "Error importing database schema.");
             }
+        }
+
+        protected DbImportAction createAction(DataMap targetDataMap) {
+            Injector injector = DIBootstrap.createInjector(new DbSyncModule(),
+                    new ToolsModule(LOGGER),
+                    new DbImportModule());
+
+            return new ModelerDbImportAction(
+                    LOGGER,
+                    new DbImportProjectSaver(projectController),
+                    injector.getInstance(DataSourceFactory.class),
+                    injector.getInstance(DbAdapterFactory.class),
+                    injector.getInstance(MapLoader.class),
+                    injector.getInstance(MergerTokenFactoryProvider.class),
+                    targetDataMap,
+                    createDbLoader(config));
         }
     }
 

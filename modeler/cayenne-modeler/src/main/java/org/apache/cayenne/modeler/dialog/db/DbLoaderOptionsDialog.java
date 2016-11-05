@@ -24,8 +24,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,7 +37,7 @@ import java.util.Vector;
  */
 public class DbLoaderOptionsDialog extends CayenneDialog {
 
-    private static final Log logObj = LogFactory.getLog(DbLoaderOptionsDialog.class);
+    public static final String WILDCARD_PATTERN = ".*";
 
     public static final int CANCEL = 0;
     public static final int SELECT = 1;
@@ -55,28 +53,21 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     protected JButton selectButton;
     protected JButton cancelButton;
 
-    public static final String WILDCARD_PATTERN = ".*";
 
-
-    /**
-     * Combobox for naming strategy
-     */
     protected JComboBox strategyCombo;
-//
     protected String strategy;
-
     protected int choice;
 
     /**
      * Creates and initializes new ChooseSchemaDialog.
      */
-    public DbLoaderOptionsDialog(Collection<String> schemas, Collection<String> catalogs, String dbUserName,
+    public DbLoaderOptionsDialog(Collection<String> schemas, Collection<String> catalogs, String currentSchema,
                                  String dbCatalog) {
         super(Application.getFrame(), "Reengineer DB Schema: Select Options");
 
         init();
         initController();
-        initFromModel(schemas, catalogs, dbUserName, dbCatalog);
+        initFromModel(schemas, catalogs, currentSchema, dbCatalog);
 
         pack();
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -128,7 +119,6 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
                 processSelect();
             }
         });
-
         cancelButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -140,8 +130,8 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     protected void initFromModel(
             Collection<String> schemas,
             Collection<String> catalogs,
-            String dbUserName,
-            String dbCatalog) {
+            String currentSchema,
+            String currentCatalog) {
 
         this.choice = CANCEL;
         this.tableNamePatternField.setText(WILDCARD_PATTERN);
@@ -160,10 +150,9 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
 
             schemaSelector.setModel(new DefaultComboBoxModel(schemas.toArray()));
 
-            // select schema belonging to the user
-            if (dbUserName != null) {
+            if (currentSchema != null) {
                 for (String schema : schemas) {
-                    if (dbUserName.equalsIgnoreCase(schema)) {
+                    if (currentSchema.equalsIgnoreCase(schema)) {
                         schemaSelector.setSelectedItem(schema);
                         break;
                     }
@@ -178,16 +167,15 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         if (showCatalogSelector) {
             catalogSelector.setModel(new DefaultComboBoxModel(catalogs.toArray()));
 
-            if (dbCatalog != null && !dbCatalog.isEmpty()) {
+            if (currentCatalog != null && !currentCatalog.isEmpty()) {
                 for (String catalog : catalogs) {
-                    if (dbCatalog.equalsIgnoreCase(catalog)) {
+                    if (currentCatalog.equalsIgnoreCase(catalog)) {
                         catalogSelector.setSelectedItem(catalog);
                         break;
                     }
                 }
             }
         }
-
     }
 
     public int getChoice() {

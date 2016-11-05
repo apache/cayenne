@@ -19,20 +19,11 @@
 
 package org.apache.cayenne.modeler.action;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbimport.ReverseEngineering;
-import org.apache.cayenne.dbsync.naming.NameBuilder;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.CayenneModelerController;
-import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.db.ConnectionWizard;
 import org.apache.cayenne.modeler.dialog.db.DbLoaderHelper;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -72,20 +63,19 @@ public class ReverseEngineeringAction extends DBWizardAction {
             return;
         }
 
+        // TODO: doesn't look like we are closing this connection anywhere...
         Connection connection = connectWizard.getConnection();
         DbAdapter adapter = connectWizard.getAdapter();
         DBConnectionInfo dataSourceInfo = connectWizard.getConnectionInfo();
 
         // from here pass control to DbLoaderHelper, running it from a thread separate
         // from EventDispatch
-        ReverseEngineering reverseEngineering = new ReverseEngineering();
 
         final DbLoaderHelper helper = new DbLoaderHelper(
                 getProjectController(),
                 connection,
                 adapter,
-                dataSourceInfo,
-                reverseEngineering);
+                dataSourceInfo);
         Thread th = new Thread(new Runnable() {
 
             public void run() {
