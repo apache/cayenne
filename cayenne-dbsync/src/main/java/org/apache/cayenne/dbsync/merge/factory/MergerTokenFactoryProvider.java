@@ -29,8 +29,10 @@ import java.util.Map;
  */
 public class MergerTokenFactoryProvider extends PerAdapterProvider<MergerTokenFactory> {
 
-    public MergerTokenFactoryProvider(@Inject(DbSyncModule.MERGER_FACTORIES_MAP) Map<String,
-            MergerTokenFactory> perAdapterValues, @Inject MergerTokenFactory defaultValue) {
+    public MergerTokenFactoryProvider(
+            @Inject(DbSyncModule.MERGER_FACTORIES_MAP) Map<String, MergerTokenFactory> perAdapterValues,
+            @Inject MergerTokenFactory defaultValue) {
+
         super(perAdapterValues, defaultValue);
     }
 }

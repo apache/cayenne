@@ -160,9 +160,11 @@ public class DefaultDbImportAction implements DbImportAction {
 
         DataMap targetDataMap = existingTargetMap(config);
         if (targetDataMap == null) {
+
+            String path = config.getTargetDataMap() == null ? "null" : config.getTargetDataMap().getAbsolutePath() + "'";
+
             logger.info("");
-            logger.info("Map file does not exist. Loaded db model will be saved into '"
-                    + (config.getTargetDataMap() == null ? "null" : config.getTargetDataMap().getAbsolutePath() + "'"));
+            logger.info("Map file does not exist. Loaded db model will be saved into '" + path);
 
             hasChanges = true;
             targetDataMap = newTargetDataMap(config);
