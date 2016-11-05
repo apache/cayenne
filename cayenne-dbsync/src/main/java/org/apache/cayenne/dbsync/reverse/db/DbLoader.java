@@ -63,7 +63,7 @@ public class DbLoader {
     private final Connection connection;
     private final DbAdapter adapter;
     private final DbLoaderDelegate delegate;
-    private ObjectNameGenerator nameGenerator;
+    private final ObjectNameGenerator nameGenerator;
     private DatabaseMetaData metaData;
 
     public DbLoader(Connection connection, DbAdapter adapter, DbLoaderDelegate delegate, ObjectNameGenerator nameGenerator) {
@@ -97,6 +97,31 @@ public class DbLoader {
     }
 
     /**
+     * Retrieves catalogs for a given connection.
+     *
+     * @return List with the catalog names; empty list if none found.
+     */
+    // using a static method for catalog loading as we don't need a full DbLoader for this operation
+    public static List<String> loadCatalogs(Connection connection) throws SQLException {
+        try (ResultSet rs = connection.getMetaData().getCatalogs()) {
+            return getStrings(rs);
+        }
+    }
+
+    /**
+     * Retrieves the schemas for the given connection.
+     *
+     * @return List with the schema names; empty list if none found.
+     */
+    // using a static method for catalog loading as we don't need a full DbLoader for this operation
+    public static List<String> loadSchemas(Connection connection) throws SQLException {
+
+        try (ResultSet rs = connection.getMetaData().getSchemas()) {
+            return getStrings(rs);
+        }
+    }
+
+    /**
      * Returns DatabaseMetaData object associated with this DbLoader.
      */
     private DatabaseMetaData getMetaData() throws SQLException {
@@ -104,49 +129,6 @@ public class DbLoader {
             metaData = connection.getMetaData();
         }
         return metaData;
-    }
-
-    /**
-     * Check if database support schemas.
-     */
-    protected boolean supportSchemas() throws SQLException {
-        if (metaData == null) {
-            metaData = connection.getMetaData();
-        }
-        return metaData.supportsSchemasInTableDefinitions();
-    }
-
-    /**
-     * Check if database support catalogs.
-     */
-    protected boolean supportCatalogs() throws SQLException {
-        if (metaData == null) {
-            metaData = connection.getMetaData();
-        }
-        return metaData.supportsCatalogsInTableDefinitions();
-    }
-
-    /**
-     * Retrieves catalogs for the database associated with this DbLoader.
-     *
-     * @return List with the catalog names, empty Array if none found.
-     */
-    public List<String> loadCatalogs() throws SQLException {
-        try (ResultSet rs = getMetaData().getCatalogs()) {
-            return getStrings(rs);
-        }
-    }
-
-    /**
-     * Retrieves the schemas for the database.
-     *
-     * @return List with the schema names, empty Array if none found.
-     */
-    public List<String> loadSchemas() throws SQLException {
-
-        try (ResultSet rs = getMetaData().getSchemas()) {
-            return getStrings(rs);
-        }
     }
 
     protected void loadDbRelationships(DbLoaderConfiguration config, String catalog, String schema,
@@ -297,7 +279,7 @@ public class DbLoader {
             } catch (SQLException cay182Ex) {
                 // Sybase-specific - the line above blows on VIEWS, see CAY-182.
                 LOGGER.info("Error getting relationships for '" + catalog + "." + schema + "', ignoring. "
-                                + cay182Ex.getMessage(), cay182Ex);
+                        + cay182Ex.getMessage(), cay182Ex);
                 return new HashMap<>();
             }
 
@@ -335,7 +317,6 @@ public class DbLoader {
     private void skipRelationLog(ExportedKey key, String tableName) {
         LOGGER.info("Skip relation: '" + key + "' because table '" + tableName + "' not found");
     }
-
 
     protected String[] getTableTypes(DbLoaderConfiguration config) {
 

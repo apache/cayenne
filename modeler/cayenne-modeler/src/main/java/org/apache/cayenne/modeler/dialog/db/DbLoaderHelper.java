@@ -206,9 +206,6 @@ public class DbLoaderHelper {
         });
     }
 
-    protected DbLoader createDbLoader(DbImportConfiguration configuration) {
-        return new DbLoader(connection, adapter, new LoaderDelegate(), configuration.createNameGenerator());
-    }
 
     private final class LoaderDelegate extends DefaultDbLoaderDelegate {
 
@@ -310,7 +307,7 @@ public class DbLoaderHelper {
             loadStatusNote = "Loading available catalogs...";
 
             try {
-                result = createDbLoader(config).loadCatalogs();
+                result = DbLoader.loadCatalogs(connection);
             } catch (Throwable th) {
                 processException(th, "Error Loading Catalogs");
             }
@@ -328,7 +325,7 @@ public class DbLoaderHelper {
             loadStatusNote = "Loading available schemas...";
 
             try {
-                result = createDbLoader(config).loadSchemas();
+                result = DbLoader.loadSchemas(connection);
             } catch (Throwable th) {
                 processException(th, "Error Loading Schemas");
             }
@@ -393,6 +390,10 @@ public class DbLoaderHelper {
                     injector.getInstance(MergerTokenFactoryProvider.class),
                     targetDataMap,
                     createDbLoader(config));
+        }
+
+        protected DbLoader createDbLoader(DbImportConfiguration configuration) {
+            return new DbLoader(connection, adapter, new LoaderDelegate(), configuration.createNameGenerator());
         }
     }
 
