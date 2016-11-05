@@ -120,8 +120,6 @@ public class DefaultDbImportActionTest {
         };
 
         DbImportConfiguration config = mock(DbImportConfiguration.class);
-        when(config.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
-                .thenReturn(dbLoader);
 
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(config.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
@@ -138,7 +136,7 @@ public class DefaultDbImportActionTest {
                 // Validation phase
                 assertTrue(project.getRootNode() instanceof DataMap);
             }
-        }, null);
+        }, null, dbLoader);
 
         action.execute(config);
 
@@ -164,8 +162,6 @@ public class DefaultDbImportActionTest {
         };
 
         DbImportConfiguration params = mock(DbImportConfiguration.class);
-        when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
-                .thenReturn(dbLoader);
 
         when(params.getTargetDataMap()).thenReturn(FILE_STUB);
         when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
@@ -203,7 +199,7 @@ public class DefaultDbImportActionTest {
                                 objAttr("name").type(String.class).dbPath("NAME")
                         )).build();
             }
-        });
+        }, dbLoader);
 
         action.execute(params);
 
@@ -223,16 +219,10 @@ public class DefaultDbImportActionTest {
         };
 
         DbImportConfiguration params = mock(DbImportConfiguration.class);
-        when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
-                .thenReturn(dbLoader);
-
         when(params.getTargetDataMap()).thenReturn(FILE_STUB);
         when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
 
-        Log log = mock(Log.class);
-        when(log.isDebugEnabled()).thenReturn(false);
-        when(log.isInfoEnabled()).thenReturn(false);
 
         FileProjectSaver projectSaver = mock(FileProjectSaver.class);
         doNothing().when(projectSaver).save(any(Project.class));
@@ -243,7 +233,7 @@ public class DefaultDbImportActionTest {
                         dbAttr("NAME").typeVarchar(100).mandatory()
                 )).build());
 
-        DefaultDbImportAction action = buildDbImportAction(log, projectSaver, mapLoader);
+        DefaultDbImportAction action = buildDbImportAction(projectSaver, mapLoader, dbLoader);
 
         action.execute(params);
 
@@ -258,8 +248,6 @@ public class DefaultDbImportActionTest {
         doThrow(new SQLException()).when(dbLoader).load(any(DataMap.class), any(DbLoaderConfiguration.class));
 
         DbImportConfiguration params = mock(DbImportConfiguration.class);
-        when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
-                .thenReturn(dbLoader);
 
         FileProjectSaver projectSaver = mock(FileProjectSaver.class);
         doNothing().when(projectSaver).save(any(Project.class));
@@ -267,7 +255,7 @@ public class DefaultDbImportActionTest {
         MapLoader mapLoader = mock(MapLoader.class);
         when(mapLoader.loadDataMap(any(InputSource.class))).thenReturn(null);
 
-        DefaultDbImportAction action = buildDbImportAction(projectSaver, mapLoader);
+        DefaultDbImportAction action = buildDbImportAction(projectSaver, mapLoader, dbLoader);
 
         try {
             action.execute(params);
@@ -280,15 +268,13 @@ public class DefaultDbImportActionTest {
         verify(mapLoader, never()).loadDataMap(any(InputSource.class));
     }
 
-    private DefaultDbImportAction buildDbImportAction(FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
+    private DefaultDbImportAction buildDbImportAction(FileProjectSaver projectSaver, MapLoader mapLoader, final DbLoader dbLoader)
+            throws Exception {
+
         Log log = mock(Log.class);
         when(log.isDebugEnabled()).thenReturn(true);
         when(log.isInfoEnabled()).thenReturn(true);
 
-        return buildDbImportAction(log, projectSaver, mapLoader);
-    }
-
-    private DefaultDbImportAction buildDbImportAction(Log log, FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
         DbAdapter dbAdapter = mock(DbAdapter.class);
 
         DbAdapterFactory adapterFactory = mock(DbAdapterFactory.class);
@@ -301,7 +287,12 @@ public class DefaultDbImportActionTest {
         MergerTokenFactoryProvider mergerTokenFactoryProvider = mock(MergerTokenFactoryProvider.class);
         when(mergerTokenFactoryProvider.get(any(DbAdapter.class))).thenReturn(new DefaultMergerTokenFactory());
 
-        return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider);
+        return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider) {
+            @Override
+            protected DbLoader createDbLoader(DbImportConfiguration config, DbAdapter adapter, Connection connection) {
+                return dbLoader;
+            }
+        };
     }
 
     @Test

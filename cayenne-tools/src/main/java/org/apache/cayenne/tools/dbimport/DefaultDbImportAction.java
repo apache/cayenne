@@ -397,8 +397,11 @@ public class DefaultDbImportAction implements DbImportAction {
 
     protected DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
         DataMap dataMap = new DataMap("_import_source_");
-        DbLoader loader = config.createLoader(adapter, connection, config.createLoaderDelegate());
-        loader.load(dataMap, config.getDbLoaderConfig());
+        createDbLoader(config, adapter, connection).load(dataMap, config.getDbLoaderConfig());
         return dataMap;
+    }
+
+    protected DbLoader createDbLoader(DbImportConfiguration config, DbAdapter adapter, Connection connection) {
+        return new DbLoader(connection, adapter, config.createLoaderDelegate(), config.createNameGenerator());
     }
 }
