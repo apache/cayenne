@@ -18,21 +18,29 @@
  */
 package org.apache.cayenne.dbsync.naming;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @since 4.0
  */
 public class PatternStemmer implements DbEntityNameStemmer {
 
-    private String stripPattern;
+    private Pattern pattern;
 
-    public PatternStemmer(String stripPattern) {
-        this.stripPattern = stripPattern;
+    public PatternStemmer(String stripPattern, boolean caseSensitive) {
+
+        int flags = 0;
+        if (!caseSensitive) {
+            flags = flags | Pattern.CASE_INSENSITIVE;
+        }
+
+        this.pattern = Pattern.compile(stripPattern, flags);
     }
 
     @Override
     public String stem(String dbEntityName) {
-        throw new UnsupportedOperationException("TODO");
+        Matcher m = pattern.matcher(dbEntityName);
+        return m.replaceAll("");
     }
-
-
 }

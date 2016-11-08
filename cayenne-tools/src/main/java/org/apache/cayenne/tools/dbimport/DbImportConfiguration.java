@@ -160,7 +160,7 @@ public class DbImportConfiguration {
     }
 
     public ObjectNameGenerator createNameGenerator() {
-        
+
         // TODO: not a singleton; called from different places...
 
         // custom name generator
@@ -181,7 +181,7 @@ public class DbImportConfiguration {
     protected DbEntityNameStemmer createStemmer() {
         return (stripFromTableNames == null || stripFromTableNames.length() == 0)
                 ? NoStemStemmer.getInstance()
-                : new PatternStemmer(stripFromTableNames);
+                : new PatternStemmer(stripFromTableNames, false);
     }
 
     public String getDriver() {
