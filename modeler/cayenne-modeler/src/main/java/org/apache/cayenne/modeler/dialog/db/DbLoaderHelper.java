@@ -189,7 +189,7 @@ public class DbLoaderHelper {
 
         config.setMeaningfulPkTables(dialog.getMeaningfulPk());
         config.setNamingStrategy(dialog.getNamingStrategy());
-        
+
         new LoadDataMapTask(Application.getFrame(), "Reengineering DB", reverseEngineering).startAndWait();
     }
 

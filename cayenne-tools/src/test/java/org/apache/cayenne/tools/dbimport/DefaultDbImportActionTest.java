@@ -35,6 +35,7 @@ import org.apache.cayenne.dbsync.merge.builders.DataMapBuilder;
 import org.apache.cayenne.dbsync.merge.factory.DefaultMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
@@ -124,7 +125,7 @@ public class DefaultDbImportActionTest {
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(config.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
         when(config.getTargetDataMap()).thenReturn(new File("xyz.map.xml"));
-        when(config.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
+        when(config.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
         when(config.createMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
 
         final boolean[] haveWeTriedToSave = {false};
@@ -166,7 +167,7 @@ public class DefaultDbImportActionTest {
         when(params.getTargetDataMap()).thenReturn(FILE_STUB);
         when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
-        when(params.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
+        when(params.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
         when(params.createMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
 
         final boolean[] haveWeTriedToSave = {false};
@@ -288,8 +289,12 @@ public class DefaultDbImportActionTest {
         when(mergerTokenFactoryProvider.get(any(DbAdapter.class))).thenReturn(new DefaultMergerTokenFactory());
 
         return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider) {
+
             @Override
-            protected DbLoader createDbLoader(DbImportConfiguration config, DbAdapter adapter, Connection connection) {
+            protected DbLoader createDbLoader(DbAdapter adapter,
+                                              Connection connection,
+                                              DbLoaderDelegate dbLoaderDelegate,
+                                              ObjectNameGenerator objectNameGenerator) {
                 return dbLoader;
             }
         };

@@ -36,6 +36,11 @@ import java.util.Objects;
  */
 public class DefaultObjectNameGenerator implements ObjectNameGenerator {
 
+    private DbEntityNameStemmer dbEntityNameStemmer;
+
+    public DefaultObjectNameGenerator(DbEntityNameStemmer dbEntityNameStemmer) {
+        this.dbEntityNameStemmer = dbEntityNameStemmer;
+    }
 
     @Override
     public String relationshipName(DbRelationship... relationshipChain) {
@@ -56,8 +61,8 @@ public class DefaultObjectNameGenerator implements ObjectNameGenerator {
 
     protected boolean isToMany(DbRelationship... relationshipChain) {
 
-        for(DbRelationship r : relationshipChain) {
-            if(r.isToMany()) {
+        for (DbRelationship r : relationshipChain) {
+            if (r.isToMany()) {
                 return true;
             }
         }
@@ -65,19 +70,25 @@ public class DefaultObjectNameGenerator implements ObjectNameGenerator {
         return false;
     }
 
+    protected String stemmed(String dbEntityName) {
+        return dbEntityNameStemmer.stem(Objects.requireNonNull(dbEntityName));
+    }
+
     protected String toManyRelationshipName(DbRelationship... relationshipChain) {
 
         DbRelationship last = relationshipChain[relationshipChain.length - 1];
 
+        String baseName = stemmed(last.getTargetEntityName());
+
         try {
             // by default we use English rules here...
-            return Noun.pluralOf(last.getTargetEntityName().toLowerCase(), Locale.ENGLISH);
+            return Noun.pluralOf(baseName.toLowerCase(), Locale.ENGLISH);
         } catch (Exception inflectorError) {
             //  seems that Inflector cannot be trusted. For instance, it
             // throws an exception when invoked for word "ADDRESS" (although
             // lower case works fine). To feel safe, we use superclass'
             // behavior if something's gone wrong
-            return last.getTargetEntityName();
+            return baseName;
         }
     }
 
@@ -98,19 +109,20 @@ public class DefaultObjectNameGenerator implements ObjectNameGenerator {
         // return the name of the FK column sans ID
         String fkColName = join1.getSourceName();
         if (fkColName == null) {
-            return Objects.requireNonNull(last.getTargetEntityName());
+            return stemmed(last.getTargetEntityName());
         } else if (fkColName.toUpperCase().endsWith("_ID") && fkColName.length() > 3) {
             return fkColName.substring(0, fkColName.length() - 3);
         } else if (fkColName.toUpperCase().endsWith("ID") && fkColName.length() > 2) {
             return fkColName.substring(0, fkColName.length() - 2);
         } else {
-            return Objects.requireNonNull(last.getTargetEntityName());
+            return stemmed(last.getTargetEntityName());
         }
     }
 
     @Override
     public String objEntityName(DbEntity dbEntity) {
-        return Util.underscoredToJava(dbEntity.getName(), true);
+        String baseName = stemmed(dbEntity.getName());
+        return Util.underscoredToJava(baseName, true);
     }
 
     @Override

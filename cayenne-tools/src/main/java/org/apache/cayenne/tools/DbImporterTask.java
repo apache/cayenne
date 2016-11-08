@@ -197,6 +197,13 @@ public class DbImporterTask extends Task {
         config.setNamingStrategy(namingStrategy);
     }
 
+    /**
+     * @since 4.0
+     */
+    public void setStripFromTableNames(String pattern) {
+        config.setStripFromTableNames(pattern);
+    }
+
     public void setAdapter(String adapter) {
         config.setAdapter(adapter);
     }

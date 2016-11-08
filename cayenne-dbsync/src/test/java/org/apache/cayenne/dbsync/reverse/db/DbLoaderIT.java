@@ -23,6 +23,7 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
@@ -92,7 +93,7 @@ public class DbLoaderIT extends ServerCase {
     }
 
     private DbLoader createDbLoader(boolean meaningfulPK, boolean meaningfulFK) {
-        return new DbLoader(connection, adapter, null, new DefaultObjectNameGenerator());
+        return new DbLoader(connection, adapter, null, new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
     }
 
     @After

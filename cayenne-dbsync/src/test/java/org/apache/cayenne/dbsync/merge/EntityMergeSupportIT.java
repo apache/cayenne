@@ -20,6 +20,7 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -88,7 +89,8 @@ public class EntityMergeSupportIT extends MergeCase {
 		objEntity2.setDbEntity(dbEntity2);
 		map.addObjEntity(objEntity2);
 
-		EntityMergeSupport entityMergeSupport = new EntityMergeSupport(new DefaultObjectNameGenerator(),
+		EntityMergeSupport entityMergeSupport = new EntityMergeSupport(
+				new DefaultObjectNameGenerator(NoStemStemmer.getInstance()),
 				NamePatternMatcher.EXCLUDE_ALL,
 				true,
 				true);

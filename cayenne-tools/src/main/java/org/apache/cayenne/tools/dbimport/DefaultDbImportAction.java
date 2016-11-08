@@ -36,6 +36,7 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
+import org.apache.cayenne.dbsync.reverse.db.DbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
@@ -152,10 +153,11 @@ public class DefaultDbImportAction implements DbImportAction {
         DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
         DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
         DbAdapter adapter = adapterFactory.createAdapter(dataNodeDescriptor, dataSource);
+        ObjectNameGenerator objectNameGenerator = config.createNameGenerator();
 
         DataMap sourceDataMap;
         try (Connection connection = dataSource.getConnection()) {
-            sourceDataMap = load(config, adapter, connection);
+            sourceDataMap = load(config, adapter, connection, objectNameGenerator);
         }
 
         DataMap targetDataMap = existingTargetMap(config);
@@ -184,7 +186,7 @@ public class DefaultDbImportAction implements DbImportAction {
         hasChanges |= applyTokens(config.createMergeDelegate(),
                 targetDataMap,
                 log(sort(reverse(mergerTokenFactory, tokens))),
-                config.createNameGenerator(),
+                objectNameGenerator,
                 config.createMeaningfulPKFilter(),
                 config.isUsePrimitives());
         hasChanges |= syncProcedures(targetDataMap, sourceDataMap, loaderConfig.getFiltersConfig());
@@ -395,13 +397,21 @@ public class DefaultDbImportAction implements DbImportAction {
         projectSaver.save(project);
     }
 
-    protected DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
+    protected DataMap load(DbImportConfiguration config,
+                           DbAdapter adapter,
+                           Connection connection,
+                           ObjectNameGenerator objectNameGenerator) throws Exception {
+
         DataMap dataMap = new DataMap("_import_source_");
-        createDbLoader(config, adapter, connection).load(dataMap, config.getDbLoaderConfig());
+        createDbLoader(adapter, connection, config.createLoaderDelegate(), objectNameGenerator)
+                .load(dataMap, config.getDbLoaderConfig());
         return dataMap;
     }
 
-    protected DbLoader createDbLoader(DbImportConfiguration config, DbAdapter adapter, Connection connection) {
-        return new DbLoader(connection, adapter, config.createLoaderDelegate(), config.createNameGenerator());
+    protected DbLoader createDbLoader(DbAdapter adapter,
+                                      Connection connection,
+                                      DbLoaderDelegate dbLoaderDelegate,
+                                      ObjectNameGenerator objectNameGenerator) {
+        return new DbLoader(connection, adapter, dbLoaderDelegate, objectNameGenerator);
     }
 }

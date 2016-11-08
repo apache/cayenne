@@ -118,6 +118,13 @@ public class DbImporterMojo extends AbstractMojo {
      */
     private ReverseEngineering reverseEngineering = new ReverseEngineering();
 
+    /**
+     * A regular expression that should match the part of the table name to strip before generating DB names.
+     *
+     * @parameter stripFromTableNames="stripFromTableNames"
+     * default-value=""
+     */
+    private String stripFromTableNames;
 
     /**
      * JDBC connection URL of a target database.
@@ -196,6 +203,7 @@ public class DbImporterMojo extends AbstractMojo {
         config.setTargetDataMap(map);
         config.setMeaningfulPkTables(meaningfulPkTables);
         config.setNamingStrategy(namingStrategy);
+        config.setStripFromTableNames(stripFromTableNames);
         config.setPassword(password);
         config.setUrl(url);
         config.setUsername(username);

@@ -26,8 +26,11 @@ import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.merge.DefaultModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
+import org.apache.cayenne.dbsync.naming.DbEntityNameStemmer;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.PatternStemmer;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.db.DefaultDbLoaderDelegate;
@@ -54,10 +57,19 @@ public class DbImportConfiguration {
     private boolean usePrimitives;
     private Log logger;
     private String namingStrategy;
+    private String stripFromTableNames;
 
     public DbImportConfiguration() {
         this.dataSourceInfo = new DataSourceInfo();
         this.dbLoaderConfiguration = new DbLoaderConfiguration();
+    }
+
+    public String getStripFromTableNames() {
+        return stripFromTableNames;
+    }
+
+    public void setStripFromTableNames(String stripFromTableNames) {
+        this.stripFromTableNames = stripFromTableNames;
     }
 
     public Log getLogger() {
@@ -148,13 +160,14 @@ public class DbImportConfiguration {
     }
 
     public ObjectNameGenerator createNameGenerator() {
-
-        // TODO: load via DI AdhocObjectFactory
-
+        
         // TODO: not a singleton; called from different places...
 
+        // custom name generator
+        // TODO: support stemmer in non-standard generators...
+        // TODO: load via DI AdhocObjectFactory
         String namingStrategy = getNamingStrategy();
-        if (namingStrategy != null) {
+        if (namingStrategy != null && !namingStrategy.equals(DefaultObjectNameGenerator.class.getName())) {
             try {
                 return (ObjectNameGenerator) Class.forName(namingStrategy).newInstance();
             } catch (Exception e) {
@@ -162,7 +175,13 @@ public class DbImportConfiguration {
             }
         }
 
-        return new DefaultObjectNameGenerator();
+        return new DefaultObjectNameGenerator(createStemmer());
+    }
+
+    protected DbEntityNameStemmer createStemmer() {
+        return (stripFromTableNames == null || stripFromTableNames.length() == 0)
+                ? NoStemStemmer.getInstance()
+                : new PatternStemmer(stripFromTableNames);
     }
 
     public String getDriver() {

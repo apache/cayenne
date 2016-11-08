@@ -24,6 +24,7 @@ import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
+import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -94,7 +95,7 @@ public class CreateObjEntityAction extends CayenneAction {
             entity.setDbEntity(dbEntity);
 
             // TODO: use injectable name generator
-            String baseName = new DefaultObjectNameGenerator().objEntityName(dbEntity);
+            String baseName = new DefaultObjectNameGenerator(NoStemStemmer.getInstance()).objEntityName(dbEntity);
             entity.setName(NameBuilder
                     .builder(entity, dbEntity.getDataMap())
                     .baseName(baseName)
@@ -111,7 +112,8 @@ public class CreateObjEntityAction extends CayenneAction {
         dataMap.addObjEntity(entity);
 
         // TODO: Modeler-controlled defaults for all the hardcoded boolean flags here.
-        EntityMergeSupport merger = new EntityMergeSupport(new DefaultObjectNameGenerator(), NamePatternMatcher.EXCLUDE_ALL, true, true);
+        EntityMergeSupport merger = new EntityMergeSupport(new DefaultObjectNameGenerator(NoStemStemmer.getInstance()),
+                NamePatternMatcher.EXCLUDE_ALL, true, true);
         merger.addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
         merger.synchronizeWithDbEntity(entity);
 

@@ -25,6 +25,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.db.LoggingDbLoaderDelegate;
@@ -112,7 +113,7 @@ public abstract class MergeCase extends DbSyncCase {
             new DbLoader(conn,
                     node.getAdapter(),
                     new LoggingDbLoaderDelegate(LogFactory.getLog(DbLoader.class)),
-                    new DefaultObjectNameGenerator())
+                    new DefaultObjectNameGenerator(NoStemStemmer.getInstance()))
                     .load(dbImport, loaderConfiguration);
 
         } catch (SQLException e) {
