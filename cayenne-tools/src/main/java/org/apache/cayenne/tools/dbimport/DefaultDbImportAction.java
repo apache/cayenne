@@ -42,6 +42,7 @@ import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
@@ -172,6 +173,9 @@ public class DefaultDbImportAction implements DbImportAction {
             targetDataMap = newTargetDataMap(config);
         }
 
+        // transform source DataMap before merging
+        transformSourceBeforeMerge(sourceDataMap, targetDataMap, config);
+
         MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
 
         DbLoaderConfiguration loaderConfig = config.getDbLoaderConfig();
@@ -194,6 +198,27 @@ public class DefaultDbImportAction implements DbImportAction {
         if (hasChanges) {
             saveLoaded(targetDataMap);
         }
+    }
+
+
+    protected void transformSourceBeforeMerge(DataMap sourceDataMap,
+                                              DataMap targetDataMap,
+                                              DbImportConfiguration configuration) {
+
+        if (configuration.isForceDataMapCatalog()) {
+            String catalog = targetDataMap.getDefaultCatalog();
+            for (DbEntity e : sourceDataMap.getDbEntities()) {
+                e.setCatalog(catalog);
+            }
+        }
+
+        if (configuration.isForceDataMapSchema()) {
+            String schema = targetDataMap.getDefaultSchema();
+            for (DbEntity e : sourceDataMap.getDbEntities()) {
+                e.setSchema(schema);
+            }
+        }
+
     }
 
     private boolean syncDataMapProperties(DataMap targetDataMap, DbImportConfiguration config) {

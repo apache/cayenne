@@ -78,6 +78,16 @@ public class DbImporterMojo extends AbstractMojo {
     private String driver;
 
     /**
+     * @parameter forceDataMapCatalog="forceDataMapCatalog"  default-value="false"
+     */
+    private boolean forceDataMapCatalog;
+
+    /**
+     * @parameter forceDataMapSchema="forceDataMapSchema"  default-value="false"
+     */
+    private boolean forceDataMapSchema;
+
+    /**
      * DataMap XML file to use as a base for DB importing.
      *
      * @parameter map="map"
@@ -200,19 +210,21 @@ public class DbImporterMojo extends AbstractMojo {
         config.setAdapter(adapter);
         config.setDefaultPackage(defaultPackage);
         config.setDriver(driver);
-        config.setTargetDataMap(map);
+        config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering).build());
+        config.setForceDataMapCatalog(forceDataMapCatalog);
+        config.setForceDataMapSchema(forceDataMapSchema);
+        config.setLogger(logger);
         config.setMeaningfulPkTables(meaningfulPkTables);
         config.setNamingStrategy(namingStrategy);
-        config.setStripFromTableNames(stripFromTableNames);
         config.setPassword(password);
+        config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
+        config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
+        config.setStripFromTableNames(stripFromTableNames);
+        config.setTableTypes(reverseEngineering.getTableTypes());
+        config.setTargetDataMap(map);
         config.setUrl(url);
         config.setUsername(username);
         config.setUsePrimitives(usePrimitives);
-        config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering).build());
-        config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
-        config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
-        config.setTableTypes(reverseEngineering.getTableTypes());
-        config.setLogger(logger);
 
         return config;
     }

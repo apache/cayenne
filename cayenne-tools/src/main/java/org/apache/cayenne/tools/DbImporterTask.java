@@ -224,6 +224,18 @@ public class DbImporterTask extends Task {
         config.setUsername(username);
     }
 
+    public void setUsePrimitives(boolean flag) {
+        config.setUsePrimitives(flag);
+    }
+
+    public void setForceDataMapCatalog(boolean flag) {
+        config.setForceDataMapCatalog(flag);
+    }
+
+    public void setForceDataMapSchema(boolean flag) {
+        config.setForceDataMapSchema(flag);
+    }
+
     public ReverseEngineering getReverseEngineering() {
         return reverseEngineering;
     }

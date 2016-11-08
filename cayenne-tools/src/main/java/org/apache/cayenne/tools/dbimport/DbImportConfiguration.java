@@ -58,6 +58,8 @@ public class DbImportConfiguration {
     private Log logger;
     private String namingStrategy;
     private String stripFromTableNames;
+    private boolean forceDataMapCatalog;
+    private boolean forceDataMapSchema;
 
     public DbImportConfiguration() {
         this.dataSourceInfo = new DataSourceInfo();
@@ -280,5 +282,21 @@ public class DbImportConfiguration {
 
     public void setTableTypes(String[] tableTypes) {
         dbLoaderConfiguration.setTableTypes(tableTypes);
+    }
+
+    public void setForceDataMapCatalog(boolean forceDataMapCatalog) {
+        this.forceDataMapCatalog = forceDataMapCatalog;
+    }
+
+    public boolean isForceDataMapCatalog() {
+        return forceDataMapCatalog;
+    }
+
+    public void setForceDataMapSchema(boolean forceDataMapSchema) {
+        this.forceDataMapSchema = forceDataMapSchema;
+    }
+
+    public boolean isForceDataMapSchema() {
+        return forceDataMapSchema;
     }
 }
