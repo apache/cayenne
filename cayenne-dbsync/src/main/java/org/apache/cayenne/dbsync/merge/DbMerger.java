@@ -250,8 +250,7 @@ public class DbMerger {
         for (DbRelationship detected : detectedEntity.getRelationships()) {
             if (findDbRelationship(dbEntity, detected) == null) {
 
-                // alter detected relationship to match entity and attribute
-                // names.
+                // alter detected relationship to match entity and attribute names.
                 // (case sensitively)
 
                 DbEntity targetEntity = findDbEntity(dbEntity.getDataMap().getDbEntities(),
@@ -275,16 +274,13 @@ public class DbMerger {
                     }
                 }
 
-                MergerToken token = tokenFactory.createDropRelationshipToDb(dbEntity, detected);
-                if (detected.isToMany()) {
-                    // default toModel as we can not do drop a toMany in the db.
-                    // only
-                    // toOne are represented using foreign key
-                    tokens.addAll(token.createReverse(tokenFactory));
-                } else {
+                // There is only one FK in the database so we create
+                // DropRelationshipToDb token only for direct relationships
+                // and skip token for toMany relationships
+                if (!detected.isToMany()) {
+                    MergerToken token = tokenFactory.createDropRelationshipToDb(dbEntity, detected);
                     tokens.add(token);
                 }
-                tokens.add(token);
             }
         }
 
@@ -301,10 +297,9 @@ public class DbMerger {
 
                 if (token.shouldGenerateFkConstraint()) {
                     // TODO I guess we should add relationship always; in order
-                    // to have ability
-                    // TODO generate reverse relationship. If it doesn't have
-                    // anything to execute it will be passed
-                    // TODO through execution without any affect on db
+                    // TODO to have ability generate reverse relationship.
+                    // TODO If it doesn't have anything to execute it will be
+                    // TODO passed through execution without any affect on db
                     tokens.add(token);
                 }
             }

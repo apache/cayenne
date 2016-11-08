@@ -61,7 +61,12 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
     public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
         Collection<MergerToken> result = new ArrayList<>();
         result.add(factory.createAddRelationshipToModel(getEntity(), relationship));
-        result.add(factory.createAddRelationshipToModel(relationship.getTargetEntity(), relationship.createReverseRelationship()));
+        DbRelationship reverse = relationship.getReverseRelationship();
+        if(reverse == null) {
+            reverse = relationship.createReverseRelationship();
+            // NB name will be set in AddRelationshipToModel.execute() call
+            result.add(factory.createAddRelationshipToModel(relationship.getTargetEntity(), reverse));
+        }
         return result;
     }
 
