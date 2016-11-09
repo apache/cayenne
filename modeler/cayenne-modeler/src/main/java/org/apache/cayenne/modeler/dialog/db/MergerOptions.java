@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.dialog.db;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.AbstractToDbToken;
 import org.apache.cayenne.dbsync.merge.DbMerger;
 import org.apache.cayenne.dbsync.merge.MergeDirection;
@@ -63,10 +63,12 @@ import org.apache.cayenne.validation.ValidationResult;
 import org.apache.commons.logging.LogFactory;
 
 import javax.sql.DataSource;
-import javax.swing.*;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.*;
+import java.awt.Component;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -83,7 +85,7 @@ public class MergerOptions extends CayenneController {
 
     protected DBConnectionInfo connectionInfo;
     protected DataMap dataMap;
-    protected JdbcAdapter adapter;
+    protected DbAdapter adapter;
     protected String textForSQL;
 
     protected MergerTokenSelectorController tokens;
@@ -161,7 +163,7 @@ public class MergerOptions extends CayenneController {
      */
     protected void prepareMigrator() {
         try {
-            adapter = (JdbcAdapter) connectionInfo.makeAdapter(getApplication().getClassLoadingService());
+            adapter = connectionInfo.makeAdapter(getApplication().getClassLoadingService());
 
             MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
             tokens.setMergerTokenFactory(mergerTokenFactory);
