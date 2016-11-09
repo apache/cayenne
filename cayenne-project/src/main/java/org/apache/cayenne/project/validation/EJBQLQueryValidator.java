@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.project.validation.EJBQLStatementValidator.PositionException;
 import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.validation.ValidationResult;
@@ -27,13 +26,7 @@ class EJBQLQueryValidator extends ConfigurationNodeValidator {
 
     void validate(EJBQLQueryDescriptor query, ValidationResult validationResult) {
 
-        PositionException message = new EJBQLStatementValidator().validateEJBQL(
-                query,
-                new EntityResolver(query
-                        .getDataMap()
-                        .getDataChannelDescriptor()
-                        .getDataMaps()));
-
+        PositionException message = new EJBQLStatementValidator().validateEJBQL(query);
         if (message != null) {
             addFailure(validationResult, query, "Error in EJBQL query '%s' syntax", query
                     .getName());
