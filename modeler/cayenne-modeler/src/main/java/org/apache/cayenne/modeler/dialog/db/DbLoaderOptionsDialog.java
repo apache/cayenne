@@ -43,9 +43,9 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     public static final int SELECT = 1;
 
     protected JLabel catalogLabel;
-    protected JComboBox catalogSelector;
+    protected JComboBox<String> catalogSelector;
     protected JLabel schemaLabel;
-    protected JComboBox schemaSelector;
+    protected JComboBox<String> schemaSelector;
     protected JTextField tableNamePatternField;
     protected JTextField meaningfulPk;
     protected JTextField procNamePatternField;
@@ -54,7 +54,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     protected JButton cancelButton;
 
 
-    protected JComboBox strategyCombo;
+    protected JComboBox<String> strategyCombo;
     protected String strategy;
     protected int choice;
 
@@ -81,12 +81,19 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         // create widgets...
         selectButton = new JButton("Continue");
         cancelButton = new JButton("Cancel");
-        catalogSelector = new JComboBox();
-        schemaSelector = new JComboBox();
+        catalogSelector = new JComboBox<>();
+        schemaSelector = new JComboBox<>();
         tableNamePatternField = new JTextField();
+        tableNamePatternField.setToolTipText("<html>Regular expression to filter table names.<br>" +
+                "Default expression <b>.*</b> includes all tables.</html>");
         procNamePatternField = new JTextField();
+        procNamePatternField.setToolTipText("<html>Regular expression to filter stored procedures names.<br>" +
+                "Default expression .* includes all stored procedures.</html>");
         meaningfulPk = new JTextField();
-        strategyCombo = new JComboBox();
+        meaningfulPk.setToolTipText("<html>Regular expression to filter tables with meaningful primary keys.<br>" +
+                "Multiple expressions divided by comma can be used.<br>" +
+                "Example: <b>^table1,^table2,^prefix.*</b></html>");
+        strategyCombo = new JComboBox<>();
         strategyCombo.setEditable(true);
 
         // assemble
@@ -140,7 +147,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         Vector<String> arr = NameGeneratorPreferences
                 .getInstance()
                 .getLastUsedStrategies();
-        strategyCombo.setModel(new DefaultComboBoxModel(arr));
+        strategyCombo.setModel(new DefaultComboBoxModel<>(arr));
 
         boolean showSchemaSelector = schemas != null && !schemas.isEmpty();
         schemaSelector.setVisible(showSchemaSelector);
@@ -148,7 +155,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
 
         if (showSchemaSelector) {
 
-            schemaSelector.setModel(new DefaultComboBoxModel(schemas.toArray()));
+            schemaSelector.setModel(new DefaultComboBoxModel<>(schemas.toArray(new String[0])));
 
             if (currentSchema != null) {
                 for (String schema : schemas) {
@@ -165,7 +172,7 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         catalogLabel.setVisible(showCatalogSelector);
 
         if (showCatalogSelector) {
-            catalogSelector.setModel(new DefaultComboBoxModel(catalogs.toArray()));
+            catalogSelector.setModel(new DefaultComboBoxModel<>(catalogs.toArray(new String[0])));
 
             if (currentCatalog != null && !currentCatalog.isEmpty()) {
                 for (String catalog : catalogs) {
