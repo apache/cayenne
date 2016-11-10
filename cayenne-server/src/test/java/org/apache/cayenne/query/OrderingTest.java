@@ -25,6 +25,8 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -194,5 +196,65 @@ public class OrderingTest {
         assertEquals(list.get(3), orderedList.get(3));
         assertEquals(list.get(1), orderedList.get(4));
         assertEquals(list.get(0), orderedList.get(5));
+    }
+    
+    @Test
+    public void testOrderedListInstanceMethod() {
+    	Collection<TstBean> set = new HashSet<TstBean>(6);
+    	
+    	TstBean shouldBe0 = new TstBean("a", 0);
+    	TstBean shouldBe1 = new TstBean("b", 0);
+    	TstBean shouldBe2 = new TstBean("c", 0);
+    	TstBean shouldBe3 = new TstBean("d", 0);
+    	TstBean shouldBe4 = new TstBean("f", 0);
+    	TstBean shouldBe5 = new TstBean("r", 0);
+    	
+    	set.add(shouldBe1);
+    	set.add(shouldBe0);
+    	set.add(shouldBe5);
+    	set.add(shouldBe3);
+    	set.add(shouldBe2);
+    	set.add(shouldBe4);
+    	
+    	List<TstBean> orderedList = new Ordering("string", SortOrder.ASCENDING).orderedList(set);
+    	
+    	assertEquals(shouldBe0, orderedList.get(0));
+    	assertEquals(shouldBe1, orderedList.get(1));
+    	assertEquals(shouldBe2, orderedList.get(2));
+    	assertEquals(shouldBe3, orderedList.get(3));
+    	assertEquals(shouldBe4, orderedList.get(4));
+    	assertEquals(shouldBe5, orderedList.get(5));
+    }
+    
+    @Test
+    public void testOrderedListStaticMethod() {
+        Collection<TstBean> set = new HashSet<TstBean>(6);
+
+        TstBean shouldBe0 = new TstBean("a", 5);
+        TstBean shouldBe1 = new TstBean("b", 5);
+        TstBean shouldBe2 = new TstBean("b", 2);
+        TstBean shouldBe3 = new TstBean("b", 1);
+        TstBean shouldBe4 = new TstBean("c", 30);
+        TstBean shouldBe5 = new TstBean("c", 1);
+
+        set.add(shouldBe0);
+        set.add(shouldBe5);
+        set.add(shouldBe3);
+        set.add(shouldBe1);
+        set.add(shouldBe4);
+        set.add(shouldBe2);
+        
+        List<Ordering> orderings = new ArrayList<Ordering>(2);
+        orderings.add(new Ordering("string", SortOrder.ASCENDING));
+        orderings.add(new Ordering("integer", SortOrder.DESCENDING));
+
+        List<TstBean> orderedList = Ordering.orderedList(set, orderings);
+        
+        assertEquals(shouldBe0, orderedList.get(0));
+        assertEquals(shouldBe1, orderedList.get(1));
+        assertEquals(shouldBe2, orderedList.get(2));
+        assertEquals(shouldBe3, orderedList.get(3));
+        assertEquals(shouldBe4, orderedList.get(4));
+        assertEquals(shouldBe5, orderedList.get(5));
     }
 }
