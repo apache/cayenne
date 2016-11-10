@@ -179,8 +179,8 @@ public class ObjAttributeInfoDialogView extends JDialog {
             public void componentResized(ComponentEvent e) {
                 int delta = e.getComponent().getHeight() - height;
                 if (delta < 0) {
-                    fL.setRowSpec(3, new RowSpec("fill:min(10dlu;pref):grow"));
-                    fLEmb.setRowSpec(1, new RowSpec("fill:min(10dlu;pref):grow"));
+                    fL.setRowSpec(3, RowSpec.decode("fill:min(10dlu;pref):grow"));
+                    fLEmb.setRowSpec(1, RowSpec.decode("fill:min(10dlu;pref):grow"));
                 }
             }
 

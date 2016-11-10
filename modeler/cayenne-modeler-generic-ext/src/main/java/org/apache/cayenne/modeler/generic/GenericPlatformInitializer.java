@@ -48,7 +48,7 @@ public class GenericPlatformInitializer implements PlatformInitializer {
         PlasticTheme theme = findTheme();
 
         if (theme != null) {
-            PlasticLookAndFeel.setMyCurrentTheme(theme);
+            PlasticLookAndFeel.setCurrentTheme(theme);
         }
 
         try {
