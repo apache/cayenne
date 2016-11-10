@@ -40,7 +40,8 @@
 		<module>cayenne-modeler-mac-ext</module>
 		<module>cayenne-modeler-mac</module>
 		<module>cayenne-modeler-win</module>
-	</modules>
+        <module>cayenne-modeler-win-ext</module>
+    </modules>
 
 	<build>
 		<plugins>
