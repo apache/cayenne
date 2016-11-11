@@ -240,7 +240,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         detailPanel.add(ejbqlQueryView, EJBQL_QUERY_VIEW);
 
         embeddableView = new EmbeddableTabbedView(eventController);
-        detailPanel.add(new JScrollPane(embeddableView), EMBEDDABLE_VIEW);
+        detailPanel.add(embeddableView, EMBEDDABLE_VIEW);
 
         objDetailView = new ObjEntityTabbedView(eventController);
         detailPanel.add(objDetailView, OBJ_VIEW);

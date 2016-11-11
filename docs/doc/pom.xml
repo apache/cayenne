@@ -73,13 +73,13 @@
 		</dependency>
 
 		<dependency>
-			<groupId>jgoodies</groupId>
+			<groupId>com.jgoodies</groupId>
 			<artifactId>forms</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>jgoodies</groupId>
-			<artifactId>looks</artifactId>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>jgoodies-looks</artifactId>
 		</dependency>
 
 		<dependency>

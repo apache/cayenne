@@ -39,6 +39,11 @@
 			<version>${project.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.cayenne.modeler</groupId>
+			<artifactId>cayenne-modeler-win-ext</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<!-- 
 			adding cayenne runtime dependencies explicitly, 
 			as they are marked as "provided" in the modeler pom
@@ -87,7 +92,7 @@
 							<name>CayenneModeler</name>
 							<longName>${project.version}</longName>
 							<destDir>${project.build.outputDirectory}</destDir>
-							<mainClass>org.apache.cayenne.modeler.generic.GenericMain</mainClass>
+							<mainClass>org.apache.cayenne.modeler.win.WinMain</mainClass>
 							<icon>src/japplication/resources/CayenneModeler.ico</icon>
 							<os>windows</os>
 							<jvm>1.5+</jvm>

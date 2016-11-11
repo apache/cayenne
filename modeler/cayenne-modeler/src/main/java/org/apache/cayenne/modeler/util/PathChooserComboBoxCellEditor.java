@@ -59,6 +59,7 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
     protected int previousEmbeddedLevel = 0;
     protected EntityTreeModel treeModel;
     protected int row;
+    private JTable table;
 
     protected abstract void enterPressed(JTable table);
 
@@ -72,6 +73,7 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
         Object currentNode = getCurrentNodeToInitializeCombo(model, row);
         String dbAttributePath = getPathToInitializeCombo(model, row);
         List<String> nodeChildren = getChildren(currentNode, dbAttributePath);
+        this.table = table;
         comboBoxPathChooser = Application.getWidgetFactory().createComboBox(
                 nodeChildren,
                 false);
@@ -213,6 +215,7 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
         if (comboBoxPathChooser.getSelectedIndex() != (-1)) {
             ((JTextComponent) (comboBoxPathChooser).
                     getEditor().getEditorComponent()).setText(comboBoxPathChooser.getSelectedItem().toString());
+            enterPressed(table);
         }
     }
 
