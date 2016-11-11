@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.action;
 
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.modeler.Application;
@@ -55,14 +56,14 @@ public class DefaultActionManager implements ActionManager {
 
     protected Map<String, Action> actionMap;
 
-    public DefaultActionManager(@Inject Application application) {
+    public DefaultActionManager(@Inject Application application, @Inject ConfigurationNameMapper nameMapper) {
         initActions();
         this.actionMap = new HashMap<>(40);
 
         registerAction(new ProjectAction(application));
         registerAction(new NewProjectAction(application)).setAlwaysOn(true);
         registerAction(new OpenProjectAction(application)).setAlwaysOn(true);
-        registerAction(new ImportDataMapAction(application));
+        registerAction(new ImportDataMapAction(application, nameMapper));
         registerAction(new SaveAction(application));
         registerAction(new SaveAsAction(application));
         registerAction(new RevertAction(application));

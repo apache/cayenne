@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
@@ -381,7 +382,7 @@ public class DbLoaderHelper {
 
             return new ModelerDbImportAction(
                     LOGGER,
-                    new DbImportProjectSaver(projectController),
+                    new DbImportProjectSaver(projectController, injector.getInstance(ConfigurationNameMapper.class)),
                     injector.getInstance(DataSourceFactory.class),
                     injector.getInstance(DbAdapterFactory.class),
                     injector.getInstance(MapLoader.class),

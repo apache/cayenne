@@ -18,6 +18,7 @@
  */
 package org.apache.cayenne.modeler.dialog;
 
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.map.DataMap;
@@ -30,10 +31,14 @@ import org.apache.cayenne.resource.Resource;
 
 public class DbImportProjectSaver implements ProjectSaver {
 
+    //@Inject // unfortunate we are not in DI context for now
+    protected ConfigurationNameMapper nameMapper;
+
     private ProjectController projectController;
 
-    public DbImportProjectSaver(ProjectController projectController) {
+    public DbImportProjectSaver(ProjectController projectController, ConfigurationNameMapper nameMapper) {
         this.projectController = projectController;
+        this.nameMapper = nameMapper;
     }
 
     @Override
@@ -58,7 +63,7 @@ public class DbImportProjectSaver implements ProjectSaver {
 
             // a new DataMap, so need to set configuration source for it
             if (baseResource != null) {
-                Resource dataMapResource = baseResource.getRelativeResource(dataMap.getName());
+                Resource dataMapResource = baseResource.getRelativeResource(nameMapper.configurationLocation(dataMap));
                 dataMap.setConfigurationSource(dataMapResource);
             }
             projectController.addDataMap(Application.getFrame(), dataMap);
