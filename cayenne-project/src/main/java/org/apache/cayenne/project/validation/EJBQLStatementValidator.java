@@ -22,23 +22,23 @@ import java.lang.reflect.Field;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ejbql.EJBQLException;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.ejbql.EJBQLParserFactory;
 import org.apache.cayenne.map.EJBQLQueryDescriptor;
 
 public class EJBQLStatementValidator {
 
-    public PositionException validateEJBQL(EJBQLQueryDescriptor query, EntityResolver er) {
+    public PositionException validateEJBQL(EJBQLQueryDescriptor query) {
         if (query.getEjbql() != null) {
             PositionException message = null;
 
-            EJBQLQuery queryTemp = new EJBQLQuery();
-            queryTemp.setEjbqlStatement(query.getEjbql());
-
             try {
-                queryTemp.getExpression(er);
-            }
-            catch (CayenneRuntimeException e) {
+                // Only parse query and validate it's syntax.
+                // It still may be invalid e.g. invalid entities used.
+                // We can't call compile() for the full check as it will try to get
+                // Class objects for ObjEntities used in query that are not available
+                // in the modeler
+                EJBQLParserFactory.getParser().parse(query.getEjbql());
+            } catch (CayenneRuntimeException e) {
                 message = new PositionException();
                 message.setE(e);
                 if (e.getCause() != null) {
@@ -46,7 +46,6 @@ public class EJBQLStatementValidator {
                     message.setMessage(e.getCause().getMessage());
 
                     if (e instanceof EJBQLException) {
-
                         EJBQLException ejbqlException = (EJBQLException) e;
                         Throwable cause = ejbqlException.getCause();
 
@@ -77,23 +76,20 @@ public class EJBQLStatementValidator {
                                 message.setEndLine((Integer) endLineField.get(nextToken));
                                 message.setImage((String) imageField.get(nextToken));
                                 message.setLength(message.getImage().length());
-                            }
-                            catch (Exception e1) {
+                            } catch (Exception e1) {
                                 throw new CayenneRuntimeException(e1);
                             }
                         }
-
                     }
-                }
-                else {
+                } else {
                     message.setE(e);
                     message.setMessage(e.getUnlabeledMessage());
                 }
-
-            }
-            catch (Exception e) {
+            } catch (Throwable e) {
                 message = new PositionException();
-                message.setE(e);
+                if(e instanceof Exception) {
+                    message.setE((Exception)e);
+                }
                 message.setMessage(e.getMessage());
             }
 
