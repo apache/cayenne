@@ -56,7 +56,9 @@ public class CreateEmbeddableAction extends CayenneAction {
         DataMap dataMap = mediator.getCurrentDataMap();
 
         Embeddable embeddable = new Embeddable();
-        embeddable.setClassName(NameBuilder.builder(embeddable, dataMap).name());
+        String baseName = NameBuilder.builder(embeddable, dataMap).name();
+        String nameWithPackage = dataMap.getNameWithDefaultPackage(baseName);
+        embeddable.setClassName(nameWithPackage);
         createEmbeddable(dataMap, embeddable);
 
         application.getUndoManager().addEdit(new CreateEmbeddableUndoableEdit(dataMap, embeddable));
