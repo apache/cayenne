@@ -54,6 +54,9 @@ http://db.apache.org/ddlutils/databases/firebird.html
    <jdbc-type name="CLOB">
        <db-type name="BLOB SUB_TYPE TEXT"/>
    </jdbc-type>
+   <jdbc-type name="NCLOB">
+       <db-type name="BLOB SUB_TYPE TEXT"/>
+   </jdbc-type>
    <jdbc-type name="DATALINK">
        <db-type name="BLOB"/>
    </jdbc-type>
@@ -79,6 +82,9 @@ http://db.apache.org/ddlutils/databases/firebird.html
        <db-type name="BLOB"/>
    </jdbc-type>
    <jdbc-type name="LONGVARCHAR">
+       <db-type name="BLOB SUB_TYPE TEXT"/>
+   </jdbc-type>
+   <jdbc-type name="LONGNVARCHAR">
        <db-type name="BLOB SUB_TYPE TEXT"/>
    </jdbc-type>
    <jdbc-type name="NUMERIC">
@@ -114,7 +120,7 @@ http://db.apache.org/ddlutils/databases/firebird.html
    <jdbc-type name="VARCHAR">
        <db-type name="VARCHAR"/>
    </jdbc-type>
-   <jdbc-type name="VARCHAR">
-       <db-type name="VARCHAR(x) CHARACTER SET UNICODE_FSS"/>
+   <jdbc-type name="NVARCHAR">
+       <db-type name="VARCHAR CHARACTER SET UNICODE_FSS"/>
    </jdbc-type>
 </types>
