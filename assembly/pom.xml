@@ -149,10 +149,17 @@
 			<build>
 				<plugins>
 					<plugin>
-                       <artifactId>maven-remote-resources-plugin</artifactId>
-                       <configuration>
-                               <outputDirectory>${project.build.directory}/legal</outputDirectory>
-                       </configuration>
+						<artifactId>maven-remote-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>process</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${project.build.directory}/legal</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
 	                </plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
