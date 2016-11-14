@@ -168,9 +168,7 @@ public class MergerTokenSelectorController extends CayenneController {
         TableColumn directionColumn = columnModel.getColumn(
                 MergerTokenTableModel.COL_DIRECTION);
         directionColumn.setCellEditor(new DefaultCellEditor(directionCombo));
-        
-        // TODO: correct width for the different columns
-        //view.getTokens().setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
         columnModel.getColumn(MergerTokenTableModel.COL_SELECT).setPreferredWidth(50);
         columnModel.getColumn(MergerTokenTableModel.COL_DIRECTION).setPreferredWidth(100);
         columnModel.getColumn(MergerTokenTableModel.COL_SELECT).setMaxWidth(50);
@@ -195,7 +193,6 @@ public class MergerTokenSelectorController extends CayenneController {
             return;
         }
         int i = selectableTokensList.indexOf(token);
-        // TODO change to collection iteration
         MergerToken reverse = token.createReverse(mergerTokenFactory);
         selectableTokensList.set(i, reverse);
         if (excludedTokens.remove(token)) {
@@ -227,7 +224,6 @@ public class MergerTokenSelectorController extends CayenneController {
         
         for (int i = 0; i < selectableTokensList.size(); i++) {
             MergerToken token = selectableTokensList.get(i);
-            // TODO change to collection iteration
             MergerToken reverse = token.createReverse(mergerTokenFactory);
             selectableTokensList.set(i, reverse);
             if (excludedTokens.remove(token)) {

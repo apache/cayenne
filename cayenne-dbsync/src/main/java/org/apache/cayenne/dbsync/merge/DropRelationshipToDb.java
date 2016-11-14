@@ -46,14 +46,13 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
 
     @Override
     public List<String> createSql(DbAdapter adapter) {
-        String fkName = getFkName();
-        if (fkName == null || relationship.isToMany()) {
+        if (isEmpty()) {
             return Collections.emptyList();
         }
 
         QuotingStrategy context = adapter.getQuotingStrategy();
         return Collections.singletonList(
-                "ALTER TABLE " + context.quotedFullyQualifiedName(getEntity()) + " DROP CONSTRAINT " + fkName);
+                "ALTER TABLE " + context.quotedFullyQualifiedName(getEntity()) + " DROP CONSTRAINT " + getFkName());
     }
 
     public MergerToken createReverse(MergerTokenFactory factory) {
@@ -62,7 +61,7 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
 
     @Override
     public boolean isEmpty() {
-        return relationship.isToMany();
+        return getFkName() == null || relationship.isToMany();
     }
 
     @Override
