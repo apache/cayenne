@@ -23,9 +23,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
  * A {@link MergerToken} to remove a {@link DbEntity} from a {@link DataMap}. Any
  * {@link ObjEntity} mapped to the {@link DbEntity} will also be removed.
@@ -38,8 +35,8 @@ public class DropTableToModel extends AbstractToModelToken.Entity {
     }
 
     @Override
-    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
-        return Collections.singleton(factory.createCreateTableToDb(getEntity()));
+    public MergerToken createReverse(MergerTokenFactory factory) {
+        return factory.createCreateTableToDb(getEntity());
     }
 
     @Override

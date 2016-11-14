@@ -117,7 +117,7 @@ public class DefaultDbImportAction implements DbImportAction {
     /**
      * Flattens many-to-many relationships in the generated model.
      */
-    protected static void flattenManyToManyRelationships(DataMap map, Collection<ObjEntity> loadedObjEntities,
+    public static void flattenManyToManyRelationships(DataMap map, Collection<ObjEntity> loadedObjEntities,
                                                          ObjectNameGenerator objectNameGenerator) {
         if (loadedObjEntities.isEmpty()) {
             return;
@@ -297,7 +297,7 @@ public class DefaultDbImportAction implements DbImportAction {
             if (token instanceof AbstractToModelToken) {
                 continue;
             }
-            tokens.addAll(token.createReverse(mergerTokenFactory));
+            tokens.add(token.createReverse(mergerTokenFactory));
         }
         return tokens;
     }

@@ -78,6 +78,10 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
 		return getTokenName() + ' ' + getTokenValue() + ' ' + getDirection();
 	}
 
+	public boolean isEmpty() {
+		return false;
+	}
+
 	public abstract List<String> createSql(DbAdapter adapter);
 
 	abstract static class Entity extends AbstractToDbToken {

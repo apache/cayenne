@@ -88,7 +88,7 @@ public class DropRelationshipToModelIT extends MergeCase {
 		assertSame(rel1To2, rel2To1.getReverseRelationship());
 		assertSame(rel2To1, rel1To2.getReverseRelationship());
 
-		assertTokensAndExecute(4, 0);
+		assertTokensAndExecute(3, 0);
 		assertTokensAndExecute(0, 0);
 
 		// create ObjEntities
@@ -153,8 +153,8 @@ public class DropRelationshipToModelIT extends MergeCase {
 		assertTokens(tokens, 2, 0);
 		// TODO: reversing the following two tokens should also reverse the
 		// order
-		MergerToken token0 = tokens.get(0).createReverse(mergerFactory()).iterator().next();
-		MergerToken token1 = tokens.get(1).createReverse(mergerFactory()).iterator().next();
+		MergerToken token0 = tokens.get(0).createReverse(mergerFactory());
+		MergerToken token1 = tokens.get(1).createReverse(mergerFactory());
 		if (!(token0 instanceof DropRelationshipToModel && token1 instanceof DropColumnToModel || token1 instanceof DropRelationshipToModel
 				&& token0 instanceof DropColumnToModel)) {
 			fail();

@@ -274,13 +274,9 @@ public class DbMerger {
                     }
                 }
 
-                // There is only one FK in the database so we create
-                // DropRelationshipToDb token only for direct relationships
-                // and skip token for toMany relationships
-                if (!detected.isToMany()) {
-                    MergerToken token = tokenFactory.createDropRelationshipToDb(dbEntity, detected);
-                    tokens.add(token);
-                }
+                // Add all relationships. Tokens will decide whether or not to execute
+                MergerToken token = tokenFactory.createDropRelationshipToDb(dbEntity, detected);
+                tokens.add(token);
             }
         }
 
@@ -293,15 +289,9 @@ public class DbMerger {
 
         for (DbRelationship rel : dbEntity.getRelationships()) {
             if (findDbRelationship(detectedEntity, rel) == null) {
+                // Add all relationships. Tokens will decide whether or not to execute
                 AddRelationshipToDb token = (AddRelationshipToDb) tokenFactory.createAddRelationshipToDb(dbEntity, rel);
-
-                if (token.shouldGenerateFkConstraint()) {
-                    // TODO I guess we should add relationship always; in order
-                    // TODO to have ability generate reverse relationship.
-                    // TODO If it doesn't have anything to execute it will be
-                    // TODO passed through execution without any affect on db
-                    tokens.add(token);
-                }
+                tokens.add(token);
             }
         }
 

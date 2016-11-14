@@ -22,9 +22,6 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
  * A {@link MergerToken} to set the mandatory field of a {@link DbAttribute} to false
  * 
@@ -36,8 +33,8 @@ public class SetAllowNullToModel extends AbstractToModelToken.EntityAndColumn {
     }
 
     @Override
-    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
-        return Collections.singleton(factory.createSetNotNullToDb(getEntity(), getColumn()));
+    public MergerToken createReverse(MergerTokenFactory factory) {
+        return factory.createSetNotNullToDb(getEntity(), getColumn());
     }
 
     @Override

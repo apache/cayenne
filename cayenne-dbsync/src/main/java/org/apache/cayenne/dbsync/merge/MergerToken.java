@@ -43,7 +43,7 @@ public interface MergerToken {
      * <p>
      * Not all tokens are reversible.
      */
-    Collection<MergerToken> createReverse(MergerTokenFactory factory);
+    MergerToken createReverse(MergerTokenFactory factory);
 
     /**
      * Executes synchronization operation.
@@ -51,5 +51,7 @@ public interface MergerToken {
      * @param context merge operation context.
      */
     void execute(MergerContext context);
+
+    boolean isEmpty();
 
 }

@@ -52,8 +52,8 @@ public class TokensReverseTest {
         testOneToOneReverse(factory().createDropColumnToModel(entity, attr));
 
         testOneToOneReverse(factory().createAddRelationshipToDb(entity, rel));
-        testCreateAddRelationshipToModel(factory().createAddRelationshipToModel(entity, rel));
-        testCreateDropRelationshipToDb(factory().createDropRelationshipToDb(entity, rel));
+        testOneToOneReverse(factory().createAddRelationshipToModel(entity, rel));
+        testOneToOneReverse(factory().createDropRelationshipToDb(entity, rel));
         testOneToOneReverse(factory().createDropRelationshipToModel(entity, rel));
 
         testOneToOneReverse(factory().createCreateTableToDb(entity));
@@ -76,30 +76,12 @@ public class TokensReverseTest {
         testOneToOneReverse(factory().createSetValueForNullToDb(entity, attr, new DefaultValueForNullProvider()));
     }
 
-    private void testReversTokenWithCount(MergerToken token, int countFirstReverse, int countSecondReverse) {
-        Collection<MergerToken> collectionReverse1 = token.createReverse(factory());
-        Assert.assertEquals(countFirstReverse, collectionReverse1.size());
-
-        Collection<MergerToken> collectionReverse2 = collectionReverse1.iterator().next().createReverse(factory());
-        Assert.assertEquals(countSecondReverse, collectionReverse2.size());
-
-        MergerToken token2 = collectionReverse2.iterator().next();
+    private void testOneToOneReverse(MergerToken token) {
+        MergerToken token2 = token.createReverse(factory()).createReverse(factory());
 
         Assert.assertEquals(token.getTokenName(), token2.getTokenName());
         Assert.assertEquals(token.getTokenValue(), token2.getTokenValue());
         Assert.assertEquals(token.getDirection(), token2.getDirection());
-    }
-
-    private void testCreateAddRelationshipToModel(MergerToken token1) {
-        testReversTokenWithCount(token1, 1, 2);
-    }
-
-    private void testCreateDropRelationshipToDb(MergerToken token1) {
-        testReversTokenWithCount(token1, 2, 1);
-    }
-
-    private void testOneToOneReverse(MergerToken token1) {
-        testReversTokenWithCount(token1, 1, 1);
     }
 
     private MergerTokenFactory factory() {

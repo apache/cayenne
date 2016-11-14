@@ -23,9 +23,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
  * A {@link MergerToken} to add a {@link DbAttribute} to a {@link DbEntity}. The
  * {@link EntityMergeSupport} will be used to update the mapped {@link ObjEntity}
@@ -37,8 +34,8 @@ public class AddColumnToModel extends AbstractToModelToken.EntityAndColumn {
     }
 
     @Override
-    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
-        return Collections.singleton(factory.createDropColumnToDb(getEntity(), getColumn()));
+    public MergerToken createReverse(MergerTokenFactory factory) {
+        return factory.createDropColumnToDb(getEntity(), getColumn());
     }
 
     @Override

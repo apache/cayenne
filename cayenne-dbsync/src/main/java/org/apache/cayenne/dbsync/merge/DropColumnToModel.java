@@ -27,8 +27,6 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,8 +40,8 @@ public class DropColumnToModel extends AbstractToModelToken.EntityAndColumn {
     }
 
     @Override
-    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
-        return Collections.singleton(factory.createAddColumnToDb(getEntity(), getColumn()));
+    public MergerToken createReverse(MergerTokenFactory factory) {
+        return factory.createAddColumnToDb(getEntity(), getColumn());
     }
 
     @Override

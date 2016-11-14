@@ -24,9 +24,6 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 
-import java.util.Collection;
-import java.util.Collections;
-
 public class AddRelationshipToModel extends AbstractToModelToken.Entity {
 
     public static final String COMMA_SEPARATOR = ", ";
@@ -55,8 +52,8 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
     }
 
     @Override
-    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
-        return Collections.singleton(factory.createDropRelationshipToDb(getEntity(), relationship));
+    public MergerToken createReverse(MergerTokenFactory factory) {
+        return factory.createDropRelationshipToDb(getEntity(), relationship);
     }
 
     @Override

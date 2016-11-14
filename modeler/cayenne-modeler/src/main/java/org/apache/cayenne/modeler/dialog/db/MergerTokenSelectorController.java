@@ -196,7 +196,7 @@ public class MergerTokenSelectorController extends CayenneController {
         }
         int i = selectableTokensList.indexOf(token);
         // TODO change to collection iteration
-        MergerToken reverse = token.createReverse(mergerTokenFactory).iterator().next();
+        MergerToken reverse = token.createReverse(mergerTokenFactory);
         selectableTokensList.set(i, reverse);
         if (excludedTokens.remove(token)) {
             excludedTokens.add(reverse);
@@ -228,7 +228,7 @@ public class MergerTokenSelectorController extends CayenneController {
         for (int i = 0; i < selectableTokensList.size(); i++) {
             MergerToken token = selectableTokensList.get(i);
             // TODO change to collection iteration
-            MergerToken reverse = token.createReverse(mergerTokenFactory).iterator().next();
+            MergerToken reverse = token.createReverse(mergerTokenFactory);
             selectableTokensList.set(i, reverse);
             if (excludedTokens.remove(token)) {
                 excludedTokens.add(reverse);

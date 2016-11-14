@@ -25,8 +25,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.dbsync.reverse.db.DbRelationshipDetected;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,7 +47,7 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
     @Override
     public List<String> createSql(DbAdapter adapter) {
         String fkName = getFkName();
-        if (fkName == null) {
+        if (fkName == null || relationship.isToMany()) {
             return Collections.emptyList();
         }
 
@@ -58,20 +56,20 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
                 "ALTER TABLE " + context.quotedFullyQualifiedName(getEntity()) + " DROP CONSTRAINT " + fkName);
     }
 
-    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
-        Collection<MergerToken> result = new ArrayList<>();
-        result.add(factory.createAddRelationshipToModel(getEntity(), relationship));
-        DbRelationship reverse = relationship.getReverseRelationship();
-        if(reverse == null) {
-            reverse = relationship.createReverseRelationship();
-            // NB name will be set in AddRelationshipToModel.execute() call
-            result.add(factory.createAddRelationshipToModel(relationship.getTargetEntity(), reverse));
-        }
-        return result;
+    public MergerToken createReverse(MergerTokenFactory factory) {
+        return factory.createAddRelationshipToModel(getEntity(), relationship);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return relationship.isToMany();
     }
 
     @Override
     public String getTokenValue() {
+        if(relationship.isToMany()) {
+            return "Skip. No sql representation.";
+        }
         return relationship.getSourceEntity().getName() + "->" + relationship.getTargetEntityName();
     }
 }

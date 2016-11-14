@@ -119,7 +119,18 @@ public abstract class MergeCase extends DbSyncCase {
             throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);
         }
 
-        return merger().filters(filters).build().createMergeTokens(map, dbImport);
+        List<MergerToken> tokens = merger().filters(filters).build().createMergeTokens(map, dbImport);
+        return filterEmpty(tokens);
+    }
+
+    private List<MergerToken> filterEmpty(List<MergerToken> tokens) {
+        List<MergerToken> tokensOut = new ArrayList<>();
+        for(MergerToken token : tokens) {
+            if(!token.isEmpty()) {
+                tokensOut.add(token);
+            }
+        }
+        return tokensOut;
     }
 
     /**

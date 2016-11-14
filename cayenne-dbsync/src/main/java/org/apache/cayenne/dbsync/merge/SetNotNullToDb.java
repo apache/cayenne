@@ -24,7 +24,6 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,8 +45,8 @@ public class SetNotNullToDb extends AbstractToDbToken.EntityAndColumn {
     }
 
     @Override
-    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
-        return Collections.singleton(factory.createSetAllowNullToModel(getEntity(), getColumn()));
+    public MergerToken createReverse(MergerTokenFactory factory) {
+        return factory.createSetAllowNullToModel(getEntity(), getColumn());
     }
 
 }

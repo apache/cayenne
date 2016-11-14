@@ -29,6 +29,7 @@ import org.apache.cayenne.dbsync.merge.MergeDirection;
 import org.apache.cayenne.dbsync.merge.MergerContext;
 import org.apache.cayenne.dbsync.merge.MergerToken;
 import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
+import org.apache.cayenne.dbsync.merge.ProxyModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
@@ -58,6 +59,7 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
+import org.apache.cayenne.tools.dbimport.DefaultDbImportAction;
 import org.apache.cayenne.validation.ValidationResult;
 import org.apache.commons.logging.LogFactory;
 
@@ -72,7 +74,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class MergerOptions extends CayenneController {
@@ -276,209 +280,95 @@ public class MergerOptions extends CayenneController {
             return;
         }
 
-        final ProjectController c = getProjectController();
+        DataSource dataSource;
+        try {
+            dataSource = connectionInfo.makeDataSource(getApplication()
+                    .getClassLoadingService());
+        } catch (SQLException ex) {
+            reportError("Migration Error", ex);
+            return;
+        }
 
-        final Object src = this;
-        final DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController()
-                .getProject()
-                .getRootNode();
-        final DataNodeDescriptor node = getProjectController().getCurrentDataNode();
+        final Collection<ObjEntity> loadedObjEntities = new LinkedList<>();
 
-        ModelMergeDelegate delegate = new ModelMergeDelegate() {
+        MergerContext mergerContext = MergerContext.builder(dataMap)
+                .syntheticDataNode(dataSource, adapter)
+                .delegate(createDelegate(loadedObjEntities))
+                .build();
 
-            public void dbAttributeAdded(DbAttribute att) {
-                if (c.getCurrentDbEntity() == att.getEntity()) {
-                    c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att
-                            .getEntity(), dataMap, domain));
-                }
-            }
+        boolean modelChanged = applyTokens(tokensToMigrate, mergerContext);
 
-            public void dbAttributeModified(DbAttribute att) {
-                if (c.getCurrentDbEntity() == att.getEntity()) {
-                    c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att
-                            .getEntity(), dataMap, domain));
-                }
-            }
+        DefaultDbImportAction.flattenManyToManyRelationships(dataMap, loadedObjEntities, mergerContext.getNameGenerator());
 
-            public void dbAttributeRemoved(DbAttribute att) {
-                if (c.getCurrentDbEntity() == att.getEntity()) {
-                    c.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att
-                            .getEntity(), dataMap, domain));
-                }
-            }
+        notifyProjectModified(modelChanged);
 
-            public void dbEntityAdded(DbEntity ent) {
-                c.fireDbEntityEvent(new EntityEvent(src, ent, MapEvent.ADD));
-                c.fireDbEntityDisplayEvent(new EntityDisplayEvent(
-                        src,
-                        ent,
-                        dataMap,
-                        node,
-                        domain));
-            }
+        reportFailures(mergerContext);
+    }
 
-            public void dbEntityRemoved(DbEntity ent) {
-                c.fireDbEntityEvent(new EntityEvent(src, ent, MapEvent.REMOVE));
-                c.fireDbEntityDisplayEvent(new EntityDisplayEvent(
-                        src,
-                        ent,
-                        dataMap,
-                        node,
-                        domain));
-            }
-
-            public void dbRelationshipAdded(DbRelationship rel) {
-                if (c.getCurrentDbEntity() == rel.getSourceEntity()) {
-                    c.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(
-                            src,
-                            rel,
-                            rel.getSourceEntity(),
-                            dataMap,
-                            domain));
-                }
-            }
-
-            public void dbRelationshipRemoved(DbRelationship rel) {
-                if (c.getCurrentDbEntity() == rel.getSourceEntity()) {
-                    c.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(
-                            src,
-                            rel,
-                            rel.getSourceEntity(),
-                            dataMap,
-                            domain));
-                }
-            }
-
-            public void objAttributeAdded(ObjAttribute att) {
-                if (c.getCurrentObjEntity() == att.getEntity()) {
-                    c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
-                            src,
-                            att,
-                            att.getEntity(),
-                            dataMap,
-                            domain));
-                }
-            }
-
-            public void objAttributeModified(ObjAttribute att) {
-                if (c.getCurrentObjEntity() == att.getEntity()) {
-                    c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
-                            src,
-                            att,
-                            att.getEntity(),
-                            dataMap,
-                            domain));
-                }
-            }
-
-            public void objAttributeRemoved(ObjAttribute att) {
-                if (c.getCurrentObjEntity() == att.getEntity()) {
-                    c.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
-                            src,
-                            att,
-                            att.getEntity(),
-                            dataMap,
-                            domain));
-                }
-            }
-
+    private ModelMergeDelegate createDelegate(final Collection<ObjEntity> loadedObjEntities) {
+        return new ProxyModelMergeDelegate(
+                new MigrateModelMergeDelegate(getProjectController(), this)) {
+            @Override
             public void objEntityAdded(ObjEntity ent) {
-                c.fireObjEntityEvent(new EntityEvent(src, ent, MapEvent.ADD));
-                c.fireObjEntityDisplayEvent(new EntityDisplayEvent(
-                        src,
-                        ent,
-                        dataMap,
-                        node,
-                        domain));
+                loadedObjEntities.add(ent);
+                super.objEntityAdded(ent);
             }
-
-            public void objEntityRemoved(ObjEntity ent) {
-                c.fireObjEntityEvent(new EntityEvent(src, ent, MapEvent.REMOVE));
-                c.fireObjEntityDisplayEvent(new EntityDisplayEvent(
-                        src,
-                        ent,
-                        dataMap,
-                        node,
-                        domain));
-            }
-
-            public void objRelationshipAdded(ObjRelationship rel) {
-                if (c.getCurrentObjEntity() == rel.getSourceEntity()) {
-                    c.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(
-                            src,
-                            rel,
-                            rel.getSourceEntity(),
-                            dataMap,
-                            domain));
-                }
-            }
-
-            public void objRelationshipRemoved(ObjRelationship rel) {
-                if (c.getCurrentObjEntity() == rel.getSourceEntity()) {
-                    c.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(
-                            src,
-                            rel,
-                            rel.getSourceEntity(),
-                            dataMap,
-                            domain));
-                }
-            }
-
         };
+    }
+
+    private boolean applyTokens(List<MergerToken> tokensToMigrate, MergerContext mergerContext) {
+        boolean modelChanged = false;
 
         try {
-            DataSource dataSource = connectionInfo.makeDataSource(getApplication()
-                    .getClassLoadingService());
-
-            MergerContext mergerContext = MergerContext.builder(dataMap)
-                    .syntheticDataNode(dataSource, adapter)
-                    .delegate(delegate)
-                    .build();
-
-            boolean modelChanged = false;
             for (MergerToken tok : tokensToMigrate) {
-                int numOfFailuresBefore = mergerContext
-                        .getValidationResult()
-                        .getFailures()
-                        .size();
+                int numOfFailuresBefore = getFailuresCount(mergerContext);
+
                 tok.execute(mergerContext);
+
                 if (!modelChanged && tok.getDirection().equals(MergeDirection.TO_MODEL)) {
                     modelChanged = true;
                 }
-
-                if (numOfFailuresBefore == mergerContext
-                        .getValidationResult()
-                        .getFailures()
-                        .size()) {
+                if (numOfFailuresBefore == getFailuresCount(mergerContext)) {
                     // looks like the token executed without failures
                     tokens.removeToken(tok);
                 }
             }
-
-            if (modelChanged) {
-                // mark the model as unsaved
-                Project project = getApplication().getProject();
-                project.setModified(true);
-
-                ProjectController projectController = getApplication()
-                        .getFrameController()
-                        .getProjectController();
-                projectController.setDirty(true);
-            }
-
-            ValidationResult failures = mergerContext.getValidationResult();
-
-            if (failures == null || !failures.hasFailures()) {
-                JOptionPane.showMessageDialog(getView(), "Migration Complete.");
-            } else {
-                new ValidationResultBrowser(this).startupAction(
-                        "Migration Complete",
-                        "Migration finished. The following problem(s) were ignored.",
-                        failures);
-            }
         } catch (Throwable th) {
             reportError("Migration Error", th);
         }
+
+        return modelChanged;
+    }
+
+    private int getFailuresCount(MergerContext mergerContext) {
+        return mergerContext.getValidationResult().getFailures().size();
+    }
+
+    private void reportFailures(MergerContext mergerContext) {
+        ValidationResult failures = mergerContext.getValidationResult();
+        if (failures == null || !failures.hasFailures()) {
+            JOptionPane.showMessageDialog(getView(), "Migration Complete.");
+        } else {
+            new ValidationResultBrowser(this).startupAction(
+                    "Migration Complete",
+                    "Migration finished. The following problem(s) were ignored.",
+                    failures);
+        }
+    }
+
+    private void notifyProjectModified(boolean modelChanged) {
+        if(!modelChanged) {
+            return;
+        }
+
+        // mark the model as unsaved
+        Project project = getApplication().getProject();
+        project.setModified(true);
+
+        ProjectController projectController = getApplication()
+                .getFrameController()
+                .getProjectController();
+        projectController.setDirty(true);
     }
 
     /**
@@ -517,5 +407,161 @@ public class MergerOptions extends CayenneController {
 
     public void closeAction() {
         view.dispose();
+    }
+
+    private class MigrateModelMergeDelegate implements ModelMergeDelegate {
+
+        private final ProjectController controller;
+        private final Object src;
+        private final DataChannelDescriptor domain;
+        private final DataNodeDescriptor node;
+
+        public MigrateModelMergeDelegate(ProjectController controller, Object src) {
+            this.controller = controller;
+            this.src = src;
+            domain = (DataChannelDescriptor) getProjectController()
+                    .getProject()
+                    .getRootNode();
+            node = getProjectController().getCurrentDataNode();
+        }
+
+        public void dbAttributeAdded(DbAttribute att) {
+            if (controller.getCurrentDbEntity() == att.getEntity()) {
+                controller.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att
+                        .getEntity(), dataMap, domain));
+            }
+        }
+
+        public void dbAttributeModified(DbAttribute att) {
+            if (controller.getCurrentDbEntity() == att.getEntity()) {
+                controller.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att
+                        .getEntity(), dataMap, domain));
+            }
+        }
+
+        public void dbAttributeRemoved(DbAttribute att) {
+            if (controller.getCurrentDbEntity() == att.getEntity()) {
+                controller.fireDbAttributeDisplayEvent(new AttributeDisplayEvent(src, att, att
+                        .getEntity(), dataMap, domain));
+            }
+        }
+
+        public void dbEntityAdded(DbEntity ent) {
+            controller.fireDbEntityEvent(new EntityEvent(src, ent, MapEvent.ADD));
+            controller.fireDbEntityDisplayEvent(new EntityDisplayEvent(
+                    src,
+                    ent,
+                    dataMap,
+                    node,
+                    domain));
+        }
+
+        public void dbEntityRemoved(DbEntity ent) {
+            controller.fireDbEntityEvent(new EntityEvent(src, ent, MapEvent.REMOVE));
+            controller.fireDbEntityDisplayEvent(new EntityDisplayEvent(
+                    src,
+                    ent,
+                    dataMap,
+                    node,
+                    domain));
+        }
+
+        public void dbRelationshipAdded(DbRelationship rel) {
+            if (controller.getCurrentDbEntity() == rel.getSourceEntity()) {
+                controller.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(
+                        src,
+                        rel,
+                        rel.getSourceEntity(),
+                        dataMap,
+                        domain));
+            }
+        }
+
+        public void dbRelationshipRemoved(DbRelationship rel) {
+            if (controller.getCurrentDbEntity() == rel.getSourceEntity()) {
+                controller.fireDbRelationshipDisplayEvent(new RelationshipDisplayEvent(
+                        src,
+                        rel,
+                        rel.getSourceEntity(),
+                        dataMap,
+                        domain));
+            }
+        }
+
+        public void objAttributeAdded(ObjAttribute att) {
+            if (controller.getCurrentObjEntity() == att.getEntity()) {
+                controller.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
+                        src,
+                        att,
+                        att.getEntity(),
+                        dataMap,
+                        domain));
+            }
+        }
+
+        public void objAttributeModified(ObjAttribute att) {
+            if (controller.getCurrentObjEntity() == att.getEntity()) {
+                controller.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
+                        src,
+                        att,
+                        att.getEntity(),
+                        dataMap,
+                        domain));
+            }
+        }
+
+        public void objAttributeRemoved(ObjAttribute att) {
+            if (controller.getCurrentObjEntity() == att.getEntity()) {
+                controller.fireObjAttributeDisplayEvent(new AttributeDisplayEvent(
+                        src,
+                        att,
+                        att.getEntity(),
+                        dataMap,
+                        domain));
+            }
+        }
+
+        public void objEntityAdded(ObjEntity ent) {
+            controller.fireObjEntityEvent(new EntityEvent(src, ent, MapEvent.ADD));
+            controller.fireObjEntityDisplayEvent(new EntityDisplayEvent(
+                    src,
+                    ent,
+                    dataMap,
+                    node,
+                    domain));
+        }
+
+        public void objEntityRemoved(ObjEntity ent) {
+            controller.fireObjEntityEvent(new EntityEvent(src, ent, MapEvent.REMOVE));
+            controller.fireObjEntityDisplayEvent(new EntityDisplayEvent(
+                    src,
+                    ent,
+                    dataMap,
+                    node,
+                    domain));
+        }
+
+        public void objRelationshipAdded(ObjRelationship rel) {
+            if (controller.getCurrentObjEntity() == rel.getSourceEntity()) {
+                controller.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(
+                        src,
+                        rel,
+                        rel.getSourceEntity(),
+                        dataMap,
+                        domain));
+            }
+        }
+
+        public void objRelationshipRemoved(ObjRelationship rel) {
+            if (controller.getCurrentObjEntity() == rel.getSourceEntity()) {
+                controller.fireObjRelationshipDisplayEvent(new RelationshipDisplayEvent(
+                        src,
+                        rel,
+                        rel.getSourceEntity(),
+                        dataMap,
+                        domain));
+            }
+        }
+
     }
 }

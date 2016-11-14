@@ -24,9 +24,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
  * A {@link MergerToken} to add a {@link DbEntity} to a {@link DataMap}
  */
@@ -94,8 +91,8 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
         context.getDelegate().objEntityAdded(objEntity);
     }
 
-    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
-        return Collections.singleton(factory.createDropTableToDb(getEntity()));
+    public MergerToken createReverse(MergerTokenFactory factory) {
+        return factory.createDropTableToDb(getEntity());
     }
 
 }

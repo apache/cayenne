@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,8 +45,8 @@ public class DropColumnToDb extends AbstractToDbToken.EntityAndColumn {
         return Collections.singletonList(sqlBuffer.toString());
     }
 
-    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
-        return Collections.singleton(factory.createAddColumnToModel(getEntity(), getColumn()));
+    public MergerToken createReverse(MergerTokenFactory factory) {
+        return factory.createAddColumnToModel(getEntity(), getColumn());
     }
 
 }

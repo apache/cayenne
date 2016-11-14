@@ -22,9 +22,6 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 
-import java.util.Collection;
-import java.util.Collections;
-
 public class DropRelationshipToModel extends AbstractToModelToken.Entity {
 
     private final DbRelationship relationship;
@@ -35,8 +32,8 @@ public class DropRelationshipToModel extends AbstractToModelToken.Entity {
     }
 
     @Override
-    public Collection<MergerToken> createReverse(MergerTokenFactory factory) {
-        return Collections.singleton(factory.createAddRelationshipToDb(getEntity(), relationship));
+    public MergerToken createReverse(MergerTokenFactory factory) {
+        return factory.createAddRelationshipToDb(getEntity(), relationship);
     }
 
     @Override
