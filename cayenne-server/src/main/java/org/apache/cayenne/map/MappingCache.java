@@ -117,9 +117,11 @@ class MappingCache implements MappingNamespace {
                 String name = queryDescriptor.getName();
                 QueryDescriptor existingQueryDescriptor = queryDesriptors.put(name, queryDescriptor);
 
-                if (existingQueryDescriptor != null && queryDescriptor != existingQueryDescriptor) {
-                    throw new CayenneRuntimeException("More than one QueryDescriptor for name: " + name);
-                }
+                // No exception is thrown in case of any other entity's name conflict.
+                // Why do we throw it here!?
+//                if (existingQueryDescriptor != null && queryDescriptor != existingQueryDescriptor) {
+//                    throw new CayenneRuntimeException("More than one QueryDescriptor for name: " + name);
+//                }
             }
         }
 

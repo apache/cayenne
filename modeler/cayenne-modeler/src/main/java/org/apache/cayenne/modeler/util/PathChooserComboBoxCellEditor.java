@@ -36,6 +36,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListCellRenderer;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.text.JTextComponent;
 import java.awt.BorderLayout;
@@ -53,9 +55,10 @@ import java.util.regex.Pattern;
  * This class used as cell editor, when you need to
  * choose path in comboBox and use autocompletion.
  */
-public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+@SuppressWarnings("WeakerAccess")
+public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener, PopupMenuListener {
 
-    protected JComboBox comboBoxPathChooser;
+    protected JComboBox<String> comboBoxPathChooser;
     protected int previousEmbeddedLevel = 0;
     protected EntityTreeModel treeModel;
     protected int row;
@@ -92,15 +95,17 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
         comboBoxPathChooser.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
         comboBoxPathChooser.setRenderer(new PathChooserComboBoxCellRenderer());
         comboBoxPathChooser.addActionListener(this);
+        comboBoxPathChooser.addPopupMenuListener(this);
     }
 
     private void setComboModelAccordingToPath(String pathString) {
         List<String> currentNodeChildren = new ArrayList<>();
         currentNodeChildren.addAll(getChildren(getCurrentNode(pathString), pathString));
-        comboBoxPathChooser.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
+        comboBoxPathChooser.setModel(new DefaultComboBoxModel<>(currentNodeChildren.toArray(new String[0])));
         comboBoxPathChooser.setSelectedItem(pathString);
-        comboBoxPathChooser.showPopup();
-        comboBoxPathChooser.setPopupVisible(true);
+        if(!pathString.isEmpty()) {
+            comboBoxPathChooser.showPopup();
+        }
     }
 
     protected void parsePathString(char lastEnteredCharacter) {
@@ -127,9 +132,8 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
             pathString = pathString.replaceAll(lastStringInPath + "$", "");
             List<String> currentNodeChildren = new ArrayList<>();
             currentNodeChildren.addAll(getChildren(getCurrentNode(pathString), pathString));
-            comboBoxPathChooser.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
+            comboBoxPathChooser.setModel(new DefaultComboBoxModel<>(currentNodeChildren.toArray(new String[0])));
             comboBoxPathChooser.setSelectedItem(saveDbAttributePath);
-            return;
         }
     }
 
@@ -171,7 +175,7 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
     /**
      * find current node by path
      *
-     * @param pathString
+     * @param pathString db path
      * @return last node in path which matches DbRelationship or DbAttribute
      */
     protected Object getCurrentNode(String pathString) {
@@ -215,14 +219,31 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
         if (comboBoxPathChooser.getSelectedIndex() != (-1)) {
             ((JTextComponent) (comboBoxPathChooser).
                     getEditor().getEditorComponent()).setText(comboBoxPathChooser.getSelectedItem().toString());
+        }
+    }
+
+    @Override
+    public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+        if (comboBoxPathChooser.getSelectedIndex() != -1 &&
+                !((JTextComponent) (comboBoxPathChooser).
+                        getEditor().getEditorComponent()).getText().isEmpty()) {
             enterPressed(table);
         }
+    }
+
+    @Override
+    public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+    }
+
+    @Override
+    public void popupMenuCanceled(PopupMenuEvent e) {
     }
 
     private final class PathChooserComboBoxCellRenderer extends DefaultListCellRenderer {
 
         private  final ImageIcon rightArrow = ModelerUtil.buildIcon("scroll_right.gif");
 
+        @SuppressWarnings("unchecked")
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index,
                                                       boolean isSelected, boolean cellHasFocus) {
