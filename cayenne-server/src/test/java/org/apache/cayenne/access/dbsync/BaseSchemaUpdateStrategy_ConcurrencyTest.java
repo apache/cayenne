@@ -80,7 +80,7 @@ public class BaseSchemaUpdateStrategy_ConcurrencyTest {
                 public void run() {
                     try {
                         strategy.updateSchema(dataNode);
-                    } catch (SQLException e) {
+                    } catch (Throwable e) {
                         LOGGER.error("error in test", e);
                         errors.set(true);
                     }
