@@ -26,12 +26,11 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.query.*;
+import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
-class SelectQueryValidator extends ConfigurationNodeValidator {
+class SelectQueryValidator extends BaseQueryValidator {
 
     void validate(SelectQueryDescriptor query, ValidationResult validationResult) {
 
@@ -126,31 +125,4 @@ class SelectQueryValidator extends ConfigurationNodeValidator {
         return null;
     }
 
-    void validateName(QueryDescriptor query, ValidationResult validationResult) {
-        String name = query.getName();
-
-        // Must have name
-        if (Util.isEmptyString(name)) {
-            addFailure(validationResult, query, "Unnamed SelectQuery");
-            return;
-        }
-
-        DataMap map = query.getDataMap();
-        if (map == null) {
-            return;
-        }
-
-        // check for duplicate names in the parent context
-
-        for (final QueryDescriptor otherQuery : map.getQueryDescriptors()) {
-            if (otherQuery == query) {
-                continue;
-            }
-
-            if (name.equals(otherQuery.getName())) {
-                addFailure(validationResult, query, "Duplicate query name: %s", name);
-                break;
-            }
-        }
-    }
 }

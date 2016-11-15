@@ -21,11 +21,9 @@ package org.apache.cayenne.project.validation;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureQueryDescriptor;
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
-class ProcedureQueryValidator extends ConfigurationNodeValidator {
+class ProcedureQueryValidator extends BaseQueryValidator {
 
     void validate(ProcedureQueryDescriptor query, ValidationResult validationResult) {
         validateName(query, validationResult);
@@ -67,37 +65,6 @@ class ProcedureQueryValidator extends ConfigurationNodeValidator {
                         "ProcedureQuery '%s' has invalid Procedure root: %s",
                         query.getName(),
                         root);
-            }
-        }
-    }
-
-    void validateName(QueryDescriptor query, ValidationResult validationResult) {
-        String name = query.getName();
-
-        // Must have name
-        if (Util.isEmptyString(name)) {
-            addFailure(validationResult, query, "Unnamed ProcedureQuery");
-            return;
-        }
-
-        DataMap map = query.getDataMap();
-        if (map == null) {
-            return;
-        }
-
-        // check for duplicate names in the parent context
-        for (final QueryDescriptor otherQuery : map.getQueryDescriptors()) {
-            if (otherQuery == query) {
-                continue;
-            }
-
-            if (name.equals(otherQuery.getName())) {
-                addFailure(
-                        validationResult,
-                        query,
-                        "Dulicate ProcedureQuery name: %s",
-                        name);
-                break;
             }
         }
     }

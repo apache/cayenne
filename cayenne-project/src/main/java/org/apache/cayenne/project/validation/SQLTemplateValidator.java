@@ -26,7 +26,7 @@ import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.Map;
 
-class SQLTemplateValidator extends ConfigurationNodeValidator {
+class SQLTemplateValidator extends BaseQueryValidator {
 
     void validate(SQLTemplateDescriptor query, ValidationResult validationResult) {
         validateName(query, validationResult);
@@ -61,33 +61,6 @@ class SQLTemplateValidator extends ConfigurationNodeValidator {
                     query,
                     "SQLTemplate query '%s' has no root",
                     query.getName());
-        }
-    }
-
-    void validateName(QueryDescriptor query, ValidationResult validationResult) {
-        String name = query.getName();
-
-        // Must have name
-        if (Util.isEmptyString(name)) {
-            addFailure(validationResult, query, "Unnamed SQLTemplate");
-            return;
-        }
-
-        DataMap map = query.getDataMap();
-        if (map == null) {
-            return;
-        }
-
-        // check for duplicate names in the parent context
-        for (final QueryDescriptor otherQuery : map.getQueryDescriptors()) {
-            if (otherQuery == query) {
-                continue;
-            }
-
-            if (name.equals(otherQuery.getName())) {
-                addFailure(validationResult, query, "Duplicate query name: %s", name);
-                break;
-            }
         }
     }
 }
