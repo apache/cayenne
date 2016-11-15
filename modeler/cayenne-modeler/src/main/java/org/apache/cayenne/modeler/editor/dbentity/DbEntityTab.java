@@ -63,7 +63,7 @@ import com.jgoodies.forms.layout.FormLayout;
  */
 public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, DbEntityDisplayListener {
 
-    static final String PK_DEFAULT_GENERATOR = "Default";
+    static final String PK_DEFAULT_GENERATOR = "Cayenne-Generated (Default)";
     static final String PK_DB_GENERATOR = "Database-Generated";
     static final String PK_CUSTOM_SEQUENCE_GENERATOR = "Custom Sequence";
 

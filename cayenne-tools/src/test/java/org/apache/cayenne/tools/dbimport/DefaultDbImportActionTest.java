@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.CayenneDbSyncModule;
+import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.merge.AddColumnToDb;
 import org.apache.cayenne.dbsync.merge.AddRelationshipToDb;
@@ -35,6 +35,7 @@ import org.apache.cayenne.dbsync.merge.builders.DataMapBuilder;
 import org.apache.cayenne.dbsync.merge.factory.DefaultMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
@@ -120,13 +121,11 @@ public class DefaultDbImportActionTest {
         };
 
         DbImportConfiguration config = mock(DbImportConfiguration.class);
-        when(config.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
-                .thenReturn(dbLoader);
 
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(config.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
         when(config.getTargetDataMap()).thenReturn(new File("xyz.map.xml"));
-        when(config.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
+        when(config.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
         when(config.createMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
 
         final boolean[] haveWeTriedToSave = {false};
@@ -138,7 +137,7 @@ public class DefaultDbImportActionTest {
                 // Validation phase
                 assertTrue(project.getRootNode() instanceof DataMap);
             }
-        }, null);
+        }, null, dbLoader);
 
         action.execute(config);
 
@@ -164,13 +163,11 @@ public class DefaultDbImportActionTest {
         };
 
         DbImportConfiguration params = mock(DbImportConfiguration.class);
-        when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
-                .thenReturn(dbLoader);
 
         when(params.getTargetDataMap()).thenReturn(FILE_STUB);
         when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
-        when(params.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator());
+        when(params.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
         when(params.createMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
 
         final boolean[] haveWeTriedToSave = {false};
@@ -203,7 +200,7 @@ public class DefaultDbImportActionTest {
                                 objAttr("name").type(String.class).dbPath("NAME")
                         )).build();
             }
-        });
+        }, dbLoader);
 
         action.execute(params);
 
@@ -223,16 +220,10 @@ public class DefaultDbImportActionTest {
         };
 
         DbImportConfiguration params = mock(DbImportConfiguration.class);
-        when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
-                .thenReturn(dbLoader);
-
         when(params.getTargetDataMap()).thenReturn(FILE_STUB);
         when(params.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(params.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
 
-        Log log = mock(Log.class);
-        when(log.isDebugEnabled()).thenReturn(false);
-        when(log.isInfoEnabled()).thenReturn(false);
 
         FileProjectSaver projectSaver = mock(FileProjectSaver.class);
         doNothing().when(projectSaver).save(any(Project.class));
@@ -243,7 +234,7 @@ public class DefaultDbImportActionTest {
                         dbAttr("NAME").typeVarchar(100).mandatory()
                 )).build());
 
-        DefaultDbImportAction action = buildDbImportAction(log, projectSaver, mapLoader);
+        DefaultDbImportAction action = buildDbImportAction(projectSaver, mapLoader, dbLoader);
 
         action.execute(params);
 
@@ -258,8 +249,6 @@ public class DefaultDbImportActionTest {
         doThrow(new SQLException()).when(dbLoader).load(any(DataMap.class), any(DbLoaderConfiguration.class));
 
         DbImportConfiguration params = mock(DbImportConfiguration.class);
-        when(params.createLoader(any(DbAdapter.class), any(Connection.class), any(DbLoaderDelegate.class)))
-                .thenReturn(dbLoader);
 
         FileProjectSaver projectSaver = mock(FileProjectSaver.class);
         doNothing().when(projectSaver).save(any(Project.class));
@@ -267,7 +256,7 @@ public class DefaultDbImportActionTest {
         MapLoader mapLoader = mock(MapLoader.class);
         when(mapLoader.loadDataMap(any(InputSource.class))).thenReturn(null);
 
-        DefaultDbImportAction action = buildDbImportAction(projectSaver, mapLoader);
+        DefaultDbImportAction action = buildDbImportAction(projectSaver, mapLoader, dbLoader);
 
         try {
             action.execute(params);
@@ -280,15 +269,13 @@ public class DefaultDbImportActionTest {
         verify(mapLoader, never()).loadDataMap(any(InputSource.class));
     }
 
-    private DefaultDbImportAction buildDbImportAction(FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
+    private DefaultDbImportAction buildDbImportAction(FileProjectSaver projectSaver, MapLoader mapLoader, final DbLoader dbLoader)
+            throws Exception {
+
         Log log = mock(Log.class);
         when(log.isDebugEnabled()).thenReturn(true);
         when(log.isInfoEnabled()).thenReturn(true);
 
-        return buildDbImportAction(log, projectSaver, mapLoader);
-    }
-
-    private DefaultDbImportAction buildDbImportAction(Log log, FileProjectSaver projectSaver, MapLoader mapLoader) throws Exception {
         DbAdapter dbAdapter = mock(DbAdapter.class);
 
         DbAdapterFactory adapterFactory = mock(DbAdapterFactory.class);
@@ -301,13 +288,22 @@ public class DefaultDbImportActionTest {
         MergerTokenFactoryProvider mergerTokenFactoryProvider = mock(MergerTokenFactoryProvider.class);
         when(mergerTokenFactoryProvider.get(any(DbAdapter.class))).thenReturn(new DefaultMergerTokenFactory());
 
-        return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider);
+        return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider) {
+
+            @Override
+            protected DbLoader createDbLoader(DbAdapter adapter,
+                                              Connection connection,
+                                              DbLoaderDelegate dbLoaderDelegate,
+                                              ObjectNameGenerator objectNameGenerator) {
+                return dbLoader;
+            }
+        };
     }
 
     @Test
     public void testSaveLoaded() throws Exception {
         Log log = mock(Log.class);
-        Injector i = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(log), new DbImportModule());
+        Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
 
         DefaultDbImportAction action = (DefaultDbImportAction) i.getInstance(DbImportAction.class);
 

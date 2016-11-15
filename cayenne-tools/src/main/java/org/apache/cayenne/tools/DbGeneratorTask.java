@@ -22,7 +22,7 @@ package org.apache.cayenne.tools;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.CayenneDbSyncModule;
+import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
@@ -69,7 +69,7 @@ public class DbGeneratorTask extends CayenneTask {
 		validateAttributes();
 
 		ClassLoader loader = null;
-		Injector injector = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(logger));
+		Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(logger));
 		try {
 			loader = Thread.currentThread().getContextClassLoader();
 			Thread.currentThread().setContextClassLoader(DbGeneratorTask.class.getClassLoader());

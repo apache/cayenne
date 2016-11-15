@@ -36,11 +36,13 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
+import org.apache.cayenne.dbsync.reverse.db.DbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
@@ -152,21 +154,27 @@ public class DefaultDbImportAction implements DbImportAction {
         DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
         DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
         DbAdapter adapter = adapterFactory.createAdapter(dataNodeDescriptor, dataSource);
+        ObjectNameGenerator objectNameGenerator = config.createNameGenerator();
 
         DataMap sourceDataMap;
         try (Connection connection = dataSource.getConnection()) {
-            sourceDataMap = load(config, adapter, connection);
+            sourceDataMap = load(config, adapter, connection, objectNameGenerator);
         }
 
         DataMap targetDataMap = existingTargetMap(config);
         if (targetDataMap == null) {
+
+            String path = config.getTargetDataMap() == null ? "null" : config.getTargetDataMap().getAbsolutePath() + "'";
+
             logger.info("");
-            logger.info("Map file does not exist. Loaded db model will be saved into '"
-                    + (config.getTargetDataMap() == null ? "null" : config.getTargetDataMap().getAbsolutePath() + "'"));
+            logger.info("Map file does not exist. Loaded db model will be saved into '" + path);
 
             hasChanges = true;
             targetDataMap = newTargetDataMap(config);
         }
+
+        // transform source DataMap before merging
+        transformSourceBeforeMerge(sourceDataMap, targetDataMap, config);
 
         MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
 
@@ -182,7 +190,7 @@ public class DefaultDbImportAction implements DbImportAction {
         hasChanges |= applyTokens(config.createMergeDelegate(),
                 targetDataMap,
                 log(sort(reverse(mergerTokenFactory, tokens))),
-                config.createNameGenerator(),
+                objectNameGenerator,
                 config.createMeaningfulPKFilter(),
                 config.isUsePrimitives());
         hasChanges |= syncProcedures(targetDataMap, sourceDataMap, loaderConfig.getFiltersConfig());
@@ -190,6 +198,27 @@ public class DefaultDbImportAction implements DbImportAction {
         if (hasChanges) {
             saveLoaded(targetDataMap);
         }
+    }
+
+
+    protected void transformSourceBeforeMerge(DataMap sourceDataMap,
+                                              DataMap targetDataMap,
+                                              DbImportConfiguration configuration) {
+
+        if (configuration.isForceDataMapCatalog()) {
+            String catalog = targetDataMap.getDefaultCatalog();
+            for (DbEntity e : sourceDataMap.getDbEntities()) {
+                e.setCatalog(catalog);
+            }
+        }
+
+        if (configuration.isForceDataMapSchema()) {
+            String schema = targetDataMap.getDefaultSchema();
+            for (DbEntity e : sourceDataMap.getDbEntities()) {
+                e.setSchema(schema);
+            }
+        }
+
     }
 
     private boolean syncDataMapProperties(DataMap targetDataMap, DbImportConfiguration config) {
@@ -393,10 +422,21 @@ public class DefaultDbImportAction implements DbImportAction {
         projectSaver.save(project);
     }
 
-    protected DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
+    protected DataMap load(DbImportConfiguration config,
+                           DbAdapter adapter,
+                           Connection connection,
+                           ObjectNameGenerator objectNameGenerator) throws Exception {
+
         DataMap dataMap = new DataMap("_import_source_");
-        DbLoader loader = config.createLoader(adapter, connection, config.createLoaderDelegate());
-        loader.load(dataMap, config.getDbLoaderConfig());
+        createDbLoader(adapter, connection, config.createLoaderDelegate(), objectNameGenerator)
+                .load(dataMap, config.getDbLoaderConfig());
         return dataMap;
+    }
+
+    protected DbLoader createDbLoader(DbAdapter adapter,
+                                      Connection connection,
+                                      DbLoaderDelegate dbLoaderDelegate,
+                                      ObjectNameGenerator objectNameGenerator) {
+        return new DbLoader(connection, adapter, dbLoaderDelegate, objectNameGenerator);
     }
 }

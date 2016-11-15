@@ -18,21 +18,16 @@
  */
 package org.apache.cayenne.modeler.dialog.db;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
-import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.db.DbLoader;
+import org.apache.cayenne.dbsync.reverse.db.DbLoaderDelegate;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.map.event.MapEvent;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.project.ProjectSaver;
-import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.tools.dbimport.DbImportAction;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.cayenne.tools.dbimport.DefaultDbImportAction;
 import org.apache.commons.logging.Log;
@@ -40,73 +35,37 @@ import org.apache.commons.logging.Log;
 import java.io.IOException;
 import java.sql.Connection;
 
-public class ModelerDbImportAction implements DbImportAction {
+public class ModelerDbImportAction extends DefaultDbImportAction {
 
-    private final Log logger;
+    private DataMap targetMap;
+    private DbLoader dbLoader;
 
-    private final DbLoaderHelper dbLoaderHelper;
+    public ModelerDbImportAction(Log logger,
+                                 ProjectSaver projectSaver,
+                                 DataSourceFactory dataSourceFactory,
+                                 DbAdapterFactory adapterFactory,
+                                 MapLoader mapLoader,
+                                 MergerTokenFactoryProvider mergerTokenFactoryProvider,
+                                 DataMap targetMap,
+                                 DbLoader dbLoader
+                                 ) {
 
-    @Inject
-    private ProjectSaver projectSaver;
+        super(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider);
 
-    @Inject
-    private DataSourceFactory dataSourceFactory;
-
-    @Inject
-    private DbAdapterFactory adapterFactory;
-
-    @Inject
-    private MapLoader mapLoader;
-
-    @Inject
-    private MergerTokenFactoryProvider mergerTokenFactoryProvider;
-
-    public ModelerDbImportAction(Log logger, DbLoaderHelper dbLoaderHelper) {
-        this.logger = logger;
-        this.dbLoaderHelper = dbLoaderHelper;
+        this.targetMap = targetMap;
+        this.dbLoader = dbLoader;
     }
 
     @Override
-    public void execute(DbImportConfiguration config) throws Exception {
-        if (dbLoaderHelper == null) {
-            throw new IllegalStateException("Before using execute method you must set dbLoaderHelper");
-        }
+    protected DbLoader createDbLoader(DbAdapter adapter,
+                                      Connection connection,
+                                      DbLoaderDelegate dbLoaderDelegate,
+                                      ObjectNameGenerator objectNameGenerator) {
+        return dbLoader;
+    }
 
-        new DefaultDbImportAction(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider) {
-
-            @Override
-            protected DataMap existingTargetMap(DbImportConfiguration configuration) throws IOException {
-                return dbLoaderHelper.getDataMap();
-            }
-
-            @Override
-            protected void saveLoaded(DataMap dataMap) {
-
-                ProjectController mediator = dbLoaderHelper.getMediator();
-
-                if (mediator.getCurrentDataMap() != null) {
-                    mediator.fireDataMapEvent(new DataMapEvent(Application.getFrame(), dataMap, MapEvent.REMOVE));
-                    mediator.fireDataMapEvent(new DataMapEvent(Application.getFrame(), dataMap, MapEvent.ADD));
-                } else {
-                    DataChannelDescriptor currentDomain = (DataChannelDescriptor) mediator.getProject().getRootNode();
-                    Resource baseResource = currentDomain.getConfigurationSource();
-
-                    // this will be new data map so need to set configuration source
-                    // for it
-                    if (baseResource != null) {
-                        Resource dataMapResource = baseResource.getRelativeResource(dataMap.getName());
-                        dataMap.setConfigurationSource(dataMapResource);
-                    }
-                    mediator.addDataMap(Application.getFrame(), dataMap);
-                }
-            }
-
-            @Override
-            protected DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
-                DataMap dataMap = new DataMap();
-                dbLoaderHelper.getLoader().load(dataMap, config.getDbLoaderConfig());
-                return dataMap;
-            }
-        }.execute(config);
+    @Override
+    protected DataMap existingTargetMap(DbImportConfiguration configuration) throws IOException {
+        return targetMap;
     }
 }

@@ -24,6 +24,7 @@ import org.apache.cayenne.dbimport.Schema;
 import org.apache.cayenne.test.jdbc.SQLReader;
 import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
+import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.codehaus.plexus.util.FileUtils;
@@ -50,6 +51,7 @@ import java.util.Iterator;
 import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.mockito.Mockito.mock;
 
 
 public class DbImporterMojoTest extends AbstractMojoTestCase {
@@ -74,23 +76,23 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     @Test
     public void testToParameters_MeaningfulPkTables() throws Exception {
 
-        DbImportConfiguration parameters1 = getCdbImport("dbimporter-pom1.xml").toParameters();
+        DbImportConfiguration parameters1 = getCdbImport("dbimporter-pom1.xml").createConfig(mock(Log.class));
         assertNull(parameters1.getMeaningfulPkTables());
         assertPathEquals("target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml", parameters1.getTargetDataMap()
                 .getPath());
 
-        assertEquals("x,b*", getCdbImport("dbimporter-pom2.xml").toParameters().getMeaningfulPkTables());
-        assertEquals("*", getCdbImport("dbimporter-pom3.xml").toParameters().getMeaningfulPkTables());
+        assertEquals("x,b*", getCdbImport("dbimporter-pom2.xml").createConfig(mock(Log.class)).getMeaningfulPkTables());
+        assertEquals("*", getCdbImport("dbimporter-pom3.xml").createConfig(mock(Log.class)).getMeaningfulPkTables());
     }
 
     public void testToParameters_Map() throws Exception {
 
-        DbImportConfiguration parameters1 = getCdbImport("dbimporter-pom1.xml").toParameters();
+        DbImportConfiguration parameters1 = getCdbImport("dbimporter-pom1.xml").createConfig(mock(Log.class));
         assertNotNull(parameters1.getTargetDataMap());
         assertPathEquals("target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml", parameters1.getTargetDataMap()
                 .getPath());
 
-        assertNull(getCdbImport("dbimporter-pom2.xml").toParameters().getTargetDataMap());
+        assertNull(getCdbImport("dbimporter-pom2.xml").createConfig(mock(Log.class)).getTargetDataMap());
     }
 
     private DbImporterMojo getCdbImport(String pomFileName) throws Exception {
@@ -190,12 +192,17 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         test("testUnFlattensManyToMany");
     }
 
-	/**
-	 * Make sure any merges preserve custom object layer settings, like "usePrimitives", PK mapping as attribute, etc.
-	 */
+    /**
+     * Make sure any merges preserve custom object layer settings, like "usePrimitives", PK mapping as attribute, etc.
+     */
+    @Test
+    public void testCustomObjectLayerSettings() throws Exception {
+        test("testCustomObjectLayerSettings");
+    }
+
 	@Test
-	public void testCustomObjectLayerSettings() throws Exception {
-		test("testCustomObjectLayerSettings");
+	public void testForceDataMapSchema() throws Exception {
+		test("testForceDataMapSchema");
 	}
 
     /**
@@ -309,7 +316,7 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
             mapFileCopy = mapFile;
         }
 
-        DbImportConfiguration parameters = cdbImport.toParameters();
+        DbImportConfiguration parameters = cdbImport.createConfig(mock(Log.class));
         prepareDatabase(name, parameters);
 
         try {

@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.action;
 
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
@@ -50,8 +51,11 @@ public class ImportDataMapAction extends CayenneAction {
 
     private static Log logObj = LogFactory.getLog(ImportDataMapAction.class);
 
-    public ImportDataMapAction(Application application) {
+    private ConfigurationNameMapper nameMapper;
+
+    public ImportDataMapAction(Application application, ConfigurationNameMapper nameMapper) {
         super(getActionName(), application);
+        this.nameMapper = nameMapper;
     }
 
     public static String getActionName() {
@@ -88,7 +92,7 @@ public class ImportDataMapAction extends CayenneAction {
             Resource baseResource = ((DataChannelDescriptor) root).getConfigurationSource();
 
             if (baseResource != null) {
-                Resource dataMapResource = baseResource.getRelativeResource(newMap.getName());
+                Resource dataMapResource = baseResource.getRelativeResource(nameMapper.configurationLocation(newMap));
                 newMap.setConfigurationSource(dataMapResource);
             }
 

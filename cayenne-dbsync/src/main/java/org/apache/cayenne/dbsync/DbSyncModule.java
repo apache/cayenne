@@ -34,7 +34,7 @@ import org.apache.cayenne.di.Module;
 /**
  * @since 4.0
  */
-public class CayenneDbSyncModule implements Module {
+public class DbSyncModule implements Module {
 
     /**
      * A DI container key for the Map&lt;String, String&gt; storing properties

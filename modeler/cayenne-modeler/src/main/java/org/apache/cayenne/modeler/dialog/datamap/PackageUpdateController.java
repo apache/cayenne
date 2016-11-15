@@ -22,6 +22,8 @@ package org.apache.cayenne.modeler.dialog.datamap;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -96,9 +98,10 @@ public class PackageUpdateController extends DefaultsPreferencesController {
         boolean doAll = isAllEntities();
 
         Map<String, String> oldNameEmbeddableToNewName = new HashMap<>();
-        
-        for (Embeddable embeddable : dataMap.getEmbeddables()) {
-            
+
+        // Create local copy to escape ConcurrentModificationException
+        Collection<Embeddable> embeddables = new ArrayList<>(dataMap.getEmbeddables());
+        for (Embeddable embeddable : embeddables) {
             String oldName = embeddable.getClassName();
             
             Pattern p = Pattern.compile("[.]");

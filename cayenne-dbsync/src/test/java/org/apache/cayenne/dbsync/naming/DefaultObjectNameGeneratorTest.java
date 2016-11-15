@@ -28,8 +28,7 @@ import static org.junit.Assert.assertEquals;
 
 public class DefaultObjectNameGeneratorTest {
 
-    private DefaultObjectNameGenerator generator = new DefaultObjectNameGenerator();
-
+    private DefaultObjectNameGenerator generator = new DefaultObjectNameGenerator(NoStemStemmer.getInstance());
 
     private DbRelationship makeRelationship(String srcEntity, String srcKey, String targetEntity, String targetKey,
                                             boolean toMany) {

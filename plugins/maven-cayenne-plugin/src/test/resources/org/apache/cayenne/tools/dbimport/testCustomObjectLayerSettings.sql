@@ -29,3 +29,8 @@ CREATE TABLE schema_01.existing_table (
   COL2 INTEGER,
   PRIMARY KEY (id)
  );
+
+CREATE TABLE schema_01.xyz_prefixed_new_table (
+  id INTEGER NOT NULL,
+  PRIMARY KEY (id)
+ );

@@ -19,6 +19,7 @@
 package org.apache.cayenne.modeler.util;
 
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.modeler.Application;
 
@@ -98,6 +99,6 @@ public class NameGeneratorPreferences {
     }
 
     public static ObjectNameGenerator defaultNameGenerator() {
-        return new DefaultObjectNameGenerator();
+        return new DefaultObjectNameGenerator(NoStemStemmer.getInstance());
     }
 }

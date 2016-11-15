@@ -19,7 +19,7 @@
 package org.apache.cayenne.dbsync.merge.factory;
 
 import org.apache.cayenne.dba.PerAdapterProvider;
-import org.apache.cayenne.dbsync.CayenneDbSyncModule;
+import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.di.Inject;
 
 import java.util.Map;
@@ -29,8 +29,10 @@ import java.util.Map;
  */
 public class MergerTokenFactoryProvider extends PerAdapterProvider<MergerTokenFactory> {
 
-    public MergerTokenFactoryProvider(@Inject(CayenneDbSyncModule.MERGER_FACTORIES_MAP) Map<String,
-            MergerTokenFactory> perAdapterValues, @Inject MergerTokenFactory defaultValue) {
+    public MergerTokenFactoryProvider(
+            @Inject(DbSyncModule.MERGER_FACTORIES_MAP) Map<String, MergerTokenFactory> perAdapterValues,
+            @Inject MergerTokenFactory defaultValue) {
+
         super(perAdapterValues, defaultValue);
     }
 }

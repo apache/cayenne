@@ -31,6 +31,7 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.EntityMergeListener;
 import org.apache.commons.logging.Log;
@@ -388,8 +389,64 @@ public class EntityMergeSupport {
         return true;
     }
 
-    protected boolean shouldAddToObjEntity(ObjEntity entity, DbRelationship dbRelationship) {
-        return dbRelationship.getName() != null && entity.getRelationshipForDbRelationship(dbRelationship) == null;
+    private boolean shouldAddToObjEntity(ObjEntity entity, DbRelationship dbRelationship) {
+        if(dbRelationship.getName() == null) {
+            return false;
+        }
+
+        for(Relationship relationship : entity.getRelationships()) {
+            ObjRelationship objRelationship = (ObjRelationship)relationship;
+            if(objRelationshipHasDbRelationship(objRelationship, dbRelationship)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @return true if objRelationship includes given dbRelationship
+     */
+    private boolean objRelationshipHasDbRelationship(ObjRelationship objRelationship, DbRelationship dbRelationship) {
+        for(DbRelationship relationship : objRelationship.getDbRelationships()) {
+
+            if(relationship.getSourceEntityName().equals(dbRelationship.getSourceEntityName())
+                    && relationship.getTargetEntityName().equals(dbRelationship.getTargetEntityName())
+                    && isSameAttributes(relationship.getSourceAttributes(), dbRelationship.getSourceAttributes())
+                    && isSameAttributes(relationship.getTargetAttributes(), dbRelationship.getTargetAttributes())) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+
+    /**
+     * @param collection1 first collection to compare
+     * @param collection2 second collection to compare
+     * @return true if collections have same size and attributes in them have same names
+     */
+    private boolean isSameAttributes(Collection<DbAttribute> collection1, Collection<DbAttribute> collection2) {
+        if(collection1.size() != collection2.size()) {
+            return false;
+        }
+
+        if(collection1.isEmpty()) {
+            return true;
+        }
+
+        Iterator<DbAttribute> iterator1 = collection1.iterator();
+        Iterator<DbAttribute> iterator2 = collection2.iterator();
+        for(int i=0; i<collection1.size(); i++) {
+            DbAttribute attr1 = iterator1.next();
+            DbAttribute attr2 = iterator2.next();
+            if(!attr1.getName().equals(attr2.getName())) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private Collection<DbRelationship> getIncomingRelationships(DbEntity entity) {

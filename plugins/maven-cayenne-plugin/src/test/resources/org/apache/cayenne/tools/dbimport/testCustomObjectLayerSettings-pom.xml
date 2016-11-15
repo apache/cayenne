@@ -34,6 +34,7 @@
                     <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
                     <meaningfulPkTables>^*$</meaningfulPkTables>
                     <usePrimitives>true</usePrimitives>
+                    <stripFromTableNames>^xyz_</stripFromTableNames>
 
                     <reverseEngineering>
                         <schema>

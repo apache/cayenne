@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -71,7 +72,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 * 
 	 * @since 4.0
 	 */
-	public static <E> List<E> orderedList(List<E> objects, List<? extends Ordering> orderings) {
+	public static <E> List<E> orderedList(Collection<E> objects, List<? extends Ordering> orderings) {
 		List<E> newList = new ArrayList<E>(objects);
 		
 		orderList(newList, orderings);
@@ -332,7 +333,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	/**
 	 * @since 4.0
 	 */
-	public <E> List<E> orderedList(List<E> objects) {
+	public <E> List<E> orderedList(Collection<E> objects) {
 		List<E> newList = new ArrayList<E>(objects);
 		
 		orderList(newList);

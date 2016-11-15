@@ -58,8 +58,8 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>jgoodies</groupId>
-			<artifactId>looks</artifactId>
+			<groupId>com.jgoodies</groupId>
+			<artifactId>jgoodies-looks</artifactId>
 		</dependency>
 	</dependencies>
 

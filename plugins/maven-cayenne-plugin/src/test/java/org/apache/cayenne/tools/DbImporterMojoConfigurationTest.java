@@ -25,6 +25,7 @@ import org.apache.cayenne.dbsync.reverse.filters.IncludeTableFilter;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
+import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.Test;
 
@@ -40,6 +41,7 @@ import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.as
 import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertSkipPrimaryKeyLoading;
 import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertSkipRelationshipsLoading;
 import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertTableTypes;
+import static org.mockito.Mockito.mock;
 
 public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
 
@@ -71,7 +73,7 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
 
     @Test
     public void testLoadSchema2() throws Exception {
-        FiltersConfig filters = getCdbImport("pom-schema-2.xml").toParameters()
+        FiltersConfig filters = getCdbImport("pom-schema-2.xml").createConfig(mock(Log.class))
                 .getDbLoaderConfig().getFiltersConfig();
 
         TreeSet<IncludeTableFilter> includes = new TreeSet<>();
@@ -91,7 +93,7 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
 
     @Test
     public void testDefaultPackage() throws Exception {
-        DbImportConfiguration config = getCdbImport("pom-default-package.xml").toParameters();
+        DbImportConfiguration config = getCdbImport("pom-default-package.xml").createConfig(mock(Log.class));
         assertEquals("com.example.test", config.getDefaultPackage());
     }
 

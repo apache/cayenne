@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbimport.*;
-import org.apache.cayenne.dbsync.CayenneDbSyncModule;
+import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.di.DIBootstrap;
@@ -111,7 +111,7 @@ public class DbImporterTask extends Task {
         config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
         config.setTableTypes(reverseEngineering.getTableTypes());
 
-        Injector injector = DIBootstrap.createInjector(new CayenneDbSyncModule(), new ToolsModule(logger), new DbImportModule());
+        Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(logger), new DbImportModule());
 
         validateDbImportConfiguration(config, injector);
 
@@ -197,6 +197,13 @@ public class DbImporterTask extends Task {
         config.setNamingStrategy(namingStrategy);
     }
 
+    /**
+     * @since 4.0
+     */
+    public void setStripFromTableNames(String pattern) {
+        config.setStripFromTableNames(pattern);
+    }
+
     public void setAdapter(String adapter) {
         config.setAdapter(adapter);
     }
@@ -215,6 +222,18 @@ public class DbImporterTask extends Task {
 
     public void setUserName(String username) {
         config.setUsername(username);
+    }
+
+    public void setUsePrimitives(boolean flag) {
+        config.setUsePrimitives(flag);
+    }
+
+    public void setForceDataMapCatalog(boolean flag) {
+        config.setForceDataMapCatalog(flag);
+    }
+
+    public void setForceDataMapSchema(boolean flag) {
+        config.setForceDataMapSchema(flag);
     }
 
     public ReverseEngineering getReverseEngineering() {

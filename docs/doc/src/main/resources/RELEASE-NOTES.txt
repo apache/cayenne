@@ -37,8 +37,11 @@ CAY-2115 DbLoader - allow loading DataMap without Obj layer
 CAY-2116 Split schema synchronization code in a separate module
 CAY-2118 cdbimport: drop support for the old style of table filtering
 CAY-2129 Modeler: reengineer dialog improvements
+CAY-2130 Stripping common name prefixes on reverse engineering
 CAY-2132 Adding SybaseSelectTranslator to support TOP/DISTINCT TOP in limited queries
 CAY-2133 ObjectNameGenerator refactoring - unifying relationship name generation
+CAY-2135 cdbimport: reset DbEntity catalogs / schemas to DataMap defaults
+CAY-2136 Allow Ordering.orderedList(…) methods to accept a Collection rather than only a List
 
 Bug Fixes:
 
@@ -63,6 +66,7 @@ CAY-2125 SchemaUpdateStrategy doesn't work with multiple DataNodes
 CAY-2126 Modeler cannot upgrade project from v7 to v9
 CAY-2128 Modeler stored procedures are not imported
 CAY-2131 Modeler NullPointerException in reverse engineering when importing different catalogs in one datamap
+CAY-2138 NVARCHAR, LONGNVARCHAR and NCLOB types are missing from Firebird types.xml
 
 ----------------------------------
 Release: 4.0.M3

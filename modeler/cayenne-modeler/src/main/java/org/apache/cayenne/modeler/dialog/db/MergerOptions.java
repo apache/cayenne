@@ -20,8 +20,9 @@
 package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.event.DataMapEvent;
-import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.AbstractToDbToken;
 import org.apache.cayenne.dbsync.merge.DbMerger;
 import org.apache.cayenne.dbsync.merge.DefaultModelMergeDelegate;
@@ -33,6 +34,7 @@ import org.apache.cayenne.dbsync.merge.ProxyModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.db.LoggingDbLoaderDelegate;
@@ -80,7 +82,7 @@ public class MergerOptions extends CayenneController {
 
     protected DBConnectionInfo connectionInfo;
     protected DataMap dataMap;
-    protected JdbcAdapter adapter;
+    protected DbAdapter adapter;
     protected String textForSQL;
 
     protected MergerTokenSelectorController tokens;
@@ -158,7 +160,7 @@ public class MergerOptions extends CayenneController {
      */
     protected void prepareMigrator() {
         try {
-            adapter = (JdbcAdapter) connectionInfo.makeAdapter(getApplication().getClassLoadingService());
+            adapter = connectionInfo.makeAdapter(getApplication().getClassLoadingService());
 
             MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
             tokens.setMergerTokenFactory(mergerTokenFactory);
@@ -181,7 +183,7 @@ public class MergerOptions extends CayenneController {
                 new DbLoader(conn,
                         adapter,
                         new LoggingDbLoaderDelegate(LogFactory.getLog(DbLoader.class)),
-                        new DefaultObjectNameGenerator())
+                        new DefaultObjectNameGenerator(NoStemStemmer.getInstance()))
                         .load(dbImport, config);
 
             } catch (SQLException e) {

@@ -64,6 +64,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
             public void stateChanged(ChangeEvent e) {
                 superclassTemplate.setEnabled(pairs.isSelected());
+                overwrite.setEnabled(!pairs.isSelected());
             }
         });
 
