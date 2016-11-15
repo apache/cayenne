@@ -30,20 +30,20 @@ import java.sql.SQLException;
 public abstract class BaseSchemaUpdateStrategy implements SchemaUpdateStrategy {
 
     protected volatile boolean run;
-    protected volatile ThreadLocal<Boolean> threadRunInProgress;
+    protected final ThreadLocal<Boolean> threadRunInProgress;
 
     public BaseSchemaUpdateStrategy() {
 
         // this barrier is needed to prevent stack overflow in the same thread
         // (getConnection/updateSchema/getConnection/...)
         this.threadRunInProgress = new ThreadLocal<>();
-        this.threadRunInProgress.set(false);
     }
 
     @Override
     public void updateSchema(DataNode dataNode) throws SQLException {
 
-        if (!run && !threadRunInProgress.get()) {
+        Boolean inProgress = threadRunInProgress.get();
+        if (!run && (inProgress == null || !inProgress)) {
             synchronized (this) {
                 if (!run) {
 
