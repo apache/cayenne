@@ -88,7 +88,7 @@ public class DropRelationshipToModelIT extends MergeCase {
 		assertSame(rel1To2, rel2To1.getReverseRelationship());
 		assertSame(rel2To1, rel1To2.getReverseRelationship());
 
-		assertTokensAndExecute(4, 0);
+		assertTokensAndExecute(3, 0);
 		assertTokensAndExecute(0, 0);
 
 		// create ObjEntities
@@ -130,18 +130,20 @@ public class DropRelationshipToModelIT extends MergeCase {
         dbEntity1.removeRelationship(rel1To2.getName());
         dbEntity2.removeAttribute(e2col2.getName());
         List<MergerToken> tokens = createMergeTokens();
+
         /**
          * Add Relationship NEW_TABLE->NEW_TABLE2 To Model
          * Drop Relationship NEW_TABLE2->NEW_TABLE To DB
          * Drop Column NEW_TABLE2.FK To DB
          * */
-        assertTokens(tokens, 2, 1);
+        assertTokens(tokens, 2, 0);
         for (MergerToken token : tokens) {
             if (token.getDirection().isToDb()) {
                 execute(token);
             }
         }
         assertTokensAndExecute(0, 0);
+
         dbEntity2.addRelationship(rel2To1);
         dbEntity1.addRelationship(rel1To2);
         dbEntity2.addAttribute(e2col2);

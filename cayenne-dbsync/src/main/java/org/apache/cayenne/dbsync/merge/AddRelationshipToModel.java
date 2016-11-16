@@ -58,11 +58,12 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
 
     @Override
     public void execute(MergerContext context) {
+        // Set name to relationship if it was created without it, e.g. in createReverse() action
+        if(relationship.getName() == null) {
+            relationship.setName(context.getNameGenerator().relationshipName(relationship));
+        }
 
         getEntity().addRelationship(relationship);
-
-        // TODO: add reverse relationship as well if it does not exist
-
         for (ObjEntity e : getEntity().mappedObjEntities()) {
             context.getEntityMergeSupport().synchronizeOnDbRelationshipAdded(e, relationship);
         }

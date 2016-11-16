@@ -20,6 +20,8 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 
+import java.util.Collection;
+
 /**
  * Represents a minimal atomic synchronization operation between database and Cayenne model.
  */
@@ -49,5 +51,7 @@ public interface MergerToken {
      * @param context merge operation context.
      */
     void execute(MergerContext context);
+
+    boolean isEmpty();
 
 }

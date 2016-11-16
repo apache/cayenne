@@ -44,6 +44,11 @@ class DummyReverseToken implements MergerToken {
     }
 
     @Override
+    public boolean isEmpty() {
+        return true;
+    }
+
+    @Override
     public MergeDirection getDirection() {
         return reverse.getDirection().reverseDirection();
     }

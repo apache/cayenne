@@ -79,6 +79,10 @@ public abstract class AbstractToModelToken implements MergerToken {
         return getTokenName() + ' ' + getTokenValue() + ' ' + getDirection();
     }
 
+    public boolean isEmpty() {
+        return false;
+    }
+
     abstract static class Entity extends AbstractToModelToken {
 
         private final DbEntity entity;

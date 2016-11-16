@@ -119,7 +119,7 @@ public class DefaultDbImportAction implements DbImportAction {
     /**
      * Flattens many-to-many relationships in the generated model.
      */
-    protected static void flattenManyToManyRelationships(DataMap map, Collection<ObjEntity> loadedObjEntities,
+    public static void flattenManyToManyRelationships(DataMap map, Collection<ObjEntity> loadedObjEntities,
                                                          ObjectNameGenerator objectNameGenerator) {
         if (loadedObjEntities.isEmpty()) {
             return;

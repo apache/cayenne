@@ -168,9 +168,7 @@ public class MergerTokenSelectorController extends CayenneController {
         TableColumn directionColumn = columnModel.getColumn(
                 MergerTokenTableModel.COL_DIRECTION);
         directionColumn.setCellEditor(new DefaultCellEditor(directionCombo));
-        
-        // TODO: correct width for the different columns
-        //view.getTokens().setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
         columnModel.getColumn(MergerTokenTableModel.COL_SELECT).setPreferredWidth(50);
         columnModel.getColumn(MergerTokenTableModel.COL_DIRECTION).setPreferredWidth(100);
         columnModel.getColumn(MergerTokenTableModel.COL_SELECT).setMaxWidth(50);

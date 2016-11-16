@@ -42,20 +42,13 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
     @Override
     public List<String> createSql(DbAdapter adapter) {
         // TODO: skip FK to a different DB
-
-        if (this.shouldGenerateFkConstraint()) {
+        if (!this.isEmpty()) {
             String fksql = adapter.createFkConstraint(relationship);
             if (fksql != null) {
                 return Collections.singletonList(fksql);
             }
         }
         return Collections.emptyList();
-    }
-
-    public boolean shouldGenerateFkConstraint() {
-        return !relationship.isToMany()
-                && relationship.isToPK() // TODO it is not necessary primary key it can be unique index
-                && !relationship.isToDependentPK();
     }
 
     @Override
@@ -65,13 +58,23 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
 
     @Override
     public String getTokenValue() {
-        if (this.shouldGenerateFkConstraint()) {
+        if (!this.isEmpty()) {
             return relationship.getSourceEntity().getName() + "->" + relationship.getTargetEntityName();
         } else {
             return "Skip. No sql representation.";
         }
     }
-    
+
+    @Override
+    public boolean isEmpty() {
+        // Method DbRelationship.isSourceIndependentFromTargetChange() looks same
+        return relationship.isSourceIndependentFromTargetChange();
+        /*return relationship.isToMany()
+                || relationship.isToDependentPK()
+                || !relationship.isToPK(); // TODO it is not necessary primary key it can be unique index
+        */
+    }
+
     @Override
     public int compareTo(MergerToken o) {
         // add all AddRelationshipToDb to the end.

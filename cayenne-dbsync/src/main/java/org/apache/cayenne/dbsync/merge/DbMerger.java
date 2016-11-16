@@ -250,8 +250,7 @@ public class DbMerger {
         for (DbRelationship detected : detectedEntity.getRelationships()) {
             if (findDbRelationship(dbEntity, detected) == null) {
 
-                // alter detected relationship to match entity and attribute
-                // names.
+                // alter detected relationship to match entity and attribute names.
                 // (case sensitively)
 
                 DbEntity targetEntity = findDbEntity(dbEntity.getDataMap().getDbEntities(),
@@ -275,13 +274,8 @@ public class DbMerger {
                     }
                 }
 
+                // Add all relationships. Tokens will decide whether or not to execute
                 MergerToken token = tokenFactory.createDropRelationshipToDb(dbEntity, detected);
-                if (detected.isToMany()) {
-                    // default toModel as we can not do drop a toMany in the db.
-                    // only
-                    // toOne are represented using foreign key
-                    token = token.createReverse(tokenFactory);
-                }
                 tokens.add(token);
             }
         }
@@ -295,16 +289,9 @@ public class DbMerger {
 
         for (DbRelationship rel : dbEntity.getRelationships()) {
             if (findDbRelationship(detectedEntity, rel) == null) {
+                // Add all relationships. Tokens will decide whether or not to execute
                 AddRelationshipToDb token = (AddRelationshipToDb) tokenFactory.createAddRelationshipToDb(dbEntity, rel);
-
-                if (token.shouldGenerateFkConstraint()) {
-                    // TODO I guess we should add relationship always; in order
-                    // to have ability
-                    // TODO generate reverse relationship. If it doesn't have
-                    // anything to execute it will be passed
-                    // TODO through execution without any affect on db
-                    tokens.add(token);
-                }
+                tokens.add(token);
             }
         }
 
