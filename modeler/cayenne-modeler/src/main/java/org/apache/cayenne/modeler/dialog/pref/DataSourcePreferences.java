@@ -231,19 +231,17 @@ public class DataSourcePreferences extends CayenneController {
 			List<File> oldPathFiles = ((FileClassLoadingService) getApplication().getClassLoadingService())
 					.getPathFiles();
 
-			Collection details = new ArrayList<String>();
-			for (int i = 0; i < oldPathFiles.size(); i++) {
-				details.add(oldPathFiles.get(i).getAbsolutePath());
+			Collection<String> details = new ArrayList<>();
+			for (File oldPathFile : oldPathFiles) {
+				details.add(oldPathFile.getAbsolutePath());
 			}
 
 			Preferences classPathPreferences = getApplication().getPreferencesNode(ClasspathPreferences.class, "");
 			if (editor.getChangedPreferences().containsKey(classPathPreferences)) {
 				Map<String, String> map = editor.getChangedPreferences().get(classPathPreferences);
 
-				Iterator iterator = map.entrySet().iterator();
-				while (iterator.hasNext()) {
-					Map.Entry en = (Map.Entry) iterator.next();
-					String key = (String) en.getKey();
+				for (Map.Entry<String, String> en : map.entrySet()) {
+					String key = en.getKey();
 					if (!details.contains(key)) {
 						details.add(key);
 					}
@@ -253,10 +251,8 @@ public class DataSourcePreferences extends CayenneController {
 			if (editor.getRemovedPreferences().containsKey(classPathPreferences)) {
 				Map<String, String> map = editor.getRemovedPreferences().get(classPathPreferences);
 
-				Iterator iterator = map.entrySet().iterator();
-				while (iterator.hasNext()) {
-					Map.Entry en = (Map.Entry) iterator.next();
-					String key = (String) en.getKey();
+				for (Map.Entry<String, String> en : map.entrySet()) {
+					String key = en.getKey();
 					if (details.contains(key)) {
 						details.remove(key);
 					}
@@ -282,11 +278,12 @@ public class DataSourcePreferences extends CayenneController {
 
 			// connect via Cayenne DriverDataSource - it addresses some driver
 			// issues...
-
-			try (Connection c = new DriverDataSource(driver, currentDataSource.getUrl(),
-					currentDataSource.getUserName(), currentDataSource.getPassword()).getConnection();) {
-				// do nothing...
-			} catch (SQLException e) {
+			// can't use try with resource here as we can loose meaningful exception
+			Connection c = new DriverDataSource(driver, currentDataSource.getUrl(),
+					currentDataSource.getUserName(), currentDataSource.getPassword()).getConnection();
+			try {
+				c.close();
+			} catch (SQLException ignored) {
 				// i guess we can ignore this...
 			}
 
@@ -308,11 +305,10 @@ public class DataSourcePreferences extends CayenneController {
 					sbMessage.append("\n");
 					len = 0;
 				}
-				sbMessage.append(tempString + " ");
+				sbMessage.append(tempString).append(" ");
 			}
 
 			JOptionPane.showMessageDialog(null, sbMessage.toString(), "Warning", JOptionPane.WARNING_MESSAGE);
-			return;
 		}
 	}
 }
