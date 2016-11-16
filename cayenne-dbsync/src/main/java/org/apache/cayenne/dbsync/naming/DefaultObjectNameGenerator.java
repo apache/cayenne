@@ -38,6 +38,10 @@ public class DefaultObjectNameGenerator implements ObjectNameGenerator {
 
     private DbEntityNameStemmer dbEntityNameStemmer;
 
+    public DefaultObjectNameGenerator() {
+        this.dbEntityNameStemmer = NoStemStemmer.getInstance();
+    }
+
     public DefaultObjectNameGenerator(DbEntityNameStemmer dbEntityNameStemmer) {
         this.dbEntityNameStemmer = dbEntityNameStemmer;
     }

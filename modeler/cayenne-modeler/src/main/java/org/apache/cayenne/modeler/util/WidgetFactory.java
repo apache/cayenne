@@ -37,22 +37,22 @@ public interface WidgetFactory {
     /**
      * Creates a new JComboBox with a collection of model objects.
      */
-    JComboBox createComboBox(Collection<String> model, boolean sort);
+    JComboBox<String> createComboBox(Collection<String> model, boolean sort);
 
     /**
      * Creates a new JComboBox with an array of model objects.
      */
-    JComboBox createComboBox(Object[] model, boolean sort);
+    <E> JComboBox<E> createComboBox(E[] model, boolean sort);
 
     /**
      * Creates a new JComboBox.
      */
-    JComboBox createComboBox();
+    <E> JComboBox<E> createComboBox();
 
     /**
      * Creates undoable JComboBox.
      */
-    JComboBox createUndoableComboBox();
+    <E> JComboBox<E> createUndoableComboBox();
 
     /**
      * Creates cell editor for text field
@@ -65,7 +65,7 @@ public interface WidgetFactory {
      * 
      * @param combo JComboBox to be used as editor component
      */
-    TableCellEditor createCellEditor(JComboBox combo);
+    TableCellEditor createCellEditor(JComboBox<?> combo);
 
     /**
      * Creates and returns a JEdit text component with syntax highlighing

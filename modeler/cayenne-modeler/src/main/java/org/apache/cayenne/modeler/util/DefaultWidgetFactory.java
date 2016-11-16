@@ -40,29 +40,29 @@ public class DefaultWidgetFactory implements WidgetFactory {
     /**
      * Creates a new JComboBox with a collection of model objects.
      */
-    public JComboBox createComboBox(Collection<String> model, boolean sort) {
-        return createComboBox(model.toArray(), sort);
+    public JComboBox<String> createComboBox(Collection<String> model, boolean sort) {
+        return createComboBox(model.toArray(new String[0]), sort);
     }
 
     /**
      * Creates a new JComboBox with an array of model objects.
      */
-    public JComboBox createComboBox(Object[] model, boolean sort) {
-        JComboBox comboBox = createComboBox();
+    public <T> JComboBox<T> createComboBox(T[] model, boolean sort) {
+        JComboBox<T> comboBox = createComboBox();
 
         if (sort) {
             Arrays.sort(model);
         }
 
-        comboBox.setModel(new DefaultComboBoxModel(model));
+        comboBox.setModel(new DefaultComboBoxModel<>(model));
         return comboBox;
     }
 
     /**
      * Creates a new JComboBox.
      */
-    public JComboBox createComboBox() {
-        JComboBox comboBox = new JComboBox();
+    public <T> JComboBox<T> createComboBox() {
+        JComboBox<T> comboBox = new JComboBox<>();
         comboBox.setFont(new Font("Verdana", Font.PLAIN , 12));
         comboBox.setBackground(Color.WHITE);
         comboBox.setMaximumRowCount(ModelerPreferences.COMBOBOX_MAX_VISIBLE_SIZE);
@@ -73,8 +73,8 @@ public class DefaultWidgetFactory implements WidgetFactory {
      * Creates undoable JComboBox.
      * 
      */
-    public JComboBox createUndoableComboBox() {
-        JComboBox comboBox = new JComboBox();
+    public <T> JComboBox<T> createUndoableComboBox() {
+        JComboBox<T> comboBox = new JComboBox<>();
         comboBox.addItemListener(new JComboBoxUndoListener());
         comboBox.setBackground(Color.WHITE);
         comboBox.setMaximumRowCount(ModelerPreferences.COMBOBOX_MAX_VISIBLE_SIZE);
@@ -95,7 +95,7 @@ public class DefaultWidgetFactory implements WidgetFactory {
      * 
      * @param combo JComboBox to be used as editor component
      */
-    public TableCellEditor createCellEditor(JComboBox combo) {
+    public TableCellEditor createCellEditor(JComboBox<?> combo) {
         combo.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
         if (Boolean.TRUE.equals(combo
                 .getClientProperty(AutoCompletion.AUTOCOMPLETION_PROPERTY))) {

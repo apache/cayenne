@@ -69,23 +69,17 @@ class MappingCache implements MappingNamespace {
 
         // index DbEntities separately and before ObjEntities to avoid infinite
         // loops when looking up DbEntities during ObjEntity index op
-
         for (DataMap map : maps) {
-            for (DbEntity de : map.getDbEntities()) {
-                dbEntities.put(de.getName(), de);
-            }
+            dbEntities.putAll(map.getDbEntityMap());
         }
 
         for (DataMap map : maps) {
+            // index ObjEntities by name
+            objEntities.putAll(map.getObjEntityMap());
 
-            // index ObjEntities
+            // index ObjEntities by class name
             for (ObjEntity oe : map.getObjEntities()) {
-
-                // index by name
-                objEntities.put(oe.getName(), oe);
-
-                // index by class.. use class name as a key to avoid class
-                // loading here...
+                // use class name as a key to avoid class loading here...
                 String className = oe.getJavaClassName();
                 if (className == null) {
                     continue;
@@ -94,33 +88,21 @@ class MappingCache implements MappingNamespace {
                 // allow duplicates, but put a special marker indicating
                 // that this entity can't be looked up by class
                 Object existing = objEntitiesByClassName.get(className);
-                if (existing != null) {
-
-                    if (existing != OBJ_DUPLICATE_MARKER) {
-                        objEntitiesByClassName.put(className, OBJ_DUPLICATE_MARKER);
-                    }
+                if (existing != null && existing != OBJ_DUPLICATE_MARKER) {
+                    objEntitiesByClassName.put(className, OBJ_DUPLICATE_MARKER);
                 } else {
                     objEntitiesByClassName.put(className, oe);
                 }
             }
 
             // index stored procedures
-            for (Procedure proc : map.getProcedures()) {
-                procedures.put(proc.getName(), proc);
-            }
+            procedures.putAll(map.getProcedureMap());
 
             // index embeddables
             embeddables.putAll(map.getEmbeddableMap());
 
             // index query descriptors
-            for (QueryDescriptor queryDescriptor : map.getQueryDescriptors()) {
-                String name = queryDescriptor.getName();
-                QueryDescriptor existingQueryDescriptor = queryDesriptors.put(name, queryDescriptor);
-
-                if (existingQueryDescriptor != null && queryDescriptor != existingQueryDescriptor) {
-                    throw new CayenneRuntimeException("More than one QueryDescriptor for name: " + name);
-                }
-            }
+            queryDesriptors.putAll(map.getQueryDescriptorMap());
         }
 
         // restart the map iterator to index inheritance

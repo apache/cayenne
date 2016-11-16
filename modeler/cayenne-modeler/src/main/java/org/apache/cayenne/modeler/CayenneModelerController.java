@@ -140,12 +140,13 @@ public class CayenneModelerController extends CayenneController {
         geometry.bind(frame, 650, 550, 0);
     }
 
+
+    @SuppressWarnings("unchecked")
     private boolean processDropAction(Transferable transferable) {
         List<File> fileList;
         try {
-            fileList = (List) transferable.getTransferData(DataFlavor.javaFileListFlavor);
-        }
-        catch (Exception e) {
+            fileList = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
+        } catch (Exception e) {
             return false;
         }
 
@@ -260,7 +261,7 @@ public class CayenneModelerController extends CayenneController {
 
         // for validation purposes combine load failures with post-load validation (not
         // sure if that'll cause duplicate messages?).
-        List<ValidationFailure> allFailures = new ArrayList<ValidationFailure>();
+        List<ValidationFailure> allFailures = new ArrayList<>();
         Collection<ValidationFailure> loadFailures = project
                 .getConfigurationTree()
                 .getLoadFailures();
@@ -305,14 +306,13 @@ public class CayenneModelerController extends CayenneController {
 
         try {
             frefLastProjFiles.clear();
-        }
-        catch (BackingStoreException e) {
+        } catch (BackingStoreException ignored) {
             // ignore exception
         }
         int size = arr.size();
 
         for (int i = 0; i < size; i++) {
-            frefLastProjFiles.put(String.valueOf(i), arr.get(i).toString());
+            frefLastProjFiles.put(String.valueOf(i), arr.get(i));
         }
     }
 
@@ -331,10 +331,10 @@ public class CayenneModelerController extends CayenneController {
 
     class ExpireThread extends Thread {
 
-        protected int seconds;
+        int seconds;
         protected String message;
 
-        public ExpireThread(String message, int seconds) {
+        ExpireThread(String message, int seconds) {
             this.seconds = seconds;
             this.message = message;
         }
@@ -380,7 +380,7 @@ public class CayenneModelerController extends CayenneController {
         int size = arr.size();
 
         for (int i = 0; i < size; i++) {
-            frefLastProjFiles.put(String.valueOf(i), arr.get(i).toString());
+            frefLastProjFiles.put(String.valueOf(i), arr.get(i));
         }
 
         getLastDirectory().setDirectory(new File(newPath));

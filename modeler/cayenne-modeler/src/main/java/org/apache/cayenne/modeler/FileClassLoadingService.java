@@ -36,17 +36,17 @@ import java.util.List;
 public class FileClassLoadingService implements ClassLoadingService {
 
     private FileClassLoader classLoader;
-    protected List<File> pathFiles;
+    private List<File> pathFiles;
 
     public FileClassLoadingService() {
-        this.pathFiles = new ArrayList<File>(15);
+        this.pathFiles = new ArrayList<>(15);
     }
 
     /**
      * Returns class for a given name, loading it if needed from configured
      * locations.
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings("unchecked")
     public <T> Class<T> loadClass(Class<T> interfaceType, String className) throws ClassNotFoundException {
         return (Class<T>) nonNullClassLoader().loadClass(className);
     }
@@ -106,7 +106,7 @@ public class FileClassLoadingService implements ClassLoadingService {
     }
 
     // URLClassLoader with addURL method exposed.
-    static class FileClassLoader extends URLClassLoader {
+    private static class FileClassLoader extends URLClassLoader {
 
         FileClassLoader(ClassLoader parent) {
             super(new URL[0], parent);
@@ -119,7 +119,7 @@ public class FileClassLoadingService implements ClassLoadingService {
                 // I guess here we have to quetly ignore invalid URLs...
                 try {
                     addURL(file.toURI().toURL());
-                } catch (MalformedURLException ex) {
+                } catch (MalformedURLException ignored) {
                 }
             }
         }
