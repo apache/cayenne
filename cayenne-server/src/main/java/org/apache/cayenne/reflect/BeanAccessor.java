@@ -139,14 +139,14 @@ public class BeanAccessor implements Accessor {
 
 		Class type = writeMethod.getParameterTypes()[0];
 		Converter<?> converter = ConverterFactory.factory.getConverter(type);
-		newValue = (converter != null) ? converter.convert(newValue, type) : newValue;
-
-		// this will take care of primitives.
-		if (newValue == null) {
-			newValue = this.nullValue;
-		}
-
 		try {
+			newValue = (converter != null) ? converter.convert(newValue, type) : newValue;
+	
+			// this will take care of primitives.
+			if (newValue == null) {
+				newValue = this.nullValue;
+			}
+
 			writeMethod.invoke(object, newValue);
 		} catch (Throwable th) {
 			throw new PropertyException("Error writing property: " + propertyName, this, object, th);
