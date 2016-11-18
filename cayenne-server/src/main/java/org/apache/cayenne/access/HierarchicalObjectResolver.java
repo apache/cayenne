@@ -176,34 +176,45 @@ class HierarchicalObjectResolver {
             List<PrefetchSelectQuery> queries = new ArrayList<PrefetchSelectQuery>();
             int qualifiersCount = 0;
             PrefetchSelectQuery currentQuery = null;
+            List<DbJoin> joins = lastDbRelationship.getJoins();
+            Set<List<Object>> values = new HashSet<>();
 
             for (Object dataRow : parentDataRows) {
                 Expression allJoinsQualifier = null;
-                List<DbJoin> joins = lastDbRelationship.getJoins();
 
                 // handling too big qualifiers
                 if (currentQuery == null
                         || (maxIdQualifierSize > 0 && qualifiersCount + joins.size() > maxIdQualifierSize)) {
+
+                    if(currentQuery != null) {
+                        for(List<Object> joinValues : values) {
+                            for(int i=0; i<joins.size(); i++) {
+                                Expression joinQualifier = ExpressionFactory.matchDbExp(pathPrefix
+                                        + joins.get(i).getTargetName(), joinValues.get(i));
+                                if (allJoinsQualifier == null) {
+                                    allJoinsQualifier = joinQualifier;
+                                } else {
+                                    allJoinsQualifier = allJoinsQualifier.andExp(joinQualifier);
+                                }
+                            }
+                            currentQuery.orQualifier(allJoinsQualifier);
+                        }
+                    }
+
                     currentQuery = new PrefetchSelectQuery(node.getPath(), relationship);
                     queries.add(currentQuery);
                     qualifiersCount = 0;
                 }
 
+                List<Object> joinValues = new ArrayList<>();
                 for (DbJoin join : joins) {
-
                     Object targetValue = ((DataRow) dataRow).get(join.getSourceName());
-                    Expression joinQualifier = ExpressionFactory.matchDbExp(pathPrefix
-                            + join.getTargetName(), targetValue);
-                    if (allJoinsQualifier == null) {
-                        allJoinsQualifier = joinQualifier;
-                    }
-                    else {
-                        allJoinsQualifier = allJoinsQualifier.andExp(joinQualifier);
-                    }
+                    joinValues.add(targetValue);
                 }
 
-                currentQuery.orQualifier(allJoinsQualifier);
-                qualifiersCount += joins.size();
+                if(values.add(joinValues)) {
+                    qualifiersCount += joins.size();
+                }
             }
 
             PrefetchTreeNode jointSubtree = node.cloneJointSubtree();
