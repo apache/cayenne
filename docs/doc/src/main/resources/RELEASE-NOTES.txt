@@ -68,6 +68,7 @@ CAY-2128 Modeler stored procedures are not imported
 CAY-2131 Modeler NullPointerException in reverse engineering when importing different catalogs in one datamap
 CAY-2138 NVARCHAR, LONGNVARCHAR and NCLOB types are missing from Firebird types.xml
 CAY-2143 NPE in BaseSchemaUpdateStrategy
+CAY-2146 Vertical inheritance: record still inserted into parent db table when child validation fails
 
 ----------------------------------
 Release: 4.0.M3

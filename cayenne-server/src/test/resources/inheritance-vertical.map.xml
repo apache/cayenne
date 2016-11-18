@@ -24,6 +24,29 @@
 	<db-entity name="IV2_X">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
+	<db-entity name="IV_ABSTRACT">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="PARENT_ID" type="INTEGER"/>
+		<db-attribute name="TYPE" type="CHAR" isMandatory="true" length="1"/>
+	</db-entity>
+	<db-entity name="IV_BASE">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+		<db-attribute name="TYPE" type="CHAR" isMandatory="true" length="1"/>
+	</db-entity>
+	<db-entity name="IV_CONCRETE">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="IV_IMPL">
+		<db-attribute name="ATTR1" type="VARCHAR" isMandatory="true" length="100"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="OTHER_ID" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="IV_OTHER">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
 	<db-entity name="IV_ROOT">
 		<db-attribute name="DISCRIMINATOR" type="VARCHAR" length="10"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -42,36 +65,11 @@
 		<db-attribute name="SUB2_ATTR" type="VARCHAR" length="100"/>
 		<db-attribute name="SUB2_NAME" type="VARCHAR" length="100"/>
 	</db-entity>
-	<db-entity name="IV_CONCRETE">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	<db-entity name="IV_SUB3">
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<!--db-attribute name="SUB3_ATTR" type="INTEGER"/-->
+		<db-attribute name="IV_ROOT_ID" type="INTEGER" isMandatory="true"/>
 	</db-entity>
-	<db-entity name="IV_ABSTRACT">
-		<db-attribute name="PARENT_ID" type="INTEGER"/>
-		<db-attribute name="TYPE" type="CHAR" isMandatory="true" length="1"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="IV_OTHER">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100"/>
-	</db-entity>
-	<db-entity name="IV_BASE">
-		<db-attribute name="TYPE" type="CHAR" isMandatory="true" length="1"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" length="100" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="IV_IMPL">
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="ATTR1" type="VARCHAR" length="100" isMandatory="true"/>
-		<db-attribute name="OTHER_ID" type="INTEGER" isMandatory="true"/>
-	</db-entity>
-	<obj-entity name="IvConcrete" superEntityName="IvAbstract" className="org.apache.cayenne.testdo.inheritance_vertical.IvConcrete">
-		<qualifier><![CDATA[type = "S"]]></qualifier>
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="concrete.NAME"/>
-	</obj-entity>
-	<obj-entity name="IvAbstract" abstract="true" className="org.apache.cayenne.testdo.inheritance_vertical.IvAbstract" dbEntityName="IV_ABSTRACT">
-		<obj-attribute name="type" type="java.lang.String" db-attribute-path="TYPE"/>
-	</obj-entity>
 	<obj-entity name="Iv1Root" className="org.apache.cayenne.testdo.inheritance_vertical.Iv1Root" dbEntityName="IV1_ROOT">
 		<obj-attribute name="discriminator" type="java.lang.String" db-attribute-path="DISCRIMINATOR"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
@@ -88,6 +86,24 @@
 		<qualifier><![CDATA[discriminator = "Iv2Sub1"]]></qualifier>
 	</obj-entity>
 	<obj-entity name="Iv2X" className="org.apache.cayenne.testdo.inheritance_vertical.Iv2X" dbEntityName="IV2_X">
+	</obj-entity>
+	<obj-entity name="IvAbstract" abstract="true" className="org.apache.cayenne.testdo.inheritance_vertical.IvAbstract" dbEntityName="IV_ABSTRACT">
+		<obj-attribute name="type" type="java.lang.String" db-attribute-path="TYPE"/>
+	</obj-entity>
+	<obj-entity name="IvBase" abstract="true" className="org.apache.cayenne.testdo.inheritance_vertical.IvBase" dbEntityName="IV_BASE">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+		<obj-attribute name="type" type="java.lang.String" db-attribute-path="TYPE"/>
+	</obj-entity>
+	<obj-entity name="IvConcrete" superEntityName="IvAbstract" className="org.apache.cayenne.testdo.inheritance_vertical.IvConcrete">
+		<qualifier><![CDATA[type = "S"]]></qualifier>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="concrete.NAME"/>
+	</obj-entity>
+	<obj-entity name="IvImpl" superEntityName="IvBase" className="org.apache.cayenne.testdo.inheritance_vertical.IvImpl">
+		<qualifier><![CDATA[type = "I"]]></qualifier>
+		<obj-attribute name="attr1" type="java.lang.String" db-attribute-path="impl.ATTR1"/>
+	</obj-entity>
+	<obj-entity name="IvOther" className="org.apache.cayenne.testdo.inheritance_vertical.IvOther" dbEntityName="IV_OTHER">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
 	<obj-entity name="IvRoot" className="org.apache.cayenne.testdo.inheritance_vertical.IvRoot" dbEntityName="IV_ROOT">
 		<obj-attribute name="discriminator" type="java.lang.String" db-attribute-path="DISCRIMINATOR"/>
@@ -110,29 +126,11 @@
 		<obj-attribute name="sub2Attr" type="java.lang.String" db-attribute-path="sub2.SUB2_ATTR"/>
 		<obj-attribute name="sub2Name" type="java.lang.String" db-attribute-path="sub2.SUB2_NAME"/>
 	</obj-entity>
-	<obj-entity name="IvOther" className="org.apache.cayenne.testdo.inheritance_vertical.IvOther" dbEntityName="IV_OTHER">
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	<obj-entity name="IvSub3" superEntityName="IvRoot" className="org.apache.cayenne.testdo.inheritance_vertical.IvSub3">
+		<qualifier><![CDATA[discriminator = "IvSub3"]]></qualifier>
+		<!--obj-attribute name="sub3Attr" type="int" db-attribute-path="sub3.SUB3_ATTR"/-->
+		<!--pre-persist method-name="onPrePersist"/-->
 	</obj-entity>
-	<obj-entity name="IvBase" abstract="true" className="org.apache.cayenne.testdo.inheritance_vertical.IvBase" dbEntityName="IV_BASE">
-		<obj-attribute name="type" type="java.lang.String" db-attribute-path="TYPE"/>
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-	</obj-entity>
-	<obj-entity name="IvImpl" superEntityName="IvBase" className="org.apache.cayenne.testdo.inheritance_vertical.IvImpl">
-		<qualifier><![CDATA[type = "I"]]></qualifier>
-		<obj-attribute name="attr1" type="java.lang.String" db-attribute-path="impl.ATTR1"/>
-	</obj-entity>
-	<db-relationship name="abstract" source="IV_CONCRETE" target="IV_ABSTRACT" toMany="false">
-		<db-attribute-pair source="ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="concrete" source="IV_ABSTRACT" target="IV_CONCRETE" toDependentPK="true" toMany="false">
-		<db-attribute-pair source="ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="parent" source="IV_ABSTRACT" target="IV_ABSTRACT" toMany="false">
-		<db-attribute-pair source="PARENT_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="children" source="IV_ABSTRACT" target="IV_ABSTRACT" toMany="true">
-		<db-attribute-pair source="ID" target="PARENT_ID"/>
-	</db-relationship>
 	<db-relationship name="sub1" source="IV1_ROOT" target="IV1_SUB1" toDependentPK="true" toMany="false">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
@@ -151,25 +149,19 @@
 	<db-relationship name="sub1" source="IV2_X" target="IV2_SUB1" toMany="true">
 		<db-attribute-pair source="ID" target="X_ID"/>
 	</db-relationship>
-	<db-relationship name="sub1" source="IV_ROOT" target="IV_SUB1" toDependentPK="true" toMany="false">
+	<db-relationship name="children" source="IV_ABSTRACT" target="IV_ABSTRACT" toMany="true">
+		<db-attribute-pair source="ID" target="PARENT_ID"/>
+	</db-relationship>
+	<db-relationship name="concrete" source="IV_ABSTRACT" target="IV_CONCRETE" toDependentPK="true" toMany="false">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="sub2" source="IV_ROOT" target="IV_SUB2" toDependentPK="true" toMany="false">
-		<db-attribute-pair source="ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="master" source="IV_SUB1" target="IV_ROOT" toMany="false">
-		<db-attribute-pair source="ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="sub1Sub1" source="IV_SUB1" target="IV_SUB1_SUB1" toDependentPK="true" toMany="false">
-		<db-attribute-pair source="ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="master" source="IV_SUB1_SUB1" target="IV_SUB1" toMany="false">
-		<db-attribute-pair source="ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="master" source="IV_SUB2" target="IV_ROOT" toMany="false">
-		<db-attribute-pair source="ID" target="ID"/>
+	<db-relationship name="parent" source="IV_ABSTRACT" target="IV_ABSTRACT" toMany="false">
+		<db-attribute-pair source="PARENT_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="impl" source="IV_BASE" target="IV_IMPL" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="abstract" source="IV_CONCRETE" target="IV_ABSTRACT" toMany="false">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="base" source="IV_IMPL" target="IV_BASE" toMany="false">
@@ -181,9 +173,41 @@
 	<db-relationship name="impls" source="IV_OTHER" target="IV_IMPL" toMany="true">
 		<db-attribute-pair source="ID" target="OTHER_ID"/>
 	</db-relationship>
+	<db-relationship name="ivSub3s" source="IV_ROOT" target="IV_SUB3" toMany="true">
+		<db-attribute-pair source="ID" target="IV_ROOT_ID"/>
+	</db-relationship>
+	<db-relationship name="sub1" source="IV_ROOT" target="IV_SUB1" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="sub2" source="IV_ROOT" target="IV_SUB2" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="sub3" source="IV_ROOT" target="IV_SUB3" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="master" source="IV_SUB1" target="IV_ROOT" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="sub1Sub1" source="IV_SUB1" target="IV_SUB1_SUB1" toDependentPK="true" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="master" source="IV_SUB1_SUB1" target="IV_SUB1" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<!--db-relationship name="ivSub3s1" source="IV_SUB2" target="IV_SUB3" toMany="true">
+		<db-attribute-pair source="ID" target="IV_ROOT_ID"/>
+	</db-relationship-->
+	<db-relationship name="master" source="IV_SUB2" target="IV_ROOT" toMany="false">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="ivRoot1" source="IV_SUB3" target="IV_ROOT" toMany="false">
+		<db-attribute-pair source="IV_ROOT_ID" target="ID"/>
+	</db-relationship>
 	<obj-relationship name="x" source="Iv2Sub1" target="Iv2X" deleteRule="Nullify" db-relationship-path="sub1.x"/>
-	<obj-relationship name="parent" source="IvConcrete" target="IvConcrete" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="children" source="IvConcrete" target="IvConcrete" deleteRule="Deny" db-relationship-path="children"/>
+	<obj-relationship name="parent" source="IvConcrete" target="IvConcrete" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="other" source="IvImpl" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other"/>
 	<obj-relationship name="impls" source="IvOther" target="IvImpl" deleteRule="Deny" db-relationship-path="impls.base"/>
+	<obj-relationship name="ivRoot" source="IvSub3" target="IvRoot" deleteRule="Nullify" db-relationship-path="sub3.ivRoot1"/>
+	<!--obj-relationship name="ivSub3ToRoot" source="IvSub3" target="IvRoot" deleteRule="Nullify" db-relationship-path="sub3"/-->
 </data-map>
