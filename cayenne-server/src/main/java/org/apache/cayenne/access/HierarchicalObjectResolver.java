@@ -173,37 +173,23 @@ class HierarchicalObjectResolver {
                     .getParentDataDomain()
                     .getMaxIdQualifierSize();
 
-            List<PrefetchSelectQuery> queries = new ArrayList<PrefetchSelectQuery>();
+            List<PrefetchSelectQuery> queries = new ArrayList<>();
             int qualifiersCount = 0;
             PrefetchSelectQuery currentQuery = null;
             List<DbJoin> joins = lastDbRelationship.getJoins();
             Set<List<Object>> values = new HashSet<>();
 
             for (Object dataRow : parentDataRows) {
-                Expression allJoinsQualifier = null;
-
                 // handling too big qualifiers
                 if (currentQuery == null
                         || (maxIdQualifierSize > 0 && qualifiersCount + joins.size() > maxIdQualifierSize)) {
 
-                    if(currentQuery != null) {
-                        for(List<Object> joinValues : values) {
-                            for(int i=0; i<joins.size(); i++) {
-                                Expression joinQualifier = ExpressionFactory.matchDbExp(pathPrefix
-                                        + joins.get(i).getTargetName(), joinValues.get(i));
-                                if (allJoinsQualifier == null) {
-                                    allJoinsQualifier = joinQualifier;
-                                } else {
-                                    allJoinsQualifier = allJoinsQualifier.andExp(joinQualifier);
-                                }
-                            }
-                            currentQuery.orQualifier(allJoinsQualifier);
-                        }
-                    }
+                    createDisjointByIdPrefetchQualifier(pathPrefix, currentQuery, joins, values);
 
                     currentQuery = new PrefetchSelectQuery(node.getPath(), relationship);
                     queries.add(currentQuery);
                     qualifiersCount = 0;
+                    values = new HashSet<>();
                 }
 
                 List<Object> joinValues = new ArrayList<>();
@@ -216,6 +202,8 @@ class HierarchicalObjectResolver {
                     qualifiersCount += joins.size();
                 }
             }
+            // add final part of values
+            createDisjointByIdPrefetchQualifier(pathPrefix, currentQuery, joins, values);
 
             PrefetchTreeNode jointSubtree = node.cloneJointSubtree();
 
@@ -238,6 +226,26 @@ class HierarchicalObjectResolver {
             processorNode.setDataRows(dataRows);
 
             return startDisjointPrefetch(node);
+        }
+
+        private void createDisjointByIdPrefetchQualifier(String pathPrefix, PrefetchSelectQuery currentQuery,
+                                                         List<DbJoin> joins, Set<List<Object>> values) {
+            Expression allJoinsQualifier;
+            if(currentQuery != null) {
+                for(List<Object> joinValues : values) {
+                    allJoinsQualifier = null;
+                    for(int i=0; i<joins.size(); i++) {
+                        Expression joinQualifier = ExpressionFactory.matchDbExp(pathPrefix
+                                + joins.get(i).getTargetName(), joinValues.get(i));
+                        if (allJoinsQualifier == null) {
+                            allJoinsQualifier = joinQualifier;
+                        } else {
+                            allJoinsQualifier = allJoinsQualifier.andExp(joinQualifier);
+                        }
+                    }
+                    currentQuery.orQualifier(allJoinsQualifier);
+                }
+            }
         }
 
         public boolean startJointPrefetch(PrefetchTreeNode node) {
