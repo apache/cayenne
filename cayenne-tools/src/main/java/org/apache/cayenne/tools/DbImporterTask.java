@@ -18,12 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.server.DataSourceFactory;
-import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbimport.*;
+import org.apache.cayenne.dbimport.Catalog;
+import org.apache.cayenne.dbimport.ExcludeColumn;
+import org.apache.cayenne.dbimport.ExcludeProcedure;
+import org.apache.cayenne.dbimport.ExcludeTable;
+import org.apache.cayenne.dbimport.IncludeColumn;
+import org.apache.cayenne.dbimport.IncludeProcedure;
+import org.apache.cayenne.dbimport.IncludeTable;
+import org.apache.cayenne.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbimport.Schema;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
@@ -39,7 +43,6 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
-import javax.sql.DataSource;
 import java.io.File;
 
 public class DbImporterTask extends Task {
@@ -111,9 +114,16 @@ public class DbImporterTask extends Task {
         config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
         config.setTableTypes(reverseEngineering.getTableTypes());
 
-        Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(logger), new DbImportModule());
+        Injector injector = DIBootstrap.createInjector(new DbSyncModule(),
+                new ToolsModule(logger), new DbImportModule());
 
-        validateDbImportConfiguration(config, injector);
+        DbImportConfigurationValidator validator = new DbImportConfigurationValidator(
+                reverseEngineering, config, injector);
+        try {
+            validator.validate();
+        } catch (Exception ex) {
+            throw new BuildException(ex.getMessage(), ex);
+        }
 
         try {
             injector.getInstance(DbImportAction.class).execute(config);
@@ -130,27 +140,6 @@ public class DbImporterTask extends Task {
             throw new BuildException(message, th);
         } finally {
             injector.shutdown();
-        }
-    }
-
-    private void validateDbImportConfiguration(DbImportConfiguration config, Injector injector) throws BuildException {
-        DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
-        DataSource dataSource = null;
-        DbAdapter adapter = null;
-
-        try {
-            dataSource = injector.getInstance(DataSourceFactory.class).getDataSource(dataNodeDescriptor);
-            adapter = injector.getInstance(DbAdapterFactory.class).createAdapter(dataNodeDescriptor, dataSource);
-
-            if (!adapter.supportsCatalogsOnReverseEngineering() &&
-                    reverseEngineering.getCatalogs() != null && !reverseEngineering.getCatalogs().isEmpty()) {
-                String message = "Your database does not support catalogs on reverse engineering. " +
-                        "It allows to connect to only one at the moment. Please don't note catalogs as param.";
-                throw new BuildException(message);
-            }
-        } catch (Exception e) {
-            throw new BuildException("Error creating DataSource ("
-                    + dataSource + ") or DbAdapter (" + adapter + ") for DataNodeDescriptor (" + dataNodeDescriptor + ")", e);
         }
     }
 
