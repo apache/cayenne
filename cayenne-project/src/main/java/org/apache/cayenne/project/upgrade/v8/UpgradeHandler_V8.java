@@ -113,6 +113,9 @@ public class UpgradeHandler_V8 extends BaseUpgradeHandler {
                 for (int j = 0; j < queryNodes.getLength(); j++) {
                     Element queryElement = (Element) queryNodes.item(j);
                     String factory = queryElement.getAttribute("factory");
+                    if(factory == null || factory.isEmpty()) {
+                        continue;
+                    }
 
                     String queryType;
 
