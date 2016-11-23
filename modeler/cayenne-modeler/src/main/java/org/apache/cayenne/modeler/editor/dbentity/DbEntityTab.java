@@ -213,10 +213,10 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
             ((PKGeneratorPanel) pkGeneratorDetail.getComponent(i)).setDbEntity(entity);
         }
 
-        if (!e.isEntityChanged()) {
-            // name.getComponent().requestFocusInWindow();
-            return;
-        }
+//        if (!e.isEntityChanged()) {
+//            // name.getComponent().requestFocusInWindow();
+//            return;
+//        }
 
         name.setText(entity.getName());
         catalog.setText(entity.getCatalog());
