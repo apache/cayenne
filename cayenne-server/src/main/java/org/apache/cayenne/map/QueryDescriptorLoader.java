@@ -19,6 +19,7 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.*;
 
@@ -87,6 +88,31 @@ public class QueryDescriptorLoader {
 
     void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * It's better be handled by project upgrade handler and actually it is.
+     * But upgrade logic is faulty when project is several versions away
+     * and can't be changed without complete upgrade system rewrite
+     * @param factory old style query factory class
+     */
+    void setLegacyFactory(String factory) {
+        switch (factory) {
+            case "org.apache.cayenne.map.SelectQueryBuilder":
+                queryType = QueryDescriptor.SELECT_QUERY;
+                break;
+            case "org.apache.cayenne.map.SQLTemplateBuilder":
+                queryType = QueryDescriptor.SQL_TEMPLATE;
+                break;
+            case "org.apache.cayenne.map.EjbqlBuilder":
+                queryType = QueryDescriptor.EJBQL_QUERY;
+                break;
+            case "org.apache.cayenne.map.ProcedureQueryBuilder":
+                queryType = QueryDescriptor.PROCEDURE_QUERY;
+                break;
+            default:
+                throw new ConfigurationException("Unknown query factory: " + factory);
+        }
     }
 
     void setQueryType(String queryType) {
