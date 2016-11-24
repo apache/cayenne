@@ -114,8 +114,8 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
         }
 
         // If this obj attribute is mapped to db attribute
-        if (getDbAttribute() != null
-                || (((ObjEntity) getEntity()).isAbstract() && !Util.isEmptyString(getDbAttributePath()))) {
+        if (/*getDbAttribute() != null
+                || (((ObjEntity) getEntity()).isAbstract() && */!Util.isEmptyString(getDbAttributePath())) {
             encoder.print(" db-attribute-path=\"");
             encoder.print(Util.encodeXmlAttribute(getDbAttributePath()));
             encoder.print('\"');
