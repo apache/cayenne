@@ -20,6 +20,8 @@ package org.apache.cayenne.project.validation;
 
 import java.util.Map;
 
+import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
@@ -32,124 +34,120 @@ class ObjAttributeValidator extends ConfigurationNodeValidator {
 
     void validate(ObjAttribute attribute, ValidationResult validationResult) {
 
-        // Must have name
-        if (Util.isEmptyString(attribute.getName())) {
-            addFailure(validationResult, attribute, "Unnamed ObjAttribute");
-        }
-        else {
-            NameValidationHelper helper = NameValidationHelper.getInstance();
-            String invalidChars = helper.invalidCharsInObjPathComponent(attribute
-                    .getName());
-
-            if (invalidChars != null) {
-                addFailure(
-                        validationResult,
-                        attribute,
-                        "ObjAttribute name '%s' contains invalid characters: %s",
-                        attribute.getName(),
-                        invalidChars);
-            }
-            else if (helper.invalidDataObjectProperty(attribute.getName())) {
-                addFailure(
-                        validationResult,
-                        attribute,
-                        "ObjAttribute name '%s' is invalid",
-                        attribute.getName());
-            }
-        }
+        validateName(attribute, validationResult);
 
         // all attributes must have type
         if (Util.isEmptyString(attribute.getType())) {
-            addFailure(
-                    validationResult,
-                    attribute,
+            addFailure(validationResult, attribute,
                     "ObjAttribute '%s' has no Java type",
                     attribute.getName());
         }
 
-        if (attribute.getEntity() instanceof ObjEntity
-                && ((ObjEntity) attribute.getEntity()).isAbstract()) {
-            // nothing, abstract entity does not have to define a dbAttribute
+        if (attribute instanceof EmbeddedAttribute) {
+            validateEmbeddable((EmbeddedAttribute)attribute, validationResult);
+        } else {
+            validateDbAttribute(attribute, validationResult);
         }
-        else if (attribute instanceof EmbeddedAttribute) {
-            Map<String, String> attrOverrides = ((EmbeddedAttribute) attribute)
-                    .getAttributeOverrides();
 
-            Embeddable embeddable = ((EmbeddedAttribute) attribute).getEmbeddable();
-            if (embeddable == null && ((EmbeddedAttribute) attribute).getType() != null) {
+        checkForDuplicates(attribute, validationResult);
+    }
 
-                addFailure(
-                        validationResult,
-                        attribute,
-                        "EmbeddedAttribute '%s' has incorrect Embeddable",
-                        attribute.getName());
-            }
-            else if (embeddable == null
-                    && ((EmbeddedAttribute) attribute).getType() == null) {
-                addFailure(
-                        validationResult,
-                        attribute,
-                        "EmbeddedAttribute '%s' has no Embeddable",
-                        attribute.getName());
-            }
-
-            if (embeddable != null) {
-
-                for (EmbeddableAttribute embeddableAttribute : embeddable.getAttributes()) {
-                    String dbAttributeName;
-                    if (attrOverrides.size() > 0
-                            && attrOverrides.containsKey(embeddableAttribute.getName())) {
-                        dbAttributeName = attrOverrides
-                                .get(embeddableAttribute.getName());
-                    }
-                    else {
-                        dbAttributeName = embeddableAttribute.getDbAttributeName();
-                    }
-
-                    if (dbAttributeName == "" || dbAttributeName == null) {
-
-                        addFailure(
-                                validationResult,
-                                attribute,
-                                "EmbeddedAttribute '%s' has no DbAttribute mapping",
-                                attribute.getName());
-                    }
-                    else if (((ObjEntity) attribute.getEntity())
-                            .getDbEntity()
-                            .getAttribute(dbAttributeName) == null) {
-
-                        addFailure(
-                                validationResult,
-                                attribute,
-                                "EmbeddedAttribute '%s' has incorrect DbAttribute mapping",
-                                attribute.getName());
-                    }
-                }
-            }
-
+    private void validateName(ObjAttribute attribute, ValidationResult validationResult) {
+        // Must have name
+        if (Util.isEmptyString(attribute.getName())) {
+            addFailure(validationResult, attribute, "Unnamed ObjAttribute");
+            return;
         }
-        else if (attribute.getDbAttribute() == null) {
-            addFailure(
-                    validationResult,
-                    attribute,
-                    "ObjAttribute '%s' has no DbAttribute mapping",
+
+        NameValidationHelper helper = NameValidationHelper.getInstance();
+        String invalidChars = helper.invalidCharsInObjPathComponent(attribute.getName());
+
+        if (invalidChars != null) {
+            addFailure(validationResult, attribute,
+                    "ObjAttribute name '%s' contains invalid characters: %s",
+                    attribute.getName(),
+                    invalidChars);
+        } else if (helper.invalidDataObjectProperty(attribute.getName())) {
+            addFailure(validationResult, attribute,
+                    "ObjAttribute name '%s' is invalid",
                     attribute.getName());
         }
-        // can't support generated meaningful attributes for now; besides they don't make
-        // sense.
-        // TODO: andrus 03/10/2010 - is that really so? I think those are supported...
-        else if (attribute.getDbAttribute().isPrimaryKey()
-                && attribute.getDbAttribute().isGenerated()) {
+    }
 
-            addFailure(
-                    validationResult,
-                    attribute,
+    private void validateDbAttribute(ObjAttribute attribute, ValidationResult validationResult) {
+        if (attribute.getEntity().isAbstract()) {
+            // nothing to validate
+            // abstract entity does not have to define a dbAttribute
+            return;
+        }
+
+        DbAttribute dbAttribute;
+        try {
+            dbAttribute = attribute.getDbAttribute();
+        } catch (ExpressionException e) {
+            // see CAY-2153
+            // getDbAttribute() can fail if db path for this attribute is invalid
+            // so we catch it here and show nice validation failure instead of crash
+            addFailure(validationResult, attribute,
+                    "ObjAttribute '%s' has invalid DB path: %s",
+                    attribute.getName(),
+                    e.getExpressionString());
+            return;
+        }
+
+        if (dbAttribute == null) {
+            addFailure(validationResult, attribute,
+                    "ObjAttribute '%s' has no DbAttribute mapping",
+                    attribute.getName());
+            return;
+        }
+
+        if (dbAttribute.isPrimaryKey() && dbAttribute.isGenerated()) {
+            // can't support generated meaningful attributes for now;
+            // besides they don't make sense.
+            // TODO: andrus 03/10/2010 - is that really so? I think those are supported...
+            addFailure(validationResult, attribute,
                     "ObjAttribute '%s' is mapped to a generated PK: %s",
                     attribute.getName(),
                     attribute.getDbAttributeName());
         }
+    }
 
-        checkForDuplicates(attribute, validationResult);
+    private void validateEmbeddable(EmbeddedAttribute attribute, ValidationResult validationResult) {
+        Embeddable embeddable = attribute.getEmbeddable();
+
+        if (embeddable == null) {
+            String msg = attribute.getType() == null ?
+                    "EmbeddedAttribute '%s' has no Embeddable" :
+                    "EmbeddedAttribute '%s' has incorrect Embeddable";
+
+            addFailure(validationResult, attribute, msg, attribute.getName());
+            return;
+        }
+
+        Map<String, String> attrOverrides = attribute.getAttributeOverrides();
+
+        for (EmbeddableAttribute embeddableAttribute : embeddable.getAttributes()) {
+            String dbAttributeName;
+            if (!attrOverrides.isEmpty()
+                    && attrOverrides.containsKey(embeddableAttribute.getName())) {
+                dbAttributeName = attrOverrides.get(embeddableAttribute.getName());
+            } else {
+                dbAttributeName = embeddableAttribute.getDbAttributeName();
+            }
+
+            if (Util.isEmptyString(dbAttributeName)) {
+                addFailure(validationResult, attribute,
+                        "EmbeddedAttribute '%s' has no DbAttribute mapping",
+                        attribute.getName());
+            } else if (attribute.getEntity()
+                    .getDbEntity()
+                    .getAttribute(dbAttributeName) == null) {
+                addFailure(validationResult, attribute,
+                        "EmbeddedAttribute '%s' has incorrect DbAttribute mapping",
+                        attribute.getName());
+            }
+        }
     }
 
     /**
@@ -158,11 +156,11 @@ class ObjAttributeValidator extends ConfigurationNodeValidator {
      */
     private void checkForDuplicates(ObjAttribute     attribute,
                                     ValidationResult validationResult) {
-        if (attribute               != null &&
-            attribute.getName()     != null &&
-            attribute.isInherited() == false) {
+        if ( attribute               != null &&
+             attribute.getName()     != null &&
+            !attribute.isInherited()) {
 
-            ObjEntity entity = (ObjEntity) attribute.getEntity();
+            ObjEntity entity = attribute.getEntity();
 
             for (ObjAttribute comparisonAttribute : entity.getAttributes()) {
                 if (attribute != comparisonAttribute) {
@@ -170,9 +168,7 @@ class ObjAttributeValidator extends ConfigurationNodeValidator {
 
                     if (dbAttributePath != null) {
                         if (dbAttributePath.equals(comparisonAttribute.getDbAttributePath())) {
-                            addFailure
-                                (validationResult,
-                                 attribute,
+                            addFailure(validationResult, attribute,
                                  "ObjEntity '%s' contains a duplicate DbAttribute mapping ('%s' -> '%s')",
                                  entity.getName(),
                                  attribute.getName(),

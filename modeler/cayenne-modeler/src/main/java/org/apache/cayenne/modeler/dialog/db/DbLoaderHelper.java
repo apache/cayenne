@@ -49,6 +49,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.DbImportProjectSaver;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.LongRunningTask;
+import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.cayenne.tools.dbimport.DbImportAction;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
@@ -373,6 +374,7 @@ public class DbLoaderHelper {
             } catch (Exception e) {
                 processException(e, "Error importing database schema.");
             }
+            ProjectUtil.cleanObjMappings(dataMap);
         }
 
         protected DbImportAction createAction(DataMap targetDataMap) {

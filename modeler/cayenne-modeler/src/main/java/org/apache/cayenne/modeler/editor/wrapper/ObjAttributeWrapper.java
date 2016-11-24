@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.editor.wrapper;
 
 import java.util.List;
 
+import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
@@ -139,7 +140,11 @@ public class ObjAttributeWrapper implements Wrapper<ObjAttribute> {
     }
 
     public DbAttribute getDbAttribute() {
-        return objAttribute.getDbAttribute();
+        try {
+            return objAttribute.getDbAttribute();
+        } catch (ExpressionException e) {
+            return null;
+        }
     }
 
     public boolean isInherited() {
