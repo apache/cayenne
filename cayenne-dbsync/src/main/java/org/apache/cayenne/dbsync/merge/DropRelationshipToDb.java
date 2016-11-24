@@ -71,4 +71,13 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
         }
         return relationship.getSourceEntity().getName() + "->" + relationship.getTargetEntityName();
     }
+
+    @Override
+    public int compareTo(MergerToken o) {
+        // add all AddRelationshipToDb to the end.
+        if (o instanceof DropRelationshipToDb) {
+            return super.compareTo(o);
+        }
+        return -1;
+    }
 }

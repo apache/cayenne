@@ -49,4 +49,13 @@ public class DropColumnToDb extends AbstractToDbToken.EntityAndColumn {
         return factory.createAddColumnToModel(getEntity(), getColumn());
     }
 
+    @Override
+    public int compareTo(MergerToken o) {
+        // add all AddRelationshipToDb to the end.
+        if (o instanceof DropRelationshipToDb) {
+            return 1;
+        }
+        return super.compareTo(o);
+    }
+
 }

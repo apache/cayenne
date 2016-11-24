@@ -72,6 +72,7 @@ CAY-2144 cdbimport always fails for databases which don't support catalogs
 CAY-2148 Failure upgrading from 3.1 to M4
 CAY-2150 UI bug: PK generation custom sequence is getting reset
 CAY-2153 Modeler Exception in save action after reverse engineering some complex DB schema
+CAY-2154 Migrate db: queries order
 
 ----------------------------------
 Release: 4.0.M3

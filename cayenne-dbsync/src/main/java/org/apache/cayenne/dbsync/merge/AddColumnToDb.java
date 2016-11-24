@@ -62,4 +62,13 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createDropColumnToModel(getEntity(), getColumn());
     }
+
+    @Override
+    public int compareTo(MergerToken o) {
+        // add all AddRelationshipToDb to the end.
+        if (o instanceof AddRelationshipToDb) {
+            return -1;
+        }
+        return super.compareTo(o);
+    }
 }
