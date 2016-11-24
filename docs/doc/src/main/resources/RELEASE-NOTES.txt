@@ -69,6 +69,7 @@ CAY-2131 Modeler NullPointerException in reverse engineering when importing diff
 CAY-2138 NVARCHAR, LONGNVARCHAR and NCLOB types are missing from Firebird types.xml
 CAY-2143 NPE in BaseSchemaUpdateStrategy
 CAY-2144 cdbimport always fails for databases which don't support catalogs
+CAY-2150 UI bug: PK generation custom sequence is getting reset
 
 ----------------------------------
 Release: 4.0.M3

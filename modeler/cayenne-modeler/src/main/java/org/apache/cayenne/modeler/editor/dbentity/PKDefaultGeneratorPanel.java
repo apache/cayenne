@@ -32,7 +32,7 @@ public class PKDefaultGeneratorPanel extends PKGeneratorPanel {
         // noop
     }
 
-    public void onInit(DbEntity entity) {
+    protected void onInitInternal(DbEntity entity) {
         resetStrategy(entity, true, true);
     }
 }
