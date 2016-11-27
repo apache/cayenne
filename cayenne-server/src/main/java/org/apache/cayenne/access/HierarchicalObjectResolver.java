@@ -194,7 +194,7 @@ class HierarchicalObjectResolver {
                     values = new HashSet<>();
                 }
 
-                List<Object> joinValues = new ArrayList<>();
+                List<Object> joinValues = new ArrayList<>(joins.size());
                 for (DbJoin join : joins) {
                     Object targetValue = ((DataRow) dataRow).get(join.getSourceName());
                     joinValues.add(targetValue);
