@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
@@ -39,6 +32,13 @@ import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Processes a number of DataRow sets corresponding to a given prefetch tree, resolving
@@ -103,6 +103,7 @@ class HierarchicalObjectResolver {
 
     final class DisjointProcessor implements PrefetchProcessor {
 
+        @Override
         public boolean startDisjointPrefetch(PrefetchTreeNode node) {
 
             PrefetchProcessorNode processorNode = (PrefetchProcessorNode) node;
@@ -124,6 +125,7 @@ class HierarchicalObjectResolver {
             return true;
         }
 
+        @Override
         public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
             PrefetchProcessorNode processorNode = (PrefetchProcessorNode) node;
 
@@ -248,6 +250,7 @@ class HierarchicalObjectResolver {
             }
         }
 
+        @Override
         public boolean startJointPrefetch(PrefetchTreeNode node) {
 
             // delegate processing of the top level joint prefetch to a joint processor,
@@ -297,14 +300,17 @@ class HierarchicalObjectResolver {
             return true;
         }
 
+        @Override
         public boolean startPhantomPrefetch(PrefetchTreeNode node) {
             return true;
         }
 
+        @Override
         public boolean startUnknownPrefetch(PrefetchTreeNode node) {
             throw new CayenneRuntimeException("Unknown prefetch node: " + node);
         }
 
+        @Override
         public void finishPrefetch(PrefetchTreeNode node) {
             // now that all the children are processed, we can clear the dupes
 
@@ -346,16 +352,19 @@ class HierarchicalObjectResolver {
             this.currentFlatRow = currentFlatRow;
         }
 
+        @Override
         public boolean startDisjointPrefetch(PrefetchTreeNode node) {
             // disjoint prefetch that is not the root terminates the walk...
             // don't process the root node itself..
             return node == rootNode;
         }
 
+        @Override
         public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
             return startDisjointPrefetch(node);
         }
 
+        @Override
         public boolean startJointPrefetch(PrefetchTreeNode node) {
             PrefetchProcessorJointNode processorNode = (PrefetchProcessorJointNode) node;
 
@@ -388,14 +397,17 @@ class HierarchicalObjectResolver {
             return processorNode.isJointChildren();
         }
 
+        @Override
         public boolean startPhantomPrefetch(PrefetchTreeNode node) {
             return ((PrefetchProcessorNode) node).isJointChildren();
         }
 
+        @Override
         public boolean startUnknownPrefetch(PrefetchTreeNode node) {
             throw new CayenneRuntimeException("Unknown prefetch node: " + node);
         }
 
+        @Override
         public void finishPrefetch(PrefetchTreeNode node) {
             // noop
         }
@@ -405,18 +417,22 @@ class HierarchicalObjectResolver {
     // relationships and also fires snapshot update events
     final class PostProcessor implements PrefetchProcessor {
 
+        @Override
         public void finishPrefetch(PrefetchTreeNode node) {
         }
 
+        @Override
         public boolean startDisjointPrefetch(PrefetchTreeNode node) {
             ((PrefetchProcessorNode) node).connectToParents();
             return true;
         }
 
+        @Override
         public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
             return startDisjointPrefetch(node);
         }
 
+        @Override
         public boolean startJointPrefetch(PrefetchTreeNode node) {
             PrefetchProcessorJointNode processorNode = (PrefetchProcessorJointNode) node;
 
@@ -433,10 +449,12 @@ class HierarchicalObjectResolver {
             return true;
         }
 
+        @Override
         public boolean startPhantomPrefetch(PrefetchTreeNode node) {
             return true;
         }
 
+        @Override
         public boolean startUnknownPrefetch(PrefetchTreeNode node) {
             throw new CayenneRuntimeException("Unknown prefetch node: " + node);
         }
