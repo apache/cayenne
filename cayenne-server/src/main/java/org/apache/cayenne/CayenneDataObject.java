@@ -19,17 +19,6 @@
 
 package org.apache.cayenne;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -42,6 +31,17 @@ import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A default implementation of DataObject interface. It is normally used as a
@@ -663,8 +663,11 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 			// skip db relationships that we can't validate or that can't be invalid here
 			// can't handle paths longer than two db relationships
 			// see ObjRelationship.recalculateReadOnlyValue() for more info
-			if (dbRels.size() == 1 && relationship.isSourceIndependentFromTargetChange() ||
-					dbRels.size() > 1 && (relationship.isToMany() || relationship.isReadOnly())) {
+			if (dbRels.size() == 1 && relationship.isSourceIndependentFromTargetChange()) {
+				continue;
+			}
+
+			if (dbRels.size() > 1 && (relationship.isToMany() || relationship.isReadOnly())) {
 				continue;
 			}
 

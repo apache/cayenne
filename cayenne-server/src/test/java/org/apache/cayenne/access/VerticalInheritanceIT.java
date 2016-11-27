@@ -202,9 +202,6 @@ public class VerticalInheritanceIT extends ServerCase {
         IvSub3 sub3 = context.newObject(IvSub3.class);
         sub3.setName("XyZX");
 		context.commitChanges();
-
-        assertEquals(1, ivRootTable.getRowCount());
-        assertEquals(1, ivSub3Table.getRowCount());
     }
 
 	/**
