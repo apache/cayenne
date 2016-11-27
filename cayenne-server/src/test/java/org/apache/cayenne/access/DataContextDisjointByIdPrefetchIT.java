@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -117,8 +116,7 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
         createArtistWithTwoPaintingsDataSet();
 
         SelectQuery query = new SelectQuery(Artist.class);
-        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(
-                PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Artist.PAINTING_ARRAY.disjointById());
 
         final List<Artist> result = context.performQuery(query);
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
@@ -126,7 +124,7 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
             public void execute() {
                 assertFalse(result.isEmpty());
                 Artist b1 = result.get(0);
-                List<Painting> toMany = (List<Painting>) b1.readPropertyDirectly(Artist.PAINTING_ARRAY_PROPERTY);
+                List<Painting> toMany = (List<Painting>) b1.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
                 assertNotNull(toMany);
                 assertFalse(((ValueHolder) toMany).isFault());
                 assertEquals(2, toMany.size());
@@ -148,7 +146,7 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
         createArtistWithTwoPaintingsDataSet();
 
         SelectQuery query = new SelectQuery(Painting.class);
-        query.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Painting.TO_ARTIST.disjointById());
 
         final List<Painting> result = context.performQuery(query);
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
@@ -168,8 +166,7 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
         createThreeArtistsWithPlentyOfPaintingsDataSet();
 
         final SelectQuery query = new SelectQuery(Artist.class);
-        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(
-                PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Artist.PAINTING_ARRAY.disjointById());
         query.addOrdering("db:" + Artist.ARTIST_ID_PK_COLUMN, SortOrder.ASCENDING);
 
         query.setFetchLimit(2);
@@ -203,8 +200,7 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
         createTwoPaintingsWithInfosDataSet();
 
         SelectQuery query = new SelectQuery(Painting.class);
-        query.addPrefetch(Painting.TO_PAINTING_INFO_PROPERTY).setSemantics(
-                PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Painting.TO_PAINTING_INFO.disjointById());
         final List<Painting> result = context.performQuery(query);
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
@@ -212,7 +208,7 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
                 assertFalse(result.isEmpty());
                 List<String> boxColors = new ArrayList<String>();
                 for (Painting box : result) {
-                    PaintingInfo info = (PaintingInfo) box.readPropertyDirectly(Painting.TO_PAINTING_INFO_PROPERTY);
+                    PaintingInfo info = (PaintingInfo) box.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName());
                     assertNotNull(info);
                     boxColors.add(info.getTextReview());
                     assertEquals(PersistenceState.COMMITTED, info.getPersistenceState());
