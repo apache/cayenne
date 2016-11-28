@@ -97,9 +97,7 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
         encoder.indent(1);
 
         // print properties
-        for (Map.Entry<String, String> property : properties.entrySet()) {
-            encoder.printProperty(property.getKey(), property.getValue());
-        }
+        encodeProperties(encoder);
 
         encoder.indent(-1);
         encoder.println("</query>");
