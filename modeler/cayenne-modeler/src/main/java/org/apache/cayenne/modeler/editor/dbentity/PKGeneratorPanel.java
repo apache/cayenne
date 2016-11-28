@@ -19,14 +19,13 @@
 
 package org.apache.cayenne.modeler.editor.dbentity;
 
-import java.util.Iterator;
-
 import javax.swing.JPanel;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.undo.ChangePKGeneratorUndoableEdit;
 
 public abstract class PKGeneratorPanel extends JPanel {
 
@@ -46,7 +45,19 @@ public abstract class PKGeneratorPanel extends JPanel {
     /**
      * Called by parent when the panel becomes visible.
      */
-    public abstract void onInit(DbEntity entity);
+    public void onInit(DbEntity entity) {
+        ChangePKGeneratorUndoableEdit edit = new ChangePKGeneratorUndoableEdit(entity);
+        edit.captureOldState();
+
+        onInitInternal(entity);
+
+        edit.captureNewState();
+        if(edit.hasRealChange()) {
+            mediator.getApplication().getUndoManager().addEdit(edit);
+        }
+    }
+
+    protected abstract void onInitInternal(DbEntity entity);
 
     protected void resetStrategy(
             DbEntity entity,

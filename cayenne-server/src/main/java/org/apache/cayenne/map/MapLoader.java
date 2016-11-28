@@ -1029,8 +1029,12 @@ public class MapLoader extends DefaultHandler {
 		this.queryBuilder = new QueryDescriptorLoader();
 
 		String type = attributes.getValue("", "type");
-
-		queryBuilder.setQueryType(type);
+		// Legacy format support (v7 and older)
+		if(type == null) {
+			queryBuilder.setLegacyFactory(attributes.getValue("", "factory"));
+		} else {
+			queryBuilder.setQueryType(type);
+		}
 
 		String rootType = attributes.getValue("", "root");
 		String rootName = attributes.getValue("", "root-name");

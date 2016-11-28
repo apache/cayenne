@@ -82,14 +82,15 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
         add(builder.getPanel(), BorderLayout.CENTER);
     }
 
-    public void onInit(DbEntity entity) {
-
+    protected void onInitInternal(DbEntity entity) {
         resetStrategy(entity, false, true);
 
         if (entity.getPrimaryKeyGenerator() == null) {
             DbKeyGenerator generator = new DbKeyGenerator();
             generator.setGeneratorType(DbKeyGenerator.ORACLE_TYPE);
             entity.setPrimaryKeyGenerator(generator);
+        } else {
+            setDbEntity(entity);
         }
     }
 
@@ -98,11 +99,9 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
 
         if (generator != null) {
             customPKName.setText(generator.getGeneratorName());
-            customPKSize.setText(generator.getKeyCacheSize() != null ? generator
-                    .getKeyCacheSize()
-                    .toString() : "0");
-        }
-        else {
+            customPKSize.setText(generator.getKeyCacheSize() != null ?
+                    generator.getKeyCacheSize().toString() : "0");
+        } else {
             customPKName.setText(null);
             customPKSize.setText(null);
         }

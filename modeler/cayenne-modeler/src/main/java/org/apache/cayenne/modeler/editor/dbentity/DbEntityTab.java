@@ -24,7 +24,6 @@ import java.awt.CardLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.EventObject;
-
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -32,6 +31,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
@@ -53,9 +54,6 @@ import org.apache.cayenne.modeler.util.ExpressionConvertor;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * Detail view of the DbEntity properties.
@@ -211,11 +209,6 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
 
         for (int i = 0; i < pkGeneratorDetail.getComponentCount(); i++) {
             ((PKGeneratorPanel) pkGeneratorDetail.getComponent(i)).setDbEntity(entity);
-        }
-
-        if (!e.isEntityChanged()) {
-            // name.getComponent().requestFocusInWindow();
-            return;
         }
 
         name.setText(entity.getName());

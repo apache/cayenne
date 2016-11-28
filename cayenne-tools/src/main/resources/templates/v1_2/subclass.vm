@@ -32,7 +32,7 @@ ${importUtils.addReservedType("${subPackageName}.${subClassName}")}##
 ${importUtils.addType("${superPackageName}.${superClassName}")}##
 ${importUtils.generate()}
 
-public#if("true" == "${object.getIsAbstract()}") abstract#end class ${subClassName} extends ${superClassName} {
+public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName} extends ${superClassName} {
 
     private static final long serialVersionUID = 1L; 
 

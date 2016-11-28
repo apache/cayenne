@@ -24,7 +24,6 @@ import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Collection;
-import java.util.Iterator;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -73,7 +72,7 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
         }
     }
 
-    public void onInit(DbEntity entity) {
+    protected void onInitInternal(DbEntity entity) {
         resetStrategy(entity, true, false);
 
         Collection pkAttributes = entity.getPrimaryKeys();

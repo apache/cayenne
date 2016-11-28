@@ -187,6 +187,44 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertEquals(0, ivSub2Table.getRowCount());
 	}
 
+	/**
+	 * @link https://issues.apache.org/jira/browse/CAY-2146
+	 */
+    @Test(expected = org.apache.cayenne.validation.ValidationException.class)
+    public void testValidationOnInsert_Sub3_Exception() throws Exception {
+
+        TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
+        ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+        TableHelper ivSub3Table = new TableHelper(dbHelper, "IV_SUB3");
+        ivSub3Table.setColumns("ID", "IV_ROOT_ID");
+
+        IvSub3 sub3 = context.newObject(IvSub3.class);
+        sub3.setName("XyZX");
+		context.commitChanges();
+    }
+
+	/**
+	 * @link https://issues.apache.org/jira/browse/CAY-2146
+	 */
+	@Test
+	public void testValidationOnInsert_Sub3_Ok() throws Exception {
+
+		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
+		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+		TableHelper ivSub3Table = new TableHelper(dbHelper, "IV_SUB3");
+		ivSub3Table.setColumns("ID", "IV_ROOT_ID");
+
+		IvSub3 sub3 = context.newObject(IvSub3.class);
+		sub3.setName("XyZX");
+		sub3.setIvRoot(sub3);
+		context.commitChanges();
+
+		assertEquals(1, ivRootTable.getRowCount());
+		assertEquals(1, ivSub3Table.getRowCount());
+	}
+
     @Test
 	public void testInsert_Sub1Sub1() throws Exception {
 

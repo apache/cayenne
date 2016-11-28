@@ -19,17 +19,6 @@
 
 package org.apache.cayenne;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -42,6 +31,17 @@ import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A default implementation of DataObject interface. It is normally used as a
@@ -655,39 +655,40 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 		// validate mandatory relationships
 		for (final ObjRelationship relationship : objEntity.getRelationships()) {
 
-			if (relationship.isSourceIndependentFromTargetChange()) {
-				continue;
-			}
-
 			List<DbRelationship> dbRels = relationship.getDbRelationships();
 			if (dbRels.isEmpty()) {
 				continue;
 			}
 
+			// skip db relationships that we can't validate or that can't be invalid here
+			// can't handle paths longer than two db relationships
+			// see ObjRelationship.recalculateReadOnlyValue() for more info
+			if (dbRels.size() == 1 && relationship.isSourceIndependentFromTargetChange()) {
+				continue;
+			}
+
+			if (dbRels.size() > 1 && (relationship.isToMany() || relationship.isReadOnly())) {
+				continue;
+			}
+
 			// if db relationship is not based on a PK and is based on mandatory
 			// attributes, see if we have a target object set
+			// relationship will be validated only if all db path has mandatory
+			// db relationships
 			boolean validate = true;
-			DbRelationship dbRelationship = dbRels.get(0);
-			for (DbJoin join : dbRelationship.getJoins()) {
-				DbAttribute source = join.getSource();
-
-				if (source.isMandatory()) {
-					// clear attribute failures...
-					if (failedDbAttributes != null && !failedDbAttributes.isEmpty()) {
-						failedDbAttributes.remove(source.getName());
-
-						// loop through all joins if there were previous
-						// mandatory
-
-						// attribute failures....
-						if (!failedDbAttributes.isEmpty()) {
-							continue;
+			for (DbRelationship dbRelationship : dbRels) {
+				for (DbJoin join : dbRelationship.getJoins()) {
+					DbAttribute source = join.getSource();
+					if (source.isMandatory()) {
+						// clear attribute failures...
+						if (failedDbAttributes != null && !failedDbAttributes.isEmpty()) {
+							failedDbAttributes.remove(source.getName());
 						}
+					} else {
+						// do not validate if the relation is based on
+						// multiple keys with some that can be nullable.
+						validate = false;
 					}
-				} else {
-					// do not validate if the relation is based on
-					// multiple keys with some that can be nullable.
-					validate = false;
 				}
 			}
 
