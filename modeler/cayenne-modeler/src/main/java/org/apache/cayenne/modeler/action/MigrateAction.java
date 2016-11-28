@@ -32,6 +32,7 @@ import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import javax.sql.DataSource;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -105,10 +106,16 @@ public class MigrateAction extends DBWizardAction {
                 map, selectedCatalog, selectedSchema, mergerTokenFactoryProvider).startupAction();
     }
 
+    @SuppressWarnings("unchecked")
     private List<String> getCatalogs(DataSourceController connectWizard) throws Exception {
+        DbAdapter adapter = connectWizard.getConnectionInfo()
+                .makeAdapter(getApplication().getClassLoadingService());
+        if(!adapter.supportsCatalogsOnReverseEngineering()) {
+            return (List<String>)Collections.EMPTY_LIST;
+        }
+
         DataSource dataSource = connectWizard.getConnectionInfo()
                 .makeDataSource(getApplication().getClassLoadingService());
-
         return DbLoader.loadCatalogs(dataSource.getConnection());
     }
 
