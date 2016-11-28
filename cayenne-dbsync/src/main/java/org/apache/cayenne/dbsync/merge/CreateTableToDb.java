@@ -21,6 +21,7 @@ package org.apache.cayenne.dbsync.merge;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 
@@ -37,8 +38,10 @@ public class CreateTableToDb extends AbstractToDbToken.Entity {
     @Override
     public List<String> createSql(DbAdapter adapter) {
         List<String> sqls = new ArrayList<String>();
-        sqls.addAll(adapter.getPkGenerator().createAutoPkStatements(
-                Collections.singletonList(getEntity())));
+        if(needAutoPkSupport()) {
+            sqls.addAll(adapter.getPkGenerator().createAutoPkStatements(
+                    Collections.singletonList(getEntity())));
+        }
         sqls.add(adapter.createTable(getEntity()));
         return sqls;
     }
@@ -48,15 +51,32 @@ public class CreateTableToDb extends AbstractToDbToken.Entity {
         try {
             DataNode node = mergerContext.getDataNode();
             DbAdapter adapter = node.getAdapter();
-            adapter.getPkGenerator().createAutoPk(
-                    node,
-                    Collections.singletonList(getEntity()));
+            if(needAutoPkSupport()) {
+                adapter.getPkGenerator().createAutoPk(
+                        node,
+                        Collections.singletonList(getEntity()));
+            }
             executeSql(mergerContext, adapter.createTable(getEntity()));
         }
         catch (Exception e) {
             mergerContext.getValidationResult().addFailure(
                     new SimpleValidationFailure(this, e.getMessage()));
         }
+    }
+
+    private boolean needAutoPkSupport() {
+        DbEntity entity = getEntity();
+        if(entity.getPrimaryKeyGenerator() != null) {
+            return false;
+        }
+
+        for(DbAttribute attribute : entity.getPrimaryKeys()) {
+            if(attribute.isGenerated()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public MergerToken createReverse(MergerTokenFactory factory) {
