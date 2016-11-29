@@ -1418,11 +1418,11 @@
 			</dependencies>
 		</profile>
 		<profile>
-			<id>postgres-docker</id>
+			<id>postgresdocker</id>
 			<activation>
 				<property>
 					<name>cayenneTestConnection</name>
-					<value>postgres-docker</value>
+					<value>postgresdocker</value>
 				</property>
 			</activation>
 			<dependencies>
