@@ -85,6 +85,7 @@ public class MergerOptions extends CayenneController {
     protected String textForSQL;
 
     protected MergerTokenSelectorController tokens;
+    protected String defaultCatalog;
     protected String defaultSchema;
     private MergerTokenFactoryProvider mergerTokenFactoryProvider;
 
@@ -92,6 +93,7 @@ public class MergerOptions extends CayenneController {
                          String title,
                          DBConnectionInfo connectionInfo,
                          DataMap dataMap,
+                         String defaultCatalog,
                          String defaultSchema,
                          MergerTokenFactoryProvider mergerTokenFactoryProvider) {
         super(parent);
@@ -101,18 +103,12 @@ public class MergerOptions extends CayenneController {
         this.tokens = new MergerTokenSelectorController(parent);
         this.view = new MergerOptionsView(tokens.getView());
         this.connectionInfo = connectionInfo;
+        this.defaultCatalog = defaultCatalog;
         this.defaultSchema = defaultSchema;
-        /*
-         * TODO:? this.generatorDefaults = (DBGeneratorDefaults) parent
-         * .getPreferenceDomainForProject() .getDetail("DbGenerator",
-         * DBGeneratorDefaults.class, true);
-         */
         this.view.setTitle(title);
         initController();
 
-        // tables.updateTables(dataMap);
         prepareMigrator();
-        // generatorDefaults.configureGenerator(generator);
         createSQL();
         refreshView();
     }
@@ -120,10 +116,6 @@ public class MergerOptions extends CayenneController {
     public Component getView() {
         return view;
     }
-
-    /*
-     * public DBGeneratorDefaults getGeneratorDefaults() { return generatorDefaults; }
-     */
 
     public String getTextForSQL() {
         return textForSQL;
@@ -165,7 +157,7 @@ public class MergerOptions extends CayenneController {
             tokens.setMergerTokenFactory(mergerTokenFactory);
 
 
-            FiltersConfig filters = FiltersConfig.create(null, defaultSchema, TableFilter.everything(),
+            FiltersConfig filters = FiltersConfig.create(defaultCatalog, defaultSchema, TableFilter.everything(),
                     PatternFilter.INCLUDE_NOTHING);
 
             DbMerger merger = DbMerger.builder(mergerTokenFactory)
@@ -222,12 +214,6 @@ public class MergerOptions extends CayenneController {
     }
 
     protected void refreshView() {
-
-        /*
-         * for (int i = 0; i < optionBindings.length; i++) {
-         * optionBindings[i].updateView(); }
-         */
-
         sqlBinding.updateView();
     }
 
@@ -248,7 +234,6 @@ public class MergerOptions extends CayenneController {
     }
 
     public void refreshGeneratorAction() {
-        // prepareMigrator();
         refreshSQLAction();
     }
 
@@ -256,8 +241,6 @@ public class MergerOptions extends CayenneController {
      * Updates a text area showing generated SQL.
      */
     public void refreshSQLAction() {
-        // sync generator with defaults, make SQL, then sync the view...
-        // generatorDefaults.configureGenerator(generator);
         createSQL();
         sqlBinding.updateView();
     }

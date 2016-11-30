@@ -32,6 +32,7 @@ import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import javax.sql.DataSource;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -72,13 +73,18 @@ public class MigrateAction extends DBWizardAction {
         }
         //showOptions dialog
         String selectedSchema = null;
+        String selectedCatalog = null;
         try {
             List<String> schemas = getSchemas(connectWizard);
-            if (schemas != null && !schemas.isEmpty()) {
-                DbMigrateOptionsDialog optionsDialog = new DbMigrateOptionsDialog(schemas, connectWizard.getConnectionInfo().getUserName());
+            List<String> catalogs = getCatalogs(connectWizard);
+            if (!catalogs.isEmpty() || !schemas.isEmpty()) {
+                DbMigrateOptionsDialog optionsDialog = new DbMigrateOptionsDialog(catalogs, schemas, connectWizard.getConnectionInfo().getUserName());
                 optionsDialog.showDialog();
                 if (optionsDialog.getChoice() == DbMigrateOptionsDialog.SELECT) {
                     selectedSchema = optionsDialog.getSelectedSchema();
+                    selectedCatalog = optionsDialog.getSelectedCatalog();
+                } else {
+                    return;
                 }
             }
         } catch (Exception ex) {
@@ -97,12 +103,23 @@ public class MigrateAction extends DBWizardAction {
                 getProjectController(),
                 "Migrate DB Schema: Options",
                 connectWizard.getConnectionInfo(),
-                map, selectedSchema, mergerTokenFactoryProvider).startupAction();
+                map, selectedCatalog, selectedSchema, mergerTokenFactoryProvider).startupAction();
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<String> getCatalogs(DataSourceController connectWizard) throws Exception {
+        DbAdapter adapter = connectWizard.getConnectionInfo()
+                .makeAdapter(getApplication().getClassLoadingService());
+        if(!adapter.supportsCatalogsOnReverseEngineering()) {
+            return (List<String>)Collections.EMPTY_LIST;
+        }
+
+        DataSource dataSource = connectWizard.getConnectionInfo()
+                .makeDataSource(getApplication().getClassLoadingService());
+        return DbLoader.loadCatalogs(dataSource.getConnection());
     }
 
     private List<String> getSchemas(DataSourceController connectWizard) throws Exception {
-        DbAdapter dbAdapter = connectWizard.getConnectionInfo()
-                .makeAdapter(getApplication().getClassLoadingService());
         DataSource dataSource = connectWizard.getConnectionInfo()
                 .makeDataSource(getApplication().getClassLoadingService());
 
