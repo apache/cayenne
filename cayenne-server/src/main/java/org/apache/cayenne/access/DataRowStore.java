@@ -19,6 +19,21 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataObject;
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.event.SnapshotEvent;
+import org.apache.cayenne.event.EventBridge;
+import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.event.EventSubject;
+import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
+import org.apache.commons.collections.ExtendedProperties;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -29,22 +44,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataObject;
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.event.SnapshotEvent;
-import org.apache.cayenne.event.EventBridge;
-import org.apache.cayenne.event.EventBridgeFactory;
-import org.apache.cayenne.event.EventManager;
-import org.apache.cayenne.event.EventSubject;
-import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
-import org.apache.commons.collections.ExtendedProperties;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * A fixed size cache of DataRows keyed by ObjectId.
@@ -58,7 +57,18 @@ public class DataRowStore implements Serializable {
     // property keys
     public static final String SNAPSHOT_EXPIRATION_PROPERTY = "cayenne.DataRowStore.snapshot.expiration";
     public static final String SNAPSHOT_CACHE_SIZE_PROPERTY = "cayenne.DataRowStore.snapshot.size";
+
+    /**
+     * @deprecated since 4.0.M3 does nothing. Previously it used to check
+     * if need to create {@link EventBridge}.
+     */
+    @Deprecated
     public static final String REMOTE_NOTIFICATION_PROPERTY = "cayenne.DataRowStore.remote.notify";
+
+    /**
+     * @deprecated since 4.0.M3 {@link DataRowStoreFactory} establishes {@link EventBridge}.
+     */
+    @Deprecated
     public static final String EVENT_BRIDGE_FACTORY_PROPERTY = "cayenne.DataRowStore.EventBridge.factory";
 
     // default property values
@@ -66,15 +76,24 @@ public class DataRowStore implements Serializable {
     // default expiration time is 2 hours
     public static final long SNAPSHOT_EXPIRATION_DEFAULT = 2 * 60 * 60;
     public static final int SNAPSHOT_CACHE_SIZE_DEFAULT = 10000;
+
+    @Deprecated
     public static final boolean REMOTE_NOTIFICATION_DEFAULT = false;
 
     // use String for class name, since JavaGroups may not be around,
     // causing CNF exceptions
+    @Deprecated
     public static final String EVENT_BRIDGE_FACTORY_DEFAULT = "org.apache.cayenne.event.JavaGroupsBridgeFactory";
 
     protected String name;
     private int maxSize;
     protected ConcurrentMap<ObjectId, DataRow> snapshots;
+
+    /**
+     * @deprecated since 4.0.M3 does nothing. Previously it used to check
+     * if need to create {@link EventBridge}.
+     */
+    @Deprecated
     protected boolean notifyingRemoteListeners;
 
     protected transient EventManager eventManager;
@@ -88,7 +107,7 @@ public class DataRowStore implements Serializable {
      * Creates new DataRowStore with a specified name and a set of properties. If no
      * properties are defined, default values are used.
      * 
-     * @param name DataRowStore name. Used to idenitfy this DataRowStore in events, etc.
+     * @param name DataRowStore name. Used to identify this DataRowStore in events, etc.
      *            Can't be null.
      * @param properties Properties map used to configure DataRowStore parameters. Can be
      *            null.
@@ -126,14 +145,6 @@ public class DataRowStore implements Serializable {
                 SNAPSHOT_CACHE_SIZE_PROPERTY,
                 SNAPSHOT_CACHE_SIZE_DEFAULT);
 
-        boolean notifyRemote = propertiesWrapper.getBoolean(
-                REMOTE_NOTIFICATION_PROPERTY,
-                REMOTE_NOTIFICATION_DEFAULT);
-
-        String eventBridgeFactory = propertiesWrapper.getString(
-                EVENT_BRIDGE_FACTORY_PROPERTY,
-                EVENT_BRIDGE_FACTORY_DEFAULT);
-
         if (logger.isDebugEnabled()) {
             logger.debug("DataRowStore property "
                     + SNAPSHOT_EXPIRATION_PROPERTY
@@ -143,44 +154,16 @@ public class DataRowStore implements Serializable {
                     + SNAPSHOT_CACHE_SIZE_PROPERTY
                     + " = "
                     + maxSize);
-            logger.debug("DataRowStore property "
-                    + REMOTE_NOTIFICATION_PROPERTY
-                    + " = "
-                    + notifyRemote);
-            logger.debug("DataRowStore property "
-                    + EVENT_BRIDGE_FACTORY_PROPERTY
-                    + " = "
-                    + eventBridgeFactory);
         }
-
-        // init ivars from properties
-        this.notifyingRemoteListeners = notifyRemote;
 
         this.snapshots = new ConcurrentLinkedHashMap.Builder<ObjectId, DataRow>()
                 .maximumWeightedCapacity(maxSize)
                 .build();
 
-        // init event bridge only if we are notifying remote listeners
-        if (notifyingRemoteListeners) {
-            try {
-                EventBridgeFactory factory = (EventBridgeFactory) Class.forName(
-                        eventBridgeFactory).newInstance();
+    }
 
-                Collection<EventSubject> subjects = Collections
-                        .singleton(getSnapshotEventSubject());
-                String externalSubject = EventBridge
-                        .convertToExternalSubject(getSnapshotEventSubject());
-                this.remoteNotificationsHandler = factory.createEventBridge(
-                        subjects,
-                        externalSubject,
-                        properties);
-            }
-            catch (Exception ex) {
-                throw new CayenneRuntimeException("Error initializing DataRowStore.", ex);
-            }
-
-            startListeners();
-        }
+    protected void setEventBridge(EventBridge eventBridge) {
+        remoteNotificationsHandler = eventBridge;
     }
 
     /**
@@ -554,10 +537,12 @@ public class DataRowStore implements Serializable {
         }
     }
 
+    @Deprecated
     public boolean isNotifyingRemoteListeners() {
         return notifyingRemoteListeners;
     }
 
+    @Deprecated
     public void setNotifyingRemoteListeners(boolean notifyingRemoteListeners) {
         this.notifyingRemoteListeners = notifyingRemoteListeners;
     }

@@ -49,39 +49,6 @@ public class DataRowStoreIT extends ServerCase {
         assertEquals("cacheXYZ", cache.getName());
         assertNotNull(cache.getSnapshotEventSubject());
         assertTrue(cache.getSnapshotEventSubject().getSubjectName().contains("cacheXYZ"));
-
-        assertEquals(DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache
-                .isNotifyingRemoteListeners());
-    }
-
-    @Test
-    public void testConstructorWithProperties() {
-        Map<Object, Object> props = new HashMap<Object, Object>();
-        props.put(DataRowStore.REMOTE_NOTIFICATION_PROPERTY, String
-                .valueOf(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT));
-
-        DataRowStore cache = new DataRowStore(
-                "cacheXYZ",
-                props,
-                new DefaultEventManager());
-        assertEquals("cacheXYZ", cache.getName());
-        assertEquals(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache
-                .isNotifyingRemoteListeners());
-    }
-
-    @Test
-    public void testNotifyingRemoteListeners() {
-        DataRowStore cache = new DataRowStore(
-                "cacheXYZ",
-                Collections.EMPTY_MAP,
-                new DefaultEventManager());
-
-        assertEquals(DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache
-                .isNotifyingRemoteListeners());
-
-        cache.setNotifyingRemoteListeners(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT);
-        assertEquals(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache
-                .isNotifyingRemoteListeners());
     }
 
     /**

@@ -19,13 +19,8 @@
 
 package org.apache.cayenne.event;
 
-import java.lang.reflect.Constructor;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.reflect.PropertyUtils;
 
 /**
  * Factory to create JavaGroupsBridge instances. If JavaGroups library is not installed
@@ -36,17 +31,6 @@ import org.apache.cayenne.reflect.PropertyUtils;
  * @since 1.1
  */
 public class JavaGroupsBridgeFactory implements EventBridgeFactory {
-
-    public static final String MCAST_ADDRESS_DEFAULT = "228.0.0.5";
-    public static final String MCAST_PORT_DEFAULT = "22222";
-
-    public static final String MCAST_ADDRESS_PROPERTY = "cayenne.JavaGroupsBridge.mcast.address";
-    public static final String MCAST_PORT_PROPERTY = "cayenne.JavaGroupsBridge.mcast.port";
-
-    /**
-     * Defines a property for JavaGroups XML configuration file.
-     */
-    public static final String JGROUPS_CONFIG_URL_PROPERTY = "javagroupsbridge.config.url";
 
     /**
      * Creates a JavaGroupsBridge instance. Since JavaGroups is not shipped with Cayenne
@@ -59,94 +43,7 @@ public class JavaGroupsBridgeFactory implements EventBridgeFactory {
             Collection<EventSubject> localSubjects,
             String externalSubject,
             Map<String, String> properties) {
-
-        try {
-            // sniff JavaGroups presence
-            Class.forName("org.jgroups.Channel");
-            return createJavaGroupsBridge(localSubjects, externalSubject, properties);
-        }
-        catch (Exception ex) {
-            // recover from no JavaGroups
-            return createNoopBridge();
-        }
+        return new JavaGroupsBridge(localSubjects, externalSubject, properties);
     }
 
-    private EventBridge createNoopBridge() {
-        return new NoopEventBridge();
-    }
-
-    private EventBridge createJavaGroupsBridge(
-            Collection<EventSubject> localSubjects,
-            String externalSubject,
-            Map<String, String> properties) {
-
-        // create JavaGroupsBridge using reflection to avoid triggering
-        // ClassNotFound exceptions due to JavaGroups absence.
-
-        try {
-            Constructor<?> c = Class
-                    .forName("org.apache.cayenne.event.JavaGroupsBridge")
-                    .getConstructor(Collection.class, String.class);
-
-            Object bridge = c.newInstance(localSubjects, externalSubject);
-
-            // configure properties
-            String multicastAddress = properties.get(MCAST_ADDRESS_PROPERTY);
-            String multicastPort = properties.get(MCAST_PORT_PROPERTY);
-            String configURL = properties.get(JGROUPS_CONFIG_URL_PROPERTY);
-
-            PropertyUtils.setProperty(bridge, "configURL", configURL);
-            PropertyUtils.setProperty(
-                    bridge,
-                    "multicastAddress",
-                    multicastAddress != null ? multicastAddress : MCAST_ADDRESS_DEFAULT);
-            PropertyUtils.setProperty(bridge, "multicastPort", multicastPort != null
-                    ? multicastPort
-                    : MCAST_PORT_DEFAULT);
-
-            return (EventBridge) bridge;
-        }
-        catch (Exception ex) {
-            throw new CayenneRuntimeException("Error creating JavaGroupsBridge", ex);
-        }
-    }
-
-    // mockup EventBridge
-    class NoopEventBridge extends EventBridge {
-
-        public NoopEventBridge() {
-            super(Collections.<EventSubject>emptySet(), null);
-        }
-
-        @Override
-        public boolean receivesExternalEvents() {
-            return false;
-        }
-
-        @Override
-        public boolean receivesLocalEvents() {
-            return false;
-        }
-
-        @Override
-        protected void startupExternal() {
-        }
-
-        @Override
-        protected void shutdownExternal() {
-        }
-
-        @Override
-        protected void sendExternalEvent(CayenneEvent localEvent) {
-        }
-
-        @Override
-        public void startup(EventManager eventManager, int mode, Object eventsSource) {
-            this.eventManager = eventManager;
-        }
-
-        @Override
-        public void shutdown() {
-        }
-    }
 }
