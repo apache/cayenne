@@ -221,16 +221,21 @@ public class DataDomainIT extends ServerCase {
 
         final boolean[] cacheShutdown = new boolean[1];
 
-        DataRowStore cache = new DataRowStore("Y", Collections.EMPTY_MAP, new DefaultEventManager()) {
+        DefaultEventManager eventManager = new DefaultEventManager();
+        try {
+            DataRowStore cache = new DataRowStore("Y", Collections.EMPTY_MAP, eventManager) {
 
-            @Override
-            public void shutdown() {
-                cacheShutdown[0] = true;
-            }
-        };
+                @Override
+                public void shutdown() {
+                    cacheShutdown[0] = true;
+                }
+            };
 
-        domain.setSharedSnapshotCache(cache);
-        domain.shutdown();
+            domain.setSharedSnapshotCache(cache);
+            domain.shutdown();
+        } finally {
+            eventManager.shutdown();
+        }
 
         assertTrue(cacheShutdown[0]);
     }
