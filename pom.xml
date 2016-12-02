@@ -890,12 +890,18 @@
 							<name>cayenneJdbcDriver</name>
 							<value>${cayenneJdbcDriver}</value>
 						</property>
+                        <org.slf4j.simpleLogger.defaultLogLevel>${cayenneLogLevel}</org.slf4j.simpleLogger.defaultLogLevel>
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 			<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <org.slf4j.simpleLogger.defaultLogLevel>${cayenneLogLevel}</org.slf4j.simpleLogger.defaultLogLevel>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
