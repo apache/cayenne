@@ -83,6 +83,7 @@ import org.apache.cayenne.modeler.action.ShowLogConsoleAction;
 import org.apache.cayenne.modeler.action.UndoAction;
 import org.apache.cayenne.modeler.action.ValidateAction;
 import org.apache.cayenne.modeler.dialog.LogConsole;
+import org.apache.cayenne.modeler.dialog.welcome.WelcomeScreen;
 import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.DataMapDisplayListener;
