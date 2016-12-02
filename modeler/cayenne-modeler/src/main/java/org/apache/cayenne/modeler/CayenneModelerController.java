@@ -137,7 +137,7 @@ public class CayenneModelerController extends CayenneController {
         });
 
         ComponentGeometry geometry = new ComponentGeometry(frame.getClass(), null);
-        geometry.bind(frame, 650, 550, 0);
+        geometry.bind(frame, 1200, 720, 0);
     }
 
 
