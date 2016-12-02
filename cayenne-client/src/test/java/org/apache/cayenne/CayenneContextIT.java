@@ -39,6 +39,7 @@ import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.GenericResponse;
+import org.junit.After;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -64,6 +65,16 @@ public class CayenneContextIT extends ClientCase {
 
 	@Inject
 	private ObjectContext serverContext;
+
+	private DefaultEventManager eventManager;
+
+	@After
+	public void cleanUp() {
+		if(eventManager != null) {
+			eventManager.shutdown();
+			eventManager = null;
+		}
+	}
 
 	@Test
 	public void testConstructor() {
@@ -121,7 +132,7 @@ public class CayenneContextIT extends ClientCase {
 	public void testCommitChangesNew() {
 		final CompoundDiff diff = new CompoundDiff();
 		final Object newObjectId = new ObjectId("test", "key", "generated");
-		final EventManager eventManager = new DefaultEventManager(0);
+		eventManager = new DefaultEventManager(0);
 
 		// test that ids that are passed back are actually propagated to the
 		// right

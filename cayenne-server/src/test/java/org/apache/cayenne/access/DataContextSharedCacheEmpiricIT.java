@@ -32,6 +32,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,12 +60,15 @@ public class DataContextSharedCacheEmpiricIT extends ServerCase {
     private DataContext c1;
     private DataContext c2;
 
+    private DefaultEventManager eventManager;
+
     @Before
     public void setUp() throws Exception {
+        eventManager = new DefaultEventManager();
         DataRowStore cache = new DataRowStore(
                 "cacheTest",
                 Collections.EMPTY_MAP,
-                new DefaultEventManager());
+                eventManager);
 
         c1 = new DataContext(runtime.getDataDomain(), 
                 objectStoreFactory.createObjectStore(cache));
@@ -75,6 +79,13 @@ public class DataContextSharedCacheEmpiricIT extends ServerCase {
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
         tArtist.insert(1, "version1");
+    }
+
+    @After
+    public void tearDown() {
+        if(eventManager != null) {
+            eventManager.shutdown();
+        }
     }
 
     @Test
