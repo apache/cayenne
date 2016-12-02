@@ -44,10 +44,21 @@ public class DataRowStoreIT extends ServerCase {
 
     private DefaultEventManager eventManager;
 
+    private DataRowStore cache;
+
     @After
     public void cleanEventManager() {
         if(eventManager != null) {
             eventManager.shutdown();
+            eventManager = null;
+        }
+    }
+
+    @After
+    public void cleanDataStore() {
+        if(cache != null) {
+            cache.shutdown();
+            cache = null;
         }
     }
 
@@ -58,7 +69,7 @@ public class DataRowStoreIT extends ServerCase {
 
     @Test
     public void testDefaultConstructor() {
-        DataRowStore cache = new DataRowStore(
+        cache = new DataRowStore(
                 "cacheXYZ",
                 Collections.EMPTY_MAP,
                 eventManager);
@@ -76,7 +87,7 @@ public class DataRowStoreIT extends ServerCase {
         props.put(DataRowStore.REMOTE_NOTIFICATION_PROPERTY, String
                 .valueOf(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT));
 
-        DataRowStore cache = new DataRowStore(
+        cache = new DataRowStore(
                 "cacheXYZ",
                 props,
                 eventManager);
@@ -87,7 +98,7 @@ public class DataRowStoreIT extends ServerCase {
 
     @Test
     public void testNotifyingRemoteListeners() {
-        DataRowStore cache = new DataRowStore(
+        cache = new DataRowStore(
                 "cacheXYZ",
                 Collections.EMPTY_MAP,
                 eventManager);
@@ -108,7 +119,7 @@ public class DataRowStoreIT extends ServerCase {
         Map<Object, Object> props = new HashMap<Object, Object>();
         props.put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, String.valueOf(2));
 
-        DataRowStore cache = new DataRowStore(
+        cache = new DataRowStore(
                 "cacheXYZ",
                 props,
                 eventManager);
