@@ -19,14 +19,12 @@
 
 package org.apache.cayenne.modeler.dialog.welcome;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.List;
 
+import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -38,6 +36,7 @@ import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.action.NewProjectAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.event.RecentFileListListener;
+import org.apache.cayenne.modeler.util.BackgroundPanel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
 /**
@@ -49,18 +48,16 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener, Rec
     /**
      * List of recent projects
      */
-    private JList<String> recentsList;
+    private JList<String> recentProjectsList;
 
-    private JPanel buttonsPane;
-
-    private JPanel fileListPane;
+    private JPanel buttonsPanel;
 
     public WelcomeScreen() {
         initView();
     }
 
     /**
-     * Creates all neccesary components
+     * Creates all necessary components
      */
     protected void initView() {
         setLayout(new GridBagLayout());
@@ -69,78 +66,45 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener, Rec
     }
 
     private void initFileListPane() {
-        final ImageIcon rightPaneImg = ModelerUtil.buildIcon("welcome/welcome-screen-right-bg.jpg");
-        fileListPane = new JPanel(null) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(rightPaneImg.getImage(), 0, 0, null);
-            }
-        };
-        fileListPane.setPreferredSize(new Dimension(902, 592));
-        fileListPane.setOpaque(false);
+        JPanel fileListPanel = new BackgroundPanel("welcome/welcome-screen-right-bg.jpg");
 
-        initRecentList();
+        final int padding = 20;
+        recentProjectsList = new JList<>();
+        recentProjectsList.setOpaque(false);
+        recentProjectsList.setLocation(padding, padding);
+        recentProjectsList.setSize(
+                fileListPanel.getWidth() - 2 * padding,
+                fileListPanel.getHeight() - 2 * padding
+        );
+        recentProjectsList.setCellRenderer(new RecentFileListRenderer(recentProjectsList, this));
 
-        add(fileListPane);
+        fileListPanel.add(recentProjectsList);
+        add(fileListPanel);
     }
 
     private void initButtonsPane() {
-        final ImageIcon leftPaneImg = ModelerUtil.buildIcon("welcome/welcome-screen-left-bg.jpg");
-        buttonsPane = new JPanel(null) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(leftPaneImg.getImage(), 0, 0, null);
-            }
-        };
-        buttonsPane.setPreferredSize(new Dimension(198, 592));
-        buttonsPane.setOpaque(false);
+        final int padding = 24; // bottom padding for buttons
+        final int buttonHeight = 36;
 
-        initNewButton();
-        initOpenButton();
+        buttonsPanel = new BackgroundPanel("welcome/welcome-screen-left-bg.jpg");
+        int openButtonY = buttonsPanel.getHeight() - padding - buttonHeight; // buttons layout from bottom
+        int newButtonY = openButtonY - 10 - buttonHeight; // 10px - space between buttons
+        initButton("open", openButtonY, OpenProjectAction.class);
+        initButton("new", newButtonY, NewProjectAction.class);
 
-        add(buttonsPane);
+        add(buttonsPanel);
     }
 
-
-    private void initNewButton() {
-        ImageIcon newIcon = ModelerUtil.buildIcon("welcome/welcome-screen-new-btn.png");
-        ImageIcon newHoverIcon = ModelerUtil.buildIcon("welcome/welcome-screen-new-btn-hover.png");
-        JButton newButton = createButton(newIcon, newHoverIcon);
-        newButton.setLocation(24, 488);
-        newButton.addActionListener(Application
+    private void initButton(String name, int y,  Class<? extends Action> actionClass) {
+        ImageIcon icon = ModelerUtil.buildIcon("welcome/welcome-screen-"+name+"-btn.png");
+        ImageIcon hoverIcon = ModelerUtil.buildIcon("welcome/welcome-screen-"+name+"-btn-hover.png");
+        JButton button = createButton(icon, hoverIcon);
+        button.setLocation(24, y); // 24px - button left & right padding
+        button.addActionListener(Application
                 .getInstance()
                 .getActionManager()
-                .getAction(NewProjectAction.class));
-        buttonsPane.add(newButton);
-    }
-
-    private void initOpenButton() {
-        ImageIcon newIcon = ModelerUtil.buildIcon("welcome/welcome-screen-open-btn.png");
-        ImageIcon newHoverIcon = ModelerUtil.buildIcon("welcome/welcome-screen-open-btn-hover.png");
-        JButton openButton = createButton(newIcon, newHoverIcon);
-        openButton.setLocation(24, 532);
-        openButton.addActionListener(Application
-                .getInstance()
-                .getActionManager()
-                .getAction(NewProjectAction.class));
-        buttonsPane.add(openButton);
-    }
-
-    private void initRecentList() {
-        recentsList = new JList<>();
-        recentsList.setOpaque(false);
-        int padding = 20;
-        recentsList.setLocation(padding, padding);
-        recentsList.setSize(902 - 2 * padding, 592 - 2 * padding);
-        Font fontOld = recentsList.getFont();
-        Font font = new Font(fontOld.getFontName(), Font.PLAIN, 12);
-        recentsList.setFont(font);
-//        recentsList.setFixedCellHeight(24);
-        RecentFileListRenderer cellRenderer = new RecentFileListRenderer(recentsList, this);
-        recentsList.setCellRenderer(cellRenderer);
-        fileListPane.add(recentsList);
+                .getAction(actionClass));
+        buttonsPanel.add(button);
     }
 
     @Override
@@ -178,7 +142,6 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener, Rec
     @Override
     public void recentFileListChanged() {
         List<String> arr = ModelerPreferences.getLastProjFiles();
-        recentsList.setModel(new RecentFileListModel(arr));
+        recentProjectsList.setModel(new RecentFileListModel(arr));
     }
-
 }
