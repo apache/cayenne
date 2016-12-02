@@ -21,9 +21,12 @@ package org.apache.cayenne.event;
 
 import org.apache.cayenne.access.event.SnapshotEvent;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
+import org.junit.After;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -33,6 +36,16 @@ import static org.junit.Assert.assertTrue;
 /**
  */
 public class EventBridgeTest {
+
+    private List<DefaultEventManager> managersToClean = new ArrayList<>();
+
+    @After
+    public void cleanEventManagers() {
+        for(DefaultEventManager manager : managersToClean) {
+            manager.shutdown();
+        }
+        managersToClean.clear();
+    }
 
     @Test
     public void testConstructor() throws Exception {
@@ -54,7 +67,8 @@ public class EventBridgeTest {
         String external = "externalSubject";
         TestBridge bridge = new TestBridge(local, external);
 
-        EventManager manager = new DefaultEventManager();
+        DefaultEventManager manager = new DefaultEventManager();
+        managersToClean.add(manager);
         bridge.startup(manager, EventBridge.RECEIVE_LOCAL_EXTERNAL);
 
         assertSame(manager, bridge.eventManager);
@@ -62,7 +76,8 @@ public class EventBridgeTest {
         assertEquals(0, bridge.shutdownCalls);
 
         // try startup again
-        EventManager newManager = new DefaultEventManager();
+        DefaultEventManager newManager = new DefaultEventManager();
+        managersToClean.add(newManager);
         bridge.startup(newManager, EventBridge.RECEIVE_LOCAL_EXTERNAL);
 
         assertSame(newManager, bridge.eventManager);
@@ -77,7 +92,8 @@ public class EventBridgeTest {
         String external = "externalSubject";
         TestBridge bridge = new TestBridge(local, external);
 
-        EventManager manager = new DefaultEventManager();
+        DefaultEventManager manager = new DefaultEventManager();
+        managersToClean.add(manager);
         bridge.startup(manager, EventBridge.RECEIVE_LOCAL_EXTERNAL);
         bridge.shutdown();
 
@@ -95,7 +111,8 @@ public class EventBridgeTest {
         String external = "externalSubject";
         final TestBridge bridge = new TestBridge(local, external);
 
-        EventManager manager = new DefaultEventManager(2);
+        DefaultEventManager manager = new DefaultEventManager(2);
+        managersToClean.add(manager);
         bridge.startup(manager, EventBridge.RECEIVE_LOCAL_EXTERNAL);
 
         final SnapshotEvent eventWithNoSubject = new SnapshotEvent(
