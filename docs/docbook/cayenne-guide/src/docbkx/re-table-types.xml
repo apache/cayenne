@@ -19,24 +19,22 @@
     <title>Table Types</title>
     <para>
         By default, cdbimport processes only tables and views from schema, but there are a lot of other objects that could be loaded from database,
-        such as SYSTEM TABLE, GLOBAL TEMPORARY, LOCAL TEMPORARY, ALIAS, SYNONYM, etc. Those things are specific for concrete databases and could be accepted
-        by the &lt;tableType&gt;&lt;tableType&gt; element.
+        such as <code>SYSTEM TABLE, GLOBAL TEMPORARY, LOCAL TEMPORARY, ALIAS, SYNONYM</code>, etc. Those things are specific for concrete databases and could be accepted
+        by the <code language="xml">&lt;tableType&gt;&lt;/tableType&gt;</code> element.
     </para>
     <para>
         Import only tables
         <programlisting language="xml">
-                &lt;reverseEngineering>&gt;
-                    &lt;tableType&gt;TABLE&lt;/tableType&gt;
-                &lt;/reverseEngineering&gt;
-        </programlisting>
+    &lt;reverseEngineering&gt;
+        &lt;tableType&gt;TABLE&lt;/tableType&gt;
+    &lt;/reverseEngineering&gt;</programlisting>
     </para>
     <para>
-        Tables and views (default option)
+        Tables and views (<emphasis>default option</emphasis>)
         <programlisting language="xml">
-                &lt;reverseEngineering>&gt;
-                    &lt;tableType&gt;TABLE&lt;/tableType&gt;
-                    &lt;tableType&gt;VIEWS&lt;/tableType&gt;
-                &lt;/reverseEngineering&gt;
-        </programlisting>
+    &lt;reverseEngineering&gt;
+        &lt;tableType&gt;TABLE&lt;/tableType&gt;
+        &lt;tableType&gt;VIEWS&lt;/tableType&gt;
+    &lt;/reverseEngineering&gt;</programlisting>
     </para>
 </chapter>

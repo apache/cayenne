@@ -67,6 +67,14 @@ pre.programlisting {
     clear:         both;
 }
 
+pre.screen {
+    font-family: Courier New,monospace;
+    font-size:     10pt;
+    padding:       7pt 3pt;
+    border:        1pt solid black;
+    background:    #F9F9F6;
+}
+
 div.table {
     margin:        1em;
     padding:       0.5em;

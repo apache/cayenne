@@ -116,7 +116,7 @@ PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS</programlisting></para>
             <link linkend="ejbqlquery">EJBQLQuery</link> queries by employing the &quot;FETCH&quot;
                 keyword.</para>
 
-            <screen>SELECT a FROM Artist a LEFT JOIN FETCH a.paintings</screen>
+            <programlisting language="sql">SELECT a FROM Artist a LEFT JOIN FETCH a.paintings</programlisting>
 
             <para>
                 In this case, the Paintings that exist for the Artist will be obtained at the same time
@@ -165,12 +165,12 @@ for(DataRow row : rows) {
             The following example would return a java.util.List of String objects;
         </para>
 
-        <screen>SELECT a.name FROM Artist a</screen>
+        <programlisting language="sql">SELECT a.name FROM Artist a</programlisting>
 
         <para>The following will yield a java.util.List containing Object[] instances, each of which
             would contain the name followed by the dateOfBirth value.</para>
 
-        <screen>SELECT a.name, a.dateOfBirth FROM Artist a</screen>
+        <programlisting language="sql">SELECT a.name, a.dateOfBirth FROM Artist a</programlisting>
 
         <para>Refer to third-party query language documentation for further
             detail on this mechanism.</para>
@@ -204,7 +204,7 @@ for(DataRow row : rows) {
     }           
 }</programlisting></para>
         <para>Same thing with a
-            callback:<programlisting>ObjectSelect.query(Artist.class).iterate(context, (Artist a) -> {
+            callback:<programlisting language="java">ObjectSelect.query(Artist.class).iterate(context, (Artist a) -> {
     // do something with the object...
     ...
 });</programlisting></para>
@@ -212,7 +212,7 @@ for(DataRow row : rows) {
             each iteration. This is a common scenario in various data processing jobs - read a batch
             of objects, process them, commit the results, and then repeat. This allows to further
             optimize processing (e.g. by avoiding frequent
-            commits).<programlisting>try(ResultBatchIterator&lt;Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
+            commits).<programlisting language="java">try(ResultBatchIterator&lt;Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
     for(List&lt;Artist> list : it) {
        // do something with each list
        ...
@@ -265,7 +265,7 @@ List&lt;Artist> artists =
             <para>To take advantage of query result caching, the first step is to mark your queries
                 appropriately. Here is an example for ObjectSelect query. Other types of queries
                 have similar
-                API:<programlisting>ObjectSelect.query(Artist.class).localCache("artists");</programlisting></para>
+                API:<programlisting language="java">ObjectSelect.query(Artist.class).localCache("artists");</programlisting></para>
             <para>This tells Cayenne that the query created here would like to use local cache of
                 the context it is executed against. A vararg parameter to <code>localCache()</code>
                 (or <code>sharedCache()</code>) method contains so called "cache groups". Those are
@@ -277,7 +277,7 @@ List&lt;Artist> artists =
                 providers. One such provider available in Cayenne is a provider for <link
                     xlink:href="http://www.ehcache.org/">EhCache</link>. It can be enabled on
                 ServerRuntime startup in a custom
-                Module:<programlisting>ServerRuntimeBuilder
+                Module:<programlisting language="java">ServerRuntimeBuilder
   .builder()
   .addModule((binder) -> 
      binder.bind(QueryCache.class).to(EhCacheQueryCache.class)
@@ -285,7 +285,7 @@ List&lt;Artist> artists =
   .build();</programlisting></para>
             <para>By default EhCache reads a file called "ehcache.xml" located on classpath. You can
                 put your cache configuration in that file.
-                E.g.:<programlisting>&lt;ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                E.g.:<programlisting language="xml">&lt;ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="false"
 	monitoring="off" dynamicConfig="false">
 
@@ -302,7 +302,7 @@ List&lt;Artist> artists =
                 sufficient, and the users want real-time cache invalidation when the data changes.
                 So in addition to those policies, the app can invalidate individual cache groups
                 explicitly with
-                <code>RefreshQuery</code>:<programlisting>RefreshQuery refresh = new RefreshQuery("artist");
+                <code>RefreshQuery</code>:<programlisting language="java">RefreshQuery refresh = new RefreshQuery("artist");
 context.performGenericQuery(refresh);</programlisting></para>
             <para>The above can be used e.g. to build UI for manual cache invalidation. It is also
                 possible to automate cache refresh when certain entities are committed. This
@@ -310,7 +310,7 @@ context.performGenericQuery(refresh);</programlisting></para>
                 you will need two things: <code>@CacheGroups</code> annotation to mark entities that
                 generate cache invalidation events and  <code>CacheInvalidationFilter</code> that
                 catches the updates to the annotated objects and generates appropriate invalidation
-                events:<programlisting>// configure filter on startup
+                events:<programlisting language="java">// configure filter on startup
 ServerRuntimeBuilder
   .builder()
   .addModule((binder) -> 
@@ -319,7 +319,7 @@ ServerRuntimeBuilder
   .build();</programlisting></para>
             <para>Now you can associate entities with cache groups, so that commits to those
                 entities would atomatically invalidate the
-                groups:<programlisting>@CacheGroups("artists")
+                groups:<programlisting language="java">@CacheGroups("artists")
 public class Artist extends _Artist {
 }</programlisting></para>
             <para>Finally you may cluster cache group events. They are very small and can be
@@ -366,7 +366,7 @@ public class Artist extends _Artist {
             To do that, set to "false" the following DI property -
                 <code>Constants.SERVER_CONTEXTS_SYNC_PROPERTY</code>, using one of the standard
             Cayenne DI approaches. E.g. from command
-            line:<programlisting language="java">java -Dcayenne.server.contexts_sync_strategy=false</programlisting>Or
+            line:<screen><prompt>$</prompt> java -Dcayenne.server.contexts_sync_strategy=false</screen>Or
             by changing the standard properties Map in a custom extensions
             module:<programlisting language="java">public class MyModule implements Module {
 

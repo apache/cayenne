@@ -23,4 +23,5 @@
 	<xi:include href="re-name-generator.xml"/>
 	<xi:include href="re-table-types.xml"/>
 	<xi:include href="re-types-mapping.xml"/>
+	<xi:include href="re-modeler.xml"/>
 </part>

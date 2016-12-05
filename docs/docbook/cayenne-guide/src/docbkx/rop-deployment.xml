@@ -30,7 +30,7 @@
                 problem" protections of the container. E.g. the later can be achieved in Tomcat 7 by
                 adding the following <emphasis>context.xml</emphasis> file to the webapp's META-INF/
                 directory:
-                <programlisting>&lt;Context>
+                <programlisting language="xml">&lt;Context>
     &lt;Valve className="org.apache.catalina.authenticator.BasicAuthenticator"
             changeSessionIdOnAuthentication="false" />
 &lt;/Context></programlisting>(The

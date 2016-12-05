@@ -22,61 +22,55 @@
             Let's rename "name" column from the Customer table to the "first_name".
         </para>
         <para>
-            SQL
+            Database:
         </para>
-        <programlisting>
-            ALTER TABLE `customer` 
-            CHANGE COLUMN `name` `first_name` VARCHAR(50) NULL DEFAULT NULL ;
-        </programlisting>
+        <programlisting language="sql">ALTER TABLE `customer`
+CHANGE COLUMN `name` `first_name` VARCHAR(50) NULL DEFAULT NULL ;</programlisting>
         <para>
             Now we can do reverse engineering again by the command we already know:
         </para>
-        <programlisting>
-            mvn compile -Pormsync
-        </programlisting>
+        <screen><prompt>$</prompt> mvn compile -Pormsync</screen>
         <para>The output should look like this:</para>
-        <programlisting>
-            [INFO] Scanning for projects...
-            [INFO]
-            [INFO] ------------------------------------------------------------------------
-            [INFO] Building MySQLTest 0.0.1-SNAPSHOT
-            [INFO] ------------------------------------------------------------------------
-            [INFO]
-            [INFO] --- maven-cayenne-plugin:4.0.M3:cdbimport (ormsync) @ MySQLTest ---
-            Aug 16, 2016 5:07:31 PM org.apache.cayenne.datasource.DriverDataSource logConnect
-            INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
-            Aug 16, 2016 5:07:32 PM org.apache.cayenne.datasource.DriverDataSource getConnection
-            INFO: +++ Connecting: SUCCESS.
-            Aug 16, 2016 5:07:32 PM org.apache.cayenne.log.CommonsJdbcEventLogger log
-            INFO: Detected and installed adapter: org.apache.cayenne.dba.mysql.MySQLAdapter
-            Aug 16, 2016 5:07:32 PM org.apache.cayenne.datasource.DriverDataSource logConnect
-            INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
-            Aug 16, 2016 5:07:32 PM org.apache.cayenne.datasource.DriverDataSource getConnection
-            INFO: +++ Connecting: SUCCESS.
-            Aug 16, 2016 5:07:32 PM org.apache.cayenne.access.DbLoader load
-            INFO: Schema loading...
-            Aug 16, 2016 5:07:32 PM org.apache.cayenne.datasource.DriverDataSource logConnect
-            INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
-            Aug 16, 2016 5:07:32 PM org.apache.cayenne.datasource.DriverDataSource getConnection
-            INFO: +++ Connecting: SUCCESS.
-            Aug 16, 2016 5:07:32 PM org.apache.cayenne.log.CommonsJdbcEventLogger log
-            INFO: Detected and installed adapter: org.apache.cayenne.dba.mysql.MySQLAdapter
-            [INFO]   Table: test.customer
-            [INFO]   Table: test.order
-            [INFO]     Db Relationship : toOne  (order.customer_id, customer.id)
-            [INFO]     Db Relationship : toMany (customer.id, order.customer_id)
-            [INFO]
-            [INFO] Detected changes:
-            [INFO]     Add Column           customer.first_name
-            [INFO]     Drop Column          customer.name
-            [INFO]
-            [INFO] Migration Complete Successfully.
-            [INFO]
-            [INFO] --- maven-cayenne-plugin:4.0.M3:cgen (ormsync) @ MySQLTest ---
-            [INFO] Generating superclass file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/auto/_Customer.java
-            [INFO] Generating superclass file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/auto/_Order.java
-            [INFO]
-        </programlisting>
+        <screen>[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building MySQLTest 0.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO]
+[INFO] --- maven-cayenne-plugin:4.0.M3:cdbimport (ormsync) @ MySQLTest ---
+Aug 16, 2016 5:07:31 PM org.apache.cayenne.datasource.DriverDataSource logConnect
+INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
+Aug 16, 2016 5:07:32 PM org.apache.cayenne.datasource.DriverDataSource getConnection
+INFO: +++ Connecting: SUCCESS.
+Aug 16, 2016 5:07:32 PM org.apache.cayenne.log.CommonsJdbcEventLogger log
+INFO: Detected and installed adapter: org.apache.cayenne.dba.mysql.MySQLAdapter
+Aug 16, 2016 5:07:32 PM org.apache.cayenne.datasource.DriverDataSource logConnect
+INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
+Aug 16, 2016 5:07:32 PM org.apache.cayenne.datasource.DriverDataSource getConnection
+INFO: +++ Connecting: SUCCESS.
+Aug 16, 2016 5:07:32 PM org.apache.cayenne.access.DbLoader load
+INFO: Schema loading...
+Aug 16, 2016 5:07:32 PM org.apache.cayenne.datasource.DriverDataSource logConnect
+INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
+Aug 16, 2016 5:07:32 PM org.apache.cayenne.datasource.DriverDataSource getConnection
+INFO: +++ Connecting: SUCCESS.
+Aug 16, 2016 5:07:32 PM org.apache.cayenne.log.CommonsJdbcEventLogger log
+INFO: Detected and installed adapter: org.apache.cayenne.dba.mysql.MySQLAdapter
+[INFO]   Table: test.customer
+[INFO]   Table: test.order
+[INFO]     Db Relationship : toOne  (order.customer_id, customer.id)
+[INFO]     Db Relationship : toMany (customer.id, order.customer_id)
+[INFO]
+[INFO] Detected changes:
+[INFO]     Add Column           customer.first_name
+[INFO]     Drop Column          customer.name
+[INFO]
+[INFO] Migration Complete Successfully.
+[INFO]
+[INFO] --- maven-cayenne-plugin:4.0.M3:cgen (ormsync) @ MySQLTest ---
+[INFO] Generating superclass file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/auto/_Customer.java
+[INFO] Generating superclass file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/auto/_Order.java
+[INFO]</screen>
         <para>
             As you could see, cdbimport task found and applied our changes to the model. Then, superclasses was updated by 
             cgen task to catch our changes. Notice that Cayenne treated a column renaming change as dropping and adding 
@@ -89,44 +83,42 @@
             Let’s rename an "amount" ObjAttribute name to "totalPrice" in Order ObjectEntity. After running
             reverse engineering task, the output will show you no changes to import:
         </para>
-        <programlisting>
-            [INFO] Scanning for projects...
-            [INFO]
-            [INFO] ------------------------------------------------------------------------
-            [INFO] Building MySQLTest 0.0.1-SNAPSHOT
-            [INFO] ------------------------------------------------------------------------
-            [INFO]
-            [INFO] --- maven-cayenne-plugin:4.0.M3:cdbimport (ormsync) @ MySQLTest ---
-            Aug 16, 2016 5:26:53 PM org.apache.cayenne.datasource.DriverDataSource logConnect
-            INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
-            Aug 16, 2016 5:26:53 PM org.apache.cayenne.datasource.DriverDataSource getConnection
-            INFO: +++ Connecting: SUCCESS.
-            Aug 16, 2016 5:26:53 PM org.apache.cayenne.log.CommonsJdbcEventLogger log
-            INFO: Detected and installed adapter: org.apache.cayenne.dba.mysql.MySQLAdapter
-            Aug 16, 2016 5:26:53 PM org.apache.cayenne.datasource.DriverDataSource logConnect
-            INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
-            Aug 16, 2016 5:26:53 PM org.apache.cayenne.datasource.DriverDataSource getConnection
-            INFO: +++ Connecting: SUCCESS.
-            Aug 16, 2016 5:26:53 PM org.apache.cayenne.access.DbLoader load
-            INFO: Schema loading...
-            Aug 16, 2016 5:26:53 PM org.apache.cayenne.datasource.DriverDataSource logConnect
-            INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
-            Aug 16, 2016 5:26:53 PM org.apache.cayenne.datasource.DriverDataSource getConnection
-            INFO: +++ Connecting: SUCCESS.
-            Aug 16, 2016 5:26:53 PM org.apache.cayenne.log.CommonsJdbcEventLogger log
-            INFO: Detected and installed adapter: org.apache.cayenne.dba.mysql.MySQLAdapter
-            [INFO]   Table: test.customer
-            [INFO]   Table: test.order
-            [INFO]     Db Relationship : toOne  (order.customer_id, customer.id)
-            [INFO]     Db Relationship : toMany (customer.id, order.customer_id)
-            [INFO]
-            [INFO] Detected changes: No changes to import.
-            [INFO]
-            [INFO] --- maven-cayenne-plugin:4.0.M3:cgen (ormsync) @ MySQLTest ---
-            [INFO] Generating superclass file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/auto/_Customer.java
-            [INFO] Generating superclass file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/auto/_Order.java
-            [INFO]
-        </programlisting>
+        <screen>[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building MySQLTest 0.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO]
+[INFO] --- maven-cayenne-plugin:4.0.M3:cdbimport (ormsync) @ MySQLTest ---
+Aug 16, 2016 5:26:53 PM org.apache.cayenne.datasource.DriverDataSource logConnect
+INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
+Aug 16, 2016 5:26:53 PM org.apache.cayenne.datasource.DriverDataSource getConnection
+INFO: +++ Connecting: SUCCESS.
+Aug 16, 2016 5:26:53 PM org.apache.cayenne.log.CommonsJdbcEventLogger log
+INFO: Detected and installed adapter: org.apache.cayenne.dba.mysql.MySQLAdapter
+Aug 16, 2016 5:26:53 PM org.apache.cayenne.datasource.DriverDataSource logConnect
+INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
+Aug 16, 2016 5:26:53 PM org.apache.cayenne.datasource.DriverDataSource getConnection
+INFO: +++ Connecting: SUCCESS.
+Aug 16, 2016 5:26:53 PM org.apache.cayenne.access.DbLoader load
+INFO: Schema loading...
+Aug 16, 2016 5:26:53 PM org.apache.cayenne.datasource.DriverDataSource logConnect
+INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
+Aug 16, 2016 5:26:53 PM org.apache.cayenne.datasource.DriverDataSource getConnection
+INFO: +++ Connecting: SUCCESS.
+Aug 16, 2016 5:26:53 PM org.apache.cayenne.log.CommonsJdbcEventLogger log
+INFO: Detected and installed adapter: org.apache.cayenne.dba.mysql.MySQLAdapter
+[INFO]   Table: test.customer
+[INFO]   Table: test.order
+[INFO]     Db Relationship : toOne  (order.customer_id, customer.id)
+[INFO]     Db Relationship : toMany (customer.id, order.customer_id)
+[INFO]
+[INFO] Detected changes: No changes to import.
+[INFO]
+[INFO] --- maven-cayenne-plugin:4.0.M3:cgen (ormsync) @ MySQLTest ---
+[INFO] Generating superclass file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/auto/_Customer.java
+[INFO] Generating superclass file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/auto/_Order.java
+[INFO]</screen>
         <para>
             As you could see, cdbimport task didn't detect any changes. Whenever you change anything in “obj-attribute” xml element 
             it will not reflect anything on the database side. But your changes will be reflected in auto generated java classes
@@ -142,16 +134,14 @@
         <para>
             SQL
         </para>
-        <programlisting language="sql">
-            CREATE TABLE `ordered_product` (
-            `customer_order_id` INT(11) NOT NULL,
-            `product_id` INT(11) DEFAULT NULL,
-            `quantity` SMALLINT(6) DEFAULT NULL,
-            PRIMARY KEY (`customer_order_id`),
-            KEY `fk_product_references_idx` (`product_id`),
-            CONSTRAINT `fk_order_references` FOREIGN KEY (`customer_order_id`) REFERENCES `order` (`id`) 
-            ON DELETE CASCADE ON UPDATE CASCADE);
-        </programlisting>
+        <programlisting language="sql">CREATE TABLE `ordered_product` (
+`customer_order_id` INT(11) NOT NULL,
+`product_id` INT(11) DEFAULT NULL,
+`quantity` SMALLINT(6) DEFAULT NULL,
+PRIMARY KEY (`customer_order_id`),
+KEY `fk_product_references_idx` (`product_id`),
+CONSTRAINT `fk_order_references` FOREIGN KEY (`customer_order_id`) REFERENCES `order` (`id`)
+ON DELETE CASCADE ON UPDATE CASCADE);</programlisting>
         <para>
             <inlinemediaobject>
                 <imageobject>
@@ -163,56 +153,54 @@
             After running the reverse engineering task again as described in the previous examples, the new output will 
             show a few actual DB operations:
         </para>
-        <programlisting>
-            [INFO] Scanning for projects...
-            [INFO]
-            [INFO] ------------------------------------------------------------------------
-            [INFO] Building MySQLTest 0.0.1-SNAPSHOT
-            [INFO] ------------------------------------------------------------------------
-            [INFO]
-            [INFO] --- maven-cayenne-plugin:4.0.M3:cdbimport (ormsync) @ MySQLTest ---
-            Aug 16, 2016 5:43:52 PM org.apache.cayenne.datasource.DriverDataSource logConnect
-            INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
-            Aug 16, 2016 5:43:52 PM org.apache.cayenne.datasource.DriverDataSource getConnection
-            INFO: +++ Connecting: SUCCESS.
-            Aug 16, 2016 5:43:52 PM org.apache.cayenne.log.CommonsJdbcEventLogger log
-            INFO: Detected and installed adapter: org.apache.cayenne.dba.mysql.MySQLAdapter
-            Aug 16, 2016 5:43:52 PM org.apache.cayenne.datasource.DriverDataSource logConnect
-            INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
-            Aug 16, 2016 5:43:52 PM org.apache.cayenne.datasource.DriverDataSource getConnection
-            INFO: +++ Connecting: SUCCESS.
-            Aug 16, 2016 5:43:52 PM org.apache.cayenne.access.DbLoader load
-            INFO: Schema loading...
-            Aug 16, 2016 5:43:52 PM org.apache.cayenne.datasource.DriverDataSource logConnect
-            INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
-            Aug 16, 2016 5:43:52 PM org.apache.cayenne.datasource.DriverDataSource getConnection
-            INFO: +++ Connecting: SUCCESS.
-            Aug 16, 2016 5:43:52 PM org.apache.cayenne.log.CommonsJdbcEventLogger log
-            INFO: Detected and installed adapter: org.apache.cayenne.dba.mysql.MySQLAdapter
-            [INFO]   Table: test.customer
-            [INFO]   Table: test.order
-            [INFO]   Table: test.ordered_product
-            [INFO]     Db Relationship : toOne  (ordered_product.customer_order_id, order.id)
-            [INFO]     Db Relationship : toOne  (order.id, ordered_product.customer_order_id)
-            [INFO]     Db Relationship : toOne  (order.customer_id, customer.id)
-            [INFO]     Db Relationship : toMany (customer.id, order.customer_id)
-            [INFO]
-            [INFO] Detected changes:
-            [INFO]     Add Relationship     customerOrder order->ordered_product.customer_order_id
-            [INFO]     Create Table         ordered_product
-            [INFO]
-            Aug 16, 2016 5:43:52 PM org.apache.cayenne.util.EntityMergeSupport addMissingRelationships
-            WARNING: Can't find ObjEntity for ordered_product
-            Aug 16, 2016 5:43:52 PM org.apache.cayenne.util.EntityMergeSupport addMissingRelationships
-            WARNING: Db Relationship (Db Relationship : toOne  (order.id, ordered_product.customer_order_id)) will have GUESSED Obj Relationship reflection.
-            [INFO] Migration Complete Successfully.
-            [INFO]
-            [INFO] --- maven-cayenne-plugin:4.0.M3:cgen (ormsync) @ MySQLTest ---
-            [INFO] Generating superclass file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/auto/_Customer.java
-            [INFO] Generating superclass file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/auto/_Order.java
-            [INFO] Generating superclass file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/auto/_OrderedProduct.java
-            [INFO] Generating class file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/OrderedProduct.java
-            [INFO]
-        </programlisting>
+        <screen>[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building MySQLTest 0.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO]
+[INFO] --- maven-cayenne-plugin:4.0.M3:cdbimport (ormsync) @ MySQLTest ---
+Aug 16, 2016 5:43:52 PM org.apache.cayenne.datasource.DriverDataSource logConnect
+INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
+Aug 16, 2016 5:43:52 PM org.apache.cayenne.datasource.DriverDataSource getConnection
+INFO: +++ Connecting: SUCCESS.
+Aug 16, 2016 5:43:52 PM org.apache.cayenne.log.CommonsJdbcEventLogger log
+INFO: Detected and installed adapter: org.apache.cayenne.dba.mysql.MySQLAdapter
+Aug 16, 2016 5:43:52 PM org.apache.cayenne.datasource.DriverDataSource logConnect
+INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
+Aug 16, 2016 5:43:52 PM org.apache.cayenne.datasource.DriverDataSource getConnection
+INFO: +++ Connecting: SUCCESS.
+Aug 16, 2016 5:43:52 PM org.apache.cayenne.access.DbLoader load
+INFO: Schema loading...
+Aug 16, 2016 5:43:52 PM org.apache.cayenne.datasource.DriverDataSource logConnect
+INFO: Connecting to 'jdbc:mysql://127.0.0.1:3306/test' as 'root'
+Aug 16, 2016 5:43:52 PM org.apache.cayenne.datasource.DriverDataSource getConnection
+INFO: +++ Connecting: SUCCESS.
+Aug 16, 2016 5:43:52 PM org.apache.cayenne.log.CommonsJdbcEventLogger log
+INFO: Detected and installed adapter: org.apache.cayenne.dba.mysql.MySQLAdapter
+[INFO]   Table: test.customer
+[INFO]   Table: test.order
+[INFO]   Table: test.ordered_product
+[INFO]     Db Relationship : toOne  (ordered_product.customer_order_id, order.id)
+[INFO]     Db Relationship : toOne  (order.id, ordered_product.customer_order_id)
+[INFO]     Db Relationship : toOne  (order.customer_id, customer.id)
+[INFO]     Db Relationship : toMany (customer.id, order.customer_id)
+[INFO]
+[INFO] Detected changes:
+[INFO]     Add Relationship     customerOrder order->ordered_product.customer_order_id
+[INFO]     Create Table         ordered_product
+[INFO]
+Aug 16, 2016 5:43:52 PM org.apache.cayenne.util.EntityMergeSupport addMissingRelationships
+WARNING: Can't find ObjEntity for ordered_product
+Aug 16, 2016 5:43:52 PM org.apache.cayenne.util.EntityMergeSupport addMissingRelationships
+WARNING: Db Relationship (Db Relationship : toOne  (order.id, ordered_product.customer_order_id)) will have GUESSED Obj Relationship reflection.
+[INFO] Migration Complete Successfully.
+[INFO]
+[INFO] --- maven-cayenne-plugin:4.0.M3:cgen (ormsync) @ MySQLTest ---
+[INFO] Generating superclass file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/auto/_Customer.java
+[INFO] Generating superclass file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/auto/_Order.java
+[INFO] Generating superclass file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/auto/_OrderedProduct.java
+[INFO] Generating class file: **/MySQLTest/src/main/java/org/apache/cayenne/shopping/OrderedProduct.java
+[INFO]</screen>
     </section>
 </chapter>

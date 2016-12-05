@@ -55,7 +55,7 @@
 				<plugin>
 					<groupId>com.agilejava.docbkx</groupId>
 					<artifactId>docbkx-maven-plugin</artifactId>
-					<version>2.0.14</version>
+					<version>2.0.17</version>
 					<dependencies>
 						<dependency>
 							<groupId>org.docbook</groupId>
@@ -102,6 +102,11 @@
 							<htmlCustomization>${project.stylesheetdir}/stylesheets/html.xsl</htmlCustomization>
 							<chunkedOutput>true</chunkedOutput>
 							<postProcess>
+								<move todir="${basedir}/target/site/index">
+									<fileset dir="${basedir}/target/site/">
+										<include name="*.html"/>
+									</fileset>
+								</move>
 								<copy todir="${basedir}/target/site/index/css">
 									<fileset dir="${project.stylesheetdir}/css" />
 								</copy>

@@ -64,7 +64,7 @@
     <section xml:id="many-to-many">
         <title>ManyToMany</title>
         <para>
-            This type of relationships usually modeled via join or junction table (http://en.wikipedia.org/wiki/Junction_table).
+            This type of relationships usually modeled via join or junction table (<link xlink:href="http://en.wikipedia.org/wiki/Junction_table">http://en.wikipedia.org/wiki/Junction_table</link>).
             It is also successfully handled by cdbimport. Notice that join table should contain two and only two columns. Both of this columns 
             should be included as primary keys. 
         </para>
@@ -72,24 +72,22 @@
     <section xml:id="skip-relationships-loading">
         <title>Skip Relationships Loading</title>
         <para>
-            You are able to skip relationships loading by the &lt;skipRelationshipsLoading&gt; element.
+            You are able to skip relationships loading by the <code language="xml">&lt;skipRelationshipsLoading&gt;</code> element.
         </para>
         <programlisting language="xml">
-            &lt;reverseEngineering&gt;
-                &lt;skipRelationshipsLoading&gt;true&lt;skipRelationshipsLoading&gt;
-            &lt;/reverseEngineering&gt;
-        </programlisting>
+    &lt;reverseEngineering&gt;
+        &lt;skipRelationshipsLoading&gt;true&lt;skipRelationshipsLoading&gt;
+    &lt;/reverseEngineering&gt;</programlisting>
     </section>
     <section xml:id="skip-pk-loading">
         <title>Skip Primary Keys Loading</title>
         <para>
-            Another useful Cayenne reverse engineering property is &lt;skipPrimaryKeyLoading&gt;. If you decide to support all relationships at the application layer
+            Another useful Cayenne reverse engineering property is <code language="xml">&lt;skipPrimaryKeyLoading&gt;</code>. If you decide to support all relationships at the application layer
             and avoid their management in database, you’ll find useful to turn off primary keys synchronization at all.
         </para>
         <programlisting language="xml">
-            &lt;reverseEngineering&gt;
-                &lt;skipPrimaryKeyLoading&gt;true&lt;skipPrimaryKeyLoading&gt;
-            &lt;/reverseEngineering&gt;
-        </programlisting>
+    &lt;reverseEngineering&gt;
+        &lt;skipPrimaryKeyLoading&gt;true&lt;skipPrimaryKeyLoading&gt;
+    &lt;/reverseEngineering&gt;</programlisting>
     </section>
 </chapter>

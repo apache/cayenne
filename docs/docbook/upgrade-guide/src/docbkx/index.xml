@@ -4,7 +4,7 @@
     <info>
         <title>Cayenne 4.0 New Features and Upgrade Guide</title>
         <copyright>
-            <year>2011-2014</year>
+            <year>2011-<?dbtimestamp format="Y"?></year>
             <holder>Apache Software Foundation and individual authors</holder>
         </copyright>
         <legalnotice>

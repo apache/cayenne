@@ -25,8 +25,8 @@
                     <para><emphasis role="italic">Java</emphasis>: Cayenne runtime framework and
                         CayenneModeler GUI tool are written in 100% Java, and run on any
                         Java-compatible platform. Minimal required JDK version depends on the
-                        version of Cayenne you are using, as shown in the following table: <table
-                            frame="void">
+                        version of Cayenne you are using, as shown in the following table:
+                        <table frame="void">
                             <caption>Cayenne Version History</caption>
                             <col width="28%"/>
                             <col width="36%"/>
@@ -77,8 +77,10 @@
                 <listitem>
                     <para><emphasis role="italic">Third-party Libraries:</emphasis> Cayenne runtime
                         framework has a minimal set of required and a few more optional dependencies
-                        on third-party open source packages. See "Including Cayenne in a Project"
-                        chapter for details.</para>
+                        on third-party open source packages. See
+                        <link linkend="including-cayenne-in-project">"Including Cayenne in a Project"</link>
+                        chapter for details.
+                    </para>
                 </listitem>
             </itemizedlist>
         </para>
@@ -88,33 +90,51 @@
         <para>CayenneModeler GUI tool is intended to work with object relational mapping projects. While
             you can edit your XML by hand, it is rarely needed, as the Modeler is a pretty advanced
             tool included in Cayenne distribution. To obtain CayenneModeler, download Cayenne
-            distribution archive from <link xlink:href="http://cayenne.apache.org/download.html"
-                >http://cayenne.apache.org/download.html</link> matching the OS you are using. Of
-            course Java needs to be installed on the machine where you are going to run the
-            Modeler.</para>
-        <para>OS X distribution contains CayenneModeler.app at the root of the distribution disk
-            image.</para>
-        <para>Windows distribution contains CayenneModeler.exe file in the <code>bin</code>
-            directory.</para>
-        <para>Cross-platform distribution (targeting Linux, but as the name implies, compatible with any
-            OS) contains a runnable CayenneModeler.jar in the <code>bin</code> directory. It can be
-            executed either by double-clicking, or if the environment is not configured to execute
-            jars, by running from command-line:</para>
-        <programlisting>java -jar CayenneModeler.jar</programlisting>
+            distribution archive from
+            <link xlink:href="http://cayenne.apache.org/download.html">http://cayenne.apache.org/download.html</link>
+            matching the OS you are using. Of course Java needs to be installed on the machine where
+            you are going to run the Modeler.
+        </para>
+        <itemizedlist>
+            <listitem>
+                <para>OS X distribution contains CayenneModeler.app at the root of the distribution disk
+                    image.
+                </para>
+            </listitem>
+            <listitem>
+                <para>Windows distribution contains CayenneModeler.exe file in the
+                    <code>bin</code>
+                    directory.
+                </para>
+            </listitem>
+            <listitem>
+                <para>Cross-platform distribution (targeting Linux, but as the name implies, compatible with any
+                    OS) contains a runnable CayenneModeler.jar in the <code>bin</code> directory. It can be
+                    executed either by double-clicking, or if the environment is not configured to execute
+                    jars, by running from command-line:
+                </para>
+                <screen><prompt>$</prompt> java -jar CayenneModeler.jar</screen>
+            </listitem>
+        </itemizedlist>
+
         <para>The Modeler can also be started from Maven. While it may look like an exotic way to start a
             GUI application, it has its benefits - no need to download Cayenne distribution, the
             version of the Modeler always matches the version of the framework, the plugin can find
-            mapping files in the project automatically. So is an attractive option to some
+            mapping files in the project automatically. So it is an attractive option to some
             developers. Maven option requires a declaration in the
-            POM:<programlisting>&lt;build>
+            POM:
+            <programlisting language="xml">&lt;build>
     &lt;plugins>
         &lt;plugin>
             &lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
             &lt;artifactId>maven-cayenne-modeler-plugin&lt;/artifactId>
-            &lt;version>X.Y.Z&lt;/version>
+            &lt;version><?eval ${project.version}?>&lt;/version>
         &lt;/plugin>
     &lt;/plugins>
-&lt;/build></programlisting></para>
-        <para>And then can be run as <programlisting>mvn cayenne-modeler:run</programlisting></para>
+&lt;/build></programlisting>
+        </para>
+        <para>And then can be run as
+            <screen><prompt>$</prompt> mvn cayenne-modeler:run</screen>
+        </para>
     </section>
 </chapter>

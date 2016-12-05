@@ -38,13 +38,15 @@
                 </listitem>
             </itemizedlist>
         </para>
-        <table>
-            <tbody>
+        <table frame="void">
+            <thead>
                 <tr>
-                    <td>OneToMany</td>
-                    <td>Implicit</td>
-                    <td>Explicit</td>
+                    <th>OneToMany</th>
+                    <th>Implicit</th>
+                    <th>Explicit</th>
                 </tr>
+            </thead>
+            <tbody>
                 <tr>
                     <td>ARTIST.ARTIST_ID -- PAINTING.ARTIST_ID</td>
                     <td>Artists.paintings</td>
@@ -67,7 +69,11 @@
         <title>Cuztomizing Name Generator</title>
         <para>
             In case you want to customize the default naming strategy, you could set your own strategy through the namingStrategy option in the Maven or Ant 
-            configuration. Ensure that naming strategy class is in a class-path and implements ObjectNameGenerator interface.
+            configuration. Ensure that naming strategy class is in a class-path and implements <code>org.apache.cayenne.dbsync.naming.ObjectNameGenerator</code> interface.
+            <programlisting language="xml">
+    &lt;reverseEngineering&gt;
+        &lt;namingStrategy&gt;YourCustomNameGenerator&lt;/namingStrategy&gt;
+    &lt;/reverseEngineering&gt;</programlisting>
         </para>
     </section>
 </chapter>

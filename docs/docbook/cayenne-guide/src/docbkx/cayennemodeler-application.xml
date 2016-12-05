@@ -19,21 +19,75 @@
     <title>CayenneModeler Application</title>
     <section xml:id="working-with-mapping-projects">
         <title>Working with Mapping Projects</title>
+        <para></para>
     </section>
     <section xml:id="reverse-engineering-database">
         <title>Reverse Engineering Database</title>
+        <para>
+            See chapter <link linkend="re-modeler">Reverse Engineering in Cayenne Modeler</link>
+        </para>
     </section>
     <section xml:id="generating-database-schema">
         <title>Generating Database Schema</title>
+        <para>
+            With Cayenne Modeler you can create simple database schemas without any additional database tools.
+            This is a good option for initial database setup if you completely created you model with the Modeler.
+            You can start SQL schema generation by selecting menu
+            <emphasis role="strong">
+                <guimenu>Tools</guimenu> &gt; <guimenuitem>Generate Database Schema</guimenuitem>
+            </emphasis>
+        </para>
+        <para>
+            You can select what database parts should be generated and what tables you want
+        </para>
     </section>
     <section xml:id="migrations">
         <title>Migrations</title>
+        <para> </para>
     </section>
     <section xml:id="generating-java-classes">
         <title>Generating Java Classes</title>
+        <para>
+            Before using Cayenne in you code you need to generate java source code for persistent objects.
+            This can be done with Modeler GUI or via <link linkend="mvn-cgen">cgen</link> maven/ant plugin.
+        </para>
+        <para>
+            To generate classes in the modeler use
+            <emphasis role="strong">
+                <guimenu>Tools</guimenu> &gt; <guimenuitem>Generate Classes</guimenuitem>
+            </emphasis>
+        </para>
+        <para>
+            There is three default types of code generation
+            <itemizedlist>
+                <listitem>
+                    <para><emphasis role="strong">Standard Persistent Objects</emphasis></para>
+                    <para>
+                        Default type of generation suitable for almost all cases.
+                        Use this type unless you now what exactly you need to customize.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para><emphasis role="strong">Client Persistent Objects</emphasis></para>
+                    <para>
+
+                    </para>
+                </listitem>
+                <listitem>
+                    <para><emphasis role="strong">Advanced.</emphasis></para>
+                    <para>
+                        In advanced mode you can control almost all aspects of code generation including custom templates for java code.
+                        See default Cayenne templates on
+                        <link xlink:href="https://github.com/apache/cayenne/tree/master/cayenne-tools/src/main/resources/templates/v1_2">GitHub</link>
+                        as an example
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </para>
     </section>
     <section xml:id="modeling-inheritance">
         <title>Modeling Inheritance</title>
+        <para> </para>
     </section>
     <section xml:id="modeling-generic-persistence-classes">
         <title>Modeling Generic Persistent Classes</title>
@@ -53,8 +107,10 @@
     </section>
     <section xml:id="mapping-objattributes-to-custom-classes">
         <title>Mapping ObjAttributes to Custom Classes</title>
+        <para> </para>
     </section>
     <section xml:id="modeling-pk-generation-strategy">
         <title>Modeling Primary Key Generation Strategy</title>
+        <para> </para>
     </section>
 </chapter>
