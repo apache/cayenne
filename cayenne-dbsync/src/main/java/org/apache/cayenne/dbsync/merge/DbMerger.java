@@ -33,7 +33,6 @@ import org.apache.cayenne.map.DetectedDbEntity;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -112,18 +111,8 @@ public class DbMerger {
 
         List<MergerToken> tokens = createMergeTokens(filter(dataMap, filters), dbImport.getDbEntities());
 
-        // sort. use a custom Comparator since only toDb tokens are comparable
-        // by now
-        Collections.sort(tokens, new Comparator<MergerToken>() {
-
-            public int compare(MergerToken o1, MergerToken o2) {
-                if (o1 instanceof AbstractToDbToken && o2 instanceof AbstractToDbToken) {
-
-                    return ((AbstractToDbToken) o1).compareTo(o2);
-                }
-                return 0;
-            }
-        });
+        // sort
+        Collections.sort(tokens, new TokenComparator());
 
         return tokens;
     }

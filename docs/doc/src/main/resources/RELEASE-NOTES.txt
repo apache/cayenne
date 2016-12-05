@@ -45,6 +45,7 @@ CAY-2136 Allow Ordering.orderedList(…) methods to accept a Collection rather t
 
 Bug Fixes:
 
+CAY-2016 cdbimport: Rename table with toMany relationship causes migration error
 CAY-2064 Issue with BeanAccessor for classes with complex inheritance
 CAY-2066 Fixes for inner enums handling in ExtendedTypeMap
 CAY-2067 Cayenne 4.0 connection pool is occasionally running out of connections

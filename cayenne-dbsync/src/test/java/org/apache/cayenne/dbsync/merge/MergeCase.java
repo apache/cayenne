@@ -101,9 +101,13 @@ public abstract class MergeCase extends DbSyncCase {
     }
 
     protected List<MergerToken> createMergeTokens() {
+        return createMergeTokens("ARTIST|GALLERY|PAINTING|NEW_TABLE2?");
+    }
+
+    protected List<MergerToken> createMergeTokens(String tableFilterInclude) {
 
         FiltersConfig filters = FiltersConfig.create(null, null,
-                TableFilter.include("ARTIST|GALLERY|PAINTING|NEW_TABLE2?"), PatternFilter.INCLUDE_NOTHING);
+                TableFilter.include(tableFilterInclude), PatternFilter.INCLUDE_NOTHING);
 
         DbLoaderConfiguration loaderConfiguration = new DbLoaderConfiguration();
         loaderConfiguration.setFiltersConfig(filters);

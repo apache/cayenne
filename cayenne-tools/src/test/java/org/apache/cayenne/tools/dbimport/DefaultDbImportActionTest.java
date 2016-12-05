@@ -25,8 +25,8 @@ import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
-import org.apache.cayenne.dbsync.merge.AddColumnToDb;
-import org.apache.cayenne.dbsync.merge.AddRelationshipToDb;
+import org.apache.cayenne.dbsync.merge.AddColumnToModel;
+import org.apache.cayenne.dbsync.merge.AddRelationshipToModel;
 import org.apache.cayenne.dbsync.merge.CreateTableToDb;
 import org.apache.cayenne.dbsync.merge.CreateTableToModel;
 import org.apache.cayenne.dbsync.merge.DefaultModelMergeDelegate;
@@ -330,12 +330,12 @@ public class DefaultDbImportActionTest {
     @Test
     public void testMergeTokensSorting() {
         LinkedList<MergerToken> tokens = new LinkedList<MergerToken>();
-        tokens.add(new AddColumnToDb(null, null));
-        tokens.add(new AddRelationshipToDb(null, null));
+        tokens.add(new AddColumnToModel(null, null));
+        tokens.add(new AddRelationshipToModel(null, null));
         tokens.add(new CreateTableToDb(null));
         tokens.add(new CreateTableToModel(null));
 
-        assertEquals(asList("AddColumnToDb", "CreateTableToDb", "CreateTableToModel", "AddRelationshipToDb"),
+        assertEquals(asList("AddColumnToModel", "CreateTableToDb", "CreateTableToModel", "AddRelationshipToModel"),
                 toClasses(DefaultDbImportAction.sort(tokens)));
     }
 

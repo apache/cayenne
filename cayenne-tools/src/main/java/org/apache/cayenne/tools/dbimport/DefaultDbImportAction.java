@@ -25,12 +25,12 @@ import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.dbsync.merge.AbstractToModelToken;
-import org.apache.cayenne.dbsync.merge.AddRelationshipToDb;
 import org.apache.cayenne.dbsync.merge.DbMerger;
 import org.apache.cayenne.dbsync.merge.MergerContext;
 import org.apache.cayenne.dbsync.merge.MergerToken;
 import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.ProxyModelMergeDelegate;
+import org.apache.cayenne.dbsync.merge.TokenComparator;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
@@ -64,7 +64,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -98,21 +97,7 @@ public class DefaultDbImportAction implements DbImportAction {
     }
 
     protected static List<MergerToken> sort(List<MergerToken> reverse) {
-        Collections.sort(reverse, new Comparator<MergerToken>() {
-            @Override
-            public int compare(MergerToken o1, MergerToken o2) {
-                if (o1 instanceof AddRelationshipToDb && o2 instanceof AddRelationshipToDb) {
-                    return 0;
-                }
-
-                if (!(o1 instanceof AddRelationshipToDb || o2 instanceof AddRelationshipToDb)) {
-                    return o1.getClass().getSimpleName().compareTo(o2.getClass().getSimpleName());
-                }
-
-                return o1 instanceof AddRelationshipToDb ? 1 : -1;
-            }
-        });
-
+        Collections.sort(reverse, new TokenComparator());
         return reverse;
     }
 
