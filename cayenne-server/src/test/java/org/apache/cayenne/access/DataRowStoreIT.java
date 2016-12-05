@@ -26,6 +26,8 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -40,12 +42,37 @@ import static org.junit.Assert.assertTrue;
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataRowStoreIT extends ServerCase {
 
+    private DefaultEventManager eventManager;
+
+    private DataRowStore cache;
+
+    @After
+    public void cleanEventManager() {
+        if(eventManager != null) {
+            eventManager.shutdown();
+            eventManager = null;
+        }
+    }
+
+    @After
+    public void cleanDataStore() {
+        if(cache != null) {
+            cache.shutdown();
+            cache = null;
+        }
+    }
+
+    @Before
+    public void createEventManager() {
+        eventManager = new DefaultEventManager();
+    }
+
     @Test
     public void testDefaultConstructor() {
-        DataRowStore cache = new DataRowStore(
+        cache = new DataRowStore(
                 "cacheXYZ",
                 Collections.EMPTY_MAP,
-                new DefaultEventManager());
+                eventManager);
         assertEquals("cacheXYZ", cache.getName());
         assertNotNull(cache.getSnapshotEventSubject());
         assertTrue(cache.getSnapshotEventSubject().getSubjectName().contains("cacheXYZ"));
@@ -60,10 +87,10 @@ public class DataRowStoreIT extends ServerCase {
         props.put(DataRowStore.REMOTE_NOTIFICATION_PROPERTY, String
                 .valueOf(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT));
 
-        DataRowStore cache = new DataRowStore(
+        cache = new DataRowStore(
                 "cacheXYZ",
                 props,
-                new DefaultEventManager());
+                eventManager);
         assertEquals("cacheXYZ", cache.getName());
         assertEquals(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache
                 .isNotifyingRemoteListeners());
@@ -71,10 +98,10 @@ public class DataRowStoreIT extends ServerCase {
 
     @Test
     public void testNotifyingRemoteListeners() {
-        DataRowStore cache = new DataRowStore(
+        cache = new DataRowStore(
                 "cacheXYZ",
                 Collections.EMPTY_MAP,
-                new DefaultEventManager());
+                eventManager);
 
         assertEquals(DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache
                 .isNotifyingRemoteListeners());
@@ -92,10 +119,10 @@ public class DataRowStoreIT extends ServerCase {
         Map<Object, Object> props = new HashMap<Object, Object>();
         props.put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, String.valueOf(2));
 
-        DataRowStore cache = new DataRowStore(
+        cache = new DataRowStore(
                 "cacheXYZ",
                 props,
-                new DefaultEventManager());
+                eventManager);
         assertEquals(2, cache.maximumSize());
         assertEquals(0, cache.size());
 

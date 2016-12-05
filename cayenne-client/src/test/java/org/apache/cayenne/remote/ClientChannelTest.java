@@ -35,10 +35,12 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.GenericResponse;
+import org.junit.After;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,6 +56,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ClientChannelTest {
+
+    private List<DefaultEventManager> managers = new ArrayList<>();
+
+    @After
+    public void cleanUp() {
+        if(managers.size() == 0) {
+            return;
+        }
+        for(DefaultEventManager manager : managers) {
+            manager.shutdown();
+        }
+        managers.clear();
+    }
 
     @Test
     public void testOnQuerySelect() {
@@ -221,23 +236,24 @@ public class ClientChannelTest {
         try {
             new ClientChannel(connection, false, new MockEventManager(), false);
             fail("Channel didn't throw on broken EventBridge");
-        }
-        catch (CayenneRuntimeException e) {
+        } catch (CayenneRuntimeException e) {
             // expected
         }
 
         try {
-            new ClientChannel(connection, false, new DefaultEventManager(2), false);
+            DefaultEventManager manager = new DefaultEventManager(2);
+            managers.add(manager);
+            new ClientChannel(connection, false, manager, false);
             fail("Channel didn't throw on broken EventBridge");
-        }
-        catch (CayenneRuntimeException e) {
+        } catch (CayenneRuntimeException e) {
             // expected
         }
 
         try {
-            new ClientChannel(connection, false, new DefaultEventManager(2), true);
-        }
-        catch (CayenneRuntimeException e) {
+            DefaultEventManager manager = new DefaultEventManager(2);
+            managers.add(manager);
+            new ClientChannel(connection, false, manager, true);
+        } catch (CayenneRuntimeException e) {
             fail("Channel threw on broken EventBridge");
         }
     }

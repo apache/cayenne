@@ -20,6 +20,7 @@
 package org.apache.cayenne.event;
 
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,6 +45,11 @@ public class DefaultEventManagerTest implements EventListener {
         eventManager = new DefaultEventManager();
         numberOfReceivedEvents = 0;
         numberOfReceivedEventsForClass = 0;
+    }
+
+    @After
+    public void tearDown() {
+        ((DefaultEventManager)eventManager).shutdown();
     }
 
     @Test

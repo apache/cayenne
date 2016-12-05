@@ -39,12 +39,22 @@ import org.apache.cayenne.configuration.web.WebUtil;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.rop.ROPServlet;
+import org.junit.After;
 import org.junit.Test;
 
 import com.mockrunner.mock.web.MockServletConfig;
 import com.mockrunner.mock.web.MockServletContext;
 
 public class ROPServletTest {
+
+	private CayenneRuntime runtime;
+
+	@After
+	public void shutdownRuntime() {
+		if(runtime != null) {
+			runtime.shutdown();
+		}
+	}
 
 	@Test
 	public void testInitWithServletName() throws Exception {
@@ -60,7 +70,7 @@ public class ROPServletTest {
 		assertNull(WebUtil.getCayenneRuntime(context));
 		servlet.init(config);
 
-		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
+		runtime = WebUtil.getCayenneRuntime(context);
 		assertNotNull(runtime);
 
 		List<?> locations = runtime.getInjector().getInstance(
@@ -82,7 +92,7 @@ public class ROPServletTest {
 		ROPServlet servlet = new ROPServlet();
 		servlet.init(config);
 
-		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
+		runtime = WebUtil.getCayenneRuntime(context);
 		assertNotNull(runtime);
 		List<?> locations = runtime.getInjector().getInstance(
 				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
@@ -104,7 +114,7 @@ public class ROPServletTest {
 		ROPServlet servlet = new ROPServlet();
 		servlet.init(config);
 
-		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
+		runtime = WebUtil.getCayenneRuntime(context);
 		assertNotNull(runtime);
 
 		List<?> locations = runtime.getInjector().getInstance(
@@ -135,7 +145,7 @@ public class ROPServletTest {
 		ROPServlet servlet = new ROPServlet();
 		servlet.init(config);
 
-		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
+		runtime = WebUtil.getCayenneRuntime(context);
 		assertNotNull(runtime);
 
 		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
@@ -165,7 +175,7 @@ public class ROPServletTest {
 		ROPServlet servlet = new ROPServlet();
 
 		servlet.init(config);
-		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
+		runtime = WebUtil.getCayenneRuntime(context);
 		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
 		assertEquals(3, modules.size());
 

@@ -69,10 +69,7 @@ public class EJBQLQueryDescriptor extends QueryDescriptor {
         encoder.indent(1);
 
         // print properties
-        for (Map.Entry<String, String> property : properties.entrySet()) {
-            encoder.printProperty(property.getKey(), property.getValue());
-        }
-
+        encodeProperties(encoder);
 
         if (ejbql != null) {
             encoder.print("<ejbql><![CDATA[");
