@@ -19,7 +19,12 @@
 
 package org.apache.cayenne.modeler.dialog.welcome;
 
+import java.awt.Color;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
+import java.awt.Paint;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.List;
@@ -30,6 +35,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ModelerPreferences;
@@ -43,7 +49,17 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
  * Welcome screen (CAY-894) is a panel shown when no project is open. User can quickly
  * create new project or open an existing one.
  */
-public class WelcomeScreen extends JPanel implements RecentFileListListener, RecentFileListRenderer.OnFileClickListener {
+public class WelcomeScreen extends JScrollPane implements RecentFileListListener, RecentFileListRenderer.OnFileClickListener {
+
+    /**
+     * Top color of gradient background
+     */
+    private static final Color TOP_GRADIENT = new Color(153, 153, 153);
+
+    /**
+     * Bottom color of gradient background
+     */
+    private static final Color BOTTOM_GRADIENT = new Color(230, 230, 230);
 
     /**
      * List of recent projects
@@ -51,6 +67,8 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener, Rec
     private JList<String> recentProjectsList;
 
     private JPanel buttonsPanel;
+
+    private JPanel mainPanel;
 
     public WelcomeScreen() {
         initView();
@@ -60,9 +78,20 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener, Rec
      * Creates all necessary components
      */
     protected void initView() {
-        setLayout(new GridBagLayout());
+        mainPanel = new JPanel(new GridBagLayout()) {
+            @Override
+            public void paintComponent(Graphics g) {
+                // paint gradient background
+                Graphics2D g2 = (Graphics2D) g.create();
+                Paint paint = new GradientPaint(0, 0, TOP_GRADIENT, 0, getHeight(), BOTTOM_GRADIENT);
+                g2.setPaint(paint);
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.dispose();
+            }
+        };
         initButtonsPane();
         initFileListPane();
+        setViewportView(mainPanel);
     }
 
     private void initFileListPane() {
@@ -79,7 +108,7 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener, Rec
         recentProjectsList.setCellRenderer(new RecentFileListRenderer(recentProjectsList, this));
 
         fileListPanel.add(recentProjectsList);
-        add(fileListPanel);
+        mainPanel.add(fileListPanel);
     }
 
     private void initButtonsPane() {
@@ -92,7 +121,7 @@ public class WelcomeScreen extends JPanel implements RecentFileListListener, Rec
         initButton("open", openButtonY, OpenProjectAction.class);
         initButton("new", newButtonY, NewProjectAction.class);
 
-        add(buttonsPanel);
+        mainPanel.add(buttonsPanel);
     }
 
     private void initButton(String name, int y,  Class<? extends Action> actionClass) {

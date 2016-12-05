@@ -67,14 +67,14 @@ public class ComponentGeometry extends CayennePreference {
 
             @Override
             public void componentResized(ComponentEvent e) {
-                setWidth(new Integer(window.getWidth()));
-                setHeight(new Integer(window.getHeight()));
+                setWidth(window.getWidth());
+                setHeight(window.getHeight());
             }
 
             @Override
             public void componentMoved(ComponentEvent e) {
-                setX(new Integer(window.getX()));
-                setY(new Integer(window.getY()));
+                setX(window.getX());
+                setY(window.getY());
             }
         });
     }
@@ -90,8 +90,8 @@ public class ComponentGeometry extends CayennePreference {
 
             @Override
             public void componentResized(ComponentEvent e) {
-                setWidth(new Integer(window.getWidth()));
-                setHeight(new Integer(window.getHeight()));
+                setWidth(window.getWidth());
+                setHeight(window.getHeight());
             }
         });
     }
@@ -119,7 +119,7 @@ public class ComponentGeometry extends CayennePreference {
     void updateIntProperty(Component c, String property, int defaultValue) {
         int i = getPreference().getInt(property, defaultValue);
         try {
-            PropertyUtils.setProperty(c, property, new Integer(i));
+            PropertyUtils.setProperty(c, property, i);
         }
         catch (Throwable th) {
             throw new PreferenceException("Error setting property: " + property, th);
@@ -153,13 +153,13 @@ public class ComponentGeometry extends CayennePreference {
 
     public void changeX(int xOffset) {
         if (xOffset != 0) {
-            setX(new Integer(getX(0) + xOffset));
+            setX(getX(0) + xOffset);
         }
     }
 
     public void changeY(int yOffset) {
         if (yOffset != 0) {
-            setY(new Integer(getY(0) + yOffset));
+            setY(getY(0) + yOffset);
         }
     }
 
