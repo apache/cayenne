@@ -18,6 +18,10 @@
 # How to fix: Change build setting or fix code.
 # https://docs.travis-ci.com/user/ci-environment/#Virtualization-environments
 sudo: required
+
+services:
+  - docker
+
 language: java
 
 env:
