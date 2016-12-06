@@ -1428,7 +1428,7 @@
 			<activation>
 				<property>
 					<name>cayenneTestConnection</name>
-					<value>postgresdocker</value>
+					<value>postgres-docker</value>
 				</property>
 			</activation>
 			<dependencies>
