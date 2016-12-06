@@ -15,7 +15,7 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<chapter xmlns="http://docbook.org/ns/docbook"
+<section xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
     <title>Getting started with persistent objects</title>
     <para>In this chapter we'll learn about persistent objects, how to customize them and how to
@@ -102,7 +102,7 @@ stein.setGallery(metropolitan);</programlisting>
         <programlisting language="java">context.commitChanges();</programlisting>
         <para>Now you can run the application again as described in the previous chapter. The new
             output will show a few actual DB operations:</para>
-        <programlisting>org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader load
+        <screen>org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader load
 INFO: Loading XML configuration resource from file:cayenne-project.xml
 ... 
 INFO: Opening connection: jdbc:derby:memory:testdb;create=true
@@ -138,9 +138,9 @@ INFO: [batch bind: 1->ARTIST_ID:200, 2->GALLERY_ID:200, 3->ID:200, 4->NAME:'Gert
 INFO: [batch bind: 1->ARTIST_ID:200, 2->GALLERY_ID:200, 3->ID:201, 4->NAME:'Girl Reading at a Table']
 INFO: === updated 2 rows.
 INFO: +++ transaction committed.
-</programlisting>
+</screen>
         <para>So first Cayenne creates the needed tables (remember, we used
             "CreateIfNoSchemaStrategy"). Then it runs a number of inserts, generating primary keys
             on the fly. Not bad for just a few lines of code.</para>
     </section>
-</chapter>
+</section>

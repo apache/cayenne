@@ -15,11 +15,11 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<part xmlns="http://docbook.org/ns/docbook"
+<chapter xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
     xml:id="getting-started-part2" xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>Learning mapping basics</title>
     <xi:include href="starting-project.xml"/>
     <xi:include href="object-relational-mapping.xml"/>
     <xi:include href="java-classes.xml"/>
-</part>
+</chapter>

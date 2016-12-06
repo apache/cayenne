@@ -15,7 +15,7 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<chapter xmlns="http://docbook.org/ns/docbook"
+<section xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
     <title>Getting started with Object Relational Mapping (ORM)</title>
     <para> The goal of this section is to learn how to create a simple Object-Relational model with
@@ -68,18 +68,25 @@
             Start by creating a one-to-many ARTIST/PAINTING relationship:</para>
         <itemizedlist>
             <listitem>
-                <para>Select the ARTIST DbEntity on the left and click on the "Relationships"
+                <para>Select the ARTIST DbEntity on the left and click on the "Properties"
                     tab.</para>
             </listitem>
             <listitem>
-                <para>Click on "Create Relationship" button on the entity toolbar (second button
-                    from the left) - a relationship called "untitledRel" is created.</para>
+                <para>Click on "Create Relationship" button on the entity toolbar <inlinemediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/icon-relationship.png" scalefit="1" width="100%"/>
+                    </imageobject>
+                </inlinemediaobject> - a relationship called "untitledRel" is created.</para>
             </listitem>
             <listitem>
                 <para>Choose the "Target" to be "Painting".</para>
             </listitem>
             <listitem>
-                <para>Click on the "Database Mapping" button (letter "I" in a circle) - relationship
+                <para>Click on the "Database Mapping" button <inlinemediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/icon-info.png" scalefit="1" width="100%"/>
+                    </imageobject>
+                </inlinemediaobject> - relationship
                     configuration dialog is presented. Here you can assign a name to the
                     relationship and also its complimentary reverse relationship. This name can be
                     anything (this is really a symbolic name of the database referential
@@ -160,4 +167,4 @@
         <para>Unless you want to customize the Java class and property names (which you can do
             easily) the mapping is complete. </para>
     </section>
-</chapter>
+</section>

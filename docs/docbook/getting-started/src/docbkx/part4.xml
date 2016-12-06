@@ -14,9 +14,9 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<part xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
     xml:id="getting-started-part4" xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>Converting to Web Application</title>
     <xi:include href="webapp.xml"/>
-</part>
+</chapter>
 

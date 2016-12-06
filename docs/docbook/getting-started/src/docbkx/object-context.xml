@@ -15,7 +15,7 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<chapter xmlns="http://docbook.org/ns/docbook"
+<section xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
     <title>Getting started with ObjectContext</title>
     <para>In this section we'll write a simple main class to run our application, and get a brief
@@ -24,7 +24,7 @@
         <title>Creating the Main Class</title>
         <itemizedlist>
             <listitem>
-                <para>In Eclipse create a new class called "Main" in the "org.example.cayenne"
+                <para>In IDEA create a new class called "Main" in the "org.example.cayenne"
                     package.</para>
             </listitem>
             <listitem>
@@ -69,24 +69,25 @@ public class Main {
         <para>Let's check what happens when you run the application. But before we do that we need
             to add another dependency to the pom.xml - Apache Derby, our embedded database engine.
             The following piece of XML needs to be added to the
-            &lt;dependencies&gt;...&lt;/dependencies&gt; section, where we already have Cayenne
-            jars:<programlisting>&lt;dependency&gt;
+            <code>&lt;dependencies&gt;...&lt;/dependencies&gt;</code> section, where we already have Cayenne
+            jars:<programlisting language="xml">&lt;dependency&gt;
    &lt;groupId&gt;org.apache.derby&lt;/groupId&gt;
    &lt;artifactId&gt;derby&lt;/artifactId&gt;
    &lt;version&gt;10.8.1.2&lt;/version&gt;
 &lt;/dependency&gt;</programlisting>Now
-            we are ready to run. Right click the "Main" class in Eclipse and select "Run As &gt;
-            Java Application". In the console you'll see output similar to this, indicating that
+            we are ready to run. Right click the "Main" class in IDEA and select "Run 'Main.main()'". In the console you'll see output similar to this, indicating that
             Cayenne stack has been
-                started:<programlisting>INFO: Loading XML configuration resource from file:cayenne-project.xml
+                started:<screen>INFO: Loading XML configuration resource from file:cayenne-project.xml
 INFO: loading user name and password.
 INFO: Created connection pool: jdbc:derby:memory:testdb;create=true
     Driver class: org.apache.derby.jdbc.EmbeddedDriver
     Min. connections in the pool: 1
-    Max. connections in the pool: 1</programlisting>
+    Max. connections in the pool: 1</screen>
             
-            <note><para><emphasis role="bold">How to Configure Cayenne Logging.</emphasis>  Follow the instructions in
-                    the logging chapter to tweak verbosity of the logging output.</para></note>
+            <note>
+                <title>How to Configure Cayenne Logging</title>
+                <para>Follow the instructions in the logging chapter to tweak verbosity of the logging output.</para>
+            </note>
            </para>
     </section>
-</chapter>
+</section>
