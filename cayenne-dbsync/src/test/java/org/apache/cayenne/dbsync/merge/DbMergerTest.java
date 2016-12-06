@@ -31,6 +31,7 @@ import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dataMap;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbAttr;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbEntity;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DbMergerTest {
 
@@ -88,6 +89,87 @@ public class DbMergerTest {
         DbEntity entity = existing.getDbEntity("table1");
         assertEquals(factory().createAddColumnToDb(entity, entity.getAttribute("attr02")).getTokenValue(),
                      tokens.get(0).getTokenValue());
+    }
+
+    @Test
+    public void testChangeColumnType() throws Exception {
+        DataMap existing = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt()
+                )).build();
+
+        DataMap db = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeVarchar(30)
+                )).build();
+
+        List<MergerToken> tokens = dbMerger().createMergeTokens(existing.getDbEntities(), db.getDbEntities());
+        assertEquals(1, tokens.size());
+
+        DbEntity entity = existing.getDbEntity("table1");
+        DbEntity entityDb = db.getDbEntity("table1");
+        assertTrue(tokens.get(0) instanceof SetColumnTypeToDb);
+
+        assertEquals(
+                factory()
+                        .createSetColumnTypeToDb(entity, entityDb.getAttribute("attr01"), entity.getAttribute("attr01"))
+                        .getTokenValue(),
+                tokens.get(0)
+                        .getTokenValue()
+        );
+    }
+
+    @Test
+    public void testChangeColumnLength() throws Exception {
+        DataMap existing = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeVarchar(60)
+                )).build();
+
+        DataMap db = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeVarchar(30)
+                )).build();
+
+        List<MergerToken> tokens = dbMerger().createMergeTokens(existing.getDbEntities(), db.getDbEntities());
+        assertEquals(1, tokens.size());
+
+        DbEntity entity = existing.getDbEntity("table1");
+        DbEntity entityDb = db.getDbEntity("table1");
+        assertTrue(tokens.get(0) instanceof SetColumnTypeToDb);
+
+        assertEquals(
+                factory()
+                        .createSetColumnTypeToDb(entity, entityDb.getAttribute("attr01"), entity.getAttribute("attr01"))
+                        .getTokenValue(),
+                tokens.get(0)
+                        .getTokenValue()
+        );
+    }
+
+    /**
+     * Test unsupported type changes
+     */
+    @Test
+    public void testNotChangeColumnType() throws Exception {
+        DataMap existing = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt(),
+                        dbAttr("attr02").type("DATE"),
+                        dbAttr("attr03").type("BOOLEAN"),
+                        dbAttr("attr04").type("FLOAT")
+                )).build();
+
+        DataMap db = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeBigInt(),
+                        dbAttr("attr02").type("NUMERIC"),
+                        dbAttr("attr03").type("BLOB"),
+                        dbAttr("attr04").type("TIMESTAMP")
+                )).build();
+
+        List<MergerToken> tokens = dbMerger().createMergeTokens(existing.getDbEntities(), db.getDbEntities());
+        assertEquals(0, tokens.size());
     }
 
     @Test

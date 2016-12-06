@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.dbsync.merge.MergeDirection;
 import org.apache.cayenne.dbsync.merge.MergerToken;
+import org.apache.cayenne.dbsync.merge.TokenComparator;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.CayenneController;
@@ -231,6 +232,7 @@ public class MergerTokenSelectorController extends CayenneController {
             }
         }
 
+        Collections.sort(selectableTokensList, new TokenComparator());
         AbstractTableModel model = (AbstractTableModel) view.getTokens().getModel();
         model.fireTableDataChanged();
     }
