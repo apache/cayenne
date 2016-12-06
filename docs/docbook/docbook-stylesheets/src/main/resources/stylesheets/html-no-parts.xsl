@@ -21,5 +21,5 @@
                 version="1.0" xmlns:d="http://docbook.org/ns/docbook">
 
     <xsl:include href="html.xsl"/>
-    <xsl:param name="generate.section.toc.level">2</xsl:param>
+    <!--xsl:param name="generate.section.toc.level">2</xsl:param-->
 </xsl:stylesheet>

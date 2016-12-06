@@ -37,28 +37,36 @@
     <section xml:id="mapping-db-tables-and-columns">
         <title>Mapping Database Tables and Columns</title>
         <para>Lets go back to CayenneModeler where we have the newly created project open and start
-            by adding the ARTIST table. Database tables are called <emphasis role="bold"
-                >"DbEntities"</emphasis> in Cayenne mapping (those can be actual tables or database
-            views). </para>
-        <para>Select "datamap" on the left-hand side project tree and click "Create DbEntity" button
+            by adding the ARTIST table. Database tables are called <emphasis role="bold">"DbEntities"</emphasis>
+            in Cayenne mapping (those can be actual tables or database views).
+        </para>
+        <para>Select "datamap" on the left-hand side project tree and click "Create DbEntity" button <inlinemediaobject>
+            <imageobject>
+                <imagedata fileref="images/icon-dbentity.gif" scalefit="0" valign="bottom" width="100%"/>
+            </imageobject>
+        </inlinemediaobject>
             (or use "Project &gt; Create DbEntity" menu). A new DbEntity is created. In "DbEntity
-            Name" field enter "ARTIST". Then click on "Create Attribute" button on the entity
+            Name" field enter "ARTIST". Then click on "Create Attribute" button <inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="images/icon-attribute.gif" scalefit="0" valign="bottom" width="100%"/>
+                </imageobject>
+            </inlinemediaobject> on the entity
             toolbar (third button from the left). This action changes the view to the "Attribute"
             tab and adds a new attribute (attribute means a "table column" in this case) called
-            "untitledAttr". Let's rename it to ID, make it an INTEGER and make it a PK:</para>
+            "untitledAttr". Let's rename it to ID, make it an <code>INTEGER</code> and make it a PK:
+        </para>
         <para><inlinemediaobject>
                 <imageobject>
                     <imagedata fileref="images/modeler-artistid.png" scalefit="1" width="100%"/>
                 </imageobject>
             </inlinemediaobject></para>
-        <para>Similarly add NAME VARCHAR(200) and DATE_OF_BIRTH DATE attributes. After that repeat
+        <para>Similarly add NAME <code>VARCHAR(200)</code> and DATE_OF_BIRTH <code>DATE</code> attributes. After that repeat
             this procedure for PAINTING and GALLERY entities to match DB schema shown above.</para>
         <para>
             <note>
-                <para>Don't forget to save your project periodically to
-                    avoid losing your work. You will also have to refresh the project in Eclipse
-                    after every CayenneModeler save, as Eclipse is by default unaware of any
-                    changes made in the Modeler.</para>
+                <para>
+                    Don't forget to save your project periodically to avoid losing your work.
+                </para>
             </note>
         </para>
     </section>
@@ -74,7 +82,7 @@
             <listitem>
                 <para>Click on "Create Relationship" button on the entity toolbar <inlinemediaobject>
                     <imageobject>
-                        <imagedata fileref="images/icon-relationship.png" scalefit="1" width="100%"/>
+                        <imagedata fileref="images/icon-relationship.png" scalefit="0" valign="bottom" width="100%"/>
                     </imageobject>
                 </inlinemediaobject> - a relationship called "untitledRel" is created.</para>
             </listitem>
@@ -84,7 +92,7 @@
             <listitem>
                 <para>Click on the "Database Mapping" button <inlinemediaobject>
                     <imageobject>
-                        <imagedata fileref="images/icon-info.png" scalefit="1" width="100%"/>
+                        <imagedata fileref="images/icon-info.png" scalefit="0" valign="bottom" width="100%"/>
                     </imageobject>
                 </inlinemediaobject> - relationship
                     configuration dialog is presented. Here you can assign a name to the
@@ -136,8 +144,11 @@
             table individually.</para>
         <itemizedlist>
             <listitem>
-                <para>Select "ARTIST" DbEntity and click on "Create ObjEntity" button (a green class
-                    icon) either on the entity toolbar or on the main toolbar. An ObjEntity called
+                <para>Select "ARTIST" DbEntity and click on "Create ObjEntity" button <inlinemediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/icon-objentity.gif" scalefit="0" valign="bottom" width="100%"/>
+                    </imageobject>
+                </inlinemediaobject> either on the entity toolbar or on the main toolbar. An ObjEntity called
                     "Artist" is created with a Java class field set to
                     "org.example.cayenne.persistent.Artist". The modeler transformed the database
                     names to the Java-friendly names (e.g., if you click on the "Attributes" tab,
@@ -155,9 +166,12 @@
         <para>Now you need to synchronize relationships. Artist and Gallery entities were created
             when there was no related "Painting" entity, so their relationships were not set. <itemizedlist>
                 <listitem>
-                    <para>Click on the "Artist" ObjEntity and (optinally) change to the
-                        "Relationships" tab. Now click on "Sync ObjEntity with DbEntity" button on
-                        the toolbar (two yellow arrows) - you will see the "paintings" relationship
+                    <para>Click on the "Artist" ObjEntity. Now click on "Sync ObjEntity with DbEntity" button on
+                        the toolbar <inlinemediaobject>
+                            <imageobject>
+                                <imagedata fileref="images/icon-sync.gif" scalefit="0" valign="bottom" width="100%"/>
+                            </imageobject>
+                        </inlinemediaobject> - you will see the "paintings" relationship
                         appear.</para>
                 </listitem>
                 <listitem>

@@ -24,7 +24,7 @@
         <title>Creating the Main Class</title>
         <itemizedlist>
             <listitem>
-                <para>In IDEA create a new class called "Main" in the "org.example.cayenne"
+                <para>In IDEA create a new class called "Main" in the "<code>org.example.cayenne</code>"
                     package.</para>
             </listitem>
             <listitem>
@@ -40,9 +40,9 @@ public class Main {
             </listitem>
             <listitem>
                 <para>The first thing you need to be able to access the database is to create a
-                    ServerRuntime object (which is essentially a wrapper around Cayenne stack) and
+                    <code>ServerRuntime</code> object (which is essentially a wrapper around Cayenne stack) and
                     use it to obtain an instance of an
-                    ObjectContext.<programlisting language="java">package org.example.cayenne;
+                    <code>ObjectContext</code>.<programlisting language="java">package org.example.cayenne;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -67,7 +67,7 @@ public class Main {
     <section xml:id="runnning-app">
         <title>Running Application</title>
         <para>Let's check what happens when you run the application. But before we do that we need
-            to add another dependency to the pom.xml - Apache Derby, our embedded database engine.
+            to add another dependency to the <code>pom.xml</code> - Apache Derby, our embedded database engine.
             The following piece of XML needs to be added to the
             <code>&lt;dependencies&gt;...&lt;/dependencies&gt;</code> section, where we already have Cayenne
             jars:<programlisting language="xml">&lt;dependency&gt;

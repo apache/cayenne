@@ -20,7 +20,7 @@
     <title>Creating Java Classes</title>
     <para>Here we'll generate the Java classes from the model that was created in the previous
         section. CayenneModeler can be used to also generate the database schema, but since we
-        specified "CreateIfNoSchemaStrategy" earlier when we created a DataNode, we'll skip the
+        specified "<code>CreateIfNoSchemaStrategy</code>" earlier when we created a DataNode, we'll skip the
         database schema step. Still be aware that you can do it if you need to via "Tools &gt;
         Create Database Schema".
     </para>
@@ -35,8 +35,8 @@
                     selected.</para>
             </listitem>
             <listitem>
-                <para>For the "Output Directory" select "src/main/java" folder under your Eclipse
-                    project folder (this is a "peer" location to the cayenne-*.xml location we
+                <para>For the "Output Directory" select "<code>src/main/java</code>" folder under your IDEA
+                    project folder (this is a "peer" location to the <code>cayenne-*.xml</code> location we
                     selected before).</para>
             </listitem>
             <listitem>
@@ -51,7 +51,7 @@
             should see pairs of classes generated for each mapped entity. You probably also see that
             there's a bunch of red squiggles next to the newly generated Java classes in IDEA.
             This is because our project does not include Cayenne as a Maven dependency yet. Let's
-            fix it now by adding "cayenne-server" artifact in the bottom of the pom.xml file. The
+            fix it now by adding "cayenne-server" artifact in the bottom of the <code>pom.xml</code> file. The
             resulting POM should look like
             this:<programlisting language="xml">&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
@@ -81,7 +81,7 @@
             and a subclass (e.g. Artist). You <emphasis role="bold">should not</emphasis> modify the
             superclasses whose names start with "_" (underscore), as they will be replaced on
             subsequent generator runs. Instead all custom logic should be placed in the subclasses
-            in "org.example.cayenne.persistent" package - those will never be overwritten by the
+            in "<code>org.example.cayenne.persistent</code>" package - those will never be overwritten by the
             class generator.</para>
         <para>
             <note>

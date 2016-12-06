@@ -46,11 +46,11 @@
         <para>So let's convert the tutorial that we created to a web application:</para>
         <itemizedlist>
             <listitem>
-                <para>In Eclipse under "tutorial" project folder create a new folder
-                    "src/main/webapp/WEB-INF".</para>
+                <para>In IDEA under "tutorial" project folder create a new folder
+                    "<code>src/main/webapp/WEB-INF</code>".</para>
             </listitem>
             <listitem>
-                <para>Under "WEB-INF" create a new file "web.xml" (a standard web app descriptor): </para>
+                <para>Under "<code>WEB-INF</code>" create a new file "<code>web.xml</code>" (a standard web app descriptor): </para>
                 <para>
                     <emphasis role="bold">web.xml</emphasis>
                     <programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
@@ -78,10 +78,10 @@
 &lt;/web-app&gt;</programlisting></para>
             </listitem>
             <listitem>
-                <para>Create the artist browser page src/main/webapp/index.jsp file with the
+                <para>Create the artist browser page <code>src/main/webapp/index.jsp</code> file with the
                     following contents: </para>
                 <para><emphasis role="bold">webapp/index.jsp</emphasis>
-                    <programlisting language="jsp">&lt;%@ page language="java" contentType="text/html" %&gt;
+                    <programlisting language="xml">&lt;%@ page language="java" contentType="text/html" %&gt;
 &lt;%@ page import="org.example.cayenne.persistent.*" %&gt;
 &lt;%@ page import="org.apache.cayenne.*" %&gt;
 &lt;%@ page import="org.apache.cayenne.query.*" %&gt;
@@ -117,10 +117,10 @@
 &lt;/html&gt; </programlisting></para>
             </listitem>
             <listitem>
-                <para>Create the artist editor page src/main/webapp/detail.jsp with the following
+                <para>Create the artist editor page <code>src/main/webapp/detail.jsp</code> with the following
                     content: </para>
                 <para><emphasis role="bold">webapp/detail.jsp</emphasis>
-                    <programlisting language="jsp">&lt;%@ page language="java" contentType="text/html" %&gt;
+                    <programlisting language="xml">&lt;%@ page language="java" contentType="text/html" %&gt;
 &lt;%@ page import="org.example.cayenne.persistent.*" %&gt;
 &lt;%@ page import="org.apache.cayenne.*" %&gt;
 &lt;%@ page import="java.util.*" %&gt;
@@ -201,7 +201,7 @@
 &lt;/dependency&gt;</programlisting>
 
         <para>Also to run the web application we'll use "maven-jetty-plugin". To activate it,
-            let's add the following piece of code to the "pom.xml" file, following the "dependencies"
+            let's add the following piece of code to the "<code>pom.xml</code>" file, following the "dependencies"
             section and save the POM:</para>
         <programlisting language="xml">&lt;build&gt;
     &lt;plugins&gt;
@@ -264,9 +264,9 @@ INFO::Started SelectChannelConnector@0.0.0.0:8080
                 <para>So the Jetty container just started.</para>
             </listitem>
             <listitem>
-                <para>Now go to <emphasis role="italic">http://localhost:8080/tutorial/</emphasis>
+                <para>Now go to <link xlink:href="http://localhost:8080/tutorial/">http://localhost:8080/tutorial/</link>
                             URL. You should see "No artists found message" in the web browser and
-                            the following output in the Eclipse console:</para>
+                            the following output in the IDEA console:</para>
         <screen>INFO: Loading XML configuration resource from file:/.../tutorial/target/classes/cayenne-project.xml
 INFO: loading user name and password.
 INFO: Created connection pool: jdbc:derby:memory:testdb;create=true
