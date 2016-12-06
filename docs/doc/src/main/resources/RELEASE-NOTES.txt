@@ -13,7 +13,6 @@ Date:
 ----------------------------------
 Changes/New Features:
 
-CAY-894 CM Usability: Welcome Screen (Panel)
 CAY-2051 Applying new Reverse Engineering to the Modeler
 CAY-2053 SQLExec fluent query API
 CAY-2060 Replace Query objects in DataMap with query descriptors
@@ -43,6 +42,7 @@ CAY-2132 Adding SybaseSelectTranslator to support TOP/DISTINCT TOP in limited qu
 CAY-2133 ObjectNameGenerator refactoring - unifying relationship name generation
 CAY-2135 cdbimport: reset DbEntity catalogs / schemas to DataMap defaults
 CAY-2136 Allow Ordering.orderedList(…) methods to accept a Collection rather than only a List
+CAY-2160 Modeler: new welcome screen
 
 Bug Fixes:
 
