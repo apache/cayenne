@@ -26,7 +26,7 @@
 	<parent>
 		<groupId>org.apache.cayenne.docs</groupId>
 		<artifactId>cayenne-docs-parent</artifactId>
-		<version>4.0.M4-SNAPSHOT</version>
+		<version>4.0.M4</version>
 	</parent>
 	
 	<modules>
@@ -104,7 +104,7 @@
 							<postProcess>
 								<move todir="${basedir}/target/site/index">
 									<fileset dir="${basedir}/target/site/">
-										<include name="*.html"/>
+										<include name="*.html" />
 									</fileset>
 								</move>
 								<copy todir="${basedir}/target/site/index/css">

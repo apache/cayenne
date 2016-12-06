@@ -24,7 +24,7 @@
 	<groupId>org.apache.cayenne</groupId>
 	<name>Cayenne</name>
 
-	<version>4.0.M4-SNAPSHOT</version>
+	<version>4.0.M4</version>
 	<packaging>pom</packaging>
 
 	<description>
@@ -246,7 +246,7 @@
 		<connection>scm:git:https://git-wip-us.apache.org/repos/asf/cayenne.git</connection>
 		<developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/cayenne.git</developerConnection>
 		<url>https://github.com/apache/cayenne</url>
-		<tag>HEAD</tag>
+		<tag>4.0.M4</tag>
 	</scm>
 	<organization>
 		<name>Apache Cayenne</name>
@@ -1345,7 +1345,7 @@
 								<!-- ${db.host} and ${db.port} are dynamically set by docker-maven-plugin below -->
 								<cayenneAdapter>org.apache.cayenne.dba.mysql.MySQLAdapter</cayenneAdapter>
 								<cayenneJdbcUsername>root</cayenneJdbcUsername>
-								<cayenneJdbcPassword></cayenneJdbcPassword>
+								<cayenneJdbcPassword />
 								<cayenneJdbcUrl>jdbc:mysql://${db.host}:${db.port}/cayenne</cayenneJdbcUrl>
 								<cayenneJdbcDriver>com.mysql.jdbc.Driver</cayenneJdbcDriver>
 							</systemPropertyVariables>
