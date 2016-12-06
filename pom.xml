@@ -1424,7 +1424,7 @@
 			</dependencies>
 		</profile>
 		<profile>
-			<id>postgresdocker</id>
+			<id>postgres-docker</id>
 			<activation>
 				<property>
 					<name>cayenneTestConnection</name>
