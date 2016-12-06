@@ -15,11 +15,12 @@
     License.
 -->
 <book xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
-    xml:id="cayenne-guide" xmlns:xi="http://www.w3.org/2001/XInclude">
+      xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://docbook.org/xml/5.0/xsd/docbook.xsd" xml:id="cayenne-guide">
     <info>
         <title>Cayenne Guide</title>
         <copyright>
-            <year>2011-2014</year>
+            <year>2011-<?dbtimestamp format="Y"?></year>
             <holder>Apache Software Foundation and individual authors</holder>
         </copyright>
         <legalnotice>
@@ -40,6 +41,7 @@
     <xi:include href="part1.xml"/>
     <xi:include href="part2.xml"/>
     <xi:include href="part3.xml"/>
+    <xi:include href="part4.xml"/>
     <xi:include href="appendix-a.xml"/>
     <xi:include href="appendix-b.xml"/>
     <xi:include href="appendix-c.xml"/>

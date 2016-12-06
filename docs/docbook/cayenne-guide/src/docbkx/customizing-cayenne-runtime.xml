@@ -184,7 +184,7 @@ binder.bind(Key.get(Service2.class, "i2")).to(Service2Impl.class);</programlisti
             This section shows all the configuration possibilities in detail, including changing
             properties of the existing services, contributing services to standard service lists and
             maps, and overriding service implementations. All the code examples later in this
-            section are assumed to be placed in an application module "configure" method:</para><programlisting>public class MyExtensionsModule implements Module {
+            section are assumed to be placed in an application module "configure" method:</para><programlisting language="java">public class MyExtensionsModule implements Module {
     public void configure(Binder binder) {
         // customizations go here...
     }
@@ -199,7 +199,7 @@ ServerRuntime runtime =
                 Supported property names are listed in "Appendix A".</para>
             <para>There are two ways to set service properties. The most obvious one is to pass it
                 to the JVM with -D flag on startup.
-                E.g.<programlisting>java -Dcayenne.server.contexts_sync_strategy=false ...</programlisting></para>
+                E.g.<screen><prompt>$</prompt> java -Dcayenne.server.contexts_sync_strategy=false ...</screen></para>
             <para>A second one is to contribute a property to
                     <code>org.apache.cayenne.configuration.DefaultRuntimeProperties.properties
                 </code>map (see the next section on how to do that). This map contains the default

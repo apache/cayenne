@@ -114,7 +114,7 @@ ServerRuntime runtime = new ServerRuntime("com/example/cayenne-project.xml", ext
         <para>Still Cayenne includes a piece of web app configuration code that can assist in
             quickly setting up simple Cayenne-enabled web applications. We are talking about
             CayenneFilter. It is declared in
-            web.xml:<programlisting>&lt;web-app>
+            web.xml:<programlisting language="xml">&lt;web-app>
     ...
     &lt;filter>
         &lt;filter-name>cayenne-project&lt;/filter-name>

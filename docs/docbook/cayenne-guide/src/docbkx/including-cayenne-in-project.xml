@@ -22,19 +22,19 @@
         <para>Cayenne distribution contains the following core runtime jars in the distribution
                 <code>lib</code> directory: <itemizedlist>
                 <listitem>
-                    <para><emphasis role="italic">cayenne-server-x.x.jar</emphasis> - contains full
+                    <para><emphasis role="italic">cayenne-server-<?eval ${project.version}?>.jar</emphasis> - contains full
                         Cayenne runtime (DI, adapters, DB access classes, etc.). Most applications
                         will use only this file.</para>
                 </listitem>
                 <listitem>
-                    <para>cayenne-client-x.x.jar - a subset of cayenne-server.jar trimmed for use on
+                    <para>cayenne-client-<?eval ${project.version}?>.jar - a subset of cayenne-server.jar trimmed for use on
                         the client in an ROP application.</para>
                 </listitem>
                 <listitem>
                     <para>Other cayenne-* jars - various Cayenne extensions.</para>
                 </listitem>
             </itemizedlist></para>
-        <para>When using <code>cayenne-server-x.x.jar</code> you'll need a few third party jars (all
+        <para>When using <code>cayenne-server-<?eval ${project.version}?>.jar</code> you'll need a few third party jars (all
             included in <code>lib/third-party</code> directory of the distribution): <itemizedlist>
                 <listitem>
                     <para><link xlink:href="http://velocity.apache.org/">Apache Velocity
@@ -58,10 +58,10 @@
         <title>Maven Projects</title>
         <para>If you are using Maven, you won't have to deal with figuring out the dependencies. You
             can simply include cayenne-server artifact in your
-            POM:<programlisting>&lt;dependency>
+            POM:<programlisting language="xml">&lt;dependency>
    &lt;groupId>org.apache.cayenne&lt;/groupId>
    &lt;artifactId>cayenne-server&lt;/artifactId>
-   &lt;version>X.Y.Z&lt;/version>
+   &lt;version><?eval ${project.version}?>&lt;/version>
 &lt;/dependency></programlisting></para>
         <para>Additionally Cayenne provides a Maven plugin with a set of goals to perform various project
             tasks, such as synching generated Java classes with the mapping, described in the
@@ -232,10 +232,10 @@
                     </tbody>
                 </table> Example - a typical class generation scenario, where pairs of classes are
                 generated with default Maven source destination and superclass
-                package:<programlisting>&lt;plugin>
+                package:<programlisting language="xml">&lt;plugin>
     &lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
     &lt;artifactId>maven-cayenne-plugin&lt;/artifactId>
-    &lt;version>X.Y.Z&lt;/version>
+    &lt;version><?eval ${project.version}?>&lt;/version>
 
     &lt;configuration>
         &lt;map>${project.basedir}/src/main/resources/my.map.xml&lt;/map>
@@ -353,10 +353,10 @@
 				</table>
 			</para>
 			<para>Example - creating a DB schema on a local HSQLDB
-				database:<programlisting>&lt;plugin>
+				database:<programlisting language="xml">&lt;plugin>
     &lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
     &lt;artifactId>maven-cayenne-plugin&lt;/artifactId>
-    &lt;version>X.Y.Z&lt;/version>
+    &lt;version><?eval ${project.version}?>&lt;/version>
     &lt;executions>
         &lt;execution>
             &lt;configuration>
@@ -378,8 +378,9 @@
 			<para><code>cdbimport</code> is a <code>maven-cayenne-plugin</code> goal that generates a DataMap
 				based on an existing database schema. By default, it is bound to the
 				generate-sources phase. This allows you to generate your DataMap prior to building
-				your project, possibly followed by "cgen" execution to generate the classes.<table
-					frame="void">
+				your project, possibly followed by "cgen" execution to generate the classes.
+				CDBImport plugin described in details in chapter <link linkend="re-introduction">Reverse Engineering</link>
+				<table frame="void">
 					<caption>cdbimport required parameters</caption>
 					<col width="14%"/>
 					<col width="7%"/>
@@ -441,13 +442,6 @@
 								to guess the DB type.</td>
 						</tr>
 						<tr>
-							<td><code>catalog</code></td>
-							<td>String</td>
-							<td>A database catalog to import tables/stored procedures from. This can
-								be a pattern in the format supported by
-								DatabaseMetadata.getTables(). I.e. it can contain '%' wildcard.</td>
-						</tr>
-						<tr>
 							<td><code>defaultPackage</code></td>
 							<td>String</td>
 							<td>A Java package that will be set as the imported DataMap default and
@@ -457,29 +451,24 @@
 								no package, and will not compile.</td>
 						</tr>
 						<tr>
-							<td><code>excludeTables</code></td>
+							<td><code>forceDataMapCatalog</code></td>
 							<td>boolean</td>
-							<td>A comma-separated list of Perl5 patterns that defines which table names should be skipped
-								during the import. This (together with 'includeTables') is the most
-								flexible way to filter the table list. Another way to filter it is
-								via "tablePattern" that is limited to filtering with a single
-								wildcard pattern as defined in DatabaseMetadata.getTables().</td>
+							<td>
+								Automatically tagging each DbEntity with the actual DB catalog/schema (default behavior)
+								may some time be undesirable. If this is the case then setting <code>forceDataMapCatalog</code>
+								to <code>true</code> will set DbEntity catalog to one in the DataMap.
+								Default value <code>false</code>.
+							</td>
 						</tr>
 						<tr>
-							<td><code>includeTables</code></td>
+							<td><code>forceDataMapSchema</code></td>
 							<td>boolean</td>
-							<td>A comma-separated list of Perl5 patterns that defines which table names should be
-								included during the import. Additionally matching tables will be
-								compared with "excludeTables" pattern. If they match include and
-								exclude, they will be skipped. Another way to filter it is via
-								"tablePattern" that is limited to filtering with a single wildcard
-								pattern as defined in DatabaseMetadata.getTables().</td>
-						</tr>
-						<tr>
-							<td><code>importProcedures</code></td>
-							<td>boolean</td>
-							<td>Indicates whether stored procedures should be imported from the
-								database. Default is false. </td>
+							<td>
+								Automatically tagging each DbEntity with the actual DB catalog/schema (default behavior)
+								may some time be undesirable. If this is the case then setting <code>forceDataMapSchema</code>
+								to <code>true</code> will set DbEntity schema to one in the DataMap.
+								Default value <code>false</code>.
+							</td>
 						</tr>
 						<tr>
 							<td><code>meaningfulPkTables</code></td>
@@ -491,41 +480,56 @@
 						<tr>
 							<td><code>namingStrategy</code></td>
 							<td>String</td>
-							<td>The naming strategy used for mapping database names to object entity
-								names. Default is
-									<code>org.apache.cayenne.map.naming.SmartNameGenerator</code>.
+							<td>
+								The naming strategy used for mapping database names to object entity
+								names. Default is <code>org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator</code>.
 							</td>
-						</tr>
-						<tr>
-							<td><code>overwrite</code></td>
-							<td>boolean</td>
-							<td>If true (default), deletes all existing mappings before starting scheman import. If
-								false, already existing entities are preserved.</td>
 						</tr>
 						<tr>
 							<td><code>password</code></td>
 							<td>String</td>
 							<td>Database user password.</td>
 						</tr>
-						<tr>
-							<td><code>procedurePattern</code></td>
-							<td>String</td>
-							<td>Pattern to match stored procedure names against for import. Default
-								is to match all stored procedures. This value is only meaningful if
-								importProcedures is true. </td>
+						<tr xml:id="cdbimport-rr-parameter">
+							<td><code>reverseEngineering</code></td>
+							<td>XML</td>
+							<td>
+								An object that contains detailed reverse engineering rules about
+								what DB objects should be processed.
+								For full information about this parameter see
+								<link linkend="re-introduction">reverse engineering</link> chapter.
+								Here is some simple example:
+								<programlisting language="xml">&lt;reverseEngineering&gt;
+	&lt;skipRelationshipsLoading&gt;false&lt;/skipRelationshipsLoading&gt;
+	&lt;skipPrimaryKeyLoading&gt;false&lt;/skipPrimaryKeyLoading&gt;
+
+	&lt;catalog name="test_catalog"&gt;
+		&lt;schema name="test_schema"&gt;
+			&lt;includeTable pattern=".*"/&gt;
+			&lt;excludeTable&gt;test_table&lt;/excludeTable&gt;
+		&lt;/schema&gt;
+	&lt;/catalog&gt;
+
+	&lt;includeProcedure pattern=".*"/&gt;
+&lt;/reverseEngineering&gt;</programlisting>
+
+							</td>
 						</tr>
 						<tr>
-							<td><code>schema</code></td>
+							<td><code>stripFromTableNames</code></td>
 							<td>String</td>
-							<td>A database schema to import tables/stored procedures from. This can
-								be a pattern in the format supported by
-								DatabaseMetadata.getTables(). I.e. it can contain '%' wildcard.</td>
-						</tr>
-						<tr>
-							<td><code>tablePattern</code></td>
-							<td>String</td>
-							<td>Pattern to match table names against for import. Default is to match
-								all tables. </td>
+							<td>
+								Regex that matches the part of the table name that needs to be stripped off.
+								Here is some examples:
+								<programlisting language="xml"><![CDATA[<!-- Strip prefix -->
+<stripFromTableNames>^myt_</stripFromTableNames>
+
+<!-- Strip suffix -->
+<stripFromTableNames>_s$</stripFromTableNames>
+
+<!-- Strip multiple occurrences in the middle -->
+<stripFromTableNames>_abc</stripFromTableNames>]]></programlisting>
+							</td>
 						</tr>
 						<tr>
 							<td><code>username</code></td>
@@ -544,10 +548,10 @@
 			</para>
 			<para>Example - loading a DB schema from a local HSQLDB database (essentially a reverse operation
 				compared to the cdbgen example above)
-				:<programlisting>&lt;plugin>
+				:<programlisting language="xml">&lt;plugin>
     &lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
     &lt;artifactId>maven-cayenne-plugin&lt;/artifactId>
-    &lt;version>X.Y.Z&lt;/version>
+    &lt;version><?eval ${project.version}?>&lt;/version>
 
     &lt;executions>
         &lt;execution>
@@ -578,7 +582,7 @@
             <title>cdbimport</title>
             <para>This is an Ant counterpart of "cdbimport" goal of maven-cayenne-plugin described
                 above. It has exactly the same properties. Here is a usage
-                example:<programlisting> &lt;cdbimport map="${context.dir}/WEB-INF/my.map.xml"
+                example:<programlisting language="xml"> &lt;cdbimport map="${context.dir}/WEB-INF/my.map.xml"
     driver="com.mysql.jdbc.Driver" 
     url="jdbc:mysql://127.0.0.1/mydb" 
     username="sa"

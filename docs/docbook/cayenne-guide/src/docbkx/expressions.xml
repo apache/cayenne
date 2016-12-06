@@ -109,7 +109,7 @@
             understanding the semantics. A Cayenne expression can be represented as a String, which
             can be later converted to an expression object using <code>Expression.fromString</code>
             static method. Here is an
-            example:<programlisting>String expString = &quot;name like &apos;A%&apos; and price &lt; 1000&quot;;
+            example:<programlisting language="java">String expString = &quot;name like &apos;A%&apos; and price &lt; 1000&quot;;
 Expression exp = Expression.fromString(expString);</programlisting>This
             particular expression may be used to match Paintings with names that start with &quot;A&quot; and
             a price less than $1000. While this example is pretty self-explanatory, there are a few
@@ -120,13 +120,13 @@ Expression exp = Expression.fromString(expString);</programlisting>This
             may be other entities, for which this expression is valid. Now the expression details... </para>
         <para><emphasis role="italic">Character constants</emphasis> that are not paths or numeric values
             should be enclosed in single or double quotes. Two of the expressions below are
-            equivalent:<programlisting>name = &apos;ABC&apos;
+            equivalent:<programlisting language="SQL">name = &apos;ABC&apos;
 
 // double quotes are escaped inside Java Strings of course
 name = \&quot;ABC\&quot;</programlisting></para>
         <para><emphasis role="italic">Case sensitivity.</emphasis> Expression operators are all case
             sensitive and are usually lowercase. Complex words follow the java camel-case
-            style:<programlisting>// valid
+            style:<programlisting language="SQL">// valid
 name likeIgnoreCase &apos;A%&apos;
 
 // invalid - will throw a parse exception
@@ -138,7 +138,7 @@ name LIKEIGNORECASE &apos;A%&apos;</programlisting></para>
             optionally prefixed by &quot;obj:&quot; (usually they are not prefixed at all actually). Database
             expressions are always prefixed with &quot;db:&quot;. A special kind of prefix, not discussed yet
             is &quot;enum:&quot; that prefixes an enumeration
-            constant:<programlisting>// object path
+            constant:<programlisting language="SQL">// object path
 name = &apos;Salvador Dali&apos;
 
 // same object path - a rarely used form
@@ -156,13 +156,13 @@ name = enum:org.foo.EnumClass.VALUE1</programlisting></para>
             <emphasis role="italic">Binary conditions</emphasis> are expressions that contain a path
             on the left, a value on the right, and some operation between them, such as equals,
             like, etc. They can be used as qualifiers in
-                SelectQueries:<programlisting>name like &apos;A%&apos;</programlisting>
+                SelectQueries:<programlisting language="SQL">name like &apos;A%&apos;</programlisting>
             <emphasis role="italic">Named parameters.</emphasis> Expressions can have named parameters (names that
             start with &quot;$&quot;). Parameterized expressions allow to create reusable expression
             templates. Also if an Expression contains a complex object that doesn&apos;t have a simple
             String representation (e.g. a Date, a DataObject, an ObjectId), parameterizing such
             expression is the only way to represent it as String. Here are some
-            examples:<programlisting>Expression template = Expression.fromString(&quot;name = $name&quot;);
+            examples:<programlisting language="java">Expression template = Expression.fromString(&quot;name = $name&quot;);
 ...
 Map p1 = Collections.singletonMap(&quot;name&quot;, &quot;Salvador Dali&quot;);
 Expression qualifier1 = template.expWithParameters(p1);
@@ -171,19 +171,19 @@ Map p2 = Collections.singletonMap(&quot;name&quot;, &quot;Monet&quot;);
 Expression qualifier2 = template.expWithParameters(p2);</programlisting>To
             create a named parameterized expression with a LIKE clause, SQL wildcards must be part
             of the values in the Map and not the expression string
-            itself:<programlisting>Expression template = Expression.fromString(&quot;name like $name&quot;);
+            itself:<programlisting language="java">Expression template = Expression.fromString(&quot;name like $name&quot;);
 ...
 Map p1 = Collections.singletonMap(&quot;name&quot;, &quot;Salvador%&quot;);
 Expression qualifier1 = template.expWithParameters(p1);</programlisting>When
             matching on a relationship, parameters can be Persistent objects or
-            ObjectIds:<programlisting>Expression template = Expression.fromString(&quot;artist = $artist&quot;);
+            ObjectIds:<programlisting language="java">Expression template = Expression.fromString(&quot;artist = $artist&quot;);
 ...
 Artist dali = // asume we fetched this one already
 Map p1 = Collections.singletonMap(&quot;artist&quot;, dali);
 Expression qualifier1 = template.expWithParameters(p1);</programlisting>Uninitialized
             parameters will be automatically pruned from expressions, so a user can omit some
             parameters when creating an expression from a parameterized
-            template:<programlisting>Expression template = Expression.fromString(&quot;name like $name and dateOfBirth &gt; $date&quot;);
+            template:<programlisting language="java">Expression template = Expression.fromString(&quot;name like $name and dateOfBirth &gt; $date&quot;);
 ...
 Map p1 = Collections.singletonMap(&quot;name&quot;, &quot;Salvador%&quot;);
 Expression qualifier1 = template.expWithParameters(p1);
@@ -211,7 +211,7 @@ Expression qualifier1 = template.expWithParameters(p1);
             general examples and some gotchas. </para>
         <para>The following code recreates the expression from the previous chapter, but now using
             expression
-            API:<programlisting>// String expression: name like &apos;A%&apos; and price &lt; 1000
+            API:<programlisting language="java">// String expression: name like &apos;A%&apos; and price &lt; 1000
 Expression e1 = ExpressionFactory.likeExp(Painting.NAME_PROPERTY, &quot;A%&quot;);
 Expression e2 = ExpressionFactory.lessExp(Painting.PRICE_PROPERTY, 1000);
 Expression finalExp = e1.andExp(e2); </programlisting>This
@@ -227,7 +227,7 @@ Expression finalExp = e1.andExp(e2); </programlisting>This
             control how SQL joins are generated if the same path is encountered more than once in
             the same Expression. Two ExpressionFactory methods allow to implicitly generate aliases
             to &quot;split&quot; match paths into individual joins if
-            needed:<programlisting>Expression matchAllExp(String path, Collection values)
+            needed:<programlisting language="java">Expression matchAllExp(String path, Collection values)
 Expression matchAllExp(String path, Object... values)</programlisting></para>
         <para>&quot;Path&quot; argument to both of these methods can use a split character (a pipe symbol &apos;|&apos;)
             instead of dot to indicate that relationship following a path should be split into a
@@ -243,16 +243,16 @@ Expression matchAllExp(String path, Object... values)</programlisting></para>
             is done by the database engine. However the same expressions can also be used for
             accessing object properties, calculating values, in-memory filtering. </para>
         <para>Checking whether an object satisfies an
-            expression:<programlisting>Expression e = ExpressionFactory.inExp(User.NAME_PROPERTY, &quot;John&quot;, &quot;Bob&quot;);
+            expression:<programlisting language="java">Expression e = ExpressionFactory.inExp(User.NAME_PROPERTY, &quot;John&quot;, &quot;Bob&quot;);
 User user = ...
 if(e.match(user)) {
    ...
 }</programlisting>Reading
             property
-            value:<programlisting>Expression e = Expression.fromString(User.NAME_PROPERTY);
+            value:<programlisting language="java">Expression e = Expression.fromString(User.NAME_PROPERTY);
 String name = e.evaluate(user);</programlisting></para>
         <para>Filtering a list of
-            objects:<programlisting>Expression e = ExpressionFactory.inExp(User.NAME_PROPERTY, &quot;John&quot;, &quot;Bob&quot;);
+            objects:<programlisting language="java">Expression e = ExpressionFactory.inExp(User.NAME_PROPERTY, &quot;John&quot;, &quot;Bob&quot;);
 List&lt;User&gt; unfiltered = ...
 List&lt;User&gt; filtered = e.filterObjects(unfiltered);</programlisting></para>
         <para>
@@ -270,7 +270,7 @@ List&lt;User&gt; filtered = e.filterObjects(unfiltered);</programlisting></para>
             In some situations, it is convenient to be able to convert Expression instances into EJBQL.
             Expressions support this conversion.  An example is shown below.
 
-            <programlisting>String serial = ...
+            <programlisting language="java">String serial = ...
 Expression e = ExpressionFactory.matchExp(Pkg.SERIAL_PROPERTY, serial);
 List&lt;Object&gt; params = new ArrayList&lt;Object&gt;();
 EJBQLQuery query = new EJBQLQuery("SELECT p FROM Pkg p WHERE " + e.toEJBQL(params,&quot;p&quot;);
@@ -281,7 +281,7 @@ for(int i=0;i&lt;params.size();i++) {
 
             This would be equivalent to the following purely EJBQL querying logic;
 
-            <programlisting>EJBQLQuery query = new EJBQLQuery("SELECT p FROM Pkg p WHERE p.serial = ?1");
+            <programlisting language="java">EJBQLQuery query = new EJBQLQuery("SELECT p FROM Pkg p WHERE p.serial = ?1");
 query.setParameter(1,serial);</programlisting>
         </para>
     </section>

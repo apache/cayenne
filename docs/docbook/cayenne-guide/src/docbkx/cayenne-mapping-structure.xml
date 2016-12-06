@@ -29,13 +29,13 @@
             legacy reasons this naming convention is different from the convention for the root
             project descriptor above, and we may align it in the future versions. Here is how a
             typical project might look on the file
-            system:<programlisting>~: ls -l
+            system:<screen><prompt>$</prompt> <userinput>ls -l</userinput>
 total 24
 -rw-r--r--  1 cayenne  staff  491 Jan 28 18:25 cayenne-project.xml
--rw-r--r--  1 cayenne  staff  313 Jan 28 18:25 datamap.map.xml</programlisting></para>
+-rw-r--r--  1 cayenne  staff  313 Jan 28 18:25 datamap.map.xml</screen></para>
         <para>DataMap are referenced by name in the root
-            descriptor:<programlisting>&lt;map name="datamap"/></programlisting></para>
-        <para>Map files are resolved by Cayenne by appending <code>.map.xml</code>" extension to the
+            descriptor:<programlisting language="xml">&lt;map name="datamap"/></programlisting></para>
+        <para>Map files are resolved by Cayenne by appending "<code>.map.xml</code>" extension to the
             map name, and resolving the resulting string relative to the root descriptor URI. The
             following sections discuss varios ORM model objects, without regards to their XML
             representation. XML format details are really unimportant to the Cayenne users.</para>
