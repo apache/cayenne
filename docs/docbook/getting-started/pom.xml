@@ -36,32 +36,5 @@
 				<directory>target/site</directory>
 			</resource>
 		</resources>
-		<plugins>
-			<plugin>
-				<groupId>com.agilejava.docbkx</groupId>
-				<artifactId>docbkx-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>build-html</id>
-						<configuration>
-							<htmlCustomization>${project.stylesheetdir}/stylesheets/html-no-parts.xsl</htmlCustomization>
-							<chunkedOutput>true</chunkedOutput>
-							<postProcess>
-								<copy todir="${basedir}/target/site/index/css">
-									<fileset dir="${project.stylesheetdir}/css" />
-								</copy>
-								<copy todir="${basedir}/target/site/index/images">
-									<fileset dir="${basedir}/src/images" />
-								</copy>
-							</postProcess>
-						</configuration>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>generate-html</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
 	</build>
 </project>

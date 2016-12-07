@@ -69,12 +69,12 @@
         &lt;/dependency&gt;
     &lt;/dependencies&gt;
 &lt;/project&gt;</programlisting></para>
-        <para>Your computer must be connected to the internet. Once you edit the pom.xml, IDEA
+        <para>Your computer must be connected to the internet. Once you edit the <code>pom.xml</code>, IDEA
             will download the needed Cayenne jar file and add it to the project build path. As a
             result, all the errors should disappear.</para>
         <para><inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="images/idea-generated-classes.png" scalefit="1" width="100%"/>
+                    <imagedata fileref="images/idea-generated-classes.png" scalefit="0" width="100%"/>
                 </imageobject>
             </inlinemediaobject></para>
         <para>Now let's check the entity class pairs. Each one is made of a superclass (e.g. Artist)

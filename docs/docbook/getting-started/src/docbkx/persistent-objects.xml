@@ -104,11 +104,10 @@ stein.setGallery(metropolitan);</programlisting>
             output will show a few actual DB operations:</para>
         <screen>org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader load
 INFO: Loading XML configuration resource from file:cayenne-project.xml
-... 
-INFO: Opening connection: jdbc:derby:memory:testdb;create=true
-    Login: null
-    Password: *******
+...
+INFO: Connecting to 'jdbc:derby:memory:testdb;create=true' as 'null'
 INFO: +++ Connecting: SUCCESS.
+INFO: setting DataNode 'datanode' as default, used by all unlinked DataMaps
 INFO: Detected and installed adapter: org.apache.cayenne.dba.derby.DerbyAdapter
 INFO: --- transaction started.
 INFO: No schema detected, will create mapped tables

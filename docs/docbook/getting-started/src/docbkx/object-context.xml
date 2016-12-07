@@ -24,7 +24,7 @@
         <title>Creating the Main Class</title>
         <itemizedlist>
             <listitem>
-                <para>In IDEA create a new class called "Main" in the "<code>org.example.cayenne</code>"
+                <para>In IDEA create a new class called "<code>Main</code>" in the "<code>org.example.cayenne</code>"
                     package.</para>
             </listitem>
             <listitem>
@@ -55,7 +55,7 @@ public class Main {
         ObjectContext context = cayenneRuntime.newContext();
     }
 }</programlisting></para>
-                <para>ObjectContext is an isolated "session" in Cayenne that provides all needed API
+                <para><code>ObjectContext</code> is an isolated "session" in Cayenne that provides all needed API
                     to work with data. ObjectContext has methods to execute queries and manage
                     persistent objects. We'll discuss them in the following sections. When the first
                     ObjectContext is created in the application, Cayenne loads XML mapping files and
@@ -73,16 +73,16 @@ public class Main {
             jars:<programlisting language="xml">&lt;dependency&gt;
    &lt;groupId&gt;org.apache.derby&lt;/groupId&gt;
    &lt;artifactId&gt;derby&lt;/artifactId&gt;
-   &lt;version&gt;10.8.1.2&lt;/version&gt;
+   &lt;version&gt;10.13.1.1&lt;/version&gt;
 &lt;/dependency&gt;</programlisting>Now
             we are ready to run. Right click the "Main" class in IDEA and select "Run 'Main.main()'". In the console you'll see output similar to this, indicating that
             Cayenne stack has been
-                started:<screen>INFO: Loading XML configuration resource from file:cayenne-project.xml
+                started:<screen>INFO: Loading XML configuration resource from file:/.../cayenne-project.xml
+INFO: Loading XML DataMap resource from file:/.../datamap.map.xml
 INFO: loading user name and password.
-INFO: Created connection pool: jdbc:derby:memory:testdb;create=true
-    Driver class: org.apache.derby.jdbc.EmbeddedDriver
-    Min. connections in the pool: 1
-    Max. connections in the pool: 1</screen>
+INFO: Connecting to 'jdbc:derby:memory:testdb;create=true' as 'null'
+INFO: +++ Connecting: SUCCESS.
+INFO: setting DataNode 'datanode' as default, used by all unlinked DataMaps</screen>
             
             <note>
                 <title>How to Configure Cayenne Logging</title>

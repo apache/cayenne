@@ -158,7 +158,7 @@
                 </imageobject>
             </inlinemediaobject></para>
         <para>Note that the location of the XML files is not coincidental. Cayenne runtime looks for
-            "cayenne-*.xml" file in the application <code>CLASSPATH</code> and "<code>src/main/resources</code>" folder should
+            "<code>cayenne-*.xml</code>" file in the application <code>CLASSPATH</code> and "<code>src/main/resources</code>" folder should
             already be a "class folder" in IDEA for our project (and is also a standard location
             that Maven would copy to a jar file, if we were using Maven from command-line).</para>
     </section>
