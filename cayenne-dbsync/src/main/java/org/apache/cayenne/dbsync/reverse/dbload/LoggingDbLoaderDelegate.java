@@ -16,28 +16,47 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.reverse.db;
+package org.apache.cayenne.dbsync.reverse.dbload;
 
+import org.apache.cayenne.dbsync.reverse.dbload.DefaultDbLoaderDelegate;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
- * Interface responsible for attributes loading. Several options possible here
- *  1) load attributes for each table separately
- *  2) load attributes for schema and group it by table names
- *
- *  here is a trade of between count of queries and amount af calculation.
- *
- *
  * @since 4.0
  */
-public interface DbAttributesLoader {
+public class LoggingDbLoaderDelegate extends DefaultDbLoaderDelegate {
 
-    // TODO use instant field for logging
-    Log LOGGER = LogFactory.getLog(DbTableLoader.class);
+    private final Log logger;
 
-    void loadDbAttributes(DbEntity entity);
+    public LoggingDbLoaderDelegate(Log logger) {
+        this.logger = logger;
+    }
 
+    @Override
+    public void dbEntityAdded(DbEntity entity) {
+        logger.info("  Table: " + entity.getFullyQualifiedName());
+    }
+
+    @Override
+    public void dbEntityRemoved(DbEntity entity) {
+        logger.info("  Table removed: " + entity.getFullyQualifiedName());
+    }
+
+    @Override
+    public boolean dbRelationship(DbEntity entity) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("    Relationships for " + entity.getFullyQualifiedName());
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean dbRelationshipLoaded(DbEntity entity, DbRelationship relationship) {
+        logger.info("    " + relationship);
+
+        return true;
+    }
 }
-

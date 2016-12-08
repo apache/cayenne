@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dbsync.reverse.db;
+package org.apache.cayenne.dbsync.reverse.dbload;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -50,13 +50,13 @@ public interface DbLoaderDelegate {
     boolean dbRelationshipLoaded(DbEntity entity, DbRelationship relationship);
 
     /**
-     * @deprecated since 4.0 no longer invoked as DbLoader does not deal with object layer anymore.
+     * @deprecated since 4.0 no longer invoked as DbLoader2 does not deal with object layer anymore.
      */
     @Deprecated
     void objEntityAdded(ObjEntity entity);
 
     /**
-     * @deprecated since 4.0 no longer invoked as DbLoader does not deal with object layer anymore.
+     * @deprecated since 4.0 no longer invoked as DbLoader2 does not deal with object layer anymore.
      */
     @Deprecated
     void objEntityRemoved(ObjEntity entity);

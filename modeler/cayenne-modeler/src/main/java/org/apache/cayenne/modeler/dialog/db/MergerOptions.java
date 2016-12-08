@@ -34,9 +34,9 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.NoStemStemmer;
-import org.apache.cayenne.dbsync.reverse.db.DbLoader;
-import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
-import org.apache.cayenne.dbsync.reverse.db.LoggingDbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
+import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderConfiguration;
+import org.apache.cayenne.dbsync.reverse.dbload.LoggingDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
@@ -169,14 +169,13 @@ public class MergerOptions extends CayenneController {
 
             DataSource dataSource = connectionInfo.makeDataSource(getApplication().getClassLoadingService());
 
-            DataMap dbImport = new DataMap();
+            DataMap dbImport;
             try (Connection conn = dataSource.getConnection();) {
-                new DbLoader(conn,
-                        adapter,
+                dbImport = new DbLoader(adapter, conn,
+                        config,
                         new LoggingDbLoaderDelegate(LogFactory.getLog(DbLoader.class)),
                         new DefaultObjectNameGenerator(NoStemStemmer.getInstance()))
-                        .load(dbImport, config);
-
+                        .load();
             } catch (SQLException e) {
                 throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);
             }

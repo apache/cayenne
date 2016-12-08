@@ -33,8 +33,8 @@ import org.apache.cayenne.dbimport.Schema;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
-import org.apache.cayenne.dbsync.reverse.db.DbLoader;
-import org.apache.cayenne.dbsync.reverse.db.DefaultDbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
+import org.apache.cayenne.dbsync.reverse.dbload.DefaultDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -68,7 +68,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Stateful helper class that encapsulates access to DbLoader.
+ * Stateful helper class that encapsulates access to DbLoader2.
  */
 public class DbLoaderHelper {
 
@@ -377,7 +377,7 @@ public class DbLoaderHelper {
             ProjectUtil.cleanObjMappings(dataMap);
         }
 
-        protected DbImportAction createAction(DataMap targetDataMap) {
+        DbImportAction createAction(DataMap targetDataMap) {
             Injector injector = DIBootstrap.createInjector(new DbSyncModule(),
                     new ToolsModule(LOGGER),
                     new DbImportModule());
@@ -393,8 +393,8 @@ public class DbLoaderHelper {
                     createDbLoader(config));
         }
 
-        protected DbLoader createDbLoader(DbImportConfiguration configuration) {
-            return new DbLoader(connection, adapter, new LoaderDelegate(), configuration.createNameGenerator());
+        DbLoader createDbLoader(DbImportConfiguration configuration) {
+            return new DbLoader(adapter, connection, configuration.getDbLoaderConfig(), new LoaderDelegate(), configuration.createNameGenerator());
         }
     }
 

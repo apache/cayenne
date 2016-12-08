@@ -22,9 +22,7 @@ import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
-import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
-import org.apache.cayenne.dbsync.reverse.db.DbLoader;
-import org.apache.cayenne.dbsync.reverse.db.DbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.project.ProjectSaver;
@@ -47,8 +45,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
                                  MapLoader mapLoader,
                                  MergerTokenFactoryProvider mergerTokenFactoryProvider,
                                  DataMap targetMap,
-                                 DbLoader dbLoader
-                                 ) {
+                                 DbLoader dbLoader) {
 
         super(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider);
 
@@ -58,9 +55,8 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
 
     @Override
     protected DbLoader createDbLoader(DbAdapter adapter,
-                                      Connection connection,
-                                      DbLoaderDelegate dbLoaderDelegate,
-                                      ObjectNameGenerator objectNameGenerator) {
+                                       Connection connection,
+                                       DbImportConfiguration config) {
         return dbLoader;
     }
 
