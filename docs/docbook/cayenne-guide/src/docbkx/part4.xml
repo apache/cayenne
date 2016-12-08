@@ -16,12 +16,9 @@
 -->
 <part xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
     xml:id="cayenne-guide-part4" xmlns:xi="http://www.w3.org/2001/XInclude">
-    <title>Cayenne Framework - Reverse Engineering </title>
+    <title>DB-First Flow</title>
     <xi:include href="re-introduction.xml"/>
 	<xi:include href="re-filtering.xml"/>
-	<xi:include href="re-relationships-loading-control.xml"/>
-	<xi:include href="re-name-generator.xml"/>
-	<xi:include href="re-table-types.xml"/>
-	<xi:include href="re-types-mapping.xml"/>
+	<xi:include href="re-other-settings.xml"/>
 	<xi:include href="re-modeler.xml"/>
 </part>

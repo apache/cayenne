@@ -18,12 +18,10 @@
          xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ns="http://docbook.org/ns/docbook">
     <title>Reverse Engineering in Cayenne Modeler</title>
 
-    <para>
-        Alternative aproach to using <link linkend="what-is-cdbimport">cdbimport </link> is doing reverse engineering
-        from <link linkend="running-cayennemodeler">Cayenne Modeler</link>. Currently modeler GUI doesn't support
-        all features of ant/maven tasks but it suffice for general DB import.
-        Especially it's a good place to quickly start working on your data model.
-    </para>
+    <para>Alternative aproach to using <link linkend="what-is-cdbimport">cdbimport </link> is doing
+        reverse engineering from <link linkend="running-cayennemodeler">Cayenne Modeler</link>.
+        Currently modeler GUI doesn't support all features of ant/maven tasks but it suffice for
+        general DB import. Especially it's a good place to quickly start working on your data model. </para>
 
     <para>
         You can find reverse engineering tool in main modeler menu
