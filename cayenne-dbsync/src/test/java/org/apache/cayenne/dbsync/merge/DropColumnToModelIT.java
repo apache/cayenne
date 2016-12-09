@@ -28,6 +28,9 @@ import static org.junit.Assert.fail;
 import java.sql.Types;
 import java.util.List;
 
+import org.apache.cayenne.dbsync.merge.token.DropColumnToModel;
+import org.apache.cayenne.dbsync.merge.token.DropRelationshipToModel;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;

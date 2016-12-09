@@ -24,6 +24,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.cayenne.dbsync.merge.token.AddColumnToDb;
+import org.apache.cayenne.dbsync.merge.token.AddColumnToModel;
+import org.apache.cayenne.dbsync.merge.token.AddRelationshipToDb;
+import org.apache.cayenne.dbsync.merge.token.AddRelationshipToModel;
+import org.apache.cayenne.dbsync.merge.token.CreateTableToDb;
+import org.apache.cayenne.dbsync.merge.token.CreateTableToModel;
+import org.apache.cayenne.dbsync.merge.token.DropColumnToDb;
+import org.apache.cayenne.dbsync.merge.token.DropColumnToModel;
+import org.apache.cayenne.dbsync.merge.token.DropRelationshipToDb;
+import org.apache.cayenne.dbsync.merge.token.DropRelationshipToModel;
+import org.apache.cayenne.dbsync.merge.token.DropTableToDb;
+import org.apache.cayenne.dbsync.merge.token.DropTableToModel;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.TokenComparator;
 import org.junit.Before;
 import org.junit.Test;
 

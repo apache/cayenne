@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge.factory;
 
-import org.apache.cayenne.dbsync.merge.MergerToken;
-import org.apache.cayenne.dbsync.merge.ValueForNullProvider;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.ValueForNullProvider;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;

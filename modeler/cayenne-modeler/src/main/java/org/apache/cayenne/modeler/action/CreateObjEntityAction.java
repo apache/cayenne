@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
-import org.apache.cayenne.dbsync.merge.EntityMergeSupport;
+import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.naming.NoStemStemmer;

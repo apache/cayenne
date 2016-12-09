@@ -19,6 +19,11 @@
 package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
+import org.apache.cayenne.dbsync.merge.token.AddRelationshipToDb;
+import org.apache.cayenne.dbsync.merge.token.EmptyValueForNullProvider;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.TokenComparator;
+import org.apache.cayenne.dbsync.merge.token.ValueForNullProvider;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
@@ -42,6 +47,7 @@ import java.util.Set;
 /**
  * Wraps an algorithm to traverse a {@link DataMap} and create a group of {@link MergerToken}s that can be used to
  * synchronize data store and Cayenne model.
+ * @deprecated
  */
 public class DbMerger {
 
@@ -85,13 +91,12 @@ public class DbMerger {
 
     private static boolean havePair(Collection<DbJoin> j2s, DbJoin j1) {
         for (DbJoin j2 : j2s) {
-            if (!isNull(j1.getSource()) && !isNull(j1.getTarget()) && !isNull(j2.getSource())
-                    && !isNull(j2.getTarget())
+            if (       !isNull(j1.getSource()) && !isNull(j1.getTarget())
+                    && !isNull(j2.getSource()) && !isNull(j2.getTarget())
                     && j1.getSource().getEntity().getName().equalsIgnoreCase(j2.getSource().getEntity().getName())
                     && j1.getTarget().getEntity().getName().equalsIgnoreCase(j2.getTarget().getEntity().getName())
                     && j1.getSourceName().equalsIgnoreCase(j2.getSourceName())
                     && j1.getTargetName().equalsIgnoreCase(j2.getTargetName())) {
-
                 return true;
             }
         }
@@ -351,6 +356,7 @@ public class DbMerger {
         return null;
     }
 
+    @Deprecated
     public static class Builder {
         private DbMerger merger;
 

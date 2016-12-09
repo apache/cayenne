@@ -22,14 +22,14 @@ package org.apache.cayenne.modeler.dialog.db;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.merge.AbstractToDbToken;
-import org.apache.cayenne.dbsync.merge.DbMerger;
-import org.apache.cayenne.dbsync.merge.DefaultModelMergeDelegate;
-import org.apache.cayenne.dbsync.merge.MergeDirection;
-import org.apache.cayenne.dbsync.merge.MergerContext;
-import org.apache.cayenne.dbsync.merge.MergerToken;
-import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
-import org.apache.cayenne.dbsync.merge.ProxyModelMergeDelegate;
+import org.apache.cayenne.dbsync.merge.token.AbstractToDbToken;
+import org.apache.cayenne.dbsync.merge.DataMapMerger;
+import org.apache.cayenne.dbsync.reverse.dbload.DefaultModelMergeDelegate;
+import org.apache.cayenne.dbsync.merge.context.MergeDirection;
+import org.apache.cayenne.dbsync.merge.context.MergerContext;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.reverse.dbload.ModelMergeDelegate;
+import org.apache.cayenne.dbsync.reverse.dbload.ProxyModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
@@ -160,7 +160,7 @@ public class MergerOptions extends CayenneController {
             FiltersConfig filters = FiltersConfig.create(defaultCatalog, defaultSchema, TableFilter.everything(),
                     PatternFilter.INCLUDE_NOTHING);
 
-            DbMerger merger = DbMerger.builder(mergerTokenFactory)
+            DataMapMerger merger = DataMapMerger.builder(mergerTokenFactory)
                     .filters(filters)
                     .build();
 

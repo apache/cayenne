@@ -23,6 +23,7 @@ import org.apache.cayenne.DataObject;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.jdbc.SQLParameterBinding;
+import org.apache.cayenne.dbsync.merge.token.DefaultValueForNullProvider;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;

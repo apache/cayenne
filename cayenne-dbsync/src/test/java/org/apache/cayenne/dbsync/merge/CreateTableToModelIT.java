@@ -16,6 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.dbsync.merge;
 
 import static org.junit.Assert.assertEquals;
@@ -27,6 +28,8 @@ import static org.junit.Assert.assertTrue;
 import java.sql.Types;
 import java.util.List;
 
+import org.apache.cayenne.dbsync.merge.token.CreateTableToModel;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
