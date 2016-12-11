@@ -106,26 +106,27 @@
         <title>Creating Expressions from Strings </title>
         <para>While in most cases users are likely to rely on API from the following section for
             expression creation, we&apos;ll start by showing String expressions, as this will help
-            understanding the semantics. A Cayenne expression can be represented as a String, which
-            can be later converted to an expression object using <code>Expression.fromString</code>
-            static method. Here is an
+            to understand the semantics. A Cayenne expression can be represented as a String, which
+            can be converted to an expression object using <code>ExpressionFactory.exp</code> static
+            method. Here is an
             example:<programlisting language="java">String expString = &quot;name like &apos;A%&apos; and price &lt; 1000&quot;;
-Expression exp = Expression.fromString(expString);</programlisting>This
-            particular expression may be used to match Paintings with names that start with &quot;A&quot; and
-            a price less than $1000. While this example is pretty self-explanatory, there are a few
-            points worth mentioning. &quot;name&quot; and &quot;price&quot; here are object paths discussed earlier. As
-            always, paths themselves are not attached to a specific root entity and can be applied
-            to any entity that has similarly named attributes or relationships. So when we are
-            saying that this expression &quot;may be used to match Paintings&quot;, we are implying that there
-            may be other entities, for which this expression is valid. Now the expression details... </para>
+Expression exp = ExpressionFactory.exp(expString);</programlisting>This
+            particular expression may be used to match Paintings whose names that start with
+            &quot;A&quot; and whose price is less than $1000. While this example is pretty
+            self-explanatory, there are a few points worth mentioning. &quot;name&quot; and
+            &quot;price&quot; here are object paths discussed earlier. As always, paths themselves
+            are not attached to a specific root entity and can be applied to any entity that has
+            similarly named attributes or relationships. So when we are saying that this expression
+            &quot;may be used to match Paintings&quot;, we are implying that there may be other
+            entities, for which this expression is valid. Now the expression details... </para>
         <para><emphasis role="italic">Character constants</emphasis> that are not paths or numeric values
             should be enclosed in single or double quotes. Two of the expressions below are
             equivalent:<programlisting language="SQL">name = &apos;ABC&apos;
 
 // double quotes are escaped inside Java Strings of course
 name = \&quot;ABC\&quot;</programlisting></para>
-        <para><emphasis role="italic">Case sensitivity.</emphasis> Expression operators are all case
-            sensitive and are usually lowercase. Complex words follow the java camel-case
+        <para><emphasis role="italic">Case sensitivity.</emphasis> Expression operators are case
+            sensitive and are usually lowercase. Complex words follow the Java camel-case
             style:<programlisting language="SQL">// valid
 name likeIgnoreCase &apos;A%&apos;
 
@@ -155,49 +156,52 @@ name = enum:org.foo.EnumClass.VALUE1</programlisting></para>
         <para>
             <emphasis role="italic">Binary conditions</emphasis> are expressions that contain a path
             on the left, a value on the right, and some operation between them, such as equals,
-            like, etc. They can be used as qualifiers in
-                SelectQueries:<programlisting language="SQL">name like &apos;A%&apos;</programlisting>
-            <emphasis role="italic">Named parameters.</emphasis> Expressions can have named parameters (names that
-            start with &quot;$&quot;). Parameterized expressions allow to create reusable expression
-            templates. Also if an Expression contains a complex object that doesn&apos;t have a simple
-            String representation (e.g. a Date, a DataObject, an ObjectId), parameterizing such
-            expression is the only way to represent it as String. Here are some
-            examples:<programlisting language="java">Expression template = Expression.fromString(&quot;name = $name&quot;);
+            like, etc. They can be used as qualifiers in SelectQueries:<programlisting language="SQL">name like &apos;A%&apos;</programlisting>
+            <emphasis role="italic">Parameters.</emphasis> Expressions can contain named parameters
+            (names that start with &quot;$&quot;) that can be substituted with values either by name
+            or by position. Parameterized expressions allow to create reusable expression templates.
+            Also if an Expression contains a complex object that doesn&apos;t have a simple String
+            representation (e.g. a Date, a DataObject, an ObjectId), parameterizing such expression
+            is the only way to represent it as String. Here are the examples of both positional and
+            named parameter
+            bindings:<programlisting language="java">Expression template = ExpressionFactory.exp(&quot;name = $name&quot;);
 ...
+// name binding
 Map p1 = Collections.singletonMap(&quot;name&quot;, &quot;Salvador Dali&quot;);
-Expression qualifier1 = template.expWithParameters(p1);
+Expression qualifier1 = template.params(p1);
 ...
-Map p2 = Collections.singletonMap(&quot;name&quot;, &quot;Monet&quot;);
-Expression qualifier2 = template.expWithParameters(p2);</programlisting>To
-            create a named parameterized expression with a LIKE clause, SQL wildcards must be part
-            of the values in the Map and not the expression string
-            itself:<programlisting language="java">Expression template = Expression.fromString(&quot;name like $name&quot;);
-...
-Map p1 = Collections.singletonMap(&quot;name&quot;, &quot;Salvador%&quot;);
-Expression qualifier1 = template.expWithParameters(p1);</programlisting>When
+// positional binding
+Expression qualifier2 = template.paramsArray(&quot;Monet&quot;);</programlisting></para>
+        <para>Positional binding is usually shorter. You can pass positional bindings to the
+                <code>"exp(..)"</code> factory method (its second argument is a params
+            vararg):<programlisting>Expression qualifier = ExpressionFactory.exp(&quot;name = $name&quot;, &quot;Monet&quot;);</programlisting></para>
+        <para>To create a named parameterized expression with a LIKE clause, SQL wildcards must be
+            part of the values in the Map and not the expression string
+            itself:<programlisting language="java">Expression qualifier = ExpressionFactory.exp(&quot;name like $name&quot;, &quot;Salvador%&quot;);</programlisting>When
             matching on a relationship, parameters can be Persistent objects or
-            ObjectIds:<programlisting language="java">Expression template = Expression.fromString(&quot;artist = $artist&quot;);
-...
-Artist dali = // asume we fetched this one already
-Map p1 = Collections.singletonMap(&quot;artist&quot;, dali);
-Expression qualifier1 = template.expWithParameters(p1);</programlisting>Uninitialized
-            parameters will be automatically pruned from expressions, so a user can omit some
-            parameters when creating an expression from a parameterized
-            template:<programlisting language="java">Expression template = Expression.fromString(&quot;name like $name and dateOfBirth &gt; $date&quot;);
+            ObjectIds:<programlisting language="java">Artist dali = ... // asume we fetched this one already
+Expression qualifier1 = ExpressionFactory.exp(&quot;artist = $artist&quot;, dali);</programlisting>When
+            using positional binding, Cayenne would expect values for <emphasis role="bold"
+                >all</emphasis> parameters to be present. Binding by name offers extra flexibility:
+            subexpressions with uninitialized parameters are automatically pruned from the
+            expression. So e.g. if certain parts of the expression criteria are not provided to the
+            application, you can still build a valid
+            expression:<programlisting language="java">Expression template = ExpressionFactory.exp(&quot;name like $name and dateOfBirth &gt; $date&quot;);
 ...
 Map p1 = Collections.singletonMap(&quot;name&quot;, &quot;Salvador%&quot;);
-Expression qualifier1 = template.expWithParameters(p1);
+Expression qualifier1 = template.params(p1);
 
-// qualifier1 is now equals to &quot;name like &apos;Salvador%&apos;&quot;, the &apos;dateOfBirth&apos; condition was
-// pruned, as no value was specified for the $date parameter</programlisting></para>
+// "qualifier1" is now &quot;name like &apos;Salvador%&apos;&quot;.
+// &apos;dateOfBirth &gt; $date&apos; condition was pruned, as no value was specified for 
+// the $date parameter</programlisting></para>
         <para><emphasis role="italic">Null handling.</emphasis> Handling of Java nulls as operands
             is no different from normal values. Instead of using special conditional operators, like
-            SQL does (IS NULL, IS NOT NULL), &quot;=&quot; and &quot;!=&quot; expressions can be used directly with null
-            values. It is up to Cayenne to translate expressions with nulls to the valid SQL.</para>
+            SQL does (IS NULL, IS NOT NULL), &quot;=&quot; and &quot;!=&quot; expressions are used
+            directly with null values. It is up to Cayenne to translate expressions with nulls to
+            the valid SQL.</para>
         <para>
             <note>
-                <para>A formal definition of all possible valid expressions in a form of JavaCC
-                    grammar is provided in Appendix C</para>
+                <para>A formal definition of the expression grammar is provided in Appendix C</para>
             </note>
         </para>
     </section>
