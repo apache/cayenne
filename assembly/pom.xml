@@ -30,7 +30,7 @@
 	<groupId>org.apache.cayenne.assembly</groupId>
 	<artifactId>cayenne-assembly</artifactId>
 	<packaging>pom</packaging>
-	<name>Cayenne Release Assembly</name>
+	<name>cayenne-assembly: Cayenne Release Assembly</name>
 
 	<description>An assembly of Cayenne into a generically runnable package.</description>
 

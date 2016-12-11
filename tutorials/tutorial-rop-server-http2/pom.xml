@@ -22,7 +22,7 @@
     </parent>
 
     <artifactId>tutorial-rop-server-http2</artifactId>
-    <name>Cayenne ROP HTTP/2 Server Tutorial</name>
+    <name>tutorial-rop-server-http2: Cayenne ROP HTTP/2 Server Tutorial</name>
     <packaging>jar</packaging>
 
     <properties>

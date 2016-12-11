@@ -25,7 +25,7 @@
 	</parent>
 
 	<artifactId>cayenne-project</artifactId>
-	<name>Cayenne Project</name>
+	<name>cayenne-project: Cayenne Project</name>
 	<packaging>jar</packaging>
 
 	<dependencies>

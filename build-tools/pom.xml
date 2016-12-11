@@ -29,7 +29,7 @@
 
 	<groupId>org.apache.cayenne.build-tools</groupId>
 	<artifactId>build-tools-parent</artifactId>
-	<name>Cayenne Build Tools Parent</name>
+	<name>build-tools-parent: Cayenne Build Tools Parent</name>
 	<packaging>pom</packaging>
 
 	<modules>

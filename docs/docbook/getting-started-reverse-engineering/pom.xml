@@ -28,7 +28,7 @@
     <artifactId>getting-started-reverse-engineering</artifactId>
 
     <packaging>jar</packaging>
-    <name>Docbook: Getting Started with Cayenne RE</name>
+    <name>getting-started-reverse-engineering: Docbook: Getting Started with Cayenne RE</name>
 
     <build>
         <resources>

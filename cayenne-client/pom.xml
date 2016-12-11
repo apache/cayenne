@@ -18,7 +18,7 @@
 	</parent>
 	<artifactId>cayenne-client</artifactId>
 	<packaging>jar</packaging>
-	<name>Cayenne ROP Client</name>
+	<name>cayenne-client: Cayenne ROP Client</name>
 	<dependencies>
 
 		<!-- Compile dependencies -->

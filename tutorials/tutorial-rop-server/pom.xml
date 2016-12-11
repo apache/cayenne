@@ -22,7 +22,7 @@
 	</parent>
 
 	<artifactId>tutorial-rop-server</artifactId>
-	<name>Cayenne ROP Server Tutorial</name>
+	<name>tutorial-rop-server: Cayenne ROP Server Tutorial</name>
     <packaging>war</packaging>
 
 	<dependencies>

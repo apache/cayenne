@@ -20,7 +20,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>maven-cayenne-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
-	<name>Cayenne Maven Plugin</name>
+	<name>maven-cayenne-plugin: Cayenne Maven Plugin</name>
 
 	<dependencies>
 

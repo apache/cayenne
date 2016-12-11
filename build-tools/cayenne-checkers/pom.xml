@@ -30,7 +30,7 @@
     <artifactId>cayenne-checkers</artifactId>
     <packaging>jar</packaging>
 
-    <name>Cayenne Code Checkers</name>
+    <name>cayenne-checkers: Cayenne Code Checkers</name>
 
     <build>
         <plugins>

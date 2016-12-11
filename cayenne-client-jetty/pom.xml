@@ -19,7 +19,7 @@
     </parent>
 
     <artifactId>cayenne-client-jetty</artifactId>
-    <name>Cayenne ROP Client (Jetty)</name>
+    <name>cayenne-client-jetty: Cayenne ROP Client (Jetty)</name>
     <packaging>jar</packaging>
 
     <properties>

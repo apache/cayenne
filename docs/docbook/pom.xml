@@ -47,7 +47,7 @@
 
 	<artifactId>cayenne-docbook</artifactId>
 	<packaging>pom</packaging>
-	<name>Cayenne Docbook Documentation</name>
+	<name>cayenne-docbook: Cayenne Docbook Documentation</name>
 	
 	<build>
 		<pluginManagement>

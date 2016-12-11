@@ -22,7 +22,7 @@
 	</parent>
 
 	<artifactId>tutorial</artifactId>
-	<name>Cayenne Tutorial</name>
+	<name>tutorial: ayenne Tutorial</name>
 
 	<dependencies>
 		<dependency>

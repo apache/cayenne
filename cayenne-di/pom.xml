@@ -18,7 +18,7 @@
 	</parent>
 	<artifactId>cayenne-di</artifactId>
 	<packaging>jar</packaging>
-	<name>Cayenne Dependency Injection Container</name>
+	<name>cayenne-di: Cayenne Dependency Injection Container</name>
 	<description>Cayenne Dependency Injection Container</description>
 	<dependencies>
 		<dependency>

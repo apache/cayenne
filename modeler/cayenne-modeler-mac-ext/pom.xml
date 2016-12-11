@@ -28,7 +28,7 @@
 	</parent>
 
 	<artifactId>cayenne-modeler-mac-ext</artifactId>
-	<name>Cayenne Modeler Mac OS X Extensions</name>
+	<name>cayenne-modeler-mac-ext: Cayenne Modeler Mac OS X Extensions</name>
 	<packaging>jar</packaging>
 
 	<dependencies>

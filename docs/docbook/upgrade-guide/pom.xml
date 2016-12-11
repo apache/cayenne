@@ -26,7 +26,7 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>upgrade-guide</artifactId>
-	<name>Docbook: Cayenne New Features and Upgrade Guide</name>
+	<name>upgrade-guide: Docbook - Cayenne New Features and Upgrade Guide</name>
 
 	<build>
 		<resources>

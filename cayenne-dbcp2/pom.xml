@@ -17,7 +17,7 @@
         <version>4.0.M5-SNAPSHOT</version>
     </parent>
     <artifactId>cayenne-dbcp2</artifactId>
-    <name>Cayenne DBCP2 Extension</name>
+    <name>cayenne-dbcp2: Cayenne DBCP2 Extension</name>
     <packaging>jar</packaging>
 
     <dependencies>

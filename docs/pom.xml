@@ -30,7 +30,7 @@
 
 	<groupId>org.apache.cayenne.docs</groupId>
 	<artifactId>cayenne-docs-parent</artifactId>
-	<name>Cayenne Documenation Parent</name>
+	<name>cayenne-docs-parent: Cayenne Documenation Parent</name>
 	<packaging>pom</packaging>
 
 	<modules>

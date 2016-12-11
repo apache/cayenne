@@ -29,7 +29,7 @@
 
 	<artifactId>cayenne-tools</artifactId>
 	<packaging>jar</packaging>
-	<name>Cayenne Tools</name>
+	<name>cayenne-tools: Cayenne Tools</name>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>

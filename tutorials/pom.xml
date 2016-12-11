@@ -27,7 +27,7 @@
 	
 	<groupId>org.apache.cayenne.tutorials</groupId>
 	<artifactId>cayenne-tutorials-parent</artifactId>
-	<name>Cayenne Tutorials</name>
+	<name>cayenne-tutorials-parent: Cayenne Tutorials</name>
 	<packaging>pom</packaging>
 
 	<modules>
