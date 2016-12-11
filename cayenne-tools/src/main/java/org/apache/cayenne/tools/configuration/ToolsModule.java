@@ -26,6 +26,7 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.configuration.server.DefaultDbAdapterFactory;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.firebird.FirebirdSniffer;
@@ -79,8 +80,8 @@ public class ToolsModule implements Module {
         // configure empty global stack properties
         binder.bindMap(Constants.PROPERTIES_MAP);
 
-        binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
-        binder.bindList(Constants.SERVER_USER_TYPES_LIST);
+        ServerModule.contributeDefaultExtendedTypes(binder);
+        ServerModule.contributeUserExtendedTypes(binder);
         binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
 
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);

@@ -108,8 +108,8 @@ public class DefaultDbAdapterFactoryTest {
 
             public void configure(Binder binder) {
                 binder.bindMap(Constants.PROPERTIES_MAP);
-                binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
-                binder.bindList(Constants.SERVER_USER_TYPES_LIST);
+                ServerModule.contributeDefaultExtendedTypes(binder);
+                ServerModule.contributeUserExtendedTypes(binder);
                 binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
 
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
@@ -145,8 +145,8 @@ public class DefaultDbAdapterFactoryTest {
 
             public void configure(Binder binder) {
                 binder.bindMap(Constants.PROPERTIES_MAP);
-                binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
-                binder.bindList(Constants.SERVER_USER_TYPES_LIST);
+                ServerModule.contributeDefaultExtendedTypes(binder);
+                ServerModule.contributeUserExtendedTypes(binder);
                 binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
 
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);

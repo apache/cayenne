@@ -152,8 +152,8 @@ public class DataDomainProviderTest {
 				binder.bindList(Constants.SERVER_PROJECT_LOCATIONS_LIST).add(testConfigName);
 
 				// configure extended types
-				binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
-				binder.bindList(Constants.SERVER_USER_TYPES_LIST);
+				ServerModule.contributeDefaultExtendedTypes(binder);
+				ServerModule.contributeUserExtendedTypes(binder);
 				binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
 
 				binder.bind(EventManager.class).toInstance(eventManager);

@@ -52,6 +52,7 @@ import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.XMLDataMapLoader;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
@@ -157,8 +158,7 @@ public class ServerCaseModule implements Module {
         binder.bindMap(Constants.PROPERTIES_MAP);
         
         // configure extended types
-        binder
-                .bindList(Constants.SERVER_DEFAULT_TYPES_LIST)
+        ServerModule.contributeDefaultExtendedTypes(binder)
                 .add(new VoidType())
                 .add(new BigDecimalType())
                 .add(new BigIntegerType())

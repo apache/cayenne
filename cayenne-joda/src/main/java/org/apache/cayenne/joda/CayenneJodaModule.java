@@ -22,6 +22,7 @@ package org.apache.cayenne.joda;
  */
 
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.joda.access.types.DateTimeType;
@@ -32,17 +33,20 @@ import org.apache.cayenne.joda.access.types.LocalTimeType;
 /**
  * Include this module when creating a ServerRuntime in order to add support for
  * joda-time ObjAttributes.
- * 
+ *
  * @since 4.0
  */
 public class CayenneJodaModule implements Module {
 
-	public CayenneJodaModule() {
-	}
+    public CayenneJodaModule() {
+    }
 
-	@Override
-	public void configure(Binder binder) {
-		binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST).add(new DateTimeType()).add(new LocalDateType())
-				.add(new LocalTimeType()).add(new LocalDateTimeType());
-	}
+    @Override
+    public void configure(Binder binder) {
+        ServerModule.contributeDefaultExtendedTypes(binder)
+                .add(new DateTimeType())
+                .add(new LocalDateType())
+                .add(new LocalTimeType())
+                .add(new LocalDateTimeType());
+    }
 }

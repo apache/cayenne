@@ -20,6 +20,7 @@
 package org.apache.cayenne.java8;
 
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.java8.access.types.LocalDateTimeType;
@@ -33,8 +34,7 @@ public class CayenneJava8Module implements Module {
 
     @Override
     public void configure(Binder binder) {
-        binder
-                .bindList(Constants.SERVER_DEFAULT_TYPES_LIST)
+        ServerModule.contributeDefaultExtendedTypes(binder)
                 .add(new LocalDateType())
                 .add(new LocalTimeType())
                 .add(new LocalDateTimeType());
