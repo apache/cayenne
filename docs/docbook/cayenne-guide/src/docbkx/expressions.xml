@@ -175,12 +175,14 @@ Expression qualifier2 = template.paramsArray(&quot;Monet&quot;);</programlisting
         <para>Positional binding is usually shorter. You can pass positional bindings to the
                 <code>"exp(..)"</code> factory method (its second argument is a params
             vararg):<programlisting>Expression qualifier = ExpressionFactory.exp(&quot;name = $name&quot;, &quot;Monet&quot;);</programlisting></para>
-        <para>To create a named parameterized expression with a LIKE clause, SQL wildcards must be
-            part of the values in the Map and not the expression string
+        <para>In parameterized expressions with LIKE clause, SQL wildcards must be part of the
+            values in the Map and not the expression string
             itself:<programlisting language="java">Expression qualifier = ExpressionFactory.exp(&quot;name like $name&quot;, &quot;Salvador%&quot;);</programlisting>When
-            matching on a relationship, parameters can be Persistent objects or
-            ObjectIds:<programlisting language="java">Artist dali = ... // asume we fetched this one already
-Expression qualifier1 = ExpressionFactory.exp(&quot;artist = $artist&quot;, dali);</programlisting>When
+            matching on a relationship, the value parameter must be either a Persistent object, an
+                <code>org.apache.cayenne.ObjectId</code>, or a numeric ID value (for single column
+            IDs).
+            E.g.:<programlisting language="java">Artist dali = ... // asume we fetched this one already
+Expression qualifier = ExpressionFactory.exp(&quot;artist = $artist&quot;, dali);</programlisting>When
             using positional binding, Cayenne would expect values for <emphasis role="bold"
                 >all</emphasis> parameters to be present. Binding by name offers extra flexibility:
             subexpressions with uninitialized parameters are automatically pruned from the
