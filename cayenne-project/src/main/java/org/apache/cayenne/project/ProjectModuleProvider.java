@@ -18,10 +18,29 @@
  */
 package org.apache.cayenne.project;
 
+import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.spi.ModuleProvider;
+
+import java.util.Collection;
+import java.util.Collections;
+
 /**
- * @since 3.1
- * @deprecated since 4.0 renamed to {@link ProjectModule}.
+ * @since 4.0
  */
-@Deprecated
-public class CayenneProjectModule extends ProjectModule {
+public class ProjectModuleProvider implements ModuleProvider {
+
+    @Override
+    public Module module() {
+        return new ProjectModule();
+    }
+
+    @Override
+    public Class<? extends Module> moduleType() {
+        return ProjectModule.class;
+    }
+
+    @Override
+    public Collection<Class<? extends Module>> overrides() {
+        return Collections.emptyList();
+    }
 }

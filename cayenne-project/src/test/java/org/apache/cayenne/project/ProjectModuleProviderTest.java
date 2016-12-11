@@ -18,10 +18,13 @@
  */
 package org.apache.cayenne.project;
 
-/**
- * @since 3.1
- * @deprecated since 4.0 renamed to {@link ProjectModule}.
- */
-@Deprecated
-public class CayenneProjectModule extends ProjectModule {
+import org.apache.cayenne.unit.util.ModuleProviderChecker;
+import org.junit.Test;
+
+public class ProjectModuleProviderTest {
+
+    @Test
+    public void testProviderPresent() {
+        ModuleProviderChecker.testProviderPresent(ProjectModuleProvider.class);
+    }
 }

@@ -16,6 +16,7 @@ Changes/New Features:
 CAY-2163 Property.path() , ExpressionFactory.pathExp()
 CAY-2164 Relocate builder bootstrap methods from ServerRuntimeBuilder to ServerRuntime
 CAY-2165 Explicit "contribution" API for easier expansion of DI collections and maps
+CAY-2166 Auto-loading of Cayenne modules
 
 Bug Fixes:
 

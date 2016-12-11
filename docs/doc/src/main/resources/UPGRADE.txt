@@ -13,8 +13,8 @@ UPGRADING TO 4.0.M5
   invoked explicitly when the stack assembly is performed, while modules can be written without any knowledge of the
   final stack.
   - Module Renaming and Explicit Loading of Modules. If you see compile errors (class not found for CayenneJodaModule,
-   CayenneJava8Module), just remove explicit loading of those modules. They will be autoloade if they are on classpath.
-   If you explicitly turned off auto-loading, use the new names for these modules: JodaModule and Java8Module.
+   CayenneJava8Module), just remove explicit loading of those modules. They will be auto-loaded if they are on classpath.
+   If you explicitly turn off auto-loading, use the new names for these modules: JodaModule and Java8Module.
 
 * Per CAY-2164, creating a ServerRuntimeBuilder is done via a static method on ServerRuntime ("ServerRuntime.builder()").
   The previous style (ServerRuntimeBuilder.builder()) is deprecated and will soon be removed, so you should replace it
