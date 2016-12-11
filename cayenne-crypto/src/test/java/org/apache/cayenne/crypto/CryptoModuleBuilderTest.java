@@ -18,12 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.crypto;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.net.URL;
-import java.security.Key;
-
 import org.apache.cayenne.crypto.key.JceksKeySourceTest;
 import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactory;
@@ -31,6 +25,12 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.junit.Test;
+
+import java.net.URL;
+import java.security.Key;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class CryptoModuleBuilderTest {
 
@@ -41,7 +41,7 @@ public class CryptoModuleBuilderTest {
         Module m = new CryptoModuleBuilder().keyStore(ksUrl, JceksKeySourceTest.TEST_KEY_PASS, "k1")
                 .valueTransformer(DefaultValueTransformerFactory.class).build();
 
-        Injector injector = DIBootstrap.createInjector(m);
+        Injector injector = DIBootstrap.createInjector(new CryptoModule(), m);
 
         KeySource ks = injector.getInstance(KeySource.class);
         Key k1 = ks.getKey("k1");

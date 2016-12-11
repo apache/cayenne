@@ -62,8 +62,9 @@ public class Runtime_AES128_Base {
     protected Module createCryptoModule(boolean compress) {
         URL keyStoreUrl = JceksKeySourceTest.class.getResource(JceksKeySourceTest.KS1_JCEKS);
 
-        CryptoModuleBuilder builder = new CryptoModuleBuilder().keyStore(keyStoreUrl, JceksKeySourceTest.TEST_KEY_PASS,
-                "k3");
+        CryptoModuleBuilder builder = CryptoModule
+                .builder()
+                .keyStore(keyStoreUrl, JceksKeySourceTest.TEST_KEY_PASS, "k3");
 
         if (compress) {
             builder.compress();
