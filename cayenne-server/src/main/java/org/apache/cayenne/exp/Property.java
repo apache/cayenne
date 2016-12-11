@@ -77,16 +77,18 @@ public class Property<E> {
     }
 
     /**
-     * @return Constructs a property path by appending the argument to the
-     * existing property separated by a dot
+     * Constructs a property path by appending the argument to the existing property separated by a dot.
+     *
+     * @return a newly created Property object.
      */
     public Property<Object> dot(String property) {
         return new Property<Object>(getName() + "." + property);
     }
 
     /**
-     * @return Constructs a property path by appending the argument to the
-     * existing property separated by a dot
+     * Constructs a new property path by appending the argument to the existing property separated by a dot.
+     *
+     * @return a newly created Property object.
      */
     public <T> Property<T> dot(Property<T> property) {
         return new Property<T>(getName() + "." + property.getName());
@@ -103,6 +105,15 @@ public class Property<E> {
 
     private boolean isOuter() {
         return name.endsWith("+");
+    }
+
+    /**
+     * Converts this property to a path expression.
+     *
+     * @return a newly created expression.
+     */
+    public Expression path() {
+        return ExpressionFactory.pathExp(getName());
     }
 
     /**

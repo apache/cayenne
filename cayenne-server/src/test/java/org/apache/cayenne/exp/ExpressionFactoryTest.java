@@ -175,7 +175,7 @@ public class ExpressionFactoryTest {
 
 	@Test
 	public void testInExp2() throws Exception {
-		List<Object> v = new ArrayList<Object>();
+		List<Object> v = new ArrayList<>();
 		v.add("a");
 		v.add("b");
 		Expression exp = ExpressionFactory.inExp("abc", v);
@@ -184,7 +184,7 @@ public class ExpressionFactoryTest {
 
 	@Test
 	public void testInExp3() throws Exception {
-		List<Object> v = new ArrayList<Object>();
+		List<Object> v = new ArrayList<>();
 		Expression exp = ExpressionFactory.inExp("abc", v);
 		assertEquals(Expression.FALSE, exp.getType());
 	}
@@ -308,7 +308,7 @@ public class ExpressionFactoryTest {
 
 		// check for N in (1..5)
 		for (int n = 1; n <= 5; n++) {
-			Collection<Expression> list = new ArrayList<Expression>();
+			Collection<Expression> list = new ArrayList<>();
 
 			// populate map
 			for (int i = 1; i <= n; i++) {
@@ -342,7 +342,7 @@ public class ExpressionFactoryTest {
 	public void testAnd_Collection_OneElement() {
 		Expression e1 = ExpressionFactory.matchExp("a", 1);
 
-		Collection<Expression> c = Arrays.asList(e1);
+		Collection<Expression> c = Collections.singletonList(e1);
 		Expression e = ExpressionFactory.and(c);
 
 		assertEquals("a = 1", e.toString());
@@ -457,8 +457,18 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
-	public void testExp_Vararg_InAsValues() throws Exception {
+	public void testExp_Vararg_InAsValues() {
 		Expression e = ExpressionFactory.exp("k1 in ($ap, $bp)", "a", "b");
 		assertEquals("k1 in (\"a\", \"b\")", e.toString());
+	}
+
+	@Test
+	public void testPathExp() {
+		assertEquals("abc.xyz", ExpressionFactory.pathExp("abc.xyz").toString());
+	}
+
+	@Test
+	public void testDbPathExp() {
+		assertEquals("db:abc.xyz", ExpressionFactory.dbPathExp("abc.xyz").toString());
 	}
 }
