@@ -16,28 +16,32 @@
  *    specific language governing permissions and limitations
  *    under the License.
  */
-package org.apache.cayenne.di.spi;
+package org.apache.cayenne.crypto;
 
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.spi.ModuleProvider;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Provider of modules used by module auto-loading mechanism to identify and load modules.
- *
  * @since 4.0
  */
-public interface ModuleProvider {
+public class CryptoModuleProvider implements ModuleProvider {
 
-    Module module();
+    @Override
+    public Module module() {
+        return new CryptoModule();
+    }
 
-    Class<? extends Module> moduleType();
+    @Override
+    public Class<? extends Module> moduleType() {
+        return CryptoModule.class;
+    }
 
-    /**
-     * Returns an array of module types this module overrides. Module auto-loading mechanism will ensure module
-     * load order that respects overriding preferences.
-     *
-     * @return a collection of module types this module overrides.
-     */
-    Collection<Class<? extends Module>> overrides();
+    @Override
+    public Collection<Class<? extends Module>> overrides() {
+        // we don't override anything, we only decorate ServerModule services...
+        return Collections.emptyList();
+    }
 }

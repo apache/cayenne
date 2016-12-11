@@ -37,10 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * A builder of a Cayenne DI module that will contain all extension to Cayenne
- * runtime needed to enable encryption of certain data columns. Builder allows
- * to specify custom ciphers, as well as a strategy for discovering which
- * columns are encrypted.
+ * A builder that allows to customize {@link CryptoModule} module.
  *
  * @since 4.0
  */

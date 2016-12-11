@@ -21,6 +21,9 @@ package org.apache.cayenne.configuration.server;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleProvider;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * ServerModule auto-loading facility.
  *
@@ -39,7 +42,7 @@ public class ServerModuleProvider implements ModuleProvider {
     }
 
     @Override
-    public Class<? extends Module>[] overrides() {
-        return new Class[0];
+    public Collection<Class<? extends Module>> overrides() {
+        return Collections.emptyList();
     }
 }

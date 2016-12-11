@@ -24,6 +24,8 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.junit.Test;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -90,9 +92,11 @@ public class ModuleLoaderTest {
             return Module1.class;
         }
 
+
         @Override
-        public Class<? extends Module>[] overrides() {
-            return new Class[]{Module2.class};
+        public Collection<Class<? extends Module>> overrides() {
+            Collection c = Collections.singletonList(Module2.class);
+            return c;
         }
     }
 
@@ -109,8 +113,8 @@ public class ModuleLoaderTest {
         }
 
         @Override
-        public Class<? extends Module>[] overrides() {
-            return new Class[0];
+        public Collection<Class<? extends Module>> overrides() {
+            return Collections.emptyList();
         }
     }
 
@@ -127,8 +131,8 @@ public class ModuleLoaderTest {
         }
 
         @Override
-        public Class<? extends Module>[] overrides() {
-            return new Class[0];
+        public Collection<Class<? extends Module>> overrides() {
+            return Collections.emptyList();
         }
     }
 
@@ -145,8 +149,9 @@ public class ModuleLoaderTest {
         }
 
         @Override
-        public Class<? extends Module>[] overrides() {
-            return new Class[]{Module3.class};
+        public Collection<Class<? extends Module>> overrides() {
+            Collection c = Collections.singletonList(Module3.class);
+            return c;
         }
     }
 }

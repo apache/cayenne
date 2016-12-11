@@ -21,6 +21,9 @@ package org.apache.cayenne.joda;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleProvider;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * @since 4.0
  */
@@ -37,7 +40,7 @@ public class JodaModuleProvider implements ModuleProvider {
     }
 
     @Override
-    public Class<? extends Module>[] overrides() {
-        return new Class[0];
+    public Collection<Class<? extends Module>> overrides() {
+        return Collections.emptyList();
     }
 }
