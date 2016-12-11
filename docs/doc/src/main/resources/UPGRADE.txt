@@ -4,6 +4,12 @@ Apache Cayenne Upgrade Information
 IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
+UPGRADING TO 4.0.M5
+
+* Per CAY-2164, creating a ServerRuntimeBuilder is done via a static method on ServerRuntime ("ServerRuntime.builder()").
+  The previous style (ServerRuntimeBuilder.builder()) is deprecated and will soon be removed, so you should replace it
+  with the new API.
+
 UPGRADING TO 4.0.M4
 
 * Per CAY-2133, LegacyObjectNameGenerator is no longer provided, as it wasn't possible to maintain it in a fully backwards-

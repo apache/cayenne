@@ -86,7 +86,7 @@ public abstract class AuditableServerCase {
 	}
 
 	protected ServerRuntimeBuilder configureCayenne() {
-		return ServerRuntimeBuilder.builder().addConfig("cayenne-lifecycle.xml");
+		return ServerRuntime.builder().addConfig("cayenne-lifecycle.xml");
 	}
 
 	@After

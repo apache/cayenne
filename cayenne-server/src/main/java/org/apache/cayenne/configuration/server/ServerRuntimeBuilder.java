@@ -37,246 +37,253 @@ import org.apache.cayenne.di.Module;
  * A convenience class to assemble custom ServerRuntime. It allows to easily
  * configure custom modules, multiple config locations, or quickly create a
  * global DataSource.
- * 
+ *
  * @since 4.0
  */
 public class ServerRuntimeBuilder {
 
-	static final String DEFAULT_NAME = "cayenne";
+    static final String DEFAULT_NAME = "cayenne";
 
-	private String name;
-	private Collection<String> configs;
-	private List<Module> modules;
-	private DataSourceFactory dataSourceFactory;
-	private String jdbcUrl;
-	private String jdbcDriver;
-	private String jdbcUser;
-	private String jdbcPassword;
-	private int jdbcMinConnections;
-	private int jdbcMaxConnections;
-	private long maxQueueWaitTime;
-	private String validationQuery;
+    private String name;
+    private Collection<String> configs;
+    private List<Module> modules;
+    private DataSourceFactory dataSourceFactory;
+    private String jdbcUrl;
+    private String jdbcDriver;
+    private String jdbcUser;
+    private String jdbcPassword;
+    private int jdbcMinConnections;
+    private int jdbcMaxConnections;
+    private long maxQueueWaitTime;
+    private String validationQuery;
 
-	public static ServerRuntimeBuilder builder() {
-		return new ServerRuntimeBuilder();
-	}
+    /**
+     * @deprecated since 4.0.M5 in favor of {@link ServerRuntime#builder()}
+     */
+    @Deprecated
+    public static ServerRuntimeBuilder builder() {
+        return ServerRuntime.builder();
+    }
 
-	public static ServerRuntimeBuilder builder(String name) {
-		return new ServerRuntimeBuilder(name);
-	}
+    /**
+     * @deprecated since 4.0.M5 in favor of {@link ServerRuntime#builder(String)}
+     */
+    @Deprecated
+    public static ServerRuntimeBuilder builder(String name) {
+        return ServerRuntime.builder(name);
+    }
 
-	/**
-	 * Creates an empty builder.
-	 */
-	public ServerRuntimeBuilder() {
-		this(null);
-	}
+    /**
+     * Creates an empty builder.
+     */
+    public ServerRuntimeBuilder() {
+        this(null);
+    }
 
-	/**
-	 * Creates a builder with a fixed name of the DataDomain of the resulting
-	 * ServerRuntime. Specifying explicit name is often needed for consistency
-	 * in runtimes merged from multiple configs, each having its own name.
-	 */
-	public ServerRuntimeBuilder(String name) {
-		this.configs = new LinkedHashSet<String>();
-		this.modules = new ArrayList<Module>();
-		this.name = name;
-	}
+    /**
+     * Creates a builder with a fixed name of the DataDomain of the resulting
+     * ServerRuntime. Specifying explicit name is often needed for consistency
+     * in runtimes merged from multiple configs, each having its own name.
+     */
+    public ServerRuntimeBuilder(String name) {
+        this.configs = new LinkedHashSet<String>();
+        this.modules = new ArrayList<Module>();
+        this.name = name;
+    }
 
-	/**
-	 * Sets a DataSource that will override any DataSources found in the
-	 * mapping. If the mapping contains no DataNodes, and the DataSource is set
-	 * with this method, the builder would create a single default DataNode.
-	 * 
-	 * @see DataSourceBuilder
-	 */
-	public ServerRuntimeBuilder dataSource(DataSource dataSource) {
-		this.dataSourceFactory = new FixedDataSourceFactory(dataSource);
-		return this;
-	}
+    /**
+     * Sets a DataSource that will override any DataSources found in the
+     * mapping. If the mapping contains no DataNodes, and the DataSource is set
+     * with this method, the builder would create a single default DataNode.
+     *
+     * @see DataSourceBuilder
+     */
+    public ServerRuntimeBuilder dataSource(DataSource dataSource) {
+        this.dataSourceFactory = new FixedDataSourceFactory(dataSource);
+        return this;
+    }
 
-	/**
-	 * Sets JNDI location for the default DataSource. If the mapping contains no
-	 * DataNodes, and the DataSource is set with this method, the builder would
-	 * create a single default DataNode.
-	 */
-	public ServerRuntimeBuilder jndiDataSource(String location) {
-		this.dataSourceFactory = new FixedJNDIDataSourceFactory(location);
-		return this;
-	}
+    /**
+     * Sets JNDI location for the default DataSource. If the mapping contains no
+     * DataNodes, and the DataSource is set with this method, the builder would
+     * create a single default DataNode.
+     */
+    public ServerRuntimeBuilder jndiDataSource(String location) {
+        this.dataSourceFactory = new FixedJNDIDataSourceFactory(location);
+        return this;
+    }
 
-	/**
-	 * Sets a database URL for the default DataSource.
-	 */
-	public ServerRuntimeBuilder url(String url) {
-		this.jdbcUrl = url;
-		return this;
-	}
+    /**
+     * Sets a database URL for the default DataSource.
+     */
+    public ServerRuntimeBuilder url(String url) {
+        this.jdbcUrl = url;
+        return this;
+    }
 
-	/**
-	 * Sets a driver Java class for the default DataSource.
-	 */
-	public ServerRuntimeBuilder jdbcDriver(String driver) {
-		// TODO: guess the driver from URL
-		this.jdbcDriver = driver;
-		return this;
-	}
+    /**
+     * Sets a driver Java class for the default DataSource.
+     */
+    public ServerRuntimeBuilder jdbcDriver(String driver) {
+        // TODO: guess the driver from URL
+        this.jdbcDriver = driver;
+        return this;
+    }
 
-	/**
-	 * Sets a validation query for the default DataSource.
-	 * 
-	 * @param validationQuery
-	 *            a SQL string that returns some result. It will be used to
-	 *            validate connections in the pool.
-	 */
-	public ServerRuntimeBuilder validationQuery(String validationQuery) {
-		this.validationQuery = validationQuery;
-		return this;
-	}
-	
-	public ServerRuntimeBuilder maxQueueWaitTime(long maxQueueWaitTime) {
-		this.maxQueueWaitTime = maxQueueWaitTime;
-		return this;
-	}
+    /**
+     * Sets a validation query for the default DataSource.
+     *
+     * @param validationQuery a SQL string that returns some result. It will be used to
+     *                        validate connections in the pool.
+     */
+    public ServerRuntimeBuilder validationQuery(String validationQuery) {
+        this.validationQuery = validationQuery;
+        return this;
+    }
 
-	/**
-	 * Sets a user name for the default DataSource.
-	 */
-	public ServerRuntimeBuilder user(String user) {
-		this.jdbcUser = user;
-		return this;
-	}
+    public ServerRuntimeBuilder maxQueueWaitTime(long maxQueueWaitTime) {
+        this.maxQueueWaitTime = maxQueueWaitTime;
+        return this;
+    }
 
-	/**
-	 * Sets a password for the default DataSource.
-	 */
-	public ServerRuntimeBuilder password(String password) {
-		this.jdbcPassword = password;
-		return this;
-	}
+    /**
+     * Sets a user name for the default DataSource.
+     */
+    public ServerRuntimeBuilder user(String user) {
+        this.jdbcUser = user;
+        return this;
+    }
 
-	public ServerRuntimeBuilder minConnections(int minConnections) {
-		this.jdbcMinConnections = minConnections;
-		return this;
-	}
+    /**
+     * Sets a password for the default DataSource.
+     */
+    public ServerRuntimeBuilder password(String password) {
+        this.jdbcPassword = password;
+        return this;
+    }
 
-	public ServerRuntimeBuilder maxConnections(int maxConnections) {
-		this.jdbcMaxConnections = maxConnections;
-		return this;
-	}
+    public ServerRuntimeBuilder minConnections(int minConnections) {
+        this.jdbcMinConnections = minConnections;
+        return this;
+    }
 
-	public ServerRuntimeBuilder addConfig(String configurationLocation) {
-		configs.add(configurationLocation);
-		return this;
-	}
+    public ServerRuntimeBuilder maxConnections(int maxConnections) {
+        this.jdbcMaxConnections = maxConnections;
+        return this;
+    }
 
-	public ServerRuntimeBuilder addConfigs(String... configurationLocations) {
-		if (configurationLocations != null) {
-			configs.addAll(Arrays.asList(configurationLocations));
-		}
-		return this;
-	}
+    public ServerRuntimeBuilder addConfig(String configurationLocation) {
+        configs.add(configurationLocation);
+        return this;
+    }
 
-	public ServerRuntimeBuilder addConfigs(Collection<String> configurationLocations) {
-		configs.addAll(configurationLocations);
-		return this;
-	}
+    public ServerRuntimeBuilder addConfigs(String... configurationLocations) {
+        if (configurationLocations != null) {
+            configs.addAll(Arrays.asList(configurationLocations));
+        }
+        return this;
+    }
 
-	public ServerRuntimeBuilder addModule(Module module) {
-		modules.add(module);
-		return this;
-	}
+    public ServerRuntimeBuilder addConfigs(Collection<String> configurationLocations) {
+        configs.addAll(configurationLocations);
+        return this;
+    }
 
-	public ServerRuntimeBuilder addModules(Collection<Module> modules) {
-		this.modules.addAll(modules);
-		return this;
-	}
+    public ServerRuntimeBuilder addModule(Module module) {
+        modules.add(module);
+        return this;
+    }
 
-	public ServerRuntime build() {
+    public ServerRuntimeBuilder addModules(Collection<Module> modules) {
+        this.modules.addAll(modules);
+        return this;
+    }
 
-		buildModules();
+    public ServerRuntime build() {
 
-		String[] configs = this.configs.toArray(new String[this.configs.size()]);
-		Module[] modules = this.modules.toArray(new Module[this.modules.size()]);
-		return new ServerRuntime(configs, modules);
-	}
+        buildModules();
 
-	private void buildModules() {
+        String[] configs = this.configs.toArray(new String[this.configs.size()]);
+        Module[] modules = this.modules.toArray(new Module[this.modules.size()]);
+        return new ServerRuntime(configs, modules);
+    }
 
-		String nameOverride = name;
+    private void buildModules() {
 
-		if (nameOverride == null) {
-			// check if we need to force the default name ... we do when no
-			// configs or multiple configs are supplied.
-			if (configs.size() != 1) {
-				nameOverride = DEFAULT_NAME;
-			}
-		}
+        String nameOverride = name;
 
-		if (nameOverride != null) {
+        if (nameOverride == null) {
+            // check if we need to force the default name ... we do when no
+            // configs or multiple configs are supplied.
+            if (configs.size() != 1) {
+                nameOverride = DEFAULT_NAME;
+            }
+        }
 
-			final String finalNameOverride = nameOverride;
-			prepend(new Module() {
-				@Override
-				public void configure(Binder binder) {
-					binder.bindMap(Constants.PROPERTIES_MAP).put(Constants.SERVER_DOMAIN_NAME_PROPERTY,
-							finalNameOverride);
-				}
-			});
-		}
+        if (nameOverride != null) {
 
-		if (dataSourceFactory != null) {
+            final String finalNameOverride = nameOverride;
+            prepend(new Module() {
+                @Override
+                public void configure(Binder binder) {
+                    binder.bindMap(Constants.PROPERTIES_MAP).put(Constants.SERVER_DOMAIN_NAME_PROPERTY,
+                            finalNameOverride);
+                }
+            });
+        }
 
-			prepend(new Module() {
-				@Override
-				public void configure(Binder binder) {
-					binder.bind(DataDomain.class).toProvider(SyntheticNodeDataDomainProvider.class);
-					binder.bind(DataSourceFactory.class).toInstance(dataSourceFactory);
-				}
-			});
+        if (dataSourceFactory != null) {
 
-		}
-		// URL and driver are the minimal requirement for
-		// DelegatingDataSourceFactory to work
-		else if (jdbcUrl != null && jdbcDriver != null) {
-			prepend(new Module() {
-				@Override
-				public void configure(Binder binder) {
-					binder.bind(DataDomain.class).toProvider(SyntheticNodeDataDomainProvider.class);
-					MapBuilder<Object> props = binder.bindMap(Constants.PROPERTIES_MAP)
-							.put(Constants.JDBC_DRIVER_PROPERTY, jdbcDriver).put(Constants.JDBC_URL_PROPERTY, jdbcUrl);
+            prepend(new Module() {
+                @Override
+                public void configure(Binder binder) {
+                    binder.bind(DataDomain.class).toProvider(SyntheticNodeDataDomainProvider.class);
+                    binder.bind(DataSourceFactory.class).toInstance(dataSourceFactory);
+                }
+            });
 
-					if (jdbcUser != null) {
-						props.put(Constants.JDBC_USERNAME_PROPERTY, jdbcUser);
-					}
+        }
+        // URL and driver are the minimal requirement for
+        // DelegatingDataSourceFactory to work
+        else if (jdbcUrl != null && jdbcDriver != null) {
+            prepend(new Module() {
+                @Override
+                public void configure(Binder binder) {
+                    binder.bind(DataDomain.class).toProvider(SyntheticNodeDataDomainProvider.class);
+                    MapBuilder<Object> props = binder.bindMap(Constants.PROPERTIES_MAP)
+                            .put(Constants.JDBC_DRIVER_PROPERTY, jdbcDriver).put(Constants.JDBC_URL_PROPERTY, jdbcUrl);
 
-					if (jdbcPassword != null) {
-						props.put(Constants.JDBC_PASSWORD_PROPERTY, jdbcPassword);
-					}
+                    if (jdbcUser != null) {
+                        props.put(Constants.JDBC_USERNAME_PROPERTY, jdbcUser);
+                    }
 
-					if (jdbcMinConnections > 0) {
-						props.put(Constants.JDBC_MIN_CONNECTIONS_PROPERTY, Integer.toString(jdbcMinConnections));
-					}
+                    if (jdbcPassword != null) {
+                        props.put(Constants.JDBC_PASSWORD_PROPERTY, jdbcPassword);
+                    }
 
-					if (jdbcMaxConnections > 0) {
-						props.put(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, Integer.toString(jdbcMaxConnections));
-					}
-					
-					if (maxQueueWaitTime > 0) {
-						props.put(Constants.JDBC_MAX_QUEUE_WAIT_TIME, Long.toString(maxQueueWaitTime));
-					}
+                    if (jdbcMinConnections > 0) {
+                        props.put(Constants.JDBC_MIN_CONNECTIONS_PROPERTY, Integer.toString(jdbcMinConnections));
+                    }
 
-					if (validationQuery != null) {
-						props.put(Constants.JDBC_VALIDATION_QUERY_PROPERTY, validationQuery);
-					}
-				}
-			});
-		}
-	}
+                    if (jdbcMaxConnections > 0) {
+                        props.put(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, Integer.toString(jdbcMaxConnections));
+                    }
 
-	private void prepend(Module module) {
-		// prepend any special modules BEFORE custom modules, to allow callers
-		// to override our stuff
-		modules.add(0, module);
-	}
+                    if (maxQueueWaitTime > 0) {
+                        props.put(Constants.JDBC_MAX_QUEUE_WAIT_TIME, Long.toString(maxQueueWaitTime));
+                    }
+
+                    if (validationQuery != null) {
+                        props.put(Constants.JDBC_VALIDATION_QUERY_PROPERTY, validationQuery);
+                    }
+                }
+            });
+        }
+    }
+
+    private void prepend(Module module) {
+        // prepend any special modules BEFORE custom modules, to allow callers
+        // to override our stuff
+        modules.add(0, module);
+    }
 }

@@ -13,7 +13,8 @@ Date:
 ----------------------------------
 Changes/New Features:
 
-CAY-2153 Property.path() , ExpressionFactory.pathExp()
+CAY-2163 Property.path() , ExpressionFactory.pathExp()
+CAY-2164 Relocate builder bootstrap methods from ServerRuntimeBuilder to ServerRuntime
 
 Bug Fixes:
 
