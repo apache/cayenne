@@ -30,7 +30,7 @@
 
     <groupId>org.apache.cayenne.itests</groupId>
     <artifactId>cayenne-itests-parent</artifactId>
-    <name>cayenne-itests-parent: Cayenne Integration Tests Parent</name>
+    <name>cayenne-itests-parent: Integration Tests Parent</name>
     <packaging>pom</packaging>
     
     <modules>
