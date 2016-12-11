@@ -25,7 +25,6 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.configuration.web.WebConfiguration;
 import org.apache.cayenne.configuration.web.WebUtil;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.java8.CayenneJava8Module;
 import org.apache.cayenne.remote.RemoteService;
 import org.apache.cayenne.rop.ROPSerializationService;
 import org.apache.cayenne.rop.ROPServlet;
@@ -51,11 +50,13 @@ public class Http2ROPServlet extends ROPServlet {
 
         Collection<Module> modules = configAdapter.createModules(
                 new ROPServerModule(eventBridgeParameters),
-                new ProtostuffModule(),
-                new CayenneJava8Module());
+                new ProtostuffModule());
 
-        ServerRuntime runtime = new ServerRuntime(configurationLocation, modules
-                .toArray(new Module[modules.size()]));
+        ServerRuntime runtime = ServerRuntime
+                .builder()
+                .addConfig(configurationLocation)
+                .addModules(modules)
+                .build();
 
         this.remoteService = runtime.getInjector().getInstance(RemoteService.class);
         this.serializationService = runtime.getInjector().getInstance(ROPSerializationService.class);
