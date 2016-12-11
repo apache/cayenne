@@ -18,24 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
+import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.di.Key;
+import org.apache.cayenne.di.Module;
+import org.junit.After;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.ModuleCollection;
-import org.apache.cayenne.di.Key;
-import org.apache.cayenne.di.Module;
-import org.junit.After;
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 public class ServerRuntimeBuilderTest {
 
@@ -62,9 +58,8 @@ public class ServerRuntimeBuilderTest {
 				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
 		assertEquals(Arrays.asList(), locations);
-		assertTrue(runtime.getModule() instanceof ModuleCollection);
 
-		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+		Collection<Module> modules = runtime.getModules();
 		assertEquals(2, modules.size());
 		assertThat(modules.iterator().next(), instanceOf(ServerModule.class));
 	}
@@ -79,8 +74,8 @@ public class ServerRuntimeBuilderTest {
 
 		assertEquals(Arrays.asList("xxxx"), locations);
 
-		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
-		assertEquals(1, modules.size());
+		Collection<Module> modules = runtime.getModules();
+		assertEquals(2, modules.size());
 		assertThat(modules.iterator().next(), instanceOf(ServerModule.class));
 
 	}
@@ -95,8 +90,8 @@ public class ServerRuntimeBuilderTest {
 
 		assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
 
-		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
-		assertEquals(2, modules.size());
+		Collection<Module> modules = runtime.getModules();
+		assertEquals(3, modules.size());
 		assertThat(modules.iterator().next(), instanceOf(ServerModule.class));
 	}
 
@@ -107,7 +102,7 @@ public class ServerRuntimeBuilderTest {
 
 		runtime = new ServerRuntimeBuilder().addModule(m).build();
 
-		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+		Collection<Module> modules = runtime.getModules();
 		assertEquals(3, modules.size());
 
 		Iterator<Module> it = modules.iterator();

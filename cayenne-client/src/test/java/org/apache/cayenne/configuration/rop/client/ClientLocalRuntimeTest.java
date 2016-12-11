@@ -22,7 +22,6 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
@@ -53,7 +52,7 @@ public class ClientLocalRuntimeTest {
 
 		ClientLocalRuntime runtime = new ClientLocalRuntime(DIBootstrap.createInjector(serverModule),
 				Collections.<String, String> emptyMap());
-		Collection<Module> cmodules = ((ModuleCollection) runtime.getModule()).getModules();
+		Collection<Module> cmodules = runtime.getModules();
 		assertEquals(2, cmodules.size());
 
 		assertTrue(cmodules.toArray()[0] instanceof ClientModule);

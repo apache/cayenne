@@ -21,13 +21,18 @@ package org.apache.cayenne.configuration.server;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.ModuleCollection;
+import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.tx.TransactionListener;
 import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.tx.TransactionalOperation;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import static java.util.Arrays.asList;
 
 /**
  * An object representing Cayenne server-stack that connects directly to the
@@ -61,8 +66,28 @@ public class ServerRuntime extends CayenneRuntime {
         return new ServerRuntimeBuilder(name);
     }
 
-    private static ModuleCollection mainModule(String... configurationLocations) {
-        return new ModuleCollection(new ServerModule(configurationLocations));
+    @Deprecated
+    private static Collection<Module> collectModules(final String[] configurationLocations, Module... extraModules) {
+        Collection<Module> modules = new ArrayList<>();
+        modules.add(new ServerModule());
+
+        if(configurationLocations.length > 0) {
+            modules.add(new Module() {
+                @Override
+                public void configure(Binder binder) {
+                    ListBuilder<String> locationsBinder = ServerModule.contributeProjectLocations(binder);
+                    for(String c : configurationLocations) {
+                        locationsBinder.add(c);
+                    }
+                }
+            });
+        }
+
+        if(extraModules != null) {
+            modules.addAll(asList(extraModules));
+        }
+
+        return modules;
     }
 
     /**
@@ -70,9 +95,12 @@ public class ServerRuntime extends CayenneRuntime {
      * contained in {@link ServerModule}. CayenneServerModule is created with
      * provided 'configurationLocation'. An optional array of extra modules may
      * contain service overrides and/or user services.
+     *
+     * @deprecated since 4.0 use {@link ServerRuntime#builder()}.
      */
+    @Deprecated
     public ServerRuntime(String configurationLocation, Module... extraModules) {
-        super(mainModule(configurationLocation).add(extraModules));
+        this(collectModules(new String[]{configurationLocation}, extraModules));
     }
 
     /**
@@ -80,9 +108,24 @@ public class ServerRuntime extends CayenneRuntime {
      * contained in {@link ServerModule}. CayenneServerModule is created with
      * one or more 'configurationLocations'. An optional array of extra modules
      * may contain service overrides and/or user services.
+     *
+     * @deprecated since 4.0 use {@link ServerRuntime#builder()}.
      */
+    @Deprecated
     public ServerRuntime(String[] configurationLocations, Module... extraModules) {
-        super(mainModule(configurationLocations).add(extraModules));
+        this(collectModules(configurationLocations, extraModules));
+    }
+
+    /**
+     * Creates a server runtime configuring it with a standard set of services
+     * contained in {@link ServerModule}. CayenneServerModule is created with
+     * one or more 'configurationLocations'. An optional array of extra modules
+     * may contain service overrides and/or user services.
+     *
+     * @since 4.0
+     */
+    protected ServerRuntime(Collection<Module> modules) {
+        super(modules);
     }
 
     /**

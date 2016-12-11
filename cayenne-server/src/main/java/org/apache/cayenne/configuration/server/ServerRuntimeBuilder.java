@@ -22,6 +22,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
 
@@ -51,6 +52,7 @@ public class ServerRuntimeBuilder {
     private int jdbcMaxConnections;
     private long maxQueueWaitTime;
     private String validationQuery;
+    private boolean autoLoadModules;
 
     /**
      * @deprecated since 4.0.M5 in favor of {@link ServerRuntime#builder()}
@@ -84,6 +86,19 @@ public class ServerRuntimeBuilder {
         this.configs = new LinkedHashSet<String>();
         this.modules = new ArrayList<Module>();
         this.name = name;
+        this.autoLoadModules = true;
+    }
+
+    /**
+     * Disables DI module auto-loading. By default auto-loading is enabled based on
+     * {@link org.apache.cayenne.di.spi.ModuleLoader} service provider inetrface. If you decide to disable auto-loading,
+     * make sure you provide all the modules that you need.
+     *
+     * @return this builder instance.
+     */
+    public ServerRuntimeBuilder disableModulesAutoLoading() {
+        this.autoLoadModules = false;
+        return this;
     }
 
     /**
@@ -196,20 +211,37 @@ public class ServerRuntimeBuilder {
 
     public ServerRuntime build() {
 
-        buildModules();
+        Collection<Module> configModules = buildConfigModules();
 
-        String[] configs = this.configs.toArray(new String[this.configs.size()]);
-        Module[] modules = this.modules.toArray(new Module[this.modules.size()]);
-        return new ServerRuntime(configs, modules);
+        Collection<Module> allModules = new ArrayList<>();
+        // TODO: make ServerModule auto-loadable?
+        allModules.add(new ServerModule());
+        allModules.addAll(configModules);
+        // custom modules override config modules...
+        allModules.addAll(this.modules);
+
+        return new ServerRuntime(allModules);
     }
 
-    private void buildModules() {
+    private Collection<Module> buildConfigModules() {
+
+        Collection<Module> modules = new ArrayList<>();
+
+        if(!configs.isEmpty()) {
+            modules.add(new Module() {
+                @Override
+                public void configure(Binder binder) {
+                    ListBuilder<String> locationsBinder = ServerModule.contributeProjectLocations(binder);
+                    for(String c : configs) {
+                        locationsBinder.add(c);
+                    }
+                }
+            });
+        }
 
         String nameOverride = name;
-
         if (nameOverride == null) {
-            // check if we need to force the default name ... we do when no
-            // configs or multiple configs are supplied.
+            // check if we need to force the default name ... we do when no configs or multiple configs are supplied.
             if (configs.size() != 1) {
                 nameOverride = DEFAULT_NAME;
             }
@@ -218,7 +250,7 @@ public class ServerRuntimeBuilder {
         if (nameOverride != null) {
 
             final String finalNameOverride = nameOverride;
-            prepend(new Module() {
+            modules.add(new Module() {
                 @Override
                 public void configure(Binder binder) {
                     ServerModule.contributeProperties(binder).put(Constants.SERVER_DOMAIN_NAME_PROPERTY, finalNameOverride);
@@ -228,7 +260,7 @@ public class ServerRuntimeBuilder {
 
         if (dataSourceFactory != null) {
 
-            prepend(new Module() {
+            modules.add(new Module() {
                 @Override
                 public void configure(Binder binder) {
                     binder.bind(DataDomain.class).toProvider(SyntheticNodeDataDomainProvider.class);
@@ -237,10 +269,9 @@ public class ServerRuntimeBuilder {
             });
 
         }
-        // URL and driver are the minimal requirement for
-        // DelegatingDataSourceFactory to work
+        // URL and driver are the minimal requirement for DelegatingDataSourceFactory to work
         else if (jdbcUrl != null && jdbcDriver != null) {
-            prepend(new Module() {
+            modules.add(new Module() {
                 @Override
                 public void configure(Binder binder) {
                     binder.bind(DataDomain.class).toProvider(SyntheticNodeDataDomainProvider.class);
@@ -273,11 +304,7 @@ public class ServerRuntimeBuilder {
                 }
             });
         }
-    }
 
-    private void prepend(Module module) {
-        // prepend any special modules BEFORE custom modules, to allow callers
-        // to override our stuff
-        modules.add(0, module);
+        return modules;
     }
 }

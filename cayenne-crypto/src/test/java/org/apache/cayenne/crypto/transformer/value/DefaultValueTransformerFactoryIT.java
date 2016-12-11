@@ -52,7 +52,7 @@ public class DefaultValueTransformerFactoryIT {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        ServerRuntime runtime = new ServerRuntime("cayenne-crypto.xml");
+        ServerRuntime runtime = ServerRuntime.builder().addConfig("cayenne-crypto.xml").build();
         t1 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE1");
         t2 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE2");
         t3 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE3");

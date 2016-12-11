@@ -56,7 +56,7 @@ public class Runtime_AES128_Base {
     }
 
     protected ServerRuntime createRuntime(Module crypto) {
-        return new ServerRuntime("cayenne-crypto.xml", crypto);
+        return ServerRuntime.builder().addConfig("cayenne-crypto.xml").addModule(crypto).build();
     }
 
     protected Module createCryptoModule(boolean compress) {
