@@ -6,11 +6,15 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 -------------------------------------------------------------------------------
 UPGRADING TO 4.0.M5
 
-* Per CAY-2166, Cayenne supports auto-loading of DI modules. The part of this is a tweak in DI service override policies.
-  In the previous 4.0 releases custom modules would override "builder" modules (i.e. implicit modules that wrap around
-  various customizations made in response to the builder method calls). It seemed logical to reverse this order, and
-  let builder modules override custom modules. As the builder is invoked explicitly when the stack assembly is performed,
-  while modules can be written without any knowledge of the final stack.
+* Per CAY-2166, Cayenne supports auto-loading of DI modules. There are a few changes worth mentioning:
+  - Service override policies. In the previous 4.0 milestones custom modules would override "builder" modules
+  (i.e. implicit modules that wrap around various customizations made in response to the builder method calls). It
+  seemed logical to reverse this order, and let builder modules override custom modules. As the builder is
+  invoked explicitly when the stack assembly is performed, while modules can be written without any knowledge of the
+  final stack.
+  - Module Renaming and Explicit Loading of Modules. If you see compile errors (class not found for CayenneJodaModule,
+   CayenneJava8Module), just remove explicit loading of those modules. They will be autoloade if they are on classpath.
+   If you explicitly turned off auto-loading, use the new names for these modules: JodaModule and Java8Module.
 
 * Per CAY-2164, creating a ServerRuntimeBuilder is done via a static method on ServerRuntime ("ServerRuntime.builder()").
   The previous style (ServerRuntimeBuilder.builder()) is deprecated and will soon be removed, so you should replace it

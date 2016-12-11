@@ -27,7 +27,7 @@ public class RuntimeBase {
     protected ServerRuntime runtime;
 
     @Before
-    public void setUpRuntime() throws Exception {
+    public void setUpRuntime() {
         this.runtime = ServerRuntime.builder().addConfig("cayenne-java8.xml").build();
     }
 }
