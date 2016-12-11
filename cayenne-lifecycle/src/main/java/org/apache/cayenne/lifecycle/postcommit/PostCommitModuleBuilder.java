@@ -18,10 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.postcommit;
 
-import java.util.Collection;
-import java.util.HashSet;
-
-import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
@@ -33,6 +30,9 @@ import org.apache.cayenne.lifecycle.postcommit.meta.PostCommitEntityFactory;
 import org.apache.cayenne.tx.TransactionFilter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * A builder of a module that integrates {@link PostCommitFilter} and
@@ -133,11 +133,9 @@ public class PostCommitModuleBuilder {
 				binder.bind(PostCommitFilter.class).to(PostCommitFilter.class);
 
 				if (excludeFromTransaction) {
-					binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST).add(PostCommitFilter.class)
-							.after(TransactionFilter.class);
+					ServerModule.contributeDomainFilters(binder).add(PostCommitFilter.class).after(TransactionFilter.class);
 				} else {
-					binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST).add(PostCommitFilter.class)
-							.before(TransactionFilter.class);
+					ServerModule.contributeDomainFilters(binder).add(PostCommitFilter.class).before(TransactionFilter.class);
 				}
 			}
 		};

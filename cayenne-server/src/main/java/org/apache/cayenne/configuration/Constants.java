@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import org.apache.cayenne.di.Binder;
+
 /**
  * Defines the names of runtime properties and DI collections used in DI modules
  * used to configure server and client runtime.
@@ -31,6 +33,8 @@ public interface Constants {
 	/**
 	 * A DI container key for the Map&lt;String, String&gt; storing properties
 	 * used by built-in Cayenne service.
+	 *
+	 * @see org.apache.cayenne.configuration.server.ServerModule#contributeProperties(Binder).
 	 */
 	public static final String PROPERTIES_MAP = "cayenne.properties";
 
@@ -44,6 +48,8 @@ public interface Constants {
 	/**
 	 * A DI container key for the List&lt;DataChannelFilter&gt; storing
 	 * DataDomain filters.
+     *
+     * @see org.apache.cayenne.configuration.server.ServerModule#contributeDomainFilters(Binder).
 	 */
 	public static final String SERVER_DOMAIN_FILTERS_LIST = "cayenne.server.domain_filters";
 
@@ -56,18 +62,24 @@ public interface Constants {
 	/**
 	 * A DI container key for the List&lt;ExtendedType&gt; storing default
 	 * adapter-agnostic ExtendedTypes.
+	 *
+	 * @see org.apache.cayenne.configuration.server.ServerModule#contributeDefaultTypes(Binder).
 	 */
 	public static final String SERVER_DEFAULT_TYPES_LIST = "cayenne.server.default_types";
 
 	/**
 	 * A DI container key for the List&lt;ExtendedType&gt; storing a
 	 * user-provided ExtendedTypes.
+	 *
+	 * @see org.apache.cayenne.configuration.server.ServerModule#contributeUserTypes(Binder).
 	 */
 	public static final String SERVER_USER_TYPES_LIST = "cayenne.server.user_types";
 
 	/**
 	 * A DI container key for the List&lt;ExtendedTypeFactory&gt; storing
 	 * default and user-provided ExtendedTypeFactories.
+	 *
+	 * @see org.apache.cayenne.configuration.server.ServerModule#contributeTypeFactories(Binder).
 	 */
 	public static final String SERVER_TYPE_FACTORIES_LIST = "cayenne.server.type_factories";
 

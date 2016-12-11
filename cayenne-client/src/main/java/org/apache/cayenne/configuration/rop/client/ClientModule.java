@@ -27,6 +27,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
@@ -56,7 +57,7 @@ public class ClientModule implements Module {
     public void configure(Binder binder) {
 
         // expose user-provided ROP properties as the main properties map
-        binder.<String> bindMap(Constants.PROPERTIES_MAP).putAll(properties);
+        ServerModule.contributeProperties(binder).putAll(properties);
 
         binder.bind(ObjectContextFactory.class).to(CayenneContextFactory.class);
         binder.bind(ROPSerializationService.class).toProvider(ClientHessianSerializationServiceProvider.class);

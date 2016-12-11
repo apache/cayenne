@@ -18,20 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
+
+import javax.sql.DataSource;
+import java.util.*;
 
 /**
  * A convenience class to assemble custom ServerRuntime. It allows to easily
@@ -226,8 +221,7 @@ public class ServerRuntimeBuilder {
             prepend(new Module() {
                 @Override
                 public void configure(Binder binder) {
-                    binder.bindMap(Constants.PROPERTIES_MAP).put(Constants.SERVER_DOMAIN_NAME_PROPERTY,
-                            finalNameOverride);
+                    ServerModule.contributeProperties(binder).put(Constants.SERVER_DOMAIN_NAME_PROPERTY, finalNameOverride);
                 }
             });
         }
@@ -250,7 +244,7 @@ public class ServerRuntimeBuilder {
                 @Override
                 public void configure(Binder binder) {
                     binder.bind(DataDomain.class).toProvider(SyntheticNodeDataDomainProvider.class);
-                    MapBuilder<Object> props = binder.bindMap(Constants.PROPERTIES_MAP)
+                    MapBuilder<String> props = ServerModule.contributeProperties(binder)
                             .put(Constants.JDBC_DRIVER_PROPERTY, jdbcDriver).put(Constants.JDBC_URL_PROPERTY, jdbcUrl);
 
                     if (jdbcUser != null) {

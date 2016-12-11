@@ -78,11 +78,11 @@ public class ToolsModule implements Module {
         binder.bind(Log.class).toInstance(logger);
 
         // configure empty global stack properties
-        binder.bindMap(Constants.PROPERTIES_MAP);
+        ServerModule.contributeProperties(binder);
 
-        ServerModule.contributeDefaultExtendedTypes(binder);
-        ServerModule.contributeUserExtendedTypes(binder);
-        binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
+        ServerModule.contributeDefaultTypes(binder);
+        ServerModule.contributeUserTypes(binder);
+        ServerModule.contributeTypeFactories(binder);
 
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
@@ -93,7 +93,7 @@ public class ToolsModule implements Module {
         binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
         binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
 
-        binder.bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST).add(FirebirdSniffer.class).add(OpenBaseSniffer.class)
+        ServerModule.contributeAdapterDetectors(binder).add(FirebirdSniffer.class).add(OpenBaseSniffer.class)
                 .add(FrontBaseSniffer.class).add(IngresSniffer.class).add(SQLiteSniffer.class).add(DB2Sniffer.class)
                 .add(H2Sniffer.class).add(HSQLDBSniffer.class).add(SybaseSniffer.class).add(DerbySniffer.class)
                 .add(SQLServerSniffer.class).add(OracleSniffer.class).add(PostgresSniffer.class)

@@ -19,6 +19,7 @@
 package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
@@ -63,12 +64,7 @@ import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
-import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.ClassLoaderManager;
-import org.apache.cayenne.di.Key;
-import org.apache.cayenne.di.ListBuilder;
-import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.*;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.event.DefaultEventManager;
@@ -100,24 +96,88 @@ public class ServerModule implements Module {
     protected String[] configurationLocations;
 
     /**
-     * Provides access to a DI collection builder for default adapter-agnostic {@link ExtendedType}'s.
+     * Provides access to a DI collection builder for String locations that allows downstream modules to
+     * "contribute" their own Cayenne project locations.
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return ListBuilder for String locations.
+     * @since 4.0
+     */
+    public static ListBuilder<String> contributeProjectLocations(Binder binder) {
+        return binder.bindList(Constants.SERVER_PROJECT_LOCATIONS_LIST);
+    }
+
+    /**
+     * Provides access to a DI collection builder for {@link DataChannelFilter}'s that allows downstream modules to
+     * "contribute" their own DataDomain filters
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return ListBuilder for DataChannelFilter.
+     * @since 4.0
+     */
+    public static ListBuilder<DataChannelFilter> contributeDomainFilters(Binder binder) {
+        return binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST);
+    }
+
+    /**
+     * Provides access to a DI collection builder for {@link DbAdapterDetector}'s that allows downstream modules to
+     * "contribute" their own adapter detectors.
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return ListBuilder for DbAdapterDetectors.
+     * @since 4.0
+     */
+    public static ListBuilder<DbAdapterDetector> contributeAdapterDetectors(Binder binder) {
+        return binder.bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST);
+    }
+
+    /**
+     * Provides access to a DI map builder for runtime properties that allows downstream modules to
+     * "contribute" their own properties.
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return MapBuilder for properties.
+     * @since 4.0
+     */
+    public static MapBuilder<String> contributeProperties(Binder binder) {
+        return binder.bindMap(Constants.PROPERTIES_MAP);
+    }
+
+    /**
+     * Provides access to a DI collection builder for {@link ExtendedTypeFactory}'s that allows downstream modules to
+     * "contribute" their own factories.
      *
      * @param binder DI binder passed to the module during injector startup.
      * @return ListBuilder for ExtendedTypes.
      * @since 4.0
      */
-    public static ListBuilder<ExtendedType> contributeDefaultExtendedTypes(Binder binder) {
+    public static ListBuilder<ExtendedTypeFactory> contributeTypeFactories(Binder binder) {
+        return binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
+    }
+
+    /**
+     * Provides access to a DI collection builder for default adapter-agnostic {@link ExtendedType}'s that allows
+     * downstream modules to "contribute" their own types. "Default" types are loaded before adapter-provided or "user"
+     * types, so they may be overridden by those.
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return ListBuilder for ExtendedTypes.
+     * @since 4.0
+     */
+    public static ListBuilder<ExtendedType> contributeDefaultTypes(Binder binder) {
         return binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
     }
 
     /**
-     * Provides access to a DI collection builder for user-provided {@link ExtendedType}'s.
+     * Provides access to a DI collection builder for {@link ExtendedType}'s that allows downstream modules to "contribute"
+     * their own types. Unlike "default" types (see {@link #contributeDefaultTypes(Binder)}), "user" types are loaded
+     * after the adapter-provided types and can override those.
      *
      * @param binder DI binder passed to the module during injector startup.
      * @return ListBuilder for ExtendedTypes.
      * @since 4.0
      */
-    public static ListBuilder<ExtendedType> contributeUserExtendedTypes(Binder binder) {
+    public static ListBuilder<ExtendedType> contributeUserTypes(Binder binder) {
         return binder.bindList(Constants.SERVER_USER_TYPES_LIST);
     }
 
@@ -137,40 +197,38 @@ public class ServerModule implements Module {
     public void configure(Binder binder) {
 
         // configure global stack properties
-        binder.bindMap(Constants.PROPERTIES_MAP).put(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY,
-                String.valueOf(DEFAULT_MAX_ID_QUALIFIER_SIZE));
+        contributeProperties(binder)
+                .put(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, String.valueOf(DEFAULT_MAX_ID_QUALIFIER_SIZE));
 
         binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
 
         // configure known DbAdapter detectors in reverse order of popularity.
-        // Users can
-        // add their own to install custom adapters automatically
+        // Users can add their own to install custom adapters automatically
 
-        binder.bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST).add(FirebirdSniffer.class).add(OpenBaseSniffer.class)
+        contributeAdapterDetectors(binder).add(FirebirdSniffer.class).add(OpenBaseSniffer.class)
                 .add(FrontBaseSniffer.class).add(IngresSniffer.class).add(SQLiteSniffer.class).add(DB2Sniffer.class)
                 .add(H2Sniffer.class).add(HSQLDBSniffer.class).add(SybaseSniffer.class).add(DerbySniffer.class)
                 .add(SQLServerSniffer.class).add(OracleSniffer.class).add(PostgresSniffer.class)
                 .add(MySQLSniffer.class);
 
         // configure a filter chain with only one TransactionFilter as default
-        binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST)
-                .add(TransactionFilter.class);
+        contributeDomainFilters(binder).add(TransactionFilter.class);
 
         // configure extended types
-        contributeDefaultExtendedTypes(binder).add(new VoidType()).add(new BigDecimalType())
+        contributeDefaultTypes(binder).add(new VoidType()).add(new BigDecimalType())
                 .add(new BigIntegerType()).add(new BooleanType()).add(new ByteArrayType(false, true))
                 .add(new ByteType(false)).add(new CharType(false, true)).add(new DateType()).add(new DoubleType())
                 .add(new FloatType()).add(new IntegerType()).add(new LongType()).add(new ShortType(false))
                 .add(new TimeType()).add(new TimestampType()).add(new UtilDateType())
                 .add(new CalendarType<GregorianCalendar>(GregorianCalendar.class))
                 .add(new CalendarType<Calendar>(Calendar.class)).add(new UUIDType());
-        contributeUserExtendedTypes(binder);
-        binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
+        contributeUserTypes(binder);
+        contributeTypeFactories(binder);
 
         // configure explicit configurations
-        ListBuilder<Object> locationsListBuilder = binder.bindList(Constants.SERVER_PROJECT_LOCATIONS_LIST);
+        ListBuilder<String> locationsListBuilder = contributeProjectLocations(binder);
         for (String location : configurationLocations) {
             locationsListBuilder.add(location);
         }
