@@ -19,14 +19,9 @@
 
 package org.apache.cayenne.di.spi;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import org.apache.cayenne.di.DIRuntimeException;
+
+import java.util.*;
 
 /**
  * The implementation here is basically an adjacency list, but a {@link Map} is
@@ -39,7 +34,7 @@ import java.util.Map;
 class DIGraph<V> {
 
 	/**
-	 * Note: {@link LinkedHashMap} is used for supporting insertion order.
+	 * {@link LinkedHashMap} is used for supporting insertion order.
 	 */
 	private Map<V, List<V>> neighbors = new LinkedHashMap<>();
 
@@ -129,8 +124,7 @@ class DIGraph<V> {
 	}
 
 	/**
-	 * Return (as a List) the topological sort of the vertices; null for no such
-	 * sort.
+	 * Return (as a List) the topological sort of the vertices. Throws an exception if cycles are detected.
 	 */
 	public List<V> topSort() {
 		Map<V, Integer> degree = inDegree();
@@ -157,7 +151,7 @@ class DIGraph<V> {
 
 		// Check that we have used the entire graph (if not, there was a cycle)
 		if (result.size() != neighbors.size()) {
-			return null;
+			throw new DIRuntimeException("Dependency cycle detected in DI container");
 		}
 
 		return result;
@@ -176,4 +170,7 @@ class DIGraph<V> {
 		return s.toString();
 	}
 
+	public int size() {
+		return neighbors.size();
+	}
 }

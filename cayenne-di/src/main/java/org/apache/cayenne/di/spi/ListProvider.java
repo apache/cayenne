@@ -49,9 +49,6 @@ class ListProvider implements Provider<List<?>> {
     public List<?> get() throws DIRuntimeException {
         List<Key<?>> insertOrder = graph.topSort();
 
-        if (insertOrder == null)
-            throw new DIRuntimeException("Dependency cycle detected in DI container");
-
         if (insertOrder.size() != providers.size()) {
             List<Key<?>> emptyKeys = new ArrayList<>();
 

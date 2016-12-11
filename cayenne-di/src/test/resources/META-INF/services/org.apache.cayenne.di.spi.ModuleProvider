@@ -1,0 +1,4 @@
+org.apache.cayenne.di.spi.ModuleLoaderTest$ModuleProvider1
+org.apache.cayenne.di.spi.ModuleLoaderTest$ModuleProvider2
+org.apache.cayenne.di.spi.ModuleLoaderTest$ModuleProvider3
+org.apache.cayenne.di.spi.ModuleLoaderTest$ModuleProvider4
