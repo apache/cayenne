@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Since 4GB not enought for build, we use 'sudo' environment with 7.5GB RAM
+# Since 4GB is not enough for the build, we use 'sudo' environment with 7.5GB RAM
 # Downside: It's starts a little bit slower
 # How to fix: Change build setting or fix code.
 # https://docs.travis-ci.com/user/ci-environment/#Virtualization-environments
@@ -30,9 +30,9 @@ jdk:
   - oraclejdk7
 
 script:
-  - mvn verify -q -DcayenneTestConnection=$DB_PROFILE
+  - mvn verify -q -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
 
-# prevent Travis from uneeded "mvn install" run
+# prevent Travis from unneeded "mvn install" run
 install: /bin/true
 
 cache:
