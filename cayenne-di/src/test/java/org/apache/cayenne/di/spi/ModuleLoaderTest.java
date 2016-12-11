@@ -38,10 +38,10 @@ public class ModuleLoaderTest {
 
         List<Module> modules = new ModuleLoader().load();
         assertEquals(4, modules.size());
-        assertTrue(String.valueOf(modules.get(0)), modules.get(0) instanceof Module2);
-        assertTrue(String.valueOf(modules.get(1)), modules.get(1) instanceof Module1);
-        assertTrue(String.valueOf(modules.get(2)), modules.get(2) instanceof Module3);
-        assertTrue(String.valueOf(modules.get(3)), modules.get(3) instanceof Module4);
+        assertTrue(String.valueOf(modules.get(0)), modules.get(0) instanceof Module3);
+        assertTrue(String.valueOf(modules.get(1)), modules.get(1) instanceof Module4);
+        assertTrue(String.valueOf(modules.get(2)), modules.get(2) instanceof Module2);
+        assertTrue(String.valueOf(modules.get(3)), modules.get(3) instanceof Module1);
 
         Injector i = DIBootstrap.createInjector(modules);
         assertEquals("a", i.getInstance(String.class));
@@ -114,7 +114,8 @@ public class ModuleLoaderTest {
 
         @Override
         public Collection<Class<? extends Module>> overrides() {
-            return Collections.emptyList();
+            Collection c = Collections.singletonList(Module4.class);
+            return c;
         }
     }
 
