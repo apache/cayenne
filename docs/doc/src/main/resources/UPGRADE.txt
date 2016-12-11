@@ -6,6 +6,12 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 -------------------------------------------------------------------------------
 UPGRADING TO 4.0.M5
 
+* Per CAY-2166, Cayenne supports auto-loading of DI modules. The part of this is a tweak in DI service override policies.
+  In the previous 4.0 releases custom modules would override "builder" modules (i.e. implicit modules that wrap around
+  various customizations made in response to the builder method calls). It seemed logical to reverse this order, and
+  let builder modules override custom modules. As the builder is invoked explicitly when the stack assembly is performed,
+  while modules can be written without any knowledge of the final stack.
+
 * Per CAY-2164, creating a ServerRuntimeBuilder is done via a static method on ServerRuntime ("ServerRuntime.builder()").
   The previous style (ServerRuntimeBuilder.builder()) is deprecated and will soon be removed, so you should replace it
   with the new API.

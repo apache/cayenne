@@ -59,7 +59,7 @@ public class ServerRuntime extends CayenneRuntime {
     /**
      * Creates a builder of ServerRuntime.
      *
-     * @param name
+     * @param name optional symbolic name of the created runtime.
      * @return a named builder of ServerRuntime.
      */
     public static ServerRuntimeBuilder builder(String name) {
@@ -71,19 +71,19 @@ public class ServerRuntime extends CayenneRuntime {
         Collection<Module> modules = new ArrayList<>();
         modules.add(new ServerModule());
 
-        if(configurationLocations.length > 0) {
+        if (configurationLocations.length > 0) {
             modules.add(new Module() {
                 @Override
                 public void configure(Binder binder) {
                     ListBuilder<String> locationsBinder = ServerModule.contributeProjectLocations(binder);
-                    for(String c : configurationLocations) {
+                    for (String c : configurationLocations) {
                         locationsBinder.add(c);
                     }
                 }
             });
         }
 
-        if(extraModules != null) {
+        if (extraModules != null) {
             modules.addAll(asList(extraModules));
         }
 

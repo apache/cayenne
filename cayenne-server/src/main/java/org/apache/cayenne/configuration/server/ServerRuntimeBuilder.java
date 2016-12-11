@@ -25,6 +25,7 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.spi.ModuleLoader;
 
 import javax.sql.DataSource;
 import java.util.*;
@@ -72,7 +73,11 @@ public class ServerRuntimeBuilder {
 
     /**
      * Creates an empty builder.
+     *
+     * @deprecated since 4.0.M5 in favor of {@link ServerRuntime#builder()}
      */
+    @Deprecated
+    // TODO remove once we are comfortable with removal of the deprecated API
     public ServerRuntimeBuilder() {
         this(null);
     }
@@ -81,7 +86,11 @@ public class ServerRuntimeBuilder {
      * Creates a builder with a fixed name of the DataDomain of the resulting
      * ServerRuntime. Specifying explicit name is often needed for consistency
      * in runtimes merged from multiple configs, each having its own name.
+     *
+     * @deprecated since 4.0.M5 in favor of {@link ServerRuntime#builder(String)}
      */
+    @Deprecated
+    // TODO make private once we are comfortable with removal of the deprecated API
     public ServerRuntimeBuilder(String name) {
         this.configs = new LinkedHashSet<String>();
         this.modules = new ArrayList<Module>();
@@ -211,28 +220,38 @@ public class ServerRuntimeBuilder {
 
     public ServerRuntime build() {
 
-        Collection<Module> configModules = buildConfigModules();
-
         Collection<Module> allModules = new ArrayList<>();
-        // TODO: make ServerModule auto-loadable?
-        allModules.add(new ServerModule());
-        allModules.addAll(configModules);
-        // custom modules override config modules...
+
+        // first load default or auto-loaded modules...
+        allModules.addAll(autoLoadModules ? autoLoadedModules() : defaultModules());
+
+        // custom modules override default and auto-loaded modules...
         allModules.addAll(this.modules);
+
+        // builder modules override default, auto-loaded and custom modules...
+        allModules.addAll(builderModules());
 
         return new ServerRuntime(allModules);
     }
 
-    private Collection<Module> buildConfigModules() {
+    private Collection<? extends Module> autoLoadedModules() {
+        return new ModuleLoader().load();
+    }
+
+    private Collection<? extends Module> defaultModules() {
+        return Collections.singleton(new ServerModule());
+    }
+
+    private Collection<? extends Module> builderModules() {
 
         Collection<Module> modules = new ArrayList<>();
 
-        if(!configs.isEmpty()) {
+        if (!configs.isEmpty()) {
             modules.add(new Module() {
                 @Override
                 public void configure(Binder binder) {
                     ListBuilder<String> locationsBinder = ServerModule.contributeProjectLocations(binder);
-                    for(String c : configs) {
+                    for (String c : configs) {
                         locationsBinder.add(c);
                     }
                 }

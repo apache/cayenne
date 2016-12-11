@@ -26,7 +26,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -104,15 +103,9 @@ public class ServerRuntimeBuilderTest {
 
 		Collection<Module> modules = runtime.getModules();
 		assertEquals(3, modules.size());
-
-		Iterator<Module> it = modules.iterator();
-
-		assertThat(it.next(), instanceOf(ServerModule.class));
-
-		// rewind - this module is name fix module
-		it.next();
-		
-		assertSame(m, it.next());
+		Module[] array = modules.toArray(new Module[3]);
+		assertThat(array[0], instanceOf(ServerModule.class));
+		assertSame(m, array[1]);
 	}
 
 	@Test
