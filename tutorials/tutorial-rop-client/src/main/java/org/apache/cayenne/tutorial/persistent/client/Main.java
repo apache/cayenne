@@ -19,7 +19,7 @@
 package org.apache.cayenne.tutorial.persistent.client;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.rop.client.ClientConstants;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.query.ObjectSelect;
 
@@ -32,9 +32,9 @@ public class Main {
     public static void main(String[] args) {
 
         Map<String, String> properties = new HashMap<>();
-        properties.put(Constants.ROP_SERVICE_URL_PROPERTY, "http://localhost:8080/tutorial-rop-server/cayenne-service");
-        properties.put(Constants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
-        properties.put(Constants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
+        properties.put(ClientConstants.ROP_SERVICE_URL_PROPERTY, "http://localhost:8080/tutorial-rop-server/cayenne-service");
+        properties.put(ClientConstants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
+        properties.put(ClientConstants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
 
         ClientRuntime runtime = new ClientRuntime(properties);
 

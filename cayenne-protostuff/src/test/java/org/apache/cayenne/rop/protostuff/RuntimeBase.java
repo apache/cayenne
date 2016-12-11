@@ -20,7 +20,7 @@
 package org.apache.cayenne.rop.protostuff;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.rop.client.ClientConstants;
 import org.apache.cayenne.configuration.rop.client.ClientLocalRuntime;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.configuration.rop.client.ProtostuffModule;
@@ -47,7 +47,7 @@ public class RuntimeBase extends ProtostuffProperties {
                 new CayenneJava8Module());
 
         Map<String, String> properties = new HashMap<>();
-        properties.put(Constants.ROP_CHANNEL_EVENTS_PROPERTY, Boolean.TRUE.toString());
+        properties.put(ClientConstants.ROP_CHANNEL_EVENTS_PROPERTY, Boolean.TRUE.toString());
 
         Module module = binder -> binder.bind(ClientConnection.class)
                 .toProviderInstance(new ProtostuffLocalConnectionProvider());

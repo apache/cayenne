@@ -42,7 +42,7 @@ public class ClientChannelProvider implements Provider<DataChannel> {
     public DataChannel get() throws ConfigurationException {
 
         boolean channelEvents = properties.getBoolean(
-                Constants.ROP_CHANNEL_EVENTS_PROPERTY,
+                ClientConstants.ROP_CHANNEL_EVENTS_PROPERTY,
                 false);
 
         return new ClientChannel(connection, channelEvents, eventManager, channelEvents);

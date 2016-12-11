@@ -20,7 +20,7 @@
 package org.apache.cayenne.rop;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.rop.client.ClientConstants;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.rop.http.JettyHttpROPConnector;
@@ -34,7 +34,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
  * {@link org.eclipse.jetty.client.HttpClient} over {@link org.eclipse.jetty.http2.client.HTTP2Client}.
  * It works without ALPN by default.
  * <p>
- * In order to use it with ALPN you have to set {@link Constants#ROP_SERVICE_USE_ALPN_PROPERTY} to true
+ * In order to use it with ALPN you have to set {@link ClientConstants#ROP_SERVICE_USE_ALPN_PROPERTY} to true
  * and provide the alpn-boot-XXX.jar into the bootstrap classpath.
  */
 public class JettyHttp2ClientConnectionProvider extends JettyHttpClientConnectionProvider {
@@ -44,7 +44,7 @@ public class JettyHttp2ClientConnectionProvider extends JettyHttpClientConnectio
         try {
             HttpClientTransportOverHTTP2 http2 = new HttpClientTransportOverHTTP2(new HTTP2Client());
 
-            boolean useALPN = runtimeProperties.getBoolean(Constants.ROP_SERVICE_USE_ALPN_PROPERTY, false);
+            boolean useALPN = runtimeProperties.getBoolean(ClientConstants.ROP_SERVICE_USE_ALPN_PROPERTY, false);
             http2.setUseALPN(useALPN);
 
             HttpClient httpClient = new HttpClient(http2, new SslContextFactory());

@@ -49,11 +49,11 @@ public class CayenneContextFactory implements ObjectContextFactory {
 
     public ObjectContext createContext(DataChannel parent) {
         boolean changeEvents = properties.getBoolean(
-                Constants.ROP_CONTEXT_CHANGE_EVENTS_PROPERTY,
+                ClientConstants.ROP_CONTEXT_CHANGE_EVENTS_PROPERTY,
                 false);
 
         boolean lifecycleEvents = properties.getBoolean(
-                Constants.ROP_CONTEXT_LIFECYCLE_EVENTS_PROPERTY,
+                ClientConstants.ROP_CONTEXT_LIFECYCLE_EVENTS_PROPERTY,
                 false);
 
         CayenneContext context = newInstance(parent, changeEvents, lifecycleEvents);

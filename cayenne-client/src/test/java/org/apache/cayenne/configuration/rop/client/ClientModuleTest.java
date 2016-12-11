@@ -45,7 +45,7 @@ public class ClientModuleTest {
     public void testClientConnection() {
 
         Map<String, String> properties = new HashMap<>();
-        properties.put(Constants.ROP_SERVICE_URL_PROPERTY, "http://localhost/YuM");
+        properties.put(ClientConstants.ROP_SERVICE_URL_PROPERTY, "http://localhost/YuM");
         ClientModule module = new ClientModule(properties);
 
         Injector injector = DIBootstrap.createInjector(module);
@@ -114,7 +114,7 @@ public class ClientModuleTest {
     public void testDataChannel_NoChannelEvents() {
 
         Map<String, String> properties = new HashMap<>();
-        properties.put(Constants.ROP_CHANNEL_EVENTS_PROPERTY, "true");
+        properties.put(ClientConstants.ROP_CHANNEL_EVENTS_PROPERTY, "true");
         ClientModule module = new ClientModule(properties) {
 
             @Override
