@@ -28,7 +28,7 @@
 	</parent>
 
 	<artifactId>cayenne-modeler</artifactId>
-	<name>cayenne-modeler: Cayenne Modeler</name>
+	<name>cayenne-modeler: Cayenne Modeler Core</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
