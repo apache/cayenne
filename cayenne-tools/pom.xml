@@ -31,10 +31,57 @@
 	<packaging>jar</packaging>
 	<name>cayenne-tools: Cayenne Tools</name>
 	<dependencies>
+        <!-- Compile Dependencies -->
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <scope>compile</scope>
+        </dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+            <scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+            <scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+            <scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-server</artifactId>
+			<version>${project.version}</version>
+            <scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-project</artifactId>
+			<version>${project.version}</version>
+            <scope>compile</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-dbsync</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+		<dependency>
+			<groupId>foundrylogic.vpp</groupId>
+			<artifactId>vpp</artifactId>
+            <scope>compile</scope>
+		</dependency>
+
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.cayenne</groupId>
             <artifactId>cayenne-server</artifactId>
@@ -49,70 +96,38 @@
             <scope>test</scope>
             <type>test-jar</type>
         </dependency>
-
         <dependency>
-			<groupId>org.apache.cayenne.build-tools</groupId>
-			<artifactId>cayenne-test-utilities</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.ant</groupId>
-			<artifactId>ant</artifactId>
-		</dependency>
+            <groupId>org.apache.cayenne.build-tools</groupId>
+            <artifactId>cayenne-test-utilities</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant-testutil</artifactId>
             <version>1.9.4</version>
             <scope>test</scope>
         </dependency>
-
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity</artifactId>
-		</dependency>		
-
-		<dependency>
-			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-server</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-project</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-        <dependency>
-            <groupId>org.apache.cayenne</groupId>
-            <artifactId>cayenne-dbsync</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-		<dependency>
-			<groupId>foundrylogic.vpp</groupId>
-			<artifactId>vpp</artifactId>
-		</dependency>
-
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
@@ -128,7 +143,7 @@
 	
 	<build>
 		<plugins>
-			<!-- This ensures LICESNE and NOTICE inclusion in all jars -->
+			<!-- This ensures LICENSE and NOTICE inclusion in all jars -->
             <plugin>
                 <artifactId>maven-remote-resources-plugin</artifactId>
                 <executions>
