@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.server;
 
-import java.util.Map;
-
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.RemoteService;
+import org.apache.cayenne.rop.ROPSerializationService;
 import org.apache.cayenne.rop.ServerHessianSerializationServiceProvider;
 import org.apache.cayenne.rop.ServerHttpRemoteService;
-import org.apache.cayenne.rop.ROPSerializationService;
+
+import java.util.Map;
 
 /**
  * A DI module that defines services for the server-side of an ROP application based on
@@ -39,14 +39,20 @@ public class ROPServerModule implements Module {
 
     protected Map<String, String> eventBridgeProperties;
 
+    /**
+     * @since 4.0
+     */
+    public static MapBuilder<String> contributeROPBridgeProperties(Binder binder) {
+        return binder.bindMap(Constants.SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP);
+    }
+
     public ROPServerModule(Map<String, String> eventBridgeProperties) {
         this.eventBridgeProperties = eventBridgeProperties;
     }
 
     public void configure(Binder binder) {
 
-        MapBuilder<String> mapBuilder = binder
-                .bindMap(Constants.SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP);
+        MapBuilder<String> mapBuilder = contributeROPBridgeProperties(binder);
         mapBuilder.putAll(eventBridgeProperties);
 
         binder.bind(RemoteService.class).to(ServerHttpRemoteService.class);
