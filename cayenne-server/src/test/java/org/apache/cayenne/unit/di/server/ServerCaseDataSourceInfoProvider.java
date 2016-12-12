@@ -142,6 +142,8 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
             }
 
             connectionInfo = new DataSourceInfo();
+            connectionInfo.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
+            connectionInfo.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
         }
 
         connectionInfo = connectionInfo.cloneInfo();
