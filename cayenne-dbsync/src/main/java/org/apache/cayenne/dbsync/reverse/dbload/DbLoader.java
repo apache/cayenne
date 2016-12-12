@@ -88,7 +88,7 @@ public class DbLoader {
 
     /**
      * Retrieves catalogs for a given connection.
-     * using a static method for catalog loading as we don't need a full DbLoader2 for this operation
+     * using a static method for catalog loading as we don't need a full DbLoader for this operation
      * @return List with the catalog names; empty list if none found.
      */
     public static List<String> loadCatalogs(Connection connection) throws SQLException {
@@ -99,7 +99,7 @@ public class DbLoader {
 
     /**
      * Retrieves the schemas for the given connection.
-     * using a static method for catalog loading as we don't need a full DbLoader2 for this operation
+     * using a static method for catalog loading as we don't need a full DbLoader for this operation
      * @return List with the schema names; empty list if none found.
      */
     public static List<String> loadSchemas(Connection connection) throws SQLException {
