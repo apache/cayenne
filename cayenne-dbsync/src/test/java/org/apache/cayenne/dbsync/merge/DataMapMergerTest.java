@@ -34,7 +34,7 @@ import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbEntity;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class DbMergerTest {
+public class DataMapMergerTest {
 
     @Test
     public void testEmptyDataMap() throws Exception {
