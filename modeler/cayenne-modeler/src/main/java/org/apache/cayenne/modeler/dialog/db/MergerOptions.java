@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.dialog.db;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.merge.token.AbstractToDbToken;
+import org.apache.cayenne.dbsync.merge.token.db.AbstractToDbToken;
 import org.apache.cayenne.dbsync.merge.DataMapMerger;
 import org.apache.cayenne.dbsync.reverse.dbload.DefaultModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.context.MergeDirection;

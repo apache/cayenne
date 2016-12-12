@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dbsync.merge;
 
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -125,7 +126,12 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
         }
 
         if(original.getMaxLength() != imported.getMaxLength()) {
-            return true;
+            int[] typesWithMaxLength = {Types.NCHAR, Types.NVARCHAR, Types.CHAR, Types.VARCHAR};
+            for(int type : typesWithMaxLength) {
+                if(original.getType() == type) {
+                    return true;
+                }
+            }
         }
 
         if(original.getScale() != imported.getScale()) {

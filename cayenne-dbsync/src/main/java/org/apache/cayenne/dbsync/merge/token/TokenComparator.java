@@ -21,6 +21,10 @@ package org.apache.cayenne.dbsync.merge.token;
 
 import java.util.Comparator;
 
+import org.apache.cayenne.dbsync.merge.token.db.AbstractToDbToken;
+import org.apache.cayenne.dbsync.merge.token.db.AddRelationshipToDb;
+import org.apache.cayenne.dbsync.merge.token.model.AddRelationshipToModel;
+
 /**
  * Simple sort of merge tokens.
  * Just move all relationships creation tokens to the end of the list.
@@ -30,7 +34,15 @@ public class TokenComparator implements Comparator<MergerToken> {
     @Override
     public int compare(MergerToken o1, MergerToken o2) {
         if (o1 instanceof AbstractToDbToken && o2 instanceof AbstractToDbToken) {
-            return ((AbstractToDbToken) o1).compareTo(o2);
+            if (o1 instanceof AddRelationshipToDb && o2 instanceof AddRelationshipToDb) {
+                return 0;
+            }
+
+            if (!(o1 instanceof AddRelationshipToDb || o2 instanceof AddRelationshipToDb)) {
+                return 0;
+            }
+
+            return o1 instanceof AddRelationshipToDb ? 1 : -1;
         }
 
         if (o1 instanceof AddRelationshipToModel && o2 instanceof AddRelationshipToModel) {

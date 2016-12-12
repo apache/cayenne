@@ -22,6 +22,7 @@ package org.apache.cayenne.dbsync.merge;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -32,6 +33,7 @@ import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DetectedDbEntity;
 
 class DbEntityMerger extends AbstractMerger<DataMap, DbEntity> {
@@ -74,7 +76,14 @@ class DbEntityMerger extends AbstractMerger<DataMap, DbEntity> {
      */
     @Override
     Collection<MergerToken> createTokensForMissingImported(DbEntity original) {
-        return Collections.singleton(getTokenFactory().createCreateTableToDb(original));
+        Collection<MergerToken> tokens = new LinkedList<>();
+        // add entity
+        tokens.add(getTokenFactory().createCreateTableToDb(original));
+        // add it's relationships
+        for (DbRelationship rel : original.getRelationships()) {
+            tokens.add(getTokenFactory().createAddRelationshipToDb(original, rel));
+        }
+        return tokens;
     }
 
     /**

@@ -60,8 +60,8 @@ public class DataMapMerger implements Merger<DataMap> {
         prepare(original, importedFromDb);
 
         createDbEntityMerger(original, importedFromDb);
-        createAttributeMerger(original, importedFromDb);
         createRelationshipMerger(original, importedFromDb);
+        createAttributeMerger(original, importedFromDb);
 
         return createTokens();
     }

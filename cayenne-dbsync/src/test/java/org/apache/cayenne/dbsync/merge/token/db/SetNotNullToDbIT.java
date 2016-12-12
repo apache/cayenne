@@ -16,32 +16,49 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.merge.factory;
 
-import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
+package org.apache.cayenne.dbsync.merge.token.db;
+
+import static org.junit.Assert.assertNotNull;
+
+import java.sql.Types;
+
+import org.apache.cayenne.dbsync.merge.MergeCase;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.junit.Test;
 
-public class DB2MergerTokenFactory extends DefaultMergerTokenFactory {
+public class SetNotNullToDbIT extends MergeCase {
 
-    @Override
-    public MergerToken createSetColumnTypeToDb(
-            final DbEntity entity,
-            DbAttribute columnOriginal,
-            final DbAttribute columnNew) {
+	@Test
+	public void test() throws Exception {
+		DbEntity dbEntity = map.getDbEntity("PAINTING");
+		assertNotNull(dbEntity);
 
-        return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
+		// create and add new column to model and db
+		DbAttribute column = new DbAttribute("NEWCOL2", Types.VARCHAR, dbEntity);
 
-            @Override
-            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
-                sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
-                sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedName(columnNew));
-                sqlBuffer.append(" SET DATA TYPE ");
-            }
-        };
-    }
+		column.setMandatory(false);
+		column.setMaxLength(10);
+		dbEntity.addAttribute(column);
+		assertTokensAndExecute(1, 0);
+
+		// check that is was merged
+		assertTokensAndExecute(0, 0);
+
+		// set not null
+		column.setMandatory(true);
+
+		// merge to db
+		assertTokensAndExecute(1, 0);
+
+		// check that is was merged
+		assertTokensAndExecute(0, 0);
+
+		// clean up
+		dbEntity.removeAttribute(column.getName());
+		assertTokensAndExecute(1, 0);
+		assertTokensAndExecute(0, 0);
+	}
+
 }

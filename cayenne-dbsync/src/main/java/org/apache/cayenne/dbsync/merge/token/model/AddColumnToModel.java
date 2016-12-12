@@ -17,52 +17,40 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dbsync.merge.token;
+package org.apache.cayenne.dbsync.merge.token.model;
 
-import org.apache.cayenne.dbsync.merge.context.MergeDirection;
+import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
 
 /**
- * The reverse of a {@link MergerToken} that can not be reversed.. This will not execute
- * any thing, but {@link #createReverse(MergerTokenFactory)} will get back the reverse that
- * this was made from.
+ * A {@link MergerToken} to add a {@link DbAttribute} to a {@link DbEntity}. The
+ * {@link EntityMergeSupport} will be used to update the mapped {@link ObjEntity}
  */
-public class DummyReverseToken implements MergerToken {
+public class AddColumnToModel extends AbstractToModelToken.EntityAndColumn {
 
-    private MergerToken reverse;
-
-    public DummyReverseToken(MergerToken reverse) {
-        this.reverse = reverse;
+    public AddColumnToModel(DbEntity entity, DbAttribute column) {
+        super("Add Column", entity, column);
     }
 
     @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
-        return reverse;
+        return factory.createDropColumnToDb(getEntity(), getColumn());
     }
 
     @Override
     public void execute(MergerContext mergerContext) {
-        // can not execute
+        getEntity().addAttribute(getColumn());
+
+        for (ObjEntity e : getEntity().mappedObjEntities()) {
+            mergerContext.getEntityMergeSupport().synchronizeOnDbAttributeAdded(e, getColumn());
+        }
+
+        mergerContext.getDelegate().dbAttributeAdded(getColumn());
     }
 
-    @Override
-    public boolean isEmpty() {
-        return true;
-    }
-
-    @Override
-    public MergeDirection getDirection() {
-        return reverse.getDirection().reverseDirection();
-    }
-
-    @Override
-    public String getTokenName() {
-        return "Can not execute the reverse of " + reverse.getTokenName();
-    }
-
-    @Override
-    public String getTokenValue() {
-        return reverse.getTokenValue();
-    }
 }

@@ -16,32 +16,45 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.merge.factory;
 
+package org.apache.cayenne.dbsync.merge.token.db;
+
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
-public class DB2MergerTokenFactory extends DefaultMergerTokenFactory {
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * A {@link MergerToken} to add a "allow null" clause to a column.
+ * 
+ */
+public class SetAllowNullToDb extends AbstractToDbToken.EntityAndColumn {
+
+    public SetAllowNullToDb(DbEntity entity, DbAttribute column) {
+        super("Set Allow Null", entity, column);
+    }
 
     @Override
-    public MergerToken createSetColumnTypeToDb(
-            final DbEntity entity,
-            DbAttribute columnOriginal,
-            final DbAttribute columnNew) {
+    public List<String> createSql(DbAdapter adapter) {
+        StringBuilder sqlBuffer = new StringBuilder();
+        QuotingStrategy context = adapter.getQuotingStrategy();
+        sqlBuffer.append("ALTER TABLE ");
+        sqlBuffer.append(context.quotedFullyQualifiedName(getEntity()));
+        sqlBuffer.append(" ALTER COLUMN ");
+        sqlBuffer.append(context.quotedName(getColumn()));
+        sqlBuffer.append(" DROP NOT NULL");
 
-        return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
-
-            @Override
-            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
-                sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
-                sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedName(columnNew));
-                sqlBuffer.append(" SET DATA TYPE ");
-            }
-        };
+        return Collections.singletonList(sqlBuffer.toString());
     }
+
+    @Override
+    public MergerToken createReverse(MergerTokenFactory factory) {
+        return factory.createSetNotNullToModel(getEntity(), getColumn());
+    }
+
 }

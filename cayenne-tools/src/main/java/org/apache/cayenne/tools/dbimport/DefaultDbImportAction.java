@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.filter.NameFilter;
-import org.apache.cayenne.dbsync.merge.token.AbstractToModelToken;
+import org.apache.cayenne.dbsync.merge.token.model.AbstractToModelToken;
 import org.apache.cayenne.dbsync.merge.DataMapMerger;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;

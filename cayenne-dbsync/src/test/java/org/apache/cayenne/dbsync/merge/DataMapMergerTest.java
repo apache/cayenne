@@ -21,7 +21,7 @@ package org.apache.cayenne.dbsync.merge;
 import org.apache.cayenne.dbsync.merge.builders.DbEntityBuilder;
 import org.apache.cayenne.dbsync.merge.factory.HSQLMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.dbsync.merge.token.SetColumnTypeToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.junit.Test;

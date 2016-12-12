@@ -16,32 +16,38 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.merge.factory;
 
-import org.apache.cayenne.dba.QuotingStrategy;
+package org.apache.cayenne.dbsync.merge.token.db;
+
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
-public class DB2MergerTokenFactory extends DefaultMergerTokenFactory {
+import java.util.ArrayList;
+import java.util.List;
+
+public class DropTableToDb extends AbstractToDbToken.Entity {
+
+    public DropTableToDb(DbEntity entity) {
+        super("Drop Table", entity);
+    }
 
     @Override
-    public MergerToken createSetColumnTypeToDb(
-            final DbEntity entity,
-            DbAttribute columnOriginal,
-            final DbAttribute columnNew) {
-
-        return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
-
-            @Override
-            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
-                sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
-                sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedName(columnNew));
-                sqlBuffer.append(" SET DATA TYPE ");
-            }
-        };
+    public List<String> createSql(DbAdapter adapter) {
+        List<String> sqls = new ArrayList<>();
+        // TODO: fix. some adapters drop the complete AUTO_PK_SUPPORT here
+        /*
+        sqls.addAll(adapter.getPkGenerator().dropAutoPkStatements(
+                Collections.singletonList(entity)));
+         */
+        sqls.addAll(adapter.dropTableStatements(getEntity()));
+        return sqls;
     }
+
+    @Override
+    public MergerToken createReverse(MergerTokenFactory factory) {
+        return factory.createCreateTableToModel(getEntity());
+    }
+
 }

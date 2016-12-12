@@ -17,52 +17,38 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dbsync.merge.token;
+package org.apache.cayenne.dbsync.merge.token.model;
 
-import org.apache.cayenne.dbsync.merge.context.MergeDirection;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
 
 /**
- * The reverse of a {@link MergerToken} that can not be reversed.. This will not execute
- * any thing, but {@link #createReverse(MergerTokenFactory)} will get back the reverse that
- * this was made from.
+ * A {@link MergerToken} to remove a {@link DbEntity} from a {@link DataMap}. Any
+ * {@link ObjEntity} mapped to the {@link DbEntity} will also be removed.
+ * 
  */
-public class DummyReverseToken implements MergerToken {
+public class DropTableToModel extends AbstractToModelToken.Entity {
 
-    private MergerToken reverse;
-
-    public DummyReverseToken(MergerToken reverse) {
-        this.reverse = reverse;
+    public DropTableToModel(DbEntity entity) {
+        super("Drop Table", entity);
     }
 
     @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
-        return reverse;
+        return factory.createCreateTableToDb(getEntity());
     }
 
     @Override
     public void execute(MergerContext mergerContext) {
-        // can not execute
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return true;
-    }
-
-    @Override
-    public MergeDirection getDirection() {
-        return reverse.getDirection().reverseDirection();
-    }
-
-    @Override
-    public String getTokenName() {
-        return "Can not execute the reverse of " + reverse.getTokenName();
-    }
-
-    @Override
-    public String getTokenValue() {
-        return reverse.getTokenValue();
+        for (ObjEntity objEntity : getEntity().mappedObjEntities()) {
+            objEntity.getDataMap().removeObjEntity(objEntity.getName(), true);
+            mergerContext.getDelegate().objEntityRemoved(objEntity);
+        }
+        getEntity().getDataMap().removeDbEntity(getEntity().getName(), true);
+        mergerContext.getDelegate().dbEntityRemoved(getEntity());
     }
 }

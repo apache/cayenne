@@ -16,32 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.merge.factory;
 
-import org.apache.cayenne.dba.QuotingStrategy;
+package org.apache.cayenne.dbsync.merge.token.model;
+
+import org.apache.cayenne.dbsync.merge.context.MergerContext;
+import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 
-public class DB2MergerTokenFactory extends DefaultMergerTokenFactory {
+public class DropRelationshipToModel extends AbstractToModelToken.Entity {
+
+    private final DbRelationship relationship;
+
+    public DropRelationshipToModel(DbEntity entity, DbRelationship relationship) {
+        super("Drop db-relationship ", entity);
+        this.relationship = relationship;
+    }
 
     @Override
-    public MergerToken createSetColumnTypeToDb(
-            final DbEntity entity,
-            DbAttribute columnOriginal,
-            final DbAttribute columnNew) {
-
-        return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
-
-            @Override
-            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
-                sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
-                sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedName(columnNew));
-                sqlBuffer.append(" SET DATA TYPE ");
-            }
-        };
+    public MergerToken createReverse(MergerTokenFactory factory) {
+        return factory.createAddRelationshipToDb(getEntity(), relationship);
     }
+
+    @Override
+    public void execute(MergerContext mergerContext) {
+        remove(mergerContext.getDelegate(), relationship, true);
+    }
+
+    @Override
+    public String getTokenValue() {
+        return AddRelationshipToModel.getTokenValue(relationship);
+    }
+
 }

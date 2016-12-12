@@ -16,32 +16,45 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.merge.factory;
 
-import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
+package org.apache.cayenne.dbsync.merge.token.db;
+
+import java.sql.Types;
+
+import org.apache.cayenne.dbsync.merge.MergeCase;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.junit.Test;
 
-public class DB2MergerTokenFactory extends DefaultMergerTokenFactory {
+public class SetPrimaryKeyToDbIT extends MergeCase {
 
-    @Override
-    public MergerToken createSetColumnTypeToDb(
-            final DbEntity entity,
-            DbAttribute columnOriginal,
-            final DbAttribute columnNew) {
+	@Test
+	public void test() throws Exception {
+		dropTableIfPresent("NEW_TABLE");
+		assertTokensAndExecute(0, 0);
 
-        return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
+		DbEntity dbEntity1 = new DbEntity("NEW_TABLE");
 
-            @Override
-            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
-                sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
-                sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedName(columnNew));
-                sqlBuffer.append(" SET DATA TYPE ");
-            }
-        };
-    }
+		DbAttribute e1col1 = new DbAttribute("ID1", Types.INTEGER, dbEntity1);
+		e1col1.setMandatory(true);
+		e1col1.setPrimaryKey(true);
+		dbEntity1.addAttribute(e1col1);
+		map.addDbEntity(dbEntity1);
+
+		assertTokensAndExecute(1, 0);
+		assertTokensAndExecute(0, 0);
+
+		DbAttribute e1col2 = new DbAttribute("ID2", Types.INTEGER, dbEntity1);
+		e1col2.setMandatory(true);
+		dbEntity1.addAttribute(e1col2);
+
+		assertTokensAndExecute(2, 0);
+		assertTokensAndExecute(0, 0);
+
+		e1col1.setPrimaryKey(false);
+		e1col2.setPrimaryKey(true);
+
+		assertTokensAndExecute(1, 0);
+		assertTokensAndExecute(0, 0);
+	}
 }

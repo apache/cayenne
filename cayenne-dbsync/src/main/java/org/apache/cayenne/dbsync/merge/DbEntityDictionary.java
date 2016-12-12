@@ -40,7 +40,8 @@ class DbEntityDictionary extends MergerDictionary<DbEntity> {
 
     @Override
     String getName(DbEntity entity) {
-        return entity.getFullyQualifiedName();
+//        return entity.getFullyQualifiedName();
+        return entity.getName();
     }
 
     @Override

@@ -22,9 +22,9 @@ package org.apache.cayenne.dbsync.merge.factory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.dbsync.merge.token.SetAllowNullToDb;
-import org.apache.cayenne.dbsync.merge.token.SetColumnTypeToDb;
-import org.apache.cayenne.dbsync.merge.token.SetPrimaryKeyToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetPrimaryKeyToDb;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 

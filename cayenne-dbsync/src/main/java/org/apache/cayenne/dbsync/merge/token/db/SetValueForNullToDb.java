@@ -16,32 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.merge.factory;
 
-import org.apache.cayenne.dba.QuotingStrategy;
+package org.apache.cayenne.dbsync.merge.token.db;
+
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
+import org.apache.cayenne.dbsync.merge.token.DummyReverseToken;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
+import org.apache.cayenne.dbsync.merge.token.ValueForNullProvider;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
-public class DB2MergerTokenFactory extends DefaultMergerTokenFactory {
+import java.util.List;
+
+
+public class SetValueForNullToDb extends AbstractToDbToken.EntityAndColumn {
+    
+    private ValueForNullProvider valueForNullProvider;
+
+    public SetValueForNullToDb(DbEntity entity, DbAttribute column, ValueForNullProvider valueForNullProvider) {
+        super("Set value for null", entity, column);
+        this.valueForNullProvider = valueForNullProvider;
+    }
+    
+    @Override
+    public List<String> createSql(DbAdapter adapter) {
+        return valueForNullProvider.createSql(getEntity(), getColumn());
+    }
 
     @Override
-    public MergerToken createSetColumnTypeToDb(
-            final DbEntity entity,
-            DbAttribute columnOriginal,
-            final DbAttribute columnNew) {
-
-        return new SetColumnTypeToDb(entity, columnOriginal, columnNew) {
-
-            @Override
-            protected void appendPrefix(StringBuffer sqlBuffer, QuotingStrategy context) {
-                sqlBuffer.append("ALTER TABLE ");
-                sqlBuffer.append(context.quotedFullyQualifiedName(entity));
-                sqlBuffer.append(" ALTER COLUMN ");
-                sqlBuffer.append(context.quotedName(columnNew));
-                sqlBuffer.append(" SET DATA TYPE ");
-            }
-        };
+    public MergerToken createReverse(MergerTokenFactory factory) {
+        return new DummyReverseToken(this);
     }
+    
 }
