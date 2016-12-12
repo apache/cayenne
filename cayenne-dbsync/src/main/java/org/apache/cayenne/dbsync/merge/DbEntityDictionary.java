@@ -20,7 +20,10 @@
 package org.apache.cayenne.dbsync.merge;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
+import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 
@@ -28,8 +31,11 @@ class DbEntityDictionary extends MergerDictionary<DbEntity> {
 
     private final DataMap container;
 
-    DbEntityDictionary(DataMap container) {
+    private final FiltersConfig filtersConfig;
+
+    DbEntityDictionary(DataMap container, FiltersConfig filtersConfig) {
         this.container = container;
+        this.filtersConfig = filtersConfig;
     }
 
     @Override
@@ -39,6 +45,21 @@ class DbEntityDictionary extends MergerDictionary<DbEntity> {
 
     @Override
     Collection<DbEntity> getAll() {
-        return container.getDbEntities();
+        return filter();
+    }
+
+    private Collection<DbEntity> filter() {
+        if(filtersConfig == null) {
+            return container.getDbEntities();
+        }
+
+        Collection<DbEntity> existingFiltered = new LinkedList<>();
+        for (DbEntity entity : container.getDbEntities()) {
+            TableFilter tableFilter = filtersConfig.tableFilter(entity.getCatalog(), entity.getSchema());
+            if (tableFilter != null && tableFilter.isIncludeTable(entity.getName()) != null) {
+                existingFiltered.add(entity);
+            }
+        }
+        return existingFiltered;
     }
 }

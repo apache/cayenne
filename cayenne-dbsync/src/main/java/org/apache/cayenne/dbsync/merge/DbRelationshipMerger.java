@@ -21,6 +21,7 @@ package org.apache.cayenne.dbsync.merge;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
@@ -123,5 +124,10 @@ public class DbRelationshipMerger extends AbstractMerger<DbEntity, DbRelationshi
             }
         }
         return null;
+    }
+
+    @Override
+    public List<MergerToken> createMergeTokens() {
+        throw new UnsupportedOperationException();
     }
 }

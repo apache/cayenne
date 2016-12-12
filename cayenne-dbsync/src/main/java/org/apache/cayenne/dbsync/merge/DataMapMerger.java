@@ -38,7 +38,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 
 /**
- * Synchronization data base store and Cayenne model.
+ * Synchronization of data base store and Cayenne model.
  */
 public class DataMapMerger implements Merger<DataMap> {
 
@@ -47,6 +47,8 @@ public class DataMapMerger implements Merger<DataMap> {
     private boolean skipRelationshipsTokens;
     private boolean skipPKTokens;
     private FiltersConfig filters;
+    private DbEntityMerger dbEntityMerger;
+    private List<AbstractMerger<?, ?>> mergerList = new ArrayList<>();
 
     private DataMapMerger() {
     }
@@ -55,41 +57,50 @@ public class DataMapMerger implements Merger<DataMap> {
      * Create List of MergerToken that represent the difference between two {@link DataMap} objects.
      */
     public List<MergerToken> createMergeTokens(DataMap original, DataMap importedFromDb) {
+        prepare(original, importedFromDb);
+
+        createDbEntityMerger(original, importedFromDb);
+        createAttributeMerger(original, importedFromDb);
+        createRelationshipMerger(original, importedFromDb);
+
+        return createTokens();
+    }
+
+    private void prepare(DataMap original, DataMap imported) {
+        imported.setQuotingSQLIdentifiers(original.isQuotingSQLIdentifiers());
+    }
+
+    private List<MergerToken> createTokens() {
         List<MergerToken> tokens = new ArrayList<>();
-
-        DbEntityMerger dbEntityMerger = mergeDbEntities(tokens, original, importedFromDb);
-        mergeAttributes(tokens, dbEntityMerger, original, importedFromDb);
-        mergeRelationships(tokens, dbEntityMerger, original, importedFromDb);
-
+        for(AbstractMerger<?, ?> merger : mergerList) {
+            tokens.addAll(merger.createMergeTokens());
+        }
         Collections.sort(tokens, new TokenComparator());
-
         return tokens;
     }
 
-    private DbEntityMerger mergeDbEntities(List<MergerToken> tokens, DataMap original, DataMap importedFromDb) {
-        DbEntityMerger dbEntityMerger = new DbEntityMerger(tokenFactory, skipPKTokens, original, importedFromDb);
-        tokens.addAll(dbEntityMerger.createMergeTokens(original, importedFromDb));
-        return dbEntityMerger;
+    private void createDbEntityMerger(DataMap original, DataMap imported) {
+        dbEntityMerger = new DbEntityMerger(tokenFactory, original, imported, filters, skipPKTokens);
+        mergerList.add(dbEntityMerger);
     }
 
-    private void mergeAttributes(List<MergerToken> tokens, DbEntityMerger dbEntityMerger, DataMap original, DataMap importedFromDb) {
+    private void createAttributeMerger(DataMap original, DataMap imported) {
         ChainMerger<DbEntity, DbAttribute> dbAttributeMerger = new ChainMerger<>(
-                tokenFactory, original, importedFromDb,
-                new DbAttributeMerger(tokenFactory, original, importedFromDb, valueForNull),
+                tokenFactory, original, imported,
+                new DbAttributeMerger(tokenFactory, original, imported, valueForNull),
                 dbEntityMerger
         );
-        tokens.addAll(dbAttributeMerger.createMergeTokens(null, null));
+        mergerList.add(dbAttributeMerger);
     }
 
-    private void mergeRelationships(List<MergerToken> tokens, DbEntityMerger dbEntityMerger, DataMap original, DataMap importedFromDb) {
+    private void createRelationshipMerger(DataMap original, DataMap imported) {
         ChainMerger<DbEntity, DbRelationship> dbRelationshipMerger = new ChainMerger<>(
-                tokenFactory, original, importedFromDb,
-                new DbRelationshipMerger(tokenFactory, original, importedFromDb, skipRelationshipsTokens),
+                tokenFactory, original, imported,
+                new DbRelationshipMerger(tokenFactory, original, imported, skipRelationshipsTokens),
                 dbEntityMerger
         );
-        tokens.addAll(dbRelationshipMerger.createMergeTokens(null, null));
+        mergerList.add(dbRelationshipMerger);
     }
-
 
     public static Builder builder(MergerTokenFactory tokenFactory) {
         return new Builder(tokenFactory);

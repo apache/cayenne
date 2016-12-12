@@ -97,7 +97,7 @@ public class DbMergerTest {
     }
 
     @Test
-    public void testChangeColumnType() throws Exception {
+    public void testChangeColumnTypeSimple() throws Exception {
         DataMap existing = dataMap().with(
                 dbEntity("table1").attributes(
                         dbAttr("attr01").typeInt()
@@ -156,25 +156,73 @@ public class DbMergerTest {
      * Test unsupported type changes
      */
     @Test
-    public void testNotChangeColumnType() throws Exception {
+    public void testChangeColumnType() throws Exception {
+        DbEntity fromModel = dbEntity("table1").attributes(
+                dbAttr("attr01").typeInt(),
+                dbAttr("attr02").type("DATE"),
+                dbAttr("attr03").type("BOOLEAN"),
+                dbAttr("attr04").type("FLOAT")
+        ).build();
+        DataMap existing = dataMap().with(fromModel).build();
+
+        DbEntity fromDb = dbEntity("table1").attributes(
+                dbAttr("attr01").typeBigInt(),
+                dbAttr("attr02").type("NUMERIC"),
+                dbAttr("attr03").type("BLOB"),
+                dbAttr("attr04").type("TIMESTAMP")
+        ).build();
+        DataMap db = dataMap().with(fromDb).build();
+
+        List<MergerToken> tokens = dbMerger().createMergeTokens(existing, db);
+        assertEquals(4, tokens.size());
+
+        assertEquals(
+                factory()
+                        .createSetColumnTypeToDb(fromModel, fromDb.getAttribute("attr02"), fromModel.getAttribute("attr02"))
+                        .getTokenValue(),
+                tokens.get(1)
+                        .getTokenValue()
+        );
+
+        for(MergerToken token : tokens) {
+            assertTrue(token instanceof SetColumnTypeToDb);
+        }
+    }
+
+    @Test
+    public void testDropPrimaryKey() throws Exception {
         DataMap existing = dataMap().with(
                 dbEntity("table1").attributes(
-                        dbAttr("attr01").typeInt(),
-                        dbAttr("attr02").type("DATE"),
-                        dbAttr("attr03").type("BOOLEAN"),
-                        dbAttr("attr04").type("FLOAT")
-                )).build();
+                        dbAttr("attr01").typeInt()
+                )
+        ).build();
 
         DataMap db = dataMap().with(
                 dbEntity("table1").attributes(
-                        dbAttr("attr01").typeBigInt(),
-                        dbAttr("attr02").type("NUMERIC"),
-                        dbAttr("attr03").type("BLOB"),
-                        dbAttr("attr04").type("TIMESTAMP")
-                )).build();
+                        dbAttr("attr01").typeInt().primaryKey()
+                )
+        ).build();
 
         List<MergerToken> tokens = dbMerger().createMergeTokens(existing, db);
-        assertEquals(0, tokens.size());
+        assertEquals(1, tokens.size());
+    }
+
+    @Test
+    public void testAddPrimaryKey() throws Exception {
+        DataMap existing = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt().primaryKey()
+                )
+        ).build();
+
+        DataMap db = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt()
+                )
+        ).build();
+
+        List<MergerToken> tokens = dbMerger().createMergeTokens(existing, db);
+        assertEquals(1, tokens.size());
     }
 
     @Test

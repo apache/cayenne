@@ -78,6 +78,8 @@ abstract class AbstractMerger<T, M> implements Merger<T> {
         }
     }
 
+    public abstract List<MergerToken> createMergeTokens();
+
     abstract MergerDictionaryDiff<M> createDiff(T original, T imported);
 
     abstract Collection<MergerToken> createTokensForMissingOriginal(M imported);

@@ -90,11 +90,9 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
         checkMandatory(same.getOriginal(), same.getImported(), tokens);
         // check type (including max length, scale and precision)
         checkType(same.getOriginal(), same.getImported(), tokens);
-
         // not implemented yet
         // isGenerated flag
-        //checkIsGenerated(same.getOriginal(), same.getImported(), tokens);
-
+        checkIsGenerated(same.getOriginal(), same.getImported(), tokens);
 
         return tokens;
     }
@@ -121,7 +119,7 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
      * @param imported attribute from db
      * @return true if attributes not same
      */
-    private boolean needUpdate(DbAttribute original, DbAttribute imported) {
+    private boolean needUpdateType(DbAttribute original, DbAttribute imported) {
         if(original.getType() != imported.getType()) {
             return true;
         }
@@ -142,11 +140,11 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
     }
 
     private void checkType(DbAttribute original, DbAttribute imported, List<MergerToken> tokens) {
-        if(!needUpdate(original, imported)) {
+        if(!needUpdateType(original, imported)) {
             return;
         }
         DbEntity originalDbEntity = original.getEntity();
-        tokens.add(getTokenFactory().createSetColumnTypeToDb(originalDbEntity, original, imported));
+        tokens.add(getTokenFactory().createSetColumnTypeToDb(originalDbEntity, imported, original));
     }
 
     private void checkIsGenerated(DbAttribute original, DbAttribute imported, List<MergerToken> tokens) {
@@ -155,5 +153,10 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
         }
 
 
+    }
+
+    @Override
+    public List<MergerToken> createMergeTokens() {
+        throw new UnsupportedOperationException();
     }
 }

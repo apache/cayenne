@@ -20,6 +20,7 @@
 package org.apache.cayenne.dbsync.merge;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
@@ -31,15 +32,21 @@ class ChainMerger<T, M> extends AbstractMerger<T, M> {
 
     private final AbstractMerger<?, T> parentMerger;
 
-    ChainMerger(MergerTokenFactory tokenFactory, DataMap original, DataMap imported, AbstractMerger<T, M> merger, AbstractMerger<?, T> parentMerger) {
+    ChainMerger(MergerTokenFactory tokenFactory, DataMap original, DataMap imported,
+                AbstractMerger<T, M> merger, AbstractMerger<?, T> parentMerger) {
         super(tokenFactory, original, imported);
         this.merger = merger;
         this.parentMerger = parentMerger;
     }
 
     @Override
-    MergerDictionaryDiff<M> createDiff(T original, T imported) {
-        MergerDictionaryDiff<M> diff = new MergerDictionaryDiff<M>();
+    public List<MergerToken> createMergeTokens() {
+        return createMergeTokens(null, null);
+    }
+
+    @Override
+    MergerDictionaryDiff<M> createDiff(T unused1, T unused2) {
+        MergerDictionaryDiff<M> diff = new MergerDictionaryDiff<>();
         MergerDictionaryDiff<T> parentDiff = parentMerger.getDiff();
         for(MergerDiffPair<T> pair : parentDiff.getSame()) {
             diff.addAll(merger.createDiff(pair.getOriginal(), pair.getImported()));

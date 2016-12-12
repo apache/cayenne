@@ -22,10 +22,12 @@ package org.apache.cayenne.dbsync.merge;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -34,18 +36,26 @@ import org.apache.cayenne.map.DetectedDbEntity;
 
 class DbEntityMerger extends AbstractMerger<DataMap, DbEntity> {
 
+    private final FiltersConfig filtersConfig;
     private final boolean skipPKTokens;
 
-    DbEntityMerger(MergerTokenFactory tokenFactory, boolean skipPKTokens, DataMap original, DataMap imported) {
+    DbEntityMerger(MergerTokenFactory tokenFactory, DataMap original, DataMap imported,
+                   FiltersConfig filtersConfig, boolean skipPKTokens) {
         super(tokenFactory, original, imported);
+        this.filtersConfig = filtersConfig;
         this.skipPKTokens = skipPKTokens;
+    }
+
+    @Override
+    public List<MergerToken> createMergeTokens() {
+        return createMergeTokens(originalDataMap, importedDataMap);
     }
 
     @Override
     MergerDictionaryDiff<DbEntity> createDiff(DataMap original, DataMap imported) {
         return new MergerDictionaryDiff.Builder<DbEntity>()
-                .originalDictionary(new DbEntityDictionary(original))
-                .importedDictionary(new DbEntityDictionary(imported))
+                .originalDictionary(new DbEntityDictionary(original, filtersConfig))
+                .importedDictionary(new DbEntityDictionary(imported, null))
                 .build();
     }
 
