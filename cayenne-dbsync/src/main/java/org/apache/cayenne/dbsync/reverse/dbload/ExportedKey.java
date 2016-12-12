@@ -45,7 +45,7 @@ public class ExportedKey implements Comparable {
      * @param rs ResultSet pointing to a exported key, fetched using
      *           DataBaseMetaData.getExportedKeys(...)
      */
-    public ExportedKey(ResultSet rs) throws SQLException {
+    ExportedKey(ResultSet rs) throws SQLException {
         String pkCatalog = rs.getString("PKTABLE_CAT");
         String pkSchema = rs.getString("PKTABLE_SCHEM");
         String pkTable = rs.getString("PKTABLE_NAME");
@@ -121,7 +121,7 @@ public class ExportedKey implements Comparable {
         return getStrKey() + " # " + keySeq;
     }
 
-    public String getStrKey() {
+    String getStrKey() {
         return pk + " <- " + fk;
     }
 

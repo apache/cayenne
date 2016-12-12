@@ -35,7 +35,7 @@ import org.apache.cayenne.map.DataMap;
  * Creates DbEntities and Procedures based on DB meta data.
  * Consists of list of loaders that iteratively loads small parts of data,
  * e.g. Entity name, Attributes, Relationships...
- * @see AbstractLoader and its children
+ * @see AbstractLoader and its descendants
  */
 public class DbLoader {
 

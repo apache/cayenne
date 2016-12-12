@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
 
 class AttributeLoader extends PerCatalogAndSchemaLoader {
 
-    private static final Log LOGGER = LogFactory.getLog(AttributeLoader.class);
+    private static final Log LOGGER = LogFactory.getLog(DbLoader.class);
 
     private boolean firstRow;
     private boolean supportAutoIncrement;
@@ -52,7 +52,7 @@ class AttributeLoader extends PerCatalogAndSchemaLoader {
     }
 
     @Override
-    protected void processResultSet(CatalogFilter catalog, SchemaFilter schema, DbLoadDataStore map, ResultSet rs) throws SQLException {
+    protected void processResultSetRow(CatalogFilter catalog, SchemaFilter schema, DbLoadDataStore map, ResultSet rs) throws SQLException {
         if (firstRow) {
             supportAutoIncrement = checkForAutoIncrement(rs);
             firstRow = false;

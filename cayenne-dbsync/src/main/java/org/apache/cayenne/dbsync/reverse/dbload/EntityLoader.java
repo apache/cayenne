@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
 
 class EntityLoader extends PerCatalogAndSchemaLoader {
 
-    private static final Log LOGGER = LogFactory.getLog(EntityLoader.class);
+    private static final Log LOGGER = LogFactory.getLog(DbLoader.class);
 
     private final String[] types;
 
@@ -50,7 +50,7 @@ class EntityLoader extends PerCatalogAndSchemaLoader {
     }
 
     @Override
-    protected void processResultSet(CatalogFilter catalog, SchemaFilter schema, DbLoadDataStore map, ResultSet rs) throws SQLException {
+    protected void processResultSetRow(CatalogFilter catalog, SchemaFilter schema, DbLoadDataStore map, ResultSet rs) throws SQLException {
         String name = rs.getString("TABLE_NAME");
         String catalogName = rs.getString("TABLE_CAT");
         String schemaName = rs.getString("TABLE_SCHEM");

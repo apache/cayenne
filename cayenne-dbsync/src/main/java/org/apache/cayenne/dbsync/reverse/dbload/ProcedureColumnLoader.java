@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class ProcedureColumnLoader extends PerCatalogAndSchemaLoader {
 
-    private static final Log LOGGER = LogFactory.getLog(ProcedureColumnLoader.class);
+    private static final Log LOGGER = LogFactory.getLog(DbLoader.class);
 
     ProcedureColumnLoader(DbAdapter adapter, DbLoaderConfiguration config, DbLoaderDelegate delegate) {
         super(adapter, config, delegate);
@@ -53,7 +53,7 @@ public class ProcedureColumnLoader extends PerCatalogAndSchemaLoader {
     }
 
     @Override
-    protected void processResultSet(CatalogFilter catalog, SchemaFilter schema, DbLoadDataStore map, ResultSet rs) throws SQLException {
+    protected void processResultSetRow(CatalogFilter catalog, SchemaFilter schema, DbLoadDataStore map, ResultSet rs) throws SQLException {
         String procSchema = rs.getString("PROCEDURE_SCHEM");
         String procCatalog = rs.getString("PROCEDURE_CAT");
         String name = rs.getString("PROCEDURE_NAME");

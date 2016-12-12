@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
 
 class PrimaryKeyLoader extends PerEntityLoader {
 
-    private static final Log LOGGER = LogFactory.getLog(PrimaryKeyLoader.class);
+    private static final Log LOGGER = LogFactory.getLog(DbLoader.class);
 
     PrimaryKeyLoader(DbLoaderConfiguration config, DbLoaderDelegate delegate) {
         super(null, config, delegate);

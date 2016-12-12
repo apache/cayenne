@@ -41,7 +41,7 @@ public abstract class PerCatalogAndSchemaLoader extends AbstractLoader {
                 }
                 try (ResultSet rs = getResultSet(catalog.name, schema.name, metaData)) {
                     while (rs.next()) {
-                        processResultSet(catalog, schema, map, rs);
+                        processResultSetRow(catalog, schema, map, rs);
                     }
                 }
             }
@@ -54,5 +54,5 @@ public abstract class PerCatalogAndSchemaLoader extends AbstractLoader {
 
     abstract ResultSet getResultSet(String catalogName, String schemaName, DatabaseMetaData metaData) throws SQLException;
 
-    abstract void processResultSet(CatalogFilter catalog, SchemaFilter schema, DbLoadDataStore map, ResultSet rs) throws SQLException;
+    abstract void processResultSetRow(CatalogFilter catalog, SchemaFilter schema, DbLoadDataStore map, ResultSet rs) throws SQLException;
 }

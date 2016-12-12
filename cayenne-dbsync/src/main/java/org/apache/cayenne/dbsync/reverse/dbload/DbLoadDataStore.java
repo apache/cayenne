@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -34,8 +33,11 @@ import org.apache.cayenne.map.Procedure;
  * Temporary storage for loaded from DB DbEntities and Procedures.
  * DataMap is used but it's functionality is excessive and
  * there can be unwanted side effects.
- * To get rid of it parallel data structure for dbEntity, attributes,
- * procedures etc.. must be created
+ * But we can't get rid of it right now as parallel data structure
+ * for dbEntity, attributes, procedures etc.. must be created
+ * or some other work around should be implemented because
+ * some functionality relies on side effects (e.g. entity resolution
+ * in relationship)
  */
 public class DbLoadDataStore extends DataMap {
 

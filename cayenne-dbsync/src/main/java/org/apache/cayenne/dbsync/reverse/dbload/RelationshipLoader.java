@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class RelationshipLoader extends AbstractLoader {
 
-    private static final Log LOGGER = LogFactory.getLog(RelationshipLoader.class);
+    private static final Log LOGGER = LogFactory.getLog(DbLoader.class);
 
     private final ObjectNameGenerator nameGenerator;
 

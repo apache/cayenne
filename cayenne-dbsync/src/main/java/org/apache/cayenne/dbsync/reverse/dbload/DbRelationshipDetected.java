@@ -34,7 +34,7 @@ public class DbRelationshipDetected extends DbRelationship {
         super(uniqueRelName);
     }
 
-    public DbRelationshipDetected() {
+    DbRelationshipDetected() {
     }
 
     /**
@@ -47,7 +47,7 @@ public class DbRelationshipDetected extends DbRelationship {
     /**
      * Set the name of the underlying foreign key. Typically FK_NAME from jdbc metadata.
      */
-    public void setFkName(String fkName) {
+    void setFkName(String fkName) {
         this.fkName = fkName;
     }
 
