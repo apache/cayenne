@@ -48,6 +48,7 @@ import org.apache.cayenne.dbsync.merge.factory.PostgresMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.SQLServerMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.SybaseMergerTokenFactory;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
 
 /**
@@ -61,12 +62,16 @@ public class DbSyncModule implements Module {
      */
     public static final String MERGER_FACTORIES_MAP = "cayenne.dbsync.mergerfactories";
 
+    public static MapBuilder<MergerTokenFactory> contributeMergerTokenFactories(Binder binder) {
+        return binder.bindMap(MERGER_FACTORIES_MAP);
+    }
+
     @Override
     public void configure(Binder binder) {
 
         // default and per adapter merger factories...
         binder.bind(MergerTokenFactory.class).to(DefaultMergerTokenFactory.class);
-        binder.bindMap(MERGER_FACTORIES_MAP)
+        contributeMergerTokenFactories(binder)
                 .put(DB2Adapter.class.getName(), DB2MergerTokenFactory.class)
                 .put(DerbyAdapter.class.getName(), DerbyMergerTokenFactory.class)
                 .put(FirebirdAdapter.class.getName(), FirebirdMergerTokenFactory.class)

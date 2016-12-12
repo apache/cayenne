@@ -20,7 +20,7 @@
 	</parent>
 
 	<artifactId>cayenne-modeler-generic</artifactId>
-	<name>Cayenne Modeler Generic</name>
+	<name>cayenne-modeler-generic: Modeler Generic Assembly</name>
 	<packaging>jar</packaging>
 
 	<dependencies>

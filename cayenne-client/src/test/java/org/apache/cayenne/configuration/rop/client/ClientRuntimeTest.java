@@ -21,7 +21,6 @@ package org.apache.cayenne.configuration.rop.client;
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
@@ -50,7 +49,7 @@ public class ClientRuntimeTest {
 	public void testDefaultConstructor() {
 		ClientRuntime runtime = new ClientRuntime(Collections.<String, String> emptyMap());
 
-		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+		Collection<Module> modules = runtime.getModules();
 		assertEquals(1, modules.size());
 		Object[] marray = modules.toArray();
 
@@ -79,7 +78,7 @@ public class ClientRuntimeTest {
 		Map<String, String> properties = new HashMap<>();
 
 		ClientRuntime runtime = new ClientRuntime(properties, m1, m2);
-		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+		Collection<Module> modules = runtime.getModules();
 		assertEquals(3, modules.size());
 
 		assertTrue(configured[0]);
@@ -110,7 +109,7 @@ public class ClientRuntimeTest {
 		Map<String, String> properties = new HashMap<>();
 
 		ClientRuntime runtime = new ClientRuntime(properties, modules);
-		Collection<Module> cmodules = ((ModuleCollection) runtime.getModule()).getModules();
+		Collection<Module> cmodules = runtime.getModules();
 		assertEquals(3, cmodules.size());
 
 		assertTrue(configured[0]);

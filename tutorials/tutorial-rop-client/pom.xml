@@ -22,7 +22,7 @@
 	</parent>
 
 	<artifactId>tutorial-rop-client</artifactId>
-	<name>Cayenne ROP Client Tutorial</name>
+	<name>tutorial-rop-client: Cayenne ROP Client Tutorial</name>
 
 	<dependencies>
 		<dependency>

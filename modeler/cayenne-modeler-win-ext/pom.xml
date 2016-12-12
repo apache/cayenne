@@ -27,7 +27,7 @@
         <version>4.0.M5-SNAPSHOT</version>
     </parent>
 
-    <name>Cayenne Modeler Win Extensions</name>
+    <name>cayenne-modeler-win-ext: Modeler Win Extensions</name>
     <packaging>jar</packaging>
     <artifactId>cayenne-modeler-win-ext</artifactId>
 

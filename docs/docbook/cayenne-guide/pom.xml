@@ -27,5 +27,5 @@
 	
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>cayenne-guide</artifactId>
-	<name>Docbook: Cayenne Guide</name>
+	<name>cayenne-guide: Docbook - Cayenne Guide</name>
 </project>

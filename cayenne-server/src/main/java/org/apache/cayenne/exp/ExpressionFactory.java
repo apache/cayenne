@@ -860,6 +860,24 @@ public class ExpressionFactory {
 	}
 
 	/**
+	 * @param pathSpec a String "obj:" path.
+	 * @since 4.0
+	 * @return a new "obj:" path expression for the specified String path.
+	 */
+	public static Expression pathExp(String pathSpec) {
+		return new ASTObjPath(pathSpec);
+	}
+
+	/**
+	 * @param pathSpec a String db: path.
+	 * @since 4.0
+	 * @return a new "db:" path expression for the specified String path.
+	 */
+	public static Expression dbPathExp(String pathSpec) {
+		return new ASTDbPath(pathSpec);
+	}
+
+	/**
 	 * A convenience shortcut for boolean true expression.
 	 * 
 	 * @since 3.0

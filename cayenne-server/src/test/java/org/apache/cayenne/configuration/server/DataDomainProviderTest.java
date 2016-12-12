@@ -141,20 +141,20 @@ public class DataDomainProviderTest {
 				binder.bind(ClassLoaderManager.class).toInstance(classLoaderManager);
 				binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
 
-				binder.bindMap(Constants.PROPERTIES_MAP);
+				ServerModule.contributeProperties(binder);
 
-				binder.bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST).add(FirebirdSniffer.class)
+				ServerModule.contributeAdapterDetectors(binder).add(FirebirdSniffer.class)
 						.add(OpenBaseSniffer.class).add(FrontBaseSniffer.class).add(IngresSniffer.class)
 						.add(SQLiteSniffer.class).add(DB2Sniffer.class).add(H2Sniffer.class).add(HSQLDBSniffer.class)
 						.add(SybaseSniffer.class).add(DerbySniffer.class).add(SQLServerSniffer.class)
 						.add(OracleSniffer.class).add(PostgresSniffer.class).add(MySQLSniffer.class);
-				binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST);
-				binder.bindList(Constants.SERVER_PROJECT_LOCATIONS_LIST).add(testConfigName);
+				ServerModule.contributeDomainFilters(binder);
+				ServerModule.contributeProjectLocations(binder).add(testConfigName);
 
 				// configure extended types
-				binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
-				binder.bindList(Constants.SERVER_USER_TYPES_LIST);
-				binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
+				ServerModule.contributeDefaultTypes(binder);
+				ServerModule.contributeUserTypes(binder);
+				ServerModule.contributeTypeFactories(binder);
 
 				binder.bind(EventManager.class).toInstance(eventManager);
 				binder.bind(EntitySorter.class).toInstance(new AshwoodEntitySorter());

@@ -27,7 +27,7 @@
     </parent>
 
     <artifactId>docbook-stylesheets</artifactId>
-    <name>Docbook: Cayenne Stylesheets</name>
+    <name>docbook-stylesheets: Docbook - Cayenne Stylesheets</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

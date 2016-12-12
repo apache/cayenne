@@ -22,7 +22,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>cayenne-parent</artifactId>
 	<groupId>org.apache.cayenne</groupId>
-	<name>Cayenne</name>
+	<name>cayenne-parent: Top-level parent of Cayenne mdoules</name>
 
 	<version>4.0.M5-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -890,12 +890,18 @@
 							<name>cayenneJdbcDriver</name>
 							<value>${cayenneJdbcDriver}</value>
 						</property>
+                        <org.slf4j.simpleLogger.defaultLogLevel>${cayenneLogLevel}</org.slf4j.simpleLogger.defaultLogLevel>
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 			<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <org.slf4j.simpleLogger.defaultLogLevel>${cayenneLogLevel}</org.slf4j.simpleLogger.defaultLogLevel>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>

@@ -52,6 +52,7 @@ import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.XMLDataMapLoader;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
@@ -154,11 +155,10 @@ public class ServerCaseModule implements Module {
                 IngresUnitDbAdapter.class.getName()).put(
                 SQLiteAdapter.class.getName(),
                 SQLiteUnitDbAdapter.class.getName());
-        binder.bindMap(Constants.PROPERTIES_MAP);
+        ServerModule.contributeProperties(binder);
         
         // configure extended types
-        binder
-                .bindList(Constants.SERVER_DEFAULT_TYPES_LIST)
+        ServerModule.contributeDefaultTypes(binder)
                 .add(new VoidType())
                 .add(new BigDecimalType())
                 .add(new BigIntegerType())
@@ -178,8 +178,8 @@ public class ServerCaseModule implements Module {
                 .add(new CalendarType<GregorianCalendar>(GregorianCalendar.class))
                 .add(new CalendarType<Calendar>(Calendar.class))
                 .add(new UUIDType());
-        binder.bindList(Constants.SERVER_USER_TYPES_LIST);
-        binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
+        ServerModule.contributeUserTypes(binder);
+        ServerModule.contributeTypeFactories(binder);
 
         binder.bind(SchemaBuilder.class).to(SchemaBuilder.class);
         binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);

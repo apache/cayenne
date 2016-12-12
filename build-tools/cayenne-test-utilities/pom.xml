@@ -29,7 +29,7 @@
 
 	<description>Common Unit Test Utilities</description>
 	<artifactId>cayenne-test-utilities</artifactId>
-	<name>Common Unit Test Utilities</name>
+	<name>cayenne-test-utilities: Common Unit Test Utilities</name>
 	<packaging>jar</packaging>
 
 	<dependencies>

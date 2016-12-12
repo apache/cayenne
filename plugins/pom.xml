@@ -18,7 +18,7 @@
 	</parent>
 	<groupId>org.apache.cayenne.plugins</groupId>
 	<artifactId>cayenne-plugins-parent</artifactId>
-	<name>Cayenne Maven Plugins</name>
+	<name>cayenne-plugins-parent: Cayenne Maven Plugins parent</name>
 	<packaging>pom</packaging>
 
 	<modules>

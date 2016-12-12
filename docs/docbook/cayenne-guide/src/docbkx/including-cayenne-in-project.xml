@@ -453,22 +453,20 @@
 						<tr>
 							<td><code>forceDataMapCatalog</code></td>
 							<td>boolean</td>
-							<td>
-								Automatically tagging each DbEntity with the actual DB catalog/schema (default behavior)
-								may some time be undesirable. If this is the case then setting <code>forceDataMapCatalog</code>
-								to <code>true</code> will set DbEntity catalog to one in the DataMap.
-								Default value <code>false</code>.
-							</td>
+							<td> Automatically tagging each DbEntity with the actual DB catalog/schema (default behavior)
+                                may sometimes be undesirable. If this is the case then setting
+                                    <code>forceDataMapCatalog</code> to <code>true</code> will set
+                                DbEntity catalog to one in the DataMap. Default value is
+                                    <code>false</code>. </td>
 						</tr>
 						<tr>
 							<td><code>forceDataMapSchema</code></td>
 							<td>boolean</td>
-							<td>
-								Automatically tagging each DbEntity with the actual DB catalog/schema (default behavior)
-								may some time be undesirable. If this is the case then setting <code>forceDataMapSchema</code>
-								to <code>true</code> will set DbEntity schema to one in the DataMap.
-								Default value <code>false</code>.
-							</td>
+							<td> Automatically tagging each DbEntity with the actual DB catalog/schema (default behavior)
+                                may sometimes be undesirable. If this is the case then setting
+                                    <code>forceDataMapSchema</code> to <code>true</code> will set
+                                DbEntity schema to one in the DataMap. Default value is
+                                    <code>false</code>. </td>
 						</tr>
 						<tr>
 							<td><code>meaningfulPkTables</code></td>
@@ -493,35 +491,30 @@
 						<tr xml:id="cdbimport-rr-parameter">
 							<td><code>reverseEngineering</code></td>
 							<td>XML</td>
-							<td>
-								An object that contains detailed reverse engineering rules about
-								what DB objects should be processed.
-								For full information about this parameter see
-								<link linkend="re-introduction">reverse engineering</link> chapter.
-								Here is some simple example:
-								<programlisting language="xml">&lt;reverseEngineering&gt;
+							<td> An object that contains detailed reverse engineering rules about what DB objects should
+                                be processed. For full information about this parameter see <link
+                                    linkend="re-introduction">"DB-First Flow</link> chapter. Here is
+                                some simple example:
+                                <programlisting language="xml">&lt;reverseEngineering&gt;
 	&lt;skipRelationshipsLoading&gt;false&lt;/skipRelationshipsLoading&gt;
 	&lt;skipPrimaryKeyLoading&gt;false&lt;/skipPrimaryKeyLoading&gt;
 
 	&lt;catalog name="test_catalog"&gt;
 		&lt;schema name="test_schema"&gt;
-			&lt;includeTable pattern=".*"/&gt;
-			&lt;excludeTable&gt;test_table&lt;/excludeTable&gt;
+			&lt;includeTable>".*"&lt;/includeTable>
+			&lt;excludeTable>test_table&lt;/excludeTable>
 		&lt;/schema&gt;
 	&lt;/catalog&gt;
 
 	&lt;includeProcedure pattern=".*"/&gt;
 &lt;/reverseEngineering&gt;</programlisting>
-
-							</td>
+                            </td>
 						</tr>
 						<tr>
 							<td><code>stripFromTableNames</code></td>
 							<td>String</td>
-							<td>
-								Regex that matches the part of the table name that needs to be stripped off.
-								Here is some examples:
-								<programlisting language="xml"><![CDATA[<!-- Strip prefix -->
+							<td>Regex that matches the part of the table name that needs to be stripped off when
+                                generating ObjEntity name. Here are some examples: <programlisting language="xml"><![CDATA[<!-- Strip prefix -->
 <stripFromTableNames>^myt_</stripFromTableNames>
 
 <!-- Strip suffix -->
@@ -529,7 +522,7 @@
 
 <!-- Strip multiple occurrences in the middle -->
 <stripFromTableNames>_abc</stripFromTableNames>]]></programlisting>
-							</td>
+                            </td>
 						</tr>
 						<tr>
 							<td><code>username</code></td>
@@ -539,9 +532,8 @@
 						<tr>
 							<td><code>usePrimitives</code></td>
 							<td>boolean</td>
-							<td>Whether numberic and boolean data types should be mapped as Java
-								primitives or Java classes. Default is "true", i.e. primitives will
-								be used.</td>
+							<td>Whether numeric and boolean data types should be mapped as Java primitives or Java
+                                classes. Default is "true", i.e. primitives will be used.</td>
 						</tr>
 					</tbody>
 				</table>

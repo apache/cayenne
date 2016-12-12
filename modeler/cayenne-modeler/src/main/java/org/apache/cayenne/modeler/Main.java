@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.init.CayenneModelerModule;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
-import org.apache.cayenne.project.CayenneProjectModule;
+import org.apache.cayenne.project.ProjectModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -66,6 +66,8 @@ public class Main {
     }
 
     protected void launch() {
+
+        // TODO: use module auto-loading...
         final Injector injector = DIBootstrap
                 .createInjector(appendModules(new ArrayList<Module>()));
 
@@ -103,8 +105,11 @@ public class Main {
     }
 
     protected Collection<Module> appendModules(Collection<Module> modules) {
+        // TODO: this is dirty... "CayenneModeler" is not a project name, and ServerModule is out of place inside
+        // the Modeler... If we need ServerRuntime for certain operations, those should start their own stack...
         modules.add(new ServerModule("CayenneModeler"));
-        modules.add(new CayenneProjectModule());
+
+        modules.add(new ProjectModule());
         modules.add(new DbSyncModule());
         modules.add(new CayenneModelerModule());
 

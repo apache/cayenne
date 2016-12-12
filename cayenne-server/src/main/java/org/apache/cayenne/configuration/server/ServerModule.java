@@ -19,6 +19,7 @@
 package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
@@ -31,24 +32,7 @@ import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslatorFactory;
 import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
-import org.apache.cayenne.access.types.BigDecimalType;
-import org.apache.cayenne.access.types.BigIntegerType;
-import org.apache.cayenne.access.types.BooleanType;
-import org.apache.cayenne.access.types.ByteArrayType;
-import org.apache.cayenne.access.types.ByteType;
-import org.apache.cayenne.access.types.CalendarType;
-import org.apache.cayenne.access.types.CharType;
-import org.apache.cayenne.access.types.DateType;
-import org.apache.cayenne.access.types.DoubleType;
-import org.apache.cayenne.access.types.FloatType;
-import org.apache.cayenne.access.types.IntegerType;
-import org.apache.cayenne.access.types.LongType;
-import org.apache.cayenne.access.types.ShortType;
-import org.apache.cayenne.access.types.TimeType;
-import org.apache.cayenne.access.types.TimestampType;
-import org.apache.cayenne.access.types.UUIDType;
-import org.apache.cayenne.access.types.UtilDateType;
-import org.apache.cayenne.access.types.VoidType;
+import org.apache.cayenne.access.types.*;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
 import org.apache.cayenne.cache.QueryCache;
@@ -80,12 +64,7 @@ import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
-import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.ClassLoaderManager;
-import org.apache.cayenne.di.Key;
-import org.apache.cayenne.di.ListBuilder;
-import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.*;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.event.DefaultEventManager;
@@ -107,130 +86,232 @@ import java.util.GregorianCalendar;
 
 /**
  * A DI module containing all Cayenne server runtime configuration.
- * 
+ *
  * @since 3.1
  */
 public class ServerModule implements Module {
 
-	private static final int DEFAULT_MAX_ID_QUALIFIER_SIZE = 10000;
+    private static final int DEFAULT_MAX_ID_QUALIFIER_SIZE = 10000;
 
-	protected String[] configurationLocations;
+    @Deprecated
+    protected String[] configurationLocations;
 
-	/**
-	 * Creates a ServerModule with at least one configuration location. For
-	 * multi-module projects additional locations can be specified as well.
-	 */
-	public ServerModule(String... configurationLocations) {
+    /**
+     * Provides access to a DI collection builder for String locations that allows downstream modules to
+     * "contribute" their own Cayenne project locations.
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return ListBuilder for String locations.
+     * @since 4.0
+     */
+    public static ListBuilder<String> contributeProjectLocations(Binder binder) {
+        return binder.bindList(Constants.SERVER_PROJECT_LOCATIONS_LIST);
+    }
 
-		if (configurationLocations == null) {
-			configurationLocations = new String[0];
-		}
+    /**
+     * Provides access to a DI collection builder for {@link DataChannelFilter}'s that allows downstream modules to
+     * "contribute" their own DataDomain filters
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return ListBuilder for DataChannelFilter.
+     * @since 4.0
+     */
+    public static ListBuilder<DataChannelFilter> contributeDomainFilters(Binder binder) {
+        return binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST);
+    }
 
-		this.configurationLocations = configurationLocations;
-	}
+    /**
+     * Provides access to a DI collection builder for {@link DbAdapterDetector}'s that allows downstream modules to
+     * "contribute" their own adapter detectors.
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return ListBuilder for DbAdapterDetectors.
+     * @since 4.0
+     */
+    public static ListBuilder<DbAdapterDetector> contributeAdapterDetectors(Binder binder) {
+        return binder.bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST);
+    }
 
-	public void configure(Binder binder) {
+    /**
+     * Provides access to a DI map builder for runtime properties that allows downstream modules to
+     * "contribute" their own properties.
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return MapBuilder for properties.
+     * @since 4.0
+     */
+    public static MapBuilder<String> contributeProperties(Binder binder) {
+        return binder.bindMap(Constants.PROPERTIES_MAP);
+    }
 
-		// configure global stack properties
-		binder.bindMap(Constants.PROPERTIES_MAP).put(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY,
-				String.valueOf(DEFAULT_MAX_ID_QUALIFIER_SIZE));
+    /**
+     * Provides access to a DI collection builder for {@link ExtendedTypeFactory}'s that allows downstream modules to
+     * "contribute" their own factories.
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return ListBuilder for ExtendedTypes.
+     * @since 4.0
+     */
+    public static ListBuilder<ExtendedTypeFactory> contributeTypeFactories(Binder binder) {
+        return binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
+    }
 
-		binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
-		binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
-		binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+    /**
+     * Provides access to a DI collection builder for default adapter-agnostic {@link ExtendedType}'s that allows
+     * downstream modules to "contribute" their own types. "Default" types are loaded before adapter-provided or "user"
+     * types, so they may be overridden by those.
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return ListBuilder for ExtendedTypes.
+     * @since 4.0
+     */
+    public static ListBuilder<ExtendedType> contributeDefaultTypes(Binder binder) {
+        return binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
+    }
 
-		// configure known DbAdapter detectors in reverse order of popularity.
-		// Users can
-		// add their own to install custom adapters automatically
+    /**
+     * Provides access to a DI collection builder for {@link ExtendedType}'s that allows downstream modules to "contribute"
+     * their own types. Unlike "default" types (see {@link #contributeDefaultTypes(Binder)}), "user" types are loaded
+     * after the adapter-provided types and can override those.
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return ListBuilder for ExtendedTypes.
+     * @since 4.0
+     */
+    public static ListBuilder<ExtendedType> contributeUserTypes(Binder binder) {
+        return binder.bindList(Constants.SERVER_USER_TYPES_LIST);
+    }
 
-		binder.bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST).add(FirebirdSniffer.class).add(OpenBaseSniffer.class)
-				.add(FrontBaseSniffer.class).add(IngresSniffer.class).add(SQLiteSniffer.class).add(DB2Sniffer.class)
-				.add(H2Sniffer.class).add(HSQLDBSniffer.class).add(SybaseSniffer.class).add(DerbySniffer.class)
-				.add(SQLServerSniffer.class).add(OracleSniffer.class).add(PostgresSniffer.class)
-				.add(MySQLSniffer.class);
+    /**
+     * Creates a new {@link ServerModule}.
+     *
+     * @since 4.0
+     */
+    public ServerModule() {
+        this.configurationLocations = new String[0];
+    }
 
-		// configure a filter chain with only one TransactionFilter as default
-		binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST)
-                .add(TransactionFilter.class);
+    /**
+     * Creates a ServerModule with at least one configuration location. For multi-module projects additional locations
+     * can be specified as well.
+     *
+     * @deprecated since 4.0 use {@link ServerRuntimeBuilder#addConfig(String)} and/or
+     * {@link ServerModule#contributeProjectLocations(Binder)} to specify locations.
+     */
+    @Deprecated
+    public ServerModule(String firstConfigLocation, String... configurationLocations) {
+        if (configurationLocations == null) {
+            configurationLocations = new String[0];
+        }
 
-		// configure extended types
-		binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST).add(new VoidType()).add(new BigDecimalType())
-				.add(new BigIntegerType()).add(new BooleanType()).add(new ByteArrayType(false, true))
-				.add(new ByteType(false)).add(new CharType(false, true)).add(new DateType()).add(new DoubleType())
-				.add(new FloatType()).add(new IntegerType()).add(new LongType()).add(new ShortType(false))
-				.add(new TimeType()).add(new TimestampType()).add(new UtilDateType())
-				.add(new CalendarType<GregorianCalendar>(GregorianCalendar.class))
-				.add(new CalendarType<Calendar>(Calendar.class)).add(new UUIDType());
-		binder.bindList(Constants.SERVER_USER_TYPES_LIST);
-		binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
+        this.configurationLocations = new String[configurationLocations.length + 1];
+        this.configurationLocations[0] = firstConfigLocation;
 
-		// configure explicit configurations
-		ListBuilder<Object> locationsListBuilder = binder.bindList(Constants.SERVER_PROJECT_LOCATIONS_LIST);
-		for (String location : configurationLocations) {
-			locationsListBuilder.add(location);
-		}
+        if(configurationLocations.length > 0) {
+            System.arraycopy(configurationLocations, 0, this.configurationLocations, 1, configurationLocations.length);
+        }
+    }
 
-		binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+    public void configure(Binder binder) {
 
-		binder.bind(EventManager.class).to(DefaultEventManager.class);
+        // configure global stack properties
+        contributeProperties(binder)
+                .put(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, String.valueOf(DEFAULT_MAX_ID_QUALIFIER_SIZE));
 
-		binder.bind(QueryCache.class).toProvider(MapQueryCacheProvider.class);
+        binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+        binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+        binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
 
-		// a service to provide the main stack DataDomain
-		binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
+        // configure known DbAdapter detectors in reverse order of popularity.
+        // Users can add their own to install custom adapters automatically
 
-		binder.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
+        contributeAdapterDetectors(binder).add(FirebirdSniffer.class).add(OpenBaseSniffer.class)
+                .add(FrontBaseSniffer.class).add(IngresSniffer.class).add(SQLiteSniffer.class).add(DB2Sniffer.class)
+                .add(H2Sniffer.class).add(HSQLDBSniffer.class).add(SybaseSniffer.class).add(DerbySniffer.class)
+                .add(SQLServerSniffer.class).add(OracleSniffer.class).add(PostgresSniffer.class)
+                .add(MySQLSniffer.class);
 
-		// will return DataDomain for request for a DataChannel
-		binder.bind(DataChannel.class).toProvider(DomainDataChannelProvider.class);
+        // configure a filter chain with only one TransactionFilter as default
+        contributeDomainFilters(binder).add(TransactionFilter.class);
 
-		binder.bind(ObjectContextFactory.class).to(DataContextFactory.class);
+        // configure extended types
+        contributeDefaultTypes(binder).add(new VoidType()).add(new BigDecimalType())
+                .add(new BigIntegerType()).add(new BooleanType()).add(new ByteArrayType(false, true))
+                .add(new ByteType(false)).add(new CharType(false, true)).add(new DateType()).add(new DoubleType())
+                .add(new FloatType()).add(new IntegerType()).add(new LongType()).add(new ShortType(false))
+                .add(new TimeType()).add(new TimestampType()).add(new UtilDateType())
+                .add(new CalendarType<GregorianCalendar>(GregorianCalendar.class))
+                .add(new CalendarType<Calendar>(Calendar.class)).add(new UUIDType());
+        contributeUserTypes(binder);
+        contributeTypeFactories(binder);
 
-		binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
+        // configure explicit configurations
+        ListBuilder<String> locationsListBuilder = contributeProjectLocations(binder);
+        for (String location : configurationLocations) {
+            locationsListBuilder.add(location);
+        }
 
-		// a service to load project XML descriptors
-		binder.bind(DataChannelDescriptorLoader.class).to(XMLDataChannelDescriptorLoader.class);
-		binder.bind(DataChannelDescriptorMerger.class).to(DefaultDataChannelDescriptorMerger.class);
+        binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
 
-		// a service to load DataMap XML descriptors
-		binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+        binder.bind(EventManager.class).to(DefaultEventManager.class);
 
-		// a locator of resources, such as XML descriptors
+        binder.bind(QueryCache.class).toProvider(MapQueryCacheProvider.class);
+
+        // a service to provide the main stack DataDomain
+        binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
+
+        binder.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
+
+        // will return DataDomain for request for a DataChannel
+        binder.bind(DataChannel.class).toProvider(DomainDataChannelProvider.class);
+
+        binder.bind(ObjectContextFactory.class).to(DataContextFactory.class);
+
+        binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
+
+        // a service to load project XML descriptors
+        binder.bind(DataChannelDescriptorLoader.class).to(XMLDataChannelDescriptorLoader.class);
+        binder.bind(DataChannelDescriptorMerger.class).to(DefaultDataChannelDescriptorMerger.class);
+
+        // a service to load DataMap XML descriptors
+        binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+
+        // a locator of resources, such as XML descriptors
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
         binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
 
-		// a global properties object
-		binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+        // a global properties object
+        binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
 
-		// a service to load DataSourceFactories. DelegatingDataSourceFactory
-		// will attempt to find the actual worker factory dynamically on each
-		// call depending on DataNodeDescriptor data and the environment
-		binder.bind(DataSourceFactory.class).to(DelegatingDataSourceFactory.class);
+        // a service to load DataSourceFactories. DelegatingDataSourceFactory
+        // will attempt to find the actual worker factory dynamically on each
+        // call depending on DataNodeDescriptor data and the environment
+        binder.bind(DataSourceFactory.class).to(DelegatingDataSourceFactory.class);
 
-		binder.bind(SchemaUpdateStrategyFactory.class).to(DefaultSchemaUpdateStrategyFactory.class);
+        binder.bind(SchemaUpdateStrategyFactory.class).to(DefaultSchemaUpdateStrategyFactory.class);
 
-		// a default DBAdapterFactory used to load custom and automatic
-		// DbAdapters
-		binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
+        // a default DBAdapterFactory used to load custom and automatic
+        // DbAdapters
+        binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
 
-		// binding AshwoodEntitySorter without scope, as this is a stateful
-		// object and is
-		// configured by the owning domain
-		binder.bind(EntitySorter.class).to(AshwoodEntitySorter.class).withoutScope();
+        // binding AshwoodEntitySorter without scope, as this is a stateful
+        // object and is
+        // configured by the owning domain
+        binder.bind(EntitySorter.class).to(AshwoodEntitySorter.class).withoutScope();
 
-		binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
-		binder.bind(SelectTranslatorFactory.class).to(DefaultSelectTranslatorFactory.class);
+        binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
+        binder.bind(SelectTranslatorFactory.class).to(DefaultSelectTranslatorFactory.class);
 
-		// a default ObjectMapRetainStrategy used to create objects map for
-		// ObjectStore
-		binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
+        // a default ObjectMapRetainStrategy used to create objects map for
+        // ObjectStore
+        binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
 
-		// a default ObjectStoreFactory used to create ObjectStores for contexts
-		binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
+        // a default ObjectStoreFactory used to create ObjectStores for contexts
+        binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
 
-		binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
-		binder.bind(RowReaderFactory.class).to(DefaultRowReaderFactory.class);
+        binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
+        binder.bind(RowReaderFactory.class).to(DefaultRowReaderFactory.class);
 
-		binder.bind(SQLTemplateProcessor.class).to(VelocitySQLTemplateProcessor.class);
-	}
+        binder.bind(SQLTemplateProcessor.class).to(VelocitySQLTemplateProcessor.class);
+    }
 }

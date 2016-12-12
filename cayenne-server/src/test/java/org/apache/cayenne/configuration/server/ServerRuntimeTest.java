@@ -18,22 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Key;
@@ -47,159 +36,167 @@ import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionalOperation;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class ServerRuntimeTest {
 
-	@Test
-	public void testPerformInTransaction() {
+    @Test
+    public void testPerformInTransaction() {
 
-		final BaseTransaction tx = mock(BaseTransaction.class);
-		final TransactionFactory txFactory = mock(TransactionFactory.class);
-		when(txFactory.createTransaction()).thenReturn(tx);
+        final BaseTransaction tx = mock(BaseTransaction.class);
+        final TransactionFactory txFactory = mock(TransactionFactory.class);
+        when(txFactory.createTransaction()).thenReturn(tx);
 
-		Module module = new Module() {
+        Module module = new Module() {
 
-			public void configure(Binder binder) {
-				binder.bind(TransactionFactory.class).toInstance(txFactory);
-			}
-		};
+            public void configure(Binder binder) {
+                binder.bind(TransactionFactory.class).toInstance(txFactory);
+            }
+        };
 
-		ServerRuntime runtime = new ServerRuntime("xxxx", module);
-		try {
+        ServerRuntime runtime = ServerRuntime.builder().addConfig("xxxx").addModule(module).build();
+        try {
 
-			final Object expectedResult = new Object();
-			Object result = runtime.performInTransaction(new TransactionalOperation<Object>() {
-				public Object perform() {
-					assertSame(tx, BaseTransaction.getThreadTransaction());
-					return expectedResult;
-				}
-			});
+            final Object expectedResult = new Object();
+            Object result = runtime.performInTransaction(new TransactionalOperation<Object>() {
+                public Object perform() {
+                    assertSame(tx, BaseTransaction.getThreadTransaction());
+                    return expectedResult;
+                }
+            });
 
-			assertSame(expectedResult, result);
-		} finally {
-			runtime.shutdown();
-		}
+            assertSame(expectedResult, result);
+        } finally {
+            runtime.shutdown();
+        }
 
-	}
+    }
 
-	@Test
-	public void testDefaultConstructor_SingleLocation() {
-		ServerRuntime runtime = new ServerRuntime("xxxx");
+    @Deprecated
+    @Test
+    public void testDefaultConstructor_SingleLocation() {
+        ServerRuntime runtime = new ServerRuntime("xxxx");
 
-		List<?> locations = runtime.getInjector().getInstance(
-				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+        List<?> locations = runtime.getInjector().getInstance(
+                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
-		assertEquals(Arrays.asList("xxxx"), locations);
+        assertEquals(Arrays.asList("xxxx"), locations);
 
-		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
-		assertEquals(1, modules.size());
-		Module m0 = modules.iterator().next();
-		assertTrue(m0 instanceof ServerModule);
-		assertEquals("xxxx", ((ServerModule) m0).configurationLocations[0]);
-	}
+        Collection<Module> modules = runtime.getModules();
+        assertEquals(2, modules.size());
+        Module m0 = modules.iterator().next();
+        assertTrue(m0 instanceof ServerModule);
+    }
 
-	@Test
-	public void testDefaultConstructor_MultipleLocations() {
-		ServerRuntime runtime = new ServerRuntime(new String[] { "xxxx", "yyyy" });
+    @Test
+    @Deprecated
+    public void testDefaultConstructor_MultipleLocations() {
+        ServerRuntime runtime = new ServerRuntime(new String[]{"xxxx", "yyyy"});
 
-		List<?> locations = runtime.getInjector().getInstance(
-				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+        List<?> locations = runtime.getInjector().getInstance(
+                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
-		assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
+        assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
 
-		assertTrue(runtime.getModule() instanceof ModuleCollection);
+        Collection<Module> modules = runtime.getModules();
+        assertEquals(2, modules.size());
+        Module m0 = modules.iterator().next();
+        assertTrue(m0 instanceof ServerModule);
+    }
 
-		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
-		assertEquals(1, modules.size());
-		Module m0 = modules.iterator().next();
-		assertTrue(m0 instanceof ServerModule);
+    @Test
+    @Deprecated
+    public void testConstructor_Modules() {
 
-		assertEquals("xxxx", ((ServerModule) m0).configurationLocations[0]);
-		assertEquals("yyyy", ((ServerModule) m0).configurationLocations[1]);
-	}
+        final boolean[] configured = new boolean[2];
 
-	@Test
-	public void testConstructor_Modules() {
+        Module m1 = new Module() {
 
-		final boolean[] configured = new boolean[2];
+            public void configure(Binder binder) {
+                configured[0] = true;
+            }
+        };
 
-		Module m1 = new Module() {
+        Module m2 = new Module() {
 
-			public void configure(Binder binder) {
-				configured[0] = true;
-			}
-		};
+            public void configure(Binder binder) {
+                configured[1] = true;
+            }
+        };
 
-		Module m2 = new Module() {
+        ServerRuntime runtime = new ServerRuntime(asList(m1, m2));
 
-			public void configure(Binder binder) {
-				configured[1] = true;
-			}
-		};
+        Collection<Module> modules = runtime.getModules();
+        assertEquals(2, modules.size());
 
-		ServerRuntime runtime = new ServerRuntime("xxxx", m1, m2);
+        assertTrue(configured[0]);
+        assertTrue(configured[1]);
+    }
 
-		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
-		assertEquals(3, modules.size());
+    @Test
+    @Deprecated
+    public void testGetDataChannel_CustomModule() {
+        final DataChannel channel = new DataChannel() {
 
-		assertTrue(configured[0]);
-		assertTrue(configured[1]);
-	}
+            public EntityResolver getEntityResolver() {
+                return null;
+            }
 
-	@Test
-	public void testGetDataChannel_CustomModule() {
-		final DataChannel channel = new DataChannel() {
+            public EventManager getEventManager() {
+                return null;
+            }
 
-			public EntityResolver getEntityResolver() {
-				return null;
-			}
+            public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
+                return null;
+            }
 
-			public EventManager getEventManager() {
-				return null;
-			}
+            public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
+                return null;
+            }
+        };
 
-			public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
-				return null;
-			}
+        Module module = new Module() {
 
-			public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
-				return null;
-			}
-		};
+            public void configure(Binder binder) {
+                binder.bind(DataChannel.class).toInstance(channel);
+            }
+        };
 
-		Module module = new Module() {
+        ServerRuntime runtime = new ServerRuntime("Yuis", module);
+        assertSame(channel, runtime.getChannel());
+    }
 
-			public void configure(Binder binder) {
-				binder.bind(DataChannel.class).toInstance(channel);
-			}
-		};
+    @Test
+    @Deprecated
+    public void testGetObjectContext_CustomModule() {
+        final ObjectContext context = new DataContext();
+        final ObjectContextFactory factory = new ObjectContextFactory() {
 
-		ServerRuntime runtime = new ServerRuntime("Yuis", module);
-		assertSame(channel, runtime.getChannel());
-	}
+            public ObjectContext createContext(DataChannel parent) {
+                return context;
+            }
 
-	@Test
-	public void testGetObjectContext_CustomModule() {
-		final ObjectContext context = new DataContext();
-		final ObjectContextFactory factory = new ObjectContextFactory() {
+            public ObjectContext createContext() {
+                return context;
+            }
+        };
 
-			public ObjectContext createContext(DataChannel parent) {
-				return context;
-			}
+        Module module = new Module() {
 
-			public ObjectContext createContext() {
-				return context;
-			}
-		};
+            public void configure(Binder binder) {
+                binder.bind(ObjectContextFactory.class).toInstance(factory);
+            }
+        };
 
-		Module module = new Module() {
-
-			public void configure(Binder binder) {
-				binder.bind(ObjectContextFactory.class).toInstance(factory);
-			}
-		};
-
-		ServerRuntime runtime = new ServerRuntime("mnYw", module);
-		assertSame(context, runtime.newContext());
-		assertSame(context, runtime.newContext());
-	}
+        ServerRuntime runtime = new ServerRuntime("mnYw", module);
+        assertSame(context, runtime.newContext());
+        assertSame(context, runtime.newContext());
+    }
 }

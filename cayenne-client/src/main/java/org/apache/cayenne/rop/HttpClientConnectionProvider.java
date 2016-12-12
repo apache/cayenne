@@ -19,8 +19,8 @@
 package org.apache.cayenne.rop;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.configuration.rop.client.ClientConstants;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
@@ -38,7 +38,7 @@ public class HttpClientConnectionProvider implements Provider<ClientConnection> 
     @Override
     public ClientConnection get() throws DIRuntimeException {
         String sharedSession = runtimeProperties
-                .get(Constants.ROP_SERVICE_SHARED_SESSION_PROPERTY);
+                .get(ClientConstants.ROP_SERVICE_SHARED_SESSION_PROPERTY);
 
         HttpROPConnector ropConnector = createHttpRopConnector();
         ProxyRemoteService remoteService = new ProxyRemoteService(serializationService, ropConnector);
@@ -50,19 +50,17 @@ public class HttpClientConnectionProvider implements Provider<ClientConnection> 
     }
 
     protected HttpROPConnector createHttpRopConnector() {
-        String url = runtimeProperties.get(Constants.ROP_SERVICE_URL_PROPERTY);
+        String url = runtimeProperties.get(ClientConstants.ROP_SERVICE_URL_PROPERTY);
         if (url == null) {
             throw new ConfigurationException(
                     "No property defined for '%s', can't initialize HessianConnection",
-                    Constants.ROP_SERVICE_URL_PROPERTY);
+                    ClientConstants.ROP_SERVICE_URL_PROPERTY);
         }
 
-        String userName = runtimeProperties.get(Constants.ROP_SERVICE_USERNAME_PROPERTY);
-        String password = runtimeProperties.get(Constants.ROP_SERVICE_PASSWORD_PROPERTY);
+        String userName = runtimeProperties.get(ClientConstants.ROP_SERVICE_USERNAME_PROPERTY);
+        String password = runtimeProperties.get(ClientConstants.ROP_SERVICE_PASSWORD_PROPERTY);
 
-        long readTimeout = runtimeProperties.getLong(
-                Constants.ROP_SERVICE_TIMEOUT_PROPERTY,
-                -1L);
+        long readTimeout = runtimeProperties.getLong(ClientConstants.ROP_SERVICE_TIMEOUT_PROPERTY, -1L);
 
         HttpROPConnector result = new HttpROPConnector(url, userName, password);
 

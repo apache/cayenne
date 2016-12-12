@@ -28,7 +28,7 @@
 	</parent>
 
 	<artifactId>cayenne-modeler-generic-ext</artifactId>
-	<name>Cayenne Modeler Generic and Windows Extensions</name>
+	<name>cayenne-modeler-generic-ext: Modeler Generic Extensions</name>
 	<packaging>jar</packaging>
 
 	<dependencies>

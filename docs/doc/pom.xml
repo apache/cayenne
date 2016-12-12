@@ -29,7 +29,7 @@
 
 	<artifactId>cayenne-doc</artifactId>
 	<packaging>jar</packaging>
-	<name>Cayenne Documentation</name>
+	<name>cayenne-doc: Cayenne Documentation</name>
 
 	<description>Cayenne documentation sans Docbook docs, including API, RELEASE-NOTES, etc.</description>
 

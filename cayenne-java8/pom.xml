@@ -17,7 +17,7 @@
 		<version>4.0.M5-SNAPSHOT</version>
 	</parent>
 	<artifactId>cayenne-java8</artifactId>
-	<name>Cayenne Java8 Extensions</name>
+	<name>cayenne-java8: Cayenne Java8 Extensions</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
@@ -44,6 +44,28 @@
 		<dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-server</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

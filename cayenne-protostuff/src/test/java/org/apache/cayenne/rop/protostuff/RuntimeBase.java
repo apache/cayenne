@@ -20,13 +20,13 @@
 package org.apache.cayenne.rop.protostuff;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.rop.client.ClientConstants;
 import org.apache.cayenne.configuration.rop.client.ClientLocalRuntime;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.configuration.rop.client.ProtostuffModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.java8.CayenneJava8Module;
+import org.apache.cayenne.java8.Java8Module;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.service.ProtostuffLocalConnectionProvider;
 import org.junit.Before;
@@ -42,12 +42,14 @@ public class RuntimeBase extends ProtostuffProperties {
 
     @Before
     public void setUpRuntimes() throws Exception {
-        this.serverRuntime = new ServerRuntime("cayenne-protostuff.xml",
-                new ProtostuffModule(),
-                new CayenneJava8Module());
+        this.serverRuntime = ServerRuntime
+                .builder()
+                .addConfig("cayenne-protostuff.xml")
+                .addModule(new ProtostuffModule())
+                .build();
 
         Map<String, String> properties = new HashMap<>();
-        properties.put(Constants.ROP_CHANNEL_EVENTS_PROPERTY, Boolean.TRUE.toString());
+        properties.put(ClientConstants.ROP_CHANNEL_EVENTS_PROPERTY, Boolean.TRUE.toString());
 
         Module module = binder -> binder.bind(ClientConnection.class)
                 .toProviderInstance(new ProtostuffLocalConnectionProvider());
@@ -56,7 +58,7 @@ public class RuntimeBase extends ProtostuffProperties {
                 serverRuntime.getInjector(),
                 properties,
                 new ProtostuffModule(),
-                new CayenneJava8Module(),
+                new Java8Module(),
                 module);
 
         this.context = clientRuntime.newContext();

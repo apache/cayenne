@@ -29,7 +29,7 @@
 
 	<artifactId>cayenne-dbsync</artifactId>
 	<packaging>jar</packaging>
-	<name>Cayenne Database Synchronization Tools</name>
+	<name>cayenne-dbsync: Database Synchronization Tools</name>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
@@ -63,6 +63,21 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 			<type>test-jar</type>
+		</dependency>
+		<dependency>
+    		<groupId>org.slf4j</groupId>
+    		<artifactId>jcl-over-slf4j</artifactId>
+    		<scope>test</scope>
+		</dependency>
+		<dependency>
+    		<groupId>org.slf4j</groupId>
+    		<artifactId>slf4j-api</artifactId>
+    		<scope>test</scope>
+		</dependency>
+		<dependency>
+    		<groupId>org.slf4j</groupId>
+    		<artifactId>slf4j-simple</artifactId>
+    		<scope>test</scope>
 		</dependency>
 
 		<dependency>

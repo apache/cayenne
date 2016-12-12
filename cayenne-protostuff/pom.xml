@@ -18,7 +18,7 @@
     </parent>
     <artifactId>cayenne-protostuff</artifactId>
     <packaging>jar</packaging>
-    <name>Cayenne Protostuff Extension</name>
+    <name>cayenne-protostuff: Cayenne Protostuff Extension</name>
 
     <properties>
         <protostuff.version>1.4.3</protostuff.version>

@@ -18,44 +18,61 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.client;
 
-import java.util.Collection;
-import java.util.Map;
-
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.ClientConnection;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
+import static java.util.Arrays.asList;
+
 /**
  * A {@link ClientRuntime} that provides an ROP stack based on a local
  * connection on top of a server stack.
- * 
+ *
  * @since 3.1
  */
+// TODO: module auto-loading and ClientLocalRuntimeBuilder
 public class ClientLocalRuntime extends ClientRuntime {
 
-	public static final String CLIENT_SERVER_CHANNEL_KEY = "client-server-channel";
+    public static final String CLIENT_SERVER_CHANNEL_KEY = "client-server-channel";
 
-	private static ModuleCollection mainModuleOverride(final Injector serverInjector) {
-		return new ModuleCollection(new Module() {
+    private static Collection<Module> collectModules(
+            Injector serverInjector,
+            Module... extraModules) {
 
-			public void configure(Binder binder) {
-				binder.bind(Key.get(DataChannel.class, CLIENT_SERVER_CHANNEL_KEY)).toProviderInstance(
-						new LocalClientServerChannelProvider(serverInjector));
-				binder.bind(ClientConnection.class).toProviderInstance(new LocalConnectionProvider());
-			}
-		});
-	}
+        Collection<Module> modules = extraModules != null ? asList(extraModules) : Collections.<Module>emptyList();
+        return collectModules(serverInjector, modules);
+    }
 
-	public ClientLocalRuntime(Injector serverInjector, Map<String, String> properties, Collection<Module> extraModules) {
-		super(properties, mainModuleOverride(serverInjector).add(extraModules));
-	}
+    private static Collection<Module> collectModules(final Injector serverInjector, Collection<Module> extraModules) {
 
-	public ClientLocalRuntime(Injector serverInjector, Map<String, String> properties, Module... extraModules) {
-		super(properties, mainModuleOverride(serverInjector).add(extraModules));
-	}
+        Collection<Module> modules = new ArrayList<>(extraModules.size() + 1);
+        modules.add(new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(Key.get(DataChannel.class, CLIENT_SERVER_CHANNEL_KEY)).toProviderInstance(
+                        new LocalClientServerChannelProvider(serverInjector));
+                binder.bind(ClientConnection.class).toProviderInstance(new LocalConnectionProvider());
+            }
+        });
+
+        modules.addAll(extraModules);
+        return modules;
+    }
+
+    public ClientLocalRuntime(Injector serverInjector, Map<String, String> properties, Collection<Module> extraModules) {
+        super(properties, collectModules(serverInjector, extraModules));
+    }
+
+    public ClientLocalRuntime(Injector serverInjector, Map<String, String> properties, Module... extraModules) {
+        super(properties, collectModules(serverInjector, extraModules));
+    }
 
 }

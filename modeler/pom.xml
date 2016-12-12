@@ -29,7 +29,7 @@
 
 	<artifactId>cayenne-modeler-parent</artifactId>
 	<groupId>org.apache.cayenne.modeler</groupId>
-	<name>Cayenne Modeler Parent</name>
+	<name>cayenne-modeler-parent: Cayenne Modeler Parent</name>
 	<packaging>pom</packaging>
 	
 	<modules>

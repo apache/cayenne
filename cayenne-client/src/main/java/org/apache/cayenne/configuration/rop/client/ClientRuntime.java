@@ -18,23 +18,40 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.client;
 
-import java.util.Collection;
-import java.util.Map;
-
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.ClientConnection;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
+import static java.util.Arrays.asList;
 
 /**
  * A user application entry point to Cayenne stack on the ROP client.
  * 
  * @since 3.1
  */
+// TODO: module auto-loading and ClientRuntimeBuilder
 public class ClientRuntime extends CayenneRuntime {
 
-	private static ModuleCollection mainModule(Map<String, String> properties) {
-		return new ModuleCollection(new ClientModule(properties));
+	private static Collection<Module> collectModules(Map<String, String> properties, Module... extraModules) {
+
+		Collection<Module> modules = extraModules != null ? asList(extraModules) : Collections.<Module>emptyList();
+		return collectModules(properties, modules);
+	}
+
+	private static Collection<Module> collectModules(Map<String, String> properties, Collection<Module> extraModules) {
+		Collection<Module> modules = new ArrayList<>();
+		modules.add(new ClientModule(properties));
+
+		if(extraModules != null) {
+			modules.addAll(extraModules);
+		}
+
+		return modules;
 	}
 
 	/**
@@ -46,7 +63,7 @@ public class ClientRuntime extends CayenneRuntime {
 	 * services.
 	 */
 	public ClientRuntime(Map<String, String> properties, Collection<Module> extraModules) {
-		super(mainModule(properties).add(extraModules));
+		this(collectModules(properties, extraModules));
 	}
 
 	/**
@@ -58,7 +75,14 @@ public class ClientRuntime extends CayenneRuntime {
 	 * user services.
 	 */
 	public ClientRuntime(Map<String, String> properties, Module... extraModules) {
-		super(mainModule(properties).add(extraModules));
+		this(collectModules(properties, extraModules));
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	protected ClientRuntime(Collection<Module> modules) {
+		super(modules);
 	}
 
 	public ClientConnection getConnection() {

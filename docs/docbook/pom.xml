@@ -34,7 +34,6 @@
 		<module>cayenne-guide</module>
 		<module>getting-started</module>
 		<module>getting-started-rop</module>
-        <module>getting-started-reverse-engineering</module>
 		<module>upgrade-guide</module>
     </modules>
 
@@ -47,7 +46,7 @@
 
 	<artifactId>cayenne-docbook</artifactId>
 	<packaging>pom</packaging>
-	<name>Cayenne Docbook Documentation</name>
+	<name>cayenne-docbook: Cayenne Docbook Documentation</name>
 	
 	<build>
 		<pluginManagement>

@@ -20,11 +20,11 @@
 package org.apache.cayenne.tutorial;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.rop.client.ClientConstants;
 import org.apache.cayenne.configuration.rop.client.ClientJettyHttp2Module;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.configuration.rop.client.ProtostuffModule;
-import org.apache.cayenne.java8.CayenneJava8Module;
+import org.apache.cayenne.java8.Java8Module;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.rop.JettyHttp2ClientConnectionProvider;
 import org.apache.cayenne.rop.http.JettyHttpROPConnector;
@@ -43,7 +43,7 @@ import java.util.Map;
  * and {@link JettyHttpROPConnector} initialized by {@link JettyHttp2ClientConnectionProvider}, which is bound
  * in {@link ClientJettyHttp2Module}. It works without ALPN by default.
  * <p>
- * In order to run it with ALPN, you have to set {@link Constants#ROP_SERVICE_USE_ALPN_PROPERTY} to true
+ * In order to run it with ALPN, you have to set {@link ClientConstants#ROP_SERVICE_USE_ALPN_PROPERTY} to true
  * and provide the alpn-boot-XXX.jar into the bootstrap classpath.
  */
 public class Http2Client {
@@ -60,16 +60,16 @@ public class Http2Client {
         System.setProperty("protostuff.runtime.pojo_schema_on_map_fields", "true");
 
         Map<String, String> properties = new HashMap<>();
-        properties.put(Constants.ROP_SERVICE_URL_PROPERTY, "https://localhost:8443/");
-        properties.put(Constants.ROP_SERVICE_USE_ALPN_PROPERTY, "false");
-        properties.put(Constants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
-        properties.put(Constants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
-        properties.put(Constants.ROP_SERVICE_REALM_PROPERTY, "Cayenne Realm");
+        properties.put(ClientConstants.ROP_SERVICE_URL_PROPERTY, "https://localhost:8443/");
+        properties.put(ClientConstants.ROP_SERVICE_USE_ALPN_PROPERTY, "false");
+        properties.put(ClientConstants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
+        properties.put(ClientConstants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
+        properties.put(ClientConstants.ROP_SERVICE_REALM_PROPERTY, "Cayenne Realm");
 
         ClientRuntime runtime = new ClientRuntime(properties,
                 new ClientJettyHttp2Module(),
                 new ProtostuffModule(),
-                new CayenneJava8Module());
+                new Java8Module());
 
         ObjectContext context = runtime.newContext();
 

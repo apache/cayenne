@@ -80,7 +80,7 @@ public class DefaultDbAdapterFactoryTest {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
-                binder.bindMap(Constants.PROPERTIES_MAP);
+                ServerModule.contributeProperties(binder);
 
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
@@ -107,10 +107,10 @@ public class DefaultDbAdapterFactoryTest {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
-                binder.bindMap(Constants.PROPERTIES_MAP);
-                binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
-                binder.bindList(Constants.SERVER_USER_TYPES_LIST);
-                binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
+                ServerModule.contributeProperties(binder);
+                ServerModule.contributeDefaultTypes(binder);
+                ServerModule.contributeUserTypes(binder);
+                ServerModule.contributeTypeFactories(binder);
 
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
@@ -144,10 +144,10 @@ public class DefaultDbAdapterFactoryTest {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
-                binder.bindMap(Constants.PROPERTIES_MAP);
-                binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
-                binder.bindList(Constants.SERVER_USER_TYPES_LIST);
-                binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
+                ServerModule.contributeProperties(binder);
+                ServerModule.contributeDefaultTypes(binder);
+                ServerModule.contributeUserTypes(binder);
+                ServerModule.contributeTypeFactories(binder);
 
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
@@ -191,7 +191,7 @@ public class DefaultDbAdapterFactoryTest {
         Module testModule = new Module() {
 
             public void configure(Binder binder) {
-                binder.bindMap(Constants.PROPERTIES_MAP);
+                ServerModule.contributeProperties(binder);
 
                 binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);

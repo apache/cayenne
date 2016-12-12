@@ -28,7 +28,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>getting-started</artifactId>
 	<packaging>jar</packaging>
-	<name>Docbook: Getting Started with Cayenne</name>
+	<name>getting-started: Docbook - Getting Started with Cayenne</name>
 	
 	<build>
 		<resources>

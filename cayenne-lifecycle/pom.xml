@@ -17,7 +17,7 @@
 		<version>4.0.M5-SNAPSHOT</version>
 	</parent>
 	<artifactId>cayenne-lifecycle</artifactId>
-	<name>Cayenne Lifecycle Utilities</name>
+	<name>cayenne-lifecycle: Cayenne Lifecycle Utilities</name>
 	<packaging>jar</packaging>
 	<dependencies>
 

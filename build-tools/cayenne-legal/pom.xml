@@ -28,7 +28,7 @@
 	</parent>
 
 	<artifactId>cayenne-legal</artifactId>
-	<name>Cayenne License and Notice Bundle</name>
+	<name>cayenne-legal: Cayenne License and Notice Bundle</name>
 	<description>Cayenne License and Notice Bundle</description>
 	<packaging>jar</packaging>
 

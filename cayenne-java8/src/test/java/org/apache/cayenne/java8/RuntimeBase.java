@@ -20,7 +20,6 @@
 package org.apache.cayenne.java8;
 
 import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.di.Module;
 import org.junit.Before;
 
 public class RuntimeBase {
@@ -28,9 +27,7 @@ public class RuntimeBase {
     protected ServerRuntime runtime;
 
     @Before
-    public void setUpRuntime() throws Exception {
-        Module java8Module = new CayenneJava8Module();
-        this.runtime = new ServerRuntime("cayenne-java8.xml", java8Module);
+    public void setUpRuntime() {
+        this.runtime = ServerRuntime.builder().addConfig("cayenne-java8.xml").build();
     }
-
 }

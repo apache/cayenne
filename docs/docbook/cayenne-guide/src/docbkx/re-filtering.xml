@@ -35,7 +35,7 @@
             The simplest example of reverse engineering is processing tables from one schema of catalog and there are several options to do this. 
             Basic syntax is described below:
         </para>
-        <programlisting language="xml">
+        <programlisting language="xml">&lt;reverseEngineering&gt;
     &lt;!-- Ant/Maven in case you only want to specify the schema to import --&gt;
     &lt;schema&gt;SCHEMA_NAME&lt;/schema&gt;
 
@@ -49,11 +49,11 @@
     &lt;schema name="SCHEMA_NAME"&gt;
         ...
     &lt;/schema&gt;
-        </programlisting>
+&lt;/reverseEngineering&gt;        </programlisting>
         <para>
             The same options are available for catalogs:
         </para>
-        <programlisting language="xml">
+        <programlisting language="xml"> &lt;reverseEngineering>
     &lt;!-- Ant/Maven in case you only want to specify the catalog to import --&gt;
     &lt;catalog&gt;CATALOG_NAME&lt;/catalog&gt;
 
@@ -66,7 +66,8 @@
     &lt;!-- Ant way in case you have nested elements in the catalog --&gt;
     &lt;catalog name="CATALOG_NAME"&gt;
         ...
-    &lt;/catalog&gt;</programlisting>
+    &lt;/catalog&gt;
+&lt;/reverseEngineering&gt;</programlisting>
         <note>
             <para>Current version of reverse engineering doesn't support catalog filtering for Postgres database.</para>
         </note>
@@ -77,32 +78,28 @@
             Cayenne supports combination of different schemas and catalogs, and it filters data according to your requirements. 
             You could achieve this by the following example of reverse engineering configuration:
         </para>
-        <programlisting language="xml">&lt;configuration&gt;
-        ...
-    &lt;reverseEngineering&gt;
+        <programlisting language="xml">&lt;reverseEngineering>
 
-        &lt;catalog&gt;
-            &lt;name>shop_01&lt;/name&gt;
-            &lt;schema&gt;schema-name-01&lt;/schema&gt;
-            &lt;schema&gt;schema-name-02&lt;/schema&gt;
-            &lt;schema&gt;schema-name-03&lt;/schema&gt;
-        &lt;/catalog&gt;
+    &lt;catalog>
+        &lt;name>shop_01&lt;/name>
+        &lt;schema>schema-name-01&lt;/schema>
+        &lt;schema>schema-name-02&lt;/schema>
+        &lt;schema>schema-name-03&lt;/schema>
+    &lt;/catalog>
 
-        &lt;catalog&gt;
-            &lt;name>shop_02&lt;/name&gt;
-            &lt;schema&gt;schema-name-01&lt;/schema&gt;
-        &lt;/catalog&gt;
+    &lt;catalog>
+        &lt;name>shop_02&lt;/name>
+        &lt;schema>schema-name-01&lt;/schema>
+    &lt;/catalog>
 
-        &lt;catalog&gt;
-            &lt;name>shop_03&lt;/name&gt;
-            &lt;schema&gt;schema-name-01&lt;/schema&gt;
-            &lt;schema&gt;schema-name-02&lt;/schema&gt;
-            &lt;schema&gt;schema-name-03&lt;/schema&gt;
-        &lt;/catalog&gt;
+    &lt;catalog>
+        &lt;name>shop_03&lt;/name>
+        &lt;schema>schema-name-01&lt;/schema>
+        &lt;schema>schema-name-02&lt;/schema>
+        &lt;schema>schema-name-03&lt;/schema>
+    &lt;/catalog>
 
-    &lt;/reverseEngineering&gt;
-    ...
-&lt;/configuration&gt;</programlisting>
+&lt;/reverseEngineering></programlisting>
         <para>
             In the example above, Cayenne reverse engineering process contains three catalogs named as shop_01, shop_02 and shop_03, 
             each of wich has their own schemas. Cayenne will load all data only from the declared catalogs and schemas.
@@ -110,45 +107,37 @@
         <para>
             If you want to load everything from database, you could simply declare catalog specification alone.
         </para>
-        <programlisting language="xml">&lt;configuration&gt;
-    ...
-    &lt;reverseEngineering&gt;
+        <programlisting language="xml">&lt;reverseEngineering>
 
-        &lt;catalog&gt;shop_01&lt;/catalog&gt;
-        &lt;catalog&gt;shop_02&lt;/catalog&gt;
-        &lt;catalog&gt;shop_03&lt;/catalog&gt;
+    &lt;catalog>shop_01&lt;/catalog>
+    &lt;catalog>shop_02&lt;/catalog>
+    &lt;catalog>shop_03&lt;/catalog>
 
-    &lt;/reverseEngineering&gt;
-    ...
-&lt;/configuration&gt;</programlisting>
+&lt;/reverseEngineering></programlisting>
         <para>
             If you want to do reverse engineering for specific schemas, just remove unwanted schemas from the catalog section. 
             For example, if you want to process schema-name-01 and schema-name-03 schemas only, then you should change reverse engineering section like this.
         </para>
-        <programlisting language="xml">&lt;configuration&gt;
-    ...
-    &lt;reverseEngineering&gt;
+        <programlisting language="xml">&lt;reverseEngineering>
 
-        &lt;catalog&gt;
-            &lt;name>shop_01&lt;/name&gt;
-            &lt;schema&gt;schema-name-01&lt;/schema&gt;
-            &lt;schema&gt;schema-name-03&lt;/schema&gt;
-        &lt;/catalog&gt;
+    &lt;catalog>
+        &lt;name>shop_01&lt;/name>
+        &lt;schema>schema-name-01&lt;/schema>
+        &lt;schema>schema-name-03&lt;/schema>
+    &lt;/catalog>
 
-        &lt;catalog&gt;
-            &lt;name>shop_02&lt;/name&gt;
-            &lt;schema&gt;schema-name-01&lt;/schema&gt;
-        &lt;/catalog&gt;
+    &lt;catalog>
+        &lt;name>shop_02&lt;/name>
+        &lt;schema>schema-name-01&lt;/schema>
+    &lt;/catalog>
 
-        &lt;catalog&gt;
-            &lt;name>shop_03&lt;/name&gt;
-            &lt;schema&gt;schema-name-01&lt;/schema&gt;
-            &lt;schema&gt;schema-name-03&lt;/schema&gt;
-        &lt;/catalog&gt;
+    &lt;catalog>
+        &lt;name>shop_03&lt;/name>
+        &lt;schema>schema-name-01&lt;/schema>
+        &lt;schema>schema-name-03&lt;/schema>
+    &lt;/catalog>
 
-    &lt;/reverseEngineering&gt;
-    ...
-&lt;/configuration&gt;</programlisting>
+&lt;/reverseEngineering></programlisting>
     </section>
     <section xml:id="including-excluding-tables-columns-procedures">
         <title>Including and Excluding tables, columns and procedures</title>
@@ -161,65 +150,57 @@
             <orderedlist numeration="arabic">
                 <listitem>
                     <para>Include tables with ‘CRM_’ prefix if you are working in that domain of application:</para>
-                    <programlisting language="xml">
-    &lt;includeTable&gt;CRM_.*&lt;/includeTable&gt;</programlisting>
+                    <programlisting language="xml">&lt;includeTable&gt;CRM_.*&lt;/includeTable&gt;</programlisting>
                 </listitem>
                 <listitem>
                     <para>Include tables with ‘_LOOKUP’ suffix</para>
-                    <programlisting language="xml">
-    &lt;includeTable&gt;
-        &lt;pattern&gt;.*_LOOKUP&lt;/pattern&gt;
-    &lt;/includeTable&gt;</programlisting>
+                    <programlisting language="xml">&lt;includeTable>
+    &lt;pattern>.*_LOOKUP&lt;/pattern>
+&lt;/includeTable></programlisting>
                 </listitem>
                 <listitem>
                     <para>Exclude tables with ‘CRM_’ prefix if you are not working only in that domain of application:</para>
-                    <programlisting language="xml">
-    &lt;excludeTable&gt;CRM_.*&lt;/excludeTable&gt;</programlisting>
+                    <programlisting language="xml">&lt;excludeTable&gt;CRM_.*&lt;/excludeTable&gt;</programlisting>
                 </listitem>
                 <listitem>
                     <para>Include only specific columns that follows specific naming convention:</para>
-                    <programlisting language="xml">
-    &lt;includeColumn&gt;includeColumn01&lt;/includeColumn&gt;
-    &lt;includeColumn&gt;includeColumn03&lt;/includeColumn></programlisting>
+                    <programlisting language="xml">&lt;includeColumn&gt;includeColumn01&lt;/includeColumn&gt;
+&lt;includeColumn&gt;includeColumn03&lt;/includeColumn></programlisting>
                 </listitem>
                 <listitem>
                     <para>Exclude system or obsolete columns:</para>
-                    <programlisting language="xml">
-    &lt;excludeColumn&gt;excludeColumn01&lt;/excludeColumn&gt;
-    &lt;excludeColumn&gt;excludeColumn03&lt;/excludeColumn></programlisting>
+                    <programlisting language="xml">&lt;excludeColumn&gt;excludeColumn01&lt;/excludeColumn&gt;
+&lt;excludeColumn&gt;excludeColumn03&lt;/excludeColumn></programlisting>
                 </listitem>
                 <listitem>
                     <para>Include/Exclude columns for particular table or group of tables:</para>
-                    <programlisting language="xml">
-    &lt;includeTable&gt;
-        &lt;pattern>table pattern&lt;/pattern>
-        &lt;includeColumn&gt;includeColumn01&lt;/includeColumn>
-        &lt;excludeColumn&gt;excludeColumn01&lt;/excludeColumn>
-    &lt;/includeTable&gt;</programlisting>
+                    <programlisting language="xml">&lt;includeTable>
+    &lt;pattern>table pattern&lt;/pattern>
+    &lt;includeColumn>includeColumn01&lt;/includeColumn>
+    &lt;excludeColumn>excludeColumn01&lt;/excludeColumn>
+&lt;/includeTable></programlisting>
                 </listitem>
                 <listitem>
                     <para>Include stored procedures:</para>
-                    <programlisting language="xml">
-    &lt;includeProcedure&gt;includeProcedure01&lt;/includeProcedure&gt;
-    &lt;includeProcedure&gt;
-        &lt;pattern>includeProcedure03&lt;/pattern>
-    &lt;/includeProcedure></programlisting>
+                    <programlisting language="xml">&lt;includeProcedure>includeProcedure01&lt;/includeProcedure>
+&lt;includeProcedure>
+    &lt;pattern>includeProcedure03&lt;/pattern>
+&lt;/includeProcedure></programlisting>
                 </listitem>
                 <listitem>
                     <para>Exclude stored procedures by pattern:</para>
-                    <programlisting language="xml">
-    &lt;excludeProcedure&gt;excludeProcedure01&lt;/excludeProcedure&gt;
-    &lt;excludeProcedure&gt;
-        &lt;pattern>excludeProcedure03&lt;/pattern>
-    &lt;/excludeProcedure&gt;</programlisting>
+                    <programlisting language="xml">&lt;excludeProcedure>excludeProcedure01&lt;/excludeProcedure>
+&lt;excludeProcedure>
+    &lt;pattern>excludeProcedure03&lt;/pattern>
+&lt;/excludeProcedure></programlisting>
                 </listitem>
             </orderedlist>
         </para>
-        <para>
-            All filtering tags <code>&lt;includeTable&gt;</code>, <code>&lt;excludeTable&gt;</code>, <code>&lt;includeColumn&gt;</code>, <code>&lt;excludeColumn&gt;</code>,
-            <code>&lt;includeProcedure&gt;</code> and <code>&lt;excludeProcedure&gt;</code> have three ways
-            to pass filtering RegExp.
-            <orderedlist numeration="arabic">
+        <para> All filtering tags <code>&lt;includeTable&gt;</code>,
+                <code>&lt;excludeTable&gt;</code>, <code>&lt;includeColumn&gt;</code>,
+                <code>&lt;excludeColumn&gt;</code>, <code>&lt;includeProcedure&gt;</code> and
+                <code>&lt;excludeProcedure&gt;</code> have 2 ways to pass filtering RegExp.
+                <orderedlist numeration="arabic">
                 <listitem>
                     <para>text inside tag</para>
                     <programlisting language="xml">
@@ -231,11 +212,6 @@
     &lt;includeTable&gt;
         &lt;pattern&gt;.*_LOOKUP&lt;/pattern&gt;
     &lt;/includeTable&gt;</programlisting>
-                </listitem>
-                <listitem>
-                    <para>pattern attribute (only for Ant task)</para>
-                    <programlisting language="xml">
-    &lt;excludeProcedure pattern="excludeProcedure03"/&gt;</programlisting>
                 </listitem>
             </orderedlist>
         </para>
@@ -249,22 +225,20 @@
         <para>
             Initially, let’s make a small sample. Consider the following reverse engineering configuration.
         </para>
-        <programlisting language="xml">
-    &lt;reverseEngineering&gt;
-        &lt;catalog&gt;shop-01&lt;/catalog&gt;
-    &lt;/reverseEngineering&gt;</programlisting>
+        <programlisting language="xml">&lt;reverseEngineering>
+    &lt;catalog>shop-01&lt;/catalog>
+&lt;/reverseEngineering>   </programlisting>
         <para>
             In this case reverse engineering will not filter anything from the shop-01 catalog. If you really want to filter database columns, tables, 
             stored procedures and relationships, you could do it in the following way.
         </para>
-        <programlisting language="xml">
-    &lt;reverseEngineering&gt;
-        &lt;catalog&gt;shop-01&lt;/catalog&gt;
-        &lt;catalog&gt;
-            &lt;name&gt;shop-02&lt;/name&gt;
-            &lt;includeTable&gt;includeTable-01&lt;/includeTable&gt;
-        &lt;/catalog&gt;
-    &lt;/reverseEngineering&gt;</programlisting>
+        <programlisting language="xml">&lt;reverseEngineering>
+    &lt;catalog>shop-01&lt;/catalog>
+    &lt;catalog>
+        &lt;name>shop-02&lt;/name>
+        &lt;includeTable>includeTable-01&lt;/includeTable>
+    &lt;/catalog>
+&lt;/reverseEngineering></programlisting>
         <para>
             Then Cayenne will do reverse engineering for both shop-01 and shop-02 catalogs. First catalog will not be processed for filtering,
             but the second catalog will be processed with “includeTable-01” filter. 
@@ -275,66 +249,64 @@
             They make your configuration more readable, understandable and straightforward. There is not complex.
             Let’s see how to use patterns in reverse engineering configuration with complete example.
         </para>
-        <programlisting language="xml">
-    &lt;reverseEngineering&gt;
+        <programlisting language="xml">&lt;reverseEngineering>
 
-        &lt;catalog&gt;shop-01&lt;/catalog&gt;
+    &lt;catalog>shop-01&lt;/catalog>
 
-        &lt;catalog&gt;
-            &lt;name&gt;shop-02&lt;/name&gt;
-        &lt;/catalog&gt;
+    &lt;catalog>
+        &lt;name>shop-02&lt;/name>
+    &lt;/catalog>
 
-        &lt;catalog&gt;
-            &lt;name&gt;shop-03&lt;/name&gt;
-            &lt;includeTable&gt;includeTable-01&lt;/includeTable&gt;
+    &lt;catalog>
+        &lt;name>shop-03&lt;/name>
+        &lt;includeTable>includeTable-01&lt;/includeTable>
 
-            &lt;includeTable&gt;
-                &lt;pattern&gt;includeTable-02&lt;/pattern&gt;
-            &lt;/includeTable&gt;
+        &lt;includeTable>
+            &lt;pattern>includeTable-02&lt;/pattern>
+        &lt;/includeTable>
 
-            &lt;includeTable&gt;
-                &lt;pattern&gt;includeTable-03&lt;/pattern&gt;
-                &lt;includeColumn&gt;includeColumn-01&lt;/includeColumn>
-                &lt;excludeColumn&gt;excludeColumn-01&lt;/excludeColumn>
-            &lt;/includeTable&gt;
+        &lt;includeTable>
+            &lt;pattern>includeTable-03&lt;/pattern>
+            &lt;includeColumn>includeColumn-01&lt;/includeColumn>
+            &lt;excludeColumn>excludeColumn-01&lt;/excludeColumn>
+        &lt;/includeTable>
 
-            &lt;excludeTable&gt;excludeTable-01&lt;/excludeTable&gt;
+        &lt;excludeTable>excludeTable-01&lt;/excludeTable>
 
-            &lt;excludeTable&gt;
-                &lt;pattern&gt;excludeTable-02&lt;/pattern&gt;
-            &lt;/excludeTable&gt;
+        &lt;excludeTable>
+            &lt;pattern>excludeTable-02&lt;/pattern>
+        &lt;/excludeTable>
 
-            &lt;includeColumn&gt;includeColumn-01&lt;/includeColumn&gt;
+        &lt;includeColumn>includeColumn-01&lt;/includeColumn>
 
-            &lt;includeColumn&gt;
-                &lt;pattern&gt;includeColumn-02&lt;/pattern&gt;
-            &lt;/includeColumn&gt;
+        &lt;includeColumn>
+            &lt;pattern>includeColumn-02&lt;/pattern>
+        &lt;/includeColumn>
 
-            &lt;excludeColumn&gt;excludeColumn-01&lt;/excludeColumn&gt;
+        &lt;excludeColumn>excludeColumn-01&lt;/excludeColumn>
 
-            &lt;excludeColumn&gt;
-                &lt;pattern&gt;excludeColumn-02&lt;/pattern&gt;
-            &lt;/excludeColumn&gt;
+        &lt;excludeColumn>
+            &lt;pattern>excludeColumn-02&lt;/pattern>
+        &lt;/excludeColumn>
 
-            &lt;includeProcedure&gt;includeProcedure-01&lt;/includeProcedure&gt;
+        &lt;includeProcedure>includeProcedure-01&lt;/includeProcedure>
 
-            &lt;includeProcedure&gt;
-                &lt;pattern&gt;includeProcedure-02&lt;/pattern&gt;
-            &lt;/includeProcedure&gt;
+        &lt;includeProcedure>
+            &lt;pattern>includeProcedure-02&lt;/pattern>
+        &lt;/includeProcedure>
 
-            &lt;excludeProcedure&gt;excludeProcedure-01&lt;/excludeProcedure&gt;
+        &lt;excludeProcedure>excludeProcedure-01&lt;/excludeProcedure>
 
-            &lt;excludeProcedure&gt;
-                &lt;pattern&gt;excludeProcedure-02&lt;/pattern&gt;
-            &lt;/excludeProcedure&gt;
+        &lt;excludeProcedure>
+            &lt;pattern>excludeProcedure-02&lt;/pattern>
+        &lt;/excludeProcedure>
 
-        &lt;/catalog&gt;
-    &lt;/reverseEngineering&gt;</programlisting>
-        <para>
-            The example above should provide you more idea about how to use filtering and patterns in Cayenne reverse engineering.
-            You could notice that this example demonstrates you the "name" and "pattern" configurations. Yes, you could use these as separates xml element
-            and xml attributes.
-        </para>
+    &lt;/catalog>
+&lt;/reverseEngineering></programlisting>
+        <para>The example above should provide you more idea about how to use filtering and patterns
+            in Cayenne reverse engineering. You could notice that this example demonstrates you the
+            "name" and "pattern" configurations. Yes, you could use these as separates xml element
+            and xml attributes. </para>
         <para>
             The cdbimport will execute reverse engineering task for all entities from “shop-01” and “shop-02”, including tables, views, stored procedures
             and table columns. As “shop-03” has variety filter tags, entities from this catalog will be filtered by cdbimport.
@@ -342,40 +314,38 @@
     </section>
     <section>
         <title>Ant configuration example</title>
-        <para>
-            Here is config sample for <code>Ant</code> task:
-            <programlisting language="xml">
-&lt;!-- inside &lt;cdbimport> tag -->
-    &lt;catalog&gt;shop-01&lt;/catalog&gt;
+        <para> Here is config sample for <code>Ant</code> task:
+            <programlisting language="xml">&lt;!-- inside &lt;cdbimport> tag -->
+&lt;catalog>shop-01&lt;/catalog>
 
-    &lt;catalog name="shop-02"/&gt;
+&lt;catalog name="shop-02"/>
 
-    &lt;catalog name="shop-03"&gt;
+&lt;catalog name="shop-03">
 
-        &lt;includeTable&gt;includeTable-01&lt;/includeTable&gt;
-        &lt;includeTable pattern="includeTable-02"/&gt;
+    &lt;includeTable>includeTable-01&lt;/includeTable>
+    &lt;includeTable pattern="includeTable-02"/>
 
-        &lt;includeTable pattern="includeTable-03"&gt;
-            &lt;includeColumn&gt;includeColumn-01&lt;/includeColumn>
-            &lt;excludeColumn&gt;excludeColumn-01&lt;/excludeColumn>
-        &lt;/includeTable&gt;
+    &lt;includeTable pattern="includeTable-03">
+        &lt;includeColumn>includeColumn-01&lt;/includeColumn>
+        &lt;excludeColumn>excludeColumn-01&lt;/excludeColumn>
+    &lt;/includeTable>
 
-        &lt;excludeTable&gt;excludeTable-01&lt;/excludeTable&gt;
-        &lt;excludeTable pattern="excludeTable-02"/&gt;
+    &lt;excludeTable>excludeTable-01&lt;/excludeTable>
+    &lt;excludeTable pattern="excludeTable-02"/>
 
-        &lt;includeColumn&gt;includeColumn-01&lt;/includeColumn&gt;
-        &lt;includeColumn pattern="includeColumn-02"/&gt;
+    &lt;includeColumn>includeColumn-01&lt;/includeColumn>
+    &lt;includeColumn pattern="includeColumn-02"/>
 
-        &lt;excludeColumn&gt;excludeColumn-01&lt;/excludeColumn&gt;
-        &lt;excludeColumn pattern="excludeColumn-02"/&gt;
+    &lt;excludeColumn>excludeColumn-01&lt;/excludeColumn>
+    &lt;excludeColumn pattern="excludeColumn-02"/>
 
-        &lt;includeProcedure&gt;includeProcedure-01&lt;/includeProcedure&gt;
-        &lt;includeProcedure pattern="includeProcedure-02"/&gt;
+    &lt;includeProcedure>includeProcedure-01&lt;/includeProcedure>
+    &lt;includeProcedure pattern="includeProcedure-02"/>
 
-        &lt;excludeProcedure&gt;excludeProcedure-01&lt;/excludeProcedure&gt;
-        &lt;excludeProcedure pattern="excludeProcedure-02"/&gt;
+    &lt;excludeProcedure>excludeProcedure-01&lt;/excludeProcedure>
+    &lt;excludeProcedure pattern="excludeProcedure-02"/>
 
-    &lt;/catalog&gt;</programlisting>
+&lt;/catalog></programlisting>
         </para>
         <note>
             <para>

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.rop.client.ClientConstants;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
@@ -36,19 +36,14 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests peer context synchronization via ClientChannel events.
  */
 @UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 @ClientRuntimeProperty({
-        Constants.ROP_CHANNEL_EVENTS_PROPERTY, "true"
+        ClientConstants.ROP_CHANNEL_EVENTS_PROPERTY, "true"
 })
 public class CayenneContextClientChannelEventsIT extends ClientCase {
 

@@ -28,7 +28,7 @@
 	</parent>
 
 	<artifactId>cayenne-modeler-win</artifactId>
-	<name>Cayenne Modeler Windows</name>
+	<name>cayenne-modeler-win: Modeler Windows Assembly</name>
 	<packaging>jar</packaging>
 
 	<dependencies>

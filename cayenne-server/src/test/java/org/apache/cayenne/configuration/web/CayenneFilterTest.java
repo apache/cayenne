@@ -25,7 +25,6 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mockrunner.mock.web.MockServletContext;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
@@ -106,13 +105,14 @@ public class CayenneFilterTest {
 				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
 		assertEquals(Arrays.asList("cayenne-abc.xml"), locations);
-		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
-		assertEquals(2, modules.size());
+		Collection<Module> modules = runtime.getModules();
+		assertEquals(3, modules.size());
 
 		Object[] marray = modules.toArray();
 
 		assertTrue(marray[0] instanceof ServerModule);
-		assertTrue(marray[1] instanceof WebModule);
+		// [1] is an inner class
+		assertTrue(marray[2] instanceof WebModule);
 
 		RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
 		assertTrue(handler instanceof SessionContextRequestHandler);
@@ -135,14 +135,15 @@ public class CayenneFilterTest {
 		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
 		assertNotNull(runtime);
 
-		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
-		assertEquals(4, modules.size());
+		Collection<Module> modules = runtime.getModules();
+		assertEquals(5, modules.size());
 
 		Object[] marray = modules.toArray();
 		assertTrue(marray[0] instanceof ServerModule);
-		assertTrue(marray[1] instanceof WebModule);
-		assertTrue(marray[2] instanceof MockModule1);
-		assertTrue(marray[3] instanceof MockModule2);
+		// [1] is an inner class
+		assertTrue(marray[2] instanceof WebModule);
+		assertTrue(marray[3] instanceof MockModule1);
+		assertTrue(marray[4] instanceof MockModule2);
 
 		RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
 		assertTrue(handler instanceof MockRequestHandler);

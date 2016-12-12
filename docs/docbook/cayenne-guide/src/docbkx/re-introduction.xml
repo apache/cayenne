@@ -16,18 +16,46 @@
 -->
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
     version="5.0" xml:id="re-introduction">
-    <title>Reverse Engineering Introduction</title>
+    <title>Introduction</title>
     <section xml:id="what-is-cdbimport">
-    	<title>What is CDBImport</title>
-    	<para>
-    		CDBImport is a Maven/Ant plugin that helps you to do reverse engineering. In other words it helps you to synchronize
-    		database structure with your Cayenne mapping config. It does not update Java classes by itself, but it synchronizes db
-    		and data access layer representation in Cayenne mapping file with actual database state.
-    		Most common practice to complete reverse engineering is to use CDBImport followed by <link linkend="mvn-cgen">CGen Maven plugin</link>,
-    		which does class generation according to the Cayenne mapping file updates.
-    	</para>
+    	<title>"DB-first" Flow</title>
+    	<para>An ORM system consists of three parts: database, OR mapping and persistent Java classes.
+			These parts always need to be kept in sync with each other for the application to work.
+			"DB-first" flow is a common and practical approach to synchronization that assumes the
+			database to be the master source of the metadata, with other two parts synchronized from
+			the DB as the schema evolves. Cayenne provides a number of tools to automate and control
+			it. Here is how "DB-first" flow is typically implemented:<itemizedlist>
+				<listitem>
+					<para> A SQL migrations framework is used to bring a local DB to a certain
+						version. This is outside of the scope of Cayenne and is done with a
+						third-party tool, such as Liquibase or Flyway.</para>
+				</listitem>
+				<listitem>
+					<para>OR mapping model (Cayenne XML files) are synchronized with the state of the database
+						using <code>"cdbimport"</code> tool provdied by Cayenne.</para>
+				</listitem>
+				<listitem>
+					<para>Object layer of the OR mapping model is customized to the developer liking, usually via
+						CayenneModeler. Subsequent runs of <code>"cdbimport"</code> will not
+						override any customizations that you make.</para>
+				</listitem>
+				<listitem>
+					<para>Java classes are generated using <code>"cgen"</code> tool provided by Cayenne.</para>
+				</listitem>
+			</itemizedlist></para>
+		<para>"cgen" and "cdbimport" tools can be invoked from Maven or Ant as discussed in the
+			"Including Cayenne in a Project" chapter or run from CayenneModeler. This chapter will
+			mostly focus on "cdbimport". </para>
 		<para>
 			Here is simple maven configuration to start with:
+			
+			
+		</para>
+    </section>
+	<section xml:id="re-configuration-file">
+		<title>Introduction to "cdbimport"</title>
+		<para>Here is a simple Maven configuration of "cdbimport" (for details see <link linkend="mvn-cdbimport">maven-cayenne-plugin</link> documentation)</para>
+		<para>
 			<programlisting language="xml">
 	&lt;plugin&gt;
 		&lt;groupId&gt;org.apache.cayenne.plugins&lt;/groupId&gt;
@@ -35,109 +63,24 @@
 		&lt;version&gt;<?eval ${project.version}?>&lt;/version&gt;
 
 		&lt;configuration&gt;
-			&lt;map&gt;${project.basedir}/src/main/resources/datamap.map.xml&lt;/map&gt;
-			&lt;url&gt;&lt;!-- jdbc url --&gt;&lt;/url&gt;
-			&lt;driver&gt;&lt;!-- jdbc driver class --&gt;&lt;/driver&gt;
-			&lt;username&gt;username&lt;/username&gt;
+			&lt;map>${project.basedir}/src/main/resources/datamap.map.xml&lt;/map>
+			&lt;url>&lt;!-- jdbc url -->&lt;/url&gt;
+			&lt;driver>&lt;!-- jdbc driver class --&gt;&lt;/driver&gt;
+			&lt;username>username&lt;/username>
 			&lt;password&gt;password&lt;/password&gt;
 			&lt;defaultPackage&gt;com.example.package&lt;/defaultPackage&gt;
+			&lt;reverseEngineering&gt;
+			    &lt;includeTable>.*&lt;/includeTable>
+			&lt;/reverseEngineering&gt;
 		&lt;/configuration&gt;
-
-		&lt;executions&gt;
-			&lt;execution&gt;
-				&lt;goals&gt;
-					&lt;goal&gt;cdbimport&lt;/goal&gt;
-					&lt;goal&gt;cgen&lt;/goal&gt;
-				&lt;/goals&gt;
-			&lt;/execution&gt;
-		&lt;/executions&gt;
-
 		&lt;dependencies&gt;
 			&lt;!-- jdbc driver dependency --&gt;
 		&lt;/dependencies&gt;
 	&lt;/plugin&gt;
 			</programlisting>
-			For full list of <code>cdbimport</code> parameters see chapter <link linkend="mvn-cdbimport">Including Cayenne in a Project</link>
-		</para>
-    </section>
-	<section xml:id="re-configuration-file">
-		<title>Reverse Engineering configuration</title>
-		<para>
-			Cayenne is designed to support database reverse engineering automation process via Maven and Ant build tools.
 		</para>
 
-		<para>
-			Here is a default template of reverse engineering settings, which should help you to get started:
-			<programlisting language="xml">
-	&lt;plugin&gt;
-		...
-		&lt;configuration&gt;
-			...
-			&lt;reverseEngineering&gt;
-				&lt;skipRelationshipsLoading&gt;false&lt;/skipRelationshipsLoading&gt;
-				&lt;skipPrimaryKeyLoading&gt;false&lt;/skipPrimaryKeyLoading&gt;
-
-				&lt;catalog&gt;
-					&lt;schema&gt;
-						&lt;includeTable&gt;
-						&lt;/includeTable&gt;
-					&lt;/schema&gt;
-				&lt;/catalog&gt;
-				&lt;includeProcedure&gt;.*&lt;/includeProcedure&gt;
-			&lt;/reverseEngineering&gt;
-		&lt;/configuration&gt;
-		...
-	&lt;/plugin&gt;
-			</programlisting>
-			<caution><para>The whole database structure will be loaded after execution reverse engineering with this stub.</para></caution>
-		</para>
-
-		<!--itemizedlist>
-			<listitem>
-			</listitem>
-			<listitem>
-				<para>
-					Externally in reverseEngineering.xml file, which will be used by Maven/Ant to perform cdbimport
-					<note><para>Configuration via file is not supported right now</para></note>
-				</para>
-
-			</listitem>
-		</itemizedlist-->
-		<!--para>
-			Maven and Ant build files usually contain lots of configuration according to your project requirements. This is why reverseEngineering.xml
-			is designed as a sum of configuration styles of Maven and Ant. It will be quite easy to use and move your configuration from build file
-			definition into separate one. At practice you should be able to cut reverseEngineering section from Maven configuration and paste it into the 
-			external reverse engineering file without a problem. Then, put path to this file into config or it could be loaded from the datamap file. 
-			It should work for Ant at the same manner.
-		</para>
-		<para>
-			Note that each datamap has its own reverse engineering file, which is described by the &lt;reverse-engineering-config&gt; datamap tag.
-			<programlisting language="xml">
-			&lt;reverse-engineering-config name="reverseEngineering"/&gt;
-			</programlisting>
-		</para>
-		<para>
-			Here is a default template of reverse engineering file, which should help you to get started:
-		</para>
-		<programlisting language="xml">
-	&lt;?xml version="1.0" encoding="utf-8"?&gt;
-	&lt;reverseEngineering
-			xmlns="http://cayenne.apache.org/schema/8/reverseEngineering"
-			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xsi:schemaLocation="http://cayenne.apache.org/schema/8/reverseEngineering http://cayenne.apache.org/schema/8/reverseEngineering.xsd"&gt;
-
-		&lt;skipRelationshipsLoading&gt;false&lt;/skipRelationshipsLoading&gt;
-		&lt;skipPrimaryKeyLoading&gt;false&lt;/skipPrimaryKeyLoading&gt;
-
-		&lt;catalog&gt;
-			&lt;schema&gt;
-				&lt;includeTable&gt;
-				&lt;/includeTable&gt;
-			&lt;/schema&gt;
-		&lt;/catalog&gt;
-		&lt;includeProcedure pattern=".*"/&gt;
-	&lt;/reverseEngineering&gt;
-		</programlisting-->
-		<para>In the next chapter we will see more configuration details</para>
+		<para>In the next chapters we will discuss various filtering and other reverse-engineering
+			options.</para>
 	</section>
 </chapter>
