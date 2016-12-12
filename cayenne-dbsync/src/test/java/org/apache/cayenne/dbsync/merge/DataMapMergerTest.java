@@ -32,6 +32,7 @@ import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dataMap;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbAttr;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbEntity;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class DataMapMergerTest {
@@ -175,18 +176,30 @@ public class DataMapMergerTest {
 
         List<MergerToken> tokens = dbMerger().createMergeTokens(existing, db);
         assertEquals(4, tokens.size());
+        for(MergerToken token : tokens) {
+            assertTrue(token instanceof SetColumnTypeToDb);
+        }
 
+        MergerToken attr02Token = findChangeTypeToken(tokens, "attr02");
+        assertNotNull(attr02Token);
         assertEquals(
                 factory()
                         .createSetColumnTypeToDb(fromModel, fromDb.getAttribute("attr02"), fromModel.getAttribute("attr02"))
                         .getTokenValue(),
-                tokens.get(1)
+                attr02Token
                         .getTokenValue()
         );
 
+
+    }
+
+    private MergerToken findChangeTypeToken(List<MergerToken> tokens, String attributeName) {
         for(MergerToken token : tokens) {
-            assertTrue(token instanceof SetColumnTypeToDb);
+            if(token.getTokenValue().contains("." + attributeName)) {
+                return token;
+            }
         }
+        return null;
     }
 
     @Test
