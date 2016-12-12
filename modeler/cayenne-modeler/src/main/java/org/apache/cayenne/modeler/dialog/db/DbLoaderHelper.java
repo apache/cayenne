@@ -68,7 +68,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Stateful helper class that encapsulates access to DbLoader2.
+ * Stateful helper class that encapsulates access to DbLoader.
  */
 public class DbLoaderHelper {
 

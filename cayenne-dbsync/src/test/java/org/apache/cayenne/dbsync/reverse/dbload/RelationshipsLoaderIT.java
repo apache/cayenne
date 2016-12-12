@@ -79,4 +79,20 @@ public class RelationshipsLoaderIT extends BaseLoaderIT {
         assertTrue("Relationship to PAINTING_INFO must be to-one", oneToOne.isToDependentPK());
     }
 
+//    private void assertUniqueConstraintsInRelationships(DataMap map) {
+        // unfortunately JDBC metadata doesn't provide info for UNIQUE
+        // constraints....
+        // cant reengineer them...
+        // upd. actually it's provided:
+        // http://docs.oracle.com/javase/7/docs/api/java/sql/DatabaseMetaData.html#getIndexInfo%28java.lang.String,%20java.lang.String,%20java.lang.String,%20boolean,%20boolean%29
+
+        // find rel to TO_ONEFK1
+        /*
+         * Iterator it = getDbEntity(map,
+         * "TO_ONEFK2").getRelationships().iterator(); DbRelationship rel =
+         * (DbRelationship) it.next(); assertEquals("TO_ONEFK1",
+         * rel.getTargetEntityName());
+         * assertFalse("UNIQUE constraint was ignored...", rel.isToMany());
+         */
+//    }
 }
