@@ -19,11 +19,15 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ExportedKeyLoaderIT extends BaseLoaderIT {
 
@@ -58,14 +62,24 @@ public class ExportedKeyLoaderIT extends BaseLoaderIT {
 
         assertEquals(2, store.getExportedKeysEntrySet().size());
 
-        ExportedKey artistIdFk = store.getExportedKeysEntrySet()
-                .iterator().next()
-                .getValue().iterator().next();
+        ExportedKey artistIdFk = findArtistExportedKey();
+        assertNotNull(artistIdFk);
+
         assertEquals("ARTIST", artistIdFk.getPk().getTable());
         assertEquals("ARTIST_ID", artistIdFk.getPk().getColumn());
 
         assertEquals("PAINTING", artistIdFk.getFk().getTable());
         assertEquals("ARTIST_ID", artistIdFk.getFk().getColumn());
+    }
+
+    ExportedKey findArtistExportedKey() {
+        for(Map.Entry<String, Set<ExportedKey>> entry : store.getExportedKeysEntrySet()) {
+            if(entry.getKey().endsWith(".ARTIST_ID")) {
+                return entry.getValue().iterator().next();
+            }
+        }
+
+        return null;
     }
 
 }
