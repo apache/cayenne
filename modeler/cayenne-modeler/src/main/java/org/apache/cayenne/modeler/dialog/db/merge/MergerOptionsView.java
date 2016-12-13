@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.db;
+package org.apache.cayenne.modeler.dialog.db.merge;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

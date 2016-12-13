@@ -16,7 +16,8 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.dialog.db;
+
+package org.apache.cayenne.modeler.dialog.db.merge;
 
 import org.apache.cayenne.dbsync.merge.MergeDirection;
 import org.apache.cayenne.dbsync.merge.MergerToken;

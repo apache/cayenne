@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.db;
+package org.apache.cayenne.modeler.dialog.db.gen;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;

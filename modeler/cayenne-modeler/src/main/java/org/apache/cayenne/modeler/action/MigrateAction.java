@@ -19,18 +19,16 @@
 
 package org.apache.cayenne.modeler.action;
 
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.db.DataSourceController;
-import org.apache.cayenne.modeler.dialog.db.DbMigrateOptionsDialog;
-import org.apache.cayenne.modeler.dialog.db.MergerOptions;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
+import org.apache.cayenne.modeler.dialog.db.merge.DbMigrateOptionsDialog;
+import org.apache.cayenne.modeler.dialog.db.merge.MergerOptions;
 
 import javax.sql.DataSource;
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.util.Collections;
 import java.util.List;
@@ -50,27 +48,16 @@ public class MigrateAction extends DBWizardAction {
 
     public void performAction(ActionEvent e) {
 
-        DBConnectionInfo nodeInfo = preferredDataSource();
-        String nodeKey = preferredDataSourceLabel(nodeInfo);
-
-        DataSourceController connectWizard = new DataSourceController(
-                getProjectController(),
-                "Migrate DB Schema: Connect to Database",
-                nodeKey,
-                nodeInfo);
-
-        if (!connectWizard.startupAction()) {
-            // canceled
+        DataSourceWizard connectWizard = dataSourceWizardDialog("Migrate DB Schema: Connect to Database");
+        if(connectWizard == null) {
             return;
         }
 
         DataMap map = getProjectController().getCurrentDataMap();
-        //migarte options
-
-        // sanity check
         if (map == null) {
             throw new IllegalStateException("No current DataMap selected.");
         }
+
         //showOptions dialog
         String selectedSchema = null;
         String selectedCatalog = null;
@@ -107,22 +94,17 @@ public class MigrateAction extends DBWizardAction {
     }
 
     @SuppressWarnings("unchecked")
-    private List<String> getCatalogs(DataSourceController connectWizard) throws Exception {
-        DbAdapter adapter = connectWizard.getConnectionInfo()
-                .makeAdapter(getApplication().getClassLoadingService());
-        if(!adapter.supportsCatalogsOnReverseEngineering()) {
+    private List<String> getCatalogs(DataSourceWizard connectWizard) throws Exception {
+        if(!connectWizard.getAdapter().supportsCatalogsOnReverseEngineering()) {
             return (List<String>)Collections.EMPTY_LIST;
         }
 
-        DataSource dataSource = connectWizard.getConnectionInfo()
-                .makeDataSource(getApplication().getClassLoadingService());
+        DataSource dataSource = connectWizard.getDataSource();
         return DbLoader.loadCatalogs(dataSource.getConnection());
     }
 
-    private List<String> getSchemas(DataSourceController connectWizard) throws Exception {
-        DataSource dataSource = connectWizard.getConnectionInfo()
-                .makeDataSource(getApplication().getClassLoadingService());
-
+    private List<String> getSchemas(DataSourceWizard connectWizard) throws Exception {
+        DataSource dataSource = connectWizard.getDataSource();
         return DbLoader.loadSchemas(dataSource.getConnection());
     }
 }

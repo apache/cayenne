@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.db;
+package org.apache.cayenne.modeler.dialog.db.gen;
 
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.dba.DbAdapter;
@@ -25,6 +25,7 @@ import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ValidationResultBrowser;
+import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DBGeneratorDefaults;
 import org.apache.cayenne.modeler.util.CayenneController;
@@ -33,7 +34,6 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.validation.ValidationResult;
 
-import javax.sql.DataSource;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -102,7 +102,7 @@ public class DBGeneratorOptions extends CayenneController {
 
     protected void initController() {
 
-        DefaultComboBoxModel adapterModel = new DefaultComboBoxModel(
+        DefaultComboBoxModel<String> adapterModel = new DefaultComboBoxModel<>(
                 DbAdapterInfo.getStandardAdapters());
         view.getAdapters().setModel(adapterModel);
         view.getAdapters().setSelectedIndex(0);
@@ -164,7 +164,7 @@ public class DBGeneratorOptions extends CayenneController {
         try {
             DbAdapter adapter = connectionInfo.makeAdapter(getApplication()
                     .getClassLoadingService());
-            generators = new ArrayList<DbGenerator>();
+            generators = new ArrayList<>();
             for (DataMap dataMap : dataMaps) {
                 this.generators.add(new DbGenerator(
                         adapter,
@@ -183,7 +183,7 @@ public class DBGeneratorOptions extends CayenneController {
      */
     protected void createSQL() {
         // convert them to string representation for display
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (DbGenerator generator : generators) {
             Iterator<String> it = generator.configuredStatements().iterator();
             String batchTerminator = generator.getAdapter().getBatchTerminator();
@@ -249,14 +249,10 @@ public class DBGeneratorOptions extends CayenneController {
      */
     public void generateSchemaAction() {
 
-        DataSourceController connectWizard = new DataSourceController(
+        DataSourceWizard connectWizard = new DataSourceWizard(
                 this.getParent(),
-                "Generate DB Schema: Connect to Database",
-                null,
-                null);
-
+                "Generate DB Schema: Connect to Database");
         if (!connectWizard.startupAction()) {
-            // canceled
             return;
         }
 
@@ -274,10 +270,7 @@ public class DBGeneratorOptions extends CayenneController {
             }
 
             try {
-
-                DataSource dataSource = connectionInfo.makeDataSource(getApplication()
-                        .getClassLoadingService());
-                generator.runGenerator(dataSource);
+                generator.runGenerator(connectWizard.getDataSource());
                 failures.add(generator.getFailures());
             } catch (Throwable th) {
                 reportError("Schema Generation Error", th);
@@ -308,14 +301,9 @@ public class DBGeneratorOptions extends CayenneController {
                 .getConfigurationResource()
                 .getURL()
                 .getPath());
-
-        if (projectDir != null) {
-            fc.setCurrentDirectory(projectDir);
-        }
-
+        fc.setCurrentDirectory(projectDir);
         if (fc.showSaveDialog(getView()) == JFileChooser.APPROVE_OPTION) {
             refreshGeneratorAction();
-
             try {
                 File file = fc.getSelectedFile();
                 FileWriter fw = new FileWriter(file);
@@ -323,8 +311,7 @@ public class DBGeneratorOptions extends CayenneController {
                 pw.print(textForSQL);
                 pw.flush();
                 pw.close();
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 reportError("Error Saving SQL", ex);
             }
         }

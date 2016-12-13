@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.db;
+package org.apache.cayenne.modeler.dialog.db.gen;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -59,7 +59,7 @@ public class DBGeneratorOptionsView extends JDialog {
     protected JCheckBox dropPK;
     protected Component tables;
     protected JTabbedPane tabs;
-    protected JComboBox adapters;
+    protected JComboBox<String> adapters;
 
     public DBGeneratorOptionsView(Component tables) {
         // create widgets
@@ -73,7 +73,7 @@ public class DBGeneratorOptionsView extends JDialog {
         this.dropPK = new JCheckBox("Drop Primary Key Support");
         this.tables = tables;
         this.tabs = new JTabbedPane(SwingConstants.TOP);
-        this.adapters = new JComboBox();
+        this.adapters = new JComboBox<>();
         adapters.setEditable(true);
         this.sql = new JTextArea();
         sql.setEditable(false);
@@ -172,7 +172,7 @@ public class DBGeneratorOptionsView extends JDialog {
         return sql;
     }
     
-    public JComboBox getAdapters() {
+    public JComboBox<String> getAdapters() {
         return adapters;
     }
 }
