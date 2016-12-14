@@ -20,23 +20,19 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
-import org.apache.cayenne.dbsync.reverse.db.DbLoader;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
 import org.apache.cayenne.modeler.dialog.db.merge.DbMigrateOptionsDialog;
 import org.apache.cayenne.modeler.dialog.db.merge.MergerOptions;
 
-import javax.sql.DataSource;
-import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Action that alter database schema to match a DataMap.
  */
-public class MigrateAction extends DBWizardAction {
+public class MigrateAction extends DBWizardAction<DbMigrateOptionsDialog> {
 
     public MigrateAction(Application application) {
         super(getActionName(), application);
@@ -58,29 +54,9 @@ public class MigrateAction extends DBWizardAction {
             throw new IllegalStateException("No current DataMap selected.");
         }
 
-        //showOptions dialog
-        String selectedSchema = null;
-        String selectedCatalog = null;
-        try {
-            List<String> schemas = getSchemas(connectWizard);
-            List<String> catalogs = getCatalogs(connectWizard);
-            if (!catalogs.isEmpty() || !schemas.isEmpty()) {
-                DbMigrateOptionsDialog optionsDialog = new DbMigrateOptionsDialog(catalogs, schemas, connectWizard.getConnectionInfo().getUserName());
-                optionsDialog.showDialog();
-                if (optionsDialog.getChoice() == DbMigrateOptionsDialog.SELECT) {
-                    selectedSchema = optionsDialog.getSelectedSchema();
-                    selectedCatalog = optionsDialog.getSelectedCatalog();
-                } else {
-                    return;
-                }
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(
-                    Application.getFrame(),
-                    ex.getMessage(),
-                    "Error loading schemas dialog",
-                    JOptionPane.ERROR_MESSAGE);
-        }
+        DbMigrateOptionsDialog optionsDialog = loaderOptionDialog(connectWizard);
+        String selectedCatalog = optionsDialog == null ? null : optionsDialog.getSelectedCatalog();
+        String selectedSchema = optionsDialog == null ? null : optionsDialog.getSelectedSchema();
 
         MergerTokenFactoryProvider mergerTokenFactoryProvider =
                 getApplication().getInjector().getInstance(MergerTokenFactoryProvider.class);
@@ -93,18 +69,8 @@ public class MigrateAction extends DBWizardAction {
                 map, selectedCatalog, selectedSchema, mergerTokenFactoryProvider).startupAction();
     }
 
-    @SuppressWarnings("unchecked")
-    private List<String> getCatalogs(DataSourceWizard connectWizard) throws Exception {
-        if(!connectWizard.getAdapter().supportsCatalogsOnReverseEngineering()) {
-            return (List<String>)Collections.EMPTY_LIST;
-        }
-
-        DataSource dataSource = connectWizard.getDataSource();
-        return DbLoader.loadCatalogs(dataSource.getConnection());
-    }
-
-    private List<String> getSchemas(DataSourceWizard connectWizard) throws Exception {
-        DataSource dataSource = connectWizard.getDataSource();
-        return DbLoader.loadSchemas(dataSource.getConnection());
+    @Override
+    protected DbMigrateOptionsDialog createDialog(Collection<String> catalogs, Collection<String> schemas, String currentCatalog, String currentSchema) {
+        return new DbMigrateOptionsDialog(catalogs, schemas, currentCatalog, currentSchema);
     }
 }
