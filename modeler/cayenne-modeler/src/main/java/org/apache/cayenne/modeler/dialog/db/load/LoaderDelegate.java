@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.dialog.db.load;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.dbsync.reverse.db.DefaultDbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.dbload.DefaultDbLoaderDelegate;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.event.EntityEvent;
