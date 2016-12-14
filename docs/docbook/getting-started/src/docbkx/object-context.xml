@@ -15,7 +15,7 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<chapter xmlns="http://docbook.org/ns/docbook"
+<section xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
     <title>Getting started with ObjectContext</title>
     <para>In this section we'll write a simple main class to run our application, and get a brief
@@ -24,7 +24,7 @@
         <title>Creating the Main Class</title>
         <itemizedlist>
             <listitem>
-                <para>In Eclipse create a new class called "Main" in the "org.example.cayenne"
+                <para>In IDEA create a new class called "<code>Main</code>" in the "<code>org.example.cayenne</code>"
                     package.</para>
             </listitem>
             <listitem>
@@ -40,9 +40,9 @@ public class Main {
             </listitem>
             <listitem>
                 <para>The first thing you need to be able to access the database is to create a
-                    ServerRuntime object (which is essentially a wrapper around Cayenne stack) and
+                    <code>ServerRuntime</code> object (which is essentially a wrapper around Cayenne stack) and
                     use it to obtain an instance of an
-                    ObjectContext.<programlisting language="java">package org.example.cayenne;
+                    <code>ObjectContext</code>.<programlisting language="java">package org.example.cayenne;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -55,7 +55,7 @@ public class Main {
         ObjectContext context = cayenneRuntime.newContext();
     }
 }</programlisting></para>
-                <para>ObjectContext is an isolated "session" in Cayenne that provides all needed API
+                <para><code>ObjectContext</code> is an isolated "session" in Cayenne that provides all needed API
                     to work with data. ObjectContext has methods to execute queries and manage
                     persistent objects. We'll discuss them in the following sections. When the first
                     ObjectContext is created in the application, Cayenne loads XML mapping files and
@@ -67,26 +67,27 @@ public class Main {
     <section xml:id="runnning-app">
         <title>Running Application</title>
         <para>Let's check what happens when you run the application. But before we do that we need
-            to add another dependency to the pom.xml - Apache Derby, our embedded database engine.
+            to add another dependency to the <code>pom.xml</code> - Apache Derby, our embedded database engine.
             The following piece of XML needs to be added to the
-            &lt;dependencies&gt;...&lt;/dependencies&gt; section, where we already have Cayenne
-            jars:<programlisting>&lt;dependency&gt;
+            <code>&lt;dependencies&gt;...&lt;/dependencies&gt;</code> section, where we already have Cayenne
+            jars:<programlisting language="xml">&lt;dependency&gt;
    &lt;groupId&gt;org.apache.derby&lt;/groupId&gt;
    &lt;artifactId&gt;derby&lt;/artifactId&gt;
-   &lt;version&gt;10.8.1.2&lt;/version&gt;
+   &lt;version&gt;10.13.1.1&lt;/version&gt;
 &lt;/dependency&gt;</programlisting>Now
-            we are ready to run. Right click the "Main" class in Eclipse and select "Run As &gt;
-            Java Application". In the console you'll see output similar to this, indicating that
+            we are ready to run. Right click the "Main" class in IDEA and select "Run 'Main.main()'". In the console you'll see output similar to this, indicating that
             Cayenne stack has been
-                started:<programlisting>INFO: Loading XML configuration resource from file:cayenne-project.xml
+                started:<screen>INFO: Loading XML configuration resource from file:/.../cayenne-project.xml
+INFO: Loading XML DataMap resource from file:/.../datamap.map.xml
 INFO: loading user name and password.
-INFO: Created connection pool: jdbc:derby:memory:testdb;create=true
-    Driver class: org.apache.derby.jdbc.EmbeddedDriver
-    Min. connections in the pool: 1
-    Max. connections in the pool: 1</programlisting>
+INFO: Connecting to 'jdbc:derby:memory:testdb;create=true' as 'null'
+INFO: +++ Connecting: SUCCESS.
+INFO: setting DataNode 'datanode' as default, used by all unlinked DataMaps</screen>
             
-            <note><para><emphasis role="bold">How to Configure Cayenne Logging.</emphasis>  Follow the instructions in
-                    the logging chapter to tweak verbosity of the logging output.</para></note>
+            <note>
+                <title>How to Configure Cayenne Logging</title>
+                <para>Follow the instructions in the logging chapter to tweak verbosity of the logging output.</para>
+            </note>
            </para>
     </section>
-</chapter>
+</section>

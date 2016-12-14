@@ -15,7 +15,7 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<chapter xmlns="http://docbook.org/ns/docbook"
+<section xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
     <title>Getting started with persistent objects</title>
     <para>In this chapter we'll learn about persistent objects, how to customize them and how to
@@ -24,10 +24,10 @@
         <title>Inspecting and Customizing Persistent Objects</title>
         <para>Persistent classes in Cayenne implement a DataObject interface. If you inspect any of
             the classes generated earlier in this tutorial (e.g.
-            org.example.cayenne.persistent.Artist), you'll see that it extends a class with the name
-            that starts with underscore (org.example.cayenne.persistent.auto._Artist), which in turn
-            extends from org.apache.cayenne.CayenneDataObject. Splitting each persistent class into
-            user-customizable subclass (Xyz) and a generated superclass (_Xyz) is a useful technique
+            <code>org.example.cayenne.persistent.Artist</code>), you'll see that it extends a class with the name
+            that starts with underscore (<code>org.example.cayenne.persistent.auto._Artist</code>), which in turn
+            extends from <code>org.apache.cayenne.CayenneDataObject</code>. Splitting each persistent class into
+            user-customizable subclass (<code>Xyz</code>) and a generated superclass (<code>_Xyz</code>) is a useful technique
             to avoid overwriting the custom code when refreshing classes from the mapping
             model.</para>
         <para>Let's for instance add a utility method to the Artist class that sets Artist date of
@@ -71,15 +71,15 @@ public class Artist extends _Artist {
     <section xml:id="create-new-objects">
         <title>Create New Objects</title>
         <para>Now we'll create a bunch of objects and save them to the database. An object is
-            created and registered with ObjectContext using "newObject" method. Objects <emphasis
-                role="bold">must</emphasis> be registered with DataContext to be persisted and to
+            created and registered with <code>ObjectContext</code> using "<code>newObject</code>" method. Objects <emphasis
+                role="bold">must</emphasis> be registered with <code>DataContext</code> to be persisted and to
             allow setting relationships with other objects. Add this code to the "main" method of
             the Main class:</para>
         <programlisting language="java">Artist picasso = context.newObject(Artist.class);
 picasso.setName("Pablo Picasso");
 picasso.setDateOfBirthString("18811025");</programlisting>
         <para>Note that at this point "picasso" object is only stored in memory and is not saved in
-            the database. Let's continue by adding a Metropolitan Museum "Gallery" object and a few
+            the database. Let's continue by adding a Metropolitan Museum "<code>Gallery</code>" object and a few
             Picasso "Paintings":</para>
         <programlisting language="java">Gallery metropolitan = context.newObject(Gallery.class);
 metropolitan.setName("Metropolitan Museum of Art"); 
@@ -90,9 +90,9 @@ girl.setName("Girl Reading at a Table");
 Painting stein = context.newObject(Painting.class);
 stein.setName("Gertrude Stein");</programlisting>
         <para>Now we can link the objects together, establishing relationships. Note that in each
-            case below relationships are automatically estabslished in both directions (e.g.
-            picasso.addToPaintings(girl) has exactly the same effect as
-            girl.setToArtist(picasso)).</para>
+            case below relationships are automatically established in both directions (e.g.
+            <code>picasso.addToPaintings(girl)</code> has exactly the same effect as
+            <code>girl.setToArtist(picasso)</code>).</para>
         <programlisting language="java">picasso.addToPaintings(girl);
 picasso.addToPaintings(stein);
         
@@ -102,13 +102,12 @@ stein.setGallery(metropolitan);</programlisting>
         <programlisting language="java">context.commitChanges();</programlisting>
         <para>Now you can run the application again as described in the previous chapter. The new
             output will show a few actual DB operations:</para>
-        <programlisting>org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader load
+        <screen>org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader load
 INFO: Loading XML configuration resource from file:cayenne-project.xml
-... 
-INFO: Opening connection: jdbc:derby:memory:testdb;create=true
-    Login: null
-    Password: *******
+...
+INFO: Connecting to 'jdbc:derby:memory:testdb;create=true' as 'null'
 INFO: +++ Connecting: SUCCESS.
+INFO: setting DataNode 'datanode' as default, used by all unlinked DataMaps
 INFO: Detected and installed adapter: org.apache.cayenne.dba.derby.DerbyAdapter
 INFO: --- transaction started.
 INFO: No schema detected, will create mapped tables
@@ -138,9 +137,9 @@ INFO: [batch bind: 1->ARTIST_ID:200, 2->GALLERY_ID:200, 3->ID:200, 4->NAME:'Gert
 INFO: [batch bind: 1->ARTIST_ID:200, 2->GALLERY_ID:200, 3->ID:201, 4->NAME:'Girl Reading at a Table']
 INFO: === updated 2 rows.
 INFO: +++ transaction committed.
-</programlisting>
+</screen>
         <para>So first Cayenne creates the needed tables (remember, we used
-            "CreateIfNoSchemaStrategy"). Then it runs a number of inserts, generating primary keys
+            "<code>CreateIfNoSchemaStrategy</code>"). Then it runs a number of inserts, generating primary keys
             on the fly. Not bad for just a few lines of code.</para>
     </section>
-</chapter>
+</section>
