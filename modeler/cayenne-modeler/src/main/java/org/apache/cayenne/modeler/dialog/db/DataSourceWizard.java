@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
@@ -29,6 +30,7 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 
+import javax.sql.DataSource;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.Connection;
@@ -44,32 +46,28 @@ import java.util.prefs.Preferences;
  */
 public class DataSourceWizard extends CayenneController {
 
-	protected DataSourceWizardView view;
-
-	protected DBConnectionInfo altDataSource;
-	protected String altDataSourceKey;
-	protected ObjectBinding dataSourceBinding;
-	protected Map<String, DBConnectionInfo> dataSources;
-
-	protected String dataSourceKey;
+	private DataSourceWizardView view;
+	private ObjectBinding dataSourceBinding;
+	private Map<String, DBConnectionInfo> dataSources;
+	private String dataSourceKey;
 
 	// this object is a clone of an object selected from the dropdown, as we
 	// need to allow
 	// local temporary modifications
-	protected DBConnectionInfo connectionInfo;
+	private DBConnectionInfo connectionInfo;
 
-	protected boolean canceled;
+	private boolean canceled;
 
-	protected DataSourceModificationListener dataSourceListener;
+	private DataSourceModificationListener dataSourceListener;
 
-	public DataSourceWizard(CayenneController parent, String title, String altDataSourceKey,
-                            DBConnectionInfo altDataSource) {
+	private DbAdapter adapter;
+	private DataSource dataSource;
+
+	public DataSourceWizard(CayenneController parent, String title) {
 		super(parent);
 
 		this.view = createView();
 		this.view.setTitle(title);
-		this.altDataSource = altDataSource;
-		this.altDataSourceKey = altDataSourceKey;
 		this.connectionInfo = new DBConnectionInfo();
 
 		initBindings();
@@ -79,7 +77,7 @@ public class DataSourceWizard extends CayenneController {
 	/**
 	 * Creates swing dialog for this wizard
 	 */
-	protected DataSourceWizardView createView() {
+	private DataSourceWizardView createView() {
 		return new DataSourceWizardView(this);
 	}
 
@@ -93,7 +91,7 @@ public class DataSourceWizard extends CayenneController {
 		builder.bindToAction(view.getConfigButton(), "dataSourceConfigAction()");
 	}
 
-	protected void initDataSourceListener() {
+	private void initDataSourceListener() {
 		dataSourceListener = new DataSourceModificationListener() {
 			@Override
 			public void callbackDataSourceRemoved(DataSourceModificationEvent e) {}
@@ -108,7 +106,7 @@ public class DataSourceWizard extends CayenneController {
 				.addDataSourceModificationListener(dataSourceListener);
 	}
 
-	protected void initFavouriteDataSource() {
+	private void initFavouriteDataSource() {
 		Preferences pref = getApplication().getPreferencesNode(GeneralPreferences.class, "");
 		String favouriteDataSource = pref.get(GeneralPreferences.FAVOURITE_DATA_SOURCE, null);
 		if(favouriteDataSource != null && dataSources.containsKey(favouriteDataSource)) {
@@ -117,7 +115,7 @@ public class DataSourceWizard extends CayenneController {
 		}
 	}
 
-	protected void removeDataSourceListener() {
+	private void removeDataSourceListener() {
 		getApplication().getFrameController().getProjectController()
 				.removeDataSourceModificationListener(dataSourceListener);
 	}
@@ -172,28 +170,17 @@ public class DataSourceWizard extends CayenneController {
 		DBConnectionInfo info = getConnectionInfo();
 		ClassLoadingService classLoader = getApplication().getClassLoadingService();
 
-		// try making an adapter...
-		try {
-			info.makeAdapter(classLoader);
-		} catch (Throwable th) {
-			reportError("DbAdapter Error", th);
-			return;
-		}
-
 		// doing connection testing...
-		// attempt opening the connection, and close it right away
 		try {
-
-			try (Connection connection = info.makeDataSource(classLoader).getConnection();) {
-				//
-			} catch (SQLException ex) {
-				// ignore close error
+			this.adapter = info.makeAdapter(classLoader);
+			this.dataSource = info.makeDataSource(classLoader);
+			try (Connection connection = dataSource.getConnection()) {
+			} catch (SQLException ignore) {
 			}
 		} catch (Throwable th) {
 			reportError("Connection Error", th);
 			return;
 		}
-
 		onClose(false);
 	}
 
@@ -228,8 +215,9 @@ public class DataSourceWizard extends CayenneController {
 		return view;
 	}
 
-	protected void refreshDataSources() {
-		this.dataSources = getApplication().getCayenneProjectPreferences().getDetailObject(DBConnectionInfo.class)
+	@SuppressWarnings("unchecked")
+	private void refreshDataSources() {
+		this.dataSources = (Map<String, DBConnectionInfo>)getApplication().getCayenneProjectPreferences().getDetailObject(DBConnectionInfo.class)
 				.getChildrenPreferences();
 
 		// 1.2 migration fix - update data source adapter names
@@ -237,12 +225,7 @@ public class DataSourceWizard extends CayenneController {
 		for(DBConnectionInfo info : dataSources.values()) {
 			if (info.getDbAdapter() != null && info.getDbAdapter().startsWith(_12package)) {
 				info.setDbAdapter("org.apache.cayenne." + info.getDbAdapter().substring(_12package.length()));
-				// info.getObjectContext().commitChanges();
 			}
-		}
-
-		if (altDataSourceKey != null && !dataSources.containsKey(altDataSourceKey) && altDataSource != null) {
-			dataSources.put(altDataSourceKey, altDataSource);
 		}
 
 		String[] keys = dataSources.keySet().toArray(new String[0]);
@@ -251,14 +234,23 @@ public class DataSourceWizard extends CayenneController {
 
 		String key = null;
 		if (getDataSourceKey() == null || !dataSources.containsKey(getDataSourceKey())) {
-			if (altDataSourceKey != null) {
-				key = altDataSourceKey;
-			} else if (keys.length > 0) {
+			if (keys.length > 0) {
 				key = keys[0];
 			}
 		}
 
 		setDataSourceKey(key != null ? key : getDataSourceKey());
 		dataSourceBinding.updateView();
+	}
+
+	public DataSource getDataSource() {
+		return dataSource;
+	}
+
+	/**
+	 * Returns configured DbAdapter.
+	 */
+	public DbAdapter getAdapter() {
+		return adapter;
 	}
 }
