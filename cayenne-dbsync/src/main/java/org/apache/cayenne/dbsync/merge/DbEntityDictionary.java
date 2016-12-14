@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.dbsync.merge;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 class DbEntityDictionary extends MergerDictionary<DbEntity> {
 
@@ -57,7 +57,7 @@ class DbEntityDictionary extends MergerDictionary<DbEntity> {
         Collection<DbEntity> existingFiltered = new LinkedList<>();
         for (DbEntity entity : container.getDbEntities()) {
             TableFilter tableFilter = filtersConfig.tableFilter(entity.getCatalog(), entity.getSchema());
-            if (tableFilter != null && tableFilter.isIncludeTable(entity.getName()) != null) {
+            if (tableFilter != null && tableFilter.isIncludeTable(entity.getName())) {
                 existingFiltered.add(entity);
             }
         }
