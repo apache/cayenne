@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.dbsync.merge;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.map.DataMap;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 abstract class AbstractMerger<T, M> implements Merger<T> {
 
@@ -40,6 +40,7 @@ abstract class AbstractMerger<T, M> implements Merger<T> {
         this.importedDataMap = imported;
     }
 
+    @Override
     public List<MergerToken> createMergeTokens(T original, T imported) {
         diff = createDiff(original, imported);
 
