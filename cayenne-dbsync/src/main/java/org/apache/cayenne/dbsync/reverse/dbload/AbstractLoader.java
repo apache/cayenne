@@ -16,28 +16,28 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.reverse.db;
 
-import org.apache.cayenne.map.DbEntity;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+package org.apache.cayenne.dbsync.reverse.dbload;
 
-/**
- * Interface responsible for attributes loading. Several options possible here
- *  1) load attributes for each table separately
- *  2) load attributes for schema and group it by table names
- *
- *  here is a trade of between count of queries and amount af calculation.
- *
- *
- * @since 4.0
- */
-public interface DbAttributesLoader {
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Objects;
 
-    // TODO use instant field for logging
-    Log LOGGER = LogFactory.getLog(DbTableLoader.class);
+import org.apache.cayenne.dba.DbAdapter;
 
-    void loadDbAttributes(DbEntity entity);
+public abstract class AbstractLoader {
 
+    static final String WILDCARD = "%";
+
+    protected DbAdapter adapter;
+    protected DbLoaderConfiguration config;
+    protected DbLoaderDelegate delegate;
+
+    AbstractLoader(DbAdapter adapter, DbLoaderConfiguration config, DbLoaderDelegate delegate) {
+        this.adapter = adapter;
+        this.config = Objects.requireNonNull(config);
+        this.delegate = Objects.requireNonNull(delegate);
+    }
+
+    public abstract void load(DatabaseMetaData metaData, DbLoadDataStore map) throws SQLException;
 }
-

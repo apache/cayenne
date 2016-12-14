@@ -23,7 +23,7 @@ import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.dbsync.reverse.db.DbRelationshipDetected;
+import org.apache.cayenne.dbsync.reverse.dbload.DbRelationshipDetected;
 
 import java.util.Collections;
 import java.util.List;

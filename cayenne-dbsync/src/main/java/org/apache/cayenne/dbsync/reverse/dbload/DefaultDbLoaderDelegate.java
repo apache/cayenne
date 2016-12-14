@@ -16,38 +16,49 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.reverse.db;
 
+package org.apache.cayenne.dbsync.reverse.dbload;
 
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.ObjEntity;
 
 /**
- * A subclass of {@link DbRelationship} to hold some extra runtime information.
+ * A noop {@link DbLoaderDelegate}.
+ *
+ * @since 4.0
  */
-// TODO: dirty ... can we lookup fkName via joins?
-public class DbRelationshipDetected extends DbRelationship {
+public class DefaultDbLoaderDelegate implements DbLoaderDelegate {
 
-    private String fkName;
+    @Override
+    public void dbEntityAdded(DbEntity entity) {
 
-    public DbRelationshipDetected(String uniqueRelName) {
-        super(uniqueRelName);
     }
 
-    public DbRelationshipDetected() {
+    @Override
+    public void dbEntityRemoved(DbEntity entity) {
+
     }
 
-    /**
-     * Get the name of the underlying foreign key. Typically FK_NAME from jdbc metadata.
-     */
-    public String getFkName() {
-        return fkName;
+    @Override
+    public boolean dbRelationship(DbEntity entity) {
+        return true;
     }
 
-    /**
-     * Set the name of the underlying foreign key. Typically FK_NAME from jdbc metadata.
-     */
-    public void setFkName(String fkName) {
-        this.fkName = fkName;
+    @Override
+    public boolean dbRelationshipLoaded(DbEntity entity, DbRelationship relationship) {
+        return true;
     }
 
+    @Deprecated
+    @Override
+    public void objEntityAdded(ObjEntity entity) {
+
+    }
+
+    @Deprecated
+    @Override
+    public void objEntityRemoved(ObjEntity entity) {
+
+    }
 }
