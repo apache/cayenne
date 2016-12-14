@@ -24,7 +24,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
- * Defines API for progress tracking and altering the folow of reverse-engineering.
+ * Defines API for progress tracking and altering the flow of reverse-engineering.
  */
 public interface DbLoaderDelegate {
 

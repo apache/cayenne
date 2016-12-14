@@ -18,6 +18,10 @@
  */
 package org.apache.cayenne.dbsync.reverse.dbload;
 
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
+import org.apache.cayenne.map.DataMap;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -26,16 +30,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
-import org.apache.cayenne.map.DataMap;
-
 /**
- * Loader for data from DB.
- * Creates DbEntities and Procedures based on DB meta data.
- * Consists of list of loaders that iteratively loads small parts of data,
- * e.g. Entity name, Attributes, Relationships...
+ * Loads DB schema into a DataMap, creating DbEntities and Procedures. Consists of a list of specialized loaders that
+ * iteratively load parts of metadata, such as Entity names, Attributes, Relationships, etc.
+ *
  * @see AbstractLoader and its descendants
+ * @since 4.0
  */
 public class DbLoader {
 
