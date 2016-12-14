@@ -20,10 +20,10 @@ package org.apache.cayenne.dbsync.merge.factory;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.dbsync.merge.MergerToken;
-import org.apache.cayenne.dbsync.merge.SetAllowNullToDb;
-import org.apache.cayenne.dbsync.merge.SetColumnTypeToDb;
-import org.apache.cayenne.dbsync.merge.SetPrimaryKeyToDb;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetPrimaryKeyToDb;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -59,7 +59,7 @@ public class HSQLMergerTokenFactory extends DefaultMergerTokenFactory {
                 QuotingStrategy context = adapter.getQuotingStrategy();
 
                 return Collections.singletonList("ALTER TABLE " + context.quotedFullyQualifiedName(getEntity())
-                        + " ALTER COLUMN " + context.quotedName(getColumn()) + " NULL");
+                        + " ALTER COLUMN " + context.quotedName(getColumn()) + " SET NULL");
             }
 
         };

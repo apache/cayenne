@@ -19,12 +19,12 @@
 package org.apache.cayenne.dbsync.merge.factory;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.merge.CreateTableToDb;
-import org.apache.cayenne.dbsync.merge.DropRelationshipToDb;
-import org.apache.cayenne.dbsync.merge.MergerToken;
-import org.apache.cayenne.dbsync.merge.SetAllowNullToDb;
-import org.apache.cayenne.dbsync.merge.SetColumnTypeToDb;
-import org.apache.cayenne.dbsync.merge.SetNotNullToDb;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.db.CreateTableToDb;
+import org.apache.cayenne.dbsync.merge.token.db.DropRelationshipToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;

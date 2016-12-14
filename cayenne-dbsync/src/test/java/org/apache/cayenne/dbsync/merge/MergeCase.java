@@ -22,8 +22,11 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.merge.context.MergerContext;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
+import org.apache.cayenne.dbsync.merge.token.db.AbstractToDbToken;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
@@ -96,8 +99,8 @@ public abstract class MergeCase extends DbSyncCase {
         assertTokensAndExecute(0, 0);
     }
 
-    protected DbMerger.Builder merger() {
-        return DbMerger.builder(mergerFactory());
+    protected DataMapMerger.Builder merger() {
+        return DataMapMerger.builder(mergerFactory());
     }
 
     protected List<MergerToken> createMergeTokens() {

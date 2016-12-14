@@ -24,13 +24,13 @@ import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.filter.NameFilter;
-import org.apache.cayenne.dbsync.merge.AbstractToModelToken;
-import org.apache.cayenne.dbsync.merge.DbMerger;
-import org.apache.cayenne.dbsync.merge.MergerContext;
-import org.apache.cayenne.dbsync.merge.MergerToken;
-import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
-import org.apache.cayenne.dbsync.merge.ProxyModelMergeDelegate;
-import org.apache.cayenne.dbsync.merge.TokenComparator;
+import org.apache.cayenne.dbsync.merge.token.model.AbstractToModelToken;
+import org.apache.cayenne.dbsync.merge.DataMapMerger;
+import org.apache.cayenne.dbsync.merge.context.MergerContext;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.reverse.dbload.ModelMergeDelegate;
+import org.apache.cayenne.dbsync.reverse.dbload.ProxyModelMergeDelegate;
+import org.apache.cayenne.dbsync.merge.token.TokenComparator;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
@@ -163,7 +163,7 @@ public class DefaultDbImportAction implements DbImportAction {
         MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
 
         DbLoaderConfiguration loaderConfig = config.getDbLoaderConfig();
-        List<MergerToken> tokens = DbMerger.builder(mergerTokenFactory)
+        List<MergerToken> tokens = DataMapMerger.builder(mergerTokenFactory)
                 .filters(loaderConfig.getFiltersConfig())
                 .skipPKTokens(loaderConfig.isSkipPrimaryKeyLoading())
                 .skipRelationshipsTokens(loaderConfig.isSkipRelationshipsLoading())
