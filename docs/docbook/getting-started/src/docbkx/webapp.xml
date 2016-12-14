@@ -15,7 +15,7 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<chapter xmlns="http://docbook.org/ns/docbook"
+<section xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
     <title>Converting to Web Application</title>
     <para>This chapter shows how to work with Cayenne in a web application.</para>
@@ -46,14 +46,14 @@
         <para>So let's convert the tutorial that we created to a web application:</para>
         <itemizedlist>
             <listitem>
-                <para>In Eclipse under "tutorial" project folder create a new folder
-                    "src/main/webapp/WEB-INF".</para>
+                <para>In IDEA under "tutorial" project folder create a new folder
+                    "<code>src/main/webapp/WEB-INF</code>".</para>
             </listitem>
             <listitem>
-                <para>Under "WEB-INF" create a new file "web.xml" (a standard web app descriptor): </para>
+                <para>Under "<code>WEB-INF</code>" create a new file "<code>web.xml</code>" (a standard web app descriptor): </para>
                 <para>
                     <emphasis role="bold">web.xml</emphasis>
-                    <programlisting>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+                    <programlisting language="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
  &lt;!DOCTYPE web-app
    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   "http://java.sun.com/dtd/web-app_2_3.dtd"&gt;
@@ -78,23 +78,23 @@
 &lt;/web-app&gt;</programlisting></para>
             </listitem>
             <listitem>
-                <para>Create the artist browser page src/main/webapp/index.jsp file with the
+                <para>Create the artist browser page <code>src/main/webapp/index.jsp</code> file with the
                     following contents: </para>
                 <para><emphasis role="bold">webapp/index.jsp</emphasis>
-                    <programlisting>&lt;%@ page language="java" contentType="text/html" %&gt;
+                    <programlisting language="jsp">&lt;%@ page language="java" contentType="text/html" %&gt;
 &lt;%@ page import="org.example.cayenne.persistent.*" %&gt;
 &lt;%@ page import="org.apache.cayenne.*" %&gt;
 &lt;%@ page import="org.apache.cayenne.query.*" %&gt;
 &lt;%@ page import="org.apache.cayenne.exp.*" %&gt;
 &lt;%@ page import="java.util.*" %&gt;
 
-&lt;% 
-    SelectQuery query = new SelectQuery(Artist.class);
-    query.addOrdering(Artist.NAME.getName(), SortOrder.ASCENDING);
-
+&lt;%
     ObjectContext context = BaseContext.getThreadObjectContext();
-    List&lt;Artist&gt; artists = context.performQuery(query);
+    List&lt;Artist> artists = ObjectSelect.query(Artist.class)
+                .orderBy(Artist.NAME.asc())
+                .select(context);
 %&gt;
+
 &lt;html&gt;
     &lt;head&gt;
         &lt;title&gt;Main&lt;/title&gt;
@@ -104,25 +104,26 @@
         
         &lt;% if(artists.isEmpty()) {%&gt;
         &lt;p&gt;No artists found&lt;/p&gt;
-        &lt;% } else { 
-            for(Artist a : artists) {
+        &lt;% } else {
+               for(Artist a : artists) {
         %&gt;
         &lt;p&gt;&lt;a href="detail.jsp?id=&lt;%=Cayenne.intPKForObject(a)%&gt;"&gt; &lt;%=a.getName()%&gt; &lt;/a&gt;&lt;/p&gt;
         &lt;%
-            }
-            } %&gt;
+               }
+           } %&gt;
         &lt;hr&gt;
         &lt;p&gt;&lt;a href="detail.jsp"&gt;Create new artist...&lt;/a&gt;&lt;/p&gt;
     &lt;/body&gt;
 &lt;/html&gt; </programlisting></para>
             </listitem>
             <listitem>
-                <para>Create the artist editor page src/main/webapp/detail.jsp with the following
+                <para>Create the artist editor page <code>src/main/webapp/detail.jsp</code> with the following
                     content: </para>
                 <para><emphasis role="bold">webapp/detail.jsp</emphasis>
-                    <programlisting>&lt;%@ page language="java" contentType="text/html" %&gt;
+                    <programlisting language="jsp">&lt;%@ page language="java" contentType="text/html" %&gt;
 &lt;%@ page import="org.example.cayenne.persistent.*" %&gt;
 &lt;%@ page import="org.apache.cayenne.*" %&gt;
+&lt;%@ page import="org.apache.cayenne.query.*" %>
 &lt;%@ page import="java.util.*" %&gt;
 &lt;%@ page import="java.text.*" %&gt;
 
@@ -133,7 +134,7 @@
     // find artist for id
     Artist artist = null;
     if(id != null &amp;&amp; id.trim().length() &gt; 0) {
-        artist = Cayenne.objectForPK(context, Artist.class, Integer.parseInt(id));
+        artist = SelectById.query(Artist.class, Integer.parseInt(id)).selectOne(context);
     }
 
     if("POST".equals(request.getMethod())) {
@@ -193,36 +194,40 @@
     <section xml:id="running-webapp">
         <title>Running Web Application</title>
         <para>We need to provide javax servlet-api for our application.</para>
-        <programlisting>&lt;dependency&gt;
-        &lt;groupId>javax.servlet&lt;/groupId&gt;
-        &lt;artifactId>javax.servlet-api&lt;/artifactId&gt;
-        &lt;version>3.1.0&lt;/version&gt;
-        &lt;scope>provided&lt;/scope&gt;
+        <programlisting language="xml">&lt;dependency&gt;
+    &lt;groupId>javax.servlet&lt;/groupId&gt;
+    &lt;artifactId>javax.servlet-api&lt;/artifactId&gt;
+    &lt;version>3.1.0&lt;/version&gt;
+    &lt;scope>provided&lt;/scope&gt;
 &lt;/dependency&gt;</programlisting>
 
         <para>Also to run the web application we'll use "maven-jetty-plugin". To activate it,
-            let's add the following piece of code to the "pom.xml" file, following the "dependencies"
+            let's add the following piece of code to the "<code>pom.xml</code>" file, following the "dependencies"
             section and save the POM:</para>
-        <programlisting>&lt;build&gt;
+        <programlisting language="xml">&lt;build&gt;
     &lt;plugins&gt;
         &lt;plugin&gt;
-            &lt;groupId&gt;org.mortbay.jetty&lt;/groupId&gt;
+            &lt;groupId&gt;org.eclipse.jetty&lt;/groupId&gt;
             &lt;artifactId&gt;maven-jetty-plugin&lt;/artifactId&gt;
-            &lt;version&gt;6.1.22&lt;/version&gt;
+            &lt;version&gt;9.3.14.v20161028&lt;/version&gt;
         &lt;/plugin&gt;
     &lt;/plugins&gt;
 &lt;/build&gt;</programlisting>
         <itemizedlist>
             <listitem>
-                <para>Go to "Run &gt; Run Configurations..." menu, select "Maven Build", right click
-                    and select "New"</para>
-            </listitem>
-            <listitem>
-                <para>Make sure you fill "Name", "Base directory" and "Goals" fields as shown on the
-                    screenshot:</para>
+                <para>Go to "Select Run/Debug Configuration" menu, and then "Edit Configuration..."</para>
                 <para><inlinemediaobject>
                         <imageobject>
-                            <imagedata fileref="images/eclipse-mvnrun.png" scalefit="1" width="100%"/>
+                            <imagedata fileref="images/idea-configuration-menu.png" scalefit="0" width="100%"/>
+                        </imageobject>
+                    </inlinemediaobject>
+                </para>
+            </listitem>
+            <listitem>
+                <para>Click "+" button and select "Maven". Enter "Name" and "Command line" as shown on screenshot:</para>
+                <para><inlinemediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/idea-run-configuration.png" scalefit="0" width="100%"/>
                         </imageobject>
                     </inlinemediaobject></para>
             </listitem>
@@ -232,27 +237,28 @@
                 <para>Click "Apply" and "Run". On the first execution it may take a few minutes for
                     Jetty plugin to download all dependencies, but eventually you'll see the logs
                     like this:</para>
-        <programlisting>[INFO] Scanning for projects...
+        <screen>[INFO] Scanning for projects...
 [INFO]                                                                         
 [INFO] ------------------------------------------------------------------------
 [INFO] Building tutorial 0.0.1-SNAPSHOT
 [INFO] ------------------------------------------------------------------------
 ...
 [INFO] Configuring Jetty for project: tutorial
-[INFO] Webapp source directory = /.../tutorial/src/main/webapp
+[INFO] webAppSourceDirectory not set. Trying src/main/webapp
 [INFO] Reload Mechanic: automatic
 [INFO] Classes = /.../tutorial/target/classes
-[INFO] Context path = /tutorial
-[INFO] Tmp directory =  determined at runtime
-[INFO] Web defaults = org/mortbay/jetty/webapp/webdefault.xml
+[INFO] Logging initialized @1617ms
+[INFO] Context path = /
+[INFO] Tmp directory = /.../tutorial/target/tmp
+[INFO] Web defaults = org/eclipse/jetty/webapp/webdefault.xml
 [INFO] Web overrides =  none
-[INFO] web.xml file = /.../tutorial/src/main/webapp/WEB-INF/web.xml
+[INFO] web.xml file = file:/.../tutorial/src/main/webapp/WEB-INF/web.xml
 [INFO] Webapp directory = /.../tutorial/src/main/webapp
-[INFO] Starting jetty 6.1.22 ...
-INFO::jetty-6.1.22
-INFO::No Transaction manager found - if your webapp requires one, please configure one.
-INFO::Started SelectChannelConnector@0.0.0.0:8080
-[INFO] Started Jetty Server</programlisting>
+[INFO] jetty-9.3.0.v20150612
+[INFO] Started o.e.j.m.p.JettyWebAppContext@6872f9c8{/,file:/.../tutorial/src/main/webapp/,AVAILABLE}{file:/.../tutorial/src/main/webapp/}
+[INFO] Started ServerConnector@723875bc{HTTP/1.1,[http/1.1]}{0.0.0.0:8080}
+[INFO] Started @2367ms
+[INFO] Started Jetty Server</screen>
                 </listitem>
         </itemizedlist>
         <itemizedlist>
@@ -260,19 +266,14 @@ INFO::Started SelectChannelConnector@0.0.0.0:8080
                 <para>So the Jetty container just started.</para>
             </listitem>
             <listitem>
-                <para>Now go to <emphasis role="italic">http://localhost:8080/tutorial/</emphasis>
+                <para>Now go to <link xlink:href="http://localhost:8080/">http://localhost:8080/</link>
                             URL. You should see "No artists found message" in the web browser and
-                            the following output in the Eclipse console:</para>
-        <programlisting>INFO: Loading XML configuration resource from file:/.../tutorial/target/classes/cayenne-project.xml
+                            the following output in the IDEA console:</para>
+        <screen>INFO: Loading XML configuration resource from file:/.../tutorial/target/classes/cayenne-project.xml
 INFO: loading user name and password.
-INFO: Created connection pool: jdbc:derby:memory:testdb;create=true
-    Driver class: org.apache.derby.jdbc.EmbeddedDriver
-    Min. connections in the pool: 1
-    Max. connections in the pool: 1
-INFO: Opening connection: jdbc:derby:memory:testdb;create=true
-    Login: null
-    Password: *******
+INFO: Connecting to 'jdbc:derby:memory:testdb;create=true' as 'null'
 INFO: +++ Connecting: SUCCESS.
+INFO: setting DataNode 'datanode' as default, used by all unlinked DataMaps
 INFO: Detected and installed adapter: org.apache.cayenne.dba.derby.DerbyAdapter
 INFO: --- transaction started.
 INFO: No schema detected, will create mapped tables
@@ -288,9 +289,9 @@ INFO: DELETE FROM AUTO_PK_SUPPORT WHERE TABLE_NAME IN ('ARTIST', 'GALLERY', 'PAI
 INFO: INSERT INTO AUTO_PK_SUPPORT (TABLE_NAME, NEXT_ID) VALUES ('ARTIST', 200)
 INFO: INSERT INTO AUTO_PK_SUPPORT (TABLE_NAME, NEXT_ID) VALUES ('GALLERY', 200)
 INFO: INSERT INTO AUTO_PK_SUPPORT (TABLE_NAME, NEXT_ID) VALUES ('PAINTING', 200)
-INFO: SELECT t0.DATE_OF_BIRTH, t0.NAME, t0.ID FROM ARTIST t0 ORDER BY t0.NAME - prepared in 43 ms.
-INFO: === returned 0 rows. - took 56 ms.
-INFO: +++ transaction committed.</programlisting>
+INFO: SELECT t0.DATE_OF_BIRTH, t0.NAME, t0.ID FROM ARTIST t0 ORDER BY t0.NAME
+INFO: === returned 0 rows. - took 17 ms.
+INFO: +++ transaction committed.</screen>
             </listitem>
         </itemizedlist>
         <itemizedlist>
@@ -299,11 +300,11 @@ INFO: +++ transaction committed.</programlisting>
                     can be edited by clicking on their name:</para>
                 <para><inlinemediaobject>
                         <imageobject>
-                            <imagedata fileref="images/firefox-webapp.png" scalefit="1" width="100%"/>
+                            <imagedata fileref="images/chrome-webapp.png" width="100%"/>
                         </imageobject>
                     </inlinemediaobject></para>
             </listitem>
         </itemizedlist>
         <para>You are done with the tutorial!</para>
     </section>
-</chapter>
+</section>

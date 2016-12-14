@@ -22,21 +22,21 @@ package org.apache.cayenne.modeler.dialog.db.merge;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.merge.AbstractToDbToken;
-import org.apache.cayenne.dbsync.merge.DbMerger;
-import org.apache.cayenne.dbsync.merge.DefaultModelMergeDelegate;
-import org.apache.cayenne.dbsync.merge.MergeDirection;
-import org.apache.cayenne.dbsync.merge.MergerContext;
-import org.apache.cayenne.dbsync.merge.MergerToken;
-import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
-import org.apache.cayenne.dbsync.merge.ProxyModelMergeDelegate;
+import org.apache.cayenne.dbsync.merge.token.db.AbstractToDbToken;
+import org.apache.cayenne.dbsync.merge.DataMapMerger;
+import org.apache.cayenne.dbsync.reverse.dbload.DefaultModelMergeDelegate;
+import org.apache.cayenne.dbsync.merge.context.MergeDirection;
+import org.apache.cayenne.dbsync.merge.context.MergerContext;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.reverse.dbload.ModelMergeDelegate;
+import org.apache.cayenne.dbsync.reverse.dbload.ProxyModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.NoStemStemmer;
-import org.apache.cayenne.dbsync.reverse.db.DbLoader;
-import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
-import org.apache.cayenne.dbsync.reverse.db.LoggingDbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
+import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderConfiguration;
+import org.apache.cayenne.dbsync.reverse.dbload.LoggingDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
@@ -160,7 +160,7 @@ public class MergerOptions extends CayenneController {
             FiltersConfig filters = FiltersConfig.create(defaultCatalog, defaultSchema, TableFilter.everything(),
                     PatternFilter.INCLUDE_NOTHING);
 
-            DbMerger merger = DbMerger.builder(mergerTokenFactory)
+            DataMapMerger merger = DataMapMerger.builder(mergerTokenFactory)
                     .filters(filters)
                     .build();
 
@@ -169,14 +169,13 @@ public class MergerOptions extends CayenneController {
 
             DataSource dataSource = connectionInfo.makeDataSource(getApplication().getClassLoadingService());
 
-            DataMap dbImport = new DataMap();
+            DataMap dbImport;
             try (Connection conn = dataSource.getConnection();) {
-                new DbLoader(conn,
-                        adapter,
+                dbImport = new DbLoader(adapter, conn,
+                        config,
                         new LoggingDbLoaderDelegate(LogFactory.getLog(DbLoader.class)),
                         new DefaultObjectNameGenerator(NoStemStemmer.getInstance()))
-                        .load(dbImport, config);
-
+                        .load();
             } catch (SQLException e) {
                 throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);
             }

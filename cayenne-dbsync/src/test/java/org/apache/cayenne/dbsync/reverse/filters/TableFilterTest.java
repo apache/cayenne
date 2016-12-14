@@ -18,13 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.filters;
 
-import junit.framework.TestCase;
-
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-public class TableFilterTest extends TestCase {
+import org.apache.cayenne.dbimport.ExcludeTable;
+import org.junit.Test;
 
+import static org.junit.Assert.*;
+
+public class TableFilterTest {
+
+    @Test
     public void testIncludeEverything() {
         TableFilter filter = TableFilter.everything();
 
@@ -34,58 +38,79 @@ public class TableFilterTest extends TestCase {
         assertNotNull(filter.isIncludeTable("alex"));
     }
 
+    @Test
     public void testInclude() {
-        TreeSet<IncludeTableFilter> includes = new TreeSet<IncludeTableFilter>();
+        TreeSet<IncludeTableFilter> includes = new TreeSet<>();
         includes.add(new IncludeTableFilter("aaa"));
         includes.add(new IncludeTableFilter("bb"));
 
-        TableFilter filter = new TableFilter(includes, new TreeSet<Pattern>(PatternFilter.PATTERN_COMPARATOR));
+        TableFilter filter = new TableFilter(includes, new TreeSet<>(PatternFilter.PATTERN_COMPARATOR));
 
-        assertNotNull(filter.isIncludeTable("aaa"));
-        assertNull(filter.isIncludeTable("aa"));
-        assertNull(filter.isIncludeTable("aaaa"));
+        assertTrue(filter.isIncludeTable("aaa"));
+        assertFalse(filter.isIncludeTable("aa"));
+        assertFalse(filter.isIncludeTable("aaaa"));
 
-        assertNotNull(filter.isIncludeTable("bb"));
-        assertNull(filter.isIncludeTable(""));
-        assertNull(filter.isIncludeTable("bbbb"));
+        assertTrue(filter.isIncludeTable("bb"));
+        assertFalse(filter.isIncludeTable(""));
+        assertFalse(filter.isIncludeTable("bbbb"));
     }
 
-
+    @Test
     public void testExclude() {
-        TreeSet<Pattern> excludes = new TreeSet<Pattern>(PatternFilter.PATTERN_COMPARATOR);
+        TreeSet<Pattern> excludes = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
         excludes.add(Pattern.compile("aaa"));
         excludes.add(Pattern.compile("bb"));
 
-        TreeSet<IncludeTableFilter> includes = new TreeSet<IncludeTableFilter>();
+        TreeSet<IncludeTableFilter> includes = new TreeSet<>();
         includes.add(new IncludeTableFilter(null, PatternFilter.INCLUDE_EVERYTHING));
 
         TableFilter filter = new TableFilter(includes, excludes);
 
-        assertNull(filter.isIncludeTable("aaa"));
-        assertNotNull(filter.isIncludeTable("aa"));
-        assertNotNull(filter.isIncludeTable("aaaa"));
+        assertFalse(filter.isIncludeTable("aaa"));
+        assertTrue(filter.isIncludeTable("aa"));
+        assertTrue(filter.isIncludeTable("aaaa"));
 
-        assertNull(filter.isIncludeTable("bb"));
-        assertNotNull(filter.isIncludeTable(""));
-        assertNotNull(filter.isIncludeTable("bbbb"));
+        assertFalse(filter.isIncludeTable("bb"));
+        assertTrue(filter.isIncludeTable(""));
+        assertTrue(filter.isIncludeTable("bbbb"));
     }
 
+    @Test
     public void testIncludeExclude() {
-        TreeSet<Pattern> excludes = new TreeSet<Pattern>(PatternFilter.PATTERN_COMPARATOR);
+        TreeSet<Pattern> excludes = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
         excludes.add(Pattern.compile("aaa"));
         excludes.add(Pattern.compile("bb"));
 
-        TreeSet<IncludeTableFilter> includes = new TreeSet<IncludeTableFilter>();
+        TreeSet<IncludeTableFilter> includes = new TreeSet<>();
         includes.add(new IncludeTableFilter("aa.*"));
 
         TableFilter filter = new TableFilter(includes, excludes);
 
-        assertNull(filter.isIncludeTable("aaa"));
-        assertNotNull(filter.isIncludeTable("aa"));
-        assertNotNull(filter.isIncludeTable("aaaa"));
+        assertFalse(filter.isIncludeTable("aaa"));
+        assertTrue(filter.isIncludeTable("aa"));
+        assertTrue(filter.isIncludeTable("aaaa"));
 
-        assertNull(filter.isIncludeTable("bb"));
-        assertNull(filter.isIncludeTable(""));
-        assertNull(filter.isIncludeTable("bbbb"));
+        assertFalse(filter.isIncludeTable("bb"));
+        assertFalse(filter.isIncludeTable(""));
+        assertFalse(filter.isIncludeTable("bbbb"));
+    }
+
+    @Test
+    public void testGetTableFilter() {
+        TreeSet<IncludeTableFilter> includes = new TreeSet<IncludeTableFilter>();
+        includes.add(new IncludeTableFilter("aaa"));
+        includes.add(new IncludeTableFilter("bb"));
+
+        TreeSet<Pattern> excludes = new TreeSet<>();
+
+        TableFilter filter = new TableFilter(includes, excludes);
+
+        assertNotNull(filter.getIncludeTableColumnFilter("aaa"));
+        assertNull(filter.getIncludeTableColumnFilter("aa"));
+        assertNull(filter.getIncludeTableColumnFilter("aaaa"));
+
+        assertNotNull(filter.getIncludeTableColumnFilter("bb"));
+        assertNull(filter.getIncludeTableColumnFilter(""));
+        assertNull(filter.getIncludeTableColumnFilter("bbbb"));
     }
 }

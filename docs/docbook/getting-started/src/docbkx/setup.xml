@@ -15,7 +15,7 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<chapter xmlns="http://docbook.org/ns/docbook"
+<section xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
     <title>Setup</title>
     <para> The goal of this chapter of the tutorial is to install (or check that you already have
@@ -23,28 +23,14 @@
     <section xml:id="install-java">
         <title>Install Java</title>
         <para>
-            Obviously, JDK has to be installed. Cayenne 3.1 requires JDK 1.5 or newer.
+            Obviously, JDK has to be installed. Cayenne 4.0 requires JDK 1.7 or newer.
         </para>
     </section>
-    <section xml:id="install-eclipse-and-maven">
-        <title>Install Eclipse IDE and the Maven Plugin</title>
-        <para> Download Eclipse. This tutorial is based on the Galileo package (Eclipse 3.5), JEE
-            edition, still it should work with any recent vanilla Eclipse distribution. </para>
-        <para> After downloading Eclipse, unpack it somewhere in the filesystem, and start it. The
-            only plugin that you need for the tutorial is m2eclipse. To install it, in Eclipse go to
-            "Help > Install New Software", then click on "Add.." to add a new download site, and
-            enter "Maven" in the "Name" field, and "<emphasis role="italic"
-                >http://m2eclipse.sonatype.org/sites/m2e</emphasis>" in the "Location" field. You
-            may install any of the optional components that you think you need, but for this
-            tutorial we only select a few basic components as shown on the following screenshot: </para>
+    <section xml:id="install-idea">
+        <title>Install IntelliJ IDEA</title>
         <para>
-            <inlinemediaobject>
-                <imageobject>
-                    <imagedata fileref="images/maven-plugin-install.png" scalefit="1" width="100%"/>
-                </imageobject>
-            </inlinemediaobject></para>
-        <para>
-            From here follow the Eclipse dialog instructions to finish the installation.
+            Download and install IntelliJ IDEA Community Edition.
+            This tutorial is based on version 2016.3, still it should work with any recent IntelliJ IDEA version.
         </para>
     </section>
-</chapter>
+</section>

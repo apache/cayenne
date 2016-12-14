@@ -155,8 +155,8 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
      * present.
      */
     public String getFullyQualifiedName() {
-        return (catalog != null ? catalog + '.' : "")
-             + (schema != null ? schema + '.' : "")
+        return ((catalog != null && !catalog.isEmpty()) ? catalog + '.' : "")
+             + ((schema != null && !schema.isEmpty()) ? schema + '.' : "")
              + name;
     }
 

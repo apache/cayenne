@@ -15,12 +15,12 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<chapter xmlns="http://docbook.org/ns/docbook"
+<section xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
     <title>Creating Java Classes</title>
     <para>Here we'll generate the Java classes from the model that was created in the previous
         section. CayenneModeler can be used to also generate the database schema, but since we
-        specified "CreateIfNoSchemaStrategy" earlier when we created a DataNode, we'll skip the
+        specified "<code>CreateIfNoSchemaStrategy</code>" earlier when we created a DataNode, we'll skip the
         database schema step. Still be aware that you can do it if you need to via "Tools &gt;
         Create Database Schema".
     </para>
@@ -35,8 +35,8 @@
                     selected.</para>
             </listitem>
             <listitem>
-                <para>For the "Output Directory" select "src/main/java" folder under your Eclipse
-                    project folder (this is a "peer" location to the cayenne-*.xml location we
+                <para>For the "Output Directory" select "<code>src/main/java</code>" folder under your IDEA
+                    project folder (this is a "peer" location to the <code>cayenne-*.xml</code> location we
                     selected before).</para>
             </listitem>
             <listitem>
@@ -47,13 +47,13 @@
                 <para>Click "Generate"</para>
             </listitem>
         </itemizedlist>
-        <para>Now go back to Eclipse, right click on "tutorial" project and select "Refresh" - you
+        <para>Now go back to IDEA - you
             should see pairs of classes generated for each mapped entity. You probably also see that
-            there's a bunch of red squiggles next to the newly generated Java classes in Eclipse.
+            there's a bunch of red squiggles next to the newly generated Java classes in IDEA.
             This is because our project does not include Cayenne as a Maven dependency yet. Let's
-            fix it now by adding "cayenne-server" artifact in the bottom of the pom.xml file. The
+            fix it now by adding "cayenne-server" artifact in the bottom of the <code>pom.xml</code> file. The
             resulting POM should look like
-            this:<programlisting>&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            this:<programlisting language="xml">&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
     &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
     &lt;groupId&gt;org.example.cayenne&lt;/groupId&gt;
@@ -64,29 +64,29 @@
         &lt;dependency&gt;
             &lt;groupId&gt;org.apache.cayenne&lt;/groupId&gt;
             &lt;artifactId&gt;cayenne-server&lt;/artifactId&gt;
-   &lt;!-- Here specify the version of Cayenne you are actually using --&gt;
-            &lt;version&gt;3.1M3&lt;/version&gt;
+            &lt;!-- Here specify the version of Cayenne you are actually using --&gt;
+            &lt;version&gt;4.0.M4&lt;/version&gt;
         &lt;/dependency&gt;
     &lt;/dependencies&gt;
 &lt;/project&gt;</programlisting></para>
-        <para>Your computer must be connected to the internet. Once you save the pom.xml, Eclipse
+        <para>Your computer must be connected to the internet. Once you edit the <code>pom.xml</code>, IDEA
             will download the needed Cayenne jar file and add it to the project build path. As a
             result, all the errors should disappear.</para>
         <para><inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="images/eclipse-generatedclasses.png" scalefit="1" width="100%"/>
+                    <imagedata fileref="images/idea-generated-classes.png" scalefit="0" width="100%"/>
                 </imageobject>
             </inlinemediaobject></para>
         <para>Now let's check the entity class pairs. Each one is made of a superclass (e.g. Artist)
             and a subclass (e.g. Artist). You <emphasis role="bold">should not</emphasis> modify the
             superclasses whose names start with "_" (underscore), as they will be replaced on
             subsequent generator runs. Instead all custom logic should be placed in the subclasses
-            in "org.example.cayenne.persistent" package - those will never be overwritten by the
+            in "<code>org.example.cayenne.persistent</code>" package - those will never be overwritten by the
             class generator.</para>
         <para>
             <note>
-                <para><emphasis role="bold">Class Generation
-                    Hint</emphasis> Often you'd start by generating classes from the
+                <title>Class Generation Hint</title>
+                <para> Often you'd start by generating classes from the
                     Modeler, but at the later stages of the project the generation is usually
                     automated either via Ant cgen task or Maven cgen mojo. All three methods are
                     interchangeable, however Ant and Maven methods would ensure that you never
@@ -96,4 +96,4 @@
         </para>
         
     </section>
-</chapter>
+</section>

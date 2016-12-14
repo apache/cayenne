@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.dialog.db.merge;
 
-import org.apache.cayenne.dbsync.merge.MergeDirection;
-import org.apache.cayenne.dbsync.merge.MergerToken;
+import org.apache.cayenne.dbsync.merge.context.MergeDirection;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;

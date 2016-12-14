@@ -49,13 +49,18 @@ public class TableFilter {
         this.excludes = excludes;
     }
 
+    public boolean isIncludeTable(String tableName) {
+        PatternFilter columnFilter = getIncludeTableColumnFilter(tableName);
+        return columnFilter != null;
+    }
+
     /**
      * Return filter for columns in case we should take this table
      *
      * @param tableName
      * @return
      */
-    public PatternFilter isIncludeTable(String tableName) {
+    public PatternFilter getIncludeTableColumnFilter(String tableName) {
         IncludeTableFilter include = null;
         for (IncludeTableFilter p : includes) {
             if (p.pattern == null || p.pattern.matcher(tableName).matches()) {

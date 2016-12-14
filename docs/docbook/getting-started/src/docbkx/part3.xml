@@ -15,7 +15,7 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<part xmlns="http://docbook.org/ns/docbook"
+<chapter xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
     xml:id="getting-started-part3" xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>Learning Cayenne API</title>
@@ -23,4 +23,4 @@
     <xi:include href="persistent-objects.xml"/>
     <xi:include href="select-query.xml"/>
     <xi:include href="delete.xml"/>
-</part>
+</chapter>

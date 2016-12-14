@@ -24,19 +24,18 @@ import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.filter.NameFilter;
-import org.apache.cayenne.dbsync.merge.AbstractToModelToken;
-import org.apache.cayenne.dbsync.merge.DbMerger;
-import org.apache.cayenne.dbsync.merge.MergerContext;
-import org.apache.cayenne.dbsync.merge.MergerToken;
-import org.apache.cayenne.dbsync.merge.ModelMergeDelegate;
-import org.apache.cayenne.dbsync.merge.ProxyModelMergeDelegate;
-import org.apache.cayenne.dbsync.merge.TokenComparator;
+import org.apache.cayenne.dbsync.merge.token.model.AbstractToModelToken;
+import org.apache.cayenne.dbsync.merge.DataMapMerger;
+import org.apache.cayenne.dbsync.merge.context.MergerContext;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.reverse.dbload.ModelMergeDelegate;
+import org.apache.cayenne.dbsync.reverse.dbload.ProxyModelMergeDelegate;
+import org.apache.cayenne.dbsync.merge.token.TokenComparator;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
-import org.apache.cayenne.dbsync.reverse.db.DbLoader;
-import org.apache.cayenne.dbsync.reverse.db.DbLoaderConfiguration;
-import org.apache.cayenne.dbsync.reverse.db.DbLoaderDelegate;
+import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
+import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
@@ -143,7 +142,7 @@ public class DefaultDbImportAction implements DbImportAction {
 
         DataMap sourceDataMap;
         try (Connection connection = dataSource.getConnection()) {
-            sourceDataMap = load(config, adapter, connection, objectNameGenerator);
+            sourceDataMap = load(config, adapter, connection);
         }
 
         DataMap targetDataMap = existingTargetMap(config);
@@ -164,7 +163,7 @@ public class DefaultDbImportAction implements DbImportAction {
         MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
 
         DbLoaderConfiguration loaderConfig = config.getDbLoaderConfig();
-        List<MergerToken> tokens = DbMerger.builder(mergerTokenFactory)
+        List<MergerToken> tokens = DataMapMerger.builder(mergerTokenFactory)
                 .filters(loaderConfig.getFiltersConfig())
                 .skipPKTokens(loaderConfig.isSkipPrimaryKeyLoading())
                 .skipRelationshipsTokens(loaderConfig.isSkipRelationshipsLoading())
@@ -409,19 +408,16 @@ public class DefaultDbImportAction implements DbImportAction {
 
     protected DataMap load(DbImportConfiguration config,
                            DbAdapter adapter,
-                           Connection connection,
-                           ObjectNameGenerator objectNameGenerator) throws Exception {
-
-        DataMap dataMap = new DataMap("_import_source_");
-        createDbLoader(adapter, connection, config.createLoaderDelegate(), objectNameGenerator)
-                .load(dataMap, config.getDbLoaderConfig());
-        return dataMap;
+                           Connection connection) throws Exception {
+        return createDbLoader(adapter, connection, config).load();
     }
 
     protected DbLoader createDbLoader(DbAdapter adapter,
-                                      Connection connection,
-                                      DbLoaderDelegate dbLoaderDelegate,
-                                      ObjectNameGenerator objectNameGenerator) {
-        return new DbLoader(connection, adapter, dbLoaderDelegate, objectNameGenerator);
+                                       Connection connection,
+                                       DbImportConfiguration config) {
+        return new DbLoader(adapter, connection,
+                config.getDbLoaderConfig(),
+                config.createLoaderDelegate(),
+                config.createNameGenerator());
     }
 }

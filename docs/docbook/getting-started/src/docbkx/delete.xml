@@ -15,7 +15,7 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<chapter xmlns="http://docbook.org/ns/docbook"
+<section xmlns="http://docbook.org/ns/docbook"
     xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
     <title>Deleting Objects</title>
     <para>This chapter explains how to model relationship delete rules and how to delete individual
@@ -44,7 +44,7 @@
                 <para>For Painting et both relationships rules to "Nullify".</para>
             </listitem>
         </itemizedlist>
-        <para>Now save the mapping, and refresh the project in Eclispe.</para>
+        <para>Now save the mapping.</para>
     </section>
     <section xml:id="deleting-objects">
         <title>Deleting Objects</title>
@@ -61,7 +61,7 @@
         <para>Since we set up "Cascade" delete rule for the Artist.paintings relationships, Cayenne
             will automatically delete all paintings of this artist. So when your run the app you'll
             see this output:</para>
-        <programlisting>INFO: SELECT t0.DATE_OF_BIRTH, t0.NAME, t0.ID FROM ARTIST t0 
+        <screen>INFO: SELECT t0.DATE_OF_BIRTH, t0.NAME, t0.ID FROM ARTIST t0
       WHERE t0.NAME = ? [bind: 1->NAME:'Pablo Picasso'] - prepared in 6 ms.
 INFO: === returned 1 row. - took 18 ms.
 INFO: +++ transaction committed.
@@ -73,6 +73,6 @@ INFO: === updated 2 rows.
 INFO: DELETE FROM ARTIST WHERE ID = ?
 INFO: [batch bind: 1->ID:200]
 INFO: === updated 1 row.
-INFO: +++ transaction committed.</programlisting>
+INFO: +++ transaction committed.</screen>
     </section>
-</chapter>
+</section>
