@@ -91,7 +91,8 @@ public class ReverseEngineeringAction extends DBWizardAction<DbLoaderOptionsDial
     }
 
     @Override
-    protected DbLoaderOptionsDialog createDialog(Collection<String> catalogs, Collection<String> schemas, String currentCatalog, String currentSchema) {
+    protected DbLoaderOptionsDialog createDialog(Collection<String> catalogs, Collection<String> schemas,
+                                                 String currentCatalog, String currentSchema) {
         return new DbLoaderOptionsDialog(catalogs, schemas, currentCatalog, currentSchema);
     }
 }

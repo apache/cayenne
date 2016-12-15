@@ -18,6 +18,7 @@ CAY-2164 Relocate builder bootstrap methods from ServerRuntimeBuilder to ServerR
 CAY-2165 Explicit "contribution" API for easier expansion of DI collections and maps
 CAY-2166 Auto-loading of Cayenne modules
 CAY-2168 Split DbLoader to parts and clean it up
+CAY-2172 Cleanup Modeler import and migrate db actions
 
 Bug Fixes:
 

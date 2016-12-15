@@ -35,7 +35,8 @@ import javax.swing.JTextField;
  */
 public class DbLoaderOptionsDialog extends DbActionOptionsDialog {
 
-    private JTextField tableNamePatternField;
+    private JTextField tableIncludePatternField;
+    private JTextField tableExcludePatternField;
     private JTextField meaningfulPk;
     private JTextField procNamePatternField;
     private JComboBox<String> strategyCombo;
@@ -52,9 +53,13 @@ public class DbLoaderOptionsDialog extends DbActionOptionsDialog {
 
     @Override
     protected void initForm(DefaultFormBuilder builder) {
-        tableNamePatternField = new JTextField();
-        tableNamePatternField.setToolTipText("<html>Regular expression to filter table names.<br>" +
+        super.initForm(builder);
+        tableIncludePatternField = new JTextField();
+        tableIncludePatternField.setToolTipText("<html>Regular expression to filter table names.<br>" +
                 "Default expression <b>.*</b> includes all tables.</html>");
+        tableExcludePatternField = new JTextField();
+        tableExcludePatternField.setToolTipText("<html>Regular expression to filter table names.<br>" +
+                "Empty by default excludes nothing.</html>");
         procNamePatternField = new JTextField();
         procNamePatternField.setToolTipText("<html>Regular expression to filter stored procedures names.<br>" +
                 "Default expression <b>.*</b> includes all stored procedures.</html>");
@@ -65,7 +70,8 @@ public class DbLoaderOptionsDialog extends DbActionOptionsDialog {
         strategyCombo = new JComboBox<>();
         strategyCombo.setEditable(true);
 
-        builder.append("Table Name Pattern:", tableNamePatternField);
+        builder.append("Table Name Include Pattern:", tableIncludePatternField);
+        builder.append("Table Name Exclude Pattern:", tableExcludePatternField);
         builder.append("Procedure Name Pattern:", procNamePatternField);
         builder.append("Naming Strategy:", strategyCombo);
         builder.append("Tables with Meaningful PK Pattern:", meaningfulPk);
@@ -74,7 +80,7 @@ public class DbLoaderOptionsDialog extends DbActionOptionsDialog {
     protected void initFromModel(Collection<String> catalogs, Collection<String> schemas, String currentCatalog, String currentSchema) {
         super.initFromModel(catalogs, schemas, currentCatalog, currentSchema);
 
-        this.tableNamePatternField.setText(WILDCARD_PATTERN);
+        this.tableIncludePatternField.setText(WILDCARD_PATTERN);
         this.procNamePatternField.setText(WILDCARD_PATTERN);
 
         Vector<String> arr = NameGeneratorPreferences
@@ -83,9 +89,16 @@ public class DbLoaderOptionsDialog extends DbActionOptionsDialog {
         strategyCombo.setModel(new DefaultComboBoxModel<>(arr));
     }
 
-    String getTableNamePattern() {
-        return "".equals(tableNamePatternField.getText()) ? null : tableNamePatternField
-                .getText();
+    String getTableIncludePattern() {
+        return "".equals(tableIncludePatternField.getText()) ?
+                null :
+                tableIncludePatternField.getText();
+    }
+
+    String getTableExcludePattern() {
+        return "".equals(tableExcludePatternField.getText()) ?
+                null :
+                tableExcludePatternField.getText();
     }
 
     String getMeaningfulPk() {

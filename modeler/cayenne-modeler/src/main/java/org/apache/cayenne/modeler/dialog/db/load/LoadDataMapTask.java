@@ -32,6 +32,9 @@ import org.apache.cayenne.tools.dbimport.DbImportModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * @since 4.0
+ */
 final public class LoadDataMapTask extends LongRunningTask {
 
     private static Log LOGGER = LogFactory.getLog(DbLoaderContext.class);

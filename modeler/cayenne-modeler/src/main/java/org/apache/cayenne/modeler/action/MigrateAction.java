@@ -20,11 +20,10 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
-import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
-import org.apache.cayenne.modeler.dialog.db.merge.DbMigrateOptionsDialog;
+import org.apache.cayenne.modeler.dialog.db.DbActionOptionsDialog;
 import org.apache.cayenne.modeler.dialog.db.merge.MergerOptions;
 
 import java.awt.event.ActionEvent;
@@ -33,7 +32,7 @@ import java.util.Collection;
 /**
  * Action that alter database schema to match a DataMap.
  */
-public class MigrateAction extends DBWizardAction<DbMigrateOptionsDialog> {
+public class MigrateAction extends DBWizardAction<DbActionOptionsDialog> {
 
     public MigrateAction(Application application) {
         super(getActionName(), application);
@@ -55,7 +54,7 @@ public class MigrateAction extends DBWizardAction<DbMigrateOptionsDialog> {
             throw new IllegalStateException("No current DataMap selected.");
         }
 
-        DbMigrateOptionsDialog optionsDialog = loaderOptionDialog(connectWizard);
+        DbActionOptionsDialog optionsDialog = loaderOptionDialog(connectWizard);
         String selectedCatalog = optionsDialog == null ? null : optionsDialog.getSelectedCatalog();
         String selectedSchema = optionsDialog == null ? null : optionsDialog.getSelectedSchema();
 
@@ -71,7 +70,9 @@ public class MigrateAction extends DBWizardAction<DbMigrateOptionsDialog> {
     }
 
     @Override
-    protected DbMigrateOptionsDialog createDialog(Collection<String> catalogs, Collection<String> schemas, String currentCatalog, String currentSchema) {
-        return new DbMigrateOptionsDialog(catalogs, schemas, currentCatalog, currentSchema);
+    protected DbActionOptionsDialog createDialog(Collection<String> catalogs, Collection<String> schemas,
+                                                 String currentCatalog, String currentSchema) {
+        return new DbActionOptionsDialog(Application.getFrame(), "Migrate DB Schema: Select Catalog and Schema",
+                catalogs, schemas, currentCatalog, currentSchema);
     }
 }

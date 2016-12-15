@@ -44,6 +44,9 @@ import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * @since 4.0
+ */
 public class DbLoaderContext {
 
     private static Log LOGGER = LogFactory.getLog(DbLoaderContext.class);
@@ -116,7 +119,11 @@ public class DbLoaderContext {
         ReverseEngineering reverseEngineering = new ReverseEngineering();
         reverseEngineering.addCatalog(new Catalog(dialog.getSelectedCatalog()));
         reverseEngineering.addSchema(new Schema(dialog.getSelectedSchema()));
-        reverseEngineering.addIncludeTable(new IncludeTable(dialog.getTableNamePattern()));
+        reverseEngineering.addIncludeTable(new IncludeTable(dialog.getTableIncludePattern()));
+        if(dialog.getTableExcludePattern() != null) {
+            reverseEngineering.addExcludeTable(new ExcludeTable(dialog.getTableExcludePattern()));
+        }
+        // Add here auto_pk_support table
         reverseEngineering.addExcludeTable(new ExcludeTable("auto_pk_support|AUTO_PK_SUPPORT"));
         reverseEngineering.addIncludeProcedure(new IncludeProcedure(dialog.getProcedureNamePattern()));
         FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(reverseEngineering);

@@ -38,7 +38,10 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.util.CayenneDialog;
 
-public abstract class DbActionOptionsDialog extends CayenneDialog {
+/**
+ * @since 4.0
+ */
+public class DbActionOptionsDialog extends CayenneDialog {
 
     protected static final String WILDCARD_PATTERN = ".*";
     public static final int CANCEL = 0;
@@ -77,9 +80,6 @@ public abstract class DbActionOptionsDialog extends CayenneDialog {
                 "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
-
-        catalogLabel = builder.append("Select Catalog:", catalogSelector, true);
-        schemaLabel = builder.append("Select Schema:", schemaSelector);
 
         initForm(builder);
 
@@ -141,7 +141,10 @@ public abstract class DbActionOptionsDialog extends CayenneDialog {
         }
     }
 
-    protected abstract void initForm(DefaultFormBuilder builder);
+    protected void initForm(DefaultFormBuilder builder) {
+        catalogLabel = builder.append("Select Catalog:", catalogSelector, true);
+        schemaLabel = builder.append("Select Schema:", schemaSelector);
+    }
 
     public int getChoice() {
         return choice;
