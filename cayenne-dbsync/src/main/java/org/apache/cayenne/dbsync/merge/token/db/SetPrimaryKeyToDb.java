@@ -39,7 +39,7 @@ public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
 
     public SetPrimaryKeyToDb(DbEntity entity, Collection<DbAttribute> primaryKeyOriginal,
             Collection<DbAttribute> primaryKeyNew, String detectedPrimaryKeyName) {
-        super("Set Primary Key", entity);
+        super("Set Primary Key", 100, entity);
 
         this.primaryKeyOriginal = primaryKeyOriginal;
         this.primaryKeyNew = primaryKeyNew;

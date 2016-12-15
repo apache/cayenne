@@ -35,7 +35,7 @@ import java.util.List;
 public class SetNotNullToDb extends AbstractToDbToken.EntityAndColumn {
 
     public SetNotNullToDb(DbEntity entity, DbAttribute column) {
-        super("Set Not Null", entity, column);
+        super("Set Not Null", 90, entity, column);
     }
 
     @Override

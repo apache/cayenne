@@ -40,7 +40,7 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
     private String objEntityClassName;
 
     public CreateTableToModel(DbEntity entity) {
-        super("Create Table", entity);
+        super("Create Table", 45, entity);
     }
 
     /**

@@ -47,7 +47,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -205,6 +207,13 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 		test("testForceDataMapSchema");
 	}
 
+    @Test
+    public void testComplexChangeOrder() throws Exception {
+        // after applying fix for CAY-2174 addressId should no longer be in CHILD table so this test will fail
+        // to fix it just remove "addressId" ObjAttribute in testComplexChangeOrder.map.xml-result
+        test("testComplexChangeOrder");
+    }
+
     /**
      * CREATE TABLE APP.A (
      * id INTEGER NOT NULL,
@@ -354,7 +363,10 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 
                         ResultSet keys = connection.getMetaData().getExportedKeys(null, schema, tableName);
                         while (keys.next()) {
-                            execute(stmt, "ALTER TABLE " + keys.getString("FKTABLE_NAME") + " DROP CONSTRAINT " + keys.getString("FK_NAME"));
+                            String fkTableSchem = keys.getString("FKTABLE_SCHEM");
+                            String fkTableName = keys.getString("FKTABLE_NAME");
+                            String fkTableNameFull = (isBlank(fkTableSchem) ? "" : fkTableSchem + ".") + fkTableName;
+                            execute(stmt, "ALTER TABLE " + fkTableNameFull + " DROP CONSTRAINT " + keys.getString("FK_NAME"));
                         }
 
                         String sql = "DROP TABLE " + tableNameFull;

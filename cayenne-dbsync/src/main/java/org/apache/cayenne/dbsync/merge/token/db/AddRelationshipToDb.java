@@ -34,7 +34,7 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
     private DbRelationship relationship;
 
     public AddRelationshipToDb(DbEntity entity, DbRelationship relationship) {
-        super("Add foreign key", entity);
+        super("Add foreign key", 110, entity);
         this.relationship = relationship;
     }
 
@@ -70,15 +70,6 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
     @Override
     public boolean isEmpty() {
         return relationship.isSourceIndependentFromTargetChange();
-    }
-
-    @Override
-    public int compareTo(MergerToken o) {
-        // add all AddRelationshipToDb to the end.
-        if (o instanceof AddRelationshipToDb) {
-            return super.compareTo(o);
-        }
-        return 1;
     }
 
 }

@@ -30,7 +30,7 @@ public class DropRelationshipToModel extends AbstractToModelToken.Entity {
     private final DbRelationship relationship;
 
     public DropRelationshipToModel(DbEntity entity, DbRelationship relationship) {
-        super("Drop db-relationship ", entity);
+        super("Drop db-relationship ", 15, entity);
         this.relationship = relationship;
     }
 

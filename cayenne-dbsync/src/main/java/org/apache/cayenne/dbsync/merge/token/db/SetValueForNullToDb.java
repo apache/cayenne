@@ -35,7 +35,7 @@ public class SetValueForNullToDb extends AbstractToDbToken.EntityAndColumn {
     private ValueForNullProvider valueForNullProvider;
 
     public SetValueForNullToDb(DbEntity entity, DbAttribute column, ValueForNullProvider valueForNullProvider) {
-        super("Set value for null", entity, column);
+        super("Set value for null", 80, entity, column);
         this.valueForNullProvider = valueForNullProvider;
     }
     

@@ -22,6 +22,7 @@ package org.apache.cayenne.dbsync.merge.token.db;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.context.MergeDirection;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
+import org.apache.cayenne.dbsync.merge.token.AbstractMergerToken;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
@@ -37,22 +38,10 @@ import java.util.List;
  * Common abstract superclass for all {@link MergerToken}s going from the model
  * to the database.
  */
-public abstract class AbstractToDbToken implements MergerToken, Comparable<MergerToken> {
+public abstract class AbstractToDbToken extends AbstractMergerToken {
 
-	private final String tokenName;
-
-	protected AbstractToDbToken(String tokenName) {
-		this.tokenName = tokenName;
-	}
-
-	@Override
-	public final String getTokenName() {
-		return tokenName;
-	}
-
-	@Override
-	public final MergeDirection getDirection() {
-		return MergeDirection.TO_DB;
+	protected AbstractToDbToken(String tokenName, int sortingWeight) {
+		super(tokenName, sortingWeight);
 	}
 
 	@Override
@@ -62,7 +51,7 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
 		}
 	}
 
-	protected void executeSql(MergerContext mergerContext, String sql) {
+	void executeSql(MergerContext mergerContext, String sql) {
 		JdbcEventLogger logger = mergerContext.getDataNode().getJdbcEventLogger();
 		logger.log(sql);
 
@@ -77,23 +66,19 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
 		}
 	}
 
-	@Override
-	public String toString() {
-		return getTokenName() + ' ' + getTokenValue() + ' ' + getDirection();
-	}
-
-	public boolean isEmpty() {
-		return false;
-	}
-
 	public abstract List<String> createSql(DbAdapter adapter);
+
+	@Override
+	public final MergeDirection getDirection() {
+		return MergeDirection.TO_DB;
+	}
 
 	abstract static class Entity extends AbstractToDbToken {
 
-		private DbEntity entity;
+		private final DbEntity entity;
 
-		public Entity(String tokenName, DbEntity entity) {
-			super(tokenName);
+		protected Entity(String tokenName, int sortingWeight, DbEntity entity) {
+			super(tokenName, sortingWeight);
 			this.entity = entity;
 		}
 
@@ -104,20 +89,14 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
 		public String getTokenValue() {
 			return getEntity().getName();
 		}
-
-		public int compareTo(MergerToken o) {
-			// default order as tokens are created
-			return 0;
-		}
-
 	}
 
 	abstract static class EntityAndColumn extends Entity {
 
-		private DbAttribute column;
+		private final DbAttribute column;
 
-		public EntityAndColumn(String tokenName, DbEntity entity, DbAttribute column) {
-			super(tokenName, entity);
+		protected EntityAndColumn(String tokenName, int sortingWeight, DbEntity entity, DbAttribute column) {
+			super(tokenName, sortingWeight, entity);
 			this.column = column;
 		}
 
@@ -129,6 +108,5 @@ public abstract class AbstractToDbToken implements MergerToken, Comparable<Merge
 		public String getTokenValue() {
 			return getEntity().getName() + "." + getColumn().getName();
 		}
-
 	}
 }

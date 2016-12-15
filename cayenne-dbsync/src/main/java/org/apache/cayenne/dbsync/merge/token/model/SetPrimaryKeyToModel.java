@@ -40,7 +40,7 @@ public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
     public SetPrimaryKeyToModel(DbEntity entity,
             Collection<DbAttribute> primaryKeyOriginal,
             Collection<DbAttribute> primaryKeyNew, String detectedPrimaryKeyName) {
-        super("Set Primary Key", entity);
+        super("Set Primary Key", 105, entity);
         
         this.primaryKeyOriginal = primaryKeyOriginal;
         this.primaryKeyNew = primaryKeyNew;
@@ -76,8 +76,6 @@ public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
                 e.dbAttributeChanged(new AttributeEvent(this, attr, e));
                 mergerContext.getDelegate().dbAttributeModified(attr);
             }
-
         }
-
     }
 }

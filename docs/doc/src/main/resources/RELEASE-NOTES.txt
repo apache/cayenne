@@ -19,6 +19,7 @@ CAY-2165 Explicit "contribution" API for easier expansion of DI collections and 
 CAY-2166 Auto-loading of Cayenne modules
 CAY-2168 Split DbLoader to parts and clean it up
 CAY-2169 Split DbMerger to parts and clean it up
+CAY-2170 MergeToken sorting is highly unstable
 
 Bug Fixes:
 

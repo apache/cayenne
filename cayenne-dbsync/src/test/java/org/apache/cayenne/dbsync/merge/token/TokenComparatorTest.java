@@ -59,6 +59,50 @@ public class TokenComparatorTest {
     }
 
     @Test
+    public void testSortStability() throws Exception {
+        List<MergerToken> tokens = Arrays.<MergerToken>asList(
+                new AddRelationshipToModel(null, null),
+                new AddColumnToModel(null, null),
+                new AddColumnToDb(null, null),
+                new CreateTableToModel(null),
+                new DropTableToModel(null),
+                new DropColumnToModel(null, null),
+                new DropRelationshipToModel(null, null)
+        );
+        Collections.sort(tokens, comparator);
+        List<String> actual = toClassesNames(tokens);
+
+        List<String> expected = Arrays.asList(
+                "DropRelationshipToModel",
+                "DropColumnToModel",
+                "DropTableToModel",
+                "CreateTableToModel",
+                "AddColumnToDb",
+                "AddColumnToModel",
+                "AddRelationshipToModel"
+        );
+
+        assertEquals(expected, actual);
+
+        Collections.sort(tokens, comparator);
+        actual = toClassesNames(tokens);
+        assertEquals(expected, actual);
+
+        List<MergerToken> tokens2 = Arrays.<MergerToken>asList(
+                new AddColumnToModel(null, null),
+                new AddRelationshipToModel(null, null),
+                new CreateTableToModel(null),
+                new AddColumnToDb(null, null),
+                new DropColumnToModel(null, null),
+                new DropRelationshipToModel(null, null),
+                new DropTableToModel(null)
+        );
+        Collections.sort(tokens2, comparator);
+        actual = toClassesNames(tokens);
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void testToModelTokensCompare() throws Exception {
         List<MergerToken> tokens = Arrays.<MergerToken>asList(
                 new DropColumnToModel(null, null),
@@ -72,12 +116,12 @@ public class TokenComparatorTest {
 
         List<String> actual = toClassesNames(tokens);
         List<String> expected = Arrays.asList(
+                "DropRelationshipToModel",
+                "DropColumnToModel",
+                "DropTableToModel",
+                "CreateTableToModel",
                 "AddColumnToDb",
                 "AddColumnToModel",
-                "CreateTableToModel",
-                "DropColumnToModel",
-                "DropRelationshipToModel",
-                "DropTableToModel",
                 "AddRelationshipToModel"
         );
 
@@ -98,12 +142,12 @@ public class TokenComparatorTest {
 
         List<String> actual = toClassesNames(tokens);
         List<String> expected = Arrays.asList(
-                "AddColumnToModel",
-                "DropColumnToDb",
                 "DropRelationshipToDb",
+                "DropColumnToDb",
                 "DropTableToDb",
-                "AddColumnToDb",
                 "CreateTableToDb",
+                "AddColumnToDb",
+                "AddColumnToModel",
                 "AddRelationshipToDb"
         );
 

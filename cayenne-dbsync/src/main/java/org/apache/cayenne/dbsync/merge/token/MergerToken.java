@@ -26,11 +26,13 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 /**
  * Represents a minimal atomic synchronization operation between database and Cayenne model.
  */
-public interface MergerToken {
+public interface MergerToken extends Comparable<MergerToken> {
 
     String getTokenName();
 
     String getTokenValue();
+
+    int getSortingWeight();
 
     /**
      * The direction of this token. One of {@link MergeDirection#TO_DB} or
