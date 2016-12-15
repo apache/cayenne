@@ -21,6 +21,7 @@ CAY-2168 Split DbLoader to parts and clean it up
 CAY-2169 Split DbMerger to parts and clean it up
 
 Bug Fixes:
+CAY-2174 Change FK attribute name cause ObjAttribute appear after Reverse Engineering
 
 ----------------------------------
 Release: 4.0.M4

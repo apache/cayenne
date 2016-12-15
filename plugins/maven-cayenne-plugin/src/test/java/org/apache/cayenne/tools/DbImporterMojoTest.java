@@ -233,6 +233,11 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     }
 
     @Test
+    public void testFkAttributeRename() throws Exception {
+        test("testFkAttributeRename");
+    }
+
+    @Test
     public void testFilteringConfig() throws Exception {
         DbImporterMojo cdbImport = getCdbImport("config/pom-01.xml");
 
