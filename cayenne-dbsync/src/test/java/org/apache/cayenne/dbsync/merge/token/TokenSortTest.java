@@ -41,14 +41,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class TokenComparatorTest {
-
-    TokenComparator comparator;
-
-    @Before
-    public void setUp() {
-        comparator = new TokenComparator();
-    }
+public class TokenSortTest {
 
     private List<String> toClassesNames(List<MergerToken> sort) {
         List<String> res = new ArrayList<String>(sort.size());
@@ -69,7 +62,7 @@ public class TokenComparatorTest {
                 new DropColumnToModel(null, null),
                 new DropRelationshipToModel(null, null)
         );
-        Collections.sort(tokens, comparator);
+        Collections.sort(tokens);
         List<String> actual = toClassesNames(tokens);
 
         List<String> expected = Arrays.asList(
@@ -84,7 +77,7 @@ public class TokenComparatorTest {
 
         assertEquals(expected, actual);
 
-        Collections.sort(tokens, comparator);
+        Collections.sort(tokens);
         actual = toClassesNames(tokens);
         assertEquals(expected, actual);
 
@@ -97,7 +90,7 @@ public class TokenComparatorTest {
                 new DropRelationshipToModel(null, null),
                 new DropTableToModel(null)
         );
-        Collections.sort(tokens2, comparator);
+        Collections.sort(tokens2);
         actual = toClassesNames(tokens);
         assertEquals(expected, actual);
     }
@@ -112,7 +105,7 @@ public class TokenComparatorTest {
                 new AddRelationshipToModel(null, null),
                 new AddColumnToModel(null, null),
                 new CreateTableToModel(null));
-        Collections.sort(tokens, comparator);
+        Collections.sort(tokens);
 
         List<String> actual = toClassesNames(tokens);
         List<String> expected = Arrays.asList(
@@ -138,7 +131,7 @@ public class TokenComparatorTest {
                 new AddRelationshipToDb(null, null),
                 new AddColumnToDb(null, null),
                 new CreateTableToDb(null));
-        Collections.sort(tokens, comparator);
+        Collections.sort(tokens);
 
         List<String> actual = toClassesNames(tokens);
         List<String> expected = Arrays.asList(

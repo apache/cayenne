@@ -24,15 +24,11 @@ CREATE TABLE schema_01.address (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE schema_01.parent (
-    id INTEGER  NOT NULL,
-    PRIMARY KEY (id)
-);
-
 CREATE TABLE schema_01.child (
     address_id INTEGER ,
+    "date" DATE,
     id INTEGER ,
-    parent_id INTEGER,
-    CONSTRAINT fk_address FOREIGN KEY (address_id) REFERENCES schema_01.address (id),
-    CONSTRAINT fk_parent FOREIGN KEY (parent_id) REFERENCES schema_01.parent (id)
+    name VARCHAR(30) NOT NULL,
+    parent_id INTEGER ,
+    CONSTRAINT fk_address FOREIGN KEY (address_id) REFERENCES schema_01.address (id)
 );

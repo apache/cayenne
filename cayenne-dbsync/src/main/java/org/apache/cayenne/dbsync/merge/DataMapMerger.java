@@ -22,7 +22,6 @@ package org.apache.cayenne.dbsync.merge;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.EmptyValueForNullProvider;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.dbsync.merge.token.TokenComparator;
 import org.apache.cayenne.dbsync.merge.token.ValueForNullProvider;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
@@ -76,7 +75,7 @@ public class DataMapMerger implements Merger<DataMap> {
         for(AbstractMerger<?, ?> merger : mergerList) {
             tokens.addAll(merger.createMergeTokens());
         }
-        Collections.sort(tokens, new TokenComparator());
+        Collections.sort(tokens);
         return tokens;
     }
 

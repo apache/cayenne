@@ -30,7 +30,6 @@ import org.apache.cayenne.dbsync.merge.context.MergerContext;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.reverse.dbload.ModelMergeDelegate;
 import org.apache.cayenne.dbsync.reverse.dbload.ProxyModelMergeDelegate;
-import org.apache.cayenne.dbsync.merge.token.TokenComparator;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
@@ -96,7 +95,7 @@ public class DefaultDbImportAction implements DbImportAction {
     }
 
     protected static List<MergerToken> sort(List<MergerToken> reverse) {
-        Collections.sort(reverse, new TokenComparator());
+        Collections.sort(reverse);
         return reverse;
     }
 
