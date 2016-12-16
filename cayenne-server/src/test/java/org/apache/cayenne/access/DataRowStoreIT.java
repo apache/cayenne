@@ -64,7 +64,10 @@ public class DataRowStoreIT extends ServerCase {
 
     @Before
     public void createEventManager() {
-        eventManager = new DefaultEventManager();
+        // we don't actually need any event manager here, as having it will start
+        // really heavy Event Bridge (jgroups bridge) inside DataRowStore and this behaviour
+        // is not anyhow tested here nor it affects existing tests.
+        eventManager = null;//new DefaultEventManager();
     }
 
     @Test
