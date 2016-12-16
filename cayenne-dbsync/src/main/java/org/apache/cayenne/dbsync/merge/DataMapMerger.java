@@ -60,8 +60,8 @@ public class DataMapMerger implements Merger<DataMap> {
         prepare(original, importedFromDb);
 
         createDbEntityMerger(original, importedFromDb);
-        createRelationshipMerger(original, importedFromDb);
-        createAttributeMerger(original, importedFromDb);
+        createRelationshipMerger();
+        createAttributeMerger();
 
         return createTokens();
     }
@@ -84,19 +84,19 @@ public class DataMapMerger implements Merger<DataMap> {
         mergerList.add(dbEntityMerger);
     }
 
-    private void createAttributeMerger(DataMap original, DataMap imported) {
+    private void createAttributeMerger() {
         ChainMerger<DbEntity, DbAttribute> dbAttributeMerger = new ChainMerger<>(
-                tokenFactory, original, imported,
-                new DbAttributeMerger(tokenFactory, original, imported, valueForNull),
+                tokenFactory,
+                new DbAttributeMerger(tokenFactory, valueForNull),
                 dbEntityMerger
         );
         mergerList.add(dbAttributeMerger);
     }
 
-    private void createRelationshipMerger(DataMap original, DataMap imported) {
+    private void createRelationshipMerger() {
         ChainMerger<DbEntity, DbRelationship> dbRelationshipMerger = new ChainMerger<>(
-                tokenFactory, original, imported,
-                new DbRelationshipMerger(tokenFactory, original, imported, skipRelationshipsTokens),
+                tokenFactory,
+                new DbRelationshipMerger(tokenFactory, skipRelationshipsTokens),
                 dbEntityMerger
         );
         mergerList.add(dbRelationshipMerger);

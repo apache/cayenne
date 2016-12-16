@@ -39,9 +39,8 @@ public class DbRelationshipMerger extends AbstractMerger<DbEntity, DbRelationshi
 
     private final boolean skipRelationshipsTokens;
 
-    DbRelationshipMerger(MergerTokenFactory tokenFactory,
-                         DataMap original, DataMap imported, boolean skipRelationshipsTokens) {
-        super(tokenFactory, original, imported);
+    DbRelationshipMerger(MergerTokenFactory tokenFactory, boolean skipRelationshipsTokens) {
+        super(tokenFactory);
         this.skipRelationshipsTokens = skipRelationshipsTokens;
     }
 
@@ -53,8 +52,12 @@ public class DbRelationshipMerger extends AbstractMerger<DbEntity, DbRelationshi
                 .build();
     }
 
-    private DbEntity getOriginalDbEntity(DbRelationship relationship) {
-        return originalDataMap.getDbEntity(relationship.getSourceEntity().getName());
+    private DbEntity getOriginalSourceDbEntity(DbRelationship relationship) {
+        return getOriginalDictionary().getByName(relationship.getSourceEntity().getName().toUpperCase());
+    }
+
+    private DbEntity getOriginalTargetDbEntity(DbRelationship relationship) {
+        return getOriginalDictionary().getByName(relationship.getTargetEntityName().toUpperCase());
     }
 
     /**
@@ -63,8 +66,8 @@ public class DbRelationshipMerger extends AbstractMerger<DbEntity, DbRelationshi
      */
     @Override
     Collection<MergerToken> createTokensForMissingOriginal(DbRelationship imported) {
-        DbEntity originalDbEntity = getOriginalDbEntity(imported);
-        DbEntity targetEntity = originalDataMap.getDbEntity(imported.getTargetEntityName());
+        DbEntity originalDbEntity = getOriginalSourceDbEntity(imported);
+        DbEntity targetEntity = getOriginalTargetDbEntity(imported);
 
         if (targetEntity == null) {
             return null;
@@ -98,7 +101,7 @@ public class DbRelationshipMerger extends AbstractMerger<DbEntity, DbRelationshi
         if(skipRelationshipsTokens) {
             return null;
         }
-        DbEntity originalDbEntity = getOriginalDbEntity(original);
+        DbEntity originalDbEntity = getOriginalSourceDbEntity(original);
         MergerToken token = getTokenFactory().createAddRelationshipToDb(originalDbEntity, original);
         return Collections.singleton(token);
     }

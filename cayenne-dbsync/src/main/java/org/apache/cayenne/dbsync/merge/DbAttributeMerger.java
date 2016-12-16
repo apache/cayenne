@@ -36,8 +36,8 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
 
     private final ValueForNullProvider valueForNull;
 
-    DbAttributeMerger(MergerTokenFactory tokenFactory, DataMap original, DataMap imported, ValueForNullProvider valueForNull) {
-        super(tokenFactory, original, imported);
+    DbAttributeMerger(MergerTokenFactory tokenFactory, ValueForNullProvider valueForNull) {
+        super(tokenFactory);
         this.valueForNull = valueForNull;
     }
 
@@ -76,7 +76,7 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
      */
     @Override
     Collection<MergerToken> createTokensForMissingOriginal(DbAttribute imported) {
-        DbEntity originalDbEntity = originalDataMap.getDbEntity(imported.getEntity().getName());
+        DbEntity originalDbEntity = getOriginalDictionary().getByName(imported.getEntity().getName().toUpperCase());
         return Collections.singleton(getTokenFactory().createDropColumnToDb(originalDbEntity, imported));
     }
 
