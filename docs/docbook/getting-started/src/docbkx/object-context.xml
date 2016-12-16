@@ -75,9 +75,18 @@ public class Main {
    &lt;artifactId&gt;derby&lt;/artifactId&gt;
    &lt;version&gt;10.13.1.1&lt;/version&gt;
 &lt;/dependency&gt;</programlisting>Now
-            we are ready to run. Right click the "Main" class in IDEA and select "Run 'Main.main()'". In the console you'll see output similar to this, indicating that
-            Cayenne stack has been
-                started:<screen>INFO: Loading XML configuration resource from file:/.../cayenne-project.xml
+            we are ready to run. Right click the "Main" class in IDEA and select "Run 'Main.main()'".
+        </para>
+        <para>
+            <inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="images/idea-file-run-menu.png"/>
+                </imageobject>
+            </inlinemediaobject>
+        </para>
+        <para>
+            In the console you'll see output similar to this, indicating that Cayenne stack has been started:
+            <screen>INFO: Loading XML configuration resource from file:/.../cayenne-project.xml
 INFO: Loading XML DataMap resource from file:/.../datamap.map.xml
 INFO: loading user name and password.
 INFO: Connecting to 'jdbc:derby:memory:testdb;create=true' as 'null'

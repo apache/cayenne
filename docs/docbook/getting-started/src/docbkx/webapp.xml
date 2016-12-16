@@ -218,7 +218,7 @@
                 <para>Go to "Select Run/Debug Configuration" menu, and then "Edit Configuration..."</para>
                 <para><inlinemediaobject>
                         <imageobject>
-                            <imagedata fileref="images/idea-configuration-menu.png" scalefit="0" width="100%"/>
+                            <imagedata fileref="images/idea-edit-configurations.png"/>
                         </imageobject>
                     </inlinemediaobject>
                 </para>
@@ -227,7 +227,7 @@
                 <para>Click "+" button and select "Maven". Enter "Name" and "Command line" as shown on screenshot:</para>
                 <para><inlinemediaobject>
                         <imageobject>
-                            <imagedata fileref="images/idea-run-configuration.png" scalefit="0" width="100%"/>
+                            <imagedata fileref="images/idea-run-configuration.png" scalefit="1" width="100%"/>
                         </imageobject>
                     </inlinemediaobject></para>
             </listitem>
@@ -237,9 +237,7 @@
                 <para>Click "Apply" and "Run". On the first execution it may take a few minutes for
                     Jetty plugin to download all dependencies, but eventually you'll see the logs
                     like this:</para>
-        <screen>[INFO] Scanning for projects...
-[INFO]                                                                         
-[INFO] ------------------------------------------------------------------------
+        <screen>[INFO] ------------------------------------------------------------------------
 [INFO] Building tutorial 0.0.1-SNAPSHOT
 [INFO] ------------------------------------------------------------------------
 ...
@@ -285,10 +283,7 @@ INFO: ALTER TABLE PAINTING ADD FOREIGN KEY (ARTIST_ID) REFERENCES ARTIST (ID)
 INFO: ALTER TABLE PAINTING ADD FOREIGN KEY (GALLERY_ID) REFERENCES GALLERY (ID)
 INFO: CREATE TABLE AUTO_PK_SUPPORT (  
       TABLE_NAME CHAR(100) NOT NULL,  NEXT_ID BIGINT NOT NULL,  PRIMARY KEY(TABLE_NAME))
-INFO: DELETE FROM AUTO_PK_SUPPORT WHERE TABLE_NAME IN ('ARTIST', 'GALLERY', 'PAINTING')
-INFO: INSERT INTO AUTO_PK_SUPPORT (TABLE_NAME, NEXT_ID) VALUES ('ARTIST', 200)
-INFO: INSERT INTO AUTO_PK_SUPPORT (TABLE_NAME, NEXT_ID) VALUES ('GALLERY', 200)
-INFO: INSERT INTO AUTO_PK_SUPPORT (TABLE_NAME, NEXT_ID) VALUES ('PAINTING', 200)
+...
 INFO: SELECT t0.DATE_OF_BIRTH, t0.NAME, t0.ID FROM ARTIST t0 ORDER BY t0.NAME
 INFO: === returned 0 rows. - took 17 ms.
 INFO: +++ transaction committed.</screen>
@@ -300,7 +295,7 @@ INFO: +++ transaction committed.</screen>
                     can be edited by clicking on their name:</para>
                 <para><inlinemediaobject>
                         <imageobject>
-                            <imagedata fileref="images/chrome-webapp.png" width="100%"/>
+                            <imagedata fileref="images/chrome-webapp.png" scalefit="1" width="100%"/>
                         </imageobject>
                     </inlinemediaobject></para>
             </listitem>
