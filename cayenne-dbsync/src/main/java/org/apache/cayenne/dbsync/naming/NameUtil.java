@@ -22,14 +22,15 @@ package org.apache.cayenne.dbsync.naming;
  * @since 4.0
  */
 final class NameUtil {
-    static String uncapitalize(String string) {
+
+    private static String prepare(String string, boolean capitalize){
         int len;
         if (string == null || (len = string.length()) == 0) {
             return string;
         }
 
         final char firstChar = string.charAt(0);
-        final char newChar = Character.toLowerCase(firstChar);
+        final char newChar = capitalize ? Character.toTitleCase(firstChar) : Character.toLowerCase(firstChar);
         if (firstChar == newChar) {
             // already capitalized
             return string;
@@ -42,24 +43,12 @@ final class NameUtil {
         return String.valueOf(newChars);
     }
 
+    static String uncapitalize(String string) {
+        return prepare(string,false);
+    }
+
     static String capitalize(String string) {
-        int len;
-        if (string == null || (len = string.length()) == 0) {
-            return string;
-        }
-
-        final char firstChar = string.charAt(0);
-        final char newChar = Character.toTitleCase(firstChar);
-        if (firstChar == newChar) {
-            // already capitalized
-            return string;
-        }
-
-        char[] newChars = new char[len];
-        newChars[0] = newChar;
-        string.getChars(1, len, newChars, 1);
-
-        return String.valueOf(newChars);
+        return prepare(string,true);
     }
 
 }
