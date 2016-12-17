@@ -1351,8 +1351,8 @@
 								<!-- ${db.host} and ${db.port} are dynamically set by docker-maven-plugin below -->
 								<cayenneAdapter>org.apache.cayenne.dba.mysql.MySQLAdapter</cayenneAdapter>
 								<cayenneJdbcUsername>root</cayenneJdbcUsername>
-								<cayenneJdbcPassword />
-								<cayenneJdbcUrl>jdbc:mysql://${db.host}:${db.port}/cayenne</cayenneJdbcUrl>
+								<cayenneJdbcPassword></cayenneJdbcPassword>
+								<cayenneJdbcUrl>jdbc:mysql://${db.host}:${db.port}/cayenne?useUnicode=true&amp;characterEncoding=UTF-8&amp;generateSimpleParameterMetadata=true</cayenneJdbcUrl>
 								<cayenneJdbcDriver>com.mysql.jdbc.Driver</cayenneJdbcDriver>
 							</systemPropertyVariables>
 						</configuration>
@@ -1424,11 +1424,11 @@
 			</dependencies>
 		</profile>
 		<profile>
-			<id>postgresdocker</id>
+			<id>postgres-docker</id>
 			<activation>
 				<property>
 					<name>cayenneTestConnection</name>
-					<value>postgresdocker</value>
+					<value>postgres-docker</value>
 				</property>
 			</activation>
 			<dependencies>

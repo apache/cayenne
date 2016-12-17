@@ -18,12 +18,18 @@
 # How to fix: Change build setting or fix code.
 # https://docs.travis-ci.com/user/ci-environment/#Virtualization-environments
 sudo: required
+
+services:
+  - docker
+
 language: java
 
 env:
   - DB_PROFILE=hsql
   - DB_PROFILE=h2
   - DB_PROFILE=derby
+  - DB_PROFILE=mysql-docker
+  - DB_PROFILE=postgres-docker
 
 jdk:
   - oraclejdk8
