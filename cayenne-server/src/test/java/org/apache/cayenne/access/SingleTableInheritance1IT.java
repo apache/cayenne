@@ -61,7 +61,7 @@ public class SingleTableInheritance1IT extends ServerCase {
 
         // Per CAY-1379 removing user and then refetching resulted in a FFE downstream
         group1.removeFromGroupMembers(user);
-        Expression exp = ExpressionFactory.matchExp(Role.ROLE_GROUPS_PROPERTY, group2);
+        Expression exp = ExpressionFactory.matchExp(Role.ROLE_GROUPS.getName(), group2);
         SelectQuery query = new SelectQuery(Group.class, exp);
         context.performQuery(query);
         context.commitChanges();

@@ -14,12 +14,9 @@ public abstract class _EnumEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String ENUM_ATTRIBUTE_PROPERTY = "enumAttribute";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Enum1> ENUM_ATTRIBUTE = new Property<Enum1>("enumAttribute");
+    public static final Property<Enum1> ENUM_ATTRIBUTE = new Property<>("enumAttribute");
 
     public void setEnumAttribute(Enum1 enumAttribute) {
         writeProperty("enumAttribute", enumAttribute);

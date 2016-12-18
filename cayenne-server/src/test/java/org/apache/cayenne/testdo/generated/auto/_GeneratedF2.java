@@ -16,12 +16,9 @@ public abstract class _GeneratedF2 extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String F1_PROPERTY = "f1";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<List<GeneratedF1>> F1 = new Property<List<GeneratedF1>>("f1");
+    public static final Property<List<GeneratedF1>> F1 = new Property<>("f1");
 
     public void addToF1(GeneratedF1 obj) {
         addToManyTarget("f1", obj, true);

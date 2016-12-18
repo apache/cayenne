@@ -15,8 +15,8 @@ public abstract class _IvRoot extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> DISCRIMINATOR = new Property<String>("discriminator");
-    public static final Property<String> NAME = new Property<String>("name");
+    public static final Property<String> DISCRIMINATOR = new Property<>("discriminator");
+    public static final Property<String> NAME = new Property<>("name");
 
     public void setDiscriminator(String discriminator) {
         writeProperty("discriminator", discriminator);

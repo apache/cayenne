@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.inheritance_flat.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_flat.Group;
 
 /**
@@ -11,32 +12,34 @@ import org.apache.cayenne.testdo.inheritance_flat.Group;
  */
 public abstract class _GroupProperties extends CayenneDataObject {
 
-    public static final String DESCRIPTION_PROPERTY = "description";
-    public static final String ID_PROPERTY = "id";
-    public static final String GROUP_PROPERTY = "group";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "id";
 
+    public static final Property<String> DESCRIPTION = new Property<>("description");
+    public static final Property<Long> ID = new Property<>("id");
+    public static final Property<Group> GROUP = new Property<>("group");
+
     public void setDescription(String description) {
-        writeProperty(DESCRIPTION_PROPERTY, description);
+        writeProperty("description", description);
     }
     public String getDescription() {
-        return (String)readProperty(DESCRIPTION_PROPERTY);
+        return (String)readProperty("description");
     }
 
     public void setId(Long id) {
-        writeProperty(ID_PROPERTY, id);
+        writeProperty("id", id);
     }
     public Long getId() {
-        return (Long)readProperty(ID_PROPERTY);
+        return (Long)readProperty("id");
     }
 
     public void setGroup(Group group) {
-        setToOneTarget(GROUP_PROPERTY, group, true);
+        setToOneTarget("group", group, true);
     }
 
     public Group getGroup() {
-        return (Group)readProperty(GROUP_PROPERTY);
+        return (Group)readProperty("group");
     }
 
 

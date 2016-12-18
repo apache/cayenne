@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.deleterules.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.deleterules.DeleteRule;
 
 /**
@@ -11,24 +12,26 @@ import org.apache.cayenne.testdo.deleterules.DeleteRule;
  */
 public abstract class _DeleteDeny extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String DENY_PROPERTY = "deny";
+    private static final long serialVersionUID = 1L; 
 
     public static final String DELETE_DENY_ID_PK_COLUMN = "DELETE_DENY_ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<DeleteRule> DENY = new Property<>("deny");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void setDeny(DeleteRule deny) {
-        setToOneTarget(DENY_PROPERTY, deny, true);
+        setToOneTarget("deny", deny, true);
     }
 
     public DeleteRule getDeny() {
-        return (DeleteRule)readProperty(DENY_PROPERTY);
+        return (DeleteRule)readProperty("deny");
     }
 
 

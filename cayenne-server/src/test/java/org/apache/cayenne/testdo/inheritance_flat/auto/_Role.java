@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.inheritance_flat.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_flat.Group;
 
 /**
@@ -13,45 +14,47 @@ import org.apache.cayenne.testdo.inheritance_flat.Group;
  */
 public abstract class _Role extends CayenneDataObject {
 
-    public static final String ID_PROPERTY = "id";
-    public static final String NAME_PROPERTY = "name";
-    public static final String TYPE_PROPERTY = "type";
-    public static final String ROLE_GROUPS_PROPERTY = "roleGroups";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "id";
 
+    public static final Property<Long> ID = new Property<>("id");
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<Integer> TYPE = new Property<>("type");
+    public static final Property<List<Group>> ROLE_GROUPS = new Property<>("roleGroups");
+
     public void setId(long id) {
-        writeProperty(ID_PROPERTY, id);
+        writeProperty("id", id);
     }
     public long getId() {
-        Object value = readProperty(ID_PROPERTY);
+        Object value = readProperty("id");
         return (value != null) ? (Long) value : 0;
     }
 
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void setType(int type) {
-        writeProperty(TYPE_PROPERTY, type);
+        writeProperty("type", type);
     }
     public int getType() {
-        Object value = readProperty(TYPE_PROPERTY);
+        Object value = readProperty("type");
         return (value != null) ? (Integer) value : 0;
     }
 
     public void addToRoleGroups(Group obj) {
-        addToManyTarget(ROLE_GROUPS_PROPERTY, obj, true);
+        addToManyTarget("roleGroups", obj, true);
     }
     public void removeFromRoleGroups(Group obj) {
-        removeToManyTarget(ROLE_GROUPS_PROPERTY, obj, true);
+        removeToManyTarget("roleGroups", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Group> getRoleGroups() {
-        return (List<Group>)readProperty(ROLE_GROUPS_PROPERTY);
+        return (List<Group>)readProperty("roleGroups");
     }
 
 

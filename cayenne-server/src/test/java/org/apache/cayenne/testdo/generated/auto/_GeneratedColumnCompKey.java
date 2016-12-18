@@ -14,17 +14,12 @@ public abstract class _GeneratedColumnCompKey extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-    @Deprecated
-    public static final String TO_MASTER_PROPERTY = "toMaster";
-
     public static final String AUTO_PK_PK_COLUMN = "AUTO_PK";
     public static final String GENERATED_COLUMN_PK_COLUMN = "GENERATED_COLUMN";
     public static final String PROPAGATED_PK_PK_COLUMN = "PROPAGATED_PK";
 
-    public static final Property<String> NAME = new Property<String>("name");
-    public static final Property<GeneratedColumnCompMaster> TO_MASTER = new Property<GeneratedColumnCompMaster>("toMaster");
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<GeneratedColumnCompMaster> TO_MASTER = new Property<>("toMaster");
 
     public void setName(String name) {
         writeProperty("name", name);

@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -69,10 +68,7 @@ public class DataContextExtendedTypeOperationsIT extends ServerCase {
 
         e1.getObjectContext().commitChanges();
 
-        Expression in = ExpressionFactory.inExp(
-                ExtendedTypeEntity.NAME_PROPERTY,
-                new StringET1("X"),
-                new StringET1("Y"));
+        Expression in = ExtendedTypeEntity.NAME.in(new StringET1("X"), new StringET1("Y"));
         SelectQuery query = new SelectQuery(ExtendedTypeEntity.class, in);
         assertEquals(2, e1.getObjectContext().performQuery(query).size());
     }
@@ -90,8 +86,7 @@ public class DataContextExtendedTypeOperationsIT extends ServerCase {
 
         e1.getObjectContext().commitChanges();
 
-        Expression in = ExpressionFactory.inExp(ExtendedTypeEntity.NAME_PROPERTY, Arrays
-                .asList(new StringET1("X"), new StringET1("Y")));
+        Expression in = ExtendedTypeEntity.NAME.in(Arrays.asList(new StringET1("X"), new StringET1("Y")));
         SelectQuery query = new SelectQuery(ExtendedTypeEntity.class, in);
         assertEquals(2, e1.getObjectContext().performQuery(query).size());
     }

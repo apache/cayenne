@@ -16,7 +16,7 @@ public abstract class _Iv2Sub1 extends Iv2Root {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Iv2X> X = new Property<Iv2X>("x");
+    public static final Property<Iv2X> X = new Property<>("x");
 
     public void setX(Iv2X x) {
         setToOneTarget("x", x, true);

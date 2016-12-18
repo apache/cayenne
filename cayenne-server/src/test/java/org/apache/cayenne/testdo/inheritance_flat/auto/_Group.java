@@ -2,6 +2,7 @@ package org.apache.cayenne.testdo.inheritance_flat.auto;
 
 import java.util.List;
 
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_flat.GroupProperties;
 import org.apache.cayenne.testdo.inheritance_flat.Role;
 import org.apache.cayenne.testdo.inheritance_flat.User;
@@ -14,29 +15,31 @@ import org.apache.cayenne.testdo.inheritance_flat.User;
  */
 public abstract class _Group extends User {
 
-    public static final String GROUP_MEMBERS_PROPERTY = "groupMembers";
-    public static final String GROUP_PROPERTIES_PROPERTY = "groupProperties";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "id";
 
+    public static final Property<List<Role>> GROUP_MEMBERS = new Property<>("groupMembers");
+    public static final Property<GroupProperties> GROUP_PROPERTIES = new Property<>("groupProperties");
+
     public void addToGroupMembers(Role obj) {
-        addToManyTarget(GROUP_MEMBERS_PROPERTY, obj, true);
+        addToManyTarget("groupMembers", obj, true);
     }
     public void removeFromGroupMembers(Role obj) {
-        removeToManyTarget(GROUP_MEMBERS_PROPERTY, obj, true);
+        removeToManyTarget("groupMembers", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Role> getGroupMembers() {
-        return (List<Role>)readProperty(GROUP_MEMBERS_PROPERTY);
+        return (List<Role>)readProperty("groupMembers");
     }
 
 
     public void setGroupProperties(GroupProperties groupProperties) {
-        setToOneTarget(GROUP_PROPERTIES_PROPERTY, groupProperties, true);
+        setToOneTarget("groupProperties", groupProperties, true);
     }
 
     public GroupProperties getGroupProperties() {
-        return (GroupProperties)readProperty(GROUP_PROPERTIES_PROPERTY);
+        return (GroupProperties)readProperty("groupProperties");
     }
 
 

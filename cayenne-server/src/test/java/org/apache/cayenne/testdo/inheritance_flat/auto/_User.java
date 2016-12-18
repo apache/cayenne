@@ -1,5 +1,6 @@
 package org.apache.cayenne.testdo.inheritance_flat.auto;
 
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_flat.Role;
 import org.apache.cayenne.testdo.inheritance_flat.UserProperties;
 
@@ -11,16 +12,18 @@ import org.apache.cayenne.testdo.inheritance_flat.UserProperties;
  */
 public abstract class _User extends Role {
 
-    public static final String USER_PROPERTIES_PROPERTY = "userProperties";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "id";
 
+    public static final Property<UserProperties> USER_PROPERTIES = new Property<>("userProperties");
+
     public void setUserProperties(UserProperties userProperties) {
-        setToOneTarget(USER_PROPERTIES_PROPERTY, userProperties, true);
+        setToOneTarget("userProperties", userProperties, true);
     }
 
     public UserProperties getUserProperties() {
-        return (UserProperties)readProperty(USER_PROPERTIES_PROPERTY);
+        return (UserProperties)readProperty("userProperties");
     }
 
 

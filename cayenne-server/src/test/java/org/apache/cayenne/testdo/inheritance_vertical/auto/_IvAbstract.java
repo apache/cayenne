@@ -15,7 +15,7 @@ public abstract class _IvAbstract extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> TYPE = new Property<String>("type");
+    public static final Property<String> TYPE = new Property<>("type");
 
     public void setType(String type) {
         writeProperty("type", type);

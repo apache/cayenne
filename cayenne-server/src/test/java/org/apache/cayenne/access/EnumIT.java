@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -66,9 +65,7 @@ public class EnumIT extends ServerCase {
         createDataSet();
 
         SelectQuery q = new SelectQuery(EnumEntity.class);
-        q.andQualifier(ExpressionFactory.matchExp(
-                EnumEntity.ENUM_ATTRIBUTE_PROPERTY,
-                Enum1.one));
+        q.andQualifier(EnumEntity.ENUM_ATTRIBUTE.eq(Enum1.one));
 
         EnumEntity e = (EnumEntity) Cayenne.objectForQuery(context, q);
         assertNotNull(e);

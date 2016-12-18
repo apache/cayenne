@@ -16,15 +16,10 @@ public abstract class _GeneratedColumnCompMaster extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-    @Deprecated
-    public static final String TO_DETAIL_PROPERTY = "toDetail";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = new Property<String>("name");
-    public static final Property<List<GeneratedColumnCompKey>> TO_DETAIL = new Property<List<GeneratedColumnCompKey>>("toDetail");
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<List<GeneratedColumnCompKey>> TO_DETAIL = new Property<>("toDetail");
 
     public void setName(String name) {
         writeProperty("name", name);

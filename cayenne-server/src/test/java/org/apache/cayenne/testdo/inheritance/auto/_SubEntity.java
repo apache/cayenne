@@ -10,7 +10,9 @@ import org.apache.cayenne.testdo.inheritance.BaseEntity;
  */
 public abstract class _SubEntity extends BaseEntity {
 
+    private static final long serialVersionUID = 1L; 
 
     public static final String BASE_ENTITY_ID_PK_COLUMN = "BASE_ENTITY_ID";
+
 
 }

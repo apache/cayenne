@@ -14,15 +14,10 @@ public abstract class _GeneratedColumnTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-    @Deprecated
-    public static final String TO_DEP_PROPERTY = "toDep";
-
     public static final String GENERATED_COLUMN_PK_COLUMN = "GENERATED_COLUMN";
 
-    public static final Property<String> NAME = new Property<String>("name");
-    public static final Property<GeneratedColumnDep> TO_DEP = new Property<GeneratedColumnDep>("toDep");
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<GeneratedColumnDep> TO_DEP = new Property<>("toDep");
 
     public void setName(String name) {
         writeProperty("name", name);

@@ -15,16 +15,12 @@ public abstract class _IvSub3 extends IvRoot {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<IvRoot> IV_ROOT = new Property<IvRoot>("ivRoot");
+    public static final Property<IvRoot> IV_ROOT = new Property<>("ivRoot");
 
-    public void setIvRoot(IvRoot ivRoot) {
-        setToOneTarget("ivRoot", ivRoot, true);
-    }
 
     public IvRoot getIvRoot() {
         return (IvRoot)readProperty("ivRoot");
     }
 
-    protected abstract void onPrePersist();
 
 }

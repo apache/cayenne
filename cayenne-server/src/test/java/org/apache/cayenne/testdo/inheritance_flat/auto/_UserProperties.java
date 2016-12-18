@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.inheritance_flat.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_flat.User;
 
 /**
@@ -11,32 +12,34 @@ import org.apache.cayenne.testdo.inheritance_flat.User;
  */
 public abstract class _UserProperties extends CayenneDataObject {
 
-    public static final String ID_PROPERTY = "id";
-    public static final String NICKNAME_PROPERTY = "nickname";
-    public static final String USER_PROPERTY = "user";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "id";
 
+    public static final Property<Long> ID = new Property<>("id");
+    public static final Property<String> NICKNAME = new Property<>("nickname");
+    public static final Property<User> USER = new Property<>("user");
+
     public void setId(Long id) {
-        writeProperty(ID_PROPERTY, id);
+        writeProperty("id", id);
     }
     public Long getId() {
-        return (Long)readProperty(ID_PROPERTY);
+        return (Long)readProperty("id");
     }
 
     public void setNickname(String nickname) {
-        writeProperty(NICKNAME_PROPERTY, nickname);
+        writeProperty("nickname", nickname);
     }
     public String getNickname() {
-        return (String)readProperty(NICKNAME_PROPERTY);
+        return (String)readProperty("nickname");
     }
 
     public void setUser(User user) {
-        setToOneTarget(USER_PROPERTY, user, true);
+        setToOneTarget("user", user, true);
     }
 
     public User getUser() {
-        return (User)readProperty(USER_PROPERTY);
+        return (User)readProperty("user");
     }
 
 

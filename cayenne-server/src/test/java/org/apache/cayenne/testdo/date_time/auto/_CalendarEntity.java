@@ -15,12 +15,9 @@ public abstract class _CalendarEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String CALENDAR_FIELD_PROPERTY = "calendarField";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Calendar> CALENDAR_FIELD = new Property<Calendar>("calendarField");
+    public static final Property<Calendar> CALENDAR_FIELD = new Property<>("calendarField");
 
     public void setCalendarField(Calendar calendarField) {
         writeProperty("calendarField", calendarField);

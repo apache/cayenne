@@ -15,18 +15,11 @@ public abstract class _DateTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String DATE_COLUMN_PROPERTY = "dateColumn";
-    @Deprecated
-    public static final String TIME_COLUMN_PROPERTY = "timeColumn";
-    @Deprecated
-    public static final String TIMESTAMP_COLUMN_PROPERTY = "timestampColumn";
-
     public static final String DATE_TEST_ID_PK_COLUMN = "DATE_TEST_ID";
 
-    public static final Property<Date> DATE_COLUMN = new Property<Date>("dateColumn");
-    public static final Property<Date> TIME_COLUMN = new Property<Date>("timeColumn");
-    public static final Property<Date> TIMESTAMP_COLUMN = new Property<Date>("timestampColumn");
+    public static final Property<Date> DATE_COLUMN = new Property<>("dateColumn");
+    public static final Property<Date> TIME_COLUMN = new Property<>("timeColumn");
+    public static final Property<Date> TIMESTAMP_COLUMN = new Property<>("timestampColumn");
 
     public void setDateColumn(Date dateColumn) {
         writeProperty("dateColumn", dateColumn);

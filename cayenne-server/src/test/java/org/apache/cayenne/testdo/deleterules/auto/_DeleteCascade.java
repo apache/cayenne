@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.deleterules.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.deleterules.DeleteRule;
 
 /**
@@ -11,24 +12,26 @@ import org.apache.cayenne.testdo.deleterules.DeleteRule;
  */
 public abstract class _DeleteCascade extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String CASCADE_PROPERTY = "cascade";
+    private static final long serialVersionUID = 1L; 
 
     public static final String DELETE_CASCADE_ID_PK_COLUMN = "DELETE_CASCADE_ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<DeleteRule> CASCADE = new Property<>("cascade");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void setCascade(DeleteRule cascade) {
-        setToOneTarget(CASCADE_PROPERTY, cascade, true);
+        setToOneTarget("cascade", cascade, true);
     }
 
     public DeleteRule getCascade() {
-        return (DeleteRule)readProperty(CASCADE_PROPERTY);
+        return (DeleteRule)readProperty("cascade");
     }
 
 

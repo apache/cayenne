@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.inheritance.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance.DirectToSubEntity;
 import org.apache.cayenne.testdo.inheritance.RelatedEntity;
 
@@ -12,34 +13,36 @@ import org.apache.cayenne.testdo.inheritance.RelatedEntity;
  */
 public abstract class _BaseEntity extends CayenneDataObject {
 
-    public static final String ENTITY_TYPE_PROPERTY = "entityType";
-    public static final String TO_DIRECT_TO_SUB_ENTITY_PROPERTY = "toDirectToSubEntity";
-    public static final String TO_RELATED_ENTITY_PROPERTY = "toRelatedEntity";
+    private static final long serialVersionUID = 1L; 
 
     public static final String BASE_ENTITY_ID_PK_COLUMN = "BASE_ENTITY_ID";
 
+    public static final Property<String> ENTITY_TYPE = new Property<>("entityType");
+    public static final Property<DirectToSubEntity> TO_DIRECT_TO_SUB_ENTITY = new Property<>("toDirectToSubEntity");
+    public static final Property<RelatedEntity> TO_RELATED_ENTITY = new Property<>("toRelatedEntity");
+
     public void setEntityType(String entityType) {
-        writeProperty(ENTITY_TYPE_PROPERTY, entityType);
+        writeProperty("entityType", entityType);
     }
     public String getEntityType() {
-        return (String)readProperty(ENTITY_TYPE_PROPERTY);
+        return (String)readProperty("entityType");
     }
 
     public void setToDirectToSubEntity(DirectToSubEntity toDirectToSubEntity) {
-        setToOneTarget(TO_DIRECT_TO_SUB_ENTITY_PROPERTY, toDirectToSubEntity, true);
+        setToOneTarget("toDirectToSubEntity", toDirectToSubEntity, true);
     }
 
     public DirectToSubEntity getToDirectToSubEntity() {
-        return (DirectToSubEntity)readProperty(TO_DIRECT_TO_SUB_ENTITY_PROPERTY);
+        return (DirectToSubEntity)readProperty("toDirectToSubEntity");
     }
 
 
     public void setToRelatedEntity(RelatedEntity toRelatedEntity) {
-        setToOneTarget(TO_RELATED_ENTITY_PROPERTY, toRelatedEntity, true);
+        setToOneTarget("toRelatedEntity", toRelatedEntity, true);
     }
 
     public RelatedEntity getToRelatedEntity() {
-        return (RelatedEntity)readProperty(TO_RELATED_ENTITY_PROPERTY);
+        return (RelatedEntity)readProperty("toRelatedEntity");
     }
 
 

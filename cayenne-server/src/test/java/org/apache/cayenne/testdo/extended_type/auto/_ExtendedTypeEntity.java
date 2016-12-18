@@ -14,12 +14,9 @@ public abstract class _ExtendedTypeEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<StringET1> NAME = new Property<StringET1>("name");
+    public static final Property<StringET1> NAME = new Property<>("name");
 
     public void setName(StringET1 name) {
         writeProperty("name", name);

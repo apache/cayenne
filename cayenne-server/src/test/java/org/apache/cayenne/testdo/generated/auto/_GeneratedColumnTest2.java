@@ -13,12 +13,9 @@ public abstract class _GeneratedColumnTest2 extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-
     public static final String GENERATED_COLUMN_PK_COLUMN = "GENERATED_COLUMN";
 
-    public static final Property<String> NAME = new Property<String>("name");
+    public static final Property<String> NAME = new Property<>("name");
 
     public void setName(String name) {
         writeProperty("name", name);

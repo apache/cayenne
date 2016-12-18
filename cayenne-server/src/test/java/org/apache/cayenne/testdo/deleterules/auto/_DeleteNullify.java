@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.deleterules.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.deleterules.DeleteRule;
 
 /**
@@ -11,24 +12,26 @@ import org.apache.cayenne.testdo.deleterules.DeleteRule;
  */
 public abstract class _DeleteNullify extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String NULLIFY_PROPERTY = "nullify";
+    private static final long serialVersionUID = 1L; 
 
     public static final String DELETE_NULLIFY_ID_PK_COLUMN = "DELETE_NULLIFY_ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<DeleteRule> NULLIFY = new Property<>("nullify");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void setNullify(DeleteRule nullify) {
-        setToOneTarget(NULLIFY_PROPERTY, nullify, true);
+        setToOneTarget("nullify", nullify, true);
     }
 
     public DeleteRule getNullify() {
-        return (DeleteRule)readProperty(NULLIFY_PROPERTY);
+        return (DeleteRule)readProperty("nullify");
     }
 
 

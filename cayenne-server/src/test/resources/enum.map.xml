@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
-    <property name="defaultPackage" value="org.apache.cayenne.testdo.enum"/>
-    <property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
-    <property name="clientSupported" value="true"/>
-    <property name="defaultClientPackage" value="test.client"/>
-    <property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
-    <db-entity name="ENUM_ENTITY">
-        <db-attribute name="ENUM_ATTRIBUTE" type="VARCHAR" length="250"/>
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <obj-entity name="EnumEntity" className="org.apache.cayenne.testdo.enum_test.EnumEntity" dbEntityName="ENUM_ENTITY">
-        <obj-attribute name="enumAttribute" type="org.apache.cayenne.testdo.enum_test.Enum1" db-attribute-path="ENUM_ATTRIBUTE"/>
-    </obj-entity>
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
+	 project-version="9">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.enum_test"/>
+	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
+	<property name="clientSupported" value="true"/>
+	<property name="defaultClientPackage" value="test.client"/>
+	<property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
+	<db-entity name="ENUM_ENTITY">
+		<db-attribute name="ENUM_ATTRIBUTE" type="VARCHAR" length="250"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="EnumEntity" className="org.apache.cayenne.testdo.enum_test.EnumEntity" dbEntityName="ENUM_ENTITY">
+		<obj-attribute name="enumAttribute" type="org.apache.cayenne.testdo.enum_test.Enum1" db-attribute-path="ENUM_ATTRIBUTE"/>
+	</obj-entity>
 </data-map>
