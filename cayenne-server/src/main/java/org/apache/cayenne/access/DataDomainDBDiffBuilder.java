@@ -148,7 +148,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
         // diffs
 
         if (currentPropertyDiff == null) {
-            currentPropertyDiff = new HashMap<Object, Object>();
+            currentPropertyDiff = new HashMap<>();
         }
 
         currentPropertyDiff.put(property, newValue);
@@ -178,7 +178,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
 
     private void doArcCreated(Object targetNodeId, Object arcId) {
         if (currentArcDiff == null) {
-            currentArcDiff = new HashMap<Object, Object>();
+            currentArcDiff = new HashMap<>();
         }
         currentArcDiff.put(arcId, targetNodeId);
     }
@@ -208,7 +208,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
 
     private void doArcDeleted(Object targetNodeId, Object arcId) {
         if (currentArcDiff == null) {
-            currentArcDiff = new HashMap<Object, Object>();
+            currentArcDiff = new HashMap<>();
             currentArcDiff.put(arcId, null);
         } else {
             // skip deletion record if a substitute arc was created prior to

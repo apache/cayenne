@@ -48,8 +48,8 @@ class DataDomainFlattenedBucket {
 
     DataDomainFlattenedBucket(DataDomainFlushAction parent) {
         this.parent = parent;
-        this.insertArcKeys = new HashMap<DbEntity, List<FlattenedArcKey>>();
-        this.flattenedDeleteQueries = new HashMap<DbEntity, DeleteBatchQuery>();
+        this.insertArcKeys = new HashMap<>();
+        this.flattenedDeleteQueries = new HashMap<>();
     }
 
     boolean isEmpty() {

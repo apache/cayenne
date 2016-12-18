@@ -240,7 +240,7 @@ public class ConverterFactory {
 		
 		// TODO: byte[] converter...
 
-        converters = new HashMap<Class<?>, Converter<?>>();
+        converters = new HashMap<>();
 
         _addConverter(Boolean.class, toBooleanConverter);
         _addConverter(boolean.class, toBooleanConverter);

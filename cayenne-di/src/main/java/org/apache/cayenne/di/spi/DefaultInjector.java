@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.Scope;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * A default Cayenne implementations of a DI injector.
@@ -52,8 +52,8 @@ public class DefaultInjector implements Injector {
         // this is intentionally hardcoded and is not configurable
         this.defaultScope = singletonScope;
 
-        this.bindings = new HashMap<Key<?>, Binding<?>>();
-        this.decorations = new HashMap<Key<?>, Decoration<?>>();
+        this.bindings = new HashMap<>();
+        this.decorations = new HashMap<>();
         this.injectionStack = new InjectionStack();
 
         DefaultBinder binder = new DefaultBinder(this);

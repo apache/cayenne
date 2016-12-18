@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -38,6 +32,12 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyMapProperty;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * An operation that creates a subgraph of detached objects, using the PrefetchTree to
@@ -53,7 +53,7 @@ public class ObjectDetachOperation {
 
     public ObjectDetachOperation(EntityResolver targetResolver) {
         this.targetResolver = targetResolver;
-        this.seen = new HashMap<ObjectId, Persistent>();
+        this.seen = new HashMap<>();
     }
 
     public void reset() {

@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.graph;
 
-import java.awt.Color;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
@@ -40,6 +35,11 @@ import org.jgraph.graph.DefaultEdge;
 import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.GraphConstants;
 
+import java.awt.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Builder of ObjEntity information-based graph (relative to UML class diagram)
  */
@@ -51,7 +51,7 @@ class ObjGraphBuilder extends BaseGraphBuilder implements ObjEntityListener,
     Map<Entity, DefaultEdge> inheritanceEdges;
 
     public ObjGraphBuilder() {
-        inheritanceEdges = new HashMap<Entity, DefaultEdge>();
+        inheritanceEdges = new HashMap<>();
     }
 
     @Override

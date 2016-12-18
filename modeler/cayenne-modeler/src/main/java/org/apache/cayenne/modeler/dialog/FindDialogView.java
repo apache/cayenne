@@ -18,36 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.KeyEvent;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Map.Entry;
-
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.DefaultTableCellRenderer;
-
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
@@ -56,6 +26,17 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.swing.ImageRendererColumn;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 
 /**
@@ -106,7 +87,7 @@ public class FindDialogView extends JDialog {
 
             TableModel tableModel = new TableModel();
 
-            LabelAndObjectIndex = new HashMap<JLabel, Integer>();
+            LabelAndObjectIndex = new HashMap<>();
 
             dataVector = createResultTable(objEntityNames, CellRenderers
                     .iconForObject(new ObjEntity()), dataVector, curentLineInTable);

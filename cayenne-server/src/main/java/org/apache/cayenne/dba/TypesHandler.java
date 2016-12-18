@@ -42,7 +42,7 @@ import java.util.Map;
  */
 public class TypesHandler {
 
-	private static Map<URL, TypesHandler> handlerMap = new HashMap<URL, TypesHandler>();
+	private static Map<URL, TypesHandler> handlerMap = new HashMap<>();
 
 	protected Map<Integer, String[]> typesMap;
 

@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.access.ToManyListFault;
 import org.apache.cayenne.access.ToManyMapFault;
 import org.apache.cayenne.access.ToManySetFault;
 import org.apache.cayenne.access.ToOneFault;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @since 3.0
@@ -35,7 +35,7 @@ public class SingletonFaultFactory implements FaultFactory {
     protected Fault toOneFault = new ToOneFault();
     protected Fault listFault = new ToManyListFault();
     protected Fault setFault = new ToManySetFault();
-    protected Map<Accessor, Fault> mapFaults = new HashMap<Accessor, Fault>();
+    protected Map<Accessor, Fault> mapFaults = new HashMap<>();
 
     public Fault getCollectionFault() {
         return listFault;

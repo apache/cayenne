@@ -58,7 +58,7 @@ abstract class DataDomainSyncBucket {
     Map<DbEntity, Collection<DbEntityClassDescriptor>> descriptorsByDbEntity;
 
     DataDomainSyncBucket(DataDomainFlushAction parent) {
-        this.objectsByDescriptor = new HashMap<ClassDescriptor, List<Persistent>>();
+        this.objectsByDescriptor = new HashMap<>();
         this.parent = parent;
     }
 

@@ -18,17 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.swing.components.textpane.style;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.util.HashMap;
-
 import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
 
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class TextPaneStyleMap {
 	
-	public HashMap<TextPaneStyleTypes, SyntaxStyle> syntaxStyleMap = new HashMap<TextPaneStyleTypes, SyntaxStyle>();
+	public Map<TextPaneStyleTypes, SyntaxStyle> syntaxStyleMap = new HashMap<>();
 	
 	public TextPaneStyleMap() {
 		Font plainFont = SQLSyntaxConstants.DEFAULT_FONT;

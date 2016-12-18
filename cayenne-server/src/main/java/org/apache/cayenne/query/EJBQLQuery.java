@@ -18,12 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
@@ -31,6 +26,10 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * An EJBQL query representation in Cayenne.
@@ -236,7 +235,7 @@ public class EJBQLQuery implements Query, XMLSerializable {
         // spec requires it.
 
         if (positionalParameters == null) {
-            positionalParameters = new HashMap<Integer, Object>();
+            positionalParameters = new HashMap<>();
         }
 
         positionalParameters.put(Integer.valueOf(position), object);

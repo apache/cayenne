@@ -552,7 +552,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 				if (attribute.getName().equals(column.getName())) {
 
 					if (attributeOverrides == null) {
-						attributeOverrides = new HashMap<ObjAttribute, ColumnDescriptor>();
+						attributeOverrides = new HashMap<>();
 					}
 
 					// kick out the original attribute

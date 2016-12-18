@@ -72,8 +72,8 @@ import java.util.Map;
 public class IndegreeTopologicalSort<E> implements Iterator<E> {
 
     private Digraph<E, ?> digraph;
-    private List<E> vertices = new LinkedList<E>();
-    private Map<E, InDegree> inDegrees = new HashMap<E, InDegree>();
+    private List<E> vertices = new LinkedList<>();
+    private Map<E, InDegree> inDegrees = new HashMap<>();
     private ListIterator<E> current;
 
     public IndegreeTopologicalSort(Digraph<E, ?> digraph) {

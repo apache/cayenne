@@ -97,7 +97,7 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
     }
 
     private void indexParents() {
-        partitionByChild = new HashMap<Object, List<Persistent>>();
+        partitionByChild = new HashMap<>();
 
         List<Persistent> objects = parentNode.getObjects();
         

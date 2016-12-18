@@ -18,12 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
@@ -31,6 +25,12 @@ import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.util.QueryResultBuilder;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A generic query based on raw SQL and featuring fluent API. While
@@ -92,7 +92,7 @@ public class SQLExec extends IndirectQuery {
     public SQLExec params(Map<String, ?> parameters) {
 
         if (this.params == null) {
-            this.params = new HashMap<String, Object>(parameters);
+            this.params = new HashMap<>(parameters);
         } else {
             Map bareMap = parameters;
             this.params.putAll(bareMap);

@@ -19,20 +19,19 @@
 
 package org.apache.cayenne.modeler.util;
 
+import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.Relationship;
+
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
-
-import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.Relationship;
 
 /**
  * Swing TreeModel for Entity attributes and relationships
@@ -50,7 +49,7 @@ public class EntityTreeModel implements TreeModel {
 
     public EntityTreeModel(Entity root) {
         this.root = root;
-        sortedChildren = new HashMap<Object, Object[]>();
+        sortedChildren = new HashMap<>();
     }
 
     public Object getRoot() {

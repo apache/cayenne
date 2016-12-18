@@ -18,13 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.swing.components.textpane;
 
-import java.awt.Graphics;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.apache.cayenne.swing.components.textpane.style.SyntaxStyle;
+import org.apache.cayenne.swing.components.textpane.style.TextPaneStyleMap;
+import org.apache.cayenne.swing.components.textpane.style.TextPaneStyleTypes;
+import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
+import org.apache.cayenne.swing.components.textpane.syntax.SyntaxConstant;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
@@ -33,12 +31,13 @@ import javax.swing.text.PlainView;
 import javax.swing.text.Segment;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.Utilities;
-
-import org.apache.cayenne.swing.components.textpane.style.TextPaneStyleMap;
-import org.apache.cayenne.swing.components.textpane.style.TextPaneStyleTypes;
-import org.apache.cayenne.swing.components.textpane.style.SyntaxStyle;
-import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
-import org.apache.cayenne.swing.components.textpane.syntax.SyntaxConstant;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TextPaneView extends PlainView {
 
@@ -50,8 +49,8 @@ public class TextPaneView extends PlainView {
     private static HashMap<Pattern, SyntaxStyle> patternValue;
 
     static {
-        patternSyntaxStyle = new HashMap<Pattern, SyntaxStyle>();
-        patternValue = new HashMap<Pattern, SyntaxStyle>();
+        patternSyntaxStyle = new HashMap<>();
+        patternValue = new HashMap<>();
     }
 
     public TextPaneView(Element elem, SyntaxConstant syntaxConstants) {
@@ -117,8 +116,8 @@ public class TextPaneView extends PlainView {
             throws BadLocationException {
 
         boolean lineComment = false;
-        HashMap<Integer, Integer> comment = new HashMap<Integer, Integer>();
-        HashMap<Integer, Integer> commentInLine = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> comment = new HashMap<>();
+        Map<Integer, Integer> commentInLine = new HashMap<>();
         StyledDocument doc = (StyledDocument) getDocument();
 
         String text = doc.getText(p0, p1 - p0);

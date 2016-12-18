@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.EntityResultSegment;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @since 3.0
@@ -37,7 +37,7 @@ class PersistentDescriptorResultMetadata implements EntityResultSegment {
 	PersistentDescriptorResultMetadata(ClassDescriptor classDescriptor) {
 		this.classDescriptor = classDescriptor;
 		this.fields = new HashMap<>();
-		this.reverseFields = new HashMap<String, String>();
+		this.reverseFields = new HashMap<>();
 	}
 
 	public ClassDescriptor getClassDescriptor() {

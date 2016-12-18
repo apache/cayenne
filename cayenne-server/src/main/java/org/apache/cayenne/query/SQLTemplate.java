@@ -648,8 +648,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 			// are not serializable with Hessian...
 			this.parameters = new Map[parameters.length];
 			for (int i = 0; i < parameters.length; i++) {
-				this.parameters[i] = parameters[i] != null ? new HashMap<>(parameters[i])
-						: new HashMap<String, Object>();
+				this.parameters[i] = parameters[i] != null ? new HashMap<>(parameters[i]) : new HashMap<String, Object>();
 			}
 		}
 	}

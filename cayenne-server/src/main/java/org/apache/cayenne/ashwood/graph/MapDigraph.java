@@ -74,7 +74,7 @@ public class MapDigraph<E, V> implements Digraph<E, V> {
 	private int size;
 
 	public MapDigraph() {
-		graph = new HashMap<E, Map<E, V>>();
+		graph = new HashMap<>();
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class MapDigraph<E, V> implements Digraph<E, V> {
 	public V putArc(E origin, E destination, V arc) {
 		Map<E, V> destinations = graph.get(origin);
 		if (destinations == null) {
-			destinations = new HashMap<E, V>();
+			destinations = new HashMap<>();
 			graph.put(origin, destinations);
 		}
 

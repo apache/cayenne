@@ -43,7 +43,7 @@ public class GraphMap implements GraphManager {
      * Creates a new GraphMap.
      */
     public GraphMap() {
-        this.nodes = new HashMap<Object, Object>();
+        this.nodes = new HashMap<>();
     }
 
     // *** GraphMap methods

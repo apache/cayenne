@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.graph;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DomainEvent;
 import org.apache.cayenne.configuration.event.DomainListener;
 import org.apache.cayenne.modeler.ProjectController;
 import org.jgraph.JGraph;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class for storing information about datadomain's builders.
@@ -41,7 +41,7 @@ public class GraphRegistry implements DomainListener {
     Map<DataChannelDescriptor, GraphMap> graphMaps;
 
     public GraphRegistry() {
-        graphMaps = new HashMap<DataChannelDescriptor, GraphMap>();
+        graphMaps = new HashMap<>();
     }
 
     /**

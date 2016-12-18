@@ -511,7 +511,7 @@ public class TypesMapping {
 		return SQL_ENUM_JAVA.get(type);
 	}
 
-	protected Map<Integer, List<TypeInfo>> databaseTypes = new HashMap<Integer, List<TypeInfo>>();
+	protected Map<Integer, List<TypeInfo>> databaseTypes = new HashMap<>();
 
 	public TypesMapping(DatabaseMetaData metaData) throws SQLException {
 		// map database types to standard JDBC types

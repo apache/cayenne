@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.changeset;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A {@link ChangeSet} implemented as a wrapper on top of {@link GraphDiff} of unspecified
@@ -61,7 +61,7 @@ public class GenericChangeSet implements ChangeSet {
 
     private Map<ObjectId, Map<String, PropertyChange>> parseDiff() {
 
-        final Map<ObjectId, Map<String, PropertyChange>> changes = new HashMap<ObjectId, Map<String, PropertyChange>>();
+        final Map<ObjectId, Map<String, PropertyChange>> changes = new HashMap<>();
 
         diff.apply(new GraphChangeHandler() {
 

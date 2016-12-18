@@ -1109,12 +1109,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     private PathComponentIterator createPathIterator(String path) {
-        return new PathComponentIterator(ObjEntity.this, path, new HashMap<String, String>()); // TODO:
-                                                                                               // do
-                                                                                               // we
-                                                                                               // need
-                                                                                               // aliases
-                                                                                               // here?
+        return new PathComponentIterator(ObjEntity.this, path, new HashMap<String, String>());
+        // TODO: do we need aliases here?
     }
 
     /**

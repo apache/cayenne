@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -31,6 +26,11 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
 
@@ -63,7 +63,7 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
 
         // TODO: there are other places that are attempting to track objects in
         // a tx... can we reuse 'seen' map from here?
-        this.seen = new HashMap<ObjectId, Persistent>();
+        this.seen = new HashMap<>();
 
         this.root = null;
 

@@ -86,7 +86,7 @@ class Compiler {
     CompiledExpression compile(String source, EJBQLExpression parsed) {
         parsed.visit(new CompilationVisitor());
 
-        Map<EJBQLPath, Integer> pathsInSelect = new HashMap<EJBQLPath, Integer>();
+        Map<EJBQLPath, Integer> pathsInSelect = new HashMap<>();
 
         if (parsed != null) {
             for (int i = 0; i < parsed.getChildrenCount(); i++) {

@@ -1597,7 +1597,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
 
         SerializationProxy(ConcurrentLinkedHashMap<K, V> map) {
             concurrencyLevel = map.concurrencyLevel;
-            data = new HashMap<K, V>(map);
+            data = new HashMap<>(map);
             capacity = map.capacity;
             listener = map.listener;
             weigher = map.weigher;

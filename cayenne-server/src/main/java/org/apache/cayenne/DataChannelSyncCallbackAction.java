@@ -70,7 +70,7 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
         this.graphManager = graphManager;
 
         if (hasListeners()) {
-            this.seenIds = new HashMap<Object, Op>();
+            this.seenIds = new HashMap<>();
             changes.apply(this);
         }
     }

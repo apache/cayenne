@@ -213,7 +213,7 @@ class ObjectDiff extends NodeDiff {
                 if (relationship.isFlattened()) {
 
                     if (flatIds == null) {
-                        flatIds = new HashMap<ArcOperation, ArcOperation>();
+                        flatIds = new HashMap<>();
                     }
 
                     ArcOperation oldOp = flatIds.put(arcDiff, arcDiff);
@@ -239,7 +239,7 @@ class ObjectDiff extends NodeDiff {
             } else if (property instanceof ToOneProperty) {
 
                 if (currentArcSnapshot == null) {
-                    currentArcSnapshot = new HashMap<String, Object>();
+                    currentArcSnapshot = new HashMap<>();
                 }
 
                 currentArcSnapshot.put(arcId, targetId);
@@ -277,7 +277,7 @@ class ObjectDiff extends NodeDiff {
         currentArcSnapshot.put(arcId, arcDiff.getTargetNodeId());
 
         if (phantomFks == null) {
-            phantomFks = new HashMap<ArcOperation, ArcOperation>();
+            phantomFks = new HashMap<>();
         }
 
         ArcOperation oldOp = phantomFks.put(arcDiff, arcDiff);

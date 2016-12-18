@@ -354,7 +354,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
         // reset changes ... using new HashMap to allow event listeners to analyze the
         // original changes map after the rollback
-        this.changes = new HashMap<Object, ObjectDiff>();
+        this.changes = new HashMap<>();
     }
 
     /**
@@ -454,7 +454,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
         // create new instance of changes map so that event listeners who stored the
         // original diff don't get affected
-        this.changes = new HashMap<Object, ObjectDiff>();
+        this.changes = new HashMap<>();
     }
 
     /**

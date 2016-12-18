@@ -19,20 +19,10 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JComboBox;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
@@ -41,14 +31,17 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.query.*;
+import org.apache.cayenne.query.CapsStrategy;
+import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.RowSpec;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A main panel for editing a SQLTemplate.
@@ -64,7 +57,7 @@ public class SQLTemplateMainTab extends JPanel {
             CapsStrategy.DEFAULT, CapsStrategy.LOWER, CapsStrategy.UPPER
     };
 
-    private static final Map<CapsStrategy, String> labelCapsLabels = new HashMap<CapsStrategy, String>();
+    private static final Map<CapsStrategy, String> labelCapsLabels = new HashMap<>();
 
     static {
         labelCapsLabels.put(CapsStrategy.DEFAULT, DEFAULT_CAPS_LABEL);

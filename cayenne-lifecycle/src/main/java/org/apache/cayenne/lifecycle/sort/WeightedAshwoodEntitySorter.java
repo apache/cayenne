@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.sort;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.commons.collections.comparators.ReverseComparator;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * EntitySorter that takes into account entity "weights", and otherwise delegating to
@@ -51,7 +51,7 @@ public class WeightedAshwoodEntitySorter extends AshwoodEntitySorter {
     protected void doIndexSorter() {
         super.doIndexSorter();
 
-        entityWeights = new HashMap<DbEntity, Integer>();
+        entityWeights = new HashMap<>();
 
         for (ObjEntity entity : entityResolver.getObjEntities()) {
 

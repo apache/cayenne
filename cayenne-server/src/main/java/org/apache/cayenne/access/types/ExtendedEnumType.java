@@ -19,16 +19,16 @@
 
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ExtendedEnumeration;
+import org.apache.cayenne.dba.TypesMapping;
+
 import java.lang.reflect.Method;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ExtendedEnumeration;
-import org.apache.cayenne.dba.TypesMapping;
 
 /**
  * An ExtendedType that handles a Java Enum based upon the Cayenne ExtendedEnumeration
@@ -46,7 +46,7 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType {
     // Contains a mapping of database values (Integer or String) and the
     // Enum for that value. This is to facilitate mapping database values
     // back to the Enum upon reading them from the database.
-    private Map<Object, Enum<T>> enumerationMappings = new HashMap<Object, Enum<T>>();
+    private Map<Object, Enum<T>> enumerationMappings = new HashMap<>();
 
     public ExtendedEnumType(Class<T> enumerationClass) {
         if (enumerationClass == null)

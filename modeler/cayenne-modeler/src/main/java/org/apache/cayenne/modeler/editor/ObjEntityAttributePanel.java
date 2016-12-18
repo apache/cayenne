@@ -336,8 +336,8 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
     }
 
     protected void setUpTableStructure() {
-        Map<Integer, Integer> minSizes = new HashMap<Integer, Integer>();
-        Map<Integer, Integer> maxSizes = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> minSizes = new HashMap<>();
+        Map<Integer, Integer> maxSizes = new HashMap<>();
 
         minSizes.put(ObjAttributeTableModel.INHERITED, INHERITANCE_COLUMN_WIDTH);
         maxSizes.put(ObjAttributeTableModel.INHERITED, INHERITANCE_COLUMN_WIDTH);

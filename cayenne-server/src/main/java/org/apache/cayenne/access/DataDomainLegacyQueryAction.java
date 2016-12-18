@@ -86,7 +86,7 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
 
         List<Query> queries = null;
         if (queriesByNode == null) {
-            queriesByNode = new HashMap<QueryEngine, List<Query>>();
+            queriesByNode = new HashMap<>();
         }
         else {
             queries = queriesByNode.get(engine);

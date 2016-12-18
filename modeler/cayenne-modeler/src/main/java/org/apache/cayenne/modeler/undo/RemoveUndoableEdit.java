@@ -18,16 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
@@ -38,6 +28,7 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -50,7 +41,15 @@ import org.apache.cayenne.modeler.action.CreateProcedureAction;
 import org.apache.cayenne.modeler.action.CreateQueryAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.RemoveAction;
-import org.apache.cayenne.map.QueryDescriptor;
+
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class RemoveUndoableEdit extends CayenneUndoableEdit {
 
@@ -65,8 +64,8 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
 
     private Embeddable embeddable;
 
-    private Map<DbEntity, List<DbRelationship>> dbRelationshipMap = new HashMap<DbEntity, List<DbRelationship>>();
-    private Map<ObjEntity, List<ObjRelationship>> objRelationshipMap = new HashMap<ObjEntity, List<ObjRelationship>>();
+    private Map<DbEntity, List<DbRelationship>> dbRelationshipMap = new HashMap<>();
+    private Map<ObjEntity, List<ObjRelationship>> objRelationshipMap = new HashMap<>();
 
     private static enum REMOVE_MODE {
         OBJECT_ENTITY, DB_ENTITY, QUERY, PROCEDURE, MAP_FROM_NODE, MAP_FROM_DOMAIN, NODE, DOMAIN, EMBEDDABLE

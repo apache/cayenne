@@ -75,7 +75,13 @@ public class FindDialog extends CayenneController {
 
         this.paths = paths;
 
-        Map<Integer, String> objEntityNames = new HashMap<Integer, String>(), dbEntityNames = new HashMap<Integer, String>(), attrNames = new HashMap<Integer, String>(), relatNames = new HashMap<Integer, String>(), queryNames = new HashMap<Integer, String>(), embeddableNames = new HashMap<Integer, String>(), embeddableAttributeNames = new HashMap<Integer, String>();
+        Map<Integer, String> objEntityNames = new HashMap<>();
+        Map<Integer, String> dbEntityNames = new HashMap<>();
+        Map<Integer, String> attrNames = new HashMap<>();
+        Map<Integer, String> relatNames = new HashMap<>();
+        Map<Integer, String> queryNames = new HashMap<>();
+        Map<Integer, String> embeddableNames = new HashMap<>();
+        Map<Integer, String> embeddableAttributeNames = new HashMap<>();
         Iterator it = paths.iterator();
         int index = 0;
         while (it.hasNext()) {
