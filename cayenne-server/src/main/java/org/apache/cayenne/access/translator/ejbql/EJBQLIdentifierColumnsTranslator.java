@@ -18,16 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.ejbql;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -43,6 +39,11 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @since 3.0
@@ -166,7 +167,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                     DbEntity table = descriptor.getRootDbEntities().iterator().next();
                     ObjEntity objectEntity = descriptor.getEntity();
                     prefetch.setEntityName(objectEntity.getName());
-                    Expression prefetchExp = Expression.fromString(prefetch.getPath());
+                    Expression prefetchExp = ExpressionFactory.exp(prefetch.getPath());
                     Expression dbPrefetch = objectEntity.translateToDbPath(prefetchExp);
 
                     DbRelationship r = null;

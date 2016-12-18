@@ -20,7 +20,6 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -56,7 +55,7 @@ public class SelectQueryPrefetchRouterActionIT extends ServerCase {
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
 
         assertSame(paintingEntity, prefetch.getRoot());
-        assertEquals(Expression.fromString("db:toArtist.ARTIST_NAME = 'abc'"), prefetch.getQualifier());
+        assertEquals(ExpressionFactory.exp("db:toArtist.ARTIST_NAME = 'abc'"), prefetch.getQualifier());
     }
 
     @Test
@@ -74,7 +73,7 @@ public class SelectQueryPrefetchRouterActionIT extends ServerCase {
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
         assertSame(paintingEntity, prefetch.getRoot());
-        assertEquals(Expression.fromString("db:toArtist.ARTIST_NAME = 'abc' or db:toArtist.ARTIST_NAME = 'xyz'"),
+        assertEquals(ExpressionFactory.exp("db:toArtist.ARTIST_NAME = 'abc' or db:toArtist.ARTIST_NAME = 'xyz'"),
                 prefetch.getQualifier());
     }
 

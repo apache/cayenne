@@ -19,20 +19,19 @@
 
 package org.apache.cayenne.map;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.dbimport.*;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.util.Util;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Default MapLoader. Its responsibilities include reading DataMaps from XML
@@ -1114,9 +1113,9 @@ public class MapLoader extends DefaultHandler {
 
 		// qualifier can belong to ObjEntity, DbEntity or a query
 		if (objEntity != null) {
-			objEntity.setDeclaredQualifier(Expression.fromString(qualifier));
+			objEntity.setDeclaredQualifier(ExpressionFactory.exp(qualifier));
 		} else if (dbEntity != null) {
-			dbEntity.setQualifier(Expression.fromString(qualifier));
+			dbEntity.setQualifier(ExpressionFactory.exp(qualifier));
 		} else {
 			queryBuilder.setQualifier(qualifier);
 		}

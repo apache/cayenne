@@ -26,6 +26,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -46,11 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextPrefetchMultistepIT extends ServerCase {
@@ -138,9 +135,8 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
         assertNull(context.getGraphManager().getNode(oid1));
         assertNull(context.getGraphManager().getNode(oid2));
 
-        Expression e = Expression.fromString("galleryName = $name");
-        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.expWithParameters(Collections
-                .singletonMap("name", "gallery2")));
+        Expression e = ExpressionFactory.exp("galleryName = $name");
+        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.params(Collections.singletonMap("name", "gallery2")));
         q.addPrefetch("exhibitArray.artistExhibitArray");
 
         List<Gallery> galleries = context.select(q);
@@ -167,7 +163,7 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
 
         createTwoArtistsWithExhibitsDataSet();
 
-        Expression e = Expression.fromString("galleryName = $name");
+        Expression e = ExpressionFactory.exp("galleryName = $name");
         SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.expWithParameters(Collections
                 .singletonMap("name", "gallery2")));
         q.addPrefetch("exhibitArray");
@@ -203,7 +199,7 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
 
         createTwoArtistsWithExhibitsDataSet();
 
-        Expression e = Expression.fromString("galleryName = $name");
+        Expression e = ExpressionFactory.exp("galleryName = $name");
         SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.expWithParameters(Collections
                 .singletonMap("name", "gallery2")));
         q.addPrefetch("exhibitArray").setSemantics(
@@ -240,14 +236,13 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
 
         createTwoArtistsWithExhibitsDataSet();
 
-        Expression e = Expression.fromString("galleryName = $name");
+        Expression e = ExpressionFactory.exp("galleryName = $name");
         SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.expWithParameters(Collections
                 .singletonMap("name", "gallery2")));
 
         // reverse the order of prefetches compared to the previous test
         q.addPrefetch("exhibitArray");
-        q.addPrefetch("exhibitArray.artistExhibitArray").setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        q.addPrefetch("exhibitArray.artistExhibitArray").setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
         List<Gallery> galleries = context.select(q);
         assertEquals(1, galleries.size());

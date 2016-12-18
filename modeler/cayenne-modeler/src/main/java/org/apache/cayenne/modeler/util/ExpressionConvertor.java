@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.util;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ParseException;
 import org.apache.cayenne.util.Util;
 
@@ -50,7 +51,7 @@ public class ExpressionConvertor {
         }
 
         try {
-            return Expression.fromString(string);
+            return ExpressionFactory.exp(string);
         }
         catch (ExpressionException eex) {
             // this is likely a parse exception... show detailed message

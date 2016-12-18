@@ -20,6 +20,7 @@
 package org.apache.cayenne.unit.jira;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -31,8 +32,7 @@ public class CAY_10062004_ExpTest {
     @Test
     public void testDeepCopy() throws Exception {
 
-        Expression parsed = Expression
-                .fromString("(a = 1 and a = 2) or (a != 1 and a != 2)");
+        Expression parsed = ExpressionFactory.exp("(a = 1 and a = 2) or (a != 1 and a != 2)");
         Expression finalExpression = parsed.deepCopy();
 
         assertEquals(parsed, finalExpression);
@@ -42,13 +42,12 @@ public class CAY_10062004_ExpTest {
     @Test
     public void testAndExpOrExp() throws Exception {
 
-        Expression parsed = Expression
-                .fromString("(a = 1 and a = 2) or (a != 1 and a != 2)");
+        Expression parsed = ExpressionFactory.exp("(a = 1 and a = 2) or (a != 1 and a != 2)");
 
-        Expression first = Expression.fromString("a = 1");
-        Expression second = Expression.fromString("a = 2");
-        Expression third = Expression.fromString("a != 1");
-        Expression fourth = Expression.fromString("a != 2");
+        Expression first = ExpressionFactory.exp("a = 1");
+        Expression second = ExpressionFactory.exp("a = 2");
+        Expression third = ExpressionFactory.exp("a != 1");
+        Expression fourth = ExpressionFactory.exp("a != 2");
 
         // this internally calls "joinExp"
         Expression firstAndSecond = first.andExp(second);

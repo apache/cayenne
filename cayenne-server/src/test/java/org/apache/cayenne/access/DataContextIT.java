@@ -393,7 +393,7 @@ public class DataContextIT extends ServerCase {
 
 		createSingleArtistDataSet();
 
-		SelectQuery select = new SelectQuery(Painting.class, Expression.fromString("db:PAINTING_ID = 1"));
+		SelectQuery select = new SelectQuery(Painting.class, ExpressionFactory.exp("db:PAINTING_ID = 1"));
 
 		assertEquals(0, context.performQuery(select).size());
 

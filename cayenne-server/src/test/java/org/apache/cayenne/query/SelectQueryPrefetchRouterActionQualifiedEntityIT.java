@@ -20,7 +20,6 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -73,7 +72,7 @@ public class SelectQueryPrefetchRouterActionQualifiedEntityIT extends PeopleProj
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
         assertSame(departmentEntity, prefetch.getRoot());
-        assertEquals(Expression.fromString("db:employees.NAME = 'abc' and db:employees.PERSON_TYPE = 'EM'"),
+        assertEquals(ExpressionFactory.exp("db:employees.NAME = 'abc' and db:employees.PERSON_TYPE = 'EM'"),
                 prefetch.getQualifier());
     }
 }

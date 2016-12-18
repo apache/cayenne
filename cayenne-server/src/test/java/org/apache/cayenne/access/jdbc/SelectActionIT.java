@@ -22,6 +22,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.testdo.lob.ClobTestRelation;
@@ -51,7 +52,7 @@ public class SelectActionIT extends ServerCase {
 
             insertClobDb();
 
-            Expression qual = Expression.fromString("clobValue.value = 100");
+            Expression qual = ExpressionFactory.exp("clobValue.value = 100");
             SelectQuery select = new SelectQuery(ClobTestEntity.class, qual);
             select.setFetchLimit(25);
             List<DataRow> resultRows = context.performQuery(select);

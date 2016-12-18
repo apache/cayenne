@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.query.*;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.SelectQuery;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  */
@@ -64,11 +64,11 @@ public class SelectQueryDescriptorTest {
     public void testGetQueryQualifier() throws Exception {
         SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
         builder.setRoot("FakeRoot");
-        builder.setQualifier(Expression.fromString("abc = 5"));
+        builder.setQualifier(ExpressionFactory.exp("abc = 5"));
 
         SelectQuery query = (SelectQuery) builder.buildQuery();
 
-        assertEquals(Expression.fromString("abc = 5"), query.getQualifier());
+        assertEquals(ExpressionFactory.exp("abc = 5"), query.getQualifier());
     }
 
     @Test

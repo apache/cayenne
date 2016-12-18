@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.wocompat;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
@@ -35,6 +27,14 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.commons.collections.Transformer;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * An extension of ObjEntity used to accomodate extra EOModel entity properties.
@@ -109,10 +109,7 @@ public class EOObjEntity extends ObjEntity {
             }
             else {
                 Map params = Collections.singletonMap("root", EOObjEntity.this);
-                Expression filter = Expression
-                        .fromString("root = $root")
-                        .expWithParameters(params);
-
+                Expression filter = ExpressionFactory.exp("root = $root").params(params);
                 filteredQueries = filter.filter(queries, new ArrayList());
             }
         }

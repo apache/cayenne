@@ -22,6 +22,7 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -30,12 +31,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DbEntityIT extends ServerCase {
@@ -231,18 +227,18 @@ public class DbEntityIT extends ServerCase {
     public void testTranslateToRelatedEntityIndependentPath() {
         DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
-        Expression e1 = Expression.fromString("db:paintingArray");
+        Expression e1 = ExpressionFactory.exp("db:paintingArray");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals("failure: " + translated, Expression.fromString("db:toArtist.paintingArray"), translated);
+        assertEquals("failure: " + translated, ExpressionFactory.exp("db:toArtist.paintingArray"), translated);
     }
 
     @Test
     public void testTranslateToRelatedEntityTrimmedPath() {
         DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
-        Expression e1 = Expression.fromString("db:artistExhibitArray.toExhibit");
+        Expression e1 = ExpressionFactory.exp("db:artistExhibitArray.toExhibit");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals("failure: " + translated, Expression.fromString("db:toArtist.artistExhibitArray.toExhibit"),
+        assertEquals("failure: " + translated, ExpressionFactory.exp("db:toArtist.artistExhibitArray.toExhibit"),
                 translated);
     }
 
@@ -250,30 +246,30 @@ public class DbEntityIT extends ServerCase {
     public void testTranslateToRelatedEntitySplitHalfWay() {
         DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
-        Expression e1 = Expression.fromString("db:paintingArray.toPaintingInfo.TEXT_REVIEW");
+        Expression e1 = ExpressionFactory.exp("db:paintingArray.toPaintingInfo.TEXT_REVIEW");
         Expression translated = artistE.translateToRelatedEntity(e1, "paintingArray.toGallery");
         assertEquals("failure: " + translated,
-                Expression.fromString("db:paintingArray.toArtist.paintingArray.toPaintingInfo.TEXT_REVIEW"), translated);
+                ExpressionFactory.exp("db:paintingArray.toArtist.paintingArray.toPaintingInfo.TEXT_REVIEW"), translated);
     }
 
     @Test
     public void testTranslateToRelatedEntityMatchingPath() {
         DbEntity artistE = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
-        Expression e1 = Expression.fromString("db:artistExhibitArray.toExhibit");
+        Expression e1 = ExpressionFactory.exp("db:artistExhibitArray.toExhibit");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray.toExhibit");
 
         assertEquals("failure: " + translated,
-                Expression.fromString("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"), translated);
+                ExpressionFactory.exp("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"), translated);
     }
 
     @Test
     public void testTranslateToRelatedEntityToOne() {
         DbEntity paintingE = runtime.getDataDomain().getEntityResolver().getDbEntity("PAINTING");
 
-        Expression e1 = Expression.fromString("db:toArtist.ARTIST_NAME = 'aa'");
+        Expression e1 = ExpressionFactory.exp("db:toArtist.ARTIST_NAME = 'aa'");
         Expression translated = paintingE.translateToRelatedEntity(e1, "toArtist");
 
-        assertEquals("failure: " + translated, Expression.fromString("db:ARTIST_NAME = 'aa'"), translated);
+        assertEquals("failure: " + translated, ExpressionFactory.exp("db:ARTIST_NAME = 'aa'"), translated);
     }
 }

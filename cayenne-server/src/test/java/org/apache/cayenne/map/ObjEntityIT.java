@@ -145,12 +145,12 @@ public class ObjEntityIT extends ServerCase {
         aliases.put("a", "paintingArray.toGallery");
 
         PathComponent<ObjAttribute, ObjRelationship> lastAttribute = artistE.lastPathComponent(
-                Expression.fromString("paintingArray.paintingTitle"), aliases);
+                ExpressionFactory.exp("paintingArray.paintingTitle"), aliases);
         assertTrue(lastAttribute.getAttribute() != null);
         assertEquals("paintingTitle", lastAttribute.getAttribute().getName());
 
         PathComponent<ObjAttribute, ObjRelationship> lastRelationship = artistE.lastPathComponent(
-                Expression.fromString("paintingArray.toGallery"), aliases);
+                ExpressionFactory.exp("paintingArray.toGallery"), aliases);
         assertTrue(lastRelationship.getRelationship() != null);
         assertEquals("toGallery", lastRelationship.getRelationship().getName());
 
@@ -388,18 +388,18 @@ public class ObjEntityIT extends ServerCase {
     public void testTranslateToRelatedEntityIndependentPath() throws Exception {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
-        Expression e1 = Expression.fromString("paintingArray");
+        Expression e1 = ExpressionFactory.exp("paintingArray");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals("failure: " + translated, Expression.fromString("db:toArtist.paintingArray"), translated);
+        assertEquals("failure: " + translated, ExpressionFactory.exp("db:toArtist.paintingArray"), translated);
     }
 
     @Test
     public void testTranslateToRelatedEntityTrimmedPath() throws Exception {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
-        Expression e1 = Expression.fromString("artistExhibitArray.toExhibit");
+        Expression e1 = ExpressionFactory.exp("artistExhibitArray.toExhibit");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals("failure: " + translated, Expression.fromString("db:toArtist.artistExhibitArray.toExhibit"),
+        assertEquals("failure: " + translated, ExpressionFactory.exp("db:toArtist.artistExhibitArray.toExhibit"),
                 translated);
     }
 
@@ -407,28 +407,28 @@ public class ObjEntityIT extends ServerCase {
     public void testTranslateToRelatedEntitySplitHalfWay() throws Exception {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
-        Expression e1 = Expression.fromString("paintingArray.toPaintingInfo.textReview");
+        Expression e1 = ExpressionFactory.exp("paintingArray.toPaintingInfo.textReview");
         Expression translated = artistE.translateToRelatedEntity(e1, "paintingArray.toGallery");
         assertEquals("failure: " + translated,
-                Expression.fromString("db:paintingArray.toArtist.paintingArray.toPaintingInfo.TEXT_REVIEW"), translated);
+                ExpressionFactory.exp("db:paintingArray.toArtist.paintingArray.toPaintingInfo.TEXT_REVIEW"), translated);
     }
 
     @Test
     public void testTranslateToRelatedEntityMatchingPath() throws Exception {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
-        Expression e1 = Expression.fromString("artistExhibitArray.toExhibit");
+        Expression e1 = ExpressionFactory.exp("artistExhibitArray.toExhibit");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray.toExhibit");
         assertEquals("failure: " + translated,
-                Expression.fromString("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"), translated);
+                ExpressionFactory.exp("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"), translated);
     }
 
     @Test
     public void testTranslateToRelatedEntityMultiplePaths() throws Exception {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
-        Expression e1 = Expression.fromString("paintingArray = $p and artistExhibitArray.toExhibit.closingDate = $d");
+        Expression e1 = ExpressionFactory.exp("paintingArray = $p and artistExhibitArray.toExhibit.closingDate = $d");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals("failure: " + translated, Expression.fromString("db:toArtist.paintingArray = $p "
+        assertEquals("failure: " + translated, ExpressionFactory.exp("db:toArtist.paintingArray = $p "
                 + "and db:toArtist.artistExhibitArray.toExhibit.CLOSING_DATE = $d"), translated);
     }
 
@@ -436,9 +436,9 @@ public class ObjEntityIT extends ServerCase {
     public void testTranslateToRelatedEntityOuterJoin_Flattened() throws Exception {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
-        Expression e1 = Expression.fromString("groupArray+.name");
+        Expression e1 = ExpressionFactory.exp("groupArray+.name");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals("failure: " + translated, Expression.fromString("db:toArtist.artistGroupArray+.toGroup+.NAME"), translated);
+        assertEquals("failure: " + translated, ExpressionFactory.exp("db:toArtist.artistGroupArray+.toGroup+.NAME"), translated);
     }
 
     @Test

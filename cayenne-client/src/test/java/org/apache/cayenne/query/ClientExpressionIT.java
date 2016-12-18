@@ -306,7 +306,7 @@ public class ClientExpressionIT extends ClientCase {
     }
 
     @Test
-    public void testExpressionWithParameters() throws Exception {
+    public void testParams() throws Exception {
         createDataSet();
         
         SelectQuery<ClientMtTable1> table1Query = new SelectQuery<ClientMtTable1>(ClientMtTable1.class);
@@ -316,15 +316,14 @@ public class ClientExpressionIT extends ClientCase {
         ClientMtTable1 element_1 = table1List.get(0);
         ClientMtTable1 element_5 = table1List.get(4);
         
-        Expression exp = Expression.fromString("table1 = $attr");
-        exp = exp.expWithParameters(Collections.singletonMap("attr", element_1));
+        Expression exp = ExpressionFactory.exp("table1 = $attr");
+        exp = exp.params(Collections.singletonMap("attr", element_1));
         SelectQuery<ClientMtTable2> table2Query = new SelectQuery<ClientMtTable2>(ClientMtTable2.class, exp);
         List<ClientMtTable2> table2List = context.select(table2Query);
         
         assertEquals(2, table2List.size());
         
-        exp = exp.andExp(Expression.fromString("table1 = $attr"))
-                .expWithParameters(Collections.singletonMap("attr", element_5));
+        exp = exp.andExp(ExpressionFactory.exp("table1 = $attr")).params(Collections.singletonMap("attr", element_5));
         table2Query = new SelectQuery<ClientMtTable2>(ClientMtTable2.class, exp);
         table2List = context.select(table2Query);
         

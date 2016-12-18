@@ -21,7 +21,9 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.query.*;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.query.SortOrder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -191,7 +193,7 @@ public class QueryDescriptorLoader {
             this.qualifier = null;
         }
         else {
-            this.qualifier = Expression.fromString(qualifier.trim());
+            this.qualifier = ExpressionFactory.exp(qualifier.trim());
         }
     }
 

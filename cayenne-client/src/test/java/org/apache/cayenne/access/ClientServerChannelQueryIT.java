@@ -23,7 +23,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.MappedSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
@@ -41,10 +41,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class ClientServerChannelQueryIT extends ClientCase {
@@ -155,8 +152,7 @@ public class ClientServerChannelQueryIT extends ClientCase {
     public void testSelectQuerySimpleQualifier() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        SelectQuery q = new SelectQuery(ClientMtTable1.class, Expression
-                .fromString("globalAttribute1 = 'g1'"));
+        SelectQuery q = new SelectQuery(ClientMtTable1.class, ExpressionFactory.exp("globalAttribute1 = 'g1'"));
         List<?> results = context.performQuery(q);
 
         assertEquals(1, results.size());
@@ -168,8 +164,7 @@ public class ClientServerChannelQueryIT extends ClientCase {
     public void testSelectQueryToManyRelationshipQualifier() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        SelectQuery q = new SelectQuery(ClientMtTable1.class, Expression
-                .fromString("table2Array.globalAttribute = 'g1'"));
+        SelectQuery q = new SelectQuery(ClientMtTable1.class, ExpressionFactory.exp("table2Array.globalAttribute = 'g1'"));
         List<?> results = context.performQuery(q);
 
         assertEquals(1, results.size());
@@ -208,8 +203,7 @@ public class ClientServerChannelQueryIT extends ClientCase {
     public void testSelectQueryPrefetchToOne() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        SelectQuery q = new SelectQuery(ClientMtTable2.class, Expression
-                .fromString("globalAttribute = 'g1'"));
+        SelectQuery q = new SelectQuery(ClientMtTable2.class, ExpressionFactory.exp("globalAttribute = 'g1'"));
         q.addPrefetch(ClientMtTable2.TABLE1_PROPERTY);
         List<?> results = context.performQuery(q);
 
@@ -231,8 +225,7 @@ public class ClientServerChannelQueryIT extends ClientCase {
     public void testSelectQueryPrefetchToMany() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        SelectQuery q = new SelectQuery(ClientMtTable1.class, Expression
-                .fromString("globalAttribute1 = 'g1'"));
+        SelectQuery q = new SelectQuery(ClientMtTable1.class, ExpressionFactory.exp("globalAttribute1 = 'g1'"));
         q.addPrefetch(ClientMtTable1.TABLE2ARRAY_PROPERTY);
         List<?> results = context.performQuery(q);
 

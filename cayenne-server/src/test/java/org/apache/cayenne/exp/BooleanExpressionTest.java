@@ -28,8 +28,8 @@ public class BooleanExpressionTest {
 
     @Test
     public void testCAY1185() {
-        Expression expTrue = Expression.fromString("booleanColumn = true");
-        Expression expFalse = Expression.fromString("booleanColumn = false");
+        Expression expTrue = ExpressionFactory.exp("booleanColumn = true");
+        Expression expFalse = ExpressionFactory.exp("booleanColumn = false");
 
         BooleanTestEntity entity = new BooleanTestEntity();
         entity.setBooleanColumn(true);

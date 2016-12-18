@@ -19,19 +19,10 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JToolBar;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.tree.TreeModel;
-
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
@@ -41,6 +32,13 @@ import org.apache.cayenne.modeler.undo.AddPrefetchUndoableEdit;
 import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.tree.TreeModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Subclass of the SelectQueryOrderingTab configured to work with prefetches.
@@ -148,7 +146,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
         // totally invalid path would result in ExpressionException
         try {
-            Expression exp = Expression.fromString(prefetch);
+            Expression exp = ExpressionFactory.exp(prefetch);
             Object object = exp.evaluate(root);
             if (object instanceof Relationship) {
                 return ((Relationship) object).isToMany();

@@ -29,18 +29,7 @@ import org.apache.cayenne.exp.Expression;
   * @since 1.1
   */
 public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeConstants, ExpressionParserConstants {/*@bgen(jjtree)*/
-  protected JJTExpressionParserState jjtree = new JJTExpressionParserState();public static void main(String[] arg) {
-        // since Main is used for some basic speed measuring,
-        // lets run it twice to "warm up" the parser
-        Expression.fromString(arg[0]);
-
-        long start = System.currentTimeMillis();
-        Expression exp = Expression.fromString(arg[0]);
-        long end = System.currentTimeMillis();
-
-        System.out.println(exp);
-        System.out.println("Parsed in " + (end - start) + " ms.");
-    }
+  protected JJTExpressionParserState jjtree = new JJTExpressionParserState();
 
   final public Expression expression() throws ParseException {
     orCondition();

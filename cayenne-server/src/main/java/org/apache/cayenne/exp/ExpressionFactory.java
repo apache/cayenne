@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.exp;
 
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.parser.ASTAdd;
 import org.apache.cayenne.exp.parser.ASTAnd;
@@ -69,9 +61,16 @@ import org.apache.cayenne.exp.parser.ParseException;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.map.Entity;
 
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 /**
- * Helper class to build expressions. Alternatively expressions can be built
- * using {@link org.apache.cayenne.exp.Expression#fromString(String)} method.
+ * Helper class to build expressions.
  */
 public class ExpressionFactory {
 
