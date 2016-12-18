@@ -15,12 +15,9 @@ public abstract class _UuidTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String UUID_PROPERTY = "uuid";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<UUID> UUID = new Property<UUID>("uuid");
+    public static final Property<UUID> UUID = new Property<>("uuid");
 
     public void setUuid(UUID uuid) {
         writeProperty("uuid", uuid);

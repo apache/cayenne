@@ -14,15 +14,10 @@ public abstract class _BoxInfo extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String COLOR_PROPERTY = "color";
-    @Deprecated
-    public static final String BOX_PROPERTY = "box";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> COLOR = new Property<String>("color");
-    public static final Property<Box> BOX = new Property<Box>("box");
+    public static final Property<String> COLOR = new Property<>("color");
+    public static final Property<Box> BOX = new Property<>("box");
 
     public void setColor(String color) {
         writeProperty("color", color);

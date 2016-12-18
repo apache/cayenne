@@ -22,7 +22,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -42,11 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.apache.cayenne.exp.ExpressionFactory.matchExp;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.THINGS_PROJECT)
 public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
@@ -129,7 +124,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
         SelectQuery query = new SelectQuery(Bag.class);
-        query.addPrefetch(Bag.BALLS_PROPERTY).setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Bag.BALLS.disjointById());
         final List<Bag> result = context.performQuery(query);
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
@@ -137,7 +132,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
             public void execute() {
                 assertFalse(result.isEmpty());
                 Bag b1 = result.get(0);
-                List<Ball> balls = (List<Ball>) b1.readPropertyDirectly(Bag.BALLS_PROPERTY);
+                List<Ball> balls = (List<Ball>) b1.readPropertyDirectly(Bag.BALLS.getName());
                 assertNotNull(balls);
                 assertFalse(((ValueHolder) balls).isFault());
                 assertEquals(6, balls.size());
@@ -157,7 +152,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
         SelectQuery query = new SelectQuery(Box.class);
-        query.addPrefetch(Box.THINGS_PROPERTY).setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Box.THINGS.disjointById());
         final List<Box> result = context.performQuery(query);
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
@@ -166,7 +161,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
                 assertFalse(result.isEmpty());
                 List<Integer> volumes = new ArrayList<Integer>();
                 for (Box box : result) {
-                    List<Thing> things = (List<Thing>) box.readPropertyDirectly(Box.THINGS_PROPERTY);
+                    List<Thing> things = (List<Thing>) box.readPropertyDirectly(Box.THINGS.getName());
                     assertNotNull(things);
                     assertFalse(((ValueHolder) things).isFault());
                     for (Thing t : things) {
@@ -185,7 +180,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
         SelectQuery query = new SelectQuery(Bag.class);
-        query.addPrefetch(Bag.THINGS_PROPERTY).setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Bag.THINGS.disjointById());
         final List<Bag> result = context.performQuery(query);
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
@@ -193,7 +188,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
             public void execute() {
                 assertFalse(result.isEmpty());
                 Bag b1 = result.get(0);
-                List<Thing> things = (List<Thing>) b1.readPropertyDirectly(Bag.THINGS_PROPERTY);
+                List<Thing> things = (List<Thing>) b1.readPropertyDirectly(Bag.THINGS.getName());
                 assertNotNull(things);
                 assertFalse(((ValueHolder) things).isFault());
                 assertEquals(6, things.size());
@@ -213,10 +208,10 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
         SelectQuery query = new SelectQuery(Ball.class);
-        query.orQualifier(matchExp(Ball.THING_VOLUME_PROPERTY, 40).andExp(matchExp(Ball.THING_WEIGHT_PROPERTY, 30)));
-        query.orQualifier(matchExp(Ball.THING_VOLUME_PROPERTY, 20).andExp(matchExp(Ball.THING_WEIGHT_PROPERTY, 10)));
+        query.orQualifier(Ball.THING_VOLUME.eq(40).andExp(Ball.THING_WEIGHT.eq(30)));
+        query.orQualifier(Ball.THING_VOLUME.eq(20).andExp(Ball.THING_WEIGHT.eq(10)));
 
-        query.addPrefetch(Ball.THING_PROPERTY).setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Ball.THING.disjointById());
 
         final List<Ball> balls = context.performQuery(query);
 
@@ -237,9 +232,8 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
         SelectQuery query = new SelectQuery(Box.class);
-        query.addPrefetch(Box.BALLS_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
-        query.addPrefetch(Box.BALLS_PROPERTY + "." + Ball.THING_PROPERTY).setSemantics(
-                PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Box.BALLS.disjointById());
+        query.addPrefetch(Box.BALLS.dot(Ball.THING).disjointById());
         final List<Box> result = context.performQuery(query);
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
@@ -248,11 +242,11 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
                 assertFalse(result.isEmpty());
                 List<Integer> volumes = new ArrayList<Integer>();
                 for (Box box : result) {
-                    List<Ball> balls = (List<Ball>) box.readPropertyDirectly(Box.BALLS_PROPERTY);
+                    List<Ball> balls = (List<Ball>) box.readPropertyDirectly(Box.BALLS.getName());
                     assertNotNull(balls);
                     assertFalse(((ValueHolder) balls).isFault());
                     for (Ball ball : balls) {
-                        Thing thing = (Thing) ball.readPropertyDirectly(Ball.THING_PROPERTY);
+                        Thing thing = (Thing) ball.readPropertyDirectly(Ball.THING.getName());
                         assertNotNull(thing);
                         assertEquals(PersistenceState.COMMITTED, thing.getPersistenceState());
                         volumes.add(thing.getVolume());
@@ -280,7 +274,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
                 assertFalse(result.isEmpty());
 
                 Bag bag = result.get(0);
-                List<Box> boxes = (List<Box>) bag.readPropertyDirectly(Bag.BOXES_PROPERTY);
+                List<Box> boxes = (List<Box>) bag.readPropertyDirectly(Bag.BOXES.getName());
                 assertNotNull(boxes);
                 assertFalse(((ValueHolder) boxes).isFault());
                 assertEquals(2, boxes.size());
@@ -297,7 +291,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
                 assertTrue(names.contains("big"));
                 assertTrue(names.contains("small"));
 
-                List<Ball> balls = (List<Ball>) big.readPropertyDirectly(Box.BALLS_PROPERTY);
+                List<Ball> balls = (List<Ball>) big.readPropertyDirectly(Box.BALLS.getName());
                 assertNotNull(balls);
                 assertFalse(((ValueHolder) balls).isFault());
                 assertEquals(2, balls.size());

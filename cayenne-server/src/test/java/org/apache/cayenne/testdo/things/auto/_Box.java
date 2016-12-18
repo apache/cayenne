@@ -19,24 +19,13 @@ public abstract class _Box extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-    @Deprecated
-    public static final String BAG_PROPERTY = "bag";
-    @Deprecated
-    public static final String BALLS_PROPERTY = "balls";
-    @Deprecated
-    public static final String BOX_INFO_PROPERTY = "boxInfo";
-    @Deprecated
-    public static final String THINGS_PROPERTY = "things";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = new Property<String>("name");
-    public static final Property<Bag> BAG = new Property<Bag>("bag");
-    public static final Property<List<Ball>> BALLS = new Property<List<Ball>>("balls");
-    public static final Property<BoxInfo> BOX_INFO = new Property<BoxInfo>("boxInfo");
-    public static final Property<List<Thing>> THINGS = new Property<List<Thing>>("things");
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<Bag> BAG = new Property<>("bag");
+    public static final Property<List<Ball>> BALLS = new Property<>("balls");
+    public static final Property<BoxInfo> BOX_INFO = new Property<>("boxInfo");
+    public static final Property<List<Thing>> THINGS = new Property<>("things");
 
     public void setName(String name) {
         writeProperty("name", name);

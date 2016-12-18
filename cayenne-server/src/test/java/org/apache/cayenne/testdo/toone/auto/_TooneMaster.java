@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.toone.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.toone.TooneDep;
 
 /**
@@ -11,16 +12,18 @@ import org.apache.cayenne.testdo.toone.TooneDep;
  */
 public abstract class _TooneMaster extends CayenneDataObject {
 
-    public static final String TO_DEPENDENT_PROPERTY = "toDependent";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<TooneDep> TO_DEPENDENT = new Property<>("toDependent");
+
     public void setToDependent(TooneDep toDependent) {
-        setToOneTarget(TO_DEPENDENT_PROPERTY, toDependent, true);
+        setToOneTarget("toDependent", toDependent, true);
     }
 
     public TooneDep getToDependent() {
-        return (TooneDep)readProperty(TO_DEPENDENT_PROPERTY);
+        return (TooneDep)readProperty("toDependent");
     }
 
 

@@ -17,21 +17,12 @@ public abstract class _Thing extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String VOLUME_PROPERTY = "volume";
-    @Deprecated
-    public static final String WEIGHT_PROPERTY = "weight";
-    @Deprecated
-    public static final String BALL_PROPERTY = "ball";
-    @Deprecated
-    public static final String BOX_PROPERTY = "box";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Integer> VOLUME = new Property<Integer>("volume");
-    public static final Property<Integer> WEIGHT = new Property<Integer>("weight");
-    public static final Property<Ball> BALL = new Property<Ball>("ball");
-    public static final Property<List<Box>> BOX = new Property<List<Box>>("box");
+    public static final Property<Integer> VOLUME = new Property<>("volume");
+    public static final Property<Integer> WEIGHT = new Property<>("weight");
+    public static final Property<Ball> BALL = new Property<>("ball");
+    public static final Property<List<Box>> BOX = new Property<>("box");
 
     public void setVolume(Integer volume) {
         writeProperty("volume", volume);

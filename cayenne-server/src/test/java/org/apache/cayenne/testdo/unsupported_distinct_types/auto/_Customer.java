@@ -16,15 +16,10 @@ public abstract class _Customer extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String LONGVARCHAR_COL_PROPERTY = "longvarcharCol";
-    @Deprecated
-    public static final String ORDER_PROPERTY = "order";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> LONGVARCHAR_COL = new Property<String>("longvarcharCol");
-    public static final Property<List<Product>> ORDER = new Property<List<Product>>("order");
+    public static final Property<String> LONGVARCHAR_COL = new Property<>("longvarcharCol");
+    public static final Property<List<Product>> ORDER = new Property<>("order");
 
     public void setLongvarcharCol(String longvarcharCol) {
         writeProperty("longvarcharCol", longvarcharCol);
