@@ -13,12 +13,9 @@ public abstract class _SubPainting extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String PAINTING_TITLE_PROPERTY = "paintingTitle";
-
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 
-    public static final Property<String> PAINTING_TITLE = new Property<String>("paintingTitle");
+    public static final Property<String> PAINTING_TITLE = new Property<>("paintingTitle");
 
     public void setPaintingTitle(String paintingTitle) {
         writeProperty("paintingTitle", paintingTitle);

@@ -15,18 +15,11 @@ public abstract class _RWCompoundPainting extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String ESTIMATED_PRICE_PROPERTY = "estimatedPrice";
-    @Deprecated
-    public static final String PAINTING_TITLE_PROPERTY = "paintingTitle";
-    @Deprecated
-    public static final String TEXT_REVIEW_PROPERTY = "textReview";
-
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 
-    public static final Property<BigDecimal> ESTIMATED_PRICE = new Property<BigDecimal>("estimatedPrice");
-    public static final Property<String> PAINTING_TITLE = new Property<String>("paintingTitle");
-    public static final Property<String> TEXT_REVIEW = new Property<String>("textReview");
+    public static final Property<BigDecimal> ESTIMATED_PRICE = new Property<>("estimatedPrice");
+    public static final Property<String> PAINTING_TITLE = new Property<>("paintingTitle");
+    public static final Property<String> TEXT_REVIEW = new Property<>("textReview");
 
     public void setEstimatedPrice(BigDecimal estimatedPrice) {
         writeProperty("estimatedPrice", estimatedPrice);

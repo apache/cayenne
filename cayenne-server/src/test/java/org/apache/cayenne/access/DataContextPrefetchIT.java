@@ -30,7 +30,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
@@ -440,7 +439,7 @@ public class DataContextPrefetchIT extends ServerCase {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		SelectQuery q = new SelectQuery(Painting.class);
-		q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
+		q.addPrefetch(Painting.TO_ARTIST.disjoint());
 
 		final List<Painting> result = context.performQuery(q);
 
@@ -466,7 +465,7 @@ public class DataContextPrefetchIT extends ServerCase {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		SelectQuery q = new SelectQuery(Painting.class);
-		q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
+		q.addPrefetch(Painting.TO_ARTIST.disjoint());
 		q.andQualifier(ExpressionFactory.matchDbExp("toArtist.ARTIST_NAME", "artist2"));
 
 		List<Painting> results = context.performQuery(q);
@@ -479,7 +478,7 @@ public class DataContextPrefetchIT extends ServerCase {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		SelectQuery q = new SelectQuery(Painting.class);
-		q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
+		q.addPrefetch(Painting.TO_ARTIST.disjoint());
 		q.andQualifier(ExpressionFactory.matchExp("toArtist.artistName", "artist2"));
 
 		List<Painting> results = context.performQuery(q);
@@ -520,7 +519,7 @@ public class DataContextPrefetchIT extends ServerCase {
 		Expression exp = ExpressionFactory.matchExp("toArtist.artistName", "artist3");
 
 		SelectQuery q = new SelectQuery(Painting.class, exp);
-		q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
+		q.addPrefetch(Painting.TO_ARTIST.disjoint());
 
 		final List<Painting> results = context.performQuery(q);
 
@@ -597,7 +596,7 @@ public class DataContextPrefetchIT extends ServerCase {
 				// see that artists are resolved...
 
 				Painting px = results.get(0);
-				Artist ax = (Artist) px.readProperty(Painting.TO_ARTIST_PROPERTY);
+				Artist ax = (Artist) px.readProperty(Painting.TO_ARTIST.getName());
 				assertEquals(PersistenceState.COMMITTED, ax.getPersistenceState());
 			}
 		});
@@ -609,8 +608,8 @@ public class DataContextPrefetchIT extends ServerCase {
 
 		Expression e = ExpressionFactory.likeExp("toArtist.artistName", "a%");
 		SelectQuery q = new SelectQuery(Painting.class, e);
-		q.addPrefetch(Painting.TO_PAINTING_INFO_PROPERTY);
-		q.addOrdering(Painting.PAINTING_TITLE_PROPERTY, SortOrder.ASCENDING);
+		q.addPrefetch(Painting.TO_PAINTING_INFO.disjoint());
+		q.addOrdering(Painting.PAINTING_TITLE.asc());
 
 		final List<Painting> results = context.performQuery(q);
 
@@ -621,7 +620,7 @@ public class DataContextPrefetchIT extends ServerCase {
 
 				// testing non-null to-one target
 				Painting p0 = results.get(0);
-				Object o2 = p0.readPropertyDirectly(Painting.TO_PAINTING_INFO_PROPERTY);
+				Object o2 = p0.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName());
 				assertTrue(o2 instanceof PaintingInfo);
 				PaintingInfo pi2 = (PaintingInfo) o2;
 				assertEquals(PersistenceState.COMMITTED, pi2.getPersistenceState());
@@ -629,7 +628,7 @@ public class DataContextPrefetchIT extends ServerCase {
 
 				// testing null to-one target
 				Painting p1 = results.get(1);
-				assertNull(p1.readPropertyDirectly(Painting.TO_PAINTING_INFO_PROPERTY));
+				assertNull(p1.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName()));
 
 				// there was a bug marking an object as dirty when clearing the
 				// relationships
@@ -658,7 +657,7 @@ public class DataContextPrefetchIT extends ServerCase {
 		tPainting.insert(6, "p_Xty", null, 1000);
 
 		SelectQuery q = new SelectQuery(Painting.class);
-		q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
+		q.addPrefetch(Painting.TO_ARTIST.disjoint());
 
 		final List<Painting> paintings = context.performQuery(q);
 
@@ -668,7 +667,7 @@ public class DataContextPrefetchIT extends ServerCase {
 				assertEquals(1, paintings.size());
 
 				Painting p2 = paintings.get(0);
-				assertNull(p2.readProperty(Painting.TO_ARTIST_PROPERTY));
+				assertNull(p2.readProperty(Painting.TO_ARTIST.getName()));
 			}
 		});
 	}
@@ -678,7 +677,7 @@ public class DataContextPrefetchIT extends ServerCase {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		final SelectQuery q = new SelectQuery(Painting.class);
-		q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
+		q.addPrefetch(Painting.TO_ARTIST.disjoint());
 		q.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
 		context.performQuery(q);
@@ -714,7 +713,7 @@ public class DataContextPrefetchIT extends ServerCase {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
 		final SelectQuery q = new SelectQuery(Painting.class);
-		q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
+		q.addPrefetch(Painting.TO_ARTIST.disjoint());
 		q.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
 		context.performQuery(q);

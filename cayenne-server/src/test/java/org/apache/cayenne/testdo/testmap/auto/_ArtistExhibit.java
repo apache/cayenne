@@ -15,16 +15,11 @@ public abstract class _ArtistExhibit extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String TO_ARTIST_PROPERTY = "toArtist";
-    @Deprecated
-    public static final String TO_EXHIBIT_PROPERTY = "toExhibit";
-
     public static final String ARTIST_ID_PK_COLUMN = "ARTIST_ID";
     public static final String EXHIBIT_ID_PK_COLUMN = "EXHIBIT_ID";
 
-    public static final Property<Artist> TO_ARTIST = new Property<Artist>("toArtist");
-    public static final Property<Exhibit> TO_EXHIBIT = new Property<Exhibit>("toExhibit");
+    public static final Property<Artist> TO_ARTIST = new Property<>("toArtist");
+    public static final Property<Exhibit> TO_EXHIBIT = new Property<>("toExhibit");
 
     public void setToArtist(Artist toArtist) {
         setToOneTarget("toArtist", toArtist, true);

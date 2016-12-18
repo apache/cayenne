@@ -17,18 +17,11 @@ public abstract class _Gallery extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String GALLERY_NAME_PROPERTY = "galleryName";
-    @Deprecated
-    public static final String EXHIBIT_ARRAY_PROPERTY = "exhibitArray";
-    @Deprecated
-    public static final String PAINTING_ARRAY_PROPERTY = "paintingArray";
-
     public static final String GALLERY_ID_PK_COLUMN = "GALLERY_ID";
 
-    public static final Property<String> GALLERY_NAME = new Property<String>("galleryName");
-    public static final Property<List<Exhibit>> EXHIBIT_ARRAY = new Property<List<Exhibit>>("exhibitArray");
-    public static final Property<List<Painting>> PAINTING_ARRAY = new Property<List<Painting>>("paintingArray");
+    public static final Property<String> GALLERY_NAME = new Property<>("galleryName");
+    public static final Property<List<Exhibit>> EXHIBIT_ARRAY = new Property<>("exhibitArray");
+    public static final Property<List<Painting>> PAINTING_ARRAY = new Property<>("paintingArray");
 
     public void setGalleryName(String galleryName) {
         writeProperty("galleryName", galleryName);

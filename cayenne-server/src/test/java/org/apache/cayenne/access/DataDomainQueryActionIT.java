@@ -26,7 +26,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -63,9 +62,9 @@ public class DataDomainQueryActionIT extends ServerCase {
 
         SelectQuery query = new SelectQuery(Painting.class);
 
-        query.addPrefetch(Painting.TO_GALLERY_PROPERTY);
-        query.addPrefetch(Painting.TO_ARTIST_PROPERTY);
-        query.addOrdering(Painting.PAINTING_TITLE_PROPERTY, SortOrder.ASCENDING);
+        query.addPrefetch(Painting.TO_GALLERY.disjoint());
+        query.addPrefetch(Painting.TO_ARTIST.disjoint());
+        query.addOrdering(Painting.PAINTING_TITLE.asc());
         query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
         query.setPageSize(5);
 

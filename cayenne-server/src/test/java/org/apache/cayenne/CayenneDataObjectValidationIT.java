@@ -62,7 +62,7 @@ public class CayenneDataObjectValidationIT extends ServerCase {
         assertEquals(1, failures.size());
 
         BeanValidationFailure failure = (BeanValidationFailure) failures.get(0);
-        assertEquals(Exhibit.TO_GALLERY_PROPERTY, failure.getProperty());
+        assertEquals(Exhibit.TO_GALLERY.getName(), failure.getProperty());
 
         // fix the problem and see if it goes away
         Gallery gallery = context.newObject(Gallery.class);

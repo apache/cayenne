@@ -44,7 +44,7 @@ public class PersistenceByReachabilityIT extends ServerCase {
         Painting persistentDO = context.newObject(Painting.class);
 
         Artist transientDO = new Artist();
-        persistentDO.setToOneTarget(Painting.TO_ARTIST_PROPERTY, transientDO, false);
+        persistentDO.setToOneTarget(Painting.TO_ARTIST.getName(), transientDO, false);
 
         assertEquals(PersistenceState.NEW, transientDO.getPersistenceState());
     }
@@ -54,7 +54,7 @@ public class PersistenceByReachabilityIT extends ServerCase {
         Painting transientDO = context.newObject(Painting.class);
 
         Artist persistentDO = new Artist();
-        transientDO.setToOneTarget(Painting.TO_ARTIST_PROPERTY, persistentDO, false);
+        transientDO.setToOneTarget(Painting.TO_ARTIST.getName(), persistentDO, false);
 
         assertEquals(PersistenceState.NEW, transientDO.getPersistenceState());
     }
@@ -68,7 +68,7 @@ public class PersistenceByReachabilityIT extends ServerCase {
         // this is the case where exception must be thrown as DataContexts are
         // different
         try {
-            doC1.setToOneTarget(Painting.TO_ARTIST_PROPERTY, doC2, false);
+            doC1.setToOneTarget(Painting.TO_ARTIST.getName(), doC2, false);
             fail("failed to detect relationship between objects in different DataContexts");
         }
         catch (CayenneRuntimeException ex) {

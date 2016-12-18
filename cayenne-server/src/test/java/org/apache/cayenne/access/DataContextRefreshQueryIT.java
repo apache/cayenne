@@ -23,7 +23,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
@@ -40,12 +39,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextRefreshQueryIT extends ServerCase {
@@ -232,9 +226,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
     public void testRefreshQueryResultsLocalCache() throws Exception {
         createRefreshCollectionDataSet();
 
-        Expression qual = ExpressionFactory.matchExp(
-                Painting.PAINTING_TITLE_PROPERTY,
-                "P2");
+        Expression qual = Painting.PAINTING_TITLE.eq("P2");
         SelectQuery q = new SelectQuery(Painting.class, qual);
         q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
         q.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
@@ -287,9 +279,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
     public void testRefreshQueryResultsSharedCache() throws Exception {
         createRefreshCollectionDataSet();
 
-        Expression qual = ExpressionFactory.matchExp(
-                Painting.PAINTING_TITLE_PROPERTY,
-                "P2");
+        Expression qual = Painting.PAINTING_TITLE.eq("P2");
         SelectQuery q = new SelectQuery(Painting.class, qual);
         q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
         q.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
@@ -342,9 +332,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
     public void testRefreshQueryResultGroupLocal() throws Exception {
         createRefreshCollectionDataSet();
 
-        Expression qual = ExpressionFactory.matchExp(
-                Painting.PAINTING_TITLE_PROPERTY,
-                "P2");
+        Expression qual = Painting.PAINTING_TITLE.eq("P2");
         SelectQuery q = new SelectQuery(Painting.class, qual);
         q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
         q.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);

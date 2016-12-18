@@ -19,39 +19,18 @@ public abstract class _CompoundPaintingLongNames extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String ARTIST_LONG_NAME_PROPERTY = "artistLongName";
-    @Deprecated
-    public static final String ESTIMATED_PRICE_PROPERTY = "estimatedPrice";
-    @Deprecated
-    public static final String GALLERY_LONG_NAME_PROPERTY = "galleryLongName";
-    @Deprecated
-    public static final String PAINTING_DESCRIPTION_PROPERTY = "paintingDescription";
-    @Deprecated
-    public static final String PAINTING_TITLE_PROPERTY = "paintingTitle";
-    @Deprecated
-    public static final String TEXT_LONG_REVIEW_PROPERTY = "textLongReview";
-    @Deprecated
-    public static final String TO_ARTIST_PROPERTY = "toArtist";
-    @Deprecated
-    public static final String TO_ARTIST1_PROPERTY = "toArtist1";
-    @Deprecated
-    public static final String TO_GALLERY_PROPERTY = "toGallery";
-    @Deprecated
-    public static final String TO_PAINTING_INFO_PROPERTY = "toPaintingInfo";
-
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 
-    public static final Property<String> ARTIST_LONG_NAME = new Property<String>("artistLongName");
-    public static final Property<BigDecimal> ESTIMATED_PRICE = new Property<BigDecimal>("estimatedPrice");
-    public static final Property<String> GALLERY_LONG_NAME = new Property<String>("galleryLongName");
-    public static final Property<String> PAINTING_DESCRIPTION = new Property<String>("paintingDescription");
-    public static final Property<String> PAINTING_TITLE = new Property<String>("paintingTitle");
-    public static final Property<String> TEXT_LONG_REVIEW = new Property<String>("textLongReview");
-    public static final Property<Artist> TO_ARTIST = new Property<Artist>("toArtist");
-    public static final Property<ROArtist> TO_ARTIST1 = new Property<ROArtist>("toArtist1");
-    public static final Property<Gallery> TO_GALLERY = new Property<Gallery>("toGallery");
-    public static final Property<PaintingInfo> TO_PAINTING_INFO = new Property<PaintingInfo>("toPaintingInfo");
+    public static final Property<String> ARTIST_LONG_NAME = new Property<>("artistLongName");
+    public static final Property<BigDecimal> ESTIMATED_PRICE = new Property<>("estimatedPrice");
+    public static final Property<String> GALLERY_LONG_NAME = new Property<>("galleryLongName");
+    public static final Property<String> PAINTING_DESCRIPTION = new Property<>("paintingDescription");
+    public static final Property<String> PAINTING_TITLE = new Property<>("paintingTitle");
+    public static final Property<String> TEXT_LONG_REVIEW = new Property<>("textLongReview");
+    public static final Property<Artist> TO_ARTIST = new Property<>("toArtist");
+    public static final Property<ROArtist> TO_ARTIST1 = new Property<>("toArtist1");
+    public static final Property<Gallery> TO_GALLERY = new Property<>("toGallery");
+    public static final Property<PaintingInfo> TO_PAINTING_INFO = new Property<>("toPaintingInfo");
 
     public void setArtistLongName(String artistLongName) {
         writeProperty("artistLongName", artistLongName);

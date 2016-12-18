@@ -30,7 +30,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
@@ -126,8 +125,7 @@ public class JointPrefetchIT extends ServerCase {
         q.setFetchLimit(2);
         q.setFetchOffset(0);
         q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
-        q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        q.addPrefetch(Painting.TO_ARTIST.joint());
 
         final List<?> objects = context.performQuery(q);
 
@@ -187,8 +185,7 @@ public class JointPrefetchIT extends ServerCase {
         SelectQuery q = new SelectQuery(Painting.class);
         q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
         q.setFetchingDataRows(true);
-        q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        q.addPrefetch(Painting.TO_ARTIST.joint());
 
         final List<?> rows = context.performQuery(q);
 
@@ -287,8 +284,7 @@ public class JointPrefetchIT extends ServerCase {
         // query with to-many joint prefetches
         SelectQuery q = new SelectQuery(Painting.class);
         q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
-        q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        q.addPrefetch(Painting.TO_ARTIST.joint());
 
         final List<?> objects = context.performQuery(q);
 
@@ -331,8 +327,7 @@ public class JointPrefetchIT extends ServerCase {
 
         // test
         SelectQuery q = new SelectQuery(Painting.class);
-        q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        q.addPrefetch(Painting.TO_ARTIST.joint());
 
         ObjEntity artistE = context.getEntityResolver().getObjEntity("Artist");
         ObjAttribute dateOfBirth = artistE.getAttribute("dateOfBirth");

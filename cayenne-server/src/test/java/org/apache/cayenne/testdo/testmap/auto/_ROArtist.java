@@ -17,18 +17,11 @@ public abstract class _ROArtist extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String ARTIST_NAME_PROPERTY = "artistName";
-    @Deprecated
-    public static final String DATE_OF_BIRTH_PROPERTY = "dateOfBirth";
-    @Deprecated
-    public static final String PAINTING_ARRAY_PROPERTY = "paintingArray";
-
     public static final String ARTIST_ID_PK_COLUMN = "ARTIST_ID";
 
-    public static final Property<String> ARTIST_NAME = new Property<String>("artistName");
-    public static final Property<Date> DATE_OF_BIRTH = new Property<Date>("dateOfBirth");
-    public static final Property<List<Painting>> PAINTING_ARRAY = new Property<List<Painting>>("paintingArray");
+    public static final Property<String> ARTIST_NAME = new Property<>("artistName");
+    public static final Property<Date> DATE_OF_BIRTH = new Property<>("dateOfBirth");
+    public static final Property<List<Painting>> PAINTING_ARRAY = new Property<>("paintingArray");
 
     public String getArtistName() {
         return (String)readProperty("artistName");

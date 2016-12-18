@@ -28,7 +28,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
@@ -48,11 +47,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class NestedDataContextWriteIT extends ServerCase {
@@ -373,7 +368,7 @@ public class NestedDataContextWriteIT extends ServerCase {
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Painting.class);
-        query.addOrdering(Painting.PAINTING_TITLE_PROPERTY, SortOrder.ASCENDING);
+        query.addOrdering(Painting.PAINTING_TITLE.asc());
         List<?> objects = childContext.performQuery(query);
 
         assertEquals(6, objects.size());

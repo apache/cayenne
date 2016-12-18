@@ -17,21 +17,12 @@ public abstract class _ArtGroup extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-    @Deprecated
-    public static final String ARTIST_ARRAY_PROPERTY = "artistArray";
-    @Deprecated
-    public static final String CHILD_GROUPS_ARRAY_PROPERTY = "childGroupsArray";
-    @Deprecated
-    public static final String TO_PARENT_GROUP_PROPERTY = "toParentGroup";
-
     public static final String GROUP_ID_PK_COLUMN = "GROUP_ID";
 
-    public static final Property<String> NAME = new Property<String>("name");
-    public static final Property<List<Artist>> ARTIST_ARRAY = new Property<List<Artist>>("artistArray");
-    public static final Property<List<ArtGroup>> CHILD_GROUPS_ARRAY = new Property<List<ArtGroup>>("childGroupsArray");
-    public static final Property<ArtGroup> TO_PARENT_GROUP = new Property<ArtGroup>("toParentGroup");
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<List<Artist>> ARTIST_ARRAY = new Property<>("artistArray");
+    public static final Property<List<ArtGroup>> CHILD_GROUPS_ARRAY = new Property<>("childGroupsArray");
+    public static final Property<ArtGroup> TO_PARENT_GROUP = new Property<>("toParentGroup");
 
     public void setName(String name) {
         writeProperty("name", name);

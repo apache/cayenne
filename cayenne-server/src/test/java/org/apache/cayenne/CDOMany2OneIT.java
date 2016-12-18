@@ -131,7 +131,7 @@ public class CDOMany2OneIT extends ServerCase {
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
 
-        Expression e = ExpressionFactory.matchExp(ROPainting.TO_ARTIST_PROPERTY, a1);
+        Expression e = ROPainting.TO_ARTIST.eq(a1);
         SelectQuery q = new SelectQuery(ROPainting.class, e);
 
         List<ROPainting> paints = context.performQuery(q);
@@ -148,7 +148,7 @@ public class CDOMany2OneIT extends ServerCase {
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
 
-        Expression e = ExpressionFactory.matchExp(ROPainting.TO_ARTIST_PROPERTY, a1);
+        Expression e = ROPainting.TO_ARTIST.eq(a1);
         SelectQuery q = new SelectQuery(ROPainting.class, e);
 
         List<ROPainting> paints = context.performQuery(q);
@@ -169,7 +169,7 @@ public class CDOMany2OneIT extends ServerCase {
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
         Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
 
-        Expression e = ExpressionFactory.matchExp(Painting.TO_ARTIST_PROPERTY, a1);
+        Expression e = Painting.TO_ARTIST.eq(a1);
         SelectQuery q = new SelectQuery(Painting.class, e);
 
         List<Painting> paints = context.performQuery(q);

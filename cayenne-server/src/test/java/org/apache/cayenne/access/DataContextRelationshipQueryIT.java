@@ -85,7 +85,7 @@ public class DataContextRelationshipQueryIT extends ServerCase {
 
         RelationshipQuery toOne = new RelationshipQuery(
                 p.getObjectId(),
-                Painting.TO_ARTIST_PROPERTY,
+                Painting.TO_ARTIST.getName(),
                 false);
 
         List<Artist> related = context.performQuery(toOne);
@@ -122,7 +122,7 @@ public class DataContextRelationshipQueryIT extends ServerCase {
 
         RelationshipQuery toOne = new RelationshipQuery(
                 p.getObjectId(),
-                Painting.TO_ARTIST_PROPERTY,
+                Painting.TO_ARTIST.getName(),
                 true);
 
         List<Artist> related = context.performQuery(toOne);

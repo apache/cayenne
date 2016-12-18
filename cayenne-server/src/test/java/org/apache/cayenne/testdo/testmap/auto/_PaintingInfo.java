@@ -14,18 +14,11 @@ public abstract class _PaintingInfo extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String IMAGE_BLOB_PROPERTY = "imageBlob";
-    @Deprecated
-    public static final String TEXT_REVIEW_PROPERTY = "textReview";
-    @Deprecated
-    public static final String PAINTING_PROPERTY = "painting";
-
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 
-    public static final Property<byte[]> IMAGE_BLOB = new Property<byte[]>("imageBlob");
-    public static final Property<String> TEXT_REVIEW = new Property<String>("textReview");
-    public static final Property<Painting> PAINTING = new Property<Painting>("painting");
+    public static final Property<byte[]> IMAGE_BLOB = new Property<>("imageBlob");
+    public static final Property<String> TEXT_REVIEW = new Property<>("textReview");
+    public static final Property<Painting> PAINTING = new Property<>("painting");
 
     public void setImageBlob(byte[] imageBlob) {
         writeProperty("imageBlob", imageBlob);

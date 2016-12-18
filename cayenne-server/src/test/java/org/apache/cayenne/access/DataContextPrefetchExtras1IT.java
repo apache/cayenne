@@ -67,7 +67,7 @@ public class DataContextPrefetchExtras1IT extends ServerCase {
         createDataSet();
 
         SelectQuery query = new SelectQuery(Painting.class);
-        query.addPrefetch(Painting.TO_PAINTING_INFO_PROPERTY);
+        query.addPrefetch(Painting.TO_PAINTING_INFO.disjoint());
 
         List<Painting> objects = context.performQuery(query);
         assertTrue(!objects.isEmpty());

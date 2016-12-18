@@ -13,12 +13,9 @@ public abstract class _NullTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = new Property<String>("name");
+    public static final Property<String> NAME = new Property<>("name");
 
     public void setName(String name) {
         writeProperty("name", name);

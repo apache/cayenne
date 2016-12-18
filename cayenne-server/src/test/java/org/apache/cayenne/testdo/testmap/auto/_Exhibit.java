@@ -18,21 +18,12 @@ public abstract class _Exhibit extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String CLOSING_DATE_PROPERTY = "closingDate";
-    @Deprecated
-    public static final String OPENING_DATE_PROPERTY = "openingDate";
-    @Deprecated
-    public static final String ARTIST_EXHIBIT_ARRAY_PROPERTY = "artistExhibitArray";
-    @Deprecated
-    public static final String TO_GALLERY_PROPERTY = "toGallery";
-
     public static final String EXHIBIT_ID_PK_COLUMN = "EXHIBIT_ID";
 
-    public static final Property<Date> CLOSING_DATE = new Property<Date>("closingDate");
-    public static final Property<Date> OPENING_DATE = new Property<Date>("openingDate");
-    public static final Property<List<ArtistExhibit>> ARTIST_EXHIBIT_ARRAY = new Property<List<ArtistExhibit>>("artistExhibitArray");
-    public static final Property<Gallery> TO_GALLERY = new Property<Gallery>("toGallery");
+    public static final Property<Date> CLOSING_DATE = new Property<>("closingDate");
+    public static final Property<Date> OPENING_DATE = new Property<>("openingDate");
+    public static final Property<List<ArtistExhibit>> ARTIST_EXHIBIT_ARRAY = new Property<>("artistExhibitArray");
+    public static final Property<Gallery> TO_GALLERY = new Property<>("toGallery");
 
     public void setClosingDate(Date closingDate) {
         writeProperty("closingDate", closingDate);
