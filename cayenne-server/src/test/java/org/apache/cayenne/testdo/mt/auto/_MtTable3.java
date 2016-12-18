@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.mt.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.mt.MtTable2;
 
 /**
@@ -13,43 +14,45 @@ import org.apache.cayenne.testdo.mt.MtTable2;
  */
 public abstract class _MtTable3 extends CayenneDataObject {
 
-    public static final String BINARY_COLUMN_PROPERTY = "binaryColumn";
-    public static final String CHAR_COLUMN_PROPERTY = "charColumn";
-    public static final String INT_COLUMN_PROPERTY = "intColumn";
-    public static final String TABLE2ARRAY_PROPERTY = "table2Array";
+    private static final long serialVersionUID = 1L; 
 
     public static final String TABLE3_ID_PK_COLUMN = "TABLE3_ID";
 
+    public static final Property<byte[]> BINARY_COLUMN = new Property<>("binaryColumn");
+    public static final Property<String> CHAR_COLUMN = new Property<>("charColumn");
+    public static final Property<Integer> INT_COLUMN = new Property<>("intColumn");
+    public static final Property<List<MtTable2>> TABLE2ARRAY = new Property<>("table2Array");
+
     public void setBinaryColumn(byte[] binaryColumn) {
-        writeProperty(BINARY_COLUMN_PROPERTY, binaryColumn);
+        writeProperty("binaryColumn", binaryColumn);
     }
     public byte[] getBinaryColumn() {
-        return (byte[])readProperty(BINARY_COLUMN_PROPERTY);
+        return (byte[])readProperty("binaryColumn");
     }
 
     public void setCharColumn(String charColumn) {
-        writeProperty(CHAR_COLUMN_PROPERTY, charColumn);
+        writeProperty("charColumn", charColumn);
     }
     public String getCharColumn() {
-        return (String)readProperty(CHAR_COLUMN_PROPERTY);
+        return (String)readProperty("charColumn");
     }
 
     public void setIntColumn(Integer intColumn) {
-        writeProperty(INT_COLUMN_PROPERTY, intColumn);
+        writeProperty("intColumn", intColumn);
     }
     public Integer getIntColumn() {
-        return (Integer)readProperty(INT_COLUMN_PROPERTY);
+        return (Integer)readProperty("intColumn");
     }
 
     public void addToTable2Array(MtTable2 obj) {
-        addToManyTarget(TABLE2ARRAY_PROPERTY, obj, true);
+        addToManyTarget("table2Array", obj, true);
     }
     public void removeFromTable2Array(MtTable2 obj) {
-        removeToManyTarget(TABLE2ARRAY_PROPERTY, obj, true);
+        removeToManyTarget("table2Array", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<MtTable2> getTable2Array() {
-        return (List<MtTable2>)readProperty(TABLE2ARRAY_PROPERTY);
+        return (List<MtTable2>)readProperty("table2Array");
     }
 
 

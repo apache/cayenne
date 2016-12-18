@@ -13,15 +13,10 @@ public abstract class _DecimalPKTest1 extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String DECIMAL_PK_PROPERTY = "decimalPK";
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-
     public static final String DECIMAL_PK_PK_COLUMN = "DECIMAL_PK";
 
-    public static final Property<Double> DECIMAL_PK = new Property<Double>("decimalPK");
-    public static final Property<String> NAME = new Property<String>("name");
+    public static final Property<Double> DECIMAL_PK = new Property<>("decimalPK");
+    public static final Property<String> NAME = new Property<>("name");
 
     public void setDecimalPK(Double decimalPK) {
         writeProperty("decimalPK", decimalPK);

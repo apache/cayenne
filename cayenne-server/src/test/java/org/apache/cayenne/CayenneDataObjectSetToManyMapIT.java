@@ -83,10 +83,10 @@ public class CayenneDataObjectSetToManyMapIT extends ServerCase {
 		createTestDataSet();
 		
 		 MapToMany o1 = Cayenne.objectForPK(context, MapToMany.class, 1);
-		 assertTrue (o1.readProperty(MapToMany.TARGETS_PROPERTY) instanceof Map);
+		 assertTrue (o1.readProperty(MapToMany.TARGETS.getName()) instanceof Map);
 		 boolean catchedSomething = false;
 		 try {
-			 o1.setToManyTarget(MapToMany.TARGETS_PROPERTY, new ArrayList<MapToMany>(0), true);
+			 o1.setToManyTarget(MapToMany.TARGETS.getName(), new ArrayList<MapToMany>(0), true);
 		 } catch(RuntimeException e) {
 			 catchedSomething = true;
 		 }

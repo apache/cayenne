@@ -13,12 +13,9 @@ public abstract class _BitTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String BIT_COLUMN_PROPERTY = "bitColumn";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Boolean> BIT_COLUMN = new Property<Boolean>("bitColumn");
+    public static final Property<Boolean> BIT_COLUMN = new Property<>("bitColumn");
 
     public void setBitColumn(Boolean bitColumn) {
         writeProperty("bitColumn", bitColumn);

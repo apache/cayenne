@@ -13,21 +13,12 @@ public abstract class _ArraysEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String BYTE_ARRAY_PROPERTY = "byteArray";
-    @Deprecated
-    public static final String BYTE_WRAPPER_ARRAY_PROPERTY = "byteWrapperArray";
-    @Deprecated
-    public static final String CHAR_ARRAY_PROPERTY = "charArray";
-    @Deprecated
-    public static final String CHAR_WRAPPER_ARRAY_PROPERTY = "charWrapperArray";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<byte[]> BYTE_ARRAY = new Property<byte[]>("byteArray");
-    public static final Property<Byte[]> BYTE_WRAPPER_ARRAY = new Property<Byte[]>("byteWrapperArray");
-    public static final Property<char[]> CHAR_ARRAY = new Property<char[]>("charArray");
-    public static final Property<Character[]> CHAR_WRAPPER_ARRAY = new Property<Character[]>("charWrapperArray");
+    public static final Property<byte[]> BYTE_ARRAY = new Property<>("byteArray");
+    public static final Property<Byte[]> BYTE_WRAPPER_ARRAY = new Property<>("byteWrapperArray");
+    public static final Property<char[]> CHAR_ARRAY = new Property<>("charArray");
+    public static final Property<Character[]> CHAR_WRAPPER_ARRAY = new Property<>("charWrapperArray");
 
     public void setByteArray(byte[] byteArray) {
         writeProperty("byteArray", byteArray);

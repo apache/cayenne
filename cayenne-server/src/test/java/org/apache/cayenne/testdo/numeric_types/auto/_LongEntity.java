@@ -13,12 +13,9 @@ public abstract class _LongEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String LONG_FIELD_PROPERTY = "longField";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Long> LONG_FIELD = new Property<Long>("longField");
+    public static final Property<Long> LONG_FIELD = new Property<>("longField");
 
     public void setLongField(Long longField) {
         writeProperty("longField", longField);

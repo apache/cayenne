@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.db2.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.db1.CrossdbM1E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E1;
 
@@ -12,34 +13,36 @@ import org.apache.cayenne.testdo.db2.CrossdbM2E1;
  */
 public abstract class _CrossdbM2E2 extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String TO_M1E1_PROPERTY = "toM1E1";
-    public static final String TO_M2E1_PROPERTY = "toM2E1";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<CrossdbM1E1> TO_M1E1 = new Property<>("toM1E1");
+    public static final Property<CrossdbM2E1> TO_M2E1 = new Property<>("toM2E1");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void setToM1E1(CrossdbM1E1 toM1E1) {
-        setToOneTarget(TO_M1E1_PROPERTY, toM1E1, true);
+        setToOneTarget("toM1E1", toM1E1, true);
     }
 
     public CrossdbM1E1 getToM1E1() {
-        return (CrossdbM1E1)readProperty(TO_M1E1_PROPERTY);
+        return (CrossdbM1E1)readProperty("toM1E1");
     }
 
 
     public void setToM2E1(CrossdbM2E1 toM2E1) {
-        setToOneTarget(TO_M2E1_PROPERTY, toM2E1, true);
+        setToOneTarget("toM2E1", toM2E1, true);
     }
 
     public CrossdbM2E1 getToM2E1() {
-        return (CrossdbM2E1)readProperty(TO_M2E1_PROPERTY);
+        return (CrossdbM2E1)readProperty("toM2E1");
     }
 
 

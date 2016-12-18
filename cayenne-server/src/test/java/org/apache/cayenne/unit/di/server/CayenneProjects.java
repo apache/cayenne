@@ -54,7 +54,6 @@ public class CayenneProjects {
     public static final String NUMERIC_TYPES_PROJECT = "cayenne-numeric-types.xml";
     public static final String ONEWAY_PROJECT = "cayenne-oneway-rels.xml";
     public static final String PEOPLE_PROJECT = "cayenne-people.xml";
-    public static final String PERSISTENT_PROJECT = "cayenne-persistent.xml";
     public static final String PRIMITIVE_PROJECT = "cayenne-primitive.xml";
     public static final String QUALIFIED_PROJECT = "cayenne-qualified.xml";
     public static final String QUOTED_IDENTIFIERS_PROJECT = "cayenne-quoted-identifiers.xml";

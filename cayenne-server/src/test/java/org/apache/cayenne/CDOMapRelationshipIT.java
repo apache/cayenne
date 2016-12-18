@@ -137,7 +137,7 @@ public class CDOMapRelationshipIT extends ServerCase {
 
         SelectQuery query = new SelectQuery(MapToMany.class, ExpressionFactory
                 .matchDbExp(MapToMany.ID_PK_COLUMN, new Integer(1)));
-        query.addPrefetch(MapToMany.TARGETS_PROPERTY);
+        query.addPrefetch(MapToMany.TARGETS.disjoint());
         MapToMany o1 = (MapToMany) Cayenne.objectForQuery(context, query);
 
         Map targets = o1.getTargets();

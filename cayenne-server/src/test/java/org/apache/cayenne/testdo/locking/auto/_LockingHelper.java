@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.locking.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.locking.RelLockingTestEntity;
 
 /**
@@ -11,24 +12,26 @@ import org.apache.cayenne.testdo.locking.RelLockingTestEntity;
  */
 public abstract class _LockingHelper extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String TO_REL_LOCKING_TEST_PROPERTY = "toRelLockingTest";
+    private static final long serialVersionUID = 1L; 
 
     public static final String LOCKING_HELPER_ID_PK_COLUMN = "LOCKING_HELPER_ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<RelLockingTestEntity> TO_REL_LOCKING_TEST = new Property<>("toRelLockingTest");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void setToRelLockingTest(RelLockingTestEntity toRelLockingTest) {
-        setToOneTarget(TO_REL_LOCKING_TEST_PROPERTY, toRelLockingTest, true);
+        setToOneTarget("toRelLockingTest", toRelLockingTest, true);
     }
 
     public RelLockingTestEntity getToRelLockingTest() {
-        return (RelLockingTestEntity)readProperty(TO_REL_LOCKING_TEST_PROPERTY);
+        return (RelLockingTestEntity)readProperty("toRelLockingTest");
     }
 
 

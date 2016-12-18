@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.inheritance_people.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
 
 /**
@@ -13,35 +14,37 @@ import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
  */
 public abstract class _AbstractPerson extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String PERSON_TYPE_PROPERTY = "personType";
-    public static final String NOTES_PROPERTY = "notes";
+    private static final long serialVersionUID = 1L; 
 
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<String> PERSON_TYPE = new Property<>("personType");
+    public static final Property<List<PersonNotes>> NOTES = new Property<>("notes");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void setPersonType(String personType) {
-        writeProperty(PERSON_TYPE_PROPERTY, personType);
+        writeProperty("personType", personType);
     }
     public String getPersonType() {
-        return (String)readProperty(PERSON_TYPE_PROPERTY);
+        return (String)readProperty("personType");
     }
 
     public void addToNotes(PersonNotes obj) {
-        addToManyTarget(NOTES_PROPERTY, obj, true);
+        addToManyTarget("notes", obj, true);
     }
     public void removeFromNotes(PersonNotes obj) {
-        removeToManyTarget(NOTES_PROPERTY, obj, true);
+        removeToManyTarget("notes", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<PersonNotes> getNotes() {
-        return (List<PersonNotes>)readProperty(NOTES_PROPERTY);
+        return (List<PersonNotes>)readProperty("notes");
     }
 
 

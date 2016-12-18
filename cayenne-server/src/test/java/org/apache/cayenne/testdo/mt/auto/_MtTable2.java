@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.mt.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable3;
 
@@ -12,34 +13,36 @@ import org.apache.cayenne.testdo.mt.MtTable3;
  */
 public abstract class _MtTable2 extends CayenneDataObject {
 
-    public static final String GLOBAL_ATTRIBUTE_PROPERTY = "globalAttribute";
-    public static final String TABLE1_PROPERTY = "table1";
-    public static final String TABLE3_PROPERTY = "table3";
+    private static final long serialVersionUID = 1L; 
 
     public static final String TABLE2_ID_PK_COLUMN = "TABLE2_ID";
 
+    public static final Property<String> GLOBAL_ATTRIBUTE = new Property<>("globalAttribute");
+    public static final Property<MtTable1> TABLE1 = new Property<>("table1");
+    public static final Property<MtTable3> TABLE3 = new Property<>("table3");
+
     public void setGlobalAttribute(String globalAttribute) {
-        writeProperty(GLOBAL_ATTRIBUTE_PROPERTY, globalAttribute);
+        writeProperty("globalAttribute", globalAttribute);
     }
     public String getGlobalAttribute() {
-        return (String)readProperty(GLOBAL_ATTRIBUTE_PROPERTY);
+        return (String)readProperty("globalAttribute");
     }
 
     public void setTable1(MtTable1 table1) {
-        setToOneTarget(TABLE1_PROPERTY, table1, true);
+        setToOneTarget("table1", table1, true);
     }
 
     public MtTable1 getTable1() {
-        return (MtTable1)readProperty(TABLE1_PROPERTY);
+        return (MtTable1)readProperty("table1");
     }
 
 
     public void setTable3(MtTable3 table3) {
-        setToOneTarget(TABLE3_PROPERTY, table3, true);
+        setToOneTarget("table3", table3, true);
     }
 
     public MtTable3 getTable3() {
-        return (MtTable3)readProperty(TABLE3_PROPERTY);
+        return (MtTable3)readProperty("table3");
     }
 
 

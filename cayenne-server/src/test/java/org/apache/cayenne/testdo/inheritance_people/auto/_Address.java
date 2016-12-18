@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.inheritance_people.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 
 /**
@@ -11,24 +12,26 @@ import org.apache.cayenne.testdo.inheritance_people.Employee;
  */
 public abstract class _Address extends CayenneDataObject {
 
-    public static final String CITY_PROPERTY = "city";
-    public static final String TO_EMPLOYEE_PROPERTY = "toEmployee";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ADDRESS_ID_PK_COLUMN = "ADDRESS_ID";
 
+    public static final Property<String> CITY = new Property<>("city");
+    public static final Property<Employee> TO_EMPLOYEE = new Property<>("toEmployee");
+
     public void setCity(String city) {
-        writeProperty(CITY_PROPERTY, city);
+        writeProperty("city", city);
     }
     public String getCity() {
-        return (String)readProperty(CITY_PROPERTY);
+        return (String)readProperty("city");
     }
 
     public void setToEmployee(Employee toEmployee) {
-        setToOneTarget(TO_EMPLOYEE_PROPERTY, toEmployee, true);
+        setToOneTarget("toEmployee", toEmployee, true);
     }
 
     public Employee getToEmployee() {
-        return (Employee)readProperty(TO_EMPLOYEE_PROPERTY);
+        return (Employee)readProperty("toEmployee");
     }
 
 

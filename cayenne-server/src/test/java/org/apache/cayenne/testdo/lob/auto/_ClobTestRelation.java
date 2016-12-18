@@ -14,18 +14,11 @@ public abstract class _ClobTestRelation extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String ID_PROPERTY = "id";
-    @Deprecated
-    public static final String VALUE_PROPERTY = "value";
-    @Deprecated
-    public static final String CLOB_ID_PROPERTY = "clobId";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Integer> ID = new Property<Integer>("id");
-    public static final Property<Integer> VALUE = new Property<Integer>("value");
-    public static final Property<ClobTestEntity> CLOB_ID = new Property<ClobTestEntity>("clobId");
+    public static final Property<Integer> ID = new Property<>("id");
+    public static final Property<Integer> VALUE = new Property<>("value");
+    public static final Property<ClobTestEntity> CLOB_ID = new Property<>("clobId");
 
     public void setId(Integer id) {
         writeProperty("id", id);

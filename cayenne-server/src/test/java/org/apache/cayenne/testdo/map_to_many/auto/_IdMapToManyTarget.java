@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.map_to_many.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.map_to_many.IdMapToMany;
 
 /**
@@ -11,16 +12,18 @@ import org.apache.cayenne.testdo.map_to_many.IdMapToMany;
  */
 public abstract class _IdMapToManyTarget extends CayenneDataObject {
 
-    public static final String MAP_TO_MANY_PROPERTY = "mapToMany";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public void setMapToMany(IdMapToMany idMapToMany) {
-        setToOneTarget(MAP_TO_MANY_PROPERTY, idMapToMany, true);
+    public static final Property<IdMapToMany> MAP_TO_MANY = new Property<>("mapToMany");
+
+    public void setMapToMany(IdMapToMany mapToMany) {
+        setToOneTarget("mapToMany", mapToMany, true);
     }
 
     public IdMapToMany getMapToMany() {
-        return (IdMapToMany)readProperty(MAP_TO_MANY_PROPERTY);
+        return (IdMapToMany)readProperty("mapToMany");
     }
 
 

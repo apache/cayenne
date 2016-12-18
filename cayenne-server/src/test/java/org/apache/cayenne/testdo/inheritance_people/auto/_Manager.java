@@ -2,6 +2,7 @@ package org.apache.cayenne.testdo.inheritance_people.auto;
 
 import java.util.List;
 
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 
@@ -13,19 +14,21 @@ import org.apache.cayenne.testdo.inheritance_people.Employee;
  */
 public abstract class _Manager extends Employee {
 
-    public static final String MANAGED_DEPARTMENTS_PROPERTY = "managedDepartments";
+    private static final long serialVersionUID = 1L; 
 
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
+    public static final Property<List<Department>> MANAGED_DEPARTMENTS = new Property<>("managedDepartments");
+
     public void addToManagedDepartments(Department obj) {
-        addToManyTarget(MANAGED_DEPARTMENTS_PROPERTY, obj, true);
+        addToManyTarget("managedDepartments", obj, true);
     }
     public void removeFromManagedDepartments(Department obj) {
-        removeToManyTarget(MANAGED_DEPARTMENTS_PROPERTY, obj, true);
+        removeToManyTarget("managedDepartments", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Department> getManagedDepartments() {
-        return (List<Department>)readProperty(MANAGED_DEPARTMENTS_PROPERTY);
+        return (List<Department>)readProperty("managedDepartments");
     }
 
 

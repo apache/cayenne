@@ -19,19 +19,8 @@
 
 package org.apache.cayenne.access;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
-import java.sql.Types;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
@@ -49,6 +38,12 @@ import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.PeopleProjectCase;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.sql.Types;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class SingleTableInheritanceIT extends PeopleProjectCase {
 
@@ -135,8 +130,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
 
         // fetch on leaf, but match on a super attribute
         SelectQuery select = new SelectQuery(Manager.class);
-        select.andQualifier(ExpressionFactory
-                .matchExp(AbstractPerson.NAME_PROPERTY, "E2"));
+        select.andQualifier(AbstractPerson.NAME.eq("E2"));
 
         List<Manager> results = context.performQuery(select);
         assertEquals(1, results.size());
@@ -149,9 +143,8 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
 
         // fetch on leaf, but match on a super attribute
         SelectQuery select = new SelectQuery(Employee.class);
-        select.addPrefetch(Employee.TO_DEPARTMENT_PROPERTY);
-        select.andQualifier(ExpressionFactory
-                .matchExp(AbstractPerson.NAME_PROPERTY, "E2"));
+        select.addPrefetch(Employee.TO_DEPARTMENT.disjoint());
+        select.andQualifier(AbstractPerson.NAME.eq("E2"));
 
         List<Manager> results = context.performQuery(select);
         assertEquals(1, results.size());
@@ -213,8 +206,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (4, 'BB', 3)"));
 
         SelectQuery query = new SelectQuery(AbstractPerson.class);
-        query.addPrefetch(AbstractPerson.NOTES_PROPERTY).setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        query.addPrefetch(AbstractPerson.NOTES.joint());
 
         final AbstractPerson person = (AbstractPerson) Cayenne.objectForQuery(
                 context,
@@ -253,7 +245,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (4, 'BB', 3)"));
 
         SelectQuery query = new SelectQuery(AbstractPerson.class);
-        query.addPrefetch(AbstractPerson.NOTES_PROPERTY);
+        query.addPrefetch(AbstractPerson.NOTES.disjoint());
 
         final AbstractPerson person = (AbstractPerson) Cayenne.objectForQuery(
                 context,
@@ -292,8 +284,8 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'BB', 2)"));
 
         SelectQuery query = new SelectQuery(PersonNotes.class);
-        query.addPrefetch(PersonNotes.PERSON_PROPERTY);
-        query.addOrdering(PersonNotes.NOTES_PROPERTY, SortOrder.ASCENDING);
+        query.addPrefetch(PersonNotes.PERSON.disjoint());
+        query.addOrdering(PersonNotes.NOTES.asc());
 
         List<PersonNotes> notes = context.performQuery(query);
         assertEquals(2, notes.size());
@@ -319,8 +311,7 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'AA', 3)"));
 
         SelectQuery query = new SelectQuery(PersonNotes.class);
-        query.addPrefetch(PersonNotes.PERSON_PROPERTY).setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        query.addPrefetch(PersonNotes.PERSON.joint());
 
         final PersonNotes note = (PersonNotes) Cayenne.objectForQuery(context, query);
 

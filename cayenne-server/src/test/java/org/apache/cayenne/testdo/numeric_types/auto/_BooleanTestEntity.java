@@ -13,12 +13,9 @@ public abstract class _BooleanTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String BOOLEAN_COLUMN_PROPERTY = "booleanColumn";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Boolean> BOOLEAN_COLUMN = new Property<Boolean>("booleanColumn");
+    public static final Property<Boolean> BOOLEAN_COLUMN = new Property<>("booleanColumn");
 
     public void setBooleanColumn(Boolean booleanColumn) {
         writeProperty("booleanColumn", booleanColumn);

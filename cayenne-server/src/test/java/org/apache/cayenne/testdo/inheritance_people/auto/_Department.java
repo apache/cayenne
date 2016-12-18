@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.inheritance_people.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
 
@@ -14,37 +15,39 @@ import org.apache.cayenne.testdo.inheritance_people.Manager;
  */
 public abstract class _Department extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String EMPLOYEES_PROPERTY = "employees";
-    public static final String TO_MANAGER_PROPERTY = "toManager";
+    private static final long serialVersionUID = 1L; 
 
     public static final String DEPARTMENT_ID_PK_COLUMN = "DEPARTMENT_ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<List<Employee>> EMPLOYEES = new Property<>("employees");
+    public static final Property<Manager> TO_MANAGER = new Property<>("toManager");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void addToEmployees(Employee obj) {
-        addToManyTarget(EMPLOYEES_PROPERTY, obj, true);
+        addToManyTarget("employees", obj, true);
     }
     public void removeFromEmployees(Employee obj) {
-        removeToManyTarget(EMPLOYEES_PROPERTY, obj, true);
+        removeToManyTarget("employees", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Employee> getEmployees() {
-        return (List<Employee>)readProperty(EMPLOYEES_PROPERTY);
+        return (List<Employee>)readProperty("employees");
     }
 
 
     public void setToManager(Manager toManager) {
-        setToOneTarget(TO_MANAGER_PROPERTY, toManager, true);
+        setToOneTarget("toManager", toManager, true);
     }
 
     public Manager getToManager() {
-        return (Manager)readProperty(TO_MANAGER_PROPERTY);
+        return (Manager)readProperty("toManager");
     }
 
 

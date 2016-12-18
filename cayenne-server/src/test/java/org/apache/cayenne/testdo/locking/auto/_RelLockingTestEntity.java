@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.locking.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.locking.LockingHelper;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 
@@ -14,37 +15,39 @@ import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
  */
 public abstract class _RelLockingTestEntity extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String LOCKING_HELPERS_PROPERTY = "lockingHelpers";
-    public static final String TO_SIMPLE_LOCKING_TEST_PROPERTY = "toSimpleLockingTest";
+    private static final long serialVersionUID = 1L; 
 
     public static final String REL_LOCKING_TEST_ID_PK_COLUMN = "REL_LOCKING_TEST_ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<List<LockingHelper>> LOCKING_HELPERS = new Property<>("lockingHelpers");
+    public static final Property<SimpleLockingTestEntity> TO_SIMPLE_LOCKING_TEST = new Property<>("toSimpleLockingTest");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void addToLockingHelpers(LockingHelper obj) {
-        addToManyTarget(LOCKING_HELPERS_PROPERTY, obj, true);
+        addToManyTarget("lockingHelpers", obj, true);
     }
     public void removeFromLockingHelpers(LockingHelper obj) {
-        removeToManyTarget(LOCKING_HELPERS_PROPERTY, obj, true);
+        removeToManyTarget("lockingHelpers", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<LockingHelper> getLockingHelpers() {
-        return (List<LockingHelper>)readProperty(LOCKING_HELPERS_PROPERTY);
+        return (List<LockingHelper>)readProperty("lockingHelpers");
     }
 
 
     public void setToSimpleLockingTest(SimpleLockingTestEntity toSimpleLockingTest) {
-        setToOneTarget(TO_SIMPLE_LOCKING_TEST_PROPERTY, toSimpleLockingTest, true);
+        setToOneTarget("toSimpleLockingTest", toSimpleLockingTest, true);
     }
 
     public SimpleLockingTestEntity getToSimpleLockingTest() {
-        return (SimpleLockingTestEntity)readProperty(TO_SIMPLE_LOCKING_TEST_PROPERTY);
+        return (SimpleLockingTestEntity)readProperty("toSimpleLockingTest");
     }
 
 

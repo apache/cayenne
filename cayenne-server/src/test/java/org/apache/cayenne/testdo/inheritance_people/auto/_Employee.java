@@ -2,6 +2,7 @@ package org.apache.cayenne.testdo.inheritance_people.auto;
 
 import java.util.List;
 
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
 import org.apache.cayenne.testdo.inheritance_people.Address;
 import org.apache.cayenne.testdo.inheritance_people.Department;
@@ -14,37 +15,39 @@ import org.apache.cayenne.testdo.inheritance_people.Department;
  */
 public abstract class _Employee extends AbstractPerson {
 
-    public static final String SALARY_PROPERTY = "salary";
-    public static final String ADDRESSES_PROPERTY = "addresses";
-    public static final String TO_DEPARTMENT_PROPERTY = "toDepartment";
+    private static final long serialVersionUID = 1L; 
 
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
+    public static final Property<Float> SALARY = new Property<>("salary");
+    public static final Property<List<Address>> ADDRESSES = new Property<>("addresses");
+    public static final Property<Department> TO_DEPARTMENT = new Property<>("toDepartment");
+
     public void setSalary(Float salary) {
-        writeProperty(SALARY_PROPERTY, salary);
+        writeProperty("salary", salary);
     }
     public Float getSalary() {
-        return (Float)readProperty(SALARY_PROPERTY);
+        return (Float)readProperty("salary");
     }
 
     public void addToAddresses(Address obj) {
-        addToManyTarget(ADDRESSES_PROPERTY, obj, true);
+        addToManyTarget("addresses", obj, true);
     }
     public void removeFromAddresses(Address obj) {
-        removeToManyTarget(ADDRESSES_PROPERTY, obj, true);
+        removeToManyTarget("addresses", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Address> getAddresses() {
-        return (List<Address>)readProperty(ADDRESSES_PROPERTY);
+        return (List<Address>)readProperty("addresses");
     }
 
 
     public void setToDepartment(Department toDepartment) {
-        setToOneTarget(TO_DEPARTMENT_PROPERTY, toDepartment, true);
+        setToOneTarget("toDepartment", toDepartment, true);
     }
 
     public Department getToDepartment() {
-        return (Department)readProperty(TO_DEPARTMENT_PROPERTY);
+        return (Department)readProperty("toDepartment");
     }
 
 

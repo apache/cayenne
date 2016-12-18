@@ -13,12 +13,9 @@ public abstract class _TinyintTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String TINYINT_COL_PROPERTY = "tinyintCol";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Byte> TINYINT_COL = new Property<Byte>("tinyintCol");
+    public static final Property<Byte> TINYINT_COL = new Property<>("tinyintCol");
 
     public void setTinyintCol(Byte tinyintCol) {
         writeProperty("tinyintCol", tinyintCol);

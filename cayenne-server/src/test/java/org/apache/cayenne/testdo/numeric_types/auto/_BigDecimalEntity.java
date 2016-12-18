@@ -15,12 +15,9 @@ public abstract class _BigDecimalEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String BIG_DECIMAL_FIELD_PROPERTY = "bigDecimalField";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<BigDecimal> BIG_DECIMAL_FIELD = new Property<BigDecimal>("bigDecimalField");
+    public static final Property<BigDecimal> BIG_DECIMAL_FIELD = new Property<>("bigDecimalField");
 
     public void setBigDecimalField(BigDecimal bigDecimalField) {
         writeProperty("bigDecimalField", bigDecimalField);

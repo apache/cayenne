@@ -1,5 +1,6 @@
 package org.apache.cayenne.testdo.inheritance_people.auto;
 
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
 import org.apache.cayenne.testdo.inheritance_people.ClientCompany;
 
@@ -11,24 +12,26 @@ import org.apache.cayenne.testdo.inheritance_people.ClientCompany;
  */
 public abstract class _CustomerRepresentative extends AbstractPerson {
 
-    public static final String CLIENT_CONTACT_TYPE_PROPERTY = "clientContactType";
-    public static final String TO_CLIENT_COMPANY_PROPERTY = "toClientCompany";
+    private static final long serialVersionUID = 1L; 
 
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
+    public static final Property<String> CLIENT_CONTACT_TYPE = new Property<>("clientContactType");
+    public static final Property<ClientCompany> TO_CLIENT_COMPANY = new Property<>("toClientCompany");
+
     public void setClientContactType(String clientContactType) {
-        writeProperty(CLIENT_CONTACT_TYPE_PROPERTY, clientContactType);
+        writeProperty("clientContactType", clientContactType);
     }
     public String getClientContactType() {
-        return (String)readProperty(CLIENT_CONTACT_TYPE_PROPERTY);
+        return (String)readProperty("clientContactType");
     }
 
     public void setToClientCompany(ClientCompany toClientCompany) {
-        setToOneTarget(TO_CLIENT_COMPANY_PROPERTY, toClientCompany, true);
+        setToOneTarget("toClientCompany", toClientCompany, true);
     }
 
     public ClientCompany getToClientCompany() {
-        return (ClientCompany)readProperty(TO_CLIENT_COMPANY_PROPERTY);
+        return (ClientCompany)readProperty("toClientCompany");
     }
 
 

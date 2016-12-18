@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.db2.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.db2.CrossdbM2E2;
 
 /**
@@ -13,27 +14,29 @@ import org.apache.cayenne.testdo.db2.CrossdbM2E2;
  */
 public abstract class _CrossdbM2E1 extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String LIST_OF_M2E2_PROPERTY = "listOfM2E2";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<List<CrossdbM2E2>> LIST_OF_M2E2 = new Property<>("listOfM2E2");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void addToListOfM2E2(CrossdbM2E2 obj) {
-        addToManyTarget(LIST_OF_M2E2_PROPERTY, obj, true);
+        addToManyTarget("listOfM2E2", obj, true);
     }
     public void removeFromListOfM2E2(CrossdbM2E2 obj) {
-        removeToManyTarget(LIST_OF_M2E2_PROPERTY, obj, true);
+        removeToManyTarget("listOfM2E2", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<CrossdbM2E2> getListOfM2E2() {
-        return (List<CrossdbM2E2>)readProperty(LIST_OF_M2E2_PROPERTY);
+        return (List<CrossdbM2E2>)readProperty("listOfM2E2");
     }
 
 

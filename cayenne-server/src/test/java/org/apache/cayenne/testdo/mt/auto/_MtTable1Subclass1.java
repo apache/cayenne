@@ -11,12 +11,11 @@ import org.apache.cayenne.testdo.mt.MtTable1;
  */
 public abstract class _MtTable1Subclass1 extends MtTable1 {
 
-    @Deprecated
-    public static final String SUBCLASS1ATTRIBUTE1_PROPERTY = "subclass1Attribute1";
+    private static final long serialVersionUID = 1L; 
 
     public static final String TABLE1_ID_PK_COLUMN = "TABLE1_ID";
 
-    public static final Property<String> SUBCLASS1ATTRIBUTE1 = new Property<String>("subclass1Attribute1");
+    public static final Property<String> SUBCLASS1ATTRIBUTE1 = new Property<>("subclass1Attribute1");
 
     public void setSubclass1Attribute1(String subclass1Attribute1) {
         writeProperty("subclass1Attribute1", subclass1Attribute1);

@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.mt.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.mt.MtTable4;
 
 /**
@@ -13,19 +14,21 @@ import org.apache.cayenne.testdo.mt.MtTable4;
  */
 public abstract class _MtTable5 extends CayenneDataObject {
 
-    public static final String TABLE4S_PROPERTY = "table4s";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<List<MtTable4>> TABLE4S = new Property<>("table4s");
+
     public void addToTable4s(MtTable4 obj) {
-        addToManyTarget(TABLE4S_PROPERTY, obj, true);
+        addToManyTarget("table4s", obj, true);
     }
     public void removeFromTable4s(MtTable4 obj) {
-        removeToManyTarget(TABLE4S_PROPERTY, obj, true);
+        removeToManyTarget("table4s", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<MtTable4> getTable4s() {
-        return (List<MtTable4>)readProperty(TABLE4S_PROPERTY);
+        return (List<MtTable4>)readProperty("table4s");
     }
 
 

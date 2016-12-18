@@ -12,15 +12,12 @@ import org.apache.cayenne.testdo.oneway.OnewayTable1;
  */
 public abstract class _OnewayTable2 extends CayenneDataObject {
 
-    @Deprecated
-    public static final String ID_PROPERTY = "id";
-    @Deprecated
-    public static final String TO_ONE_ONE_WAY_DB_PROPERTY = "toOneOneWayDb";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Integer> ID = new Property<Integer>("id");
-    public static final Property<OnewayTable1> TO_ONE_ONE_WAY_DB = new Property<OnewayTable1>("toOneOneWayDb");
+    public static final Property<Integer> ID = new Property<>("id");
+    public static final Property<OnewayTable1> TO_ONE_ONE_WAY_DB = new Property<>("toOneOneWayDb");
 
     public void setId(Integer id) {
         writeProperty("id", id);

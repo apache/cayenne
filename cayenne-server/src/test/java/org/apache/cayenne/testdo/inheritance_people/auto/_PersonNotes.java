@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.inheritance_people.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
 
 /**
@@ -11,24 +12,26 @@ import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
  */
 public abstract class _PersonNotes extends CayenneDataObject {
 
-    public static final String NOTES_PROPERTY = "notes";
-    public static final String PERSON_PROPERTY = "person";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<String> NOTES = new Property<>("notes");
+    public static final Property<AbstractPerson> PERSON = new Property<>("person");
+
     public void setNotes(String notes) {
-        writeProperty(NOTES_PROPERTY, notes);
+        writeProperty("notes", notes);
     }
     public String getNotes() {
-        return (String)readProperty(NOTES_PROPERTY);
+        return (String)readProperty("notes");
     }
 
     public void setPerson(AbstractPerson person) {
-        setToOneTarget(PERSON_PROPERTY, person, true);
+        setToOneTarget("person", person, true);
     }
 
     public AbstractPerson getPerson() {
-        return (AbstractPerson)readProperty(PERSON_PROPERTY);
+        return (AbstractPerson)readProperty("person");
     }
 
 

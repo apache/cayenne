@@ -13,12 +13,9 @@ public abstract class _SmallintTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String SMALLINT_COL_PROPERTY = "smallintCol";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Short> SMALLINT_COL = new Property<Short>("smallintCol");
+    public static final Property<Short> SMALLINT_COL = new Property<>("smallintCol");
 
     public void setSmallintCol(Short smallintCol) {
         writeProperty("smallintCol", smallintCol);

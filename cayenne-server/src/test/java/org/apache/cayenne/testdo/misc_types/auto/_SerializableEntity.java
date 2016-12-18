@@ -14,12 +14,9 @@ public abstract class _SerializableEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String SERIALIZABLE_FIELD_PROPERTY = "serializableField";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<MockSerializable> SERIALIZABLE_FIELD = new Property<MockSerializable>("serializableField");
+    public static final Property<MockSerializable> SERIALIZABLE_FIELD = new Property<>("serializableField");
 
     public void setSerializableField(MockSerializable serializableField) {
         writeProperty("serializableField", serializableField);

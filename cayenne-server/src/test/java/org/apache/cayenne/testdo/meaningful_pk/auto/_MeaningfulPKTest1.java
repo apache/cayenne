@@ -16,18 +16,11 @@ public abstract class _MeaningfulPKTest1 extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String DESCR_PROPERTY = "descr";
-    @Deprecated
-    public static final String PK_ATTRIBUTE_PROPERTY = "pkAttribute";
-    @Deprecated
-    public static final String MEANINGFUL_PKDEP_ARRAY_PROPERTY = "meaningfulPKDepArray";
-
     public static final String PK_ATTRIBUTE_PK_COLUMN = "PK_ATTRIBUTE";
 
-    public static final Property<String> DESCR = new Property<String>("descr");
-    public static final Property<Integer> PK_ATTRIBUTE = new Property<Integer>("pkAttribute");
-    public static final Property<List<MeaningfulPKDep>> MEANINGFUL_PKDEP_ARRAY = new Property<List<MeaningfulPKDep>>("meaningfulPKDepArray");
+    public static final Property<String> DESCR = new Property<>("descr");
+    public static final Property<Integer> PK_ATTRIBUTE = new Property<>("pkAttribute");
+    public static final Property<List<MeaningfulPKDep>> MEANINGFUL_PKDEP_ARRAY = new Property<>("meaningfulPKDepArray");
 
     public void setDescr(String descr) {
         writeProperty("descr", descr);

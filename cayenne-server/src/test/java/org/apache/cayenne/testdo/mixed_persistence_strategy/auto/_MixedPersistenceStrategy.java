@@ -16,18 +16,11 @@ public abstract class _MixedPersistenceStrategy extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String DESCRIPTION_PROPERTY = "description";
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-    @Deprecated
-    public static final String DETAILS_PROPERTY = "details";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> DESCRIPTION = new Property<String>("description");
-    public static final Property<String> NAME = new Property<String>("name");
-    public static final Property<List<MixedPersistenceStrategy2>> DETAILS = new Property<List<MixedPersistenceStrategy2>>("details");
+    public static final Property<String> DESCRIPTION = new Property<>("description");
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<List<MixedPersistenceStrategy2>> DETAILS = new Property<>("details");
 
     public void setDescription(String description) {
         writeProperty("description", description);

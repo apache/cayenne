@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.mt.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.mt.MtTable2;
 
 /**
@@ -13,35 +14,37 @@ import org.apache.cayenne.testdo.mt.MtTable2;
  */
 public abstract class _MtTable1 extends CayenneDataObject {
 
-    public static final String GLOBAL_ATTRIBUTE1_PROPERTY = "globalAttribute1";
-    public static final String SERVER_ATTRIBUTE1_PROPERTY = "serverAttribute1";
-    public static final String TABLE2ARRAY_PROPERTY = "table2Array";
+    private static final long serialVersionUID = 1L; 
 
     public static final String TABLE1_ID_PK_COLUMN = "TABLE1_ID";
 
+    public static final Property<String> GLOBAL_ATTRIBUTE1 = new Property<>("globalAttribute1");
+    public static final Property<String> SERVER_ATTRIBUTE1 = new Property<>("serverAttribute1");
+    public static final Property<List<MtTable2>> TABLE2ARRAY = new Property<>("table2Array");
+
     public void setGlobalAttribute1(String globalAttribute1) {
-        writeProperty(GLOBAL_ATTRIBUTE1_PROPERTY, globalAttribute1);
+        writeProperty("globalAttribute1", globalAttribute1);
     }
     public String getGlobalAttribute1() {
-        return (String)readProperty(GLOBAL_ATTRIBUTE1_PROPERTY);
+        return (String)readProperty("globalAttribute1");
     }
 
     public void setServerAttribute1(String serverAttribute1) {
-        writeProperty(SERVER_ATTRIBUTE1_PROPERTY, serverAttribute1);
+        writeProperty("serverAttribute1", serverAttribute1);
     }
     public String getServerAttribute1() {
-        return (String)readProperty(SERVER_ATTRIBUTE1_PROPERTY);
+        return (String)readProperty("serverAttribute1");
     }
 
     public void addToTable2Array(MtTable2 obj) {
-        addToManyTarget(TABLE2ARRAY_PROPERTY, obj, true);
+        addToManyTarget("table2Array", obj, true);
     }
     public void removeFromTable2Array(MtTable2 obj) {
-        removeToManyTarget(TABLE2ARRAY_PROPERTY, obj, true);
+        removeToManyTarget("table2Array", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<MtTable2> getTable2Array() {
-        return (List<MtTable2>)readProperty(TABLE2ARRAY_PROPERTY);
+        return (List<MtTable2>)readProperty("table2Array");
     }
 
 

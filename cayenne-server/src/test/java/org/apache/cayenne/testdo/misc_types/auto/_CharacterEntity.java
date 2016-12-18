@@ -13,12 +13,9 @@ public abstract class _CharacterEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String CHARACTER_FIELD_PROPERTY = "characterField";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Character> CHARACTER_FIELD = new Property<Character>("characterField");
+    public static final Property<Character> CHARACTER_FIELD = new Property<>("characterField");
 
     public void setCharacterField(Character characterField) {
         writeProperty("characterField", characterField);

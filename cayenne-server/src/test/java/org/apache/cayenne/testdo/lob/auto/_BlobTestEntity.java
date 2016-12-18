@@ -13,12 +13,9 @@ public abstract class _BlobTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String BLOB_COL_PROPERTY = "blobCol";
-
     public static final String BLOB_TEST_ID_PK_COLUMN = "BLOB_TEST_ID";
 
-    public static final Property<byte[]> BLOB_COL = new Property<byte[]>("blobCol");
+    public static final Property<byte[]> BLOB_COL = new Property<>("blobCol");
 
     public void setBlobCol(byte[] blobCol) {
         writeProperty("blobCol", blobCol);

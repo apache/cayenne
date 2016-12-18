@@ -16,15 +16,10 @@ public abstract class _ClobTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String CLOB_COL_PROPERTY = "clobCol";
-    @Deprecated
-    public static final String CLOB_VALUE_PROPERTY = "clobValue";
-
     public static final String CLOB_TEST_ID_PK_COLUMN = "CLOB_TEST_ID";
 
-    public static final Property<String> CLOB_COL = new Property<String>("clobCol");
-    public static final Property<List<ClobTestRelation>> CLOB_VALUE = new Property<List<ClobTestRelation>>("clobValue");
+    public static final Property<String> CLOB_COL = new Property<>("clobCol");
+    public static final Property<List<ClobTestRelation>> CLOB_VALUE = new Property<>("clobValue");
 
     public void setClobCol(String clobCol) {
         writeProperty("clobCol", clobCol);

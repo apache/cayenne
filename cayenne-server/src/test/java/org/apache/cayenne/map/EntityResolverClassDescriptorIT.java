@@ -91,14 +91,14 @@ public class EntityResolverClassDescriptorIT extends ServerCase {
         ClassDescriptor descriptor = resolver.getClassDescriptor("MtTable1");
         assertNotNull(descriptor);
 
-        PropertyDescriptor p = descriptor.getProperty(MtTable1.TABLE2ARRAY_PROPERTY);
+        PropertyDescriptor p = descriptor.getProperty(MtTable1.TABLE2ARRAY.getName());
         assertTrue(p instanceof ArcProperty);
 
         ClassDescriptor target = ((ArcProperty) p).getTargetDescriptor();
         assertNotNull(target);
         assertSame(resolver.getClassDescriptor("MtTable2"), target);
         assertNotNull(((ArcProperty) p).getComplimentaryReverseArc());
-        assertEquals(MtTable2.TABLE1_PROPERTY, ((ArcProperty) p)
+        assertEquals(MtTable2.TABLE1.getName(), ((ArcProperty) p)
                 .getComplimentaryReverseArc()
                 .getName());
     }

@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.inheritance_people.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_people.CustomerRepresentative;
 
 /**
@@ -13,27 +14,29 @@ import org.apache.cayenne.testdo.inheritance_people.CustomerRepresentative;
  */
 public abstract class _ClientCompany extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String REPRESENTATIVES_PROPERTY = "representatives";
+    private static final long serialVersionUID = 1L; 
 
     public static final String CLIENT_COMPANY_ID_PK_COLUMN = "CLIENT_COMPANY_ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<List<CustomerRepresentative>> REPRESENTATIVES = new Property<>("representatives");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void addToRepresentatives(CustomerRepresentative obj) {
-        addToManyTarget(REPRESENTATIVES_PROPERTY, obj, true);
+        addToManyTarget("representatives", obj, true);
     }
     public void removeFromRepresentatives(CustomerRepresentative obj) {
-        removeToManyTarget(REPRESENTATIVES_PROPERTY, obj, true);
+        removeToManyTarget("representatives", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<CustomerRepresentative> getRepresentatives() {
-        return (List<CustomerRepresentative>)readProperty(REPRESENTATIVES_PROPERTY);
+        return (List<CustomerRepresentative>)readProperty("representatives");
     }
 
 

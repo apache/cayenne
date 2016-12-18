@@ -15,12 +15,9 @@ public abstract class _BigIntegerEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String BIG_INTEGER_FIELD_PROPERTY = "bigIntegerField";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<BigInteger> BIG_INTEGER_FIELD = new Property<BigInteger>("bigIntegerField");
+    public static final Property<BigInteger> BIG_INTEGER_FIELD = new Property<>("bigIntegerField");
 
     public void setBigIntegerField(BigInteger bigIntegerField) {
         writeProperty("bigIntegerField", bigIntegerField);

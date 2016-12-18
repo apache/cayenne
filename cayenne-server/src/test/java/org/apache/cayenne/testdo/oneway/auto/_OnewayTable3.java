@@ -16,12 +16,9 @@ public abstract class _OnewayTable3 extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String TO_MANY_ONE_WAY_DB_PROPERTY = "toManyOneWayDb";
-
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<List<OnewayTable4>> TO_MANY_ONE_WAY_DB = new Property<List<OnewayTable4>>("toManyOneWayDb");
+    public static final Property<List<OnewayTable4>> TO_MANY_ONE_WAY_DB = new Property<>("toManyOneWayDb");
 
     public void addToToManyOneWayDb(OnewayTable4 obj) {
         addToManyTarget("toManyOneWayDb", obj, true);
