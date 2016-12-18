@@ -19,14 +19,13 @@
 
 package org.apache.cayenne.query;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * BatchQuery and its descendants allow to group similar data for the batch
@@ -61,7 +60,7 @@ public abstract class BatchQuery implements Query {
      */
     public BatchQuery(DbEntity dbEntity, List<DbAttribute> dbAttributes, int batchCapacity) {
         this.dbEntity = dbEntity;
-        this.rows = new ArrayList<BatchQueryRow>(batchCapacity);
+        this.rows = new ArrayList<>(batchCapacity);
         this.dbAttributes = dbAttributes;
     }
 

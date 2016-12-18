@@ -36,7 +36,7 @@ public class GeneratorControllerPanel extends JPanel {
     protected JButton selectOutputFolder;
 
     public GeneratorControllerPanel() {
-        this.dataMapLines = new ArrayList<StandardPanelComponent>();
+        this.dataMapLines = new ArrayList<>();
         this.outputFolder = new JTextField();
         this.selectOutputFolder = new JButton("Select");
     }

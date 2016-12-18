@@ -18,13 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.ejbql;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -54,6 +47,13 @@ import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @since 3.0
  */
@@ -68,7 +68,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
     protected void addMultiColumnOperand(EJBQLMultiColumnOperand operand) {
         if (multiColumnOperands == null) {
-            multiColumnOperands = new ArrayList<EJBQLMultiColumnOperand>(2);
+            multiColumnOperands = new ArrayList<>(2);
         }
 
         multiColumnOperands.add(operand);

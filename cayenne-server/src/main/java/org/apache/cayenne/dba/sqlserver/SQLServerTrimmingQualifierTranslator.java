@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sqlserver;
 
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
+
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @since 3.0
@@ -41,7 +41,7 @@ class SQLServerTrimmingQualifierTranslator extends TrimmingQualifierTranslator {
 
 	SQLServerTrimmingQualifierTranslator(QueryAssembler queryAssembler, String trimFunction) {
 		super(queryAssembler, trimFunction);
-		expressionStack = new ArrayList<Expression>();
+		expressionStack = new ArrayList<>();
 	}
 
 	@Override

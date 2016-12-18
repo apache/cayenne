@@ -19,18 +19,18 @@
 
 package org.apache.cayenne.modeler;
 
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ClientClassGenerationAction;
+import org.apache.cayenne.modeler.pref.FSPath;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-
-import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.gen.ClientClassGenerationAction;
-import org.apache.cayenne.modeler.pref.FSPath;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Manages code generation templates.
@@ -56,12 +56,12 @@ public class CodeTemplateManager {
 	}
 
 	public CodeTemplateManager(Application application) {
-		standardSuperclassTemplates = new ArrayList<String>(3);
+		standardSuperclassTemplates = new ArrayList<>(3);
 
 		standardSuperclassTemplates.add(STANDARD_SERVER_SUPERCLASS);
 		standardSuperclassTemplates.add(STANDARD_CLIENT_SUPERCLASS);
 
-		standardSubclassTemplates = new ArrayList<String>(3);
+		standardSubclassTemplates = new ArrayList<>(3);
 		standardSubclassTemplates.add(STANDARD_SERVER_SUBCLASS);
 		standardSubclassTemplates.add(STANDARD_CLIENT_SUBCLASS);
 

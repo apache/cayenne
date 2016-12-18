@@ -19,16 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ResultIterator;
@@ -39,6 +29,16 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.Util;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  * A synchronized list that serves as a container of DataObjects. It is returned
@@ -125,7 +125,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 		this.helper = createHelper(metadata);
 		this.idWidth = metadata.getDbEntity().getPrimaryKeys().size();
 
-		List<Object> elementsUnsynced = new ArrayList<Object>();
+		List<Object> elementsUnsynced = new ArrayList<>();
 		fillIn(query, elementsUnsynced);
 		this.elements = Collections.synchronizedList(elementsUnsynced);
 
@@ -220,8 +220,8 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 				toIndex = elements.size();
 			}
 
-			List<Expression> quals = new ArrayList<Expression>(pageSize);
-			List<Object> ids = new ArrayList<Object>(pageSize);
+			List<Expression> quals = new ArrayList<>(pageSize);
+			List<Object> ids = new ArrayList<>(pageSize);
 			for (int i = fromIndex; i < toIndex; i++) {
 				Object object = elements.get(i);
 				if (helper.unresolvedSuspect(object)) {
@@ -237,14 +237,14 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 
 			// fetch the range of objects in fetchSize chunks
 			boolean fetchesDataRows = internalQuery.isFetchingDataRows();
-			List<Object> objects = new ArrayList<Object>(qualsSize);
+			List<Object> objects = new ArrayList<>(qualsSize);
 
 			int fetchSize = maxFetchSize > 0 ? maxFetchSize : Integer.MAX_VALUE;
 
 			int fetchEnd = Math.min(qualsSize, fetchSize);
 			int fetchBegin = 0;
 			while (fetchBegin < qualsSize) {
-				SelectQuery<Object> query = new SelectQuery<Object>(rootEntity, ExpressionFactory.joinExp(
+				SelectQuery<Object> query = new SelectQuery<>(rootEntity, ExpressionFactory.joinExp(
 						Expression.OR, quals.subList(fetchBegin, fetchEnd)));
 
 				query.setFetchingDataRows(fetchesDataRows);

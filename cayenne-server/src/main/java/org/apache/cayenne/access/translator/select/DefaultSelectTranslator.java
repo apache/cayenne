@@ -18,16 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.select;
 
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
@@ -59,6 +49,16 @@ import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
+
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @since 4.0
@@ -149,7 +149,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		}
 
 		// convert ColumnDescriptors to column names
-		List<String> selectColumnExpList = new ArrayList<String>();
+		List<String> selectColumnExpList = new ArrayList<>();
 		for (ColumnDescriptor column : resultColumns) {
 			String fullName = strategy.quotedIdentifier(dataMap, column.getNamePrefix(), column.getName());
 			selectColumnExpList.add(fullName);
@@ -285,9 +285,9 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 
 	protected List<ColumnDescriptor> buildResultColumns() {
 
-		this.defaultAttributesByColumn = new HashMap<ColumnDescriptor, ObjAttribute>();
+		this.defaultAttributesByColumn = new HashMap<>();
 
-		List<ColumnDescriptor> columns = new ArrayList<ColumnDescriptor>();
+		List<ColumnDescriptor> columns = new ArrayList<>();
 		SelectQuery<?> query = getSelectQuery();
 
 		if (query.getRoot() instanceof DbEntity) {
@@ -303,7 +303,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 
 	<T> List<ColumnDescriptor> appendDbEntityColumns(List<ColumnDescriptor> columns, SelectQuery<T> query) {
 
-		Set<ColumnTracker> attributes = new HashSet<ColumnTracker>();
+		Set<ColumnTracker> attributes = new HashSet<>();
 
 		DbEntity table = getQueryMetadata().getDbEntity();
 		for (DbAttribute dba : table.getAttributes()) {

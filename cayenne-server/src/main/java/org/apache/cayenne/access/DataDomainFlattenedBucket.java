@@ -60,7 +60,7 @@ class DataDomainFlattenedBucket {
         List<FlattenedArcKey> arcKeys = insertArcKeys.get(flattenedEntity);
 
         if (arcKeys == null) {
-            arcKeys = new ArrayList<FlattenedArcKey>();
+            arcKeys = new ArrayList<>();
             insertArcKeys.put(flattenedEntity, arcKeys);
         }
 
@@ -73,7 +73,7 @@ class DataDomainFlattenedBucket {
         if (relationDeleteQuery == null) {
             boolean optimisticLocking = false;
             Collection<DbAttribute> pk = flattenedEntity.getPrimaryKeys();
-            List<DbAttribute> pkList = pk instanceof List ? (List<DbAttribute>) pk : new ArrayList<DbAttribute>(pk);
+            List<DbAttribute> pkList = pk instanceof List ? (List<DbAttribute>) pk : new ArrayList<>(pk);
             relationDeleteQuery = new DeleteBatchQuery(flattenedEntity, pkList, Collections.<String> emptySet(), 50);
             relationDeleteQuery.setUsingOptimisticLocking(optimisticLocking);
             flattenedDeleteQueries.put(flattenedEntity, relationDeleteQuery);

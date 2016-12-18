@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
+import org.apache.cayenne.DataObject;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.cayenne.DataObject;
 
 /**
  * A faulting strategy that does batch-faulting of related objects whenever a first
@@ -50,7 +50,7 @@ public class ObjectIdRelationshipBatchFaultingStrategy implements
             List<ObjectIdBatchSourceItem> sources = batchSources.get();
 
             if (sources == null) {
-                sources = new ArrayList<ObjectIdBatchSourceItem>();
+                sources = new ArrayList<>();
                 batchSources.set(sources);
             }
 

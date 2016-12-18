@@ -139,7 +139,7 @@ class DataDomainFlushAction {
         this.updateBucket = new DataDomainUpdateBucket(this);
         this.flattenedBucket = new DataDomainFlattenedBucket(this);
 
-        this.queries = new ArrayList<Query>();
+        this.queries = new ArrayList<>();
         this.resultIndirectlyModifiedIds = new HashSet<ObjectId>();
 
         preprocess(context, changes);
@@ -149,8 +149,8 @@ class DataDomainFlushAction {
         }
 
         this.resultDiff = new CompoundDiff();
-        this.resultDeletedIds = new ArrayList<ObjectId>();
-        this.resultModifiedSnapshots = new HashMap<ObjectId, DataRow>();
+        this.resultDeletedIds = new ArrayList<>();
+        this.resultModifiedSnapshots = new HashMap<>();
 
         runQueries();
 

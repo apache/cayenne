@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
@@ -36,6 +29,13 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.NodeDiff;
 import org.apache.cayenne.validation.ValidationException;
 import org.apache.cayenne.validation.ValidationResult;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * A GraphDiff facade for the ObjectStore changes. Provides a way for the lower
@@ -83,7 +83,7 @@ class ObjectStoreGraphDiff implements GraphDiff {
 
                 if (diff.getObject() instanceof Validating) {
                     if (objectsToValidate == null) {
-                        objectsToValidate = new ArrayList<Validating>();
+                        objectsToValidate = new ArrayList<>();
                     }
 
                     objectsToValidate.add((Validating) diff.getObject());
@@ -158,7 +158,7 @@ class ObjectStoreGraphDiff implements GraphDiff {
 			Map<Object, ObjectDiff> changes = getChangesByObjectId();
 
 			if (!changes.isEmpty()) {
-				List<NodeDiff> allChanges = new ArrayList<NodeDiff>(changes.size() * 2);
+				List<NodeDiff> allChanges = new ArrayList<>(changes.size() * 2);
 
 				for (final ObjectDiff objectDiff : changes.values()) {
 					objectDiff.appendDiffs(allChanges);

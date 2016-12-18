@@ -218,7 +218,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 			reflexiveRelNames[i] = (objRel != null ? objRel.getName() : null);
 		}
 
-		List<Persistent> sorted = new ArrayList<Persistent>(size);
+		List<Persistent> sorted = new ArrayList<>(size);
 
 		Digraph<Persistent, Boolean> objectDependencyGraph = new MapDigraph<>();
 		Object[] masters = new Object[reflexiveRelNames.length];

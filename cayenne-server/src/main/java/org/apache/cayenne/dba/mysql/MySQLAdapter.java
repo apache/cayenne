@@ -284,7 +284,7 @@ public class MySQLAdapter extends JdbcAdapter {
 	protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
 
 		// must move generated to the front...
-		List<DbAttribute> pkList = new ArrayList<DbAttribute>(entity.getPrimaryKeys());
+		List<DbAttribute> pkList = new ArrayList<>(entity.getPrimaryKeys());
 		Collections.sort(pkList, new PKComparator());
 
 		Iterator<DbAttribute> pkit = pkList.iterator();

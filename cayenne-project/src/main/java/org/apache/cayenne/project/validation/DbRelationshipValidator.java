@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 class DbRelationshipValidator extends ConfigurationNodeValidator {
 
@@ -142,7 +142,7 @@ class DbRelationshipValidator extends ConfigurationNodeValidator {
     }
 
     private String getJoins(DbRelationship relationship) {
-        List<String> joins = new ArrayList<String>();
+        List<String> joins = new ArrayList<>();
 
         for (DbJoin join : relationship.getJoins()) {
             StringBuilder builder = new StringBuilder();

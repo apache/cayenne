@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.gen;
 
+import org.apache.cayenne.util.Util;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.util.Util;
 
 /**
  * Methods for mangling strings.
@@ -212,7 +212,7 @@ public class ImportUtils {
 			outputBuffer.append(";\n\n");
 		}
 
-		List<String> typesList = new ArrayList<String>(importTypesMap.values());
+		List<String> typesList = new ArrayList<>(importTypesMap.values());
 		Collections.sort(typesList, new Comparator<String>() {
 
 			public int compare(String s1, String s2) {

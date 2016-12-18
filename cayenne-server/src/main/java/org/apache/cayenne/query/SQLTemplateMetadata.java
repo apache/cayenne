@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
 
 /**
  * @since 3.0
@@ -59,7 +59,7 @@ class SQLTemplateMetadata extends BaseQueryMetadata {
 				Map<String, ?> parameters = query.getParams();
 				if (!parameters.isEmpty()) {
 
-					List<String> keys = new ArrayList<String>(parameters.keySet());
+					List<String> keys = new ArrayList<>(parameters.keySet());
 					Collections.sort(keys);
 
 					for (String parameterKey : keys) {

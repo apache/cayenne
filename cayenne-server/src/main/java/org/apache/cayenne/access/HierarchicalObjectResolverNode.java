@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.reflect.ClassDescriptor;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 class HierarchicalObjectResolverNode extends PrefetchObjectResolver {
 
@@ -42,10 +42,10 @@ class HierarchicalObjectResolverNode extends PrefetchObjectResolver {
     List<Persistent> objectsFromDataRows(List<? extends DataRow> rows) {
 
         if (rows == null || rows.size() == 0) {
-            return new ArrayList<Persistent>(1);
+            return new ArrayList<>(1);
         }
 
-        List<Persistent> results = new ArrayList<Persistent>(rows.size());
+        List<Persistent> results = new ArrayList<>(rows.size());
 
         for (DataRow row : rows) {
 

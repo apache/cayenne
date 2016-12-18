@@ -274,7 +274,7 @@ public class DataContext extends BaseContext {
         }
 
         // guess target collection size
-        Collection<Object> objects = new ArrayList<Object>(len > 100 ? len / 2 : len);
+        Collection<Object> objects = new ArrayList<>(len > 100 ? len / 2 : len);
 
         Iterator it = getObjectStore().getObjectIterator();
         while (it.hasNext()) {
@@ -821,7 +821,7 @@ public class DataContext extends BaseContext {
 
                 @Override
                 public List<T> allRows() {
-                    List<T> list = new ArrayList<T>();
+                    List<T> list = new ArrayList<>();
 
                     while (hasNextRow()) {
                         list.add(nextRow());
@@ -972,11 +972,11 @@ public class DataContext extends BaseContext {
     public List performQuery(Query query) {
         query = nonNullDelegate().willPerformQuery(this, query);
         if (query == null) {
-            return new ArrayList<Object>(1);
+            return new ArrayList<>(1);
         }
 
         List result = onQuery(this, query).firstList();
-        return result != null ? result : new ArrayList<Object>(1);
+        return result != null ? result : new ArrayList<>(1);
     }
 
     /**

@@ -19,6 +19,9 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.graph.GraphChangeHandler;
+import org.apache.cayenne.graph.GraphManager;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,9 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-
-import org.apache.cayenne.graph.GraphChangeHandler;
-import org.apache.cayenne.graph.GraphManager;
 
 /**
  * Tracks dirty Persistent objects.
@@ -118,7 +118,7 @@ class ObjectContextStateLog implements GraphChangeHandler {
             return Collections.emptySet();
         }
 
-        Collection<Object> objects = new ArrayList<Object>(dirtyIds.size());
+        Collection<Object> objects = new ArrayList<>(dirtyIds.size());
         for (Object id : dirtyIds) {
             objects.add(graphManager.getNode(id));
         }
@@ -132,7 +132,7 @@ class ObjectContextStateLog implements GraphChangeHandler {
         }
 
         int size = dirtyIds.size();
-        Collection<Object> objects = new ArrayList<Object>(size > 50 ? size / 2 : size);
+        Collection<Object> objects = new ArrayList<>(size > 50 ? size / 2 : size);
         for (Object id : dirtyIds) {
             Persistent o = (Persistent) graphManager.getNode(id);
 

@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.access.jdbc.reader.RowReader;
+import org.apache.cayenne.util.ResultIteratorIterator;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -26,11 +31,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.util.ResultIteratorIterator;
 
 /**
  * A ResultIterator over the underlying JDBC ResultSet.
@@ -74,7 +74,7 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
      */
     @Override
     public List<T> allRows() {
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
 
         while (hasNextRow()) {
             list.add(nextRow());

@@ -222,8 +222,7 @@ public class InferRelationshipsControllerBase extends CayenneController {
     }
 
     public List<InferredRelationship> getSelectedEntities() {
-        List<InferredRelationship> selected = new ArrayList<InferredRelationship>(
-                selectedEntities.size());
+        List<InferredRelationship> selected = new ArrayList<>(selectedEntities.size());
 
         for (InferredRelationship entity : inferredRelationships) {
             if (selectedEntities.contains(entity)) {

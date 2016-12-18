@@ -59,6 +59,11 @@
  */
 package org.apache.cayenne.ashwood.graph;
 
+import org.apache.commons.collections.ArrayStack;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.functors.TruePredicate;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -67,11 +72,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.collections.ArrayStack;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.functors.TruePredicate;
 
 /**
  * @since 3.1
@@ -153,7 +153,7 @@ public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 					} else {
 						if (contractedArc.size() == 1) {
 							Collection<V> tmp = contractedArc;
-							contractedArc = new ArrayList<V>();
+							contractedArc = new ArrayList<>();
 							contractedArc.addAll(tmp);
 							contractedDigraph.putArc(origin, destination, contractedArc);
 						}
@@ -201,7 +201,7 @@ public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 		Collection<E> component = Collections.singletonList(root);
 		boolean singleton = true;
 		if (reverseDfs == null)
-			reverseDfs = new DepthFirstSearch<E>(reverseDigraph, root);
+			reverseDfs = new DepthFirstSearch<>(reverseDigraph, root);
 		else
 			reverseDfs.reset(root);
 		while (reverseDfs.hasNext()) {
@@ -209,7 +209,7 @@ public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 			if (vertex != root) {
 				if (singleton) {
 					Collection<E> tmp = component;
-					component = new ArrayList<E>();
+					component = new ArrayList<>();
 					component.addAll(tmp);
 					singleton = false;
 				}
@@ -223,7 +223,7 @@ public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 
 	private class DFSSeenVerticesPredicate implements Predicate {
 
-		private Set<E> seenVertices = new HashSet<E>();
+		private Set<E> seenVertices = new HashSet<>();
 
 		@Override
 		public boolean evaluate(Object vertex) {

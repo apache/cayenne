@@ -81,7 +81,7 @@ final class TransactionResultIteratorDecorator<T> implements ResultIterator<T> {
      */
     @Override
     public List<T> allRows() {
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
 
         while (hasNextRow()) {
             list.add(nextRow());

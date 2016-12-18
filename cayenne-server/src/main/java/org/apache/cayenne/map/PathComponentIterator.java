@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.exp.ExpressionException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
-
-import org.apache.cayenne.exp.ExpressionException;
 
 /**
  * @since 3.0
@@ -104,12 +104,10 @@ class PathComponentIterator implements Iterator<PathComponent<Attribute, Relatio
                     aliasedPath,
                     Collections.EMPTY_MAP);
 
-            Collection<PathComponent<Attribute, Relationship>> parsedSubpath = new ArrayList<PathComponent<Attribute, Relationship>>(
-                    4);
+            Collection<PathComponent<Attribute, Relationship>> parsedSubpath = new ArrayList<>(4);
 
             while (subpathIt.hasNext()) {
-                PathComponent<Attribute, Relationship> subpathComponent = subpathIt
-                        .next();
+                PathComponent<Attribute, Relationship> subpathComponent = subpathIt.next();
 
                 Relationship subpathRelationship = subpathComponent.getRelationship();
                 if (subpathRelationship == null) {
@@ -124,10 +122,7 @@ class PathComponentIterator implements Iterator<PathComponent<Attribute, Relatio
                 parsedSubpath.add(subpathComponent);
             }
 
-            return new AliasPathComponent<Attribute, Relationship>(
-                    pathComp,
-                    parsedSubpath,
-                    !hasNext());
+            return new AliasPathComponent<>(pathComp, parsedSubpath, !hasNext());
         }
 
         throw invalidPathException("Can't resolve path component", pathComp);

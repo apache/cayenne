@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.graph.ArcCreateOperation;
 import org.apache.cayenne.graph.ArcDeleteOperation;
@@ -33,6 +30,9 @@ import org.apache.cayenne.graph.NodeIdChangeOperation;
 import org.apache.cayenne.graph.NodePropertyChangeOperation;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Filters diffs before returning them to the client. Ensures that no server-only data
@@ -52,7 +52,7 @@ class ClientReturnDiffFilter implements GraphChangeHandler {
     }
 
     GraphDiff filter(GraphDiff in) {
-        diffs = new ArrayList<GraphDiff>();
+        diffs = new ArrayList<>();
         in.apply(this);
         return new CompoundDiff(diffs);
     }

@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.dba.sybase;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -32,6 +26,12 @@ import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Primary key generator implementation for Sybase. Uses a lookup table named
@@ -137,7 +137,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 
 	@Override
 	public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		list.add(safePkProcDrop());
 		list.add(safePkTableDrop());
 		return list;

@@ -19,6 +19,12 @@
 
 package org.apache.cayenne.modeler;
 
+import org.apache.cayenne.pref.CayennePreference;
+import org.apache.cayenne.pref.Preference;
+import org.apache.cayenne.pref.UpgradeCayennePreference;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,12 +32,6 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import java.util.prefs.Preferences;
-
-import org.apache.cayenne.pref.CayennePreference;
-import org.apache.cayenne.pref.Preference;
-import org.apache.cayenne.pref.UpgradeCayennePreference;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * ModelerPreferences class supports persistent user preferences. Preferences are saved in
@@ -84,7 +84,7 @@ public class ModelerPreferences implements PreferenceChangeListener {
 
     public static List<String> getLastProjFiles() {
         Preferences filesPrefs = getLastProjFilesPref();
-        ArrayList<String> arrayLastProjFiles = new ArrayList<String>();
+        ArrayList<String> arrayLastProjFiles = new ArrayList<>();
         String[] keys = null;
         try {
             keys = filesPrefs.keys();
@@ -96,7 +96,7 @@ public class ModelerPreferences implements PreferenceChangeListener {
         if (keys != null) {
             int len = keys.length;
             
-            ArrayList<Integer> keysInteger = new ArrayList<Integer>();
+            ArrayList<Integer> keysInteger = new ArrayList<>();
             for (int i = 0; i < len; i++) {
                 keysInteger.add(new Integer(i));
             }

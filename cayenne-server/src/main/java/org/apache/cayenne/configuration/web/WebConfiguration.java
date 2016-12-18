@@ -18,6 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
+import org.apache.cayenne.di.Module;
+import org.apache.cayenne.util.Util;
+
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,14 +34,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.util.Util;
 
 /**
  * A class that provides access to common Cayenne web configuration parameters retrieved
@@ -111,8 +110,8 @@ public class WebConfiguration {
     public Collection<Module> createModules(Module... standardModules)
             throws ServletException {
 
-        Set<String> existingModules = new HashSet<String>();
-        Collection<Module> modules = new ArrayList<Module>();
+        Set<String> existingModules = new HashSet<>();
+        Collection<Module> modules = new ArrayList<>();
 
         if (standardModules != null) {
             for (Module module : standardModules) {

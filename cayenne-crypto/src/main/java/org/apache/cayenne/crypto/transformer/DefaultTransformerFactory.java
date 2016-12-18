@@ -63,7 +63,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
             DbAttribute a = columns[i].getAttribute();
             if (a != null && columnMapper.isEncrypted(a)) {
                 if (cryptoColumns == null) {
-                    cryptoColumns = new ArrayList<Integer>(len - i);
+                    cryptoColumns = new ArrayList<>(len - i);
                 }
 
                 cryptoColumns.add(i);
@@ -100,7 +100,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
             if (columnMapper.isEncrypted(a)) {
 
                 if (cryptoColumns == null) {
-                    cryptoColumns = new ArrayList<Integer>(len - i);
+                    cryptoColumns = new ArrayList<>(len - i);
                 }
 
                 cryptoColumns.add(i);

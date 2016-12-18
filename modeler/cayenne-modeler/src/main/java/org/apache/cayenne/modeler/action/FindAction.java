@@ -60,7 +60,7 @@ public class FindAction extends CayenneAction {
         JTextField source = (JTextField) e.getSource();
         String sourceStr = source.getText().trim();
 
-        paths = new ArrayList<Object>();
+        paths = new ArrayList<>();
         if (sourceStr != null && !sourceStr.isEmpty()) {
 
             if (sourceStr.startsWith("*")) {

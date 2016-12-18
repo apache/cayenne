@@ -18,13 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc.reader;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
@@ -39,6 +32,13 @@ import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @since 4.0
@@ -185,7 +185,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 				Collection<ColumnOverride> overrides = columnOverrides.get(entity.getName());
 
 				if (overrides == null) {
-					overrides = new ArrayList<ColumnOverride>(3);
+					overrides = new ArrayList<>(3);
 					columnOverrides.put(entity.getName(), overrides);
 				}
 

@@ -43,7 +43,7 @@ public class SQLReader {
 
 	public static Collection<String> statements(URL sqlSource, String separator) throws Exception {
 
-		Collection<String> statements = new ArrayList<String>();
+		Collection<String> statements = new ArrayList<>();
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(sqlSource.openStream(), "UTF-8"));) {
 

@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.resource;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ConfigurationException;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ConfigurationException;
 
 /**
  * A {@link ResourceLocator} that can locate resources in the filesystem. Instances of
@@ -92,7 +92,7 @@ public class FilesystemResourceLocator implements ResourceLocator {
     }
 
     public Collection<Resource> findResources(String name) {
-        Collection<Resource> resources = new ArrayList<Resource>(3);
+        Collection<Resource> resources = new ArrayList<>(3);
 
         for (File root : roots) {
 

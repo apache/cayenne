@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.access.dbsync;
 
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,9 +30,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 
 /**
  * @since 3.0
@@ -165,7 +165,7 @@ class SchemaAnalyzer {
 		}
 		for (String schema : schemas) {
 
-			Collection<String> tableInSchema = new ArrayList<String>();
+			Collection<String> tableInSchema = new ArrayList<>();
 			try (ResultSet tables = md.getTables(null, schema, null, null);) {
 				while (tables.next()) {
 					String name = tables.getString("TABLE_NAME");
@@ -190,7 +190,7 @@ class SchemaAnalyzer {
 						}
 
 					} else {
-						Collection<String> sc = new ArrayList<String>();
+						Collection<String> sc = new ArrayList<>();
 						sc.add(schema);
 						nameSchemaMap.put(name, sc);
 					}

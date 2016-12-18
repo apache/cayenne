@@ -143,7 +143,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
     public List<Embeddable> getSelectedEmbeddables() {
 
-        List<Embeddable> selected = new ArrayList<Embeddable>(selectedEmbeddables.size());
+        List<Embeddable> selected = new ArrayList<>(selectedEmbeddables.size());
 
         for (Object classObj : classes) {
             if (classObj instanceof Embeddable
@@ -157,7 +157,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     }
 
     public List<ObjEntity> getSelectedEntities() {
-        List<ObjEntity> selected = new ArrayList<ObjEntity>(selectedEntities.size());
+        List<ObjEntity> selected = new ArrayList<>(selectedEntities.size());
         for (Object classObj : classes) {
             if (classObj instanceof ObjEntity
                     && selectedEntities.contains(((ObjEntity) classObj).getName())) {

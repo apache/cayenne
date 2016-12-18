@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.util.ResultIteratorIterator;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-
-import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.util.ResultIteratorIterator;
 
 /**
  * @since 3.0
@@ -89,7 +89,7 @@ public class LimitResultIterator<T> implements ResultIterator<T> {
     @Override
     public List<T> allRows() {
 
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
 
         while (hasNextRow()) {
             list.add(nextRow());

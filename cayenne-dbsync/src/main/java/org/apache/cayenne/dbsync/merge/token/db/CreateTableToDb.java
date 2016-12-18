@@ -40,7 +40,7 @@ public class CreateTableToDb extends AbstractToDbToken.Entity {
 
     @Override
     public List<String> createSql(DbAdapter adapter) {
-        List<String> sqls = new ArrayList<String>();
+        List<String> sqls = new ArrayList<>();
         if(needAutoPkSupport()) {
             sqls.addAll(adapter.getPkGenerator().createAutoPkStatements(
                     Collections.singletonList(getEntity())));

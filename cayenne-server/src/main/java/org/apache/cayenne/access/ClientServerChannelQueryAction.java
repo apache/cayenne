@@ -105,7 +105,7 @@ class ClientServerChannelQueryAction {
 
             // send back just one page... query sender will figure out where it fits in
             // the incremental list
-            this.response = new ListResponse(new ArrayList<Object>(cachedList.subList(
+            this.response = new ListResponse(new ArrayList<>(cachedList.subList(
                     startIndex,
                     endIndex)));
 
@@ -139,8 +139,7 @@ class ClientServerChannelQueryAction {
 
                 List sublist = list.subList(0, pageSize);
 
-                List firstPage = (serverMetadata.isFetchingDataRows()) ? new ArrayList(
-                        sublist) : toClientObjects(sublist);
+                List firstPage = (serverMetadata.isFetchingDataRows()) ? new ArrayList(sublist) : toClientObjects(sublist);
 
                 this.response = new IncrementalListResponse(firstPage, list.size());
                 return DONE;
@@ -197,7 +196,7 @@ class ClientServerChannelQueryAction {
             }
         }
 
-        return new ArrayList<Object>(3);
+        return new ArrayList<>(3);
     }
 
     private List<Object[]> processMixedResult(
@@ -206,7 +205,7 @@ class ClientServerChannelQueryAction {
 
         // must clone the list to ensure we do not mess up the server list that can be
         // used elsewhere (e.g. it can be cached).
-        List<Object[]> clientObjects = new ArrayList<Object[]>(serverObjects.size());
+        List<Object[]> clientObjects = new ArrayList<>(serverObjects.size());
 
         ObjectDetachOperation op = new ObjectDetachOperation(serverResolver
                 .getClientEntityResolver());
@@ -237,7 +236,7 @@ class ClientServerChannelQueryAction {
 
         // must clone the list to ensure we do not mess up the server list that can be
         // used elsewhere (e.g. it can be cached).
-        List<Object> clientObjects = new ArrayList<Object>(serverObjects.size());
+        List<Object> clientObjects = new ArrayList<>(serverObjects.size());
 
         ObjectDetachOperation op = new ObjectDetachOperation(serverResolver
                 .getClientEntityResolver());

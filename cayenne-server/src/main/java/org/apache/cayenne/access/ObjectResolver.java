@@ -109,10 +109,10 @@ class ObjectResolver {
 	 */
 	List<Persistent> objectsFromDataRows(List<? extends DataRow> rows) {
 		if (rows == null || rows.size() == 0) {
-			return new ArrayList<Persistent>(1);
+			return new ArrayList<>(1);
 		}
 
-		List<Persistent> results = new ArrayList<Persistent>(rows.size());
+		List<Persistent> results = new ArrayList<>(rows.size());
 		for (DataRow row : rows) {
 			// nulls are possible here since 3.0 for soem varieties of EJBQL
 			results.add(objectFromDataRow(row));

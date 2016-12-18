@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @since 3.1
@@ -37,7 +37,7 @@ class SaveableNodesGetter extends
     public Collection<ConfigurationNode> visitDataChannelDescriptor(
             DataChannelDescriptor descriptor) {
 
-        Collection<ConfigurationNode> nodes = new ArrayList<ConfigurationNode>();
+        Collection<ConfigurationNode> nodes = new ArrayList<>();
         nodes.add(descriptor);
 
         for (DataMap map : descriptor.getDataMaps()) {

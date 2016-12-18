@@ -42,7 +42,7 @@ public class OpenBaseMergerTokenFactory extends DefaultMergerTokenFactory {
 
             @Override
             public List<String> createSql(DbAdapter adapter) {
-                List<String> sqls = new ArrayList<String>();
+                List<String> sqls = new ArrayList<>();
                 // create table first as OpenBase adapter created primary key in its
                 // getPkGenerator().createAutoPkStatements
                 sqls.add(adapter.createTable(getEntity()));
@@ -96,7 +96,7 @@ public class OpenBaseMergerTokenFactory extends DefaultMergerTokenFactory {
 
             @Override
             public List<String> createSql(DbAdapter adapter) {
-                List<String> sqls = new ArrayList<String>();
+                List<String> sqls = new ArrayList<>();
 
                 if (columnOriginal.getMaxLength() != columnNew.getMaxLength()) {
                     sqls.add("ALTER TABLE "

@@ -80,7 +80,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * Creates new EntityResolver that indexes a collection of DataMaps.
      */
     public EntityResolver(Collection<DataMap> dataMaps) {
-        this.maps = new ArrayList<DataMap>(dataMaps);
+        this.maps = new ArrayList<>(dataMaps);
         refreshMappingCache();
     }
 

@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
@@ -34,6 +28,12 @@ import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Describes an association between two Java classes mapped as source and target
@@ -54,7 +54,7 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
     protected int deleteRule = DeleteRule.NO_ACTION;
     protected boolean usedForLocking;
 
-    protected List<DbRelationship> dbRelationships = new ArrayList<DbRelationship>(2);
+    protected List<DbRelationship> dbRelationships = new ArrayList<>(2);
 
     /**
      * Db-relationships path that is set but not yet parsed (turned into
@@ -185,7 +185,7 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
 
         // reverse the list
         List<DbRelationship> relationships = getDbRelationships();
-        List<DbRelationship> reversed = new ArrayList<DbRelationship>(relationships.size());
+        List<DbRelationship> reversed = new ArrayList<>(relationships.size());
 
         for (DbRelationship relationship : relationships) {
             DbRelationship reverse = relationship.getReverseRelationship();
@@ -196,7 +196,7 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
             reversed.add(0, reverse);
         }
 
-        ObjEntity target = (ObjEntity) this.getTargetEntity();
+        ObjEntity target = this.getTargetEntity();
         if (target == null) {
             return null;
         }

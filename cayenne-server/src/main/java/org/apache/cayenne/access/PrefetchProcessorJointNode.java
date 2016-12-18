@@ -79,8 +79,8 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         }
 
         objects = new ArrayList(capacity);
-        resolved = new HashMap<Map, Persistent>(capacity);
-        resolvedRows = new ArrayList<DataRow>(capacity);
+        resolved = new HashMap<>(capacity);
+        resolvedRows = new ArrayList<>(capacity);
         buildRowMapping();
         buildPKIndex();
     }
@@ -103,7 +103,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         // likely be an indicator of an outer join ... and considering SQLTemplate,
         // this is reasonable to expect...
 
-        Map<String, Object> id = new TreeMap<String, Object>();
+        Map<String, Object> id = new TreeMap<>();
         for (int idIndex : idIndices) {
             Object value = flatRow.get(columns[idIndex].getDataRowKey());
             id.put(columns[idIndex].getName(), value);
@@ -152,7 +152,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
      * Configures row columns mapping for this node entity.
      */
     private void buildRowMapping() {
-        final Map<String, ColumnDescriptor> targetSource = new TreeMap<String, ColumnDescriptor>();
+        final Map<String, ColumnDescriptor> targetSource = new TreeMap<>();
 
         // build a DB path .. find parent node that terminates the joint group...
         PrefetchTreeNode jointRoot = this;

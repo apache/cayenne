@@ -402,7 +402,7 @@ public class EOQuery<T> extends SelectQuery<T> {
 					// get the list of children
 					List children = (List) qualifierMap.get("qualifiers");
 					if (children != null) {
-						ArrayList<Expression> childExpressions = new ArrayList<Expression>();
+						ArrayList<Expression> childExpressions = new ArrayList<>();
 						// build an Expression for each child
 						Iterator<Map> it = children.iterator();
 						while (it.hasNext()) {

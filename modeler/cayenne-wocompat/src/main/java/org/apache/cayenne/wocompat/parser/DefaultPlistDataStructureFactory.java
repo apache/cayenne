@@ -19,18 +19,18 @@
 
 package org.apache.cayenne.wocompat.parser;
 
+import org.apache.cayenne.wocompat.PlistDataStructureFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.wocompat.PlistDataStructureFactory;
-
 class DefaultPlistDataStructureFactory implements PlistDataStructureFactory {
 
 	@Override
 	public Collection<Object> createCollection(String keyPath) {
-		return new ArrayList<Object>();
+		return new ArrayList<>();
 	}
 
 	@Override

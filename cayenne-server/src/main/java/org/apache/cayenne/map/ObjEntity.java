@@ -101,8 +101,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         setName(name);
         this.lockType = LOCK_TYPE_NONE;
         this.callbacks = new CallbackMap();
-        this.entityListeners = new ArrayList<EntityListener>(2);
-        this.attributeOverrides = new TreeMap<String, String>();
+        this.entityListeners = new ArrayList<>(2);
+        this.attributeOverrides = new TreeMap<>();
     }
 
     /**
@@ -236,7 +236,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         // TODO: should we also copy lock type?
 
         Collection<ObjAttribute> primaryKeys = getMutablePrimaryKeys();
-        Collection<ObjAttribute> clientPK = new ArrayList<ObjAttribute>(primaryKeys.size());
+        Collection<ObjAttribute> clientPK = new ArrayList<>(primaryKeys.size());
 
         for (ObjAttribute attribute : getDeclaredAttributes()) {
             ObjAttribute clientAttribute = attribute.getClientAttribute();
@@ -670,7 +670,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         }
 
         Collection<DbAttribute> pkAttributes = getDbEntity().getPrimaryKeys();
-        Collection<ObjAttribute> attributes = new ArrayList<ObjAttribute>(pkAttributes.size());
+        Collection<ObjAttribute> attributes = new ArrayList<>(pkAttributes.size());
 
         for (DbAttribute pk : pkAttributes) {
             ObjAttribute attribute = getAttributeForDbAttribute(pk);
@@ -913,7 +913,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         }
 
         Collection<DbAttribute> pkAttributes = dbEntity.getPrimaryKeys();
-        Collection<String> names = new ArrayList<String>(pkAttributes.size());
+        Collection<String> names = new ArrayList<>(pkAttributes.size());
 
         for (DbAttribute pk : pkAttributes) {
             names.add(pk.getName());

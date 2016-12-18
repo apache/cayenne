@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.dba.oracle;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
@@ -30,6 +27,9 @@ import org.apache.cayenne.exp.parser.ASTNegate;
 import org.apache.cayenne.exp.parser.ASTNotIn;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.commons.collections.Transformer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Oracle qualifier translator. In particular, trims INs with more than 1000
@@ -70,13 +70,13 @@ public class OracleQualifierTranslator extends TrimmingQualifierTranslator {
 		Expression trimmedInExpression(ASTPath path, Object[] values, int maxInSize) {
 			Expression res = null;
 
-			List<Object> in = new ArrayList<Object>(maxInSize);
+			List<Object> in = new ArrayList<>(maxInSize);
 			for (Object v : values) {
 				in.add(v);
 				if (in.size() == maxInSize) {
 					Expression inExp = new ASTIn(path, new ASTList(in));
 					res = res != null ? res.orExp(inExp) : inExp;
-					in = new ArrayList<Object>(maxInSize);
+					in = new ArrayList<>(maxInSize);
 				}
 			}
 			if (in.size() > 0) {

@@ -19,6 +19,13 @@
 
 package org.apache.cayenne.dba.postgres;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.oracle.OraclePkGenerator;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbKeyGenerator;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,13 +33,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.oracle.OraclePkGenerator;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbKeyGenerator;
 
 /**
  * Default PK generator for PostgreSQL that uses sequences for PK generation.
@@ -101,7 +101,7 @@ public class PostgresPkGenerator extends OraclePkGenerator {
 				adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
 
 				try (ResultSet rs = sel.executeQuery(sql);) {
-					List<String> sequenceList = new ArrayList<String>();
+					List<String> sequenceList = new ArrayList<>();
 					while (rs.next()) {
 						sequenceList.add(rs.getString(1));
 					}

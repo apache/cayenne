@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.exp.Expression;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.exp.Expression;
 
 /**
  * A tree structure representing inheritance hierarchy of an ObjEntity and its
@@ -116,7 +116,7 @@ public class EntityInheritanceTree {
 
     public void addChildNode(EntityInheritanceTree node) {
         if (subentities == null) {
-            subentities = new ArrayList<EntityInheritanceTree>(2);
+            subentities = new ArrayList<>(2);
         }
 
         subentities.add(node);
@@ -145,7 +145,7 @@ public class EntityInheritanceTree {
             return Collections.singletonList(entity);
         }
 
-        Collection<ObjEntity> c = new ArrayList<ObjEntity>();
+        Collection<ObjEntity> c = new ArrayList<>();
         appendSubentities(c);
         return c;
     }
@@ -166,7 +166,7 @@ public class EntityInheritanceTree {
             return entity.getAttributes();
         }
 
-        Collection<ObjAttribute> c = new ArrayList<ObjAttribute>();
+        Collection<ObjAttribute> c = new ArrayList<>();
         appendDeclaredAttributes(c);
 
         // add base attributes if any
@@ -183,7 +183,7 @@ public class EntityInheritanceTree {
             return entity.getRelationships();
         }
 
-        Collection<ObjRelationship> c = new ArrayList<ObjRelationship>();
+        Collection<ObjRelationship> c = new ArrayList<>();
         appendDeclaredRelationships(c);
 
         // add base relationships if any

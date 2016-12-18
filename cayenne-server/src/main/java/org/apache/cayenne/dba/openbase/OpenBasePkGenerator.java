@@ -19,6 +19,15 @@
 
 package org.apache.cayenne.dba.openbase;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.JdbcPkGenerator;
+import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.util.IDUtil;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -28,15 +37,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.JdbcPkGenerator;
-import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.util.IDUtil;
 
 /**
  * @since 1.1
@@ -152,7 +152,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      */
 	@Override
 	public List createAutoPkStatements(List dbEntities) {
-		List<String> list = new ArrayList<String>(2 * dbEntities.size());
+		List<String> list = new ArrayList<>(2 * dbEntities.size());
 		Iterator<?> it = dbEntities.iterator();
 		while (it.hasNext()) {
 			DbEntity entity = (DbEntity) it.next();

@@ -207,7 +207,7 @@ public class QueryDescriptorLoader {
 
     void addOrdering(String path, String descending, String ignoreCase) {
         if (orderings == null) {
-            orderings = new ArrayList<Ordering>();
+            orderings = new ArrayList<>();
         }
 
         if (path != null && path.trim().length() == 0) {
@@ -239,7 +239,7 @@ public class QueryDescriptorLoader {
         }
 
         if (prefetches == null) {
-            prefetches = new ArrayList<String>();
+            prefetches = new ArrayList<>();
         }
         prefetches.add(path.trim());
     }

@@ -58,7 +58,7 @@ public class LinkDataMapAction extends CayenneAction {
 
         ProjectController mediator = getProjectController();
         DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) mediator.getProject().getRootNode();
-        Collection<DataNodeDescriptor> unlinkedNodes = new ArrayList<DataNodeDescriptor>();
+        Collection<DataNodeDescriptor> unlinkedNodes = new ArrayList<>();
 
         // unlink map from any nodes
         // Theoretically only one node may contain a datamap at each given time.

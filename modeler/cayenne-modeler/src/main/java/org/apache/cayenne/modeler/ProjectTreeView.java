@@ -660,8 +660,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         mediator.getEntityResolver().removeDataMap(e.getDataMap());
 
         // Clean up map from the nodes
-        for (DataNodeDescriptor dataNode : new ArrayList<DataNodeDescriptor>(
-                dataChannelDescriptor.getNodeDescriptors())) {
+        for (DataNodeDescriptor dataNode : new ArrayList<>(dataChannelDescriptor.getNodeDescriptors())) {
             removeNode(new Object[] {
                     dataChannelDescriptor, dataNode, map
             });

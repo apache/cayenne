@@ -78,7 +78,7 @@ public class FileProjectSaver implements ProjectSaver {
 
 	void save(Project project, Resource baseResource, boolean deleteOldResources) {
 		Collection<ConfigurationNode> nodes = project.getRootNode().acceptVisitor(saveableNodesGetter);
-		Collection<SaveUnit> units = new ArrayList<SaveUnit>(nodes.size());
+		Collection<SaveUnit> units = new ArrayList<>(nodes.size());
 
 		for (ConfigurationNode node : nodes) {
 			units.add(createSaveUnit(node, baseResource));

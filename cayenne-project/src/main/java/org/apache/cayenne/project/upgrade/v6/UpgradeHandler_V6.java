@@ -72,7 +72,7 @@ class UpgradeHandler_V6 extends BaseUpgradeHandler {
         }
 
         // collect resources to delete before the upgrade...
-        Collection<Resource> resourcesToDelete = new ArrayList<Resource>();
+        Collection<Resource> resourcesToDelete = new ArrayList<>();
         for (DataChannelDescriptor descriptor : domains) {
             for (DataNodeDescriptor node : descriptor.getNodeDescriptors()) {
                 Resource nodeResource = node.getConfigurationSource();
@@ -84,8 +84,7 @@ class UpgradeHandler_V6 extends BaseUpgradeHandler {
 
         // save in the new format
         for (DataChannelDescriptor descriptor : domains) {
-            Project project = new Project(new ConfigurationTree<DataChannelDescriptor>(
-                    descriptor));
+            Project project = new Project(new ConfigurationTree<>(descriptor));
             
             attachToNamespace((DataChannelDescriptor) project.getRootNode());
 

@@ -18,14 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -36,6 +28,13 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.QueryDescriptor;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A helper class that wraps a tree of project nodes into Swing tree nodes.
@@ -60,7 +59,7 @@ public class ProjectTreeFactory {
                 return unsorted;
             }
 
-            List<T> sorted = new ArrayList<T>(unsorted);
+            List<T> sorted = new ArrayList<>(unsorted);
             Collections.sort(sorted);
             return sorted;
         }
@@ -122,8 +121,7 @@ public class ProjectTreeFactory {
             pushNode(nodeDescriptor);
 
             if (parent != null) {
-                List<String> mapNames = new ArrayList<String>(nodeDescriptor
-                        .getDataMapNames());
+                List<String> mapNames = new ArrayList<>(nodeDescriptor.getDataMapNames());
                 Collections.sort(mapNames);
                 for (String mapName : mapNames) {
                     makeNode(parent.getDataMap(mapName));

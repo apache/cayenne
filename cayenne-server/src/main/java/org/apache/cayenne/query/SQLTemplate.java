@@ -378,7 +378,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 		// since positional parameters are specified, resetting named
 		// parameters
 		this.parameters = null;
-		this.positionalParams = params != null ? new ArrayList<Object>(params) : null;
+		this.positionalParams = params != null ? new ArrayList<>(params) : null;
 	}
 
 	/**

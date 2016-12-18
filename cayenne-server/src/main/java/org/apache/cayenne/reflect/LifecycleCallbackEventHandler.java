@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
 
 /**
  * A runtime callback processor for a single kind of lifecycle events.
@@ -127,7 +127,7 @@ class LifecycleCallbackEventHandler {
                 .getName());
 
         if (entityListeners == null) {
-            entityListeners = new ArrayList<AbstractCallback>(3);
+            entityListeners = new ArrayList<>(3);
             listeners.put(entityClass.getName(), entityListeners);
         }
 
@@ -142,7 +142,7 @@ class LifecycleCallbackEventHandler {
         // default listeners are invoked first
         if (!defaultListeners.isEmpty()
                 && !excludingDefaultListeners(object.getObjectId().getEntityName())) {
-            for (final AbstractCallback listener : defaultListeners) {
+            for (AbstractCallback listener : defaultListeners) {
                 listener.performCallback(object);
             }
         }

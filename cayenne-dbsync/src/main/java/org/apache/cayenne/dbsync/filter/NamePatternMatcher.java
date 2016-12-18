@@ -106,7 +106,7 @@ public class NamePatternMatcher implements NameFilter {
             return new Pattern[0];
         }
         String[] patternStrings = tokenizePattern(patternString);
-        List<Pattern> patterns = new ArrayList<Pattern>(patternStrings.length);
+        List<Pattern> patterns = new ArrayList<>(patternStrings.length);
 
         for (String patternString1 : patternStrings) {
 

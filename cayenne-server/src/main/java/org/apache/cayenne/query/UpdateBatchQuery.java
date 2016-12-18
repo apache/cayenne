@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 
 /**
  * Batched UPDATE query.
@@ -42,7 +42,7 @@ public class UpdateBatchQuery extends BatchQuery {
 
     private static List<DbAttribute> toDbAttributes(List<DbAttribute> qualifierAttributes,
             List<DbAttribute> updatedAttributes) {
-        List<DbAttribute> dbAttributes = new ArrayList<DbAttribute>(updatedAttributes.size()
+        List<DbAttribute> dbAttributes = new ArrayList<>(updatedAttributes.size()
                 + qualifierAttributes.size());
         dbAttributes.addAll(updatedAttributes);
         dbAttributes.addAll(qualifierAttributes);

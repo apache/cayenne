@@ -19,7 +19,17 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import java.awt.Component;
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.CodeTemplateManager;
+import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
+import org.apache.cayenne.modeler.pref.DataMapDefaults;
+import org.apache.cayenne.swing.BindingBuilder;
+import org.apache.cayenne.swing.ObjectBinding;
+import org.apache.cayenne.util.Util;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,17 +39,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-
-import javax.swing.DefaultComboBoxModel;
-
-import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.CodeTemplateManager;
-import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
-import org.apache.cayenne.modeler.pref.DataMapDefaults;
-import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.swing.ObjectBinding;
-import org.apache.cayenne.util.Util;
 
 /**
  * A controller for the custom generation mode.
@@ -188,14 +187,14 @@ public class CustomModeController extends GeneratorController {
 	protected void updateTemplates() {
 		this.templateManager = getApplication().getCodeTemplateManager();
 
-		List<String> customTemplates = new ArrayList<String>(templateManager.getCustomTemplates().keySet());
+		List<String> customTemplates = new ArrayList<>(templateManager.getCustomTemplates().keySet());
 		Collections.sort(customTemplates);
 
-		List<String> superTemplates = new ArrayList<String>(templateManager.getStandardSuperclassTemplates());
+		List<String> superTemplates = new ArrayList<>(templateManager.getStandardSuperclassTemplates());
 		Collections.sort(superTemplates);
 		superTemplates.addAll(customTemplates);
 
-		List<String> subTemplates = new ArrayList<String>(templateManager.getStandardSubclassTemplates());
+		List<String> subTemplates = new ArrayList<>(templateManager.getStandardSubclassTemplates());
 		Collections.sort(subTemplates);
 		subTemplates.addAll(customTemplates);
 

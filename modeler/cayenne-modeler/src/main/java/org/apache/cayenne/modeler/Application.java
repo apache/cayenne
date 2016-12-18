@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.modeler;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-
-import javax.swing.SwingUtilities;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
@@ -43,6 +35,13 @@ import org.apache.cayenne.swing.BindingFactory;
 import org.apache.cayenne.util.IDUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
+
+import javax.swing.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 /**
  * A main modeler application class that provides a number of services to the Modeler
@@ -238,9 +237,9 @@ public class Application {
                 ClasspathPreferences.class,
                 "");
 
-        Collection details = new ArrayList<String>();
+        Collection details = new ArrayList<>();
         String[] keys = null;
-        ArrayList<String> values = new ArrayList<String>();
+        ArrayList<String> values = new ArrayList<>();
 
         try {
             keys = classLoaderPreference.keys();

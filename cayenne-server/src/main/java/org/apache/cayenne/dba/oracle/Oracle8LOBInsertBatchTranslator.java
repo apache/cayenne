@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 class Oracle8LOBInsertBatchTranslator extends Oracle8LOBBatchTranslator {
 
@@ -40,7 +40,7 @@ class Oracle8LOBInsertBatchTranslator extends Oracle8LOBBatchTranslator {
         List<DbAttribute> dbAttributes = query.getDbAttributes();
         int len = dbAttributes.size();
 
-        List<Object> values = new ArrayList<Object>(len);
+        List<Object> values = new ArrayList<>(len);
         for (int i = 0; i < len; i++) {
             Object value = row.getValue(i);
             DbAttribute attribute = dbAttributes.get(i);

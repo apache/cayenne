@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.test.jdbc;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
@@ -27,8 +28,6 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.sql.DataSource;
 
 /**
  * JDBC utility class for setting up and analyzing the DB data sets. DBHelper
@@ -98,7 +97,7 @@ public class DBHelper {
 			@Override
 			List<Object[]> readResultSet(ResultSet rs, String sql) throws SQLException {
 
-				List<Object[]> result = new ArrayList<Object[]>();
+				List<Object[]> result = new ArrayList<>();
 				while (rs.next()) {
 
 					Object[] row = new Object[columns.length];

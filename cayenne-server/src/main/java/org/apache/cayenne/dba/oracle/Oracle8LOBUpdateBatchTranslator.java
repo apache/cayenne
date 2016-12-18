@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.UpdateBatchQuery;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 class Oracle8LOBUpdateBatchTranslator extends Oracle8LOBBatchTranslator {
 
@@ -40,7 +40,7 @@ class Oracle8LOBUpdateBatchTranslator extends Oracle8LOBBatchTranslator {
         int len = query.getDbAttributes().size();
         UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
 
-        List<Object> values = new ArrayList<Object>(len);
+        List<Object> values = new ArrayList<>(len);
         List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
         List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
 

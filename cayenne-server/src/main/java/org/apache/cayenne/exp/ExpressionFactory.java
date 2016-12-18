@@ -212,7 +212,7 @@ public class ExpressionFactory {
 	 * join pair binary expressions.
 	 */
 	public static Expression matchAnyDbExp(Map<String, ?> map, int pairType) {
-		List<Expression> pairs = new ArrayList<Expression>(map.size());
+		List<Expression> pairs = new ArrayList<>(map.size());
 
 		for (Map.Entry<String, ?> entry : map.entrySet()) {
 			Expression exp = expressionOfType(pairType);
@@ -233,7 +233,7 @@ public class ExpressionFactory {
 	 * join pair binary expressions.
 	 */
 	public static Expression matchAllDbExp(Map<String, ?> map, int pairType) {
-		List<Expression> pairs = new ArrayList<Expression>(map.size());
+		List<Expression> pairs = new ArrayList<>(map.size());
 
 		for (Map.Entry<String, ?> entry : map.entrySet()) {
 			Expression exp = expressionOfType(pairType);
@@ -254,7 +254,7 @@ public class ExpressionFactory {
 	 * join pair binary expressions.
 	 */
 	public static Expression matchAnyExp(Map<String, ?> map, int pairType) {
-		List<Expression> pairs = new ArrayList<Expression>(map.size());
+		List<Expression> pairs = new ArrayList<>(map.size());
 
 		for (Map.Entry<String, ?> entry : map.entrySet()) {
 
@@ -309,7 +309,7 @@ public class ExpressionFactory {
 
 		int split = path.indexOf(SPLIT_SEPARATOR);
 
-		List<Expression> matches = new ArrayList<Expression>(values.length);
+		List<Expression> matches = new ArrayList<>(values.length);
 
 		if (split >= 0 && split < path.length() - 1) {
 
@@ -354,7 +354,7 @@ public class ExpressionFactory {
 	 * join pair binary expressions.
 	 */
 	public static Expression matchAllExp(Map<String, ?> map, int pairType) {
-		List<Expression> pairs = new ArrayList<Expression>(map.size());
+		List<Expression> pairs = new ArrayList<>(map.size());
 
 		for (Map.Entry<String, ?> entry : map.entrySet()) {
 
@@ -962,7 +962,7 @@ public class ExpressionFactory {
 			return expFalse();
 		}
 
-		List<Expression> pairs = new ArrayList<Expression>(objects.length);
+		List<Expression> pairs = new ArrayList<>(objects.length);
 
 		for (Persistent object : objects) {
 			pairs.add(matchExp(object));

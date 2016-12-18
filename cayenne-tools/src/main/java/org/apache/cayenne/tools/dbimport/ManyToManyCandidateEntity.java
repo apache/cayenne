@@ -69,7 +69,7 @@ class ManyToManyCandidateEntity {
      * @return true if current entity is represent many to many table; otherwise returns false
      */
     public static ManyToManyCandidateEntity build(ObjEntity joinEntity) {
-        ArrayList<ObjRelationship> relationships = new ArrayList<ObjRelationship>(joinEntity.getRelationships());
+        ArrayList<ObjRelationship> relationships = new ArrayList<>(joinEntity.getRelationships());
         if (relationships.size() != 2 || (relationships.get(0).getDbRelationships().isEmpty() || relationships.get(1).getDbRelationships().isEmpty())) {
             return null;
         }

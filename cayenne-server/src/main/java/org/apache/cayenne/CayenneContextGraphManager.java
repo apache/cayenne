@@ -19,11 +19,6 @@
 
 package org.apache.cayenne;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.graph.ArcCreateOperation;
@@ -42,6 +37,11 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyException;
 import org.apache.cayenne.reflect.ToManyMapProperty;
 import org.apache.cayenne.util.PersistentObjectMap;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * A GraphMap extension that works together with ObjectContext to track persistent object
@@ -321,7 +321,7 @@ final class CayenneContextGraphManager extends GraphMap {
 
     Collection<Object> deadIds() {
         if (deadIds == null) {
-            deadIds = new ArrayList<Object>();
+            deadIds = new ArrayList<>();
         }
 
         return deadIds;

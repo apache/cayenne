@@ -114,7 +114,7 @@ public class CompoundDiff implements GraphDiff {
 		if (diffs == null) {
 			synchronized (this) {
 				if (diffs == null) {
-					diffs = new ArrayList<GraphDiff>();
+					diffs = new ArrayList<>();
 				}
 			}
 		}

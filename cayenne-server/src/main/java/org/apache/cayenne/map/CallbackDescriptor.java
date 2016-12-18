@@ -81,7 +81,7 @@ public class CallbackDescriptor implements Serializable {
      * @return true if any changes were made
      */
     public boolean moveMethod(String callbackMethod, int destinationIndex) {
-        List<String> callbackMethodsList = new ArrayList<String>(callbackMethods);
+        List<String> callbackMethodsList = new ArrayList<>(callbackMethods);
         int currentIndex = callbackMethodsList.indexOf(callbackMethod);
         if (currentIndex < 0)
             throw new IllegalArgumentException("Unknown callback method: "
@@ -115,7 +115,7 @@ public class CallbackDescriptor implements Serializable {
      * @param method new callback method
      */
     public void setCallbackMethodAt(int index, String method) {
-        List<String> callbackMethodsList = new ArrayList<String>(callbackMethods);
+        List<String> callbackMethodsList = new ArrayList<>(callbackMethods);
         callbackMethodsList.set(index, method);
         callbackMethods.clear();
         callbackMethods.addAll(callbackMethodsList);

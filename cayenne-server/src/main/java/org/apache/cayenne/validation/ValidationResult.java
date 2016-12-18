@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.validation;
 
+import org.apache.cayenne.util.Util;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.cayenne.util.Util;
 
 /**
  * Represents a result of a validation execution. Contains a set of
@@ -38,7 +38,7 @@ public class ValidationResult implements Serializable {
     private List<ValidationFailure> failures;
 
     public ValidationResult() {
-        failures = new ArrayList<ValidationFailure>();
+        failures = new ArrayList<>();
     }
 
     /**
@@ -70,7 +70,7 @@ public class ValidationResult implements Serializable {
      * @see ValidationFailure#getSource()
      */
     public List<ValidationFailure> getFailures(Object source) {
-        ArrayList<ValidationFailure> matchingFailures = new ArrayList<ValidationFailure>(5);
+        ArrayList<ValidationFailure> matchingFailures = new ArrayList<>(5);
         for (ValidationFailure failure : failures) {
             if (Util.nullSafeEquals(source, failure.getSource())) {
                 matchingFailures.add(failure);

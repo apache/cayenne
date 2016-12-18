@@ -147,7 +147,7 @@ public class ProcedureTranslator {
 		long t1 = System.currentTimeMillis();
 
 		this.callParams = getProcedure().getCallParameters();
-		this.values = new ArrayList<Object>(callParams.size());
+		this.values = new ArrayList<>(callParams.size());
 
 		initValues();
 		String sqlStr = createSqlString();
@@ -156,7 +156,7 @@ public class ProcedureTranslator {
 			// need to convert OUT/VOID parameters to loggable strings
 			long time = System.currentTimeMillis() - t1;
 
-			List<Object> loggableParameters = new ArrayList<Object>(values.size());
+			List<Object> loggableParameters = new ArrayList<>(values.size());
 			for (Object val : values) {
 				if (val instanceof NotInParam) {
 					val = val.toString();

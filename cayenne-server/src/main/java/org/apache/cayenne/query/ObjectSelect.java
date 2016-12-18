@@ -284,7 +284,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 		Collection<Expression> all;
 
 		if (where != null) {
-			all = new ArrayList<Expression>(expressions.size() + 1);
+			all = new ArrayList<>(expressions.size() + 1);
 			all.add(where);
 			all.addAll(expressions);
 		} else {
@@ -321,7 +321,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 		Collection<Expression> all;
 
 		if (where != null) {
-			all = new ArrayList<Expression>(expressions.size() + 1);
+			all = new ArrayList<>(expressions.size() + 1);
 			all.add(where);
 			all.addAll(expressions);
 		} else {
@@ -367,7 +367,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 		}
 
 		if (this.orderings == null) {
-			this.orderings = new ArrayList<Ordering>(orderings.length);
+			this.orderings = new ArrayList<>(orderings.length);
 		}
 
 		for (Ordering o : orderings) {
@@ -389,7 +389,7 @@ public class ObjectSelect<T> extends IndirectQuery implements Select<T> {
 		}
 
 		if (this.orderings == null) {
-			this.orderings = new ArrayList<Ordering>(orderings.size());
+			this.orderings = new ArrayList<>(orderings.size());
 		}
 
 		this.orderings.addAll(orderings);

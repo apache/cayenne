@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.event;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.di.BeforeScopeEnd;
+import org.apache.cayenne.util.Invocation;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EventObject;
@@ -25,10 +29,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.di.BeforeScopeEnd;
-import org.apache.cayenne.util.Invocation;
 
 /**
  * A default implementation of {@link EventManager}.
@@ -65,7 +65,7 @@ public class DefaultEventManager implements EventManager {
         this.singleThread = dispatchThreadCount <= 0;
 
         if (!singleThread) {
-            dispatchThreads = new ArrayList<DispatchThread>(dispatchThreadCount);
+            dispatchThreads = new ArrayList<>(dispatchThreadCount);
 
             String prefix = "cayenne-edt-" + hashCode() + "-";
 

@@ -19,21 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.datasource.DriverDataSource;
@@ -52,6 +37,20 @@ import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 /**
  * Utility class that generates database schema based on Cayenne mapping. It is
@@ -207,7 +206,7 @@ public class DbGenerator {
 	 * current configuration.
 	 */
 	public List<String> configuredStatements() {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 
 		if (shouldDropTables) {
 			ListIterator<DbEntity> it = dbEntitiesInInsertOrder.listIterator(dbEntitiesInInsertOrder.size());
@@ -283,7 +282,7 @@ public class DbGenerator {
 			}
 
 			// create tables
-			List<String> createdTables = new ArrayList<String>();
+			List<String> createdTables = new ArrayList<>();
 			if (shouldCreateTables) {
 				for (final DbEntity ent : dbEntitiesInInsertOrder) {
 
@@ -358,7 +357,7 @@ public class DbGenerator {
 	 * @since 3.0
 	 */
 	public List<String> createConstraintsQueries(DbEntity table) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		for (final DbRelationship rel : table.getRelationships()) {
 
 			if (rel.isToMany()) {
@@ -486,8 +485,8 @@ public class DbGenerator {
 			excludedEntities = Collections.emptyList();
 		}
 
-		List<DbEntity> tables = new ArrayList<DbEntity>();
-		List<DbEntity> tablesWithAutoPk = new ArrayList<DbEntity>();
+		List<DbEntity> tables = new ArrayList<>();
+		List<DbEntity> tablesWithAutoPk = new ArrayList<>();
 
 		for (DbEntity nextEntity : map.getDbEntities()) {
 
@@ -527,7 +526,7 @@ public class DbGenerator {
 
 			// create a copy of the original PK list,
 			// since the list will be modified locally
-			List<DbAttribute> pkAttributes = new ArrayList<DbAttribute>(nextEntity.getPrimaryKeys());
+			List<DbAttribute> pkAttributes = new ArrayList<>(nextEntity.getPrimaryKeys());
 			while (pkAttributes.size() > 0 && relationships.hasNext()) {
 				DbRelationship nextRelationship = relationships.next();
 				if (!nextRelationship.isToMasterPK()) {

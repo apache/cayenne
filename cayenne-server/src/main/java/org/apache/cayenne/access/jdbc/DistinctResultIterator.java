@@ -18,6 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.util.ResultIteratorIterator;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,12 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.util.ResultIteratorIterator;
 
 /**
  * A ResultIterator that does in-memory filtering of rows to return only
@@ -94,7 +94,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
      */
     @Override
     public List<T> allRows() {
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
 
         while (this.hasNextRow()) {
             list.add(nextRow());

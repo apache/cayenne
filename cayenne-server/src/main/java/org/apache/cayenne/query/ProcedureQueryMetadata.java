@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.Procedure;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.Procedure;
 
 class ProcedureQueryMetadata extends BaseQueryMetadata {
 
@@ -81,7 +81,7 @@ class ProcedureQueryMetadata extends BaseQueryMetadata {
                 Map<String, ?> parameters = query.getParameters();
                 if (!parameters.isEmpty()) {
 
-                    List<String> keys = new ArrayList<String>(parameters.keySet());
+                    List<String> keys = new ArrayList<>(parameters.keySet());
                     Collections.sort(keys);
 
                     for(String parameterKey : keys) {

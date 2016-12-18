@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.resource;
 
+import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.di.ClassLoaderManager;
+import org.apache.cayenne.di.Inject;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-
-import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.di.ClassLoaderManager;
-import org.apache.cayenne.di.Inject;
 
 /**
  * A {@link ResourceLocator} that looks up resources is the application
@@ -45,7 +45,7 @@ public class ClassLoaderResourceLocator implements ResourceLocator {
     @Override
     public Collection<Resource> findResources(String name) {
 
-        Collection<Resource> resources = new ArrayList<Resource>(3);
+        Collection<Resource> resources = new ArrayList<>(3);
 
         Enumeration<URL> urls;
         try {

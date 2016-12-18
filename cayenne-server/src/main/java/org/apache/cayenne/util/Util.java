@@ -459,7 +459,7 @@ public class Util {
 	 * that backs the original iterator.
 	 */
 	public static <T> Iterator<T> sortedIterator(Iterator<T> it, Comparator<T> comparator) {
-		List<T> list = new ArrayList<T>();
+		List<T> list = new ArrayList<>();
 		while (it.hasNext()) {
 			list.add(it.next());
 		}

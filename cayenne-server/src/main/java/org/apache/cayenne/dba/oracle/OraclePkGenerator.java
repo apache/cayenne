@@ -19,6 +19,14 @@
 
 package org.apache.cayenne.dba.oracle;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.JdbcPkGenerator;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbKeyGenerator;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,14 +35,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.JdbcPkGenerator;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbKeyGenerator;
 
 /**
  * Sequence-based primary key generator implementation for Oracle. Uses Oracle
@@ -76,7 +76,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
 	@Override
 	public List createAutoPkStatements(List dbEntities) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		Iterator it = dbEntities.iterator();
 		while (it.hasNext()) {
 			DbEntity ent = (DbEntity) it.next();
@@ -113,7 +113,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
 	@Override
 	public List dropAutoPkStatements(List dbEntities) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		Iterator it = dbEntities.iterator();
 		while (it.hasNext()) {
 			DbEntity ent = (DbEntity) it.next();
@@ -227,7 +227,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 				adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
 
 				try (ResultSet rs = sel.executeQuery(sql);) {
-					List<String> sequenceList = new ArrayList<String>();
+					List<String> sequenceList = new ArrayList<>();
 					while (rs.next()) {
 						sequenceList.add(rs.getString(1));
 					}

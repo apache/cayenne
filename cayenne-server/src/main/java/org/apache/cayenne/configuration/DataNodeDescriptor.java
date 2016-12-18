@@ -63,7 +63,7 @@ public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
     }
 
     public DataNodeDescriptor(String name) {
-        this.dataMapNames = new ArrayList<String>();
+        this.dataMapNames = new ArrayList<>();
         this.name = name;
     }
 
@@ -116,7 +116,7 @@ public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
 
         if (!dataMapNames.isEmpty()) {
 
-            List<String> names = new ArrayList<String>(dataMapNames);
+            List<String> names = new ArrayList<>(dataMapNames);
             Collections.sort(names);
 
             for (String mapName : names) {

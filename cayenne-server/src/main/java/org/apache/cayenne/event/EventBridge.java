@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.event;
 
+import org.apache.cayenne.util.Util;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashSet;
-
-import org.apache.cayenne.util.Util;
 
 /**
  * <p>An object that passes events between a local EventManager and some other event dispatch
@@ -227,7 +227,7 @@ public abstract class EventBridge implements EventListener {
 
         if (receivesLocalEvents() && !localSubjects.isEmpty()) {
 
-            listeners = new ArrayList<SubjectListener>(localSubjects.size());
+            listeners = new ArrayList<>(localSubjects.size());
 
             for (EventSubject subject : localSubjects) {
                 SubjectListener listener = new SubjectListener(subject);

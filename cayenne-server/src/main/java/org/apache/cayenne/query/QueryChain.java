@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.query;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * A Query decorator for a collection of other queries. Note that QueryChain will always
@@ -55,7 +55,7 @@ public class QueryChain implements Query {
      */
     public QueryChain(Query[] queries) {
         if (queries != null && queries.length > 0) {
-            this.chain = new ArrayList<Query>(Arrays.asList(queries));
+            this.chain = new ArrayList<>(Arrays.asList(queries));
         }
     }
 
@@ -64,7 +64,7 @@ public class QueryChain implements Query {
      */
     public QueryChain(Collection<? extends Query> queries) {
         if (queries != null && !queries.isEmpty()) {
-            this.chain = new ArrayList<Query>(queries);
+            this.chain = new ArrayList<>(queries);
         }
     }
 
@@ -73,7 +73,7 @@ public class QueryChain implements Query {
      */
     public void addQuery(Query query) {
         if (chain == null) {
-            chain = new ArrayList<Query>();
+            chain = new ArrayList<>();
         }
 
         chain.add(query);

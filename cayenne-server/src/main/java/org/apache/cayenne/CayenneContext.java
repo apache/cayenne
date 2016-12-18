@@ -19,11 +19,6 @@
 
 package org.apache.cayenne;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
@@ -34,6 +29,11 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.validation.ValidationException;
 import org.apache.cayenne.validation.ValidationResult;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A default generic implementation of ObjectContext suitable for accessing
@@ -275,7 +275,7 @@ public class CayenneContext extends BaseContext {
     @Override
     public List performQuery(Query query) {
         List result = onQuery(this, query).firstList();
-        return result != null ? result : new ArrayList<Object>(1);
+        return result != null ? result : new ArrayList<>(1);
     }
 
     @Override

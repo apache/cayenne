@@ -47,8 +47,8 @@ public class GraphDiffCompressor {
 
     final class CompressAction implements GraphChangeHandler {
 
-        private List<GraphDiff> compressed = new ArrayList<GraphDiff>();
-        private Map<Object, List<NodeDiff>> diffsByNode = new HashMap<Object, List<NodeDiff>>();
+        private List<GraphDiff> compressed = new ArrayList<>();
+        private Map<Object, List<NodeDiff>> diffsByNode = new HashMap<>();
         private Set<Object> deletedNodes;
         private Set<Object> createdNodes;
 
@@ -197,7 +197,7 @@ public class GraphDiffCompressor {
             compressed.add(diff);
             List<NodeDiff> diffs = diffsByNode.get(diff.getNodeId());
             if (diffs == null) {
-                diffs = new ArrayList<NodeDiff>();
+                diffs = new ArrayList<>();
                 diffsByNode.put(diff.getNodeId(), diffs);
             }
 

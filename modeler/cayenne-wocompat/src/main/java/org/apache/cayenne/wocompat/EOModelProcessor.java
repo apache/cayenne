@@ -721,7 +721,7 @@ public class EOModelProcessor {
 		// iterate over a copy of the collection, since in case of
 		// reflexive relationships, we may modify source entity relationship map
 
-		for (DbRelationship relationship : new ArrayList<DbRelationship>(dbEntity.getRelationships())) {
+		for (DbRelationship relationship : new ArrayList<>(dbEntity.getRelationships())) {
 
 			if (relationship.getReverseRelationship() == null) {
 				DbRelationship reverse = relationship.createReverseRelationship();

@@ -19,16 +19,16 @@
 
 package org.apache.cayenne.access.util;
 
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.query.Query;
+import org.apache.cayenne.util.Util;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.util.Util;
 
 /**
  * Simple implementation of OperationObserver interface. Useful as a superclass
@@ -42,8 +42,8 @@ import org.apache.cayenne.util.Util;
  */
 public class DefaultOperationObserver implements OperationObserver {
 
-    protected List<Throwable> globalExceptions = new ArrayList<Throwable>();
-    protected Map<Query, Throwable> queryExceptions = new HashMap<Query, Throwable>();
+    protected List<Throwable> globalExceptions = new ArrayList<>();
+    protected Map<Query, Throwable> queryExceptions = new HashMap<>();
 
     /**
      * Prints the information about query and global exceptions.

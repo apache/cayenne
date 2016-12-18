@@ -55,7 +55,7 @@ public abstract class QueryAssembler {
 		this.adapter = adapter;
 		this.query = query;
 		this.queryMetadata = query.getMetaData(entityResolver);
-		this.bindings = new ArrayList<DbAttributeBinding>();
+		this.bindings = new ArrayList<>();
 	}
 
 	/**

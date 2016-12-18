@@ -322,9 +322,9 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 		}
 
 		// operate on a copy of passed collection
-		values = new ArrayList<DataObject>(values);
+		values = new ArrayList<>(values);
 
-		List<DataObject> removedObjects = new ArrayList<DataObject>();
+		List<DataObject> removedObjects = new ArrayList<>();
 
 		// remove all relationships, which are missing in passed collection
 		Object[] oldValues = old.toArray();

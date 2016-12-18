@@ -95,7 +95,7 @@ public class ClassGenerationAction {
 		this.context = new VelocityContext();
 		this.templateCache = new HashMap<>(5);
 
-		this.artifacts = new ArrayList<Artifact>();
+		this.artifacts = new ArrayList<>();
 	}
 
 	protected String defaultTemplateName(TemplateType type) {

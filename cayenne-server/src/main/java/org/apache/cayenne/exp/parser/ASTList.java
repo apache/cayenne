@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.exp.parser;
 
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.Expression;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.exp.Expression;
 
 /**
  * A leaf expression representing an immutable collection of values.
@@ -185,7 +185,7 @@ public class ASTList extends SimpleNode {
 			Collection<?> c = (Collection<?>) value;
 			this.values = c.toArray(new Object[c.size()]);
 		} else if (value instanceof Iterator) {
-			List<Object> values = new ArrayList<Object>();
+			List<Object> values = new ArrayList<>();
 			Iterator<?> it = (Iterator<?>) value;
 			while (it.hasNext()) {
 				values.add(it.next());

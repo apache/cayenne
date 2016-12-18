@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.util.ToStringBuilder;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.cayenne.util.ToStringBuilder;
 
 /**
  * A metadata object that provides mapping of a set of result columns to an
@@ -111,7 +111,7 @@ public class EntityResult {
 
     void addField(FieldResult field) {
         if (fields == null) {
-            fields = new ArrayList<FieldResult>();
+            fields = new ArrayList<>();
         }
 
         fields.add(field);

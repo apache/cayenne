@@ -111,7 +111,7 @@ class UpgradeHandler_V7 extends BaseUpgradeHandler {
      */
     private void removeShadowAttributes(ObjEntity objEntity, ObjEntity superEntity) {
 
-        List<String> delList = new ArrayList<String>();
+        List<String> delList = new ArrayList<>();
 
         // if subAttr and superAttr have same names, adds subAttr to delList
         for (ObjAttribute subAttr : objEntity.getDeclaredAttributes()) {

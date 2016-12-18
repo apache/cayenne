@@ -18,13 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
@@ -32,6 +25,13 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Various utils for processing persistent objects and their properties
@@ -153,7 +153,7 @@ public class Cayenne {
             }
 
             // Support for collection property in the middle of the path
-            Collection<Object> result = o instanceof List<?> ? new ArrayList<Object>() : new HashSet<Object>();
+            Collection<Object> result = o instanceof List<?> ? new ArrayList<>() : new HashSet<>();
 
             for (Object item : collection) {
                 if (item instanceof DataObject) {

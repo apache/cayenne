@@ -362,7 +362,7 @@ public class TypesMapping {
 			}
 		}
 
-		List<TypeInfo> list = new ArrayList<TypeInfo>();
+		List<TypeInfo> list = new ArrayList<>();
 		for (TypeInfo alt : alts) {
 			if (maxPrec == alt.precision) {
 				list.add(alt);
@@ -527,7 +527,7 @@ public class TypesMapping {
 				List<TypeInfo> infos = databaseTypes.get(key);
 
 				if (infos == null) {
-					infos = new ArrayList<TypeInfo>();
+					infos = new ArrayList<>();
 					databaseTypes.put(key, infos);
 				}
 

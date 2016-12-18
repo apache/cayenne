@@ -53,7 +53,7 @@ public class ResultBatchIterator<T> implements Iterable<List<T>>, Iterator<List<
 
     @Override
     public List<T> next() {
-        List<T> objects = new ArrayList<T>(size);
+        List<T> objects = new ArrayList<>(size);
 
         for (int i = 0; i < size && hasNext(); i++) {
             objects.add((T) delegate.nextRow());

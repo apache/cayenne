@@ -378,7 +378,7 @@ class Compiler {
 
     private void addPath(EJBQLPath path) {
         if (paths == null) {
-            paths = new ArrayList<EJBQLPath>();
+            paths = new ArrayList<>();
         }
 
         paths.add(path);
@@ -635,7 +635,7 @@ class Compiler {
         private void addEntityResult(EJBQLExpression expression) {
             if (appendingResultColumns) {
                 if (resultComponents == null) {
-                    resultComponents = new ArrayList<Object>();
+                    resultComponents = new ArrayList<>();
                 }
 
                 // defer EntityResult creation until we resolve all ids...
@@ -646,7 +646,7 @@ class Compiler {
         private void addResultSetColumn() {
             if (appendingResultColumns) {
                 if (resultComponents == null) {
-                    resultComponents = new ArrayList<Object>();
+                    resultComponents = new ArrayList<>();
                 }
 
                 String column = "sc" + resultComponents.size();

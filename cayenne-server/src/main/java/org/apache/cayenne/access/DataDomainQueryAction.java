@@ -19,17 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
@@ -61,6 +50,17 @@ import org.apache.cayenne.tx.TransactionalOperation;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ListResponse;
 import org.apache.cayenne.util.Util;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Performs query routing and execution. During execution phase intercepts
@@ -315,7 +315,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             Collection<Persistent> objects = (Collection<Persistent>) refreshQuery.getObjects();
             if (objects != null && !objects.isEmpty()) {
 
-                Collection<ObjectId> ids = new ArrayList<ObjectId>(objects.size());
+                Collection<ObjectId> ids = new ArrayList<>(objects.size());
                 for (final Persistent object : objects) {
                     ids.add(object.getObjectId());
                 }
@@ -510,13 +510,13 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         Collection<Query> queries = null;
         if (queriesByNode == null) {
-            queriesByNode = new HashMap<QueryEngine, Collection<Query>>();
+            queriesByNode = new HashMap<>();
         } else {
             queries = queriesByNode.get(engine);
         }
 
         if (queries == null) {
-            queries = new ArrayList<Query>(5);
+            queries = new ArrayList<>(5);
             queriesByNode.put(engine, queries);
         }
 
@@ -528,7 +528,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         if (substitutedQuery != null && substitutedQuery != query) {
 
             if (queriesByExecutedQueries == null) {
-                queriesByExecutedQueries = new HashMap<Query, Query>();
+                queriesByExecutedQueries = new HashMap<>();
             }
 
             queriesByExecutedQueries.put(query, substitutedQuery);
@@ -679,7 +679,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             PrefetchProcessorNode node = toResultsTree(descriptor, prefetchTree, mainRows);
             List<Persistent> objects = node.getObjects();
-            updateResponse(mainRows, objects != null ? objects : new ArrayList<Persistent>(1));
+            updateResponse(mainRows, objects != null ? objects : new ArrayList<>(1));
 
             // apply POST_LOAD callback
             LifecycleCallbackRegistry callbackRegistry = context.getEntityResolver().getCallbackRegistry();
@@ -704,7 +704,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 List<Object[]> rows, int position) {
 
             int len = rows.size();
-            List<DataRow> rowsColumn = new ArrayList<DataRow>(len);
+            List<DataRow> rowsColumn = new ArrayList<>(len);
             for (int i = 0; i < len; i++) {
                 rowsColumn.add((DataRow) rows.get(i)[position]);
             }
@@ -745,7 +745,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             // no conversions needed for scalar positions; reuse Object[]'s to
             // fill them
             // with resolved objects
-            List<PrefetchProcessorNode> segmentNodes = new ArrayList<PrefetchProcessorNode>(width);
+            List<PrefetchProcessorNode> segmentNodes = new ArrayList<>(width);
             for (int i = 0; i < width; i++) {
 
                 if (rsMapping.get(i) instanceof EntityResultSegment) {

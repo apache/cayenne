@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.reflect.ClassDescriptor;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * A metadata object that defines how a row in a result set can be converted to
@@ -50,7 +50,7 @@ public class SQLResult {
             return Collections.emptyList();
         }
 
-        List<Object> resolvedComponents = new ArrayList<Object>(resultDescriptors.size());
+        List<Object> resolvedComponents = new ArrayList<>(resultDescriptors.size());
 
         int offset = 0;
         for (Object component : getComponents()) {
@@ -104,7 +104,7 @@ public class SQLResult {
 
     public void addEntityResult(EntityResult entityResult) {
         if (resultDescriptors == null) {
-            resultDescriptors = new ArrayList<Object>(3);
+            resultDescriptors = new ArrayList<>(3);
         }
 
         resultDescriptors.add(entityResult);
@@ -115,7 +115,7 @@ public class SQLResult {
      */
     public void addColumnResult(String column) {
         if (resultDescriptors == null) {
-            resultDescriptors = new ArrayList<Object>(3);
+            resultDescriptors = new ArrayList<>(3);
         }
 
         resultDescriptors.add(column);

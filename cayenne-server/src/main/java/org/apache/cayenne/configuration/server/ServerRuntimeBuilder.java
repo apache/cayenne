@@ -92,8 +92,8 @@ public class ServerRuntimeBuilder {
     @Deprecated
     // TODO make private once we are comfortable with removal of the deprecated API
     public ServerRuntimeBuilder(String name) {
-        this.configs = new LinkedHashSet<String>();
-        this.modules = new ArrayList<Module>();
+        this.configs = new LinkedHashSet<>();
+        this.modules = new ArrayList<>();
         this.name = name;
         this.autoLoadModules = true;
     }

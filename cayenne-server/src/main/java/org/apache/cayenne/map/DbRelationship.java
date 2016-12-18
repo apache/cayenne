@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
@@ -34,6 +27,13 @@ import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * A DbRelationship is a descriptor of a database inter-table relationship based
  * on one or more primary key/foreign key pairs.
@@ -41,7 +41,7 @@ import org.apache.commons.collections.Transformer;
 public class DbRelationship extends Relationship implements ConfigurationNode {
 
     // The columns through which the join is implemented.
-    protected List<DbJoin> joins = new ArrayList<DbJoin>(2);
+    protected List<DbJoin> joins = new ArrayList<>(2);
 
     // Is relationship from source to target points to dependent primary
     // key (primary key column of destination table that is also a FK to the

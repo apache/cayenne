@@ -140,7 +140,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 	 * node, regardless of its semantics.
 	 */
 	public Collection<PrefetchTreeNode> adjacentJointNodes() {
-		Collection<PrefetchTreeNode> c = new ArrayList<PrefetchTreeNode>();
+		Collection<PrefetchTreeNode> c = new ArrayList<>();
 		traverse(new AdjacentJoinsOperation(c));
 		return c;
 	}
@@ -150,7 +150,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 	 * semantics.
 	 */
 	public Collection<PrefetchTreeNode> jointNodes() {
-		Collection<PrefetchTreeNode> c = new ArrayList<PrefetchTreeNode>();
+		Collection<PrefetchTreeNode> c = new ArrayList<>();
 		traverse(new CollectionBuilderOperation(c, false, false, true, false, false));
 		return c;
 	}
@@ -159,7 +159,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 	 * Returns a collection of PrefetchTreeNodes with disjoint semantics.
 	 */
 	public Collection<PrefetchTreeNode> disjointNodes() {
-		Collection<PrefetchTreeNode> c = new ArrayList<PrefetchTreeNode>();
+		Collection<PrefetchTreeNode> c = new ArrayList<>();
 		traverse(new CollectionBuilderOperation(c, true, false, false, false, false));
 		return c;
 	}
@@ -170,7 +170,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 	 * @since 3.1
 	 */
 	public Collection<PrefetchTreeNode> disjointByIdNodes() {
-		Collection<PrefetchTreeNode> c = new ArrayList<PrefetchTreeNode>();
+		Collection<PrefetchTreeNode> c = new ArrayList<>();
 		traverse(new CollectionBuilderOperation(c, false, true, false, false, false));
 		return c;
 	}
@@ -179,7 +179,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 	 * Returns a collection of PrefetchTreeNodes that are not phantoms.
 	 */
 	public Collection<PrefetchTreeNode> nonPhantomNodes() {
-		Collection<PrefetchTreeNode> c = new ArrayList<PrefetchTreeNode>();
+		Collection<PrefetchTreeNode> c = new ArrayList<>();
 		traverse(new CollectionBuilderOperation(c, true, true, true, true, false));
 		return c;
 	}
@@ -369,7 +369,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 		}
 
 		if (children == null) {
-			children = new ArrayList<PrefetchTreeNode>(4);
+			children = new ArrayList<>(4);
 		}
 
 		children.add(child);

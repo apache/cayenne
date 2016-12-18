@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
 
 /**
  * A metadata object for the {@link EJBQLQuery}.
@@ -64,7 +64,7 @@ class EJBQLQueryMetadata extends BaseQueryMetadata {
                 Map<String, Object> namedParameters = query.getNamedParameters();
                 if (!namedParameters.isEmpty()) {
 
-                    List<String> keys = new ArrayList<String>(namedParameters.keySet());
+                    List<String> keys = new ArrayList<>(namedParameters.keySet());
                     Collections.sort(keys);
                     for (String parameterKey : keys) {
                         key.append('/').append(parameterKey).append('=').append(
@@ -76,7 +76,7 @@ class EJBQLQueryMetadata extends BaseQueryMetadata {
                         .getPositionalParameters();
                 if (!positionalParameters.isEmpty()) {
 
-                    List<Integer> keys = new ArrayList<Integer>(positionalParameters
+                    List<Integer> keys = new ArrayList<>(positionalParameters
                             .keySet());
                     Collections.sort(keys);
                     for (Integer parameterKey : keys) {

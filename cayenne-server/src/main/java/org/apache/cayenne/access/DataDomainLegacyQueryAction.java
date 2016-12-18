@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
@@ -32,6 +26,12 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * DataDomain query action that relies on externally provided OperationObserver to process
@@ -93,18 +93,18 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
         }
 
         if (queries == null) {
-            queries = new ArrayList<Query>(5);
+            queries = new ArrayList<>(5);
             queriesByNode.put(engine, queries);
         }
 
         queries.add(query);
 
-        // handle case when routing resuled in an "exectable" query different from the
+        // handle case when routing resuled in an "executable" query different from the
         // original query.
         if (substitutedQuery != null && substitutedQuery != query) {
 
             if (queriesByExecutedQueries == null) {
-                queriesByExecutedQueries = new HashMap<Query, Query>();
+                queriesByExecutedQueries = new HashMap<>();
             }
 
             queriesByExecutedQueries.put(query, substitutedQuery);

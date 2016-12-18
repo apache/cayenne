@@ -19,19 +19,19 @@
 
 package org.apache.cayenne.query;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A query based on Procedure. Can be used as a select query, or as a query of an
@@ -178,7 +178,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
      */
     public synchronized void addResultDescriptor(ColumnDescriptor[] descriptor) {
         if (resultDescriptors == null) {
-            resultDescriptors = new ArrayList<ColumnDescriptor[]>(2);
+            resultDescriptors = new ArrayList<>(2);
         }
 
         resultDescriptors.add(descriptor);

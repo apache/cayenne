@@ -19,15 +19,6 @@
 
 package org.apache.cayenne.query;
 
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.parser.ASTDbPath;
@@ -37,6 +28,15 @@ import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 import org.apache.commons.collections.ComparatorUtils;
+
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Defines object sorting criteria, used either for in-memory sorting of object
@@ -73,7 +73,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 * @since 4.0
 	 */
 	public static <E> List<E> orderedList(Collection<E> objects, List<? extends Ordering> orderings) {
-		List<E> newList = new ArrayList<E>(objects);
+		List<E> newList = new ArrayList<>(objects);
 		
 		orderList(newList, orderings);
 		
@@ -334,7 +334,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 * @since 4.0
 	 */
 	public <E> List<E> orderedList(Collection<E> objects) {
-		List<E> newList = new ArrayList<E>(objects);
+		List<E> newList = new ArrayList<>(objects);
 		
 		orderList(newList);
 		

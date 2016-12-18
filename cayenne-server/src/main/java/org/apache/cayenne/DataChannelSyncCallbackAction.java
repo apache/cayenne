@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @since 3.1
@@ -95,7 +95,7 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
             if (node != null) {
 
                 if (persisted == null) {
-                    persisted = new ArrayList<Object>();
+                    persisted = new ArrayList<>();
                 }
 
                 persisted.add(node);
@@ -113,7 +113,7 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
             if (node != null) {
 
                 if (removed == null) {
-                    removed = new ArrayList<Object>();
+                    removed = new ArrayList<>();
                 }
 
                 removed.add(node);
@@ -158,7 +158,7 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
             if (node != null) {
 
                 if (updated == null) {
-                    updated = new ArrayList<Object>();
+                    updated = new ArrayList<>();
                 }
 
                 updated.add(node);

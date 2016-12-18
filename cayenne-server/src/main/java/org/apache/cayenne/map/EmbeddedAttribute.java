@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.XMLEncoder;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.util.Util;
-import org.apache.cayenne.util.XMLEncoder;
 
 /**
  * An attribute of the ObjEntity that maps to an embeddable class.
@@ -178,8 +178,7 @@ public class EmbeddedAttribute extends ObjAttribute {
         }
 
         Collection<EmbeddableAttribute> embeddableAttributes = e.getAttributes();
-        Collection<ObjAttribute> objectAttributes = new ArrayList<ObjAttribute>(
-                embeddableAttributes.size());
+        Collection<ObjAttribute> objectAttributes = new ArrayList<>(embeddableAttributes.size());
 
         for (EmbeddableAttribute ea : embeddableAttributes) {
             objectAttributes.add(makeObjAttribute(ea));

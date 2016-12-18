@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A descriptor of a primary or secondary DbEntity for a given persistent class during
@@ -58,7 +58,7 @@ class DbEntityClassDescriptor {
                 if (object instanceof DbRelationship) {
 
                     if (pathFromMaster == null) {
-                        pathFromMaster = new ArrayList<DbRelationship>(2);
+                        pathFromMaster = new ArrayList<>(2);
                     }
 
                     pathFromMaster.add((DbRelationship) object);

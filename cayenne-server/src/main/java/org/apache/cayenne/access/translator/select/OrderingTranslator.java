@@ -19,22 +19,22 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Translates query ordering to SQL.
  */
 public class OrderingTranslator extends QueryAssemblerHelper {
 
-	protected List<String> orderByColumnList = new ArrayList<String>();
+	protected List<String> orderByColumnList = new ArrayList<>();
 
 	public OrderingTranslator(QueryAssembler queryAssembler) {
 		super(queryAssembler);

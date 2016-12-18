@@ -45,7 +45,7 @@ class CollectionResultIterator<T> implements ResultIterator<T> {
     @Override
     public List<T> allRows() {
 
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
         for (T t : this) {
             list.add(t);
         }

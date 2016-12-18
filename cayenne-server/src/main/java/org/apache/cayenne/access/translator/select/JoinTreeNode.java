@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.select;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.util.Util;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @since 3.0
@@ -79,7 +79,7 @@ public final class JoinTreeNode {
             String alias) {
 
         if (children == null) {
-            children = new ArrayList<JoinTreeNode>(4);
+            children = new ArrayList<>(4);
         }
         else {
             for (JoinTreeNode child : children) {

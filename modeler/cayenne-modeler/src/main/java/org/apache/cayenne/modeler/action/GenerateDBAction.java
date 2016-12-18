@@ -48,7 +48,7 @@ public class GenerateDBAction extends DBWizardAction {
         DataMap dataMap = getProjectController().getCurrentDataMap();
 
         if (dataMap != null) {
-            dataMaps = new ArrayList<DataMap>();
+            dataMaps = new ArrayList<>();
             dataMaps.add(dataMap);
             new DBGeneratorOptions(getProjectController(), "Generate DB Schema: Options", dataMaps).startupAction();
         } else {

@@ -158,7 +158,7 @@ public abstract class GeneratorController extends CayenneController {
         }
 
         // remove generic entities...
-        Collection<ObjEntity> selectedEntities = new ArrayList<ObjEntity>(getParentController().getSelectedEntities());
+        Collection<ObjEntity> selectedEntities = new ArrayList<>(getParentController().getSelectedEntities());
         Iterator<ObjEntity> it = selectedEntities.iterator();
         while (it.hasNext()) {
             if (it.next().isGeneric()) {
@@ -166,18 +166,18 @@ public abstract class GeneratorController extends CayenneController {
             }
         }
 
-        Collection<ClassGenerationAction> generators = new ArrayList<ClassGenerationAction>();
+        Collection<ClassGenerationAction> generators = new ArrayList<>();
         Collection<StandardPanelComponent> dataMapLines = ((GeneratorControllerPanel) getView()).getDataMapLines();
         for (DataMap map : getParentController().getDataMaps()) {
             ClassGenerationAction generator = newGenerator();
             generator.setArtifactsGenerationMode(mode);
             generator.setDataMap(map);
 
-            LinkedList<ObjEntity> objEntities = new LinkedList<ObjEntity>(map.getObjEntities());
+            LinkedList<ObjEntity> objEntities = new LinkedList<>(map.getObjEntities());
             objEntities.retainAll(selectedEntities);
             generator.addEntities(objEntities);
 
-            LinkedList<Embeddable> embeddables = new LinkedList<Embeddable>(map.getEmbeddables());
+            LinkedList<Embeddable> embeddables = new LinkedList<>(map.getEmbeddables());
             embeddables.retainAll(getParentController().getSelectedEmbeddables());
             generator.addEmbeddables(embeddables);
 

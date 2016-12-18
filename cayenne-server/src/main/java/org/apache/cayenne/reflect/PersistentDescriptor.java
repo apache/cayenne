@@ -18,6 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,15 +36,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityInheritanceTree;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
 
 /**
  * A default ClassDescriptor implementation for persistent objects.
@@ -88,7 +88,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 		if (columns == null || columns.isEmpty()) {
 			allDiscriminatorColumns = null;
 		} else {
-			allDiscriminatorColumns = new ArrayList<ObjAttribute>(columns);
+			allDiscriminatorColumns = new ArrayList<>(columns);
 		}
 	}
 
@@ -126,16 +126,11 @@ public class PersistentDescriptor implements ClassDescriptor {
 		// properties, and populated both ordered collections at once
 		if (properties.size() > 1) {
 
-			List<Entry<String, PropertyDescriptor>> entries = new ArrayList<Entry<String, PropertyDescriptor>>(
-					properties.entrySet());
+			List<Entry<String, PropertyDescriptor>> entries = new ArrayList<>(properties.entrySet());
 
 			Collections.sort(entries, PropertyComparator.comparator);
-
-			Map<String, PropertyDescriptor> orderedProperties = new LinkedHashMap<String, PropertyDescriptor>(
-					(int) (entries.size() / 0.75));
-
-			Map<String, PropertyDescriptor> orderedDeclared = new LinkedHashMap<String, PropertyDescriptor>(
-					(int) (declaredProperties.size() / 0.75));
+			Map<String, PropertyDescriptor> orderedProperties = new LinkedHashMap<>((int) (entries.size() / 0.75));
+			Map<String, PropertyDescriptor> orderedDeclared = new LinkedHashMap<>((int) (declaredProperties.size() / 0.75));
 
 			for (Entry<String, PropertyDescriptor> e : entries) {
 				orderedProperties.put(e.getKey(), e.getValue());
@@ -158,7 +153,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 			if (attribute.isPrimaryKey()) {
 
 				if (idProperties == null) {
-					idProperties = new ArrayList<AttributeProperty>(2);
+					idProperties = new ArrayList<>(2);
 				}
 
 				idProperties.add(attributeProperty);
@@ -169,7 +164,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 			if (reverseRelationship != null && "java.util.Map".equals(reverseRelationship.getCollectionType())) {
 
 				if (mapArcProperties == null) {
-					mapArcProperties = new ArrayList<ArcProperty>(2);
+					mapArcProperties = new ArrayList<>(2);
 				}
 
 				mapArcProperties.add((ArcProperty) property);

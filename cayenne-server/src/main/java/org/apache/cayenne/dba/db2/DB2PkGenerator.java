@@ -18,6 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.dba.db2;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.JdbcPkGenerator;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,13 +33,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.JdbcPkGenerator;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
 
 /**
  * A sequence-based PK generator used by {@link DB2Adapter}.
@@ -85,7 +85,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
 	 */
 	@Override
 	public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
-		List<String> list = new ArrayList<String>(dbEntities.size());
+		List<String> list = new ArrayList<>(dbEntities.size());
 		for (DbEntity entity : dbEntities) {
 			list.add(createSequenceString(entity));
 		}
@@ -122,7 +122,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
 	 */
 	@Override
 	public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
-		List<String> list = new ArrayList<String>(dbEntities.size());
+		List<String> list = new ArrayList<>(dbEntities.size());
 		for (DbEntity entity : dbEntities) {
 			list.add(dropSequenceString(entity));
 		}
@@ -148,7 +148,7 @@ public class DB2PkGenerator extends JdbcPkGenerator {
 				adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
 
 				try (ResultSet rs = sel.executeQuery(sql);) {
-					List<String> sequenceList = new ArrayList<String>();
+					List<String> sequenceList = new ArrayList<>();
 					while (rs.next()) {
 						sequenceList.add(rs.getString(1));
 					}

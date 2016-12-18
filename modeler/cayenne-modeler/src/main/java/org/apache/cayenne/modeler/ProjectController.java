@@ -417,7 +417,7 @@ public class ProjectController extends CayenneController {
     private void removeFromHistory(EventObject e) {
 
         int count = controllerStateHistory.size();
-        List<Object> removeList = new ArrayList<Object>();
+        List<Object> removeList = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
             ControllerState cs = (ControllerState) controllerStateHistory.get(i);
@@ -1779,7 +1779,7 @@ public class ProjectController extends CayenneController {
         DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) getProject().getRootNode();
         Collection<DataMap> maps = dataChannelDescriptor.getDataMaps();
         Iterator<DataMap> it = maps.iterator();
-        ArrayList<Embeddable> embs = new ArrayList<Embeddable>();
+        ArrayList<Embeddable> embs = new ArrayList<>();
         while (it.hasNext()) {
             embs.addAll(it.next().getEmbeddables());
         }

@@ -88,7 +88,7 @@ public class JdbcPkGenerator implements PkGenerator {
 	}
 
 	public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
-		List<String> list = new ArrayList<String>(dbEntities.size() + 2);
+		List<String> list = new ArrayList<>(dbEntities.size() + 2);
 
 		list.add(pkTableCreateString());
 		list.add(pkDeleteString(dbEntities));
@@ -110,7 +110,7 @@ public class JdbcPkGenerator implements PkGenerator {
 	}
 
 	public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
-		List<String> list = new ArrayList<String>(1);
+		List<String> list = new ArrayList<>(1);
 		list.add(dropAutoPkString());
 		return list;
 	}
@@ -272,7 +272,7 @@ public class JdbcPkGenerator implements PkGenerator {
 				+ "WHERE TABLE_NAME = '" + entity.getName() + '\'';
 
 		// run queries via DataNode to utilize its transactional behavior
-		List<Query> queries = new ArrayList<Query>(2);
+		List<Query> queries = new ArrayList<>(2);
 		queries.add(new SQLTemplate(entity, select));
 		queries.add(new SQLTemplate(entity, pkUpdateString(entity.getName())));
 

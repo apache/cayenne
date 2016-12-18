@@ -40,7 +40,7 @@ class ClientObjEntity extends ObjEntity {
 
     @Override
     public Collection<String> getPrimaryKeyNames() {
-        Collection<String> names = new ArrayList<String>(primaryKeys.size());
+        Collection<String> names = new ArrayList<>(primaryKeys.size());
         for (ObjAttribute attribute : primaryKeys) {
             names.add(attribute.getDbAttributePath());
         }

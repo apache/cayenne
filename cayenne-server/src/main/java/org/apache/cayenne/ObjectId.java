@@ -19,6 +19,11 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.util.EqualsBuilder;
+import org.apache.cayenne.util.HashCodeBuilder;
+import org.apache.cayenne.util.IDUtil;
+import org.apache.cayenne.util.Util;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,11 +31,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.util.EqualsBuilder;
-import org.apache.cayenne.util.HashCodeBuilder;
-import org.apache.cayenne.util.IDUtil;
-import org.apache.cayenne.util.Util;
 
 /**
  * A portable global identifier for persistent objects. ObjectId can be
@@ -372,7 +372,7 @@ public class ObjectId implements Serializable {
 			// used as a
 			// unique key, just like id itself
 
-			List<String> keys = new ArrayList<String>(objectIdKeys.keySet());
+			List<String> keys = new ArrayList<>(objectIdKeys.keySet());
 			Collections.sort(keys);
 			for (Object key : keys) {
 				buffer.append(", ");

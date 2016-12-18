@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
@@ -45,6 +40,11 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.Util;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A dynamic GraphDiff that represents a delta between object simple properties
@@ -252,7 +252,7 @@ class ObjectDiff extends NodeDiff {
 
         if (addDiff) {
             if (otherDiffs == null) {
-                otherDiffs = new ArrayList<NodeDiff>(3);
+                otherDiffs = new ArrayList<>(3);
             }
 
             otherDiffs.add(diff);

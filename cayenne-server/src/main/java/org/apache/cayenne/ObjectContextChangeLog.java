@@ -19,6 +19,12 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.graph.ArcCreateOperation;
+import org.apache.cayenne.graph.ArcDeleteOperation;
+import org.apache.cayenne.graph.CompoundDiff;
+import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.graph.NodeDiff;
+
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.AbstractList;
@@ -28,12 +34,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.graph.ArcCreateOperation;
-import org.apache.cayenne.graph.ArcDeleteOperation;
-import org.apache.cayenne.graph.CompoundDiff;
-import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.graph.NodeDiff;
 
 /**
  * Stores graph operations in the order they were performed, optionally allowing to set
@@ -112,7 +112,7 @@ class ObjectContextChangeLog {
         // must create a new list instead of clearing an existing one, as the original
         // list may have been exposed via events or "getDiffs", and trimming it is
         // undesirable.
-        this.diffs = new ArrayList<GraphDiff>();
+        this.diffs = new ArrayList<>();
         this.markers = new HashMap<>();
     }
 
@@ -198,7 +198,7 @@ class ObjectContextChangeLog {
 
         // serialization method...
         private Object writeReplace() throws ObjectStreamException {
-            return new ArrayList<GraphDiff>(list.subList(offset, offset + size));
+            return new ArrayList<>(list.subList(offset, offset + size));
         }
     }
 }

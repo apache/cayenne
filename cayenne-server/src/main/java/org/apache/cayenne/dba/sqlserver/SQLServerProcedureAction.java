@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
@@ -35,6 +28,13 @@ import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ProcedureAction for SQLServer MS JDBC driver. Customizes OUT parameter
@@ -143,7 +143,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 			// does not delegate to wrapped observer
 			// but instead caches results locally.
 			if (counts == null) {
-				counts = new ArrayList<Integer>();
+				counts = new ArrayList<>();
 			}
 
 			counts.add(Integer.valueOf(resultCount));
@@ -154,7 +154,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 			// does not delegate to wrapped observer
 			// but instead caches results locally.
 			if (results == null) {
-				results = new ArrayList<List<?>>();
+				results = new ArrayList<>();
 			}
 
 			results.add(dataRows);

@@ -19,12 +19,11 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.map.DbEntity;
+
 import java.util.ArrayList;
 import java.util.Map;
-
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 
 /**
  * Batched INSERT query. Allows inserting multiple object snapshots (DataRows)
@@ -38,7 +37,7 @@ public class InsertBatchQuery extends BatchQuery {
      * Creates new InsertBatchQuery for a given DbEntity and estimated capacity.
      */
     public InsertBatchQuery(DbEntity entity, int batchCapacity) {
-        super(entity, new ArrayList<DbAttribute>(entity.getAttributes()), batchCapacity);
+        super(entity, new ArrayList<>(entity.getAttributes()), batchCapacity);
     }
 
     /**

@@ -18,14 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project.upgrade.v6;
 
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -42,6 +34,14 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A loader of Cayenne projects descriptor for version "3.0.0.1".
@@ -88,7 +88,7 @@ class XMLDataChannelDescriptorLoader_V3_0_0_1 {
 
 		URL configurationURL = configurationSource.getURL();
 
-		List<DataChannelDescriptor> domains = new ArrayList<DataChannelDescriptor>();
+		List<DataChannelDescriptor> domains = new ArrayList<>();
 
 		try (InputStream in = configurationURL.openStream();) {
 

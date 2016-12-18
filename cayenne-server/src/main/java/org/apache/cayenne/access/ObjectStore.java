@@ -19,15 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
@@ -52,6 +43,15 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * ObjectStore stores objects using their ObjectId as a key. It works as a dedicated
@@ -105,14 +105,14 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         else {
             throw new CayenneRuntimeException("Object map is null.");
         }
-        this.changes = new HashMap<Object, ObjectDiff>();
+        this.changes = new HashMap<>();
     }
 
     /**
      * @since 3.0
      */
     void childContextSyncStarted() {
-        lifecycleEventInducedChanges = new ArrayList<GraphDiff>();
+        lifecycleEventInducedChanges = new ArrayList<>();
     }
 
     /**
@@ -285,7 +285,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             return;
         }
 
-        Collection<ObjectId> ids = new ArrayList<ObjectId>(objects.size());
+        Collection<ObjectId> ids = new ArrayList<>(objects.size());
 
         Iterator it = objects.iterator();
         while (it.hasNext()) {
@@ -518,7 +518,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * Collection is returned by copy.
      */
     public synchronized List<Persistent> objectsInState(int state) {
-        List<Persistent> filteredObjects = new ArrayList<Persistent>();
+        List<Persistent> filteredObjects = new ArrayList<>();
 
         for (Persistent object : objectMap.values()) {
             if (object.getPersistenceState() == state) {

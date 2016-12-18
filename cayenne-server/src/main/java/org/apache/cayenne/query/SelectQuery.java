@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.query;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ResultBatchIterator;
@@ -39,6 +33,12 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A query that selects persistent objects of a certain type or "raw data" (aka
@@ -802,7 +802,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 */
 	List<Ordering> nonNullOrderings() {
 		if (orderings == null) {
-			orderings = new ArrayList<Ordering>(3);
+			orderings = new ArrayList<>(3);
 		}
 
 		return orderings;

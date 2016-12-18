@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.dba.oracle;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.BatchQueryRow;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -26,11 +31,6 @@ import java.io.Serializable;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQuery;
-import org.apache.cayenne.query.BatchQueryRow;
 
 /**
  * Helper class to extract the information from BatchQueries, essential for LOB
@@ -147,7 +147,7 @@ class Oracle8LOBBatchQueryWrapper {
 	List<DbAttribute> getDbAttributesForLOBSelectQualifier() {
 
 		int len = qualifierAttributes.length;
-		List<DbAttribute> attributes = new ArrayList<DbAttribute>(len);
+		List<DbAttribute> attributes = new ArrayList<>(len);
 
 		for (int i = 0; i < len; i++) {
 			if (this.qualifierAttributes[i]) {
@@ -165,7 +165,7 @@ class Oracle8LOBBatchQueryWrapper {
 	List<DbAttribute> getDbAttributesForUpdatedLOBColumns() {
 
 		int len = updatedLOBAttributes.length;
-		List<DbAttribute> attributes = new ArrayList<DbAttribute>(len);
+		List<DbAttribute> attributes = new ArrayList<>(len);
 
 		for (int i = 0; i < len; i++) {
 			if (this.updatedLOBAttributes[i] != null) {
@@ -178,7 +178,7 @@ class Oracle8LOBBatchQueryWrapper {
 	List<Object> getValuesForLOBSelectQualifier(BatchQueryRow row) {
 
 		int len = this.qualifierAttributes.length;
-		List<Object> values = new ArrayList<Object>(len);
+		List<Object> values = new ArrayList<>(len);
 		for (int i = 0; i < len; i++) {
 			if (this.qualifierAttributes[i]) {
 				values.add(row.getValue(i));
@@ -191,7 +191,7 @@ class Oracle8LOBBatchQueryWrapper {
 	List<Object> getValuesForUpdatedLOBColumns() {
 
 		int len = this.updatedLOBAttributes.length;
-		List<Object> values = new ArrayList<Object>(len);
+		List<Object> values = new ArrayList<>(len);
 		for (int i = 0; i < len; i++) {
 			if (this.updatedLOBAttributes[i] != null) {
 				values.add(this.updatedLOBAttributes[i]);

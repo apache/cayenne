@@ -18,14 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.ejbql;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
@@ -38,6 +30,14 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A context used for translating of EJBQL to SQL.
@@ -89,11 +89,11 @@ public class EJBQLTranslationContext {
 
         // buffer stack will hold named buffers during translation in the order they were
         // requested
-        this.bufferStack = new ArrayList<StringBuilder>();
+        this.bufferStack = new ArrayList<>();
 
         // buffer chain will hold named and unnamed buffers in the order they should be
         // concatenated
-        this.bufferChain = new ArrayList<StringBuilder>();
+        this.bufferChain = new ArrayList<>();
 
         stackTop = new StringBuilder();
         bufferChain.add(stackTop);
@@ -167,10 +167,10 @@ public class EJBQLTranslationContext {
             }
             else {
                 DbRelationship last = incoming.get(incoming.size() - 1);
-                entity = (DbEntity) last.getTargetEntity();
+                entity = last.getTargetEntity();
             }
 
-            incoming = new ArrayList<DbRelationship>(incoming);
+            incoming = new ArrayList<>(incoming);
 
             Iterator<?> it = entity.resolvePathComponents(id.getDbPath());
             while (it.hasNext()) {
@@ -351,7 +351,7 @@ public class EJBQLTranslationContext {
     List<String> bindParameters(Object value) {
         if(Collection.class.isAssignableFrom(value.getClass())) {
             Iterator<?> parameterValueIterator = ((Collection<?>) value).iterator();
-            List<String> result = new ArrayList<String>();
+            List<String> result = new ArrayList<>();
 
             while(parameterValueIterator.hasNext()) {
                 result.add(bindParameter(parameterValueIterator.next()));

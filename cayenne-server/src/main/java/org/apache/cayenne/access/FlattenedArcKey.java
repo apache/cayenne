@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
@@ -43,6 +36,13 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.Util;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A holder of flattened relationship modification data.
@@ -160,7 +160,7 @@ final class FlattenedArcKey {
 
 		StringBuilder sql = new StringBuilder("SELECT ");
 		Collection<DbAttribute> pk = joinEntity.getPrimaryKeys();
-		final List<DbAttribute> pkList = pk instanceof List ? (List<DbAttribute>) pk : new ArrayList<DbAttribute>(pk);
+		final List<DbAttribute> pkList = pk instanceof List ? (List<DbAttribute>) pk : new ArrayList<>(pk);
 
 		for (int i = 0; i < pkList.size(); i++) {
 
@@ -205,7 +205,7 @@ final class FlattenedArcKey {
 				if (!dataRows.isEmpty()) {
 					// decode results...
 
-					List<DataRow> fixedRows = new ArrayList<DataRow>(dataRows.size());
+					List<DataRow> fixedRows = new ArrayList<>(dataRows.size());
 					for (Object o : dataRows) {
 						DataRow row = (DataRow) o;
 

@@ -40,7 +40,7 @@ class CayenneGeneratorEntityFilterAction {
     private boolean client;
 
     Collection<Embeddable> getFilteredEmbeddables(DataMap mainDataMap) {
-        Collection<Embeddable> embeddables = new ArrayList<Embeddable>(mainDataMap.getEmbeddables());
+        Collection<Embeddable> embeddables = new ArrayList<>(mainDataMap.getEmbeddables());
 
         // filter out excluded entities...
         Iterator<Embeddable> it = embeddables.iterator();
@@ -61,7 +61,7 @@ class CayenneGeneratorEntityFilterAction {
     Collection<ObjEntity> getFilteredEntities(DataMap mainDataMap)
             throws MalformedURLException {
 
-        Collection<ObjEntity> entities = new ArrayList<ObjEntity>(mainDataMap.getObjEntities());
+        Collection<ObjEntity> entities = new ArrayList<>(mainDataMap.getObjEntities());
 
         // filter out excluded entities...
         Iterator<ObjEntity> it = entities.iterator();

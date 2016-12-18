@@ -19,17 +19,17 @@
 
 package org.apache.cayenne.map;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A mapping descriptor for a database stored procedure.
@@ -43,7 +43,7 @@ public class Procedure implements ConfigurationNode, CayenneMapEntry, XMLSeriali
     protected String catalog;
     protected String schema;
     protected boolean returningValue;
-    protected List<ProcedureParameter> callParameters = new ArrayList<ProcedureParameter>();
+    protected List<ProcedureParameter> callParameters = new ArrayList<>();
 
     /**
      * Creates an unnamed procedure object.
@@ -200,8 +200,7 @@ public class Procedure implements ConfigurationNode, CayenneMapEntry, XMLSeriali
      * it will also be included as a call parameter.
      */
     public List<ProcedureParameter> getCallOutParameters() {
-        List<ProcedureParameter> outParams = new ArrayList<ProcedureParameter>(
-                callParameters.size());
+        List<ProcedureParameter> outParams = new ArrayList<>(callParameters.size());
         for (ProcedureParameter param : callParameters) {
             if (param.isOutParam()) {
                 outParams.add(param);

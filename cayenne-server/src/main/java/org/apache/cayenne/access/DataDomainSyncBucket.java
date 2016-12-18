@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
@@ -43,6 +36,13 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyException;
 import org.apache.cayenne.reflect.ToManyMapProperty;
 import org.apache.commons.collections.Factory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A superclass of batch query wrappers.
@@ -101,9 +101,8 @@ abstract class DataDomainSyncBucket {
 
     private void groupObjEntitiesBySpannedDbEntities() {
 
-        dbEntities = new ArrayList<DbEntity>(objectsByDescriptor.size());
-        descriptorsByDbEntity = new HashMap<DbEntity, Collection<DbEntityClassDescriptor>>(
-                objectsByDescriptor.size() * 2);
+        dbEntities = new ArrayList<>(objectsByDescriptor.size());
+        descriptorsByDbEntity = new HashMap<>(objectsByDescriptor.size() * 2);
 
         for (ClassDescriptor descriptor : objectsByDescriptor.keySet()) {
 
@@ -116,7 +115,7 @@ abstract class DataDomainSyncBucket {
                 Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity
                         .get(dbEntity);
                 if (descriptors == null) {
-                    descriptors = new ArrayList<DbEntityClassDescriptor>(1);
+                    descriptors = new ArrayList<>(1);
                     dbEntities.add(dbEntity);
                     descriptorsByDbEntity.put(dbEntity, descriptors);
                 }
@@ -142,7 +141,7 @@ abstract class DataDomainSyncBucket {
                             .get(dbEntity);
 
                     if (descriptors == null) {
-                        descriptors = new ArrayList<DbEntityClassDescriptor>(1);
+                        descriptors = new ArrayList<>(1);
                         dbEntities.add(dbEntity);
                         descriptorsByDbEntity.put(dbEntity, descriptors);
                     }
@@ -171,7 +170,7 @@ abstract class DataDomainSyncBucket {
         List<Persistent> objects = objectsByDescriptor.get(descriptor);
         if (objects == null) {
 
-            objects = new ArrayList<Persistent>();
+            objects = new ArrayList<>();
             objectsByDescriptor.put(descriptor, objects);
         }
 
@@ -187,8 +186,7 @@ abstract class DataDomainSyncBucket {
                     .getResultModifiedSnapshots();
             Collection<ObjectId> deletedIds = parent.getResultDeletedIds();
 
-            for (Map.Entry<ClassDescriptor, List<Persistent>> entry : objectsByDescriptor
-                    .entrySet()) {
+            for (Map.Entry<ClassDescriptor, List<Persistent>> entry : objectsByDescriptor.entrySet()) {
 
                 ClassDescriptor descriptor = entry.getKey();
 

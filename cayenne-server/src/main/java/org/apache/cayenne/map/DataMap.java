@@ -182,7 +182,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		dbEntityMap = new TreeMap<String, DbEntity>();
 		procedureMap = new TreeMap<String, Procedure>();
 		queryDescriptorMap = new TreeMap<>();
-		defaultEntityListeners = new ArrayList<EntityListener>(3);
+		defaultEntityListeners = new ArrayList<>(3);
 		results = new TreeMap<String, SQLResult>();
 		setName(mapName);
 		initWithProperties(properties);
@@ -440,12 +440,12 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * </p>
 	 */
 	public void mergeWithDataMap(DataMap map) {
-		for (DbEntity ent : new ArrayList<DbEntity>(map.getDbEntities())) {
+		for (DbEntity ent : new ArrayList<>(map.getDbEntities())) {
 			this.removeDbEntity(ent.getName());
 			this.addDbEntity(ent);
 		}
 
-		for (ObjEntity ent : new ArrayList<ObjEntity>(map.getObjEntities())) {
+		for (ObjEntity ent : new ArrayList<>(map.getObjEntities())) {
 			this.removeObjEntity(ent.getName());
 			this.addObjEntity(ent);
 		}
@@ -903,7 +903,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 			return emptyList();
 		}
 
-		Collection<ObjEntity> result = new ArrayList<ObjEntity>();
+		Collection<ObjEntity> result = new ArrayList<>();
 		for (ObjEntity entity : allEntities) {
 			if (entity.getDbEntity() == dbEntity) {
 				result.add(entity);
@@ -951,7 +951,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		if (dbEntityToDelete != null && clearDependencies) {
 			for (DbEntity dbEnt : this.getDbEntities()) {
 				// take a copy since we're going to modify the entity
-				for (Relationship rel : new ArrayList<Relationship>(dbEnt.getRelationships())) {
+				for (Relationship rel : new ArrayList<>(dbEnt.getRelationships())) {
 					if (dbEntityName.equals(rel.getTargetEntityName())) {
 						dbEnt.removeRelationship(rel.getName());
 					}
@@ -1002,7 +1002,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 			// remove relationships that point to this entity
 			for (ObjEntity ent : getObjEntities()) {
 				// take a copy since we're going to modify the entity
-				for (Relationship relationship : new ArrayList<Relationship>(ent.getRelationships())) {
+				for (Relationship relationship : new ArrayList<>(ent.getRelationships())) {
 					if (objEntityName.equals(relationship.getTargetEntityName())
 							|| objEntityName.equals(relationship.getTargetEntityName())) {
 						ent.removeRelationship(relationship.getName());
