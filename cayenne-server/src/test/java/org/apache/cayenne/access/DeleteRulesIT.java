@@ -303,7 +303,7 @@ public class DeleteRulesIT extends ServerCase {
     private int changeDeleteRule(int deleteRule) {
         ObjEntity entity = context.getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
 
-        ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B_PROPERTY);
+        ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B.getName());
         int oldRule = relationship.getDeleteRule();
         relationship.setDeleteRule(deleteRule);
         return oldRule;
@@ -312,7 +312,7 @@ public class DeleteRulesIT extends ServerCase {
     private ObjRelationship unsetReverse() {
         ObjEntity entity = context.getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
 
-        ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B_PROPERTY);
+        ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B.getName());
         ObjRelationship reverse = relationship.getReverseRelationship();
 
         if (reverse != null) {
@@ -327,7 +327,7 @@ public class DeleteRulesIT extends ServerCase {
     private void restoreReverse(ObjRelationship reverse) {
         ObjEntity entity = context.getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
 
-        ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B_PROPERTY);
+        ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B.getName());
         relationship.getTargetEntity().addRelationship(reverse);
         context.getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatA");
         context.getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatB");
@@ -347,7 +347,7 @@ public class DeleteRulesIT extends ServerCase {
                 ArcOperation arcDelete = (ArcOperation) diff;
                 if (arcDelete.getNodeId().equals(a.getObjectId())
                         && arcDelete.getTargetNodeId().equals(b.getObjectId())
-                        && arcDelete.getArcId().equals(DeleteRuleFlatA.FLAT_B_PROPERTY) && arcDelete.isDelete()) {
+                        && arcDelete.getArcId().equals(DeleteRuleFlatA.FLAT_B.getName()) && arcDelete.isDelete()) {
                     return;
                 }
             }
@@ -369,7 +369,7 @@ public class DeleteRulesIT extends ServerCase {
                     ArcOperation arcDelete = (ArcOperation) diff;
                     if (arcDelete.getNodeId().equals(a.getObjectId())
                             && arcDelete.getTargetNodeId().equals(b.getObjectId())
-                            && arcDelete.getArcId().equals(DeleteRuleFlatA.FLAT_B_PROPERTY) && !arcDelete.isDelete()) {
+                            && arcDelete.getArcId().equals(DeleteRuleFlatA.FLAT_B.getName()) && !arcDelete.isDelete()) {
                         fail("Join was  deleted for flattened relationship");
                     }
                 }

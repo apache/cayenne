@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.relationships.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships.FkOfDifferentType;
 import org.apache.cayenne.testdo.relationships.MeaningfulFK;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
@@ -15,53 +16,55 @@ import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
  */
 public abstract class _RelationshipHelper extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String FKS_OF_DIFFERENT_TYPE_PROPERTY = "fksOfDifferentType";
-    public static final String MEANIGFUL_FKS_PROPERTY = "meanigfulFKs";
-    public static final String REFLEXIVE_AND_TO_ONE_ARRAY_PROPERTY = "reflexiveAndToOneArray";
+    private static final long serialVersionUID = 1L; 
 
     public static final String RELATIONSHIP_HELPER_ID_PK_COLUMN = "RELATIONSHIP_HELPER_ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<List<FkOfDifferentType>> FKS_OF_DIFFERENT_TYPE = new Property<>("fksOfDifferentType");
+    public static final Property<List<MeaningfulFK>> MEANIGFUL_FKS = new Property<>("meanigfulFKs");
+    public static final Property<List<ReflexiveAndToOne>> REFLEXIVE_AND_TO_ONE_ARRAY = new Property<>("reflexiveAndToOneArray");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void addToFksOfDifferentType(FkOfDifferentType obj) {
-        addToManyTarget(FKS_OF_DIFFERENT_TYPE_PROPERTY, obj, true);
+        addToManyTarget("fksOfDifferentType", obj, true);
     }
     public void removeFromFksOfDifferentType(FkOfDifferentType obj) {
-        removeToManyTarget(FKS_OF_DIFFERENT_TYPE_PROPERTY, obj, true);
+        removeToManyTarget("fksOfDifferentType", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<FkOfDifferentType> getFksOfDifferentType() {
-        return (List<FkOfDifferentType>)readProperty(FKS_OF_DIFFERENT_TYPE_PROPERTY);
+        return (List<FkOfDifferentType>)readProperty("fksOfDifferentType");
     }
 
 
     public void addToMeanigfulFKs(MeaningfulFK obj) {
-        addToManyTarget(MEANIGFUL_FKS_PROPERTY, obj, true);
+        addToManyTarget("meanigfulFKs", obj, true);
     }
     public void removeFromMeanigfulFKs(MeaningfulFK obj) {
-        removeToManyTarget(MEANIGFUL_FKS_PROPERTY, obj, true);
+        removeToManyTarget("meanigfulFKs", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<MeaningfulFK> getMeanigfulFKs() {
-        return (List<MeaningfulFK>)readProperty(MEANIGFUL_FKS_PROPERTY);
+        return (List<MeaningfulFK>)readProperty("meanigfulFKs");
     }
 
 
     public void addToReflexiveAndToOneArray(ReflexiveAndToOne obj) {
-        addToManyTarget(REFLEXIVE_AND_TO_ONE_ARRAY_PROPERTY, obj, true);
+        addToManyTarget("reflexiveAndToOneArray", obj, true);
     }
     public void removeFromReflexiveAndToOneArray(ReflexiveAndToOne obj) {
-        removeToManyTarget(REFLEXIVE_AND_TO_ONE_ARRAY_PROPERTY, obj, true);
+        removeToManyTarget("reflexiveAndToOneArray", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<ReflexiveAndToOne> getReflexiveAndToOneArray() {
-        return (List<ReflexiveAndToOne>)readProperty(REFLEXIVE_AND_TO_ONE_ARRAY_PROPERTY);
+        return (List<ReflexiveAndToOne>)readProperty("reflexiveAndToOneArray");
     }
 
 

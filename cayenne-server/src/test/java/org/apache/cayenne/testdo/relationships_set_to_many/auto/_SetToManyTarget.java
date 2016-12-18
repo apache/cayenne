@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.relationships_set_to_many.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToMany;
 
 /**
@@ -11,16 +12,18 @@ import org.apache.cayenne.testdo.relationships_set_to_many.SetToMany;
  */
 public abstract class _SetToManyTarget extends CayenneDataObject {
 
-    public static final String SET_TO_MANY_PROPERTY = "setToMany";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<SetToMany> SET_TO_MANY = new Property<>("setToMany");
+
     public void setSetToMany(SetToMany setToMany) {
-        setToOneTarget(SET_TO_MANY_PROPERTY, setToMany, true);
+        setToOneTarget("setToMany", setToMany, true);
     }
 
     public SetToMany getSetToMany() {
-        return (SetToMany)readProperty(SET_TO_MANY_PROPERTY);
+        return (SetToMany)readProperty("setToMany");
     }
 
 

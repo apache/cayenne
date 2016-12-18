@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.qualified.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.qualified.Qualified1;
 
 /**
@@ -11,32 +12,34 @@ import org.apache.cayenne.testdo.qualified.Qualified1;
  */
 public abstract class _Qualified2 extends CayenneDataObject {
 
-    public static final String DELETED_PROPERTY = "deleted";
-    public static final String NAME_PROPERTY = "name";
-    public static final String QUALIFIED1_PROPERTY = "qualified1";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<Boolean> DELETED = new Property<>("deleted");
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<Qualified1> QUALIFIED1 = new Property<>("qualified1");
+
     public void setDeleted(Boolean deleted) {
-        writeProperty(DELETED_PROPERTY, deleted);
+        writeProperty("deleted", deleted);
     }
     public Boolean getDeleted() {
-        return (Boolean)readProperty(DELETED_PROPERTY);
+        return (Boolean)readProperty("deleted");
     }
 
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void setQualified1(Qualified1 qualified1) {
-        setToOneTarget(QUALIFIED1_PROPERTY, qualified1, true);
+        setToOneTarget("qualified1", qualified1, true);
     }
 
     public Qualified1 getQualified1() {
-        return (Qualified1)readProperty(QUALIFIED1_PROPERTY);
+        return (Qualified1)readProperty("qualified1");
     }
 
 

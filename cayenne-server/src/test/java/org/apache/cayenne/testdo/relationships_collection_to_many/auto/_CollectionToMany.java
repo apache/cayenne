@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.relationships_collection_to_many.auto;
 import java.util.Collection;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToManyTarget;
 
 /**
@@ -13,19 +14,21 @@ import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToMa
  */
 public abstract class _CollectionToMany extends CayenneDataObject {
 
-    public static final String TARGETS_PROPERTY = "targets";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<Collection<CollectionToManyTarget>> TARGETS = new Property<>("targets");
+
     public void addToTargets(CollectionToManyTarget obj) {
-        addToManyTarget(TARGETS_PROPERTY, obj, true);
+        addToManyTarget("targets", obj, true);
     }
     public void removeFromTargets(CollectionToManyTarget obj) {
-        removeToManyTarget(TARGETS_PROPERTY, obj, true);
+        removeToManyTarget("targets", obj, true);
     }
     @SuppressWarnings("unchecked")
     public Collection<CollectionToManyTarget> getTargets() {
-        return (Collection<CollectionToManyTarget>)readProperty(TARGETS_PROPERTY);
+        return (Collection<CollectionToManyTarget>)readProperty("targets");
     }
 
 

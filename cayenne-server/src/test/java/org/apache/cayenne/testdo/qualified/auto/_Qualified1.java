@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.qualified.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.qualified.Qualified2;
 
 /**
@@ -13,35 +14,37 @@ import org.apache.cayenne.testdo.qualified.Qualified2;
  */
 public abstract class _Qualified1 extends CayenneDataObject {
 
-    public static final String DELETED_PROPERTY = "deleted";
-    public static final String NAME_PROPERTY = "name";
-    public static final String QUALIFIED2S_PROPERTY = "qualified2s";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<Boolean> DELETED = new Property<>("deleted");
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<List<Qualified2>> QUALIFIED2S = new Property<>("qualified2s");
+
     public void setDeleted(Boolean deleted) {
-        writeProperty(DELETED_PROPERTY, deleted);
+        writeProperty("deleted", deleted);
     }
     public Boolean getDeleted() {
-        return (Boolean)readProperty(DELETED_PROPERTY);
+        return (Boolean)readProperty("deleted");
     }
 
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void addToQualified2s(Qualified2 obj) {
-        addToManyTarget(QUALIFIED2S_PROPERTY, obj, true);
+        addToManyTarget("qualified2s", obj, true);
     }
     public void removeFromQualified2s(Qualified2 obj) {
-        removeToManyTarget(QUALIFIED2S_PROPERTY, obj, true);
+        removeToManyTarget("qualified2s", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Qualified2> getQualified2s() {
-        return (List<Qualified2>)readProperty(QUALIFIED2S_PROPERTY);
+        return (List<Qualified2>)readProperty("qualified2s");
     }
 
 

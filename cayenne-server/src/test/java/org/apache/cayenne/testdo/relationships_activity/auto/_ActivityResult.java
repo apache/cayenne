@@ -13,20 +13,15 @@ import org.apache.cayenne.exp.Property;
  */
 public abstract class _ActivityResult extends CayenneDataObject {
 
-    @Deprecated
-    public static final String APPOINT_DATE_PROPERTY = "appointDate";
-    @Deprecated
-    public static final String APPOINT_NO_PROPERTY = "appointNo";
-    @Deprecated
-    public static final String FIELD_PROPERTY = "field";
+    private static final long serialVersionUID = 1L; 
 
     public static final String APPOINT_DATE_PK_COLUMN = "APPOINT_DATE";
     public static final String APPOINT_NO_PK_COLUMN = "APPOINT_NO";
     public static final String RESULTNAME_PK_COLUMN = "RESULTNAME";
 
-    public static final Property<Date> APPOINT_DATE = new Property<Date>("appointDate");
-    public static final Property<Integer> APPOINT_NO = new Property<Integer>("appointNo");
-    public static final Property<String> FIELD = new Property<String>("field");
+    public static final Property<Date> APPOINT_DATE = new Property<>("appointDate");
+    public static final Property<Integer> APPOINT_NO = new Property<>("appointNo");
+    public static final Property<String> FIELD = new Property<>("field");
 
     public void setAppointDate(Date appointDate) {
         writeProperty("appointDate", appointDate);

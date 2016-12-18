@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.relationships.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships.RelationshipHelper;
 
 /**
@@ -11,24 +12,26 @@ import org.apache.cayenne.testdo.relationships.RelationshipHelper;
  */
 public abstract class _MeaningfulFK extends CayenneDataObject {
 
-    public static final String RELATIONSHIP_HELPER_ID_PROPERTY = "relationshipHelperID";
-    public static final String TO_RELATIONSHIP_HELPER_PROPERTY = "toRelationshipHelper";
+    private static final long serialVersionUID = 1L; 
 
     public static final String MEANIGNFUL_FK_ID_PK_COLUMN = "MEANIGNFUL_FK_ID";
 
+    public static final Property<Integer> RELATIONSHIP_HELPER_ID = new Property<>("relationshipHelperID");
+    public static final Property<RelationshipHelper> TO_RELATIONSHIP_HELPER = new Property<>("toRelationshipHelper");
+
     public void setRelationshipHelperID(Integer relationshipHelperID) {
-        writeProperty(RELATIONSHIP_HELPER_ID_PROPERTY, relationshipHelperID);
+        writeProperty("relationshipHelperID", relationshipHelperID);
     }
     public Integer getRelationshipHelperID() {
-        return (Integer)readProperty(RELATIONSHIP_HELPER_ID_PROPERTY);
+        return (Integer)readProperty("relationshipHelperID");
     }
 
     public void setToRelationshipHelper(RelationshipHelper toRelationshipHelper) {
-        setToOneTarget(TO_RELATIONSHIP_HELPER_PROPERTY, toRelationshipHelper, true);
+        setToOneTarget("toRelationshipHelper", toRelationshipHelper, true);
     }
 
     public RelationshipHelper getToRelationshipHelper() {
-        return (RelationshipHelper)readProperty(TO_RELATIONSHIP_HELPER_PROPERTY);
+        return (RelationshipHelper)readProperty("toRelationshipHelper");
     }
 
 

@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.relationships_set_to_many.auto;
 import java.util.Set;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToManyTarget;
 
 /**
@@ -13,19 +14,21 @@ import org.apache.cayenne.testdo.relationships_set_to_many.SetToManyTarget;
  */
 public abstract class _SetToMany extends CayenneDataObject {
 
-    public static final String TARGETS_PROPERTY = "targets";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<Set<SetToManyTarget>> TARGETS = new Property<>("targets");
+
     public void addToTargets(SetToManyTarget obj) {
-        addToManyTarget(TARGETS_PROPERTY, obj, true);
+        addToManyTarget("targets", obj, true);
     }
     public void removeFromTargets(SetToManyTarget obj) {
-        removeToManyTarget(TARGETS_PROPERTY, obj, true);
+        removeToManyTarget("targets", obj, true);
     }
     @SuppressWarnings("unchecked")
     public Set<SetToManyTarget> getTargets() {
-        return (Set<SetToManyTarget>)readProperty(TARGETS_PROPERTY);
+        return (Set<SetToManyTarget>)readProperty("targets");
     }
 
 

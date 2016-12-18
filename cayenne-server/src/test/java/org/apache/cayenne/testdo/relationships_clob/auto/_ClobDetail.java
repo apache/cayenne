@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.relationships_clob.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_clob.ClobMaster;
 
 /**
@@ -11,24 +12,26 @@ import org.apache.cayenne.testdo.relationships_clob.ClobMaster;
  */
 public abstract class _ClobDetail extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String MASTER_PROPERTY = "master";
+    private static final long serialVersionUID = 1L; 
 
     public static final String CLOB_DETAIL_ID_PK_COLUMN = "CLOB_DETAIL_ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<ClobMaster> MASTER = new Property<>("master");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void setMaster(ClobMaster master) {
-        setToOneTarget(MASTER_PROPERTY, master, true);
+        setToOneTarget("master", master, true);
     }
 
     public ClobMaster getMaster() {
-        return (ClobMaster)readProperty(MASTER_PROPERTY);
+        return (ClobMaster)readProperty("master");
     }
 
 

@@ -112,7 +112,7 @@ public class QuotedIdentifiersIT extends ServerCase {
         List objects7 = context.performQuery(quoteAdress1);
         assertEquals(1, objects7.size());
 
-        ObjectIdQuery queryObjectId = new ObjectIdQuery(new ObjectId("QuoteAdress", QuoteAdress.GROUP_PROPERTY, "324"));
+        ObjectIdQuery queryObjectId = new ObjectIdQuery(new ObjectId("QuoteAdress", QuoteAdress.GROUP.getName(), "324"));
 
         List objects8 = context.performQuery(queryObjectId);
         assertEquals(1, objects8.size());

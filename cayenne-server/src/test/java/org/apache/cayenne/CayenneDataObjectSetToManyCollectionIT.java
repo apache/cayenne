@@ -85,10 +85,10 @@ public class CayenneDataObjectSetToManyCollectionIT extends ServerCase {
 	@Test
 	public void testRelationCollectionTypeCollection() throws Exception {
 		CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
-		assertTrue(o1.readProperty(CollectionToMany.TARGETS_PROPERTY) instanceof Collection);
+		assertTrue(o1.readProperty(CollectionToMany.TARGETS.getName()) instanceof Collection);
 		boolean catchedSomething = false;
 		try {
-			o1.setToManyTarget(CollectionToMany.TARGETS_PROPERTY, new ArrayList<CollectionToMany>(0), true);
+			o1.setToManyTarget(CollectionToMany.TARGETS.getName(), new ArrayList<CollectionToMany>(0), true);
 		} catch (RuntimeException e) {
 			catchedSomething = true;
 		}

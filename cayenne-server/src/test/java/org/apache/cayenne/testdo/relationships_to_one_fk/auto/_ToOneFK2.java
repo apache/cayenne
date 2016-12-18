@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.relationships_to_one_fk.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK1;
 
 /**
@@ -11,16 +12,18 @@ import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK1;
  */
 public abstract class _ToOneFK2 extends CayenneDataObject {
 
-    public static final String TO_ONE_TO_FK_PROPERTY = "toOneToFK";
+    private static final long serialVersionUID = 1L; 
 
-    public static final String TO_ONEFK2_PK_PK_COLUMN = "TO_ONEFK2_PK";
+    public static final String TO_ONE_FK2_PK_PK_COLUMN = "TO_ONE_FK2_PK";
+
+    public static final Property<ToOneFK1> TO_ONE_TO_FK = new Property<>("toOneToFK");
 
     public void setToOneToFK(ToOneFK1 toOneToFK) {
-        setToOneTarget(TO_ONE_TO_FK_PROPERTY, toOneToFK, true);
+        setToOneTarget("toOneToFK", toOneToFK, true);
     }
 
     public ToOneFK1 getToOneToFK() {
-        return (ToOneFK1)readProperty(TO_ONE_TO_FK_PROPERTY);
+        return (ToOneFK1)readProperty("toOneToFK");
     }
 
 

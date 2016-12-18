@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.relationships_to_many_fk.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkDep;
 
 /**
@@ -13,27 +14,29 @@ import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkDep;
  */
 public abstract class _ToManyRoot2 extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String DEPS_PROPERTY = "deps";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<List<ToManyFkDep>> DEPS = new Property<>("deps");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void addToDeps(ToManyFkDep obj) {
-        addToManyTarget(DEPS_PROPERTY, obj, true);
+        addToManyTarget("deps", obj, true);
     }
     public void removeFromDeps(ToManyFkDep obj) {
-        removeToManyTarget(DEPS_PROPERTY, obj, true);
+        removeToManyTarget("deps", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<ToManyFkDep> getDeps() {
-        return (List<ToManyFkDep>)readProperty(DEPS_PROPERTY);
+        return (List<ToManyFkDep>)readProperty("deps");
     }
 
 

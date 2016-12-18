@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.relationships_delete_rules.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest2;
 
 /**
@@ -11,16 +12,18 @@ import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest2;
  */
 public abstract class _DeleteRuleTest3 extends CayenneDataObject {
 
-    public static final String TO_DELETE_RULE_TEST2_PROPERTY = "toDeleteRuleTest2";
+    private static final long serialVersionUID = 1L; 
 
     public static final String DELETE_RULE_TEST_3_ID_PK_COLUMN = "DELETE_RULE_TEST_3_ID";
 
+    public static final Property<DeleteRuleTest2> TO_DELETE_RULE_TEST2 = new Property<>("toDeleteRuleTest2");
+
     public void setToDeleteRuleTest2(DeleteRuleTest2 toDeleteRuleTest2) {
-        setToOneTarget(TO_DELETE_RULE_TEST2_PROPERTY, toDeleteRuleTest2, true);
+        setToOneTarget("toDeleteRuleTest2", toDeleteRuleTest2, true);
     }
 
     public DeleteRuleTest2 getToDeleteRuleTest2() {
-        return (DeleteRuleTest2)readProperty(TO_DELETE_RULE_TEST2_PROPERTY);
+        return (DeleteRuleTest2)readProperty("toDeleteRuleTest2");
     }
 
 

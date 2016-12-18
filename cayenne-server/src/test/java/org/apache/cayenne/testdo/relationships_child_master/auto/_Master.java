@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.relationships_child_master.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_child_master.Child;
 
 /**
@@ -13,27 +14,29 @@ import org.apache.cayenne.testdo.relationships_child_master.Child;
  */
 public abstract class _Master extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String CHILDREN_PROPERTY = "children";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<List<Child>> CHILDREN = new Property<>("children");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void addToChildren(Child obj) {
-        addToManyTarget(CHILDREN_PROPERTY, obj, true);
+        addToManyTarget("children", obj, true);
     }
     public void removeFromChildren(Child obj) {
-        removeToManyTarget(CHILDREN_PROPERTY, obj, true);
+        removeToManyTarget("children", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Child> getChildren() {
-        return (List<Child>)readProperty(CHILDREN_PROPERTY);
+        return (List<Child>)readProperty("children");
     }
 
 

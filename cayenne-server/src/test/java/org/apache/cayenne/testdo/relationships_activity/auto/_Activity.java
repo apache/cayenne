@@ -15,18 +15,13 @@ import org.apache.cayenne.testdo.relationships_activity.ActivityResult;
  */
 public abstract class _Activity extends CayenneDataObject {
 
-    @Deprecated
-    public static final String APPOINTMENT_DATE_PROPERTY = "appointmentDate";
-    @Deprecated
-    public static final String APPOINTMENT_NO_PROPERTY = "appointmentNo";
-    @Deprecated
-    public static final String RESULTS_PROPERTY = "results";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ACTIVITY_ID_PK_COLUMN = "ACTIVITY_ID";
 
-    public static final Property<Date> APPOINTMENT_DATE = new Property<Date>("appointmentDate");
-    public static final Property<Integer> APPOINTMENT_NO = new Property<Integer>("appointmentNo");
-    public static final Property<Map<String, ActivityResult>> RESULTS = new Property<Map<String, ActivityResult>>("results");
+    public static final Property<Date> APPOINTMENT_DATE = new Property<>("appointmentDate");
+    public static final Property<Integer> APPOINTMENT_NO = new Property<>("appointmentNo");
+    public static final Property<Map<String, ActivityResult>> RESULTS = new Property<>("results");
 
     public void setAppointmentDate(Date appointmentDate) {
         writeProperty("appointmentDate", appointmentDate);

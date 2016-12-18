@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.relationships.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships.RelationshipHelper;
 
 /**
@@ -11,16 +12,18 @@ import org.apache.cayenne.testdo.relationships.RelationshipHelper;
  */
 public abstract class _FkOfDifferentType extends CayenneDataObject {
 
-    public static final String RELATIONSHIP_HELPER_PROPERTY = "relationshipHelper";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<RelationshipHelper> RELATIONSHIP_HELPER = new Property<>("relationshipHelper");
+
     public void setRelationshipHelper(RelationshipHelper relationshipHelper) {
-        setToOneTarget(RELATIONSHIP_HELPER_PROPERTY, relationshipHelper, true);
+        setToOneTarget("relationshipHelper", relationshipHelper, true);
     }
 
     public RelationshipHelper getRelationshipHelper() {
-        return (RelationshipHelper)readProperty(RELATIONSHIP_HELPER_PROPERTY);
+        return (RelationshipHelper)readProperty("relationshipHelper");
     }
 
 

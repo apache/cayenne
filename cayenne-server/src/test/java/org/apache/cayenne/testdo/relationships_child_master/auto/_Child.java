@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.relationships_child_master.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_child_master.Master;
 
 /**
@@ -11,16 +12,18 @@ import org.apache.cayenne.testdo.relationships_child_master.Master;
  */
 public abstract class _Child extends CayenneDataObject {
 
-    public static final String MASTER_PROPERTY = "master";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<Master> MASTER = new Property<>("master");
+
     public void setMaster(Master master) {
-        setToOneTarget(MASTER_PROPERTY, master, true);
+        setToOneTarget("master", master, true);
     }
 
     public Master getMaster() {
-        return (Master)readProperty(MASTER_PROPERTY);
+        return (Master)readProperty("master");
     }
 
 

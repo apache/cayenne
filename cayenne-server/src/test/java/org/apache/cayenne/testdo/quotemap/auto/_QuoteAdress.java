@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.quotemap.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.quotemap.Quote_Person;
 
 /**
@@ -11,11 +12,13 @@ import org.apache.cayenne.testdo.quotemap.Quote_Person;
  */
 public abstract class _QuoteAdress extends CayenneDataObject {
 
-    public static final String CITY_PROPERTY = "city";
-    public static final String GROUP_PROPERTY = "group";
-    public static final String PERSON_REL_PROPERTY = "person_Rel";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ADDRESS_ID_PK_COLUMN = "ADDRESS ID";
+
+    public static final Property<String> CITY = new Property<>("city");
+    public static final Property<String> GROUP = new Property<>("group");
+    public static final Property<Quote_Person> PERSON_REL = new Property<>("person_Rel");
 
     public void setCity(String city) {
         writeProperty("city", city);

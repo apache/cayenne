@@ -95,8 +95,8 @@ public class CDOCollectionRelationshipIT extends ServerCase {
     public void testReadToManyPrefetching() throws Exception {
 
         SelectQuery query = new SelectQuery(CollectionToMany.class, ExpressionFactory
-                .matchDbExp(CollectionToMany.ID_PK_COLUMN, new Integer(1)));
-        query.addPrefetch(CollectionToMany.TARGETS_PROPERTY);
+                .matchDbExp(CollectionToMany.ID_PK_COLUMN, 1));
+        query.addPrefetch(CollectionToMany.TARGETS.disjoint());
         CollectionToMany o1 = (CollectionToMany) Cayenne.objectForQuery(context, query);
 
         Collection<?> targets = o1.getTargets();

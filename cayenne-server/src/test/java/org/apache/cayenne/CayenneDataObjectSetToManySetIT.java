@@ -77,10 +77,10 @@ public class CayenneDataObjectSetToManySetIT extends ServerCase {
 		createTestDataSet();
 
 		SetToMany o1 = Cayenne.objectForPK(context, SetToMany.class, 1);
-		assertTrue(o1.readProperty(SetToMany.TARGETS_PROPERTY) instanceof Set);
+		assertTrue(o1.readProperty(SetToMany.TARGETS.getName()) instanceof Set);
 		boolean catchedSomething = false;
 		try {
-			o1.setToManyTarget(SetToMany.TARGETS_PROPERTY, new ArrayList<MapToMany>(0), true);
+			o1.setToManyTarget(SetToMany.TARGETS.getName(), new ArrayList<MapToMany>(0), true);
 		} catch (RuntimeException e) {
 			catchedSomething = true;
 		}

@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.quotemap.auto;
 import java.util.Date;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.quotemap.QuoteAdress;
 
 /**
@@ -13,14 +14,16 @@ import org.apache.cayenne.testdo.quotemap.QuoteAdress;
  */
 public abstract class _Quote_Person extends CayenneDataObject {
 
-    public static final String D_ATE_PROPERTY = "dAte";
-    public static final String F_ULL_NAME_PROPERTY = "fULL_name";
-    public static final String GROUP_PROPERTY = "group";
-    public static final String NAME_PROPERTY = "name";
-    public static final String SALARY_PROPERTY = "salary";
-    public static final String ADDRESS_REL_PROPERTY = "address_Rel";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "id";
+
+    public static final Property<Date> D_ATE = new Property<>("dAte");
+    public static final Property<String> F_ULL_NAME = new Property<>("fULL_name");
+    public static final Property<String> GROUP = new Property<>("group");
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<Integer> SALARY = new Property<>("salary");
+    public static final Property<QuoteAdress> ADDRESS_REL = new Property<>("address_Rel");
 
     public void setDAte(Date dAte) {
         writeProperty("dAte", dAte);

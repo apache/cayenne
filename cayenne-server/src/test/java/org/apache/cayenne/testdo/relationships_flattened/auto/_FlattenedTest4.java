@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.relationships_flattened.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
 
 /**
@@ -11,24 +12,26 @@ import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
  */
 public abstract class _FlattenedTest4 extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String TO_FT3_PROPERTY = "toFT3";
+    private static final long serialVersionUID = 1L; 
 
     public static final String FT4_ID_PK_COLUMN = "FT4_ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<FlattenedTest3> TO_FT3 = new Property<>("toFT3");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void setToFT3(FlattenedTest3 toFT3) {
-        setToOneTarget(TO_FT3_PROPERTY, toFT3, true);
+        setToOneTarget("toFT3", toFT3, true);
     }
 
     public FlattenedTest3 getToFT3() {
-        return (FlattenedTest3)readProperty(TO_FT3_PROPERTY);
+        return (FlattenedTest3)readProperty("toFT3");
     }
 
 

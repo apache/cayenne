@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.relationships_collection_to_many.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToMany;
 
 /**
@@ -11,16 +12,18 @@ import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToMa
  */
 public abstract class _CollectionToManyTarget extends CayenneDataObject {
 
-    public static final String COLLECTION_TO_MANY_PROPERTY = "collectionToMany";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final Property<CollectionToMany> COLLECTION_TO_MANY = new Property<>("collectionToMany");
+
     public void setCollectionToMany(CollectionToMany collectionToMany) {
-        setToOneTarget(COLLECTION_TO_MANY_PROPERTY, collectionToMany, true);
+        setToOneTarget("collectionToMany", collectionToMany, true);
     }
 
     public CollectionToMany getCollectionToMany() {
-        return (CollectionToMany)readProperty(COLLECTION_TO_MANY_PROPERTY);
+        return (CollectionToMany)readProperty("collectionToMany");
     }
 
 

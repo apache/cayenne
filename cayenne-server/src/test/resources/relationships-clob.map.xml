@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
-    <property name="defaultPackage" value="org.apache.cayenne.testdo.relationship_clob"/>
-    <db-entity name="CLOB_DETAIL">
-        <db-attribute name="CLOB_DETAIL_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="CLOB_MASTER_ID" type="INTEGER"/>
-        <db-attribute name="NAME" type="VARCHAR" length="254"/>
-    </db-entity>
-    <db-entity name="CLOB_MASTER">
-        <db-attribute name="CLOB_COLUMN" type="CLOB"/>
-        <db-attribute name="CLOB_MASTER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="NAME" type="VARCHAR" length="254"/>
-    </db-entity>
-    <obj-entity name="ClobDetail" className="org.apache.cayenne.testdo.relationships_clob.ClobDetail" dbEntityName="CLOB_DETAIL">
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
-    <obj-entity name="ClobMaster" className="org.apache.cayenne.testdo.relationships_clob.ClobMaster" dbEntityName="CLOB_MASTER">
-        <obj-attribute name="clobColumn" type="java.lang.String" db-attribute-path="CLOB_COLUMN"/>
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
-    <db-relationship name="master" source="CLOB_DETAIL" target="CLOB_MASTER" toMany="false">
-        <db-attribute-pair source="CLOB_MASTER_ID" target="CLOB_MASTER_ID"/>
-    </db-relationship>
-    <db-relationship name="details" source="CLOB_MASTER" target="CLOB_DETAIL" toMany="true">
-        <db-attribute-pair source="CLOB_MASTER_ID" target="CLOB_MASTER_ID"/>
-    </db-relationship>
-    <obj-relationship name="master" source="ClobDetail" target="ClobMaster" db-relationship-path="master"/>
-    <obj-relationship name="details" source="ClobMaster" target="ClobDetail" db-relationship-path="details"/>
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
+	 project-version="9">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_clob"/>
+	<db-entity name="CLOB_DETAIL">
+		<db-attribute name="CLOB_DETAIL_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="CLOB_MASTER_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" length="254"/>
+	</db-entity>
+	<db-entity name="CLOB_MASTER">
+		<db-attribute name="CLOB_COLUMN" type="CLOB"/>
+		<db-attribute name="CLOB_MASTER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="254"/>
+	</db-entity>
+	<obj-entity name="ClobDetail" className="org.apache.cayenne.testdo.relationships_clob.ClobDetail" dbEntityName="CLOB_DETAIL">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="ClobMaster" className="org.apache.cayenne.testdo.relationships_clob.ClobMaster" dbEntityName="CLOB_MASTER">
+		<obj-attribute name="clobColumn" type="java.lang.String" db-attribute-path="CLOB_COLUMN"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<db-relationship name="master" source="CLOB_DETAIL" target="CLOB_MASTER" toMany="false">
+		<db-attribute-pair source="CLOB_MASTER_ID" target="CLOB_MASTER_ID"/>
+	</db-relationship>
+	<db-relationship name="details" source="CLOB_MASTER" target="CLOB_DETAIL" toMany="true">
+		<db-attribute-pair source="CLOB_MASTER_ID" target="CLOB_MASTER_ID"/>
+	</db-relationship>
+	<obj-relationship name="master" source="ClobDetail" target="ClobMaster" db-relationship-path="master"/>
+	<obj-relationship name="details" source="ClobMaster" target="ClobDetail" db-relationship-path="details"/>
 </data-map>

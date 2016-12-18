@@ -3,6 +3,7 @@ package org.apache.cayenne.testdo.relationships.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.testdo.relationships.RelationshipHelper;
 
@@ -14,47 +15,49 @@ import org.apache.cayenne.testdo.relationships.RelationshipHelper;
  */
 public abstract class _ReflexiveAndToOne extends CayenneDataObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String CHILDREN_PROPERTY = "children";
-    public static final String TO_HELPER_PROPERTY = "toHelper";
-    public static final String TO_PARENT_PROPERTY = "toParent";
+    private static final long serialVersionUID = 1L; 
 
     public static final String REFLEXIVE_AND_TO_ONE_ID_PK_COLUMN = "REFLEXIVE_AND_TO_ONE_ID";
 
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<List<ReflexiveAndToOne>> CHILDREN = new Property<>("children");
+    public static final Property<RelationshipHelper> TO_HELPER = new Property<>("toHelper");
+    public static final Property<ReflexiveAndToOne> TO_PARENT = new Property<>("toParent");
+
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void addToChildren(ReflexiveAndToOne obj) {
-        addToManyTarget(CHILDREN_PROPERTY, obj, true);
+        addToManyTarget("children", obj, true);
     }
     public void removeFromChildren(ReflexiveAndToOne obj) {
-        removeToManyTarget(CHILDREN_PROPERTY, obj, true);
+        removeToManyTarget("children", obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<ReflexiveAndToOne> getChildren() {
-        return (List<ReflexiveAndToOne>)readProperty(CHILDREN_PROPERTY);
+        return (List<ReflexiveAndToOne>)readProperty("children");
     }
 
 
     public void setToHelper(RelationshipHelper toHelper) {
-        setToOneTarget(TO_HELPER_PROPERTY, toHelper, true);
+        setToOneTarget("toHelper", toHelper, true);
     }
 
     public RelationshipHelper getToHelper() {
-        return (RelationshipHelper)readProperty(TO_HELPER_PROPERTY);
+        return (RelationshipHelper)readProperty("toHelper");
     }
 
 
     public void setToParent(ReflexiveAndToOne toParent) {
-        setToOneTarget(TO_PARENT_PROPERTY, toParent, true);
+        setToOneTarget("toParent", toParent, true);
     }
 
     public ReflexiveAndToOne getToParent() {
-        return (ReflexiveAndToOne)readProperty(TO_PARENT_PROPERTY);
+        return (ReflexiveAndToOne)readProperty("toParent");
     }
 
 

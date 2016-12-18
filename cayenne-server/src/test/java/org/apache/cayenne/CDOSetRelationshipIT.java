@@ -104,7 +104,7 @@ public class CDOSetRelationshipIT extends ServerCase {
 
         SelectQuery query = new SelectQuery(SetToMany.class, ExpressionFactory
                 .matchDbExp(SetToMany.ID_PK_COLUMN, new Integer(1)));
-        query.addPrefetch(SetToMany.TARGETS_PROPERTY);
+        query.addPrefetch(SetToMany.TARGETS.disjoint());
         SetToMany o1 = (SetToMany) Cayenne.objectForQuery(context, query);
 
         Set targets = o1.getTargets();

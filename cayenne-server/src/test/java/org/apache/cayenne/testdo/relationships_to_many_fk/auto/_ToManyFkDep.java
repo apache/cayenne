@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.relationships_to_many_fk.auto;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkRoot;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyRoot2;
 
@@ -12,43 +13,45 @@ import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyRoot2;
  */
 public abstract class _ToManyFkDep extends CayenneDataObject {
 
-    public static final String DEP_ID_PROPERTY = "depId";
-    public static final String NAME_PROPERTY = "name";
-    public static final String ROOT_PROPERTY = "root";
-    public static final String ROOT2_PROPERTY = "root2";
+    private static final long serialVersionUID = 1L; 
 
     public static final String DEP_ID_PK_COLUMN = "DEP_ID";
     public static final String OTHER_ID_PK_COLUMN = "OTHER_ID";
 
+    public static final Property<Integer> DEP_ID = new Property<>("depId");
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<ToManyFkRoot> ROOT = new Property<>("root");
+    public static final Property<ToManyRoot2> ROOT2 = new Property<>("root2");
+
     public void setDepId(Integer depId) {
-        writeProperty(DEP_ID_PROPERTY, depId);
+        writeProperty("depId", depId);
     }
     public Integer getDepId() {
-        return (Integer)readProperty(DEP_ID_PROPERTY);
+        return (Integer)readProperty("depId");
     }
 
     public void setName(String name) {
-        writeProperty(NAME_PROPERTY, name);
+        writeProperty("name", name);
     }
     public String getName() {
-        return (String)readProperty(NAME_PROPERTY);
+        return (String)readProperty("name");
     }
 
     public void setRoot(ToManyFkRoot root) {
-        setToOneTarget(ROOT_PROPERTY, root, true);
+        setToOneTarget("root", root, true);
     }
 
     public ToManyFkRoot getRoot() {
-        return (ToManyFkRoot)readProperty(ROOT_PROPERTY);
+        return (ToManyFkRoot)readProperty("root");
     }
 
 
     public void setRoot2(ToManyRoot2 root2) {
-        setToOneTarget(ROOT2_PROPERTY, root2, true);
+        setToOneTarget("root2", root2, true);
     }
 
     public ToManyRoot2 getRoot2() {
-        return (ToManyRoot2)readProperty(ROOT2_PROPERTY);
+        return (ToManyRoot2)readProperty("root2");
     }
 
 
