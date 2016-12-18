@@ -63,7 +63,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
 #end
 ## Create Properties
 #foreach( $attr in ${object.Attributes} )
-    public static final Property<$importUtils.formatJavaType(${attr.Type}, false)> ${stringUtils.capitalizedAsConstant($attr.Name)} = new Property<$importUtils.formatJavaType(${attr.Type}, false)>("${attr.Name}");
+    public static final Property<$importUtils.formatJavaType(${attr.Type}, false)> ${stringUtils.capitalizedAsConstant($attr.Name)} = new Property<>("${attr.Name}");
 #end
 
     // special properties injected by Cayenne

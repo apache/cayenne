@@ -16,18 +16,11 @@ public abstract class _CharPkTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String OTHER_COL_PROPERTY = "otherCol";
-    @Deprecated
-    public static final String PK_COL_PROPERTY = "pkCol";
-    @Deprecated
-    public static final String CHAR_FKS_PROPERTY = "charFKs";
-
     public static final String PK_COL_PK_COLUMN = "PK_COL";
 
-    public static final Property<String> OTHER_COL = new Property<String>("otherCol");
-    public static final Property<String> PK_COL = new Property<String>("pkCol");
-    public static final Property<List<CharFkTestEntity>> CHAR_FKS = new Property<List<CharFkTestEntity>>("charFKs");
+    public static final Property<String> OTHER_COL = new Property<>("otherCol");
+    public static final Property<String> PK_COL = new Property<>("pkCol");
+    public static final Property<List<CharFkTestEntity>> CHAR_FKS = new Property<>("charFKs");
 
     public void setOtherCol(String otherCol) {
         writeProperty("otherCol", otherCol);

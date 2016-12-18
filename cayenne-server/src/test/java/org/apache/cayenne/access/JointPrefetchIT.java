@@ -28,7 +28,6 @@ import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -56,11 +55,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Tests joint prefetch handling by Cayenne access stack.
@@ -160,8 +155,7 @@ public class JointPrefetchIT extends ServerCase {
         q.setFetchLimit(2);
         q.setFetchOffset(0);
         q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
-        q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        q.addPrefetch(Artist.PAINTING_ARRAY.joint());
 
         final List<?> objects = context.performQuery(q);
 
@@ -253,11 +247,7 @@ public class JointPrefetchIT extends ServerCase {
                         + "FROM ARTIST t0, PAINTING t1 "
                         + "WHERE t0.ARTIST_ID = t1.ARTIST_ID");
 
-        PrefetchTreeNode prefetch = q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY);
-        assertEquals(
-                "Default semantics for SQLTemplate is assumed to be joint.",
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS,
-                prefetch.getSemantics());
+        q.addPrefetch(Artist.PAINTING_ARRAY.joint());
         q.setFetchingDataRows(false);
 
         final List<?> objects = context.performQuery(q);
@@ -379,8 +369,7 @@ public class JointPrefetchIT extends ServerCase {
 
         // query with to-many joint prefetches
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        q.addPrefetch(Artist.PAINTING_ARRAY.joint());
 
         final List<?> objects = context.performQuery(q);
 
@@ -415,12 +404,9 @@ public class JointPrefetchIT extends ServerCase {
 
         // query with to-many joint prefetches and qualifier that doesn't match
         // prefetch....
-        Expression qualifier = ExpressionFactory.matchExp(
-                Artist.ARTIST_NAME_PROPERTY,
-                "artist1");
+        Expression qualifier = Artist.ARTIST_NAME.eq("artist1");
         SelectQuery q = new SelectQuery(Artist.class, qualifier);
-        q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        q.addPrefetch(Artist.PAINTING_ARRAY.joint());
 
         final List<?> objects = context.performQuery(q);
 
@@ -456,13 +442,8 @@ public class JointPrefetchIT extends ServerCase {
         createJointPrefetchDataSet2();
 
         // query with to-many joint prefetches
-        SelectQuery q = new SelectQuery(Artist.class);
-        q
-                .addPrefetch(
-                        Artist.PAINTING_ARRAY_PROPERTY
-                                + "."
-                                + Painting.TO_GALLERY_PROPERTY)
-                .setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
+        q.addPrefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).joint());
 
         final DataContext context = this.context;
 

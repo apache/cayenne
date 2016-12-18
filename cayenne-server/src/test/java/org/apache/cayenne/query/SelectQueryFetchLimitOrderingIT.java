@@ -66,7 +66,7 @@ public class SelectQueryFetchLimitOrderingIT extends ServerCase {
         creatArtistsDataSet();
 
         SelectQuery query = new SelectQuery("Artist");
-        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
+        query.addOrdering(Artist.ARTIST_NAME.asc());
 
         query.setFetchLimit(4);
 

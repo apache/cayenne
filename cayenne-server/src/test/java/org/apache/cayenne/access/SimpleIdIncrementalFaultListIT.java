@@ -23,7 +23,6 @@ import org.apache.cayenne.DataObject;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -39,11 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SimpleIdIncrementalFaultListIT extends ServerCase {
@@ -214,7 +209,7 @@ public class SimpleIdIncrementalFaultListIT extends ServerCase {
     public void testSort() throws Exception {
         SimpleIdIncrementalFaultList<?> list = prepareList(6);
 
-        new Ordering(Artist.ARTIST_NAME_PROPERTY, SortOrder.DESCENDING).orderList(list);
+        Artist.ARTIST_NAME.desc().orderList(list);
 
         Iterator<?> it = list.iterator();
         Artist previousArtist = null;

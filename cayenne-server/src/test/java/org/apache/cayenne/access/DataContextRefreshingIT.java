@@ -210,7 +210,7 @@ public class DataContextRefreshingIT extends ServerCase {
 
         // select using relationship prefetching
         SelectQuery query = new SelectQuery(Artist.class);
-        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY);
+        query.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
         artist = (Artist) context.performQuery(query).get(0);
         assertEquals(0, artist.getPaintingArray().size());
     }
@@ -232,7 +232,7 @@ public class DataContextRefreshingIT extends ServerCase {
         assertEquals(artist.getPaintingArray().size(), 0);
 
         // select using relationship prefetching
-        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY);
+        query.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
         artist = (Artist) context.performQuery(query).get(0);
         assertEquals(artist.getPaintingArray().size(), 1);
     }

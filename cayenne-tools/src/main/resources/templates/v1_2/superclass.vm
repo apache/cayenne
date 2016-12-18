@@ -77,19 +77,19 @@ public abstract class ${superClassName} extends ${baseClassName} {
 
 ## Create Properties
 #foreach( $attr in ${object.DeclaredAttributes} )
-    public static final Property<$importUtils.formatJavaType(${attr.Type}, false)> ${stringUtils.capitalizedAsConstant($attr.Name)} = new Property<$importUtils.formatJavaType(${attr.Type}, false)>("${attr.Name}");
+    public static final Property<$importUtils.formatJavaType(${attr.Type}, false)> ${stringUtils.capitalizedAsConstant($attr.Name)} = new Property<>("${attr.Name}");
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
 #if( $rel.ToMany )
 #if ( ${rel.CollectionType} == "java.util.Map")
     #set( $type = "$importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($entityUtils.getMapKeyType($rel)), $importUtils.formatJavaType($rel.TargetEntity.ClassName)>" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<$type>("${rel.Name}");
+    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<>("${rel.Name}");
 #else
     #set( $type = "$importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($rel.TargetEntity.ClassName)>" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<$type>("${rel.Name}");
+    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<>("${rel.Name}");
 #end
 #else
-    public static final Property<$importUtils.formatJavaType(${rel.TargetEntity.ClassName})> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<$importUtils.formatJavaType(${rel.TargetEntity.ClassName})>("${rel.Name}");
+    public static final Property<$importUtils.formatJavaType(${rel.TargetEntity.ClassName})> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<>("${rel.Name}");
 #end
 #end
 

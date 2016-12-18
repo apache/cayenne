@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -38,10 +37,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataRowUtilsIT extends ServerCase {
@@ -119,9 +115,7 @@ public class DataRowUtilsIT extends ServerCase {
         context.commitChanges();
 
         tArtist.insert(119, "artist3");
-        SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
-                Artist.ARTIST_NAME_PROPERTY,
-                "artist3"));
+        SelectQuery query = new SelectQuery(Artist.class, Artist.ARTIST_NAME.eq("artist3"));
         Artist artist3 = (Artist) context.performQuery(query).get(0);
         assertNotSame(artist3, painting.getToArtist());
 

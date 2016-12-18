@@ -14,15 +14,10 @@ public abstract class _CharFkTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-    @Deprecated
-    public static final String TO_CHAR_PK_PROPERTY = "toCharPK";
-
     public static final String PK_PK_COLUMN = "PK";
 
-    public static final Property<String> NAME = new Property<String>("name");
-    public static final Property<CharPkTestEntity> TO_CHAR_PK = new Property<CharPkTestEntity>("toCharPK");
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<CharPkTestEntity> TO_CHAR_PK = new Property<>("toCharPK");
 
     public void setName(String name) {
         writeProperty("name", name);

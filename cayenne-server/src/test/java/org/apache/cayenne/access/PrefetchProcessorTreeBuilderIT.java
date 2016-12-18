@@ -131,14 +131,9 @@ public class PrefetchProcessorTreeBuilderIT extends ServerCase {
         Map<Object, Object> extraRows = new HashMap<Object, Object>();
 
         PrefetchTreeNode tree = new PrefetchTreeNode();
-        tree.addPath(Artist.PAINTING_ARRAY_PROPERTY).setPhantom(false);
-        tree.addPath(
-                Artist.PAINTING_ARRAY_PROPERTY
-                        + "."
-                        + Painting.TO_GALLERY_PROPERTY
-                        + "."
-                        + Gallery.EXHIBIT_ARRAY_PROPERTY).setPhantom(false);
-        tree.addPath(Artist.ARTIST_EXHIBIT_ARRAY_PROPERTY).setPhantom(false);
+        tree.addPath(Artist.PAINTING_ARRAY.getName()).setPhantom(false);
+        tree.addPath(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).dot(Gallery.EXHIBIT_ARRAY).getName()).setPhantom(false);
+        tree.addPath(Artist.ARTIST_EXHIBIT_ARRAY.getName()).setPhantom(false);
 
         QueryMetadata metadata = new MockQueryMetadata() {
 

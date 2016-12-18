@@ -194,7 +194,7 @@ public class NestedDataContextWriteIT extends ServerCase {
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
+        query.addOrdering(Artist.ARTIST_NAME.asc());
         List<?> objects = childContext.performQuery(query);
 
         assertEquals(4, objects.size());
@@ -269,7 +269,7 @@ public class NestedDataContextWriteIT extends ServerCase {
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
+        query.addOrdering(Artist.ARTIST_NAME.asc());
         List<?> objects = childContext.performQuery(query);
 
         assertEquals(4, objects.size());
@@ -306,7 +306,7 @@ public class NestedDataContextWriteIT extends ServerCase {
 
         // make sure we fetch in predictable order
         SelectQuery query = new SelectQuery(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
+        query.addOrdering(Artist.ARTIST_NAME.asc());
         List<?> objects = childContext.performQuery(query);
 
         assertEquals(4, objects.size());

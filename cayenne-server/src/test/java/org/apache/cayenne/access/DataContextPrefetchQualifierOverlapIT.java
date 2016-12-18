@@ -20,9 +20,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -66,8 +64,7 @@ public class DataContextPrefetchQualifierOverlapIT extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         query.andQualifier(ExpressionFactory
                 .likeExp("paintingArray.paintingTitle", "AB%"));
-        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(
-                PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
+        query.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
 
         List<Artist> result = context.performQuery(query);
         assertEquals(1, result.size());
@@ -83,8 +80,7 @@ public class DataContextPrefetchQualifierOverlapIT extends ServerCase {
         SelectQuery query = new SelectQuery(Artist.class);
         query.andQualifier(ExpressionFactory
                 .likeExp("paintingArray.paintingTitle", "AB%"));
-        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        query.addPrefetch(Artist.PAINTING_ARRAY.joint());
 
         List<Artist> result = context.performQuery(query);
         assertEquals(1, result.size());
@@ -101,11 +97,10 @@ public class DataContextPrefetchQualifierOverlapIT extends ServerCase {
         query.andQualifier(ExpressionFactory.likeExp(
                 "paintingArray+.paintingTitle",
                 "AB%"));
-        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        query.addPrefetch(Artist.PAINTING_ARRAY.joint());
 
         query.orQualifier(ExpressionFactory.likeExp("artistName", "A%"));
-        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
+        query.addOrdering(Artist.ARTIST_NAME.asc());
 
         List<Artist> result = context.performQuery(query);
         assertEquals(2, result.size());

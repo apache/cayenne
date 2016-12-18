@@ -19,9 +19,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -64,8 +62,8 @@ public class DataContextOrderingIT extends ServerCase {
         context.commitChanges();
 
         SelectQuery query = new SelectQuery(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.DESCENDING);
-        query.addOrdering(Artist.DATE_OF_BIRTH_PROPERTY, SortOrder.DESCENDING);
+        query.addOrdering(Artist.ARTIST_NAME.desc());
+        query.addOrdering(Artist.DATE_OF_BIRTH.desc());
 
         List<Artist> list = context.performQuery(query);
         assertEquals(3, list.size());
@@ -105,16 +103,14 @@ public class DataContextOrderingIT extends ServerCase {
 
         context.commitChanges();
 
-        SelectQuery query1 = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query1 = new SelectQuery<>(Artist.class);
 
         // per CAY-1074, adding a to-many join to expression messes up the ordering
-        query1.andQualifier(ExpressionFactory.noMatchExp(
-                Artist.PAINTING_ARRAY_PROPERTY,
-                null));
-        query1.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.DESCENDING);
-        query1.addOrdering(Artist.DATE_OF_BIRTH_PROPERTY, SortOrder.DESCENDING);
+        query1.andQualifier(Artist.PAINTING_ARRAY.ne((List<Painting>) null));
+        query1.addOrdering(Artist.ARTIST_NAME.desc());
+        query1.addOrdering(Artist.DATE_OF_BIRTH.desc());
 
-        List<Artist> list1 = context.performQuery(query1);
+        List<Artist> list1 = query1.select(context);
         assertEquals(2, list1.size());
     }
 }

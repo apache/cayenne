@@ -87,7 +87,7 @@ public class CayenneDataObjectValidationIT extends ServerCase {
         assertEquals(1, failures.size());
 
         BeanValidationFailure failure = (BeanValidationFailure) failures.get(0);
-        assertEquals(Artist.ARTIST_NAME_PROPERTY, failure.getProperty());
+        assertEquals(Artist.ARTIST_NAME.getName(), failure.getProperty());
 
         // fix the problem and see if it goes away
         artist.setArtistName("aa");
@@ -119,7 +119,7 @@ public class CayenneDataObjectValidationIT extends ServerCase {
         assertEquals(1, failures.size());
 
         BeanValidationFailure failure = (BeanValidationFailure) failures.get(0);
-        assertEquals(Artist.ARTIST_NAME_PROPERTY, failure.getProperty());
+        assertEquals(Artist.ARTIST_NAME.getName(), failure.getProperty());
 
         // fix the problem and see if it goes away
         artist.setArtistName("aa");

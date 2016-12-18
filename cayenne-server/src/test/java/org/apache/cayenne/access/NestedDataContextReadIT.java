@@ -170,19 +170,20 @@ public class NestedDataContextReadIT extends ServerCase {
         assertEquals(PersistenceState.DELETED, deleted.getPersistenceState());
         assertEquals(PersistenceState.NEW, _new.getPersistenceState());
 
-        List<?> objects = child.performQuery(new SelectQuery(Artist.class));
+        List<Artist> objects = child.performQuery(new SelectQuery(Artist.class));
         assertEquals("All but NEW object must have been included", 4, objects.size());
 
         Iterator<?> it = objects.iterator();
-        while (it.hasNext()) {
-            DataObject next = (DataObject) it.next();
+
+        for (Artist next : objects) {
             assertEquals(PersistenceState.COMMITTED, next.getPersistenceState());
 
             int id = Cayenne.intPKForObject(next);
             if (id == 33003) {
-                assertEquals("MODDED", next.readProperty(Artist.ARTIST_NAME_PROPERTY));
+                assertEquals("MODDED", next.getArtistName());
             }
         }
+
     }
 
     @Test
@@ -345,8 +346,8 @@ public class NestedDataContextReadIT extends ServerCase {
         final ObjectContext child = runtime.newContext(context);
 
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addOrdering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING);
-        q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY);
+        q.addOrdering(Artist.ARTIST_NAME.asc());
+        q.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
 
         final List<?> results = child.performQuery(q);
 

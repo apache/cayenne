@@ -15,7 +15,7 @@ public abstract class _ArrayTestEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Double[]> DOUBLE_ARRAY = new Property<Double[]>("doubleArray");
+    public static final Property<Double[]> DOUBLE_ARRAY = new Property<>("doubleArray");
 
     public void setDoubleArray(Double[] doubleArray) {
         writeProperty("doubleArray", doubleArray);

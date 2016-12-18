@@ -22,7 +22,6 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -35,13 +34,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CayenneDataObjectInContextIT extends ServerCase {
@@ -213,9 +206,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
 
         tArtist.insert(7, "m6");
 
-        SelectQuery q = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
-                Artist.ARTIST_NAME_PROPERTY,
-                "m6"));
+        SelectQuery q = new SelectQuery(Artist.class, Artist.ARTIST_NAME.eq("m6"));
 
         List<Artist> artists = context.performQuery(q);
         assertEquals(1, artists.size());
@@ -229,9 +220,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
 
         tArtist.insert(7, "m6");
 
-        SelectQuery q = new SelectQuery(Artist.class, ExpressionFactory.matchExp(
-                Artist.ARTIST_NAME_PROPERTY,
-                "m6"));
+        SelectQuery q = new SelectQuery(Artist.class, Artist.ARTIST_NAME.eq("m6"));
 
         Artist a1 = (Artist) Cayenne.objectForQuery(context, q);
         Artist a2 = (Artist) Cayenne.objectForQuery(context, q);

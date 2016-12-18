@@ -14,15 +14,10 @@ public abstract class _CompoundFkTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-    @Deprecated
-    public static final String TO_COMPOUND_PK_PROPERTY = "toCompoundPk";
-
     public static final String PKEY_PK_COLUMN = "PKEY";
 
-    public static final Property<String> NAME = new Property<String>("name");
-    public static final Property<CompoundPkTestEntity> TO_COMPOUND_PK = new Property<CompoundPkTestEntity>("toCompoundPk");
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<CompoundPkTestEntity> TO_COMPOUND_PK = new Property<>("toCompoundPk");
 
     public void setName(String name) {
         writeProperty("name", name);

@@ -131,9 +131,9 @@ public class DataContextRefreshQueryIT extends ServerCase {
         assertEquals(PersistenceState.HOLLOW, a1.getPersistenceState());
         assertEquals(PersistenceState.HOLLOW, a2.getPersistenceState());
 
-        assertTrue(((ValueHolder) a1.readProperty(Artist.PAINTING_ARRAY_PROPERTY))
+        assertTrue(((ValueHolder) a1.readProperty(Artist.PAINTING_ARRAY.getName()))
                 .isFault());
-        assertTrue(((ValueHolder) a2.readProperty(Artist.PAINTING_ARRAY_PROPERTY))
+        assertTrue(((ValueHolder) a2.readProperty(Artist.PAINTING_ARRAY.getName()))
                 .isFault());
     }
 
@@ -209,7 +209,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
 
         assertEquals(PersistenceState.HOLLOW, a1.getPersistenceState());
 
-        assertTrue(((ValueHolder) a1.readProperty(Artist.PAINTING_ARRAY_PROPERTY))
+        assertTrue(((ValueHolder) a1.readProperty(Artist.PAINTING_ARRAY.getName()))
                 .isFault());
     }
 

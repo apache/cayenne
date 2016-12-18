@@ -144,12 +144,12 @@ public class MapLoaderLoadTest {
         assertEquals(2, queryWithOrdering.getOrderings().size());
 
         Ordering artistNameOrdering = queryWithOrdering.getOrderings().get(0);
-        assertEquals(Artist.ARTIST_NAME_PROPERTY, artistNameOrdering.getSortSpecString());
+        assertEquals(Artist.ARTIST_NAME.getName(), artistNameOrdering.getSortSpecString());
         assertFalse(artistNameOrdering.isAscending());
         assertTrue(artistNameOrdering.isCaseInsensitive());
 
         Ordering dobOrdering = queryWithOrdering.getOrderings().get(1);
-        assertEquals(Artist.DATE_OF_BIRTH_PROPERTY, dobOrdering.getSortSpecString());
+        assertEquals(Artist.DATE_OF_BIRTH.getName(), dobOrdering.getSortSpecString());
         assertTrue(dobOrdering.isAscending());
         assertFalse(dobOrdering.isCaseInsensitive());
 

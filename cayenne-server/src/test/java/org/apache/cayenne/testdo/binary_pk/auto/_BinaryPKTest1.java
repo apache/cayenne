@@ -16,15 +16,10 @@ public abstract class _BinaryPKTest1 extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-    @Deprecated
-    public static final String BINARY_PKDETAILS_PROPERTY = "binaryPKDetails";
-
     public static final String BIN_ID_PK_COLUMN = "BIN_ID";
 
-    public static final Property<String> NAME = new Property<String>("name");
-    public static final Property<List<BinaryPKTest2>> BINARY_PKDETAILS = new Property<List<BinaryPKTest2>>("binaryPKDetails");
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<List<BinaryPKTest2>> BINARY_PKDETAILS = new Property<>("binaryPKDetails");
 
     public void setName(String name) {
         writeProperty("name", name);

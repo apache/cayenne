@@ -107,8 +107,8 @@ public class DataContextSQLTemplateIT extends ServerCase {
 
 		EntityResult artistResult = new EntityResult(Artist.class);
 		artistResult.addDbField(Artist.ARTIST_ID_PK_COLUMN, "X");
-		artistResult.addObjectField(Artist.ARTIST_NAME_PROPERTY, "Y");
-		artistResult.addObjectField(Artist.DATE_OF_BIRTH_PROPERTY, "Z");
+		artistResult.addObjectField(Artist.ARTIST_NAME.getName(), "Y");
+		artistResult.addObjectField(Artist.DATE_OF_BIRTH.getName(), "Z");
 
 		SQLResult rsMap = new SQLResult();
 		rsMap.addEntityResult(artistResult);

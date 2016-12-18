@@ -21,7 +21,6 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -92,7 +91,7 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
         runtime.getDataDomain().setMaxIdQualifierSize(10);
         
         final SelectQuery query = new SelectQuery(Artist.class);
-        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Artist.PAINTING_ARRAY.disjointById());
 
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 
@@ -110,7 +109,7 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
         runtime.getDataDomain().setMaxIdQualifierSize(0);
 
         final SelectQuery query = new SelectQuery(Artist.class);
-        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Artist.PAINTING_ARRAY.disjointById());
 
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 
@@ -128,7 +127,7 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
         runtime.getDataDomain().setMaxIdQualifierSize(-1);
 
         final SelectQuery query = new SelectQuery(Artist.class);
-        query.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        query.addPrefetch(Artist.PAINTING_ARRAY.disjointById());
 
         int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
 

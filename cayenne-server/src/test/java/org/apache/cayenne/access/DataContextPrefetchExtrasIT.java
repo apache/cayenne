@@ -28,7 +28,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CharFkTestEntity;
@@ -43,11 +42,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Test prefetching of various obscure cases.
@@ -108,7 +103,7 @@ public class DataContextPrefetchExtrasIT extends ServerCase {
 
         SelectQuery q = new SelectQuery(CharPkTestEntity.class);
         q.addPrefetch("charFKs");
-        q.addOrdering(CharPkTestEntity.OTHER_COL_PROPERTY, SortOrder.ASCENDING);
+        q.addOrdering(CharPkTestEntity.OTHER_COL.asc());
 
         List<?> pks = context.performQuery(q);
         assertEquals(2, pks.size());

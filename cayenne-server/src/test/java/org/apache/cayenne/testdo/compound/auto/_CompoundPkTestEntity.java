@@ -16,22 +16,13 @@ public abstract class _CompoundPkTestEntity extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String KEY1_PROPERTY = "key1";
-    @Deprecated
-    public static final String KEY2_PROPERTY = "key2";
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-    @Deprecated
-    public static final String COMPOUND_FK_ARRAY_PROPERTY = "compoundFkArray";
-
     public static final String KEY1_PK_COLUMN = "KEY1";
     public static final String KEY2_PK_COLUMN = "KEY2";
 
-    public static final Property<String> KEY1 = new Property<String>("key1");
-    public static final Property<String> KEY2 = new Property<String>("key2");
-    public static final Property<String> NAME = new Property<String>("name");
-    public static final Property<List<CompoundFkTestEntity>> COMPOUND_FK_ARRAY = new Property<List<CompoundFkTestEntity>>("compoundFkArray");
+    public static final Property<String> KEY1 = new Property<>("key1");
+    public static final Property<String> KEY2 = new Property<>("key2");
+    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<List<CompoundFkTestEntity>> COMPOUND_FK_ARRAY = new Property<>("compoundFkArray");
 
     public void setKey1(String key1) {
         writeProperty("key1", key1);

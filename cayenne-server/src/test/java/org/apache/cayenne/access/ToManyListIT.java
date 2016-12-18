@@ -45,14 +45,14 @@ public class ToManyListIT extends ServerCase {
 
     private ToManyList createForNewArtist() {
         Artist artist = context.newObject(Artist.class);
-        return new ToManyList(artist, Artist.PAINTING_ARRAY_PROPERTY);
+        return new ToManyList(artist, Artist.PAINTING_ARRAY.getName());
     }
 
     private ToManyList createForExistingArtist() {
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("aa");
         context.commitChanges();
-        return new ToManyList(artist, Artist.PAINTING_ARRAY_PROPERTY);
+        return new ToManyList(artist, Artist.PAINTING_ARRAY.getName());
     }
 
     @Test

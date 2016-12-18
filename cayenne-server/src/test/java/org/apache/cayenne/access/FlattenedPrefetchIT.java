@@ -23,7 +23,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -38,15 +37,11 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.Types;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class FlattenedPrefetchIT extends ServerCase {
@@ -121,7 +116,7 @@ public class FlattenedPrefetchIT extends ServerCase {
         createPrefetchDataSet1();
 
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addPrefetch(Artist.GROUP_ARRAY_PROPERTY);
+        q.addPrefetch(Artist.GROUP_ARRAY.disjoint());
 
         final List<Artist> objects = context.performQuery(q);
 
@@ -156,8 +151,8 @@ public class FlattenedPrefetchIT extends ServerCase {
         createPrefetchDataSet2();
 
         SelectQuery q = new SelectQuery(Painting.class);
-        q.addPrefetch(Painting.TO_ARTIST_PROPERTY);
-        q.addPrefetch(Painting.TO_ARTIST_PROPERTY + '.' + Artist.GROUP_ARRAY_PROPERTY);
+        q.addPrefetch(Painting.TO_ARTIST.disjoint());
+        q.addPrefetch(Painting.TO_ARTIST.dot(Artist.GROUP_ARRAY).disjoint());
 
         final List<Painting> objects = context.performQuery(q);
 
@@ -194,8 +189,7 @@ public class FlattenedPrefetchIT extends ServerCase {
         createPrefetchDataSet1();
 
         SelectQuery q = new SelectQuery(Artist.class);
-        q.addPrefetch(Artist.GROUP_ARRAY_PROPERTY).setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        q.addPrefetch(Artist.GROUP_ARRAY.joint());
 
         final List<Artist> objects = context.performQuery(q);
 
@@ -231,12 +225,8 @@ public class FlattenedPrefetchIT extends ServerCase {
         createPrefetchDataSet2();
 
         SelectQuery q = new SelectQuery(Painting.class);
-        q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
-        q
-                .addPrefetch(
-                        Painting.TO_ARTIST_PROPERTY + '.' + Artist.GROUP_ARRAY_PROPERTY)
-                .setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        q.addPrefetch(Painting.TO_ARTIST.joint());
+        q.addPrefetch(Painting.TO_ARTIST.dot(Artist.GROUP_ARRAY).joint());
 
         final List<Painting> objects = context.performQuery(q);
 

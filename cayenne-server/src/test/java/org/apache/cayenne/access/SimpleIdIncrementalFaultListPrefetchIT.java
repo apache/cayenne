@@ -101,7 +101,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends ServerCase {
 
         createArtistsDataSet();
 
-        Expression e = ExpressionFactory.likeExp(Artist.ARTIST_NAME_PROPERTY, "artist1%");
+        Expression e = Artist.ARTIST_NAME.like("artist1%");
         SelectQuery q = new SelectQuery("Artist", e);
         q.setPageSize(4);
 

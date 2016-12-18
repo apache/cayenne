@@ -31,13 +31,11 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectIdQuery;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -64,19 +62,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextIT extends ServerCase {
@@ -167,8 +157,7 @@ public class DataContextIT extends ServerCase {
 	public void testCurrentSnapshot1() throws Exception {
 		createSingleArtistDataSet();
 
-		SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.matchExp(Artist.ARTIST_NAME_PROPERTY,
-				"artist1"));
+		SelectQuery query = new SelectQuery(Artist.class, Artist.ARTIST_NAME.eq("artist1"));
 		Artist artist = (Artist) context.performQuery(query).get(0);
 
 		DataRow snapshot = context.currentSnapshot(artist);
@@ -182,8 +171,7 @@ public class DataContextIT extends ServerCase {
 		createSingleArtistDataSet();
 
 		// test null values
-		SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.matchExp(Artist.ARTIST_NAME_PROPERTY,
-				"artist1"));
+		SelectQuery<Artist> query = new SelectQuery<>(Artist.class, Artist.ARTIST_NAME.eq("artist1"));
 		Artist artist = (Artist) context.performQuery(query).get(0);
 
 		artist.setArtistName(null);
@@ -204,8 +192,7 @@ public class DataContextIT extends ServerCase {
 		createSingleArtistDataSet();
 
 		// test null values
-		SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.matchExp(Artist.ARTIST_NAME_PROPERTY,
-				"artist1"));
+		SelectQuery query = new SelectQuery(Artist.class, Artist.ARTIST_NAME.eq("artist1"));
 		Artist artist = (Artist) context.performQuery(query).get(0);
 
 		// test FK relationship snapshotting
@@ -235,14 +222,14 @@ public class DataContextIT extends ServerCase {
 		ObjectId eId = new ObjectId("Exhibit", Exhibit.EXHIBIT_ID_PK_COLUMN, 2);
 		Exhibit e = (Exhibit) context.performQuery(new ObjectIdQuery(eId)).get(0);
 
-		assertTrue(e.readPropertyDirectly(Exhibit.TO_GALLERY_PROPERTY) instanceof Fault);
+		assertTrue(e.readPropertyDirectly(Exhibit.TO_GALLERY.getName()) instanceof Fault);
 
 		DataRow snapshot = context.currentSnapshot(e);
 
 		// assert that after taking a snapshot, we have FK in, but the
 		// relationship
 		// is still a Fault
-		assertTrue(e.readPropertyDirectly(Exhibit.TO_GALLERY_PROPERTY) instanceof Fault);
+		assertTrue(e.readPropertyDirectly(Exhibit.TO_GALLERY.getName()) instanceof Fault);
 		assertEquals(new Integer(33002), snapshot.get("GALLERY_ID"));
 	}
 
@@ -331,8 +318,7 @@ public class DataContextIT extends ServerCase {
 		// verify that the result is not messed up
 
 		SelectQuery query = new SelectQuery(Artist.class);
-		Ordering ordering = new Ordering(Artist.ARTIST_NAME_PROPERTY, SortOrder.ASCENDING_INSENSITIVE);
-		query.addOrdering(ordering);
+		query.addOrdering(Artist.ARTIST_NAME.ascInsensitive());
 		query.setDistinct(true);
 
 		List<Artist> objects = context.performQuery(query);
@@ -558,10 +544,9 @@ public class DataContextIT extends ServerCase {
 	public void testCommitChangesRO2() throws Exception {
 		createArtistsDataSet();
 
-		SelectQuery query = new SelectQuery(ROArtist.class, ExpressionFactory.matchExp(Artist.ARTIST_NAME_PROPERTY,
-				"artist1"));
+		SelectQuery query = new SelectQuery(ROArtist.class, Artist.ARTIST_NAME.eq("artist1"));
 		ROArtist a1 = (ROArtist) context.performQuery(query).get(0);
-		a1.writeProperty(ROArtist.ARTIST_NAME_PROPERTY, "abc");
+		a1.writeProperty(ROArtist.ARTIST_NAME.getName(), "abc");
 
 		try {
 			context.commitChanges();
@@ -577,8 +562,7 @@ public class DataContextIT extends ServerCase {
 
 		createArtistsDataSet();
 
-		SelectQuery query = new SelectQuery(ROArtist.class, ExpressionFactory.matchExp(Artist.ARTIST_NAME_PROPERTY,
-				"artist1"));
+		SelectQuery query = new SelectQuery(ROArtist.class, Artist.ARTIST_NAME.eq("artist1"));
 		ROArtist a1 = (ROArtist) context.performQuery(query).get(0);
 		context.deleteObjects(a1);
 
@@ -595,8 +579,7 @@ public class DataContextIT extends ServerCase {
 	public void testCommitChangesRO4() throws Exception {
 		createArtistsDataSet();
 
-		SelectQuery query = new SelectQuery(ROArtist.class, ExpressionFactory.matchExp(Artist.ARTIST_NAME_PROPERTY,
-				"artist1"));
+		SelectQuery query = new SelectQuery(ROArtist.class, Artist.ARTIST_NAME.eq("artist1"));
 		ROArtist a1 = (ROArtist) context.performQuery(query).get(0);
 
 		Painting painting = context.newObject(Painting.class);

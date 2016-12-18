@@ -66,7 +66,7 @@ public class StatementFetchSizeIT extends ServerCase {
         ObjectId id = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
         RelationshipQuery relationshipQuery = new RelationshipQuery(
                 id,
-                Artist.PAINTING_ARRAY_PROPERTY,
+                Artist.PAINTING_ARRAY.getName(),
                 true);
         relationshipQuery.setStatementFetchSize(10);
 

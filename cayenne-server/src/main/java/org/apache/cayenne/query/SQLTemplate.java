@@ -19,16 +19,6 @@
 
 package org.apache.cayenne.query;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-
 import org.apache.cayenne.access.QueryEngine;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -41,6 +31,16 @@ import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Transformer;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * A query that executes unchanged (except for template preprocessing) "raw" SQL
@@ -669,6 +669,15 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 	public PrefetchTreeNode addPrefetch(String prefetchPath) {
 		// by default use JOINT_PREFETCH_SEMANTICS
 		return metaData.addPrefetch(prefetchPath, PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+	}
+
+	/**
+	 * Adds a prefetch with specified relationship path to the query.
+	 *
+	 * @since 4.0
+	 */
+	public void addPrefetch(PrefetchTreeNode prefetchElement) {
+		metaData.mergePrefetch(prefetchElement);
 	}
 
 	/**
