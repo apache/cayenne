@@ -13,13 +13,10 @@ public abstract class _ReturnTypesMapLobs1 extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String CLOB_COLUMN_PROPERTY = "clobColumn";
-
     public static final String AAAID_PK_COLUMN = "AAAID";
 
-    public static final Property<String> CLOB_COLUMN = new Property<String>("clobColumn");
-    public static final Property<String> NCLOB_COLUMN = new Property<String>("nclobColumn");
+    public static final Property<String> CLOB_COLUMN = new Property<>("clobColumn");
+    public static final Property<String> NCLOB_COLUMN = new Property<>("nclobColumn");
 
     public void setClobColumn(String clobColumn) {
         writeProperty("clobColumn", clobColumn);
@@ -28,10 +25,10 @@ public abstract class _ReturnTypesMapLobs1 extends CayenneDataObject {
         return (String)readProperty("clobColumn");
     }
 
-    public void setNClobColumn(String nclobColumn) {
+    public void setNclobColumn(String nclobColumn) {
         writeProperty("nclobColumn", nclobColumn);
     }
-    public String getNClobColumn() {
+    public String getNclobColumn() {
         return (String)readProperty("nclobColumn");
     }
 

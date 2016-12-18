@@ -261,7 +261,7 @@ public class    ReturnTypesMappingIT extends ServerCase {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         String charValue = "درخت‌های جستجوی متوازن، نیازی ندارد که به صورت!";
-        test.setNCharColumn(charValue);
+        test.setNcharColumn(charValue);
         context.commitChanges();
 		
         DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
@@ -324,7 +324,7 @@ public class    ReturnTypesMappingIT extends ServerCase {
                         "\"Balanced,\" \"Broad,\" یا \"Bushy\" ممکن است استفاده شده‌باشند [چون همهٔ برگ‌ها در یک سطح قرار دارند]. دیگران اظهار داشتند که حرف \"B\" از کلمهٔ بوئینگ گرفته شده است [به این دلیل که پدیدآوردنده درسال 1972 در آزمایشگاه‌های تحقیقاتی علمی شرکت بوئینگ کار می‌کرد]. با این وجود پنداشتن درخت بی به عنوان درخت \"بِیِر\" نیز درخور است.[۲]");
             }
             String clobValue = buffer.toString();
-            test.setNClobColumn(clobValue);
+            test.setNclobColumn(clobValue);
             context.commitChanges();
 			
             DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesLobsMap1")).get(0);
@@ -903,7 +903,7 @@ public class    ReturnTypesMappingIT extends ServerCase {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         String varcharValue = "ی متوازن، نیازی ندارد که ب";
-        test.setNVarcharColumn(varcharValue);
+        test.setNvarcharColumn(varcharValue);
         context.commitChanges();
 		
         DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);

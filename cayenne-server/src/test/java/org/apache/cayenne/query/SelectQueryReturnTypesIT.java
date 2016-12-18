@@ -76,7 +76,7 @@ public class SelectQueryReturnTypesIT extends ServerCase {
         createNumericsDataSet();
 
         // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseNot(new ASTBitwiseNot(new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN_PROPERTY)));
+        Expression left = new ASTBitwiseNot(new ASTBitwiseNot(new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN.getName())));
         Expression right = new ASTScalar(2);
         Expression greater = new ASTGreater();
         greater.setOperand(0, left);
@@ -99,7 +99,7 @@ public class SelectQueryReturnTypesIT extends ServerCase {
         createNumericsDataSet();
 
         // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseOr(new Object[] { new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN_PROPERTY),
+        Expression left = new ASTBitwiseOr(new Object[] { new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN.getName()),
                 new ASTScalar(1) });
         Expression right = new ASTScalar(1);
         Expression equal = new ASTEqual();
@@ -123,7 +123,7 @@ public class SelectQueryReturnTypesIT extends ServerCase {
         createNumericsDataSet();
 
         // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseAnd(new Object[] { new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN_PROPERTY),
+        Expression left = new ASTBitwiseAnd(new Object[] { new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN.getName()),
                 new ASTScalar(1) });
         Expression right = new ASTScalar(0);
         Expression equal = new ASTEqual();
@@ -147,7 +147,7 @@ public class SelectQueryReturnTypesIT extends ServerCase {
         createNumericsDataSet();
 
         // to simplify result checking, do double NOT
-        Expression left = new ASTBitwiseXor(new Object[] { new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN_PROPERTY),
+        Expression left = new ASTBitwiseXor(new Object[] { new ASTObjPath(ReturnTypesMap1.INTEGER_COLUMN.getName()),
                 new ASTScalar(1) });
         Expression right = new ASTScalar(5);
         Expression equal = new ASTEqual();

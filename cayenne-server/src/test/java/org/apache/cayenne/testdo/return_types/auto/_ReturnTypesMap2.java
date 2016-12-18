@@ -13,21 +13,12 @@ public abstract class _ReturnTypesMap2 extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    @Deprecated
-    public static final String BINARY_COLUMN_PROPERTY = "binaryColumn";
-    @Deprecated
-    public static final String BLOB_COLUMN_PROPERTY = "blobColumn";
-    @Deprecated
-    public static final String LONGVARBINARY_COLUMN_PROPERTY = "longvarbinaryColumn";
-    @Deprecated
-    public static final String VARBINARY_COLUMN_PROPERTY = "varbinaryColumn";
-
     public static final String AAAID_PK_COLUMN = "AAAID";
 
-    public static final Property<byte[]> BINARY_COLUMN = new Property<byte[]>("binaryColumn");
-    public static final Property<byte[]> BLOB_COLUMN = new Property<byte[]>("blobColumn");
-    public static final Property<byte[]> LONGVARBINARY_COLUMN = new Property<byte[]>("longvarbinaryColumn");
-    public static final Property<byte[]> VARBINARY_COLUMN = new Property<byte[]>("varbinaryColumn");
+    public static final Property<byte[]> BINARY_COLUMN = new Property<>("binaryColumn");
+    public static final Property<byte[]> BLOB_COLUMN = new Property<>("blobColumn");
+    public static final Property<byte[]> LONGVARBINARY_COLUMN = new Property<>("longvarbinaryColumn");
+    public static final Property<byte[]> VARBINARY_COLUMN = new Property<>("varbinaryColumn");
 
     public void setBinaryColumn(byte[] binaryColumn) {
         writeProperty("binaryColumn", binaryColumn);

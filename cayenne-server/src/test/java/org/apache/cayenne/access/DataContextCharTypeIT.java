@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -55,14 +54,14 @@ public class DataContextCharTypeIT extends ServerCase {
             
             context.commitChanges();
             
-            Expression qual = ExpressionFactory.matchExp(ReturnTypesMap1.CHAR_COLUMN_PROPERTY, "  text");
+            Expression qual = ReturnTypesMap1.CHAR_COLUMN.eq("  text");
             SelectQuery query = new SelectQuery(ReturnTypesMap1.class, qual);
             List<ReturnTypesMap1> result =  context.performQuery(query);
             
             assertTrue("CHAR type trimming is not valid.", result.get(0).getCharColumn().startsWith("  text"));
             assertTrue("CHAR type trimming is not valid.", result.get(1).getCharColumn().startsWith("  text"));
             
-            qual = ExpressionFactory.matchExp(ReturnTypesMap1.CHAR_COLUMN_PROPERTY, "text");
+            qual = ReturnTypesMap1.CHAR_COLUMN.eq("text");
             query = new SelectQuery(ReturnTypesMap1.class, qual);
             result =  context.performQuery(query);
             
