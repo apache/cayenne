@@ -105,4 +105,33 @@ public class EJBQLParser_CompileIT extends ServerCase {
 		assertNotNull(select3.getEntityDescriptor("a"));
 		assertNotNull(select3.getEntityDescriptor("A"));
 	}
+
+	/**
+	 * CAY-2175
+	 */
+	@Test
+	public void testGetEntityDescriptorCaseSensitivityInJoin() {
+		EJBQLCompiledExpression select1 = parser.compile(
+				"SELECT artistAlias FROM Artist artistAlias " +
+						"WHERE artistAlias.artistName = 'Abcd'",
+				resolver
+		);
+		assertNotNull(select1.getEntityDescriptor("artistalias"));
+		assertNotNull(select1.getEntityDescriptor("artistAlias"));
+		assertNotNull(select1.getEntityDescriptor("ArTiStAlIaS"));
+
+		EJBQLCompiledExpression select2 = parser.compile(
+				"SELECT artistalias from Artist AS ArtistAlias JOIN artistalias.paintingArray as PaintingAlias " +
+						"where aRtistALiaS.artistName = 'Abcd'",
+				resolver
+		);
+		assertNotNull(select2.getEntityDescriptor("artistalias"));
+		assertNotNull(select2.getEntityDescriptor("artistAlias"));
+		assertNotNull(select2.getEntityDescriptor("ArTiStAlIaS"));
+
+		assertNotNull(select2.getEntityDescriptor("PaintingAlias"));
+		assertNotNull(select2.getEntityDescriptor("paintingalias"));
+		assertNotNull(select2.getEntityDescriptor("PaInTinGAlIaS"));
+	}
+
 }

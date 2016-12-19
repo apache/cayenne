@@ -24,11 +24,13 @@ CAY-2172 Cleanup Modeler import and migrate db actions
 CAY-2176 Java 7 diamond class generation templates
 
 Bug Fixes:
+
 CAY-2174 Change FK attribute name cause ObjAttribute appear after Reverse Engineering
+CAY-2175 AliasName used in EJBQLQuery is not working if it contains mixed case
 
 ----------------------------------
 Release: 4.0.M4
-Date:
+Date: December 13, 2016
 ----------------------------------
 Changes/New Features:
 
@@ -100,7 +102,7 @@ CAY-2154 Migrate db: queries order
 
 ----------------------------------
 Release: 4.0.M3
-Date:
+Date: February 12, 2016
 ----------------------------------
 Changes/New Features:
 
