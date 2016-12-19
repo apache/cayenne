@@ -159,6 +159,9 @@ public class EntityMergeSupport {
 
         if (shouldAddToObjEntity(entity, dbRelationship)) {
             addMissingRelationship(entity, dbRelationship);
+            if (removingMeaningfulFKs) {
+                getRidOfAttributesThatAreNowSrcAttributesForRelationships(entity);
+            }
         }
 
         return true;

@@ -23,6 +23,7 @@ CAY-2172 Cleanup Modeler import and migrate db actions
 CAY-2176 Java 7 diamond class generation templates
 
 Bug Fixes:
+CAY-2174 Change FK attribute name cause ObjAttribute appear after Reverse Engineering
 
 ----------------------------------
 Release: 4.0.M4
