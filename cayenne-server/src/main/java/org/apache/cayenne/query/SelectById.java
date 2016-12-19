@@ -18,13 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static java.util.Collections.singletonMap;
-import static org.apache.cayenne.exp.ExpressionFactory.matchAllDbExp;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
@@ -35,6 +28,13 @@ import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Collections.singletonMap;
+import static org.apache.cayenne.exp.ExpressionFactory.matchAllDbExp;
 
 /**
  * A query to select single objects by id.
@@ -92,7 +92,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	}
 
 	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Object id) {
-		SelectById<DataRow> q = new SelectById<DataRow>();
+		SelectById<DataRow> q = new SelectById<>();
 
 		q.entityType = entityType;
 		q.singleId = id;
@@ -102,7 +102,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	}
 
 	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Map<String, Object> id) {
-		SelectById<DataRow> q = new SelectById<DataRow>();
+		SelectById<DataRow> q = new SelectById<>();
 
 		q.entityType = entityType;
 		q.mapId = id;
@@ -114,7 +114,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	public static SelectById<DataRow> dataRowQuery(ObjectId id) {
 		checkObjectId(id);
 
-		SelectById<DataRow> q = new SelectById<DataRow>();
+		SelectById<DataRow> q = new SelectById<>();
 
 		q.entityName = id.getEntityName();
 		q.mapId = id.getIdSnapshot();
