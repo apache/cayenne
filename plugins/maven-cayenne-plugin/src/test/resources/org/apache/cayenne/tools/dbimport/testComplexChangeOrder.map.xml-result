@@ -38,7 +38,6 @@
         <obj-attribute name="addrstr" type="java.lang.String" db-attribute-path="ADDRSTR"/>
     </obj-entity>
     <obj-entity name="Child" className="Child" dbEntityName="CHILD">
-        <obj-attribute name="addressId" type="java.lang.Integer" db-attribute-path="ADDRESS_ID"/>
         <obj-attribute name="id" type="java.lang.Integer" db-attribute-path="id"/>
         <obj-attribute name="name" type="java.lang.String"/>
     </obj-entity>

@@ -209,8 +209,6 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 
     @Test
     public void testComplexChangeOrder() throws Exception {
-        // after applying fix for CAY-2174 addressId should no longer be in CHILD table so this test will fail
-        // to fix it just remove "addressId" ObjAttribute in testComplexChangeOrder.map.xml-result
         test("testComplexChangeOrder");
     }
 
