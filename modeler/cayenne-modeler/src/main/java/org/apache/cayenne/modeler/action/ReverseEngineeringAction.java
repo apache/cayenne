@@ -19,22 +19,23 @@
 
 package org.apache.cayenne.modeler.action;
 
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.db.ConnectionWizard;
-import org.apache.cayenne.modeler.dialog.db.DbLoaderHelper;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
+import org.apache.cayenne.modeler.dialog.db.load.DbLoaderContext;
+import org.apache.cayenne.modeler.dialog.db.load.DbLoaderOptionsDialog;
+import org.apache.cayenne.modeler.dialog.db.load.LoadDataMapTask;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
+import javax.swing.SwingUtilities;
 
 /**
  * Action that imports database structure into a DataMap.
  */
-public class ReverseEngineeringAction extends DBWizardAction {
+public class ReverseEngineeringAction extends DBWizardAction<DbLoaderOptionsDialog> {
 
-    public ReverseEngineeringAction(Application application) {
+    ReverseEngineeringAction(Application application) {
         super(getActionName(), application);
     }
 
@@ -47,49 +48,51 @@ public class ReverseEngineeringAction extends DBWizardAction {
      */
     @Override
     public void performAction(ActionEvent event) {
-        // guess node connection
-        DBConnectionInfo nodeInfo = preferredDataSource();
-        String nodeKey = preferredDataSourceLabel(nodeInfo);
-
-        // connect
-        ConnectionWizard connectWizard = new ConnectionWizard(
-                getProjectController(),
-                "Reengineer DB Schema: Connect to Database",
-                nodeKey,
-                nodeInfo);
-
-        if (!connectWizard.startupAction()) {
-            // canceled
+        final DbLoaderContext context = new DbLoaderContext();
+        final DataSourceWizard connectWizard = dataSourceWizardDialog("Reengineer DB Schema: Connect to Database");
+        if(connectWizard == null) {
             return;
         }
 
-        // TODO: doesn't look like we are closing this connection anywhere...
-        Connection connection = connectWizard.getConnection();
-        DbAdapter adapter = connectWizard.getAdapter();
-        DBConnectionInfo dataSourceInfo = connectWizard.getConnectionInfo();
+        context.setProjectController(getProjectController());
+        try {
+            context.setConnection(connectWizard.getDataSource().getConnection());
+        } catch (SQLException ex) {
+            return;
+        }
 
-        // from here pass control to DbLoaderHelper, running it from a thread separate
-        // from EventDispatch
+        final DbLoaderOptionsDialog loaderOptionsDialog = loaderOptionDialog(connectWizard);
+        if(!context.buildConfig(connectWizard, loaderOptionsDialog)) {
+            return;
+        }
 
-        final DbLoaderHelper helper = new DbLoaderHelper(
-                getProjectController(),
-                connection,
-                adapter,
-                dataSourceInfo);
-        Thread th = new Thread(new Runnable() {
-
+        runLoaderInThread(context, new Runnable() {
+            @Override
             public void run() {
-                helper.execute();
-
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    public void run() {
-                        application.getUndoManager().discardAllEdits();
-                    }
-                });
+                application.getUndoManager().discardAllEdits();
+                try {
+                    context.getConnection().close();
+                } catch (SQLException ignored) {
+                }
             }
         });
+    }
 
+    private void runLoaderInThread(final DbLoaderContext context,
+                                   final Runnable callback) {
+        Thread th = new Thread(new Runnable() {
+            public void run() {
+                LoadDataMapTask task = new LoadDataMapTask(Application.getFrame(), "Reengineering DB", context);
+                task.startAndWait();
+                SwingUtilities.invokeLater(callback);
+            }
+        });
         th.start();
+    }
+
+    @Override
+    protected DbLoaderOptionsDialog createDialog(Collection<String> catalogs, Collection<String> schemas,
+                                                 String currentCatalog, String currentSchema) {
+        return new DbLoaderOptionsDialog(catalogs, schemas, currentCatalog, currentSchema);
     }
 }

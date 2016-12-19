@@ -19,55 +19,48 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.CayenneDialog;
-import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
-import java.util.Vector;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.util.CayenneDialog;
 
 /**
- * Dialog for selecting database reverse-engineering parameters.
+ * @since 4.0
  */
-public class DbLoaderOptionsDialog extends CayenneDialog {
+public class DbActionOptionsDialog extends CayenneDialog {
 
-    public static final String WILDCARD_PATTERN = ".*";
-
+    protected static final String WILDCARD_PATTERN = ".*";
     public static final int CANCEL = 0;
     public static final int SELECT = 1;
 
-    protected JLabel catalogLabel;
-    protected JComboBox<String> catalogSelector;
-    protected JLabel schemaLabel;
-    protected JComboBox<String> schemaSelector;
-    protected JTextField tableNamePatternField;
-    protected JTextField meaningfulPk;
-    protected JTextField procNamePatternField;
-    protected JLabel procedureLabel;
-    protected JButton selectButton;
-    protected JButton cancelButton;
+    private int choice;
+    private JLabel schemaLabel;
+    private JLabel catalogLabel;
+    private JComboBox<String> catalogSelector;
+    private JComboBox<String> schemaSelector;
+    private JButton selectButton;
+    private JButton cancelButton;
 
-
-    protected JComboBox<String> strategyCombo;
-    protected String strategy;
-    protected int choice;
-
-    /**
-     * Creates and initializes new ChooseSchemaDialog.
-     */
-    public DbLoaderOptionsDialog(Collection<String> schemas, Collection<String> catalogs, String currentSchema,
-                                 String dbCatalog) {
-        super(Application.getFrame(), "Reengineer DB Schema: Select Options");
-
+    public DbActionOptionsDialog(Frame owner, String title, Collection<String> catalogs, Collection<String> schemas,
+                                 String currentCatalog, String currentSchema) throws HeadlessException {
+        super(owner, title);
         init();
         initController();
-        initFromModel(schemas, catalogs, currentSchema, dbCatalog);
+        initFromModel(catalogs, schemas, currentCatalog, currentSchema);
 
         pack();
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -75,44 +68,24 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         centerWindow();
     }
 
-    /** Sets up the graphical components. */
     protected void init() {
-
         // create widgets...
         selectButton = new JButton("Continue");
         cancelButton = new JButton("Cancel");
         catalogSelector = new JComboBox<>();
         schemaSelector = new JComboBox<>();
-        tableNamePatternField = new JTextField();
-        tableNamePatternField.setToolTipText("<html>Regular expression to filter table names.<br>" +
-                "Default expression <b>.*</b> includes all tables.</html>");
-        procNamePatternField = new JTextField();
-        procNamePatternField.setToolTipText("<html>Regular expression to filter stored procedures names.<br>" +
-                "Default expression .* includes all stored procedures.</html>");
-        meaningfulPk = new JTextField();
-        meaningfulPk.setToolTipText("<html>Regular expression to filter tables with meaningful primary keys.<br>" +
-                "Multiple expressions divided by comma can be used.<br>" +
-                "Example: <b>^table1,^table2,^prefix.*</b></html>");
-        strategyCombo = new JComboBox<>();
-        strategyCombo.setEditable(true);
 
-        // assemble
         FormLayout layout = new FormLayout(
                 "right:pref, 3dlu, fill:max(170dlu;pref):grow",
                 "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
-        catalogLabel = builder.append("Select Catalog:", catalogSelector);
-        schemaLabel = builder.append("Select Schema:", schemaSelector);
-        builder.append("Table Name Pattern:", tableNamePatternField);
-        procedureLabel = builder.append("Procedure Name Pattern:", procNamePatternField);
-        builder.append("Naming Strategy:", strategyCombo);
-        builder.append("Tables with Meaningful PK Pattern:", meaningfulPk);
+        initForm(builder);
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttons.add(cancelButton);
         buttons.add(selectButton);
+        buttons.add(cancelButton);
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
@@ -134,29 +107,14 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         });
     }
 
-    protected void initFromModel(
-            Collection<String> schemas,
-            Collection<String> catalogs,
-            String currentSchema,
-            String currentCatalog) {
-
+    protected void initFromModel(Collection<String> catalogs, Collection<String> schemas, String currentCatalog, String currentSchema) {
         this.choice = CANCEL;
-        this.tableNamePatternField.setText(WILDCARD_PATTERN);
-        this.procNamePatternField.setText(WILDCARD_PATTERN);
-
-        Vector<String> arr = NameGeneratorPreferences
-                .getInstance()
-                .getLastUsedStrategies();
-        strategyCombo.setModel(new DefaultComboBoxModel<>(arr));
 
         boolean showSchemaSelector = schemas != null && !schemas.isEmpty();
         schemaSelector.setVisible(showSchemaSelector);
         schemaLabel.setVisible(showSchemaSelector);
-
         if (showSchemaSelector) {
-
             schemaSelector.setModel(new DefaultComboBoxModel<>(schemas.toArray(new String[0])));
-
             if (currentSchema != null) {
                 for (String schema : schemas) {
                     if (currentSchema.equalsIgnoreCase(schema)) {
@@ -170,10 +128,8 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         boolean showCatalogSelector = catalogs != null && !catalogs.isEmpty();
         catalogSelector.setVisible(showCatalogSelector);
         catalogLabel.setVisible(showCatalogSelector);
-
         if (showCatalogSelector) {
             catalogSelector.setModel(new DefaultComboBoxModel<>(catalogs.toArray(new String[0])));
-
             if (currentCatalog != null && !currentCatalog.isEmpty()) {
                 for (String catalog : catalogs) {
                     if (currentCatalog.equalsIgnoreCase(catalog)) {
@@ -185,13 +141,16 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
         }
     }
 
+    protected void initForm(DefaultFormBuilder builder) {
+        catalogLabel = builder.append("Select Catalog:", catalogSelector, true);
+        schemaLabel = builder.append("Select Schema:", schemaSelector);
+    }
+
     public int getChoice() {
         return choice;
     }
 
     private void processSelect() {
-        strategy = (String) strategyCombo.getSelectedItem();
-
         choice = SELECT;
         setVisible(false);
     }
@@ -215,33 +174,5 @@ public class DbLoaderOptionsDialog extends CayenneDialog {
     public String getSelectedSchema() {
         String schema = (String) schemaSelector.getSelectedItem();
         return "".equals(schema) ? null : schema;
-    }
-
-    /**
-     * Returns the tableNamePattern.
-     */
-    public String getTableNamePattern() {
-        return "".equals(tableNamePatternField.getText()) ? null : tableNamePatternField
-                .getText();
-    }
-
-    public String getMeaningfulPk() {
-        return "".equals(meaningfulPk.getText()) ? null : meaningfulPk
-                .getText();
-    }
-
-    /**
-     * Returns the procedure name pattern.
-     */
-    public String getProcedureNamePattern() {
-        return "".equals(procNamePatternField.getText()) ? null : procNamePatternField
-                .getText();
-    }
-
-    /**
-     * Returns configured naming strategy
-     */
-    public String getNamingStrategy() {
-        return strategy;
     }
 }

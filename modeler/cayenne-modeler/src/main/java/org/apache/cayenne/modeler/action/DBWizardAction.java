@@ -19,108 +19,80 @@
 
 package org.apache.cayenne.modeler.action;
 
+import java.sql.Connection;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
-import org.apache.cayenne.map.DataMap;
+import javax.swing.JOptionPane;
+
+import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.cayenne.modeler.pref.DataNodeDefaults;
+import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
+import org.apache.cayenne.modeler.dialog.db.DbActionOptionsDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
-/**
- */
-public abstract class DBWizardAction extends CayenneAction {
+public abstract class DBWizardAction<T extends DbActionOptionsDialog> extends CayenneAction {
 
     public DBWizardAction(String name, Application application) {
         super(name, application);
     }
 
-    // ==== Guessing user preferences... *****
-
-    protected DataNodeDescriptor getPreferredNode() {
-        ProjectController projectController = getProjectController();
-        DataNodeDescriptor node = projectController.getCurrentDataNode();
-
-        // try a node that belongs to the current DataMap ...
-        if (node == null) {
-            DataMap map = projectController.getCurrentDataMap();
-            if (map != null) {
-                Collection<DataNodeDescriptor> nodes = ((DataChannelDescriptor) projectController
-                        .getProject()
-                        .getRootNode()).getNodeDescriptors();
-                for (DataNodeDescriptor n : nodes) {
-                    if (n.getDataMapNames().contains(map.getName())) {
-                        node = n;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return node;
-    }
-
-    protected String preferredDataSourceLabel(DBConnectionInfo nodeInfo) {
-        if (nodeInfo == null) {
-
-            // only driver nodes have meaningful connection info set
-            DataNodeDescriptor node = getPreferredNode();
-            return (node != null && XMLPoolingDataSourceFactory.class.getName().equals(
-                    node.getDataSourceFactoryType())) ? "DataNode Connection Info" : null;
-        }
-
-        return nodeInfo.getNodeName();
-    }
-
-    /**
-     * Determines the most reasonable default DataSource choice.
-     */
-    protected DBConnectionInfo preferredDataSource() {
-        DataNodeDescriptor node = getPreferredNode();
-
-        // no current node...
-        if (node == null) {
+    protected DataSourceWizard dataSourceWizardDialog(String title) {
+        // connect
+        DataSourceWizard connectWizard = new DataSourceWizard(getProjectController(), title);
+        if (!connectWizard.startupAction()) {
             return null;
         }
 
-        // if node has local DS set, use it
-        DataNodeDefaults nodeDefaults = (DataNodeDefaults) getApplication()
-                .getCayenneProjectPreferences()
-                .getProjectDetailObject(
-                        DataNodeDefaults.class,
-                        getProjectController().getPreferenceForDataDomain().node(
-                                "DataNode").node(node.getName()));
+        return connectWizard;
+    }
 
-        String key = (nodeDefaults != null) ? nodeDefaults.getLocalDataSource() : null;
-        if (key != null) {
-            DBConnectionInfo info = (DBConnectionInfo) getApplication()
-                    .getCayenneProjectPreferences()
-                    .getDetailObject(DBConnectionInfo.class)
-                    .getObject(key);
+    protected abstract T createDialog(Collection<String> catalogs, Collection<String> schemas, String currentCatalog, String currentSchema);
 
-            if (info != null) {
-                return info;
+    protected T loaderOptionDialog(DataSourceWizard connectWizard) {
+
+        // use this catalog as the default...
+        List<String> catalogs;
+        List<String> schemas;
+        String currentCatalog;
+        String currentSchema;
+        try(Connection connection = connectWizard.getDataSource().getConnection()) {
+            catalogs = getCatalogs(connectWizard, connection);
+            schemas = getSchemas(connection);
+            if (catalogs.isEmpty() && schemas.isEmpty()) {
+                return null;
             }
-        }
-
-        // extract data from the node
-        if (!XMLPoolingDataSourceFactory.class.getName().equals(
-                node.getDataSourceFactoryType())) {
+            currentCatalog = connection.getCatalog();
+            currentSchema = connection.getSchema();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
+                    Application.getFrame(),
+                    ex.getMessage(),
+                    "Error loading schemas dialog",
+                    JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
-        // create transient object..
-        DBConnectionInfo nodeInfo = new DBConnectionInfo();
+        final T optionsDialog = createDialog(catalogs, schemas, currentCatalog, currentSchema);
+        optionsDialog.setVisible(true);
+        if (optionsDialog.getChoice() == DbActionOptionsDialog.SELECT) {
+            return optionsDialog;
+        }
 
-        nodeInfo.copyFrom(node.getDataSourceDescriptor());
-
-        nodeInfo.setDbAdapter(node.getAdapterType());
-
-        return nodeInfo;
+        return null;
     }
 
+    @SuppressWarnings("unchecked")
+    private List<String> getCatalogs(DataSourceWizard connectWizard, Connection connection) throws Exception {
+        if(!connectWizard.getAdapter().supportsCatalogsOnReverseEngineering()) {
+            return (List<String>) Collections.EMPTY_LIST;
+        }
+
+        return DbLoader.loadCatalogs(connection);
+    }
+
+    private List<String> getSchemas(Connection connection) throws Exception {
+        return DbLoader.loadSchemas(connection);
+    }
 }
