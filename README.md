@@ -36,4 +36,4 @@ Cayenne is available as free and open source under the Apache License, Version 2
 Documentation
 --------------
 
-Full documentation in both pdf and html formats, tutorials, mailing lists and much more are available from our website at http://cayenne.apache.org/ . E.g. here is 3.1 [Cayenne Guide](http://cayenne.apache.org/docs/3.1/cayenne-guide/index.html).
+Full  documentation in both pdf and html formats, tutorials, mailing lists and much more are available from our website at http://cayenne.apache.org/ . E.g. here is 3.1 [Cayenne Guide](http://cayenne.apache.org/docs/3.1/cayenne-guide/index.html).
