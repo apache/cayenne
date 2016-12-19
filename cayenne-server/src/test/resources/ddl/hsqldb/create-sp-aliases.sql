@@ -16,5 +16,6 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-CREATE ALIAS cayenne_tst_upd_proc FOR "org.apache.cayenne.unit.HSQLProcedures.cayenne_tst_upd_proc";
-CREATE ALIAS cayenne_tst_select_proc FOR "org.apache.cayenne.unit.HSQLProcedures.cayenne_tst_select_proc";
+
+CREATE PROCEDURE cayenne_tst_upd_proc( IN paintingPrice INT ) LANGUAGE JAVA EXTERNAL NAME 'CLASSPATH:org.apache.cayenne.unit.HSQLProcedures.cayenne_tst_upd_proc';
+CREATE PROCEDURE cayenne_tst_select_proc( IN name VARCHAR(50), IN paintingPrice INT ) LANGUAGE JAVA EXTERNAL NAME 'CLASSPATH:org.apache.cayenne.unit.HSQLProcedures.cayenne_tst_select_proc';
