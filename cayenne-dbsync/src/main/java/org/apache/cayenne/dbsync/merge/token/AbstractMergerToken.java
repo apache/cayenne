@@ -17,37 +17,43 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dbsync.merge.token.db;
+package org.apache.cayenne.dbsync.merge.token;
 
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
-import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.map.DbEntity;
+/**
+ * @since 4.0
+ */
+public abstract class AbstractMergerToken implements MergerToken {
 
-import java.util.ArrayList;
-import java.util.List;
+    private final String tokenName;
 
-public class DropTableToDb extends AbstractToDbToken.Entity {
+    private final int sortingWeight;
 
-    public DropTableToDb(DbEntity entity) {
-        super("Drop Table", 30, entity);
+    protected AbstractMergerToken(String tokenName, int sortingWeight) {
+        this.tokenName = tokenName;
+        this.sortingWeight = sortingWeight;
     }
 
     @Override
-    public List<String> createSql(DbAdapter adapter) {
-        List<String> sqls = new ArrayList<>();
-        // TODO: fix. some adapters drop the complete AUTO_PK_SUPPORT here
-        /*
-        sqls.addAll(adapter.getPkGenerator().dropAutoPkStatements(
-                Collections.singletonList(entity)));
-         */
-        sqls.addAll(adapter.dropTableStatements(getEntity()));
-        return sqls;
+    public final String getTokenName() {
+        return tokenName;
     }
 
     @Override
-    public MergerToken createReverse(MergerTokenFactory factory) {
-        return factory.createCreateTableToModel(getEntity());
+    public int getSortingWeight() {
+        return sortingWeight;
     }
 
+    @Override
+    public int compareTo(MergerToken o) {
+        return getSortingWeight() - o.getSortingWeight();
+    }
+
+    @Override
+    public String toString() {
+        return getTokenName() + ' ' + getTokenValue() + ' ' + getDirection();
+    }
+
+    public boolean isEmpty() {
+        return false;
+    }
 }

@@ -32,7 +32,7 @@ import org.apache.cayenne.map.DbEntity;
 public class DropColumnToDb extends AbstractToDbToken.EntityAndColumn {
 
     public DropColumnToDb(DbEntity entity, DbAttribute column) {
-        super("Drop Column", entity, column);
+        super("Drop Column", 20, entity, column);
     }
 
     @Override
@@ -50,14 +50,4 @@ public class DropColumnToDb extends AbstractToDbToken.EntityAndColumn {
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createAddColumnToModel(getEntity(), getColumn());
     }
-
-    @Override
-    public int compareTo(MergerToken o) {
-        // add all AddRelationshipToDb to the end.
-        if (o instanceof DropRelationshipToDb) {
-            return 1;
-        }
-        return super.compareTo(o);
-    }
-
 }

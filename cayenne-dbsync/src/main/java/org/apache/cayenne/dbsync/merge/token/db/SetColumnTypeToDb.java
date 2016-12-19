@@ -40,7 +40,7 @@ public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
     private DbAttribute columnNew;
 
     public SetColumnTypeToDb(DbEntity entity, DbAttribute columnOriginal, DbAttribute columnNew) {
-        super("Set Column Type", entity);
+        super("Set Column Type", 60, entity);
         this.columnOriginal = columnOriginal;
         this.columnNew = columnNew;
     }

@@ -34,7 +34,7 @@ import org.apache.cayenne.map.ObjEntity;
 public class AddColumnToModel extends AbstractToModelToken.EntityAndColumn {
 
     public AddColumnToModel(DbEntity entity, DbAttribute column) {
-        super("Add Column", entity, column);
+        super("Add Column", 55, entity, column);
     }
 
     @Override

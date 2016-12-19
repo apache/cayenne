@@ -32,7 +32,7 @@ import org.apache.cayenne.map.DbEntity;
 public class SetAllowNullToModel extends AbstractToModelToken.EntityAndColumn {
 
     public SetAllowNullToModel(DbEntity entity, DbAttribute column) {
-        super("Set Allow Null", entity, column);
+        super("Set Allow Null", 75, entity, column);
     }
 
     @Override

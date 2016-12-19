@@ -38,7 +38,7 @@ public class SetColumnTypeToModel extends AbstractToModelToken.Entity {
     private DbAttribute columnNew;
 
     public SetColumnTypeToModel(DbEntity entity, DbAttribute columnOriginal, DbAttribute columnNew) {
-        super("Set Column Type", entity);
+        super("Set Column Type", 65, entity);
         this.columnOriginal = columnOriginal;
         this.columnNew = columnNew;
     }

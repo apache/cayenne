@@ -33,7 +33,7 @@ import java.util.List;
 public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
 
     public AddColumnToDb(DbEntity entity, DbAttribute column) {
-        super("Add Column", entity, column);
+        super("Add Column", 50, entity, column);
     }
 
     /**
@@ -63,14 +63,5 @@ public class AddColumnToDb extends AbstractToDbToken.EntityAndColumn {
     @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createDropColumnToModel(getEntity(), getColumn());
-    }
-
-    @Override
-    public int compareTo(MergerToken o) {
-        // add all AddRelationshipToDb to the end.
-        if (o instanceof AddRelationshipToDb) {
-            return -1;
-        }
-        return super.compareTo(o);
     }
 }

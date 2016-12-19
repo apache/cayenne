@@ -34,7 +34,7 @@ import org.apache.cayenne.map.ObjEntity;
 public class DropTableToModel extends AbstractToModelToken.Entity {
 
     public DropTableToModel(DbEntity entity) {
-        super("Drop Table", entity);
+        super("Drop Table", 35, entity);
     }
 
     @Override

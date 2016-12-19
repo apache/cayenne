@@ -35,7 +35,7 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
     private DbRelationship relationship;
 
     public DropRelationshipToDb(DbEntity entity, DbRelationship relationship) {
-        super("Drop foreign key", entity);
+        super("Drop foreign key", 10, entity);
         this.relationship = relationship;
     }
     
@@ -72,14 +72,5 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
             return "Skip. No sql representation.";
         }
         return relationship.getSourceEntity().getName() + "->" + relationship.getTargetEntityName();
-    }
-
-    @Override
-    public int compareTo(MergerToken o) {
-        // add all AddRelationshipToDb to the end.
-        if (o instanceof DropRelationshipToDb) {
-            return super.compareTo(o);
-        }
-        return -1;
     }
 }

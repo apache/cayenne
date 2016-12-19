@@ -35,7 +35,7 @@ import java.util.List;
 public class CreateTableToDb extends AbstractToDbToken.Entity {
 
     public CreateTableToDb(DbEntity entity) {
-        super("Create Table", entity);
+        super("Create Table", 40, entity);
     }
 
     @Override

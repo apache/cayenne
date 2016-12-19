@@ -39,7 +39,7 @@ import java.util.List;
 public class DropColumnToModel extends AbstractToModelToken.EntityAndColumn {
 
     public DropColumnToModel(DbEntity entity, DbAttribute column) {
-        super("Drop Column", entity, column);
+        super("Drop Column", 25, entity, column);
     }
 
     @Override

@@ -36,7 +36,7 @@ import java.util.List;
 public class SetAllowNullToDb extends AbstractToDbToken.EntityAndColumn {
 
     public SetAllowNullToDb(DbEntity entity, DbAttribute column) {
-        super("Set Allow Null", entity, column);
+        super("Set Allow Null", 70, entity, column);
     }
 
     @Override

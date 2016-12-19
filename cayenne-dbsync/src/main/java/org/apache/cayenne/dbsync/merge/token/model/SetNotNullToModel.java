@@ -32,7 +32,7 @@ import org.apache.cayenne.map.DbEntity;
 public class SetNotNullToModel extends AbstractToModelToken.EntityAndColumn {
 
     public SetNotNullToModel(DbEntity entity, DbAttribute column) {
-        super("Set Not Null", entity, column);
+        super("Set Not Null", 95, entity, column);
     }
 
     @Override

@@ -65,4 +65,14 @@ public class DummyReverseToken implements MergerToken {
     public String getTokenValue() {
         return reverse.getTokenValue();
     }
+
+    @Override
+    public int getSortingWeight() {
+        return 0;
+    }
+
+    @Override
+    public int compareTo(MergerToken o) {
+        return -o.getSortingWeight();
+    }
 }
