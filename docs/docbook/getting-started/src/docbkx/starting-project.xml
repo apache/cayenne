@@ -87,7 +87,7 @@
             we'll only use one. With "project" selected on the left, click on "Create DataNode"
             button <inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="images/icon-node.gif" scalefit="0" width="100%"/>
+                    <imagedata fileref="images/icon-node.gif"/>
                 </imageobject>
             </inlinemediaobject> on the toolbar (or select "Project &gt; Create DataNode" from the menu.
         </para>
@@ -125,7 +125,7 @@
             that holds all the mapping information. To create it, click on "Create DataMap" button
             <inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="images/icon-datamap.gif" scalefit="0" width="100%"/>
+                    <imagedata fileref="images/icon-datamap.gif"/>
                 </imageobject>
             </inlinemediaobject>
             (or select a corresponding menu item). Note that the newly created DataMap is
