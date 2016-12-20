@@ -24,6 +24,9 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.SQLSelect;
+import org.apache.cayenne.query.Select;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.numeric_types.BigDecimalEntity;
@@ -72,10 +75,10 @@ public class DataContextEJBQLNumericalFunctionalIT extends ServerCase {
         context.commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
-                "SELECT d FROM BigDecimalEntity d WHERE ABS(d.bigDecimalField) > 4.5");
+                "SELECT d FROM BigDecimalEntity d WHERE ABS(d.bigDecimalField) < 5.0");
         List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
-        assertTrue(objects.contains(o2));
+        assertTrue(objects.contains(o1));
     }
 
     @Test

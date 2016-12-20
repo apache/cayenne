@@ -23,6 +23,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.db1.CrossdbM1E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E2;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -34,9 +35,15 @@ public class DataContextCrossDBIT extends ServerCase {
     @Inject
     private DataContext context;
 
+    @Inject
+    private UnitDbAdapter dbAdapter;
+
     @Test
     public void testMultiDBUpdate() {
 
+        if(!dbAdapter.supportsPKGeneratorConcurrency()) {
+            return;
+        }
         // for now testing that no exceptions are thrown... wouldn't hurt to check the
         // data as well???
 

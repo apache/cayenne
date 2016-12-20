@@ -57,6 +57,15 @@ public class HSQLDBUnitDbAdapter extends UnitDbAdapter {
         }
     }
 
+    /**
+     * In HyperSQL, REAL, FLOAT, DOUBLE are equivalent and all mapped to double in Java
+     * @see <a href="http://hsqldb.org/doc/guide/sqlgeneral-chapt.html#sgc_numeric_types">HSQLDB data types documentation</a>
+     */
+    @Override
+    public boolean realAsDouble() {
+        return true;
+    }
+
     @Override
     public boolean supportsPKGeneratorConcurrency() {
         // HSQL is not locking AUTO_PK_TABLE, so running PkGenerator in parallel may result in conflicting ranges

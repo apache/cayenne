@@ -14,10 +14,10 @@
 	<db-entity name="TABLE2">
 		<db-attribute name="CRYPTO_BYTES" type="BLOB"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="PLAIN_BYTES" type="VARBINARY"/>
+		<db-attribute name="PLAIN_BYTES" type="LONGVARBINARY"/>
 	</db-entity>
 	<db-entity name="TABLE3">
-		<db-attribute name="CRYPTO_BYTES" type="VARBINARY"/>
+		<db-attribute name="CRYPTO_BYTES" type="LONGVARBINARY"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="TABLE4">
