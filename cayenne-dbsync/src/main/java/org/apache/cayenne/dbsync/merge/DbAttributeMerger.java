@@ -158,7 +158,7 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
             return;
         }
 
-
+        tokens.add(getTokenFactory().createSetGeneratedFlagToDb(original.getEntity(), original, original.isGenerated()));
     }
 
     @Override

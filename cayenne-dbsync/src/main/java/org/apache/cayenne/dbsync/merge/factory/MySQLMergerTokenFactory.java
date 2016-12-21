@@ -24,6 +24,7 @@ import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.merge.token.db.DropRelationshipToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetGeneratedFlagToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetPrimaryKeyToDb;
 import org.apache.cayenne.map.DbAttribute;
@@ -151,6 +152,33 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
                         + " DROP PRIMARY KEY");
             }
 
+        };
+    }
+
+    @Override
+    public MergerToken createSetGeneratedFlagToDb(DbEntity entity, DbAttribute column, boolean isGenerated) {
+        return new SetGeneratedFlagToDb(entity, column, isGenerated) {
+            protected void appendAlterColumnClause(DbAdapter adapter, StringBuffer builder) {
+                builder.append(" MODIFY ");
+            }
+
+            @Override
+            protected void appendAutoIncrement(DbAdapter adapter, StringBuffer builder) {
+                adapter.createTableAppendColumn(builder, this.getColumn());
+            }
+
+            /**
+             * To drop AUTO_INCREMENT flag update column with all information but w/o AUTO_INCREMENT
+             */
+            @Override
+            protected void appendDropAutoIncrement(DbAdapter adapter, StringBuffer builder) {
+                adapter.createTableAppendColumn(builder, this.getColumn());
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
         };
     }
 }

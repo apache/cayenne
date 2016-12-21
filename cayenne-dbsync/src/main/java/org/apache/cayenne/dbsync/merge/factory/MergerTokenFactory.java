@@ -85,4 +85,8 @@ public interface MergerTokenFactory {
             Collection<DbAttribute> primaryKeyOriginal,
             Collection<DbAttribute> primaryKeyNew,
             String detectedPrimaryKeyName);
+
+    MergerToken createSetGeneratedFlagToDb(DbEntity entity, DbAttribute column, boolean isGenerated);
+
+    MergerToken createSetGeneratedFlagToModel(DbEntity entity, DbAttribute column, boolean isGenerated);
 }

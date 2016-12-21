@@ -70,7 +70,7 @@ public class UnitDbAdapter {
     public boolean supportsPKGeneratorConcurrency() {
         return true;
     }
-    
+
     public String getIdentifiersStartQuote() {
         return "\"";
     }
@@ -353,5 +353,17 @@ public class UnitDbAdapter {
 
     public boolean supportsBoolean() {
         return true;
+    }
+
+    public boolean supportsGeneratedKeys() {
+        return adapter.supportsGeneratedKeys();
+    }
+
+    public boolean supportsGeneratedKeysAdd() {
+        return false;
+    }
+
+    public boolean supportsGeneratedKeysDrop() {
+        return false;
     }
 }
