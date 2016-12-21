@@ -21,9 +21,16 @@ package org.apache.cayenne.dba.hsqldb;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.select.QualifierTranslator;
+import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
+import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -38,6 +45,8 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Iterator;
@@ -57,6 +66,8 @@ import java.util.List;
  */
 public class HSQLDBAdapter extends JdbcAdapter {
 
+	public static final String TRIM_FUNCTION = "RTRIM";
+
 	public HSQLDBAdapter(@Inject RuntimeProperties runtimeProperties,
 			@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
 			@Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
@@ -69,8 +80,40 @@ public class HSQLDBAdapter extends JdbcAdapter {
 	 * @since 4.0
 	 */
 	@Override
+	protected void configureExtendedTypes(ExtendedTypeMap map) {
+		super.configureExtendedTypes(map);
+
+		// create specially configured CharType handler
+		map.registerType(new CharType(true, true));
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
 	public SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver) {
 		return new HSQLSelectTranslator(query, this, entityResolver);
+	}
+
+	/**
+	 * Returns a trimming translator.
+	 * @since 4.0
+	 */
+	@Override
+	public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
+		QualifierTranslator translator = new HSQLQualifierTranslator(queryAssembler);
+		translator.setCaseInsensitive(caseInsensitiveCollations);
+		return translator;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
+		JdbcEJBQLTranslatorFactory translatorFactory = new HSQLEJBQLTranslatorFactory();
+		translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
+		return translatorFactory;
 	}
 
 	/**

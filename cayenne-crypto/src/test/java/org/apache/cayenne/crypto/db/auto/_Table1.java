@@ -15,10 +15,10 @@ public abstract class _Table1 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Integer> CRYPTO_INT = new Property<Integer>("cryptoInt");
-    public static final Property<String> CRYPTO_STRING = new Property<String>("cryptoString");
-    public static final Property<Integer> PLAIN_INT = new Property<Integer>("plainInt");
-    public static final Property<String> PLAIN_STRING = new Property<String>("plainString");
+    public static final Property<Integer> CRYPTO_INT = new Property<>("cryptoInt");
+    public static final Property<String> CRYPTO_STRING = new Property<>("cryptoString");
+    public static final Property<Integer> PLAIN_INT = new Property<>("plainInt");
+    public static final Property<String> PLAIN_STRING = new Property<>("plainString");
 
     public void setCryptoInt(int cryptoInt) {
         writeProperty("cryptoInt", cryptoInt);

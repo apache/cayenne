@@ -119,15 +119,19 @@ public class AttributeLoaderIT extends BaseLoaderIT {
         assertNotNull(blobEnt);
         DbAttribute blobAttr = getDbAttribute(blobEnt, "BLOB_COL");
         assertNotNull(blobAttr);
-        assertTrue(msgForTypeMismatch(Types.BLOB, blobAttr), Types.BLOB == blobAttr.getType()
-                || Types.LONGVARBINARY == blobAttr.getType());
+        assertTrue(msgForTypeMismatch(Types.BLOB, blobAttr),
+                Types.BLOB == blobAttr.getType()
+                        || Types.VARBINARY == blobAttr.getType()
+                        || Types.LONGVARBINARY == blobAttr.getType());
 
         DbEntity clobEnt = getDbEntity("CLOB_TEST");
         assertNotNull(clobEnt);
         DbAttribute clobAttr = getDbAttribute(clobEnt, "CLOB_COL");
         assertNotNull(clobAttr);
-        assertTrue(msgForTypeMismatch(Types.CLOB, clobAttr), Types.CLOB == clobAttr.getType()
-                || Types.LONGVARCHAR == clobAttr.getType());
+        assertTrue(msgForTypeMismatch(Types.CLOB, clobAttr),
+                Types.CLOB == clobAttr.getType()
+                        || Types.VARCHAR == clobAttr.getType()
+                        || Types.LONGVARCHAR == clobAttr.getType());
     }
 
 

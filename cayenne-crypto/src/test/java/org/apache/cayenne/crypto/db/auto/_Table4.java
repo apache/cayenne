@@ -15,8 +15,8 @@ public abstract class _Table4 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Integer> PLAIN_INT = new Property<Integer>("plainInt");
-    public static final Property<String> PLAIN_STRING = new Property<String>("plainString");
+    public static final Property<Integer> PLAIN_INT = new Property<>("plainInt");
+    public static final Property<String> PLAIN_STRING = new Property<>("plainString");
 
     public void setPlainInt(int plainInt) {
         writeProperty("plainInt", plainInt);

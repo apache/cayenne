@@ -15,7 +15,7 @@ public abstract class _Table3 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> CRYPTO_STRING = new Property<String>("cryptoString");
+    public static final Property<String> CRYPTO_STRING = new Property<>("cryptoString");
 
     public void setCryptoString(String cryptoString) {
         writeProperty("cryptoString", cryptoString);

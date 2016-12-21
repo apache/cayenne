@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-2139 Upgrade HSQLDB dependency to the most recent version (2.3.4)
 CAY-2163 Property.path() , ExpressionFactory.pathExp()
 CAY-2164 Relocate builder bootstrap methods from ServerRuntimeBuilder to ServerRuntime
 CAY-2165 Explicit "contribution" API for easier expansion of DI collections and maps

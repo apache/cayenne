@@ -16,7 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-DROP PROCEDURE IF EXISTS cayenne_tst_upd_proc;
-DROP PROCEDURE IF EXISTS cayenne_tst_select_proc;
-CREATE PROCEDURE cayenne_tst_upd_proc( IN paintingPrice INT ) LANGUAGE JAVA EXTERNAL NAME 'CLASSPATH:org.apache.cayenne.unit.HSQLProcedures.cayenne_tst_upd_proc';
-CREATE PROCEDURE cayenne_tst_select_proc( IN name VARCHAR(50), IN paintingPrice INT ) LANGUAGE JAVA EXTERNAL NAME 'CLASSPATH:org.apache.cayenne.unit.HSQLProcedures.cayenne_tst_select_proc';
+
+package org.apache.cayenne.dba.hsqldb;
+
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
+import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+
+/**
+ * @since 4.0
+ */
+public class HSQLEJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {
+
+    @Override
+    public EJBQLExpressionVisitor getConditionTranslator(EJBQLTranslationContext context) {
+        return new HSQLEJBQLConditionTranslator(context);
+    }
+}
