@@ -428,7 +428,7 @@ public class ClassGenerationAction {
 
 		if (dest.exists()) {
 			// no overwrite of subclasses
-			if (makePairs) {
+			if (!makePairs) {
 				return null;
 			}
 
