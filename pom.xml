@@ -1381,6 +1381,9 @@
 											<MYSQL_ALLOW_EMPTY_PASSWORD>yes</MYSQL_ALLOW_EMPTY_PASSWORD>
 											<MYSQL_DATABASE>cayenne</MYSQL_DATABASE>
 										</env>
+										<cmd>
+											--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+										</cmd>
 									</run>
 								</image>
 							</images>
