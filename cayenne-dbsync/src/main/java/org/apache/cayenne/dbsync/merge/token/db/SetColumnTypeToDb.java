@@ -110,4 +110,12 @@ public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createSetColumnTypeToModel(getEntity(), columnNew, columnOriginal);
     }
+
+    public DbAttribute getColumnNew() {
+        return columnNew;
+    }
+
+    public DbAttribute getColumnOriginal() {
+        return columnOriginal;
+    }
 }

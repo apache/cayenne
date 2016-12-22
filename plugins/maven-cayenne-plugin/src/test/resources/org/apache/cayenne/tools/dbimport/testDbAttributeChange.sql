@@ -31,7 +31,7 @@ CREATE TABLE schema_01.parent (
 
 CREATE TABLE schema_01.child (
   id INTEGER NOT NULL,
-  Parent_id CHAR(25),
+  parent_id INTEGER,
   COL1 FLOAT,
   COL2 CHAR(25),
   COL3 DECIMAL(5,1),
@@ -40,3 +40,7 @@ CREATE TABLE schema_01.child (
 
   PRIMARY KEY (id)
 );
+
+ALTER TABLE schema_01.child
+    ADD FOREIGN KEY (parent_id)
+    REFERENCES schema_01.parent (id);

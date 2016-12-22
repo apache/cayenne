@@ -347,6 +347,18 @@ public class UnitDbAdapter {
         return constraintMap;
     }
 
+    public boolean isLowerCaseNames() {
+        return false;
+    }
+
+    public boolean onlyGenericNumberType() {
+        return false;
+    }
+
+    public boolean onlyGenericDateType() {
+        return false;
+    }
+
     public boolean supportsNullBoolean() {
         return true;
     }

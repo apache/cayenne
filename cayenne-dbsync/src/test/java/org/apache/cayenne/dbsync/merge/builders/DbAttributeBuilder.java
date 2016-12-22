@@ -94,6 +94,11 @@ public class DbAttributeBuilder extends DefaultBuilder<DbAttribute> {
         return this;
     }
 
+    public DbAttributeBuilder generated() {
+        obj.setGenerated(true);
+        return this;
+    }
+
     @Override
     public DbAttribute build() {
         if (isEmpty(obj.getName())) {

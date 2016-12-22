@@ -34,10 +34,10 @@ public class PrimaryKeyLoaderIT extends BaseLoaderIT {
     @Test
     public void testPrimaryKeyLoad() throws Exception {
         createDbEntities();
-        DbEntity artist = getDbEntity("ARTIST");
-        DbAttribute artistId = new DbAttribute("ARTIST_ID");
-        DbAttribute artistName = new DbAttribute("ARTIST_NAME");
-        DbAttribute artistId1 = new DbAttribute("ARTIST_ID1");
+        DbEntity artist = getDbEntity(nameForDb("ARTIST"));
+        DbAttribute artistId = new DbAttribute(nameForDb("ARTIST_ID"));
+        DbAttribute artistName = new DbAttribute(nameForDb("ARTIST_NAME"));
+        DbAttribute artistId1 = new DbAttribute(nameForDb("ARTIST_ID1"));
 
         artist.addAttribute(artistId);
         artist.addAttribute(artistName);

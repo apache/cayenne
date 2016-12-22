@@ -62,6 +62,10 @@ public class PostgresUnitDbAdapter extends UnitDbAdapter {
         }
     }
 
+    public boolean isLowerCaseNames() {
+        return true;
+    }
+
     @Override
     public boolean supportsGeneratedKeysDrop() {
         return true;

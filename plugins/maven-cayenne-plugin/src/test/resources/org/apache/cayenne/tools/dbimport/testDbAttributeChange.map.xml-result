@@ -28,9 +28,9 @@
         <db-attribute name="COL4" type="VARCHAR" length="25"/>
         <db-attribute name="COL5" type="DATE" length="10"/>
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-        <db-attribute name="PARENT_ID" type="CHAR" length="25"/>
         <db-attribute name="col1" type="DOUBLE" length="52"/>
         <db-attribute name="col2" type="CHAR" length="25"/>
+        <db-attribute name="parent_id" type="INTEGER" length="10"/>
     </db-entity>
     <db-entity name="parent" schema="SCHEMA_01">
         <db-attribute name="COL2" type="CHAR" length="20"/>
@@ -51,5 +51,12 @@
         <obj-attribute name="col4" type="java.lang.String" db-attribute-path="COL4"/>
         <obj-attribute name="col5" type="java.util.Date" db-attribute-path="COL5"/>
     </obj-entity>
-
+    <db-relationship name="parent" source="CHILD" target="parent" toMany="false">
+        <db-attribute-pair source="parent_id" target="ID"/>
+    </db-relationship>
+    <db-relationship name="children" source="parent" target="CHILD" toMany="true">
+        <db-attribute-pair source="ID" target="parent_id"/>
+    </db-relationship>
+    <obj-relationship name="parent" source="Child" target="Parent" deleteRule="Nullify" db-relationship-path="parent"/>
+    <obj-relationship name="children" source="Parent" target="Child" deleteRule="Deny" db-relationship-path="children"/>
 </data-map>

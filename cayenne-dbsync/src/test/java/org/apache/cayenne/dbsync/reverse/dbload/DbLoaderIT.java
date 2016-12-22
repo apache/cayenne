@@ -82,16 +82,16 @@ public class DbLoaderIT extends ServerCase {
         assertNotNull(artist);
 
         // DbAttribute
-        DbAttribute id = artist.getAttribute("ARTIST_ID");
+        DbAttribute id = getDbAttribute(artist, "ARTIST_ID");
         assertNotNull(id);
         assertTrue(id.isMandatory());
         assertTrue(id.isPrimaryKey());
 
-        DbAttribute name = artist.getAttribute("ARTIST_NAME");
+        DbAttribute name = getDbAttribute(artist,"ARTIST_NAME");
         assertNotNull(name);
         assertTrue(name.isMandatory());
 
-        DbAttribute date = artist.getAttribute("DATE_OF_BIRTH");
+        DbAttribute date = getDbAttribute(artist,"DATE_OF_BIRTH");
         assertNotNull(date);
         assertFalse(date.isMandatory());
 
@@ -100,11 +100,20 @@ public class DbLoaderIT extends ServerCase {
 
         DbRelationship exhibits = artist.getRelationship("artistExhibits");
         assertNotNull(exhibits);
-        assertEquals("ARTIST_EXHIBIT", exhibits.getTargetEntityName());
+        assertEquals("ARTIST_EXHIBIT", exhibits.getTargetEntityName().toUpperCase());
         DbEntity target = exhibits.getTargetEntity();
         assertNotNull(target);
     }
 
+    private DbAttribute getDbAttribute(DbEntity ent, String name) {
+        DbAttribute da = ent.getAttribute(name);
+        // sometimes table names get converted to lowercase
+        if (da == null) {
+            da = ent.getAttribute(name.toLowerCase());
+        }
+
+        return da;
+    }
 
     @Before
     public void before() throws Exception {

@@ -122,6 +122,11 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
      */
     private boolean needUpdateType(DbAttribute original, DbAttribute imported) {
         if(original.getType() != imported.getType()) {
+            // Decimal and NUMERIC types are effectively equal so skip their interchange
+            if( (original.getType() == Types.DECIMAL || original.getType() == Types.NUMERIC) &&
+                (imported.getType() == Types.DECIMAL || imported.getType() == Types.NUMERIC)) {
+                return false;
+            }
             return true;
         }
 
