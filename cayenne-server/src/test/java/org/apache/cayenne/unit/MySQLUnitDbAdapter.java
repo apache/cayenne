@@ -120,4 +120,14 @@ public class MySQLUnitDbAdapter extends UnitDbAdapter {
         // tables...
         return !NO_CONSTRAINTS_TABLES.contains(entity.getName());
     }
+
+    @Override
+    public boolean supportsGeneratedKeysAdd() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsGeneratedKeysDrop() {
+        return true;
+    }
 }

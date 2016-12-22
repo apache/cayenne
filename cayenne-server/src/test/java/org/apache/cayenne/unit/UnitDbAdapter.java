@@ -70,7 +70,7 @@ public class UnitDbAdapter {
     public boolean supportsPKGeneratorConcurrency() {
         return true;
     }
-    
+
     public String getIdentifiersStartQuote() {
         return "\"";
     }
@@ -347,11 +347,35 @@ public class UnitDbAdapter {
         return constraintMap;
     }
 
+    public boolean isLowerCaseNames() {
+        return false;
+    }
+
+    public boolean onlyGenericNumberType() {
+        return false;
+    }
+
+    public boolean onlyGenericDateType() {
+        return false;
+    }
+
     public boolean supportsNullBoolean() {
         return true;
     }
 
     public boolean supportsBoolean() {
         return true;
+    }
+
+    public boolean supportsGeneratedKeys() {
+        return adapter.supportsGeneratedKeys();
+    }
+
+    public boolean supportsGeneratedKeysAdd() {
+        return false;
+    }
+
+    public boolean supportsGeneratedKeysDrop() {
+        return false;
     }
 }

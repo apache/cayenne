@@ -40,12 +40,16 @@ class DbEntityMerger extends AbstractMerger<DataMap, DbEntity> {
 
     private final FiltersConfig filtersConfig;
     private final boolean skipPKTokens;
+    private DataMap originalDataMap;
+    private DataMap importedDataMap;
 
     DbEntityMerger(MergerTokenFactory tokenFactory, DataMap original, DataMap imported,
                    FiltersConfig filtersConfig, boolean skipPKTokens) {
-        super(tokenFactory, original, imported);
+        super(tokenFactory);
         this.filtersConfig = filtersConfig;
         this.skipPKTokens = skipPKTokens;
+        originalDataMap = original;
+        importedDataMap = imported;
     }
 
     @Override
@@ -55,10 +59,13 @@ class DbEntityMerger extends AbstractMerger<DataMap, DbEntity> {
 
     @Override
     MergerDictionaryDiff<DbEntity> createDiff(DataMap original, DataMap imported) {
-        return new MergerDictionaryDiff.Builder<DbEntity>()
-                .originalDictionary(new DbEntityDictionary(original, filtersConfig))
+        DbEntityDictionary dictionary = new DbEntityDictionary(original, filtersConfig);
+        MergerDictionaryDiff<DbEntity> diff = new MergerDictionaryDiff.Builder<DbEntity>()
+                .originalDictionary(dictionary)
                 .importedDictionary(new DbEntityDictionary(imported, null))
                 .build();
+        setOriginalDictionary(dictionary);
+        return diff;
     }
 
     /**

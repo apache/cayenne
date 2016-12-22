@@ -61,4 +61,13 @@ public class PostgresUnitDbAdapter extends UnitDbAdapter {
             executeDDL(con, "postgresql", "create-out-sp.sql");
         }
     }
+
+    public boolean isLowerCaseNames() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsGeneratedKeysDrop() {
+        return true;
+    }
 }

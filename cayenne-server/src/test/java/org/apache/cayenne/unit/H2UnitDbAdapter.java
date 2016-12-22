@@ -38,4 +38,8 @@ public class H2UnitDbAdapter extends UnitDbAdapter {
         return false;
     }
 
+    @Override
+    public boolean supportsGeneratedKeysAdd() {
+        return true;
+    }
 }

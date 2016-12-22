@@ -32,9 +32,8 @@ class ChainMerger<T, M> extends AbstractMerger<T, M> {
 
     private final AbstractMerger<?, T> parentMerger;
 
-    ChainMerger(MergerTokenFactory tokenFactory, DataMap original, DataMap imported,
-                AbstractMerger<T, M> merger, AbstractMerger<?, T> parentMerger) {
-        super(tokenFactory, original, imported);
+    ChainMerger(MergerTokenFactory tokenFactory, AbstractMerger<T, M> merger, AbstractMerger<?, T> parentMerger) {
+        super(tokenFactory);
         this.merger = merger;
         this.parentMerger = parentMerger;
     }
@@ -48,6 +47,7 @@ class ChainMerger<T, M> extends AbstractMerger<T, M> {
     MergerDictionaryDiff<M> createDiff(T unused1, T unused2) {
         MergerDictionaryDiff<M> diff = new MergerDictionaryDiff<>();
         MergerDictionaryDiff<T> parentDiff = parentMerger.getDiff();
+        merger.setOriginalDictionary(parentMerger.getOriginalDictionary());
         for(MergerDiffPair<T> pair : parentDiff.getSame()) {
             diff.addAll(merger.createDiff(pair.getOriginal(), pair.getImported()));
         }

@@ -29,7 +29,7 @@ env:
   - DB_PROFILE=h2
   - DB_PROFILE=derby
   - DB_PROFILE=mysql-docker
-#  - DB_PROFILE=postgres-docker
+  - DB_PROFILE=postgres-docker
 
 jdk:
   - oraclejdk8
