@@ -71,4 +71,14 @@ public class HSQLDBUnitDbAdapter extends UnitDbAdapter {
         // HSQL is not locking AUTO_PK_TABLE, so running PkGenerator in parallel may result in conflicting ranges
         return false;
     }
+
+    @Override
+    public boolean supportsGeneratedKeysAdd() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsGeneratedKeysDrop() {
+        return true;
+    }
 }

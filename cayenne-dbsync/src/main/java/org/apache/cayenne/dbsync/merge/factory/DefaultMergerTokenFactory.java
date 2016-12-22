@@ -28,6 +28,7 @@ import org.apache.cayenne.dbsync.merge.token.db.DropRelationshipToDb;
 import org.apache.cayenne.dbsync.merge.token.db.DropTableToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetGeneratedFlagToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetPrimaryKeyToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetValueForNullToDb;
@@ -39,6 +40,7 @@ import org.apache.cayenne.dbsync.merge.token.model.DropRelationshipToModel;
 import org.apache.cayenne.dbsync.merge.token.model.DropTableToModel;
 import org.apache.cayenne.dbsync.merge.token.model.SetAllowNullToModel;
 import org.apache.cayenne.dbsync.merge.token.model.SetColumnTypeToModel;
+import org.apache.cayenne.dbsync.merge.token.model.SetGeneratedFlagToModel;
 import org.apache.cayenne.dbsync.merge.token.model.SetNotNullToModel;
 import org.apache.cayenne.dbsync.merge.token.model.SetPrimaryKeyToModel;
 import org.apache.cayenne.map.DbAttribute;
@@ -177,5 +179,15 @@ public class DefaultMergerTokenFactory implements MergerTokenFactory {
                 primaryKeyOriginal,
                 primaryKeyNew,
                 detectedPrimaryKeyName);
+    }
+
+    @Override
+    public MergerToken createSetGeneratedFlagToDb(DbEntity entity, DbAttribute column, boolean isGenerated) {
+        return new SetGeneratedFlagToDb(entity, column, isGenerated);
+    }
+
+    @Override
+    public MergerToken createSetGeneratedFlagToModel(DbEntity entity, DbAttribute column, boolean isGenerated) {
+        return new SetGeneratedFlagToModel(entity, column, isGenerated);
     }
 }

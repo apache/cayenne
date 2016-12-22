@@ -61,4 +61,9 @@ public class PostgresUnitDbAdapter extends UnitDbAdapter {
             executeDDL(con, "postgresql", "create-out-sp.sql");
         }
     }
+
+    @Override
+    public boolean supportsGeneratedKeysDrop() {
+        return true;
+    }
 }

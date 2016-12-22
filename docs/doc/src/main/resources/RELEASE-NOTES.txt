@@ -23,6 +23,7 @@ CAY-2169 Split DbMerger to parts and clean it up
 CAY-2170 MergeToken sorting is highly unstable
 CAY-2172 Cleanup Modeler import and migrate db actions
 CAY-2176 Java 7 diamond class generation templates
+CAY-2177 Sync auto generated state of PK between model and DB
 
 Bug Fixes:
 
