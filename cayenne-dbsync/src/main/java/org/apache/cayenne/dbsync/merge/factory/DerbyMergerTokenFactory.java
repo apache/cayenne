@@ -23,6 +23,7 @@ import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetGeneratedFlagToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -82,4 +83,23 @@ public class DerbyMergerTokenFactory extends DefaultMergerTokenFactory {
         };
     }
 
+    @Override
+    public MergerToken createSetGeneratedFlagToDb(DbEntity entity, DbAttribute column, boolean isGenerated) {
+        return new SetGeneratedFlagToDb(entity, column, isGenerated) {
+            @Override
+            protected void appendAutoIncrement(DbAdapter adapter, StringBuffer builder) {
+                throw new UnsupportedOperationException("Can't automatically alter column to identity. You need to manually alter schema.");
+            }
+
+            @Override
+            protected void appendDropAutoIncrement(DbAdapter adapter, StringBuffer builder) {
+                throw new UnsupportedOperationException("Can't automatically drop identity. You need to manually alter schema.");
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+        };
+    }
 }

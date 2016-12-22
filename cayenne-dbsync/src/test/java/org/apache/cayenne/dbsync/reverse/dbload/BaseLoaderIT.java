@@ -72,7 +72,7 @@ public class BaseLoaderIT extends ServerCase {
     void createDbEntities() {
         String[] names = {"ARTIST", "BLOB_TEST", "CLOB_TEST", "GENERATED_COLUMN_TEST"};
         for(String name : names) {
-            createEntity(name);
+            createEntity(nameForDb(name));
         }
     }
 
@@ -87,5 +87,13 @@ public class BaseLoaderIT extends ServerCase {
             de = store.getDbEntity(name.toLowerCase());
         }
         return de;
+    }
+
+    String nameForDb(String name) {
+        if(accessStackAdapter.isLowerCaseNames()) {
+            return name.toLowerCase();
+        } else {
+            return name.toUpperCase();
+        }
     }
 }

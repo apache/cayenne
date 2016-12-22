@@ -34,7 +34,7 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
     private DbRelationship relationship;
 
     public AddRelationshipToDb(DbEntity entity, DbRelationship relationship) {
-        super("Add foreign key", 110, entity);
+        super("Add foreign key", 120, entity);
         this.relationship = relationship;
     }
 

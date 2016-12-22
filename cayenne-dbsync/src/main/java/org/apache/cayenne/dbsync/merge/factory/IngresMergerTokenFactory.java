@@ -26,6 +26,7 @@ import org.apache.cayenne.dbsync.merge.token.db.DropColumnToDb;
 import org.apache.cayenne.dbsync.merge.token.db.DropRelationshipToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetGeneratedFlagToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -218,6 +219,26 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
                 buf.append(" CASCADE ");
 
                 return Collections.singletonList(buf.toString());
+            }
+        };
+    }
+
+    @Override
+    public MergerToken createSetGeneratedFlagToDb(DbEntity entity, DbAttribute column, boolean isGenerated) {
+        return new SetGeneratedFlagToDb(entity, column, isGenerated) {
+            @Override
+            protected void appendAutoIncrement(DbAdapter adapter, StringBuffer builder) {
+                throw new UnsupportedOperationException("Can't automatically alter column to IDENTITY in Ingres database. You should do this manually.");
+            }
+
+            @Override
+            protected void appendDropAutoIncrement(DbAdapter adapter, StringBuffer builder) {
+                builder.append("DROP IDENTITY");
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
             }
         };
     }

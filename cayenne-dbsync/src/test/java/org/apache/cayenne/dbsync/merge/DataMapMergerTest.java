@@ -315,6 +315,64 @@ public class DataMapMergerTest {
     }
 
     @Test
+    public void testTableNameUppercaseRelationship() throws Exception {
+        DataMap existing = dataMap().with(
+                dbEntity("TABLE1").attributes(
+                        dbAttr("attr01").typeInt(),
+                        dbAttr("attr02").typeInt()),
+
+                dbEntity("table2").attributes(
+                        dbAttr("attr01").typeInt().primaryKey(),
+                        dbAttr("attr02").typeInt().primaryKey(),
+                        dbAttr("attr03").typeInt().primaryKey())
+        ).join("rel", "TABLE1.attr01", "table2.attr01").build();
+
+        DataMap db = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt(),
+                        dbAttr("attr02").typeInt()),
+
+                dbEntity("table2").attributes(
+                        dbAttr("attr01").typeInt().primaryKey(),
+                        dbAttr("attr02").typeInt().primaryKey(),
+                        dbAttr("attr03").typeInt().primaryKey())
+        ).join("rel", "table1.attr01", "table2.attr01").build();
+
+
+        List<MergerToken> tokens = dbMerger().createMergeTokens(existing, db);
+        assertEquals(0, tokens.size());
+    }
+
+    @Test
+    public void testAttributeNameUppercaseRelationship() throws Exception {
+        DataMap existing = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("ATTR01").typeInt(),
+                        dbAttr("attr02").typeInt()),
+
+                dbEntity("table2").attributes(
+                        dbAttr("attr01").typeInt().primaryKey(),
+                        dbAttr("attr02").typeInt().primaryKey(),
+                        dbAttr("attr03").typeInt().primaryKey())
+        ).join("rel", "table1.ATTR01", "table2.attr01").build();
+
+        DataMap db = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt(),
+                        dbAttr("attr02").typeInt()),
+
+                dbEntity("table2").attributes(
+                        dbAttr("attr01").typeInt().primaryKey(),
+                        dbAttr("attr02").typeInt().primaryKey(),
+                        dbAttr("attr03").typeInt().primaryKey())
+        ).join("rel", "table1.attr01", "table2.attr01").build();
+
+
+        List<MergerToken> tokens = dbMerger().createMergeTokens(existing, db);
+        assertEquals(0, tokens.size());
+    }
+
+    @Test
     public void testRemoveRelationship() throws Exception {
         DataMap existing = dataMap().with(
             dbEntity("table1").attributes(
@@ -368,6 +426,22 @@ public class DataMapMergerTest {
         DbEntity entity = db.getDbEntity("table1");
         assertEquals(factory().createDropColumnToModel(entity, entity.getAttribute("attr02")).getTokenValue(),
                      tokens.get(0).getTokenValue());
+    }
+
+    @Test
+    public void testChangeGeneratedStatus() {
+        DataMap existing = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeVarchar(10)
+                )).build();
+
+        DataMap db = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt().generated()
+                )).build();
+
+        List<MergerToken> tokens = dbMerger().createMergeTokens(existing, db);
+        assertEquals(2, tokens.size());
     }
 
     @Test

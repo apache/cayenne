@@ -35,7 +35,7 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
     private DbRelationship relationship;
 
     public AddRelationshipToModel(DbEntity entity, DbRelationship relationship) {
-        super("Add Relationship", 115, entity);
+        super("Add Relationship", 125, entity);
         this.relationship = relationship;
     }
 

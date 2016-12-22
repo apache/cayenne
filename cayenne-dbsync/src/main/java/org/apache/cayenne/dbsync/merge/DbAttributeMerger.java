@@ -36,8 +36,8 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
 
     private final ValueForNullProvider valueForNull;
 
-    DbAttributeMerger(MergerTokenFactory tokenFactory, DataMap original, DataMap imported, ValueForNullProvider valueForNull) {
-        super(tokenFactory, original, imported);
+    DbAttributeMerger(MergerTokenFactory tokenFactory, ValueForNullProvider valueForNull) {
+        super(tokenFactory);
         this.valueForNull = valueForNull;
     }
 
@@ -76,7 +76,7 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
      */
     @Override
     Collection<MergerToken> createTokensForMissingOriginal(DbAttribute imported) {
-        DbEntity originalDbEntity = originalDataMap.getDbEntity(imported.getEntity().getName());
+        DbEntity originalDbEntity = getOriginalDictionary().getByName(imported.getEntity().getName().toUpperCase());
         return Collections.singleton(getTokenFactory().createDropColumnToDb(originalDbEntity, imported));
     }
 
@@ -122,6 +122,11 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
      */
     private boolean needUpdateType(DbAttribute original, DbAttribute imported) {
         if(original.getType() != imported.getType()) {
+            // Decimal and NUMERIC types are effectively equal so skip their interchange
+            if( (original.getType() == Types.DECIMAL || original.getType() == Types.NUMERIC) &&
+                (imported.getType() == Types.DECIMAL || imported.getType() == Types.NUMERIC)) {
+                return false;
+            }
             return true;
         }
 
@@ -158,7 +163,7 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
             return;
         }
 
-
+        tokens.add(getTokenFactory().createSetGeneratedFlagToDb(original.getEntity(), original, original.isGenerated()));
     }
 
     @Override

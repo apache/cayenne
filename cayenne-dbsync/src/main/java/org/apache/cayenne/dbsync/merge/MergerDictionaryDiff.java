@@ -19,9 +19,11 @@
 
 package org.apache.cayenne.dbsync.merge;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 class MergerDictionaryDiff<T> {
 
@@ -48,6 +50,7 @@ class MergerDictionaryDiff<T> {
         private MergerDictionaryDiff<T> diff;
         private MergerDictionary<T> originalDictionary;
         private MergerDictionary<T> importedDictionary;
+        private Set<String> sameNames = new HashSet<>();
 
         Builder() {
             diff = new MergerDictionaryDiff<>();
@@ -79,7 +82,6 @@ class MergerDictionaryDiff<T> {
 
         private List<MergerDiffPair<T>> buildSame() {
             List<MergerDiffPair<T>> sameEntities = new LinkedList<>();
-            List<String> sameNames = new LinkedList<>();
             for(Map.Entry<String, T> entry : originalDictionary.getDictionary().entrySet()) {
                 String name = entry.getKey();
                 T original = entry.getValue();
@@ -91,27 +93,26 @@ class MergerDictionaryDiff<T> {
                 }
             }
 
-            // clean up found names
-            for(String name : sameNames) {
-                originalDictionary.remove(name);
-                importedDictionary.remove(name);
-            }
-
             return sameEntities;
         }
 
         private List<MergerDiffPair<T>> buildMissing() {
             List<MergerDiffPair<T>> missingEntities = new LinkedList<>();
-            for(T original : originalDictionary.getDictionary().values()) {
-                MergerDiffPair<T> pair = new MergerDiffPair<>(original, null);
-                missingEntities.add(pair);
-            }
-            for(T imported : importedDictionary.getDictionary().values()) {
-                MergerDiffPair<T> pair = new MergerDiffPair<>(null, imported);
-                missingEntities.add(pair);
-            }
+            addMissingFromDictionary(missingEntities, originalDictionary, true);
+            addMissingFromDictionary(missingEntities, importedDictionary, false);
             return missingEntities;
         }
-    }
 
+        private void addMissingFromDictionary(List<MergerDiffPair<T>> missingEntities, MergerDictionary<T> dictionary, boolean isOriginal) {
+            for(Map.Entry<String, T> entry : dictionary.getDictionary().entrySet()) {
+                if(sameNames.contains(entry.getKey())) {
+                    continue;
+                }
+                MergerDiffPair<T> pair = new MergerDiffPair<>(
+                        isOriginal ? entry.getValue() : null,
+                        isOriginal ? null : entry.getValue());
+                missingEntities.add(pair);
+            }
+        }
+    }
 }

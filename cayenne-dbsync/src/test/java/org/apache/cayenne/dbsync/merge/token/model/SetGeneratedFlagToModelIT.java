@@ -17,44 +17,51 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dbsync.reverse.dbload;
+package org.apache.cayenne.dbsync.merge.token.model;
 
-import java.util.Collection;
+import java.util.List;
 
+import org.apache.cayenne.dbsync.merge.MergeCase;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class PrimaryKeyLoaderIT extends BaseLoaderIT {
+/**
+ * @since 4.0
+ */
+public class SetGeneratedFlagToModelIT extends MergeCase {
 
     @Test
-    public void testPrimaryKeyLoad() throws Exception {
-        createDbEntities();
-        DbEntity artist = getDbEntity(nameForDb("ARTIST"));
-        DbAttribute artistId = new DbAttribute(nameForDb("ARTIST_ID"));
-        DbAttribute artistName = new DbAttribute(nameForDb("ARTIST_NAME"));
-        DbAttribute artistId1 = new DbAttribute(nameForDb("ARTIST_ID1"));
+    public void test() throws Exception {
+        DbEntity dbEntity = map.getDbEntity("PAINTING");
+        assertNotNull(dbEntity);
 
-        artist.addAttribute(artistId);
-        artist.addAttribute(artistName);
-        artist.addAttribute(artistId1);
-        assertFalse(artistId.isPrimaryKey());
-        assertFalse(artistName.isPrimaryKey());
-        assertFalse(artistId1.isPrimaryKey());
+        DbAttribute attribute = dbEntity.getAttribute("PAINTING_ID");
+        assertNotNull(attribute);
+        assertFalse(attribute.isGenerated());
 
-        PrimaryKeyLoader loader = new PrimaryKeyLoader(EMPTY_CONFIG, new DefaultDbLoaderDelegate());
-        loader.load(connection.getMetaData(), store);
+        attribute.setGenerated(true);
 
-        assertTrue(artistId.isPrimaryKey());
-        assertFalse(artistId1.isPrimaryKey());
-        assertFalse(artistName.isPrimaryKey());
-        Collection<DbAttribute> pk = artist.getPrimaryKeys();
-        assertEquals(1, pk.size());
-        assertEquals(artistId, pk.iterator().next());
+        List<MergerToken> tokens = createMergeTokens();
+        assertEquals(1, tokens.size());
+
+        MergerToken token = tokens.get(0);
+        if (token.getDirection().isToDb()) {
+            token = token.createReverse(mergerFactory());
+        }
+        assertTrue(token instanceof SetGeneratedFlagToModel);
+
+        execute(token);
+
+        assertFalse(attribute.isGenerated());
+
+        assertTokensAndExecute(0, 0);
     }
 
 }

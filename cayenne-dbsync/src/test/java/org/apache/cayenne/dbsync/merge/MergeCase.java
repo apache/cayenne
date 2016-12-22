@@ -22,11 +22,13 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.token.db.AbstractToDbToken;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
@@ -128,7 +130,46 @@ public abstract class MergeCase extends DbSyncCase {
         }
 
         List<MergerToken> tokens = merger().filters(filters).build().createMergeTokens(map, dbImport);
-        return filterEmpty(tokens);
+        return filter(tokens);
+    }
+
+    private List<MergerToken> filter(List<MergerToken> tokens) {
+        return filterEmptyTypeChange(filterEmpty(tokens));
+    }
+
+    /**
+     * Filter out tokens for db attribute type change when types is same for specific DB
+     */
+    private List<MergerToken> filterEmptyTypeChange(List<MergerToken> tokens) {
+        List<MergerToken> tokensOut = new ArrayList<>();
+        for(MergerToken token : tokens) {
+            if(!(token instanceof SetColumnTypeToDb)) {
+                tokensOut.add(token);
+                continue;
+            }
+            SetColumnTypeToDb setColumnToDb = (SetColumnTypeToDb)token;
+            int toType = setColumnToDb.getColumnNew().getType();
+            int fromType = setColumnToDb.getColumnOriginal().getType();
+            // filter out conversions between date/time types
+            if(accessStackAdapter.onlyGenericDateType()) {
+                if(isDateTimeType(toType) && isDateTimeType(fromType)){
+                    continue;
+                }
+            }
+            // filter out conversions between numeric types
+            if(accessStackAdapter.onlyGenericNumberType()) {
+                if(TypesMapping.isNumeric(toType) && TypesMapping.isNumeric(fromType)) {
+                    continue;
+                }
+            }
+            tokensOut.add(token);
+        }
+
+        return tokensOut;
+    }
+
+    private static boolean isDateTimeType(int type) {
+        return type == Types.DATE || type == Types.TIME || type == Types.TIMESTAMP;
     }
 
     private List<MergerToken> filterEmpty(List<MergerToken> tokens) {

@@ -38,9 +38,9 @@ public class ExportedKeyLoaderIT extends BaseLoaderIT {
             return;
         }
 
-        createEntity("ARTIST");
-        createEntity("GALLERY");
-        createEntity("PAINTING");
+        createEntity(nameForDb("ARTIST"));
+        createEntity(nameForDb("GALLERY"));
+        createEntity(nameForDb("PAINTING"));
         DbEntity artist = getDbEntity("ARTIST");
         DbAttribute artistId = new DbAttribute("ARTIST_ID");
         artist.addAttribute(artistId);
@@ -65,21 +65,20 @@ public class ExportedKeyLoaderIT extends BaseLoaderIT {
         ExportedKey artistIdFk = findArtistExportedKey();
         assertNotNull(artistIdFk);
 
-        assertEquals("ARTIST", artistIdFk.getPk().getTable());
-        assertEquals("ARTIST_ID", artistIdFk.getPk().getColumn());
+        assertEquals("ARTIST", artistIdFk.getPk().getTable().toUpperCase());
+        assertEquals("ARTIST_ID", artistIdFk.getPk().getColumn().toUpperCase());
 
-        assertEquals("PAINTING", artistIdFk.getFk().getTable());
-        assertEquals("ARTIST_ID", artistIdFk.getFk().getColumn());
+        assertEquals("PAINTING", artistIdFk.getFk().getTable().toUpperCase());
+        assertEquals("ARTIST_ID", artistIdFk.getFk().getColumn().toUpperCase());
     }
 
-    ExportedKey findArtistExportedKey() {
+    private ExportedKey findArtistExportedKey() {
         for(Map.Entry<String, Set<ExportedKey>> entry : store.getExportedKeysEntrySet()) {
-            if(entry.getKey().endsWith(".ARTIST_ID")) {
+            if(entry.getKey().toUpperCase().endsWith(".ARTIST_ID")) {
                 return entry.getValue().iterator().next();
             }
         }
 
         return null;
     }
-
 }
