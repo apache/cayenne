@@ -31,13 +31,10 @@ abstract class AbstractMerger<T, M> implements Merger<T> {
 
     private MergerDictionaryDiff<M> diff;
     private MergerTokenFactory tokenFactory;
-    DataMap originalDataMap;
-    DataMap importedDataMap;
+    private DbEntityDictionary originalDictionary;
 
-    AbstractMerger(MergerTokenFactory tokenFactory, DataMap original, DataMap imported) {
+    AbstractMerger(MergerTokenFactory tokenFactory) {
         this.tokenFactory = tokenFactory;
-        this.originalDataMap = original;
-        this.importedDataMap = imported;
     }
 
     @Override
@@ -89,4 +86,11 @@ abstract class AbstractMerger<T, M> implements Merger<T> {
 
     abstract Collection<MergerToken> createTokensForSame(MergerDiffPair<M> same);
 
+    public void setOriginalDictionary(DbEntityDictionary originalDictionary) {
+        this.originalDictionary = originalDictionary;
+    }
+
+    public DbEntityDictionary getOriginalDictionary() {
+        return originalDictionary;
+    }
 }

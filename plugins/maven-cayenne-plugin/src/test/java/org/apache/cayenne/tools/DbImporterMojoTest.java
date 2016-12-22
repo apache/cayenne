@@ -202,6 +202,11 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         test("testCustomObjectLayerSettings");
     }
 
+    @Test
+    public void testDbAttributeChange() throws Exception {
+        test("testDbAttributeChange");
+    }
+
 	@Test
 	public void testForceDataMapSchema() throws Exception {
 		test("testForceDataMapSchema");
