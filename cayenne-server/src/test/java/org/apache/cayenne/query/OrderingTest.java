@@ -29,15 +29,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.*;
 
 public class OrderingTest {
 
     @Test
-    public void testPathSpec1() throws Exception {
+    public void testPathSpec1() {
         String pathSpec = "a.b.c";
         Ordering ord = new Ordering();
         assertNull(ord.getSortSpec());
@@ -47,14 +45,14 @@ public class OrderingTest {
     }
 
     @Test
-    public void testPathSpec3() throws Exception {
+    public void testPathSpec3() {
         String pathSpec = "a.b.c";
         Ordering ord = new Ordering(pathSpec, SortOrder.DESCENDING);
         assertEquals(pathSpec, ord.getSortSpec().getOperand(0));
     }
 
     @Test
-    public void testAscending1() throws Exception {
+    public void testAscending1() {
         Ordering ord = new Ordering();
         ord.setAscending();
         assertTrue(ord.isAscending());
@@ -62,7 +60,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testAscending2() throws Exception {
+    public void testAscending2() {
         Ordering ord = new Ordering();
         ord.setSortOrder(SortOrder.ASCENDING);
         assertTrue(ord.isAscending());
@@ -70,7 +68,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testAscending3() throws Exception {
+    public void testAscending3() {
         Ordering ord = new Ordering();
         ord.setSortOrder(SortOrder.ASCENDING_INSENSITIVE);
         assertTrue(ord.isAscending());
@@ -78,7 +76,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testDescending1() throws Exception {
+    public void testDescending1() {
         Ordering ord = new Ordering();
         ord.setDescending();
         assertFalse(ord.isAscending());
@@ -86,7 +84,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testDescending2() throws Exception {
+    public void testDescending2() {
         Ordering ord = new Ordering();
         ord.setSortOrder(SortOrder.DESCENDING);
         assertFalse(ord.isAscending());
@@ -94,7 +92,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testDescending3() throws Exception {
+    public void testDescending3() {
         Ordering ord = new Ordering();
         ord.setSortOrder(SortOrder.DESCENDING_INSENSITIVE);
         assertFalse(ord.isAscending());
@@ -102,31 +100,31 @@ public class OrderingTest {
     }
 
     @Test
-    public void testCaseInsensitive3() throws Exception {
+    public void testCaseInsensitive3() {
         Ordering ord = new Ordering("M", SortOrder.ASCENDING_INSENSITIVE);
         assertTrue(ord.isCaseInsensitive());
     }
 
     @Test
-    public void testCaseInsensitive4() throws Exception {
+    public void testCaseInsensitive4() {
         Ordering ord = new Ordering("N", SortOrder.ASCENDING);
         assertFalse(ord.isCaseInsensitive());
     }
 
     @Test
-    public void testCaseInsensitive5() throws Exception {
+    public void testCaseInsensitive5() {
         Ordering ord = new Ordering("M", SortOrder.DESCENDING_INSENSITIVE);
         assertTrue(ord.isCaseInsensitive());
     }
 
     @Test
-    public void testCaseInsensitive6() throws Exception {
+    public void testCaseInsensitive6() {
         Ordering ord = new Ordering("N", SortOrder.DESCENDING);
         assertFalse(ord.isCaseInsensitive());
     }
 
     @Test
-    public void testCompare3() throws Exception {
+    public void testCompare3() {
         Painting p1 = new Painting();
         p1.setEstimatedPrice(new BigDecimal(1000.00));
 
@@ -143,7 +141,7 @@ public class OrderingTest {
     }
 
     @Test
-    public void testCompare4() throws Exception {
+    public void testCompare4() {
         // compare on non-persistent property
         TstBean t1 = new TstBean(1000);
         TstBean t2 = new TstBean(2000);
@@ -156,24 +154,36 @@ public class OrderingTest {
     }
 
     @Test
-    public void testOrderList2() throws Exception {
-        // compare on non-persistent property
-        List<TstBean> list = new ArrayList<TstBean>(3);
+    public void testOrderList() {
+        List<TstBean> list = new ArrayList<>(3);
 
         list.add(new TstBean(5));
         list.add(new TstBean(2));
         list.add(new TstBean(3));
 
         new Ordering("integer", SortOrder.ASCENDING).orderList(list);
-        assertEquals(2, ((TstBean) list.get(0)).getInteger().intValue());
-        assertEquals(3, ((TstBean) list.get(1)).getInteger().intValue());
-        assertEquals(5, ((TstBean) list.get(2)).getInteger().intValue());
+        assertEquals(2, list.get(0).getInteger().intValue());
+        assertEquals(3, list.get(1).getInteger().intValue());
+        assertEquals(5, list.get(2).getInteger().intValue());
     }
 
     @Test
-    public void testOrderListWithMultipleOrderings2() throws Exception {
-        // compare on non-persistent property
-        List<TstBean> list = new ArrayList<TstBean>(6);
+    public void testOrderList_Related() {
+        List<B1> unordered = asList(
+                new B1().setName("three").setB2(new B2().setName("Z")),
+                new B1().setName("one").setB2(new B2().setName("A")),
+                new B1().setName("two").setB2(new B2().setName("M"))
+        );
+
+        List<B1> ordered = new Ordering("b2.name", SortOrder.ASCENDING).orderedList(unordered);
+        assertEquals("one", ordered.get(0).getName());
+        assertEquals("two", ordered.get(1).getName());
+        assertEquals("three", ordered.get(2).getName());
+    }
+
+    @Test
+    public void testOrderList_Static() {
+        List<TstBean> list = new ArrayList<>(6);
 
         list.add(new TstBean("c", 1));
         list.add(new TstBean("c", 30));
@@ -182,12 +192,12 @@ public class OrderingTest {
         list.add(new TstBean("b", 2));
         list.add(new TstBean("b", 5));
 
-        List<Ordering> orderings = new ArrayList<Ordering>(2);
-        orderings.add(new Ordering("string", SortOrder.ASCENDING));
-        orderings.add(new Ordering("integer", SortOrder.DESCENDING));
+        List<Ordering> orderings = asList(
+                new Ordering("string", SortOrder.ASCENDING),
+                new Ordering("integer", SortOrder.DESCENDING));
 
         // clone list and then order
-        List<TstBean> orderedList = new ArrayList<TstBean>(list);
+        List<TstBean> orderedList = new ArrayList<>(list);
         Ordering.orderList(orderedList, orderings);
 
         assertEquals(list.get(2), orderedList.get(0));
@@ -197,38 +207,38 @@ public class OrderingTest {
         assertEquals(list.get(1), orderedList.get(4));
         assertEquals(list.get(0), orderedList.get(5));
     }
-    
+
     @Test
-    public void testOrderedListInstanceMethod() {
-    	Collection<TstBean> set = new HashSet<TstBean>(6);
-    	
-    	TstBean shouldBe0 = new TstBean("a", 0);
-    	TstBean shouldBe1 = new TstBean("b", 0);
-    	TstBean shouldBe2 = new TstBean("c", 0);
-    	TstBean shouldBe3 = new TstBean("d", 0);
-    	TstBean shouldBe4 = new TstBean("f", 0);
-    	TstBean shouldBe5 = new TstBean("r", 0);
-    	
-    	set.add(shouldBe1);
-    	set.add(shouldBe0);
-    	set.add(shouldBe5);
-    	set.add(shouldBe3);
-    	set.add(shouldBe2);
-    	set.add(shouldBe4);
-    	
-    	List<TstBean> orderedList = new Ordering("string", SortOrder.ASCENDING).orderedList(set);
-    	
-    	assertEquals(shouldBe0, orderedList.get(0));
-    	assertEquals(shouldBe1, orderedList.get(1));
-    	assertEquals(shouldBe2, orderedList.get(2));
-    	assertEquals(shouldBe3, orderedList.get(3));
-    	assertEquals(shouldBe4, orderedList.get(4));
-    	assertEquals(shouldBe5, orderedList.get(5));
+    public void testOrderedList() {
+        Collection<TstBean> set = new HashSet<>(6);
+
+        TstBean shouldBe0 = new TstBean("a", 0);
+        TstBean shouldBe1 = new TstBean("b", 0);
+        TstBean shouldBe2 = new TstBean("c", 0);
+        TstBean shouldBe3 = new TstBean("d", 0);
+        TstBean shouldBe4 = new TstBean("f", 0);
+        TstBean shouldBe5 = new TstBean("r", 0);
+
+        set.add(shouldBe1);
+        set.add(shouldBe0);
+        set.add(shouldBe5);
+        set.add(shouldBe3);
+        set.add(shouldBe2);
+        set.add(shouldBe4);
+
+        List<TstBean> orderedList = new Ordering("string", SortOrder.ASCENDING).orderedList(set);
+
+        assertEquals(shouldBe0, orderedList.get(0));
+        assertEquals(shouldBe1, orderedList.get(1));
+        assertEquals(shouldBe2, orderedList.get(2));
+        assertEquals(shouldBe3, orderedList.get(3));
+        assertEquals(shouldBe4, orderedList.get(4));
+        assertEquals(shouldBe5, orderedList.get(5));
     }
-    
+
     @Test
-    public void testOrderedListStaticMethod() {
-        Collection<TstBean> set = new HashSet<TstBean>(6);
+    public void testOrderedList_Static() {
+        Collection<TstBean> set = new HashSet<>(6);
 
         TstBean shouldBe0 = new TstBean("a", 5);
         TstBean shouldBe1 = new TstBean("b", 5);
@@ -243,18 +253,56 @@ public class OrderingTest {
         set.add(shouldBe1);
         set.add(shouldBe4);
         set.add(shouldBe2);
-        
-        List<Ordering> orderings = new ArrayList<Ordering>(2);
-        orderings.add(new Ordering("string", SortOrder.ASCENDING));
-        orderings.add(new Ordering("integer", SortOrder.DESCENDING));
+
+        List<Ordering> orderings = asList(
+                new Ordering("string", SortOrder.ASCENDING),
+                new Ordering("integer", SortOrder.DESCENDING));
 
         List<TstBean> orderedList = Ordering.orderedList(set, orderings);
-        
+
         assertEquals(shouldBe0, orderedList.get(0));
         assertEquals(shouldBe1, orderedList.get(1));
         assertEquals(shouldBe2, orderedList.get(2));
         assertEquals(shouldBe3, orderedList.get(3));
         assertEquals(shouldBe4, orderedList.get(4));
         assertEquals(shouldBe5, orderedList.get(5));
+    }
+
+    public static class B1 {
+
+        private B2 b2;
+        private String name;
+
+        public B2 getB2() {
+            return b2;
+        }
+
+        public B1 setB2(B2 b2) {
+            this.b2 = b2;
+            return this;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public B1 setName(String name) {
+            this.name = name;
+            return this;
+        }
+    }
+
+    public static class B2 {
+
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public B2 setName(String name) {
+            this.name = name;
+            return this;
+        }
     }
 }
