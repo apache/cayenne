@@ -234,6 +234,16 @@
 			</roles>
 			<timezone>+3</timezone>
 		</developer>
+		<developer>
+			<id>ntimofeev</id>
+			<name>Nikita Timofeev</name>
+			<email>ntimofeev@apache.org</email>
+			<organization>ObjectStyle</organization>
+			<roles>
+				<role>Committer</role>
+			</roles>
+			<timezone>+3</timezone>
+		</developer>
 	</developers>
 	<licenses>
 		<license>
