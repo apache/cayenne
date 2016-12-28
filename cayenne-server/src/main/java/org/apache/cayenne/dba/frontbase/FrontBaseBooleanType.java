@@ -35,7 +35,7 @@ class FrontBaseBooleanType extends BooleanType {
     @Override
     public void setJdbcObject(
             PreparedStatement st,
-            Object val,
+            Boolean val,
             int pos,
             int type,
             int precision) throws Exception {

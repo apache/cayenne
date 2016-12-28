@@ -27,7 +27,7 @@ import org.apache.cayenne.access.types.ExtendedType;
 
 /**
  */
-public class CAY_207StringType2 implements ExtendedType {
+public class CAY_207StringType2 implements ExtendedType<CAY_207String2> {
 
     @Override
     public String getClassName() {
@@ -35,34 +35,38 @@ public class CAY_207StringType2 implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public CAY_207String2 materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return new CAY_207String2(rs.getString(index));
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public CAY_207String2 materializeObject(ResultSet rs, int index, int type) throws Exception {
         return new CAY_207String2(rs.getString(index));
     }
 
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            CAY_207String2 value,
             int pos,
             int type,
             int scale) throws Exception {
 
-        if (value instanceof CAY_207String2) {
-            value = ((CAY_207String2) value).string;
-        }
-
         if (scale != -1) {
-            statement.setObject(pos, value, type, scale);
+            statement.setObject(pos, value.string, type, scale);
         }
         else {
-            statement.setObject(pos, value, type);
+            statement.setObject(pos, value.string, type);
         }
     }
 
+    @Override
+    public String toString(CAY_207String2 value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.toString();
+    }
 }

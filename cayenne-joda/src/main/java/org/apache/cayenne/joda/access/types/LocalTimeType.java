@@ -33,56 +33,62 @@ import org.joda.time.LocalTime;
 
 /**
  * Handles <code>org.joda.time.LocalTime</code> type mapping.
- * 
+ *
  * @since 4.0
  */
-public class LocalTimeType implements ExtendedType {
+public class LocalTimeType implements ExtendedType<LocalTime> {
 
-	private static final LocalDate EPOCH = new LocalDate(0, DateTimeZone.UTC);
+    private static final LocalDate EPOCH = new LocalDate(0, DateTimeZone.UTC);
 
-	@Override
-	public String getClassName() {
-		return LocalTime.class.getName();
-	}
+    @Override
+    public String getClassName() {
+        return LocalTime.class.getName();
+    }
 
-	@Override
-	public LocalTime materializeObject(ResultSet rs, int index, int type) throws Exception {
-		if (type == Types.TIME && rs.getTime(index) != null) {
-			return new LocalTime(rs.getTime(index).getTime());
-		} else if (type == Types.TIMESTAMP && rs.getTimestamp(index) != null) {
-			return new LocalTime(rs.getTimestamp(index).getTime());
-		} else {
-			return null;
-		}
-	}
+    @Override
+    public void setJdbcObject(PreparedStatement statement, LocalTime value, int pos, int type, int scale) throws Exception {
 
-	@Override
-	public LocalTime materializeObject(CallableStatement rs, int index, int type) throws Exception {
-		if (type == Types.TIME && rs.getTime(index) != null) {
-			return new LocalTime(rs.getTime(index).getTime());
-		} else if (type == Types.TIMESTAMP && rs.getTimestamp(index) != null) {
-			return new LocalTime(rs.getTimestamp(index).getTime());
-		} else {
-			return null;
-		}
-	}
+        if (value == null) {
+            statement.setNull(pos, type);
+        } else {
+            long millis = EPOCH.toDateTime(value).getMillis();
 
-	@Override
-	public void setJdbcObject(PreparedStatement statement, Object value, int pos, int type, int scale) throws Exception {
+            if (type == Types.TIME) {
+                statement.setTime(pos, new Time(millis));
+            } else {
+                statement.setTimestamp(pos, new Timestamp(millis));
+            }
+        }
+    }
 
-		if (value == null) {
-			statement.setNull(pos, type);
-		} else {
-			if (type == Types.TIME) {
-				statement.setTime(pos, new Time(getMillis(value)));
-			} else {
-				statement.setTimestamp(pos, new Timestamp(getMillis(value)));
-			}
-		}
-	}
+    @Override
+    public LocalTime materializeObject(ResultSet rs, int index, int type) throws Exception {
+        if (type == Types.TIME && rs.getTime(index) != null) {
+            return new LocalTime(rs.getTime(index).getTime());
+        } else if (type == Types.TIMESTAMP && rs.getTimestamp(index) != null) {
+            return new LocalTime(rs.getTimestamp(index).getTime());
+        } else {
+            return null;
+        }
+    }
 
-	protected long getMillis(Object value) {
-		return EPOCH.toDateTime((LocalTime) value).getMillis();
-	}
+    @Override
+    public LocalTime materializeObject(CallableStatement rs, int index, int type) throws Exception {
+        if (type == Types.TIME && rs.getTime(index) != null) {
+            return new LocalTime(rs.getTime(index).getTime());
+        } else if (type == Types.TIMESTAMP && rs.getTimestamp(index) != null) {
+            return new LocalTime(rs.getTimestamp(index).getTime());
+        } else {
+            return null;
+        }
+    }
 
+    @Override
+    public String toString(LocalTime value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return '\'' + value.toString() + '\'';
+    }
 }

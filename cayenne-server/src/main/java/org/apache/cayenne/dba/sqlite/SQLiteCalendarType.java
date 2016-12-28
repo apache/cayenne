@@ -31,13 +31,13 @@ import org.apache.cayenne.access.types.ExtendedType;
 /**
  * @since 3.0
  */
-class SQLiteCalendarType implements ExtendedType {
+class SQLiteCalendarType<T extends Calendar> implements ExtendedType<Calendar> {
 
-    protected ExtendedType delegateCalendarType;
-    protected ExtendedType delegateDateType;
+    protected ExtendedType<Calendar> delegateCalendarType;
+    protected ExtendedType<Date> delegateDateType;
 
-    public <T extends Calendar> SQLiteCalendarType(Class<T> calendarClass) {
-        this.delegateCalendarType = new CalendarType<T>(calendarClass);
+    public SQLiteCalendarType(Class<T> calendarClass) {
+        this.delegateCalendarType = new CalendarType<>(calendarClass);
         this.delegateDateType = new SQLiteDateType();
     }
 
@@ -47,10 +47,10 @@ class SQLiteCalendarType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public Calendar materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
 
-        Date date = (Date) delegateDateType.materializeObject(rs, index, type);
+        Date date = delegateDateType.materializeObject(rs, index, type);
         if (date == null) {
             return null;
         }
@@ -61,8 +61,8 @@ class SQLiteCalendarType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
-        Date date = (Date) delegateDateType.materializeObject(rs, index, type);
+    public Calendar materializeObject(ResultSet rs, int index, int type) throws Exception {
+        Date date = delegateDateType.materializeObject(rs, index, type);
         if (date == null) {
             return null;
         }
@@ -75,11 +75,19 @@ class SQLiteCalendarType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            Calendar value,
             int pos,
             int type,
             int precision) throws Exception {
         delegateCalendarType.setJdbcObject(statement, value, pos, type, precision);
     }
 
+    @Override
+    public String toString(Calendar value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.getClass().getName() + '(' + new java.sql.Timestamp(value.getTimeInMillis()) + ')';
+    }
 }

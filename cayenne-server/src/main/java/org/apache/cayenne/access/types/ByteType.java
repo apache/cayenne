@@ -23,15 +23,17 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.apache.cayenne.util.IDUtil;
+
 /**
  * Handles <code>java.lang.Byte</code> type mapping. Can be configured to recast
  * java.lang.Byte to java.lang.Integer when binding values to PreparedStatement. This is a
  * workaround for bugs in certain drivers. Drivers that are proven to have issues with
  * byte values are Sybase and Oracle (Mac OS X only).
- * 
+ *
  * @since 1.0.3
  */
-public class ByteType implements ExtendedType {
+public class ByteType implements ExtendedType<Byte> {
 
     protected boolean widenBytes;
 
@@ -45,13 +47,13 @@ public class ByteType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public Byte materializeObject(ResultSet rs, int index, int type) throws Exception {
         byte b = rs.getByte(index);
         return (rs.wasNull()) ? null : b;
     }
 
     @Override
-    public Object materializeObject(CallableStatement st, int index, int type)
+    public Byte materializeObject(CallableStatement st, int index, int type)
             throws Exception {
         byte b = st.getByte(index);
         return (st.wasNull()) ? null : b;
@@ -60,24 +62,33 @@ public class ByteType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            Byte value,
             int pos,
             int type,
             int precision) throws Exception {
 
         if (value == null) {
             statement.setNull(pos, type);
-        }
-        else {
+        } else {
 
-            Byte b = (Byte) value;
+            Byte b = value;
             if (widenBytes) {
                 statement.setInt(pos, b.intValue());
-            }
-            else {
+            } else {
                 statement.setByte(pos, b.byteValue());
             }
         }
     }
 
+    @Override
+    public String toString(Byte value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        StringBuilder buffer = new StringBuilder();
+        IDUtil.appendFormattedByte(buffer, value);
+
+        return buffer.toString();
+    }
 }

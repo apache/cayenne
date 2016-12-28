@@ -36,7 +36,7 @@ class FrontBaseByteArrayType extends ByteArrayType {
     @Override
     public void setJdbcObject(
             PreparedStatement st,
-            Object val,
+            byte[] val,
             int pos,
             int type,
             int precision) throws Exception {

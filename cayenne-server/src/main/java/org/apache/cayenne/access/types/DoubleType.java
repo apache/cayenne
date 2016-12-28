@@ -25,7 +25,7 @@ import java.sql.ResultSet;
 /**
  * @since 3.0
  */
-public class DoubleType implements ExtendedType {
+public class DoubleType implements ExtendedType<Double> {
 
     @Override
     public String getClassName() {
@@ -33,13 +33,13 @@ public class DoubleType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public Double materializeObject(ResultSet rs, int index, int type) throws Exception {
         double d = rs.getDouble(index);
         return rs.wasNull() ? null : d;
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public Double materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         double d = rs.getDouble(index);
         return rs.wasNull() ? null : d;
@@ -48,7 +48,7 @@ public class DoubleType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            Double value,
             int pos,
             int type,
             int scale) throws Exception {
@@ -57,7 +57,16 @@ public class DoubleType implements ExtendedType {
             statement.setNull(pos, type);
         }
         else {
-            statement.setDouble(pos, ((Number) value).doubleValue());
+            statement.setDouble(pos, value);
         }
+    }
+
+    @Override
+    public String toString(Double value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.toString();
     }
 }

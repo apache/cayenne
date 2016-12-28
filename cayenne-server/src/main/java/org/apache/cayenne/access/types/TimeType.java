@@ -26,7 +26,7 @@ import java.sql.Time;
 /**
  * @since 3.0
  */
-public class TimeType implements ExtendedType {
+public class TimeType implements ExtendedType<Time> {
 
     @Override
     public String getClassName() {
@@ -34,12 +34,12 @@ public class TimeType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public Time materializeObject(ResultSet rs, int index, int type) throws Exception {
         return rs.getTime(index);
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public Time materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return rs.getTime(index);
     }
@@ -47,7 +47,7 @@ public class TimeType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            Time value,
             int pos,
             int type,
             int scale) throws Exception {
@@ -56,7 +56,16 @@ public class TimeType implements ExtendedType {
             statement.setNull(pos, type);
         }
         else {
-            statement.setTime(pos, (Time) value);
+            statement.setTime(pos, value);
         }
+    }
+
+    @Override
+    public String toString(Time value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return '\'' + value.toString() + '\'';
     }
 }

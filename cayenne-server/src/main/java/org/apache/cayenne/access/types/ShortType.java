@@ -31,7 +31,7 @@ import java.sql.ResultSet;
  * 
  * @since 1.0.2
  */
-public class ShortType implements ExtendedType {
+public class ShortType implements ExtendedType<Short> {
 
     protected boolean widenShorts;
 
@@ -45,13 +45,13 @@ public class ShortType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public Short materializeObject(ResultSet rs, int index, int type) throws Exception {
         short s = rs.getShort(index);
         return (rs.wasNull()) ? null : s;
     }
 
     @Override
-    public Object materializeObject(CallableStatement st, int index, int type)
+    public Short materializeObject(CallableStatement st, int index, int type)
             throws Exception {
         short s = st.getShort(index);
         return (st.wasNull()) ? null : s;
@@ -60,7 +60,7 @@ public class ShortType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            Short value,
             int pos,
             int type,
             int precision) throws Exception {
@@ -70,13 +70,21 @@ public class ShortType implements ExtendedType {
         }
         else {
 
-            Short s = (Short) value;
             if (widenShorts) {
-                statement.setInt(pos, s.intValue());
+                statement.setInt(pos, value.intValue());
             }
             else {
-                statement.setShort(pos, s.shortValue());
+                statement.setShort(pos, value);
             }
         }
+    }
+
+    @Override
+    public String toString(Short value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.toString();
     }
 }

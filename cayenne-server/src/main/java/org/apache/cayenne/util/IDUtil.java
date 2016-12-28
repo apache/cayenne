@@ -26,9 +26,11 @@ import java.security.NoSuchAlgorithmException;
 
 import org.apache.cayenne.CayenneRuntimeException;
 
+import static org.apache.cayenne.log.CommonsJdbcEventLogger.TRIM_VALUES_THRESHOLD;
+
 /**
  * helper class to generate pseudo-GUID sequences.
- * 
+ *
  */
 public class IDUtil {
 
@@ -69,7 +71,7 @@ public class IDUtil {
 
     /**
      * Prints a byte value to a StringBuffer as a double digit hex value.
-     * 
+     *
      * @since 1.2 Since 3.0 signature has changed to take Appendable argument.
      */
     public static void appendFormattedByte(Appendable buffer, byte byteValue) {
@@ -80,6 +82,34 @@ public class IDUtil {
             buffer.append(digits.charAt(byteValue & 0xF));
         }
         catch (IOException e) {
+            throw new CayenneRuntimeException("Error appending data to buffer", e);
+        }
+    }
+
+    public static void appendFormattedBytes(Appendable buffer, byte[] bytes) {
+        try {
+            buffer.append("< ");
+
+            int len = bytes.length;
+            boolean trimming = false;
+            if (len > TRIM_VALUES_THRESHOLD) {
+                len = TRIM_VALUES_THRESHOLD;
+                trimming = true;
+            }
+
+            for (int i = 0; i < len; i++) {
+                if (i > 0) {
+                    buffer.append(",");
+                }
+                appendFormattedByte(buffer, bytes[i]);
+            }
+
+            if (trimming) {
+                buffer.append("...");
+            }
+
+            buffer.append('>');
+        } catch (IOException e) {
             throw new CayenneRuntimeException("Error appending data to buffer", e);
         }
     }

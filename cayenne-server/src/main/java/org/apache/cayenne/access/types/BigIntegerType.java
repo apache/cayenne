@@ -28,7 +28,7 @@ import org.apache.cayenne.dba.TypesMapping;
 /**
  * @since 3.0
  */
-public class BigIntegerType implements ExtendedType {
+public class BigIntegerType implements ExtendedType<BigInteger> {
 
     @Override
     public String getClassName() {
@@ -36,7 +36,7 @@ public class BigIntegerType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public BigInteger materializeObject(ResultSet rs, int index, int type) throws Exception {
         Object object = rs.getObject(index);
         if (object == null) {
             return null;
@@ -46,7 +46,7 @@ public class BigIntegerType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public BigInteger materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         Object object = rs.getObject(index);
         if (object == null) {
@@ -59,7 +59,7 @@ public class BigIntegerType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            BigInteger value,
             int pos,
             int type,
             int precision) throws Exception {
@@ -75,5 +75,14 @@ public class BigIntegerType implements ExtendedType {
                     "Can't map BigInteger to a non-numeric type: "
                             + TypesMapping.getSqlNameByType(type));
         }
+    }
+
+    @Override
+    public String toString(BigInteger value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.toString();
     }
 }

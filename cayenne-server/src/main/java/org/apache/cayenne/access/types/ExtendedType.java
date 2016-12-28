@@ -27,7 +27,7 @@ import java.sql.ResultSet;
  * Defines methods to read Java objects from JDBC ResultSets and write as parameters of
  * PreparedStatements.
  */
-public interface ExtendedType {
+public interface ExtendedType<T> {
 
     /**
      * Returns a full name of Java class that this ExtendedType supports.
@@ -39,7 +39,7 @@ public interface ExtendedType {
      */
     void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            T value,
             int pos,
             int type,
             int scale) throws Exception;
@@ -51,14 +51,20 @@ public interface ExtendedType {
      * @throws Exception if read error occurred, or an object can't be converted to a
      *             target Java class.
      */
-    Object materializeObject(ResultSet rs, int index, int type) throws Exception;
+    T materializeObject(ResultSet rs, int index, int type) throws Exception;
 
     /**
      * Reads an object from a stored procedure OUT parameter, converting it to class
      * returned by 'getClassName' method.
      * 
-     * @throws Exception if read error ocurred, or an object can't be converted to a
+     * @throws Exception if read error occurred, or an object can't be converted to a
      *             target Java class.
      */
-    Object materializeObject(CallableStatement rs, int index, int type) throws Exception;
+    T materializeObject(CallableStatement rs, int index, int type) throws Exception;
+
+    /**
+     *
+     */
+    String toString(T value);
+
 }

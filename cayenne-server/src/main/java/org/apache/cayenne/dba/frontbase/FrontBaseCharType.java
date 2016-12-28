@@ -42,13 +42,13 @@ class FrontBaseCharType extends CharType {
     @Override
     public void setJdbcObject(
             PreparedStatement st,
-            Object val,
+            String val,
             int pos,
             int type,
             int precision) throws Exception {
 
         if (type == Types.CLOB) {
-            st.setClob(pos, writeClob((String) val));
+            st.setClob(pos, writeClob(val));
         }
         else {
             super.setJdbcObject(st, val, pos, type, precision);

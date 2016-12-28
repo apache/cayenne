@@ -26,7 +26,7 @@ import java.sql.Timestamp;
 /**
  * @since 3.0
  */
-public class TimestampType implements ExtendedType {
+public class TimestampType implements ExtendedType<Timestamp> {
 
     @Override
     public String getClassName() {
@@ -47,7 +47,7 @@ public class TimestampType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            Timestamp value,
             int pos,
             int type,
             int scale) throws Exception {
@@ -56,8 +56,16 @@ public class TimestampType implements ExtendedType {
             statement.setNull(pos, type);
         }
         else {
-            statement.setTimestamp(pos, (Timestamp) value);
+            statement.setTimestamp(pos, value);
         }
     }
 
+    @Override
+    public String toString(Timestamp value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return '\'' + value.toString() + '\'';
+    }
 }

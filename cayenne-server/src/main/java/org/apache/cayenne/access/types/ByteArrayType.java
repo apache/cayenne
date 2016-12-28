@@ -30,13 +30,14 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.util.IDUtil;
 import org.apache.cayenne.util.MemoryBlob;
 
 /**
  * Handles <code>byte[]</code>, mapping it as either of JDBC types - BLOB or
  * (VAR)BINARY. Can be configured to trim trailing zero bytes.
  */
-public class ByteArrayType implements ExtendedType {
+public class ByteArrayType implements ExtendedType<byte[]> {
 
 	private static final int BUF_SIZE = 8 * 1024;
 
@@ -76,7 +77,7 @@ public class ByteArrayType implements ExtendedType {
 	}
 
 	@Override
-	public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+	public byte[] materializeObject(ResultSet rs, int index, int type) throws Exception {
 
 		byte[] bytes = null;
 
@@ -95,7 +96,7 @@ public class ByteArrayType implements ExtendedType {
 	}
 
 	@Override
-	public Object materializeObject(CallableStatement cs, int index, int type) throws Exception {
+	public byte[] materializeObject(CallableStatement cs, int index, int type) throws Exception {
 
 		byte[] bytes = null;
 
@@ -118,15 +119,15 @@ public class ByteArrayType implements ExtendedType {
 	}
 
 	@Override
-	public void setJdbcObject(PreparedStatement st, Object val, int pos, int type, int scale) throws Exception {
+	public void setJdbcObject(PreparedStatement st, byte[] val, int pos, int type, int scale) throws Exception {
 
 		// if this is a BLOB column, set the value as "bytes"
 		// instead. This should work with most drivers
 		if (type == Types.BLOB) {
 			if (isUsingBlobs()) {
-				st.setBlob(pos, writeBlob((byte[]) val));
+				st.setBlob(pos, writeBlob(val));
 			} else {
-				st.setBytes(pos, (byte[]) val);
+				st.setBytes(pos, val);
 			}
 		} else {
 			if (scale != -1) {
@@ -135,6 +136,17 @@ public class ByteArrayType implements ExtendedType {
 				st.setObject(pos, val, type);
 			}
 		}
+	}
+
+	@Override
+	public String toString(byte[] value) {
+		if (value == null) {
+			return "\'null\'";
+		}
+
+		StringBuilder buffer = new StringBuilder();
+		IDUtil.appendFormattedBytes(buffer, value);
+		return buffer.toString();
 	}
 
 	protected Blob writeBlob(byte[] bytes) {

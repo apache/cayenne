@@ -23,11 +23,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.util.IDUtil;
 
 /**
  * @since 3.0
  */
-class SQLiteByteArrayType implements ExtendedType {
+class SQLiteByteArrayType implements ExtendedType<byte[]> {
 
     @Override
     public String getClassName() {
@@ -37,13 +38,13 @@ class SQLiteByteArrayType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement st,
-            Object val,
+            byte[] val,
             int pos,
             int type,
             int scale) throws Exception {
 
-        if (val instanceof byte[]) {
-            st.setBytes(pos, (byte[]) val);
+        if (val != null) {
+            st.setBytes(pos, val);
         }
         else {
             if (scale != -1) {
@@ -56,13 +57,24 @@ class SQLiteByteArrayType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public byte[] materializeObject(ResultSet rs, int index, int type) throws Exception {
         return rs.getBytes(index);
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public byte[] materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return rs.getBytes(index);
+    }
+
+    @Override
+    public String toString(byte[] value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        StringBuilder buffer = new StringBuilder();
+        IDUtil.appendFormattedBytes(buffer, value);
+        return buffer.toString();
     }
 }

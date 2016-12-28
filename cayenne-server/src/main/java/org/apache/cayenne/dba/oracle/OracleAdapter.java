@@ -19,6 +19,16 @@
 
 package org.apache.cayenne.dba.oracle;
 
+import java.lang.reflect.Field;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.ParameterBinding;
@@ -47,24 +57,14 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
-import java.lang.reflect.Field;
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * DbAdapter implementation for <a href="http://www.oracle.com">Oracle RDBMS
  * </a>. Sample connection settings to use with Oracle are shown below:
- * 
+ *
  * <pre>
  *          test-oracle.jdbc.username = test
  *          test-oracle.jdbc.password = secret
- *          test-oracle.jdbc.url = jdbc:oracle:thin:@//192.168.0.20:1521/ora1 
+ *          test-oracle.jdbc.url = jdbc:oracle:thin:@//192.168.0.20:1521/ora1
  *          test-oracle.jdbc.driver = oracle.jdbc.driver.OracleDriver
  * </pre>
  */
@@ -116,7 +116,7 @@ public class OracleAdapter extends JdbcAdapter {
 	/**
 	 * Utility method that returns <code>true</code> if the query will update at
 	 * least one BLOB or CLOB DbAttribute.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	static boolean updatesLOBColumns(BatchQuery query) {
@@ -220,7 +220,7 @@ public class OracleAdapter extends JdbcAdapter {
 	 * Returns a query string to drop a table corresponding to <code>ent</code>
 	 * DbEntity. Changes superclass behavior to drop all related foreign key
 	 * constraints.
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	@Override
@@ -290,7 +290,7 @@ public class OracleAdapter extends JdbcAdapter {
 
 	/**
 	 * Uses OracleActionBuilder to create the right action.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	@Override
@@ -301,7 +301,7 @@ public class OracleAdapter extends JdbcAdapter {
 	/**
 	 * @since 3.0
 	 */
-	final class OracleBooleanType implements ExtendedType {
+	final class OracleBooleanType implements ExtendedType<Boolean> {
 
 		@Override
 		public String getClassName() {
@@ -309,7 +309,7 @@ public class OracleAdapter extends JdbcAdapter {
 		}
 
 		@Override
-		public void setJdbcObject(PreparedStatement st, Object val, int pos, int type, int precision) throws Exception {
+		public void setJdbcObject(PreparedStatement st, Boolean val, int pos, int type, int precision) throws Exception {
 
 			// Oracle does not support Types.BOOLEAN, so we have to override
 			// user mapping
@@ -323,7 +323,7 @@ public class OracleAdapter extends JdbcAdapter {
 		}
 
 		@Override
-		public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+		public Boolean materializeObject(ResultSet rs, int index, int type) throws Exception {
 
 			// Oracle does not support Types.BOOLEAN, so we have to override
 			// user mapping
@@ -333,7 +333,7 @@ public class OracleAdapter extends JdbcAdapter {
 		}
 
 		@Override
-		public Object materializeObject(CallableStatement st, int index, int type) throws Exception {
+		public Boolean materializeObject(CallableStatement st, int index, int type) throws Exception {
 
 			// Oracle does not support Types.BOOLEAN, so we have to override
 			// user mapping
@@ -341,5 +341,15 @@ public class OracleAdapter extends JdbcAdapter {
 			int i = st.getInt(index);
 			return st.wasNull() ? null : i == 0 ? Boolean.FALSE : Boolean.TRUE;
 		}
+
+		@Override
+		public String toString(Boolean value) {
+			if (value == null) {
+				return "\'null\'";
+			}
+
+			return '\'' + value.toString() + '\'';
+		}
+
 	}
 }

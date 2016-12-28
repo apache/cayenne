@@ -18,6 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.access.types;
 
+import java.lang.reflect.Array;
+
+import org.apache.cayenne.util.IDUtil;
+
+import static org.apache.cayenne.log.CommonsJdbcEventLogger.TRIM_VALUES_THRESHOLD;
+
 /**
  * A factory that dynamically creates ExtendedTypes for Character, Character[], Byte[] and
  * char[] based on adapter configured types for String and byte[].
@@ -40,38 +46,34 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
 
             if (Character.class.isAssignableFrom(elementType)) {
                 // can't use "getRegisteredType" as it causes infinite recursion
-                ExtendedType stringType = map
-                        .getExplictlyRegisteredType("java.lang.String");
-
+                ExtendedType<String> stringType = map.getExplictlyRegisteredType("java.lang.String");
                 return new CharacterArrayType(stringType);
             }
             else if (Character.TYPE.isAssignableFrom(elementType)) {
 
                 // can't use "getRegisteredType" as it causes infinite recursion
-                ExtendedType stringType = map
-                        .getExplictlyRegisteredType("java.lang.String");
-
+                ExtendedType<String> stringType = map.getExplictlyRegisteredType("java.lang.String");
                 return new CharArrayType(stringType);
             }
             else if (Byte.class.isAssignableFrom(elementType)) {
                 // can't use "getRegisteredType" as it causes infinite recursion
-                ExtendedType bytesType = map.getExplictlyRegisteredType("byte[]");
+                ExtendedType<byte[]> bytesType = map.getExplictlyRegisteredType("byte[]");
                 return new ByteWrapperArrayType(bytesType);
             }
         }
         else if (Character.class.isAssignableFrom(objectClass)) {
 
             // can't use "getRegisteredType" as it causes infinite recursion
-            ExtendedType stringType = map.getExplictlyRegisteredType("java.lang.String");
+            ExtendedType<String> stringType = map.getExplictlyRegisteredType("java.lang.String");
             return new CharacterType(stringType);
         }
 
         return null;
     }
 
-    final class CharacterType extends ExtendedTypeDecorator {
+    final class CharacterType extends ExtendedTypeDecorator<Character, String> {
 
-        CharacterType(ExtendedType stringType) {
+        CharacterType(ExtendedType<String> stringType) {
             super(stringType);
         }
 
@@ -81,26 +83,25 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
         }
 
         @Override
-        Object fromJavaObject(Object object) {
+        String fromJavaObject(Character object) {
             return object != null
-                    ? String.valueOf(((Character) object).charValue())
+                    ? String.valueOf(object.charValue())
                     : null;
         }
 
         @Override
-        Object toJavaObject(Object object) {
-            if (object == null) {
+        Character toJavaObject(String string) {
+            if (string == null) {
                 return null;
             }
 
-            String string = object.toString();
-            return (string.length() > 0) ? Character.valueOf(string.charAt(0)) : null;
+            return (string.length() > 0) ? string.charAt(0) : null;
         }
     }
 
-    final class CharArrayType extends ExtendedTypeDecorator {
+    final class CharArrayType extends ExtendedTypeDecorator<char[], String> {
 
-        CharArrayType(ExtendedType stringType) {
+        CharArrayType(ExtendedType<String> stringType) {
             super(stringType);
         }
 
@@ -110,19 +111,50 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
         }
 
         @Override
-        Object fromJavaObject(Object object) {
-            return object != null ? new String((char[]) object) : null;
+        String fromJavaObject(char[] object) {
+            return object != null ? new String(object) : null;
         }
 
         @Override
-        Object toJavaObject(Object object) {
-            return object != null ? ((String) object).toCharArray() : null;
+        char[] toJavaObject(String object) {
+            return object != null ? object.toCharArray() : null;
+        }
+
+        @Override
+        public String toString(char[] value) {
+            if (value == null) {
+                return "\'null\'";
+            }
+
+            StringBuilder buffer = new StringBuilder();
+            buffer.append("< ");
+
+            int len = Array.getLength(value);
+            boolean trimming = false;
+            if (len > TRIM_VALUES_THRESHOLD) {
+                len = TRIM_VALUES_THRESHOLD;
+                trimming = true;
+            }
+
+            for (int i = 0; i < len; i++) {
+                if (i > 0) {
+                    buffer.append(",");
+                }
+                buffer.append(Array.get(value, i));
+            }
+
+            if (trimming) {
+                buffer.append("...");
+            }
+
+            buffer.append('>');
+            return buffer.toString();
         }
     }
 
-    final class CharacterArrayType extends ExtendedTypeDecorator {
+    final class CharacterArrayType extends ExtendedTypeDecorator<Character[], String> {
 
-        CharacterArrayType(ExtendedType stringType) {
+        CharacterArrayType(ExtendedType<String> stringType) {
             super(stringType);
         }
 
@@ -132,39 +164,68 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
         }
 
         @Override
-        Object fromJavaObject(Object object) {
+        String fromJavaObject(Character[] object) {
             if (object == null) {
                 return null;
             }
 
-            Character[] chars = (Character[]) object;
-            StringBuilder buffer = new StringBuilder(chars.length);
-            for (Character aChar : chars) {
-                buffer.append(aChar != null ? aChar.charValue() : 0);
+            StringBuilder buffer = new StringBuilder(object.length);
+            for (Character aChar : object) {
+                buffer.append(aChar != null ? aChar : 0);
             }
 
             return buffer.toString();
         }
 
         @Override
-        Object toJavaObject(Object object) {
+        Character[] toJavaObject(String object) {
             if (object == null) {
                 return null;
             }
 
-            String string = object.toString();
-            Character[] chars = new Character[string.length()];
-            for (int i = 0; i < string.length(); i++) {
-                chars[i] = Character.valueOf(string.charAt(i));
+            Character[] chars = new Character[object.length()];
+            for (int i = 0; i < object.length(); i++) {
+                chars[i] = object.charAt(i);
             }
 
             return chars;
         }
+
+        @Override
+        public String toString(Character[] value) {
+            if (value == null) {
+                return "\'null\'";
+            }
+
+            StringBuilder buffer = new StringBuilder();
+            buffer.append("< ");
+
+            int len = Array.getLength(value);
+            boolean trimming = false;
+            if (len > TRIM_VALUES_THRESHOLD) {
+                len = TRIM_VALUES_THRESHOLD;
+                trimming = true;
+            }
+
+            for (int i = 0; i < len; i++) {
+                if (i > 0) {
+                    buffer.append(",");
+                }
+                buffer.append(Array.get(value, i));
+            }
+
+            if (trimming) {
+                buffer.append("...");
+            }
+
+            buffer.append('>');
+            return buffer.toString();
+        }
     }
 
-    final class ByteWrapperArrayType extends ExtendedTypeDecorator {
+    final class ByteWrapperArrayType extends ExtendedTypeDecorator<Byte[], byte[]> {
 
-        ByteWrapperArrayType(ExtendedType byteArrayType) {
+        ByteWrapperArrayType(ExtendedType<byte[]> byteArrayType) {
             super(byteArrayType);
         }
 
@@ -174,34 +235,62 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
         }
 
         @Override
-        Object fromJavaObject(Object object) {
-            if (object == null) {
+        byte[] fromJavaObject(Byte[] bytes) {
+            if (bytes == null) {
                 return null;
             }
 
-            Byte[] bytes = (Byte[]) object;
             byte[] buffer = new byte[bytes.length];
             for (int i = 0; i < bytes.length; i++) {
-                buffer[i] = bytes[i] != null ? bytes[i].byteValue() : 0;
+                buffer[i] = bytes[i] != null ? bytes[i] : 0;
             }
 
             return buffer;
         }
 
         @Override
-        Object toJavaObject(Object object) {
-            if (object == null) {
+        Byte[] toJavaObject(byte[] bytes) {
+            if (bytes == null) {
                 return null;
             }
 
-            byte[] bytes = (byte[]) object;
             Byte[] byteWrappers = new Byte[bytes.length];
-
             for (int i = 0; i < bytes.length; i++) {
-                byteWrappers[i] = Byte.valueOf(bytes[i]);
+                byteWrappers[i] = bytes[i];
             }
 
             return byteWrappers;
+        }
+
+        @Override
+        public String toString(Byte[] value) {
+            if (value == null) {
+                return "\'null\'";
+            }
+
+            StringBuilder buffer = new StringBuilder();
+            buffer.append("< ");
+
+            int len = value.length;
+            boolean trimming = false;
+            if (len > TRIM_VALUES_THRESHOLD) {
+                len = TRIM_VALUES_THRESHOLD;
+                trimming = true;
+            }
+
+            for (int i = 0; i < len; i++) {
+                if (i > 0) {
+                    buffer.append(",");
+                }
+                IDUtil.appendFormattedByte(buffer, value[i]);
+            }
+
+            if (trimming) {
+                buffer.append("...");
+            }
+
+            buffer.append('>');
+            return buffer.toString();
         }
     }
 }

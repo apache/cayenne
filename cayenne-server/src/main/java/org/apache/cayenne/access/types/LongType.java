@@ -25,7 +25,7 @@ import java.sql.ResultSet;
 /**
  * @since 3.0
  */
-public class LongType implements ExtendedType {
+public class LongType implements ExtendedType<Long> {
 
     @Override
     public String getClassName() {
@@ -33,13 +33,13 @@ public class LongType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public Long materializeObject(ResultSet rs, int index, int type) throws Exception {
         long value = rs.getLong(index);
         return (rs.wasNull()) ? null : value;
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public Long materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         long value = rs.getLong(index);
         return (rs.wasNull()) ? null : value;
@@ -48,7 +48,7 @@ public class LongType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            Long value,
             int pos,
             int type,
             int scale) throws Exception {
@@ -57,8 +57,16 @@ public class LongType implements ExtendedType {
             statement.setNull(pos, type);
         }
         else {
-            statement.setLong(pos, ((Number) value).longValue());
+            statement.setLong(pos, value);
         }
     }
 
+    @Override
+    public String toString(Long value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.toString();
+    }
 }

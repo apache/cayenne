@@ -34,7 +34,7 @@ public class OracleByteArrayType extends ByteArrayType {
     @Override
     public void setJdbcObject(
             PreparedStatement st,
-            Object val,
+            byte[] val,
             int pos,
             int type,
             int scale) throws Exception {
@@ -42,11 +42,11 @@ public class OracleByteArrayType extends ByteArrayType {
             if (isUsingBlobs()) {
                 
                 Blob blob = st.getConnection().createBlob();
-                blob.setBytes(1,  (byte[]) val);
+                blob.setBytes(1, val);
                 st.setBlob(pos, blob);
                 
             } else {
-                st.setBytes(pos, (byte[]) val);
+                st.setBytes(pos, val);
             }
         }
         else {

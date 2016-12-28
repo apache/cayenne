@@ -27,7 +27,7 @@ import java.sql.ResultSet;
  * 
  * @since 3.0
  */
-public class ObjectType implements ExtendedType {
+public class ObjectType implements ExtendedType<Object> {
 
     @Override
     public String getClassName() {
@@ -58,6 +58,15 @@ public class ObjectType implements ExtendedType {
         else {
             statement.setObject(pos, value, type);
         }
+    }
+
+    @Override
+    public String toString(Object value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.toString();
     }
 
 }

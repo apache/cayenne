@@ -34,7 +34,7 @@ import org.apache.cayenne.dba.TypesMapping;
  * 
  * @since 3.0
  */
-public class CalendarType<T extends Calendar> implements ExtendedType {
+public class CalendarType<T extends Calendar> implements ExtendedType<Calendar> {
 
     protected Class<T> calendarClass;
 
@@ -57,7 +57,7 @@ public class CalendarType<T extends Calendar> implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public Calendar materializeObject(ResultSet rs, int index, int type) throws Exception {
 
         Date val = null;
 
@@ -98,7 +98,7 @@ public class CalendarType<T extends Calendar> implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public Calendar materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         Date val = null;
 
@@ -141,7 +141,7 @@ public class CalendarType<T extends Calendar> implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            Calendar value,
             int pos,
             int type,
             int precision) throws Exception {
@@ -149,32 +149,33 @@ public class CalendarType<T extends Calendar> implements ExtendedType {
         if (value == null) {
             statement.setNull(pos, type);
         }
-        else if (value instanceof Calendar) {
-
-            Calendar calendar = (Calendar) value;
-            statement.setObject(pos, convertToJdbcObject(calendar, type));
-        }
         else {
-            throw new IllegalArgumentException("Expected java.util.Calendar, got "
-                    + value.getClass().getName());
+            statement.setObject(pos, convertToJdbcObject(value, type));
         }
     }
 
     protected Object convertToJdbcObject(Calendar value, int type) throws Exception {
-        Calendar calendar = value;
-
         if (type == Types.DATE)
-            return new java.sql.Date(calendar.getTimeInMillis());
+            return new java.sql.Date(value.getTimeInMillis());
         else if (type == Types.TIME)
-            return new java.sql.Time(calendar.getTimeInMillis());
+            return new java.sql.Time(value.getTimeInMillis());
         else if (type == Types.TIMESTAMP)
-            return new java.sql.Timestamp(calendar.getTimeInMillis());
+            return new java.sql.Timestamp(value.getTimeInMillis());
         else
             throw new IllegalArgumentException(
                     "Only DATE, TIME or TIMESTAMP can be mapped as '"
                             + getClassName()
                             + "', got "
                             + TypesMapping.getSqlNameByType(type));
+    }
+
+    @Override
+    public String toString(Calendar value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.getClass().getName() + '(' + new java.sql.Timestamp(value.getTimeInMillis()) + ')';
     }
 
 }

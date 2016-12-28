@@ -36,13 +36,13 @@ class IngresCharType extends CharType {
     @Override
     public void setJdbcObject(
             PreparedStatement st,
-            Object val,
+            String val,
             int pos,
             int type,
             int precision) throws Exception {
 
         if (val != null && type == Types.CHAR) {
-            st.setString(pos, val.toString());
+            st.setString(pos, val);
         }
         else {
             super.setJdbcObject(st, val, pos, type, precision);

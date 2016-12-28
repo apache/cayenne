@@ -25,7 +25,7 @@ import java.sql.ResultSet;
 /**
  * @since 3.0
  */
-public class IntegerType implements ExtendedType {
+public class IntegerType implements ExtendedType<Integer> {
 
     @Override
     public String getClassName() {
@@ -33,13 +33,13 @@ public class IntegerType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public Integer materializeObject(ResultSet rs, int index, int type) throws Exception {
         int value = rs.getInt(index);
         return (rs.wasNull()) ? null : value;
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public Integer materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         int value = rs.getInt(index);
         return (rs.wasNull()) ? null : value;
@@ -48,7 +48,7 @@ public class IntegerType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            Integer value,
             int pos,
             int type,
             int scale) throws Exception {
@@ -57,8 +57,16 @@ public class IntegerType implements ExtendedType {
             statement.setNull(pos, type);
         }
         else {
-            statement.setInt(pos, ((Number) value).intValue());
+            statement.setInt(pos, value);
         }
     }
 
+    @Override
+    public String toString(Integer value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.toString();
+    }
 }

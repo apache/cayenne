@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.java8.access.types;
 
-import org.apache.cayenne.access.types.ExtendedType;
-
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-public class LocalDateTimeType implements ExtendedType {
+import org.apache.cayenne.access.types.ExtendedType;
+
+public class LocalDateTimeType implements ExtendedType<LocalDateTime> {
 
     @Override
     public String getClassName() {
@@ -35,8 +35,8 @@ public class LocalDateTimeType implements ExtendedType {
     }
 
     @Override
-    public void setJdbcObject(PreparedStatement statement, Object value, int pos, int type, int scale) throws Exception {
-        statement.setTimestamp(pos, Timestamp.valueOf((LocalDateTime) value));
+    public void setJdbcObject(PreparedStatement statement, LocalDateTime value, int pos, int type, int scale) throws Exception {
+        statement.setTimestamp(pos, Timestamp.valueOf(value));
     }
 
     @Override
@@ -46,8 +46,17 @@ public class LocalDateTimeType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type) throws Exception {
+    public LocalDateTime materializeObject(CallableStatement rs, int index, int type) throws Exception {
         Timestamp timestamp = rs.getTimestamp(index);
         return timestamp != null ? timestamp.toLocalDateTime() : null;
+    }
+
+    @Override
+    public String toString(LocalDateTime value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return '\'' + value.toString() + '\'';
     }
 }

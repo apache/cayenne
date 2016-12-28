@@ -19,57 +19,61 @@
 
 package org.apache.cayenne.joda.access.types;
 
-import org.apache.cayenne.access.types.ExtendedType;
-import org.joda.time.DateTime;
-
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 
+import org.apache.cayenne.access.types.ExtendedType;
+import org.joda.time.DateTime;
+
 /**
  * Handles <code>org.joda.time.DateTime</code> type mapping.
- * 
+ *
  * @since 4.0
  */
-public class DateTimeType implements ExtendedType {
+public class DateTimeType implements ExtendedType<DateTime> {
 
-	@Override
-	public String getClassName() {
-		return DateTime.class.getName();
-	}
+    @Override
+    public String getClassName() {
+        return DateTime.class.getName();
+    }
 
-	@Override
-	public DateTime materializeObject(ResultSet rs, int index, int type) throws Exception {
-		if (rs.getTimestamp(index) != null) {
-			return new DateTime(rs.getTimestamp(index).getTime());
-		} else {
-			return null;
-		}
-	}
+    @Override
+    public void setJdbcObject(PreparedStatement statement, DateTime value, int pos, int type, int scale) throws Exception {
+        if (value == null) {
+            statement.setNull(pos, type);
+        } else {
+            Timestamp ts = new Timestamp(value.getMillis());
+            statement.setTimestamp(pos, ts);
+        }
+    }
 
-	@Override
-	public DateTime materializeObject(CallableStatement rs, int index, int type) throws Exception {
-		if (rs.getTimestamp(index) != null) {
-			return new DateTime(rs.getTimestamp(index).getTime());
-		} else {
-			return null;
-		}
-	}
+    @Override
+    public DateTime materializeObject(ResultSet rs, int index, int type) throws Exception {
+        if (rs.getTimestamp(index) != null) {
+            return new DateTime(rs.getTimestamp(index).getTime());
+        } else {
+            return null;
+        }
+    }
 
-	@Override
-	public void setJdbcObject(PreparedStatement statement, Object value, int pos, int type, int scale) throws Exception {
+    @Override
+    public DateTime materializeObject(CallableStatement rs, int index, int type) throws Exception {
+        if (rs.getTimestamp(index) != null) {
+            return new DateTime(rs.getTimestamp(index).getTime());
+        } else {
+            return null;
+        }
+    }
 
-		if (value == null) {
-			statement.setNull(pos, type);
-		} else {
-			Timestamp ts = new Timestamp(getMillis(value));
-			statement.setTimestamp(pos, ts);
-		}
-	}
+    @Override
+    public String toString(DateTime value) {
+        if (value == null) {
+            return "\'null\'";
+        }
 
-	protected long getMillis(Object value) {
-		return ((DateTime) value).getMillis();
-	}
+        return '\'' + value.toString() + '\'';
+    }
 
 }
