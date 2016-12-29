@@ -23,7 +23,7 @@ import org.apache.cayenne.validation.ValidationResult;
 /**
  * Defines a number of callback methods that allow an object to be validated before safe.
  * Entity class can implement this interface and its methods will be called automatically.
- * 
+ *
  * @since 3.0
  */
 public interface Validating {
@@ -33,19 +33,19 @@ public interface Validating {
      * to the provided validationResult object. This method is invoked by ObjectContext
      * before committing a NEW object to the database.
      */
-    public void validateForInsert(ValidationResult validationResult);
+    void validateForInsert(ValidationResult validationResult);
 
     /**
      * Performs property validation of the MODIFIED object, appending any validation
      * failures to the provided validationResult object. This method is invoked by
      * ObjectContext before committing a MODIFIED object to the database.
      */
-    public void validateForUpdate(ValidationResult validationResult);
+    void validateForUpdate(ValidationResult validationResult);
 
     /**
      * Performs property validation of the DELETED object, appending any validation
      * failures to the provided validationResult object. This method is invoked by
      * ObjectContext before committing a DELETED object to the database.
      */
-    public void validateForDelete(ValidationResult validationResult);
+    void validateForDelete(ValidationResult validationResult);
 }
