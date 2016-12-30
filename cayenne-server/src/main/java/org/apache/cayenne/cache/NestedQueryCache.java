@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -30,6 +27,9 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * A {@link QueryCache} wrapper that introduces a key namespace on top of a
@@ -74,6 +74,7 @@ public class NestedQueryCache implements QueryCache {
     /**
      * Clears the underlying shared cache.
      */
+    @Override
     public void clear() {
         // seems pretty evil - it clears the keys that do not belong to our
         // subset of the
@@ -81,16 +82,19 @@ public class NestedQueryCache implements QueryCache {
         delegate.clear();
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
         return delegate.get(qualifiedMetadata(metadata), factory);
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public List get(QueryMetadata metadata) {
         return delegate.get(qualifiedMetadata(metadata));
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public void put(QueryMetadata metadata, List results) {
         delegate.put(qualifiedMetadata(metadata), results);
@@ -99,6 +103,7 @@ public class NestedQueryCache implements QueryCache {
     /**
      * Removes an entry for key in the current namespace.
      */
+    @Override
     public void remove(String key) {
         delegate.remove(qualifiedKey(key));
     }
@@ -106,6 +111,7 @@ public class NestedQueryCache implements QueryCache {
     /**
      * Invalidates a shared cache group.
      */
+    @Override
     public void removeGroup(String groupKey) {
         delegate.removeGroup(groupKey);
     }
@@ -113,6 +119,7 @@ public class NestedQueryCache implements QueryCache {
     /**
      * Returns a shared cache size.
      */
+    @Override
     public int size() {
         return delegate.size();
     }
@@ -133,74 +140,92 @@ public class NestedQueryCache implements QueryCache {
             this.mdDelegate = mdDelegate;
         }
 
+        @Override
         public String[] getCacheGroups() {
             return mdDelegate.getCacheGroups();
         }
 
+        @Override
         public String getCacheKey() {
             return qualifiedKey(mdDelegate.getCacheKey());
         }
 
+        @Override
         public QueryCacheStrategy getCacheStrategy() {
             return mdDelegate.getCacheStrategy();
         }
 
+        @Override
         public ClassDescriptor getClassDescriptor() {
             return mdDelegate.getClassDescriptor();
         }
 
+        @Override
         public DataMap getDataMap() {
             return mdDelegate.getDataMap();
         }
 
+        @Override
         public DbEntity getDbEntity() {
             return mdDelegate.getDbEntity();
         }
 
+        @Override
         public int getFetchLimit() {
             return mdDelegate.getFetchLimit();
         }
 
+        @Override
         public int getFetchOffset() {
             return mdDelegate.getFetchOffset();
         }
 
+        @Override
         public ObjEntity getObjEntity() {
             return mdDelegate.getObjEntity();
         }
 
+        @Override
         public Query getOrginatingQuery() {
             return mdDelegate.getOrginatingQuery();
         }
 
+        @Override
         public int getPageSize() {
             return mdDelegate.getPageSize();
         }
 
+        @Override
         public PrefetchTreeNode getPrefetchTree() {
             return mdDelegate.getPrefetchTree();
         }
 
+        @Override
         public Map<String, String> getPathSplitAliases() {
             return mdDelegate.getPathSplitAliases();
         }
 
+        @Override
         public Procedure getProcedure() {
             return mdDelegate.getProcedure();
         }
 
+        @Override
         public List<Object> getResultSetMapping() {
             return mdDelegate.getResultSetMapping();
         }
 
+        @Override
         public boolean isFetchingDataRows() {
             return mdDelegate.isFetchingDataRows();
         }
 
+        @Override
         public boolean isRefreshingObjects() {
             return mdDelegate.isRefreshingObjects();
         }
 
+        @Override
         public int getStatementFetchSize() {
             return mdDelegate.getStatementFetchSize();
         }
