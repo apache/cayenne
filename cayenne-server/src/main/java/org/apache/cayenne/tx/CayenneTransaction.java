@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.tx;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.log.JdbcEventLogger;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
  * Represents a Cayenne-managed local Transaction.
@@ -58,9 +58,8 @@ public class CayenneTransaction extends BaseTransaction {
 
     void fixConnectionState(Connection connection) throws SQLException {
         if (connection.getAutoCommit()) {
-            // some DBs are very particular about that, (e.g. Informix SE 7.0
-            // per
-            // CAY-179), so do a try-catch and ignore exception
+            // some DBs are very particular about that, (e.g. Informix SE 7.0 per CAY-179), so do a try-catch and
+            // ignore exception
 
             // TODO: maybe allow adapter to provide transaction instance?
             try {

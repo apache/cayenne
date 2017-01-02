@@ -18,18 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.tx;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
- * A Cayenne Transaction interface.
- * 
+ * Cayenne Transaction interface.
+ *
  * @since 4.0
  */
 public interface Transaction {
 
     /**
-     * Starts a Transaction. If Transaction is not started explicitly, it will
-     * be started when the first connection is added.
+     * Starts a Transaction. If Transaction is not started explicitly, it will be started when the first connection is
+     * added.
      */
     void begin();
 
@@ -41,9 +44,23 @@ public interface Transaction {
 
     boolean isRollbackOnly();
 
-    Connection getConnection(String name);
+    /**
+     * Retrieves a connection for the given symbolic name. If it does not exists, creates a new connection using
+     * provided DataSource, and registers it internally.
+     *
+     * @param connectionName a symbolic name of the connection. Cayenne DataNodes generate a name in the form of
+     *                       "DataNode.Connection.nodename".
+     * @param dataSource     DataSource that provides new connections.
+     * @return a connection that participates in the current transaction.
+     */
+    Connection getOrCreateConnection(String connectionName, DataSource dataSource) throws SQLException;
 
-    void addConnection(String connectionName, Connection connection);
+    /**
+     * Returns all connections associated with the transaction.
+     *
+     * @return connections associated with the transaction.
+     */
+    Map<String, Connection> getConnections();
 
     void addListener(TransactionListener listener);
 }

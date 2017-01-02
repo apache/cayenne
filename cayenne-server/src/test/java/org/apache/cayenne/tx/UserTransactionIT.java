@@ -17,63 +17,59 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access;
+package org.apache.cayenne.tx;
 
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.tx.BaseTransaction;
-import org.apache.cayenne.tx.CayenneTransaction;
-import org.apache.cayenne.tx.Transaction;
-import org.apache.cayenne.tx.TransactionListener;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class TransactionThreadIT extends ServerCase {
+public class UserTransactionIT extends ServerCase {
 
     @Inject
-    private DataContext context;
+    private ObjectContext context;
 
     @Inject
     private JdbcEventLogger logger;
 
     @Test
-    public void testThreadConnectionReuseOnSelect() throws Exception {
+    public void testCommit() throws Exception {
 
-        ConnectionCounterTx t = new ConnectionCounterTx(new CayenneTransaction(logger));
+        Artist a = context.newObject(Artist.class);
+        a.setArtistName("AAA");
+
+        TxWrapper t = new TxWrapper(new CayenneTransaction(logger));
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-
-            SelectQuery q1 = new SelectQuery(Artist.class);
-            context.performQuery(q1);
-            assertEquals(1, t.connectionCount);
-
-            // delegate will fail if the second query opens a new connection
-            SelectQuery q2 = new SelectQuery(Artist.class);
-            context.performQuery(q2);
-
+            context.commitChanges();
         } finally {
+            t.rollback();
             BaseTransaction.bindThreadTransaction(null);
-            t.commit();
         }
+
+        assertEquals(0, t.commitCount);
+        assertEquals(1, t.getConnections().size());
     }
 
-    class ConnectionCounterTx implements Transaction {
+    class TxWrapper implements Transaction {
 
+        int commitCount;
         private Transaction delegate;
-        int connectionCount;
 
-        ConnectionCounterTx(Transaction delegate) {
+        TxWrapper(Transaction delegate) {
             this.delegate = delegate;
         }
 
@@ -82,6 +78,7 @@ public class TransactionThreadIT extends ServerCase {
         }
 
         public void commit() {
+            commitCount++;
             delegate.commit();
         }
 
@@ -97,16 +94,14 @@ public class TransactionThreadIT extends ServerCase {
             return delegate.isRollbackOnly();
         }
 
-        public Connection getConnection(String name) {
-            return delegate.getConnection(name);
+        @Override
+        public Connection getOrCreateConnection(String connectionName, DataSource dataSource) throws SQLException {
+            return delegate.getOrCreateConnection(connectionName, dataSource);
         }
 
-        public void addConnection(String name, Connection connection) {
-            if (connectionCount++ > 0) {
-                fail("Invalid attempt to add connection");
-            }
-
-            delegate.addConnection(name, connection);
+        @Override
+        public Map<String, Connection> getConnections() {
+            return delegate.getConnections();
         }
 
         @Override
@@ -114,4 +109,5 @@ public class TransactionThreadIT extends ServerCase {
             delegate.addListener(listener);
         }
     }
+
 }

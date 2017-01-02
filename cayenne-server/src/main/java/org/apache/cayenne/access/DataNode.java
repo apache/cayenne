@@ -235,7 +235,7 @@ public class DataNode implements QueryEngine {
 
 	/**
 	 * Returns a DataNode that should handle queries for all DataMap components.
-	 * 
+	 *
 	 * @since 1.1
 	 */
 	public DataNode lookupDataNode(DataMap dataMap) {
@@ -245,7 +245,7 @@ public class DataNode implements QueryEngine {
 
 	/**
 	 * Runs queries using Connection obtained from internal DataSource.
-	 * 
+	 *
 	 * @since 1.1
 	 */
 	@Override
@@ -326,7 +326,7 @@ public class DataNode implements QueryEngine {
 	 * Sets EntityResolver. DataNode relies on externally set EntityResolver, so
 	 * if the node is created outside of DataDomain stack, a valid
 	 * EntityResolver must be provided explicitly.
-	 * 
+	 *
 	 * @since 1.1
 	 */
 	public void setEntityResolver(EntityResolver entityResolver) {
@@ -338,115 +338,10 @@ public class DataNode implements QueryEngine {
 		return new ToStringBuilder(this).append("name", getName()).toString();
 	}
 
-	// a read-through DataSource that ensures returning the same connection
-	// within
-	// transaction.
-	final class TransactionDataSource implements DataSource {
-
-		final String CONNECTION_RESOURCE_PREFIX = "DataNode.Connection.";
-
-		public Connection getConnection() throws SQLException {
-			if (schemaUpdateStrategy != null) {
-				schemaUpdateStrategy.updateSchema(DataNode.this);
-			}
-			Transaction t = BaseTransaction.getThreadTransaction();
-
-			if (t != null) {
-				String key = CONNECTION_RESOURCE_PREFIX + name;
-				Connection c = t.getConnection(key);
-
-				if (c == null || c.isClosed()) {
-					c = dataSource.getConnection();
-					t.addConnection(key, c);
-				}
-
-				// wrap transaction-attached connections in a decorator that
-				// prevents them
-				// from being closed by callers, as transaction should take care
-				// of them
-				// on commit or rollback.
-				return new TransactionConnectionDecorator(c);
-			}
-
-			return dataSource.getConnection();
-		}
-
-		public Connection getConnection(String username, String password) throws SQLException {
-			if (schemaUpdateStrategy != null) {
-				schemaUpdateStrategy.updateSchema(DataNode.this);
-			}
-			Transaction t = BaseTransaction.getThreadTransaction();
-			if (t != null) {
-				String key = CONNECTION_RESOURCE_PREFIX + name;
-				Connection c = t.getConnection(key);
-
-				if (c == null || c.isClosed()) {
-					c = dataSource.getConnection();
-					t.addConnection(key, c);
-				}
-
-				// wrap transaction-attached connections in a decorator that
-				// prevents them
-				// from being closed by callers, as transaction should take care
-				// of them
-				// on commit or rollback.
-				return new TransactionConnectionDecorator(c);
-			}
-
-			return dataSource.getConnection(username, password);
-		}
-
-		public int getLoginTimeout() throws SQLException {
-			return dataSource.getLoginTimeout();
-		}
-
-		public PrintWriter getLogWriter() throws SQLException {
-			return dataSource.getLogWriter();
-		}
-
-		public void setLoginTimeout(int seconds) throws SQLException {
-			dataSource.setLoginTimeout(seconds);
-		}
-
-		public void setLogWriter(PrintWriter out) throws SQLException {
-			dataSource.setLogWriter(out);
-		}
-
-		/**
-		 * @since 3.0
-		 */
-		// JDBC 4 compatibility under Java 1.5
-		public boolean isWrapperFor(Class<?> iface) throws SQLException {
-			return iface.isAssignableFrom(dataSource.getClass());
-		}
-
-		/**
-		 * @since 3.0
-		 */
-		// JDBC 4 compatibility under Java 1.5
-		public <T> T unwrap(Class<T> iface) throws SQLException {
-			try {
-				return iface.cast(dataSource);
-			} catch (ClassCastException e) {
-				throw new SQLException("Not a DataSource: " + e.getMessage());
-			}
-		}
-
-		/**
-		 * @since 3.1
-		 * 
-		 *        JDBC 4.1 compatibility under Java 1.5
-		 */
-		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-			// don't throw SQLFeatureNotSupported - this will break JDK 1.5
-			// runtime
-			throw new UnsupportedOperationException();
-		}
-	}
 
 	/**
 	 * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
-	 * 
+	 *
 	 * @since 4.0
 	 */
 	public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata) {
@@ -455,7 +350,7 @@ public class DataNode implements QueryEngine {
 
 	/**
 	 * Creates a {@link RowReader} using internal {@link RowReaderFactory}.
-	 * 
+	 *
 	 * @since 4.0
 	 */
 	public RowReader<?> rowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
@@ -532,4 +427,85 @@ public class DataNode implements QueryEngine {
 	public void setSelectTranslatorFactory(SelectTranslatorFactory selectTranslatorFactory) {
 		this.selectTranslatorFactory = selectTranslatorFactory;
 	}
+
+    // a read-through DataSource that ensures returning the same connection
+    // within
+    // transaction.
+    final class TransactionDataSource implements DataSource {
+
+        final String CONNECTION_RESOURCE_PREFIX = "DataNode.Connection.";
+
+
+        @Override
+        public Connection getConnection() throws SQLException {
+            if (schemaUpdateStrategy != null) {
+                schemaUpdateStrategy.updateSchema(DataNode.this);
+            }
+
+            Transaction t = BaseTransaction.getThreadTransaction();
+            return (t != null) ? t.getOrCreateConnection(CONNECTION_RESOURCE_PREFIX + name, dataSource)
+                    : dataSource.getConnection();
+        }
+
+        @Override
+        public Connection getConnection(String username, String password) throws SQLException {
+            if (schemaUpdateStrategy != null) {
+                schemaUpdateStrategy.updateSchema(DataNode.this);
+            }
+
+            Transaction t = BaseTransaction.getThreadTransaction();
+            return (t != null) ? t.getOrCreateConnection(CONNECTION_RESOURCE_PREFIX + name, dataSource)
+                    : dataSource.getConnection(username, password);
+        }
+
+        @Override
+        public int getLoginTimeout() throws SQLException {
+            return dataSource.getLoginTimeout();
+        }
+
+        @Override
+        public PrintWriter getLogWriter() throws SQLException {
+            return dataSource.getLogWriter();
+        }
+
+        @Override
+        public void setLoginTimeout(int seconds) throws SQLException {
+            dataSource.setLoginTimeout(seconds);
+        }
+
+        @Override
+        public void setLogWriter(PrintWriter out) throws SQLException {
+            dataSource.setLogWriter(out);
+        }
+
+        /**
+         * @since 3.0
+         */
+        @Override
+        public boolean isWrapperFor(Class<?> iface) throws SQLException {
+            return iface.isAssignableFrom(dataSource.getClass());
+        }
+
+        /**
+         * @since 3.0
+         */
+        @Override
+        public <T> T unwrap(Class<T> iface) throws SQLException {
+            try {
+                return iface.cast(dataSource);
+            } catch (ClassCastException e) {
+                throw new SQLException("Not a DataSource: " + e.getMessage());
+            }
+        }
+
+        /**
+         * @since 3.1
+         */
+        @Override
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            // don't throw SQLFeatureNotSupported - this will break JDK 1.5
+            // runtime
+            throw new UnsupportedOperationException();
+        }
+    }
 }
