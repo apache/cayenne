@@ -97,6 +97,17 @@ public class ServerModule implements Module {
     protected String[] configurationLocations;
 
     /**
+     * Sets transaction management to either external or internal transactions. Default is internally-managed transactions.
+     *
+     * @param binder  DI binder passed to the module during injector startup.
+     * @param useExternal whether external (true) or internal (false) transaction management should be used.
+     * @since 4.0
+     */
+    public static void useExternalTransactions(Binder binder, boolean useExternal) {
+        contributeProperties(binder).put(Constants.SERVER_EXTERNAL_TX_PROPERTY, String.valueOf(useExternal));
+    }
+
+    /**
      * Provides access to a DI collection builder for String locations that allows downstream modules to
      * "contribute" their own Cayenne project locations.
      *
@@ -207,7 +218,7 @@ public class ServerModule implements Module {
         this.configurationLocations = new String[configurationLocations.length + 1];
         this.configurationLocations[0] = firstConfigLocation;
 
-        if(configurationLocations.length > 0) {
+        if (configurationLocations.length > 0) {
             System.arraycopy(configurationLocations, 0, this.configurationLocations, 1, configurationLocations.length);
         }
     }

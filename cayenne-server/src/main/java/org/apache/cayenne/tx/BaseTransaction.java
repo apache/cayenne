@@ -223,6 +223,7 @@ public abstract class BaseTransaction implements Transaction {
         }
 
         if (connections == null) {
+            // transaction is single-threaded, so using a non-concurrent map...
             connections = new HashMap<>();
         }
 
