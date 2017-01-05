@@ -29,8 +29,11 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.FunctionExpressionFactory;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -130,6 +133,23 @@ public class QualifierTranslatorIT extends ServerCase {
 		Expression e2 = e1.orExp(ExpressionFactory.matchExp("toGallery", g2));
 
 		doExpressionTest(Exhibit.class, e2, "(ta.GALLERY_ID = ?) OR (ta.GALLERY_ID = ?)");
+	}
+
+	@Test
+	public void testTrim() throws Exception {
+		Expression exp = FunctionExpressionFactory.trimExp(Artist.ARTIST_NAME.path());
+		Property<String> property = Property.create("trimmedName", exp, String.class);
+
+		doExpressionTest(Artist.class, property.like("P%"), "TRIM(ta.ARTIST_NAME) LIKE ?");
+	}
+
+	@Test
+	public void testConcat() throws Exception {
+		Expression exp = FunctionExpressionFactory.concatExp("artistName", "dateOfBirth");
+
+		Property<String> property = Property.create("concatNameAndDate", exp, String.class);
+
+		doExpressionTest(Artist.class, property.like("P%"), "CONCAT(ta.ARTIST_NAME, ta.DATE_OF_BIRTH) LIKE ?");
 	}
 
 	private void doExpressionTest(Class<?> queryType, String qualifier, String expectedSQL) throws Exception {

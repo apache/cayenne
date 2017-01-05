@@ -26,6 +26,8 @@ import java.util.List;
 
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.select.QualifierTranslator;
+import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
@@ -79,6 +81,14 @@ public class SybaseAdapter extends JdbcAdapter {
 	public SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver) {
 		return new SybaseSelectTranslator(query, this, entityResolver);
 	}
+
+    /**
+     * @since 4.0
+     */
+    @Override
+    public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
+        return new SybaseQualifierTranslator(queryAssembler);
+    }
 
     /**
      * Returns word "go".

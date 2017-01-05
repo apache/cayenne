@@ -39,7 +39,7 @@ public class ASTGreater extends ConditionNode {
 		super(ExpressionParserTreeConstants.JJTGREATER);
 	}
 
-	public ASTGreater(ASTPath path, Object value) {
+	public ASTGreater(SimpleNode path, Object value) {
 		super(ExpressionParserTreeConstants.JJTGREATER);
 		jjtAddChild(path, 0);
 		jjtAddChild(new ASTScalar(value), 1);

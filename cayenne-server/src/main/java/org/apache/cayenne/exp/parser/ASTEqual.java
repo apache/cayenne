@@ -51,7 +51,7 @@ public class ASTEqual extends ConditionNode implements ValueInjector {
 	/**
 	 * Creates "Equal To" expression.
 	 */
-	public ASTEqual(ASTPath path, Object value) {
+	public ASTEqual(SimpleNode path, Object value) {
 		super(ExpressionParserTreeConstants.JJTEQUAL);
 		jjtAddChild(path, 0);
 		jjtAddChild(new ASTScalar(value), 1);

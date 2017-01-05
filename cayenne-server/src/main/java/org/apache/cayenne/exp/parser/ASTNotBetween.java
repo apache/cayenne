@@ -34,7 +34,7 @@ public class ASTNotBetween extends ConditionNode {
         super(ExpressionParserTreeConstants.JJTNOTBETWEEN);
     }
 
-    public ASTNotBetween(ASTPath path, Object value1, Object value2) {
+    public ASTNotBetween(SimpleNode path, Object value1, Object value2) {
         super(ExpressionParserTreeConstants.JJTNOTBETWEEN);
         jjtAddChild(path, 0);
         jjtAddChild(new ASTScalar(value1), 1);

@@ -26,9 +26,11 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.exp.parser.SimpleNode;
@@ -189,6 +191,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 		objectMatchTranslator.reset();
 	}
 
+	@Override
 	public void finishedChild(Expression node, int childIndex, boolean hasMoreChildren) {
 
 		if (!hasMoreChildren) {
@@ -351,7 +354,18 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 		return ">>";
 	}
 
+	@Override
 	public void startNode(Expression node, Expression parentNode) {
+		boolean parenthesisNeeded = parenthesisNeeded(node, parentNode);
+
+		if(node.getType() == Expression.FUNCTION_CALL) {
+			appendFunction((ASTFunctionCall)node);
+			if(parenthesisNeeded) {
+				out.append("(");
+			}
+			return;
+		}
+
 		int count = node.getOperandCount();
 
 		if (count == 2) {
@@ -359,7 +373,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 			detectObjectMatch(node);
 		}
 
-		if (parenthesisNeeded(node, parentNode)) {
+		if (parenthesisNeeded) {
 			out.append('(');
 		}
 
@@ -367,21 +381,17 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 			// not all databases handle true/false
 			if (node.getType() == Expression.TRUE) {
 				out.append("1 = 1");
-			}
-			if (node.getType() == Expression.FALSE) {
+			} else if (node.getType() == Expression.FALSE) {
 				out.append("1 = 0");
 			}
 		}
 
 		if (count == 1) {
-			if (node.getType() == Expression.NEGATIVE)
+			if (node.getType() == Expression.NEGATIVE) {
 				out.append('-');
-			// ignore POSITIVE - it is a NOOP
-			// else if(node.getType() == Expression.POSITIVE)
-			// qualBuf.append('+');
-			else if (node.getType() == Expression.NOT)
+			} else if (node.getType() == Expression.NOT) {
 				out.append("NOT ");
-			else if (node.getType() == Expression.BITWISE_NOT) {
+			} else if (node.getType() == Expression.BITWISE_NOT) {
 				out.append(operandForBitwiseNot());
 			}
 		} else if ((node.getType() == Expression.LIKE_IGNORE_CASE || node.getType() == Expression.NOT_LIKE_IGNORE_CASE)
@@ -394,12 +404,11 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 	/**
 	 * @since 1.1
 	 */
+	@Override
 	public void endNode(Expression node, Expression parentNode) {
 
 		try {
-			// check if we need to use objectMatchTranslator to finish building
-			// the
-			// expression
+			// check if we need to use objectMatchTranslator to finish building the expression
 			if (node.getOperandCount() == 2 && matchingObject) {
 				appendObjectMatch();
 			}
@@ -417,26 +426,44 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 				appendLikeEscapeCharacter((PatternMatchNode) node);
 			}
 
+			// clean up trailing comma in function argument list
+			if(node.getType() == Expression.FUNCTION_CALL) {
+				clearLastFunctionArgDivider((ASTFunctionCall)node);
+			}
+
 			// closing LIKE parenthesis
 			if (parenthesisNeeded) {
 				out.append(')');
+			}
+
+			// if inside function call, put comma between arguments
+			if(parentNode != null && parentNode.getType() == Expression.FUNCTION_CALL) {
+				appendFunctionArgDivider((ASTFunctionCall) parentNode);
 			}
 		} catch (IOException ioex) {
 			throw new CayenneRuntimeException("Error appending content", ioex);
 		}
 	}
 
+	@Override
 	public void objectNode(Object leaf, Expression parentNode) {
 
 		try {
-			if (parentNode.getType() == Expression.OBJ_PATH) {
-				appendObjPath(parentNode);
-			} else if (parentNode.getType() == Expression.DB_PATH) {
-				appendDbPath(parentNode);
-			} else if (parentNode.getType() == Expression.LIST) {
-				appendList(parentNode, paramsDbType(parentNode));
-			} else {
-				appendLiteral(leaf, paramsDbType(parentNode), parentNode);
+			switch (parentNode.getType()) {
+				case Expression.OBJ_PATH:
+					appendObjPath(parentNode);
+					break;
+				case Expression.DB_PATH:
+					appendDbPath(parentNode);
+					break;
+				case Expression.LIST:
+					appendList(parentNode, paramsDbType(parentNode));
+					break;
+				case Expression.FUNCTION_CALL:
+					appendFunctionArg(leaf, (ASTFunctionCall)parentNode);
+					break;
+				default:
+					appendLiteral(leaf, paramsDbType(parentNode), parentNode);
 			}
 		} catch (IOException ioex) {
 			throw new CayenneRuntimeException("Error appending content", ioex);
@@ -444,24 +471,28 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 	}
 
 	protected boolean parenthesisNeeded(Expression node, Expression parentNode) {
-		if (parentNode == null)
+		if (parentNode == null) {
 			return false;
+		}
+
+		if (node.getType() == Expression.FUNCTION_CALL) {
+			return true;
+		}
 
 		// only unary expressions can go w/o parenthesis
-		if (node.getOperandCount() > 1)
+		if (node.getOperandCount() > 1) {
 			return true;
+		}
 
-		if (node.getType() == Expression.OBJ_PATH)
+		if (node.getType() == Expression.OBJ_PATH || node.getType() == Expression.DB_PATH) {
 			return false;
-
-		if (node.getType() == Expression.DB_PATH)
-			return false;
+		}
 
 		return true;
 	}
 
 	private final void appendList(Expression listExpr, DbAttribute paramDesc) throws IOException {
-		Iterator<?> it = null;
+		Iterator<?> it;
 		Object list = listExpr.getOperand(0);
 		if (list instanceof List) {
 			it = ((List<?>) list).iterator();
@@ -474,10 +505,11 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 
 		// process first element outside the loop
 		// (unroll loop to avoid condition checking
-		if (it.hasNext())
+		if (it.hasNext()) {
 			appendLiteral(it.next(), paramDesc, listExpr);
-		else
+		} else {
 			return;
+		}
 
 		while (it.hasNext()) {
 			out.append(", ");
@@ -511,6 +543,47 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 			}
 			objectMatchTranslator.setRelationship(rel, joinSplitAlias);
 		}
+	}
+
+	/**
+	 * Append function name to result SQL
+	 * Override this method to rename or skip function if generic name isn't supported on target DB.
+	 * @since 4.0
+	 */
+	protected void appendFunction(ASTFunctionCall functionExpression) {
+		out.append(functionExpression.getFunctionName());
+	}
+
+	/**
+	 * Append scalar argument of a function call
+	 * Used only for values stored in ASTScalar other
+	 * expressions appended in objectNode() method
+	 *
+	 * @since 4.0
+	 */
+	protected void appendFunctionArg(Object value, ASTFunctionCall functionExpression) throws IOException {
+		// Create fake DbAttribute to pass argument info down to bind it to SQL prepared statement
+		DbAttribute dbAttrForArg = new DbAttribute();
+		dbAttrForArg.setType(TypesMapping.getSqlTypeByJava(value.getClass()));
+		super.appendLiteral(value, dbAttrForArg, functionExpression);
+		appendFunctionArgDivider(functionExpression);
+	}
+
+	/**
+	 * Append divider between function arguments.
+	 * In overriding methods can be replaced e.g. for " || " for CONCAT operation
+	 * @since 4.0
+	 */
+	protected void appendFunctionArgDivider(ASTFunctionCall functionExpression) {
+		out.append(", ");
+	}
+
+	/**
+	 * Clear last divider as we currently don't now position of argument until parent element is ended.
+	 * @since 4.0
+	 */
+	protected void clearLastFunctionArgDivider(ASTFunctionCall functionExpression) {
+		out.delete(out.length() - 2, out.length());
 	}
 
 	/**

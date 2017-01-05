@@ -23,8 +23,12 @@ import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.dba.oracle.OracleQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTFunctionCall;
 
 public class FirebirdQualifierTranslator extends QualifierTranslator {
+
+	private int substringArg = 0;
+
 	public FirebirdQualifierTranslator(QueryAssembler queryAssembler) {
 		super(queryAssembler);
 	}
@@ -38,5 +42,71 @@ public class FirebirdQualifierTranslator extends QualifierTranslator {
 		// so we need to split one big statement on few smaller ones
 		rootNode = rootNode.transform(new OracleQualifierTranslator.INTrimmer());
 		rootNode.traverse(this);
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	protected void appendFunction(ASTFunctionCall functionExpression) {
+		switch (functionExpression.getFunctionName()) {
+			case "CONCAT":
+				// noop
+				break;
+			case "LENGTH":
+				out.append("CHAR_LENGTH");
+				break;
+			case "LOCATE":
+				out.append("POSITION");
+				break;
+			case "SUBSTRING":
+				substringArg = 0;
+			default:
+				super.appendFunction(functionExpression);
+		}
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	protected void appendFunctionArgDivider(ASTFunctionCall functionExpression) {
+		switch (functionExpression.getFunctionName()) {
+			case "CONCAT":
+				out.append(" || ");
+				break;
+			case "SUBSTRING":
+				switch (substringArg++) {
+					case 0:
+						out.append(" FROM ");
+						break;
+					case 1:
+						out.append(" FOR ");
+						break;
+				}
+				break;
+			default:
+				super.appendFunctionArgDivider(functionExpression);
+		}
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	protected void clearLastFunctionArgDivider(ASTFunctionCall functionExpression) {
+		switch (functionExpression.getFunctionName()) {
+			case "CONCAT":
+				out.delete(out.length() - 4, out.length());
+				break;
+			case "SUBSTRING":
+				// no offset arg
+				if(substringArg == 2) {
+					out.delete(out.length() - " FOR ".length(), out.length());
+				}
+				break;
+			default:
+				super.clearLastFunctionArgDivider(functionExpression);
+		}
 	}
 }

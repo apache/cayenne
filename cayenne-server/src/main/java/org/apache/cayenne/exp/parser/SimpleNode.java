@@ -326,10 +326,8 @@ public abstract class SimpleNode extends Expression implements Node {
 	}
 
 	protected Node wrapChild(Object child) {
-		// when child is null, there's no way of telling whether this is a
-		// scalar or
-		// not... fuzzy... maybe we should stop using this method - it is too
-		// generic
+		// when child is null, there's no way of telling whether this is a scalar or not... fuzzy...
+		// maybe we should stop using this method - it is too generic
 		return (child instanceof Node || child == null) ? (Node) child : new ASTScalar(child);
 	}
 

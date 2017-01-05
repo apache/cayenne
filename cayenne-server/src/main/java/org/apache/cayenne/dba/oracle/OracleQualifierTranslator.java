@@ -21,11 +21,13 @@ package org.apache.cayenne.dba.oracle;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.ASTIn;
 import org.apache.cayenne.exp.parser.ASTList;
 import org.apache.cayenne.exp.parser.ASTNegate;
 import org.apache.cayenne.exp.parser.ASTNotIn;
 import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.parser.Node;
 import org.apache.commons.collections.Transformer;
 
 import java.util.ArrayList;
@@ -92,5 +94,71 @@ public class OracleQualifierTranslator extends TrimmingQualifierTranslator {
 			}
 			return input;
 		}
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void endNode(Expression node, Expression parentNode) {
+		super.endNode(node, parentNode);
+		if(node.getType() == Expression.FUNCTION_CALL) {
+			if("LOCATE".equals(((ASTFunctionCall)node).getFunctionName())) {
+				// order of args in INSTR is different, so swap them back
+				swapNodeChildren((ASTFunctionCall)node, 0, 1);
+			}
+		}
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	protected void appendFunction(ASTFunctionCall functionExpression) {
+		if("CONCAT".equals(functionExpression.getFunctionName())) {
+			// CONCAT(x, y, z) -> (x || y || z)
+		} else if("SUBSTRING".equals(functionExpression.getFunctionName())) {
+			out.append("SUBSTR");
+		} else if("LOCATE".equals(functionExpression.getFunctionName())) {
+			// LOCATE(substr, str) -> INSTR(str, substr)
+			out.append("INSTR");
+			swapNodeChildren(functionExpression, 0, 1);
+		} else {
+			super.appendFunction(functionExpression);
+		}
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	protected void appendFunctionArgDivider(ASTFunctionCall functionExpression) {
+		if("CONCAT".equals(functionExpression.getFunctionName())) {
+			out.append(" || ");
+		} else {
+			super.appendFunctionArgDivider(functionExpression);
+		}
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	protected void clearLastFunctionArgDivider(ASTFunctionCall functionExpression) {
+		if("CONCAT".equals(functionExpression.getFunctionName())) {
+			out.delete(out.length() - " || ".length(), out.length());
+		} else {
+			super.clearLastFunctionArgDivider(functionExpression);
+		}
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	private void swapNodeChildren(Node node, int i, int j) {
+		Node ni = node.jjtGetChild(i);
+		Node nj = node.jjtGetChild(j);
+		node.jjtAddChild(ni, j);
+		node.jjtAddChild(nj, i);
 	}
 }

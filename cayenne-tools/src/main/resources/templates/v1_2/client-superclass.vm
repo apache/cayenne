@@ -76,19 +76,21 @@ public abstract class ${superClassName} extends ${baseClassName} {
 #end
 ## Create Properties
 #foreach( $attr in ${object.DeclaredAttributes} )
-    public static final Property<$importUtils.formatJavaType(${attr.Type}, false)> ${stringUtils.capitalizedAsConstant($attr.Name)} = new Property<>("${attr.Name}");
+    #set ( $type = "$importUtils.formatJavaType(${attr.Type}, false)" )
+    public static final Property<$type> ${stringUtils.capitalizedAsConstant($attr.Name)} = Property.create("${attr.Name}", ${stringUtils.stripGeneric($type)}.class);
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
 #if( $rel.ToMany )
 #if ( ${rel.CollectionType} == "java.util.Map")
     #set( $type = "$importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($entityUtils.getMapKeyType($rel)), $importUtils.formatJavaType($rel.TargetEntity.ClientClassName)>" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<>("${rel.Name}");
+    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = Property.create("${rel.Name}", ${stringUtils.stripGeneric($type)}.class);
 #else
     #set( $type = "$importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($rel.TargetEntity.ClientClassName)>" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<>("${rel.Name}");
+    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = Property.create("${rel.Name}", ${stringUtils.stripGeneric($type)}.class);
 #end
 #else
-    public static final Property<$importUtils.formatJavaType(${rel.TargetEntity.ClientClassName})> ${stringUtils.capitalizedAsConstant($rel.Name)} = new Property<>("${rel.Name}");
+    #set( $type = "$importUtils.formatJavaType(${rel.TargetEntity.ClassName})" )
+    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = Property.create("${rel.Name}", ${stringUtils.stripGeneric($type)}.class);
 #end
 #end
 

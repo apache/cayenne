@@ -41,7 +41,7 @@ public class ASTLessOrEqual extends ConditionNode {
 		super(ExpressionParserTreeConstants.JJTLESSOREQUAL);
 	}
 
-	public ASTLessOrEqual(ASTPath path, Object value) {
+	public ASTLessOrEqual(SimpleNode path, Object value) {
 		super(ExpressionParserTreeConstants.JJTLESSOREQUAL);
 		jjtAddChild(path, 0);
 		jjtAddChild(new ASTScalar(value), 1);

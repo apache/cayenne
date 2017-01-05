@@ -151,6 +151,11 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 */
 	public static final int BITWISE_RIGHT_SHIFT = 44;
 
+	/**
+	 * @since 4.0
+	 */
+	public static final int FUNCTION_CALL = 45;
+
 	protected int type;
 
 	/**
@@ -569,7 +574,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		for (int i = 0; i < count; i++) {
 			Object child = getOperand(i);
 
-			if (child instanceof Expression) {
+			if (child instanceof Expression && !(child instanceof ASTScalar)) {
 				Expression childExp = (Expression) child;
 				childExp.traverse(this, visitor);
 			} else {

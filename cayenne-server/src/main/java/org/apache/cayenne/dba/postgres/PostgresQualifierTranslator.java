@@ -25,6 +25,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 
 /**
@@ -40,20 +41,15 @@ public class PostgresQualifierTranslator extends TrimmingQualifierTranslator {
 
 	@Override
 	public void startNode(Expression node, Expression parentNode) {
-
-		if (node.getOperandCount() == 2) {
+		// super implementation has special handling of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
+		// Postgres uses ILIKE
+		boolean likeIgnoreCase = (node.getType() == Expression.LIKE_IGNORE_CASE || node.getType() == Expression.NOT_LIKE_IGNORE_CASE);
+		if (likeIgnoreCase) {
 			// binary nodes are the only ones that currently require this
 			detectObjectMatch(node);
-
 			if (parenthesisNeeded(node, parentNode)) {
 				out.append('(');
 			}
-
-			// super implementation has special handling
-			// of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
-			// Postgres uses ILIKE
-			// ...
-
 		} else {
 			super.startNode(node, parentNode);
 		}
@@ -61,12 +57,12 @@ public class PostgresQualifierTranslator extends TrimmingQualifierTranslator {
 
 	@Override
 	public void endNode(Expression node, Expression parentNode) {
-		if (node.getOperandCount() == 2) {
+		// super implementation has special handling of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
+		// Postgres uses ILIKE
+		boolean likeIgnoreCase = (node.getType() == Expression.LIKE_IGNORE_CASE || node.getType() == Expression.NOT_LIKE_IGNORE_CASE);
 
+		if (likeIgnoreCase) {
 			try {
-				// check if we need to use objectMatchTranslator to finish
-				// building the
-				// expression
 				if (matchingObject) {
 					appendObjectMatch();
 				}
@@ -78,11 +74,6 @@ public class PostgresQualifierTranslator extends TrimmingQualifierTranslator {
 				if (parenthesisNeeded(node, parentNode)) {
 					out.append(')');
 				}
-
-				// super implementation has special handling
-				// of LIKE_IGNORE_CASE and NOT_LIKE_IGNORE_CASE
-				// Postgres uses ILIKE
-				// ...
 			} catch (IOException ioex) {
 				throw new CayenneRuntimeException("Error appending content", ioex);
 			}
@@ -99,17 +90,15 @@ public class PostgresQualifierTranslator extends TrimmingQualifierTranslator {
 
 		try {
 			// use ILIKE
-
 			switch (node.getType()) {
-
-			case Expression.LIKE_IGNORE_CASE:
-				finishedChildNodeAppendExpression(node, " ILIKE ");
-				break;
-			case Expression.NOT_LIKE_IGNORE_CASE:
-				finishedChildNodeAppendExpression(node, " NOT ILIKE ");
-				break;
-			default:
-				super.finishedChild(node, childIndex, hasMoreChildren);
+				case Expression.LIKE_IGNORE_CASE:
+					finishedChildNodeAppendExpression(node, " ILIKE ");
+					break;
+				case Expression.NOT_LIKE_IGNORE_CASE:
+					finishedChildNodeAppendExpression(node, " NOT ILIKE ");
+					break;
+				default:
+					super.finishedChild(node, childIndex, hasMoreChildren);
 			}
 		} catch (IOException ioex) {
 			throw new CayenneRuntimeException("Error appending content", ioex);
@@ -122,6 +111,42 @@ public class PostgresQualifierTranslator extends TrimmingQualifierTranslator {
 		if (matchingObject) {
 			objectMatchTranslator.setOperation(buf.toString());
 			objectMatchTranslator.setExpression(node);
+		}
+	}
+
+    /**
+     * @since 4.0
+     */
+	@Override
+	protected void appendFunction(ASTFunctionCall functionExpression) {
+		if("LOCATE".equals(functionExpression.getFunctionName())) {
+			out.append("POSITION");
+		} else {
+			super.appendFunction(functionExpression);
+		}
+	}
+
+    /**
+     * @since 4.0
+     */
+	@Override
+	protected void appendFunctionArgDivider(ASTFunctionCall functionExpression) {
+		if("LOCATE".equals(functionExpression.getFunctionName())) {
+			out.append(" in ");
+		} else {
+			super.appendFunctionArgDivider(functionExpression);
+		}
+	}
+
+    /**
+     * @since 4.0
+     */
+	@Override
+	protected void clearLastFunctionArgDivider(ASTFunctionCall functionExpression) {
+		if("LOCATE".equals(functionExpression.getFunctionName())) {
+			out.delete(out.length() - " in ".length(), out.length());
+		} else {
+			super.clearLastFunctionArgDivider(functionExpression);
 		}
 	}
 }

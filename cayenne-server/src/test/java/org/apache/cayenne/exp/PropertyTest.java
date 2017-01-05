@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.reflect.TstJavaBean;
 import org.junit.Test;
@@ -222,5 +223,13 @@ public class PropertyTest {
         Expression e = p.contains("a_!bc");
         assertEquals("prop like \"%a#_!bc%\"", e.toString());
         assertEquals('#', ((PatternMatchNode) e).getEscapeChar());
+    }
+
+    @Test
+    public void testExpressionConstructor() {
+        Property<Integer> p = Property.create("testPath", new ASTObjPath("test.path"), Integer.class);
+        assertEquals("testPath", p.getName());
+        Expression ex = p.getExpression();
+        assertEquals("test.path", ex.toString());
     }
 }

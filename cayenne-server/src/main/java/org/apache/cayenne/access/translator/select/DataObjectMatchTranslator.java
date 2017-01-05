@@ -74,7 +74,7 @@ public class DataObjectMatchTranslator {
 		if (rel.isToMany() || !rel.isToPK()) {
 
 			// match on target PK
-			DbEntity ent = (DbEntity) rel.getTargetEntity();
+			DbEntity ent = rel.getTargetEntity();
 
 			// index by name
 			for (DbAttribute pkAttr : ent.getPrimaryKeys()) {

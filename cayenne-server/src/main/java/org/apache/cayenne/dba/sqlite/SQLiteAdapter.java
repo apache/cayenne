@@ -19,6 +19,8 @@
 package org.apache.cayenne.dba.sqlite;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.select.QualifierTranslator;
+import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -79,6 +81,14 @@ public class SQLiteAdapter extends JdbcAdapter {
         map.registerType(new SQLiteByteArrayType());
         map.registerType(new SQLiteCalendarType(GregorianCalendar.class));
         map.registerType(new SQLiteCalendarType(Calendar.class));
+    }
+
+    /**
+     * @since 4.0
+     */
+    @Override
+    public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
+        return new SQLiteQualifierTranslator(queryAssembler);
     }
 
     @Override

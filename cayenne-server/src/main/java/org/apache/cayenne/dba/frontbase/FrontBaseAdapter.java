@@ -20,6 +20,8 @@
 package org.apache.cayenne.dba.frontbase;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.translator.select.QualifierTranslator;
+import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
@@ -81,6 +83,14 @@ public class FrontBaseAdapter extends JdbcAdapter {
 	@Override
 	public SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver) {
 		return new FrontBaseSelectTranslator(query, this, entityResolver);
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
+		return new FrontBaseQualifierTranslator(queryAssembler);
 	}
 
 	@Override

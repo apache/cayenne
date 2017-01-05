@@ -30,20 +30,17 @@ import org.apache.cayenne.exp.ExpressionException;
  * 
  * @since 1.1
  */
-public class ConversionUtil {
+public final class ConversionUtil {
 
     public static int toInt(Object object, int defaultValue) {
         if (object == null) {
             return defaultValue;
-        }
-        else if (object instanceof Number) {
+        } else if (object instanceof Number) {
             return ((Number) object).intValue();
-        }
-        else if (object instanceof String) {
+        } else if (object instanceof String) {
             try {
                 return Integer.parseInt((String) object);
-            }
-            catch (NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 return defaultValue;
             }
         }
@@ -57,15 +54,31 @@ public class ConversionUtil {
     public static long toLong(Object object, long defaultValue) {
         if (object == null) {
             return defaultValue;
-        }
-        else if (object instanceof Number) {
+        } else if (object instanceof Number) {
             return ((Number) object).longValue();
-        }
-        else if (object instanceof String) {
+        } else if (object instanceof String) {
             try {
                 return Long.parseLong((String) object);
+            } catch (NumberFormatException ex) {
+                return defaultValue;
             }
-            catch (NumberFormatException ex) {
+        }
+
+        return defaultValue;
+    }
+
+    /**
+     * @since 4.0
+     */
+    public static double toDouble(Object object, double defaultValue) {
+        if (object == null) {
+            return defaultValue;
+        } else if (object instanceof Number) {
+            return ((Number) object).doubleValue();
+        } else if (object instanceof String) {
+            try {
+                return Double.parseDouble((String) object);
+            } catch (NumberFormatException ex) {
                 return defaultValue;
             }
         }
@@ -89,14 +102,11 @@ public class ConversionUtil {
 
         if (object == null) {
             return null;
-        }
-        else if (object instanceof BigDecimal) {
+        } else if (object instanceof BigDecimal) {
             return (BigDecimal) object;
-        }
-        else if (object instanceof BigInteger) {
+        } else if (object instanceof BigInteger) {
             return new BigDecimal((BigInteger) object);
-        }
-        else if (object instanceof Number) {
+        } else if (object instanceof Number) {
             return new BigDecimal(((Number) object).doubleValue());
         }
 
@@ -109,20 +119,15 @@ public class ConversionUtil {
     public static Comparable toComparable(Object object) {
         if (object == null) {
             return null;
-        }
-        else if (object instanceof Comparable) {
+        } else if (object instanceof Comparable) {
             return (Comparable) object;
-        }
-        else if (object instanceof StringBuilder) {
+        } else if (object instanceof StringBuilder) {
             return object.toString();
-        }
-        else if (object instanceof StringBuffer) {
+        } else if (object instanceof StringBuffer) {
             return object.toString();
-        }
-        else if (object instanceof char[]) {
+        } else if (object instanceof char[]) {
             return new String((char[]) object);
-        }
-        else {
+        } else {
             throw new ClassCastException(
                 "Invalid Comparable class:" + object.getClass().getName());
         }
@@ -134,17 +139,13 @@ public class ConversionUtil {
     public static String toString(Object object) {
         if (object == null) {
             return null;
-        }
-        else if (object instanceof String) {
+        } else if (object instanceof String) {
             return (String) object;
-        }
-        else if (object instanceof StringBuffer) {
+        } else if (object instanceof StringBuffer) {
             return object.toString();
-        }
-        else if (object instanceof char[]) {
+        } else if (object instanceof char[]) {
             return new String((char[]) object);
-        }
-        else {
+        } else {
             throw new ClassCastException(
                 "Invalid class for String conversion:" + object.getClass().getName());
         }
@@ -156,11 +157,9 @@ public class ConversionUtil {
     public static Object toUpperCase(Object object) {
         if ((object instanceof String) || (object instanceof StringBuffer)) {
             return object.toString().toUpperCase();
-        }
-        else if (object instanceof char[]) {
+        } else if (object instanceof char[]) {
             return new String((char[]) object).toUpperCase();
-        }
-        else {
+        } else {
             return object;
         }
     }

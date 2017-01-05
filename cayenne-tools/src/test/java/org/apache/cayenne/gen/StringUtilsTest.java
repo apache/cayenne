@@ -98,4 +98,13 @@ public class StringUtilsTest {
         assertEquals(expected, stringUtils.capitalizedAsConstant("abCe"));
     }
 
+    @Test
+    public void testStripGeneric() throws Exception {
+        assertEquals("List", stringUtils.stripGeneric("List"));
+        assertEquals("List", stringUtils.stripGeneric("List<Integer>"));
+        assertEquals("List", stringUtils.stripGeneric("List<List<Map<Integer,List<String>>>>"));
+        assertEquals("List123", stringUtils.stripGeneric("List<List<Map<Integer,List<String>>>>123"));
+        assertEquals("List<Integer", stringUtils.stripGeneric("List<Integer"));
+    }
+
 }

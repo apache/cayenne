@@ -21,6 +21,7 @@ package org.apache.cayenne.dba.sqlserver;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.map.DbAttribute;
 
 import java.sql.Types;
@@ -111,5 +112,49 @@ class SQLServerTrimmingQualifierTranslator extends TrimmingQualifierTranslator {
 		}
 
 		return expressionStack.get(index);
+	}
+
+    /**
+     * @since 4.0
+     */
+	@Override
+	protected void appendFunction(ASTFunctionCall functionExpression) {
+		switch (functionExpression.getFunctionName()) {
+			case "LENGTH":
+				out.append("LEN");
+				break;
+			case "LOCATE":
+				out.append("CHARINDEX");
+				break;
+			case "MOD":
+				// noop
+				break;
+			default:
+				super.appendFunction(functionExpression);
+		}
+	}
+
+    /**
+     * @since 4.0
+     */
+	@Override
+	protected void appendFunctionArgDivider(ASTFunctionCall functionExpression) {
+		if("MOD".equals(functionExpression.getFunctionName())) {
+			out.append(" % ");
+		} else {
+			super.appendFunctionArgDivider(functionExpression);
+		}
+	}
+
+    /**
+     * @since 4.0
+     */
+	@Override
+	protected void clearLastFunctionArgDivider(ASTFunctionCall functionExpression) {
+		if("MOD".equals(functionExpression.getFunctionName())) {
+			out.delete(out.length() - " % ".length(), out.length());
+		} else {
+			super.clearLastFunctionArgDivider(functionExpression);
+		}
 	}
 }

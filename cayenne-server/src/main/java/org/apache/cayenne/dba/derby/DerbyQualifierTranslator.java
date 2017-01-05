@@ -18,12 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.dba.derby;
 
+import java.io.IOException;
 import java.sql.Types;
 
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTEqual;
+import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.ASTNotEqual;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.map.DbAttribute;
@@ -52,9 +54,70 @@ public class DerbyQualifierTranslator extends TrimmingQualifierTranslator {
 
 			out.append("CAST(");
 			super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
-			out.append(" AS VARCHAR(" + size + "))");
+			out.append(" AS VARCHAR(").append(size).append("))");
 		} else {
 			super.processColumnWithQuoteSqlIdentifiers(dbAttr, pathExp);
+		}
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	protected void appendFunction(ASTFunctionCall functionExpression) {
+		if("SUBSTRING".equals(functionExpression.getFunctionName())) {
+			out.append("SUBSTR");
+		} else if("CONCAT".equals(functionExpression.getFunctionName())) {
+			out.append("");
+		} else {
+			super.appendFunction(functionExpression);
+		}
+	}
+
+	/**
+	 * A little bit ugly code that wraps String scalars to CAST(? AS VARCHAR(length))
+	 * because otherwise derby don't know what type will be at the placeholder and
+	 * use LONG VARCHAR that isn't comparable what leads to statement preparation failure.
+	 *
+	 * @since 4.0
+	 */
+	protected void appendFunctionArg(Object value, ASTFunctionCall functionExpression) throws IOException {
+		if("CONCAT".equals(functionExpression.getFunctionName())) {
+			if(value instanceof String) {
+				out.append("CAST(");
+			}
+			super.appendFunctionArg(value, functionExpression);
+			if(value instanceof String) {
+				clearLastFunctionArgDivider(functionExpression);
+				out.append(" AS VARCHAR(").append(((String)value).length()).append("))");
+				appendFunctionArgDivider(functionExpression);
+			}
+		} else {
+			super.appendFunctionArg(value, functionExpression);
+		}
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	protected void appendFunctionArgDivider(ASTFunctionCall functionExpression) {
+		if("CONCAT".equals(functionExpression.getFunctionName())) {
+			out.append(" || ");
+		} else {
+			super.appendFunctionArgDivider(functionExpression);
+		}
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	protected void clearLastFunctionArgDivider(ASTFunctionCall functionExpression) {
+		if("CONCAT".equals(functionExpression.getFunctionName())) {
+			out.delete(out.length() - 4, out.length());
+		} else {
+			super.clearLastFunctionArgDivider(functionExpression);
 		}
 	}
 }

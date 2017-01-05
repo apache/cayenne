@@ -41,7 +41,7 @@ public class ASTLess extends ConditionNode {
 		super(ExpressionParserTreeConstants.JJTLESS);
 	}
 
-	public ASTLess(ASTPath path, Object value) {
+	public ASTLess(SimpleNode path, Object value) {
 		super(ExpressionParserTreeConstants.JJTLESS);
 		jjtAddChild(path, 0);
 		jjtAddChild(new ASTScalar(value), 1);

@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SortOrder;
@@ -33,16 +32,19 @@ import java.util.List;
  * A property in a DataObject.
  * </p>
  * <p>
- * <p>
- * Used to construct Expressions quickly and with type-safety, and to construct
- * Orderings
+ * Used to construct Expressions quickly and with type-safety, and to construct Orderings
  * </p>
  * <p>
- * <p>
  * Instances of this class are immutable
+ * Construct via factory methods Property.create(..)
  * </p>
  *
  * @param <E> The type this property returns.
+ *
+ * @see Property#create(String, Class)
+ * @see Property#create(Expression, Class)
+ * @see Property#create(String, Expression, Class)
+ *
  * @since 4.0
  */
 public class Property<E> {
@@ -53,10 +55,67 @@ public class Property<E> {
     private final String name;
 
     /**
-     * Constructs a new property with the given name.
+     * Expression provider for the property
+     * @since 4.0
      */
-    public Property(String name) {
+    private final ExpressionProvider expressionProvider;
+
+    /**
+     * Explicit type of the property
+     * @since 4.0
+     */
+    private final Class<? super E> type;
+
+    /**
+     * Constructs a new property with the given name.
+     *
+     * @param name name of the property (usually it's obj path)
+     *
+     * @see Property#create(String, Class)
+     * @deprecated use factory method Property.create("propertyName", PropertyType.class)
+     */
+    public Property(final String name) {
+        this(name, null);
+    }
+
+    /**
+     * Constructs a new property with the given name and type.
+     *
+     * @param name of the property (usually it's obj path)
+     * @param type of the property
+     *
+     * @see Property#create(String, Class)
+     */
+    protected Property(final String name, final Class<? super E> type) {
         this.name = name;
+        expressionProvider = new ExpressionProvider() {
+            @Override
+            public Expression get() {
+                return ExpressionFactory.pathExp(name);
+            }
+        };
+        this.type = type;
+    }
+
+    /**
+     * Constructs a new property with the given name and expression
+     *
+     * @param name of the property (will be used as alias for the expression)
+     * @param expression expression for property
+     * @param type of the property
+     * @since 4.0
+     *
+     * @see Property#create(String, Expression, Class)
+     */
+    protected Property(final String name, final Expression expression, final Class<? super E> type) {
+        this.name = name;
+        expressionProvider = new ExpressionProvider() {
+            @Override
+            public Expression get() {
+                return expression.deepCopy();
+            }
+        };
+        this.type = type;
     }
 
     /**
@@ -64,6 +123,13 @@ public class Property<E> {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * @since 4.0
+     */
+    public Expression getExpression() {
+        return expressionProvider.get();
     }
 
     @Override
@@ -82,7 +148,7 @@ public class Property<E> {
      * @return a newly created Property object.
      */
     public Property<Object> dot(String property) {
-        return new Property<Object>(getName() + "." + property);
+        return create(getName() + "." + property, null);
     }
 
     /**
@@ -91,7 +157,7 @@ public class Property<E> {
      * @return a newly created Property object.
      */
     public <T> Property<T> dot(Property<T> property) {
-        return new Property<T>(getName() + "." + property.getName());
+        return create(getName() + "." + property.getName(), property.getType());
     }
 
     /**
@@ -100,7 +166,7 @@ public class Property<E> {
      * as "outer" attributes make no sense.
      */
     public Property<E> outer() {
-        return isOuter() ? this : new Property<E>(name + "+");
+        return isOuter() ? this : create(name + "+", type);
     }
 
     private boolean isOuter() {
@@ -109,46 +175,48 @@ public class Property<E> {
 
     /**
      * Converts this property to a path expression.
+     * This method is equivalent of getExpression() which is preferred as more generic.
      *
      * @return a newly created expression.
+     * @see Property#getExpression()
      */
     public Expression path() {
-        return ExpressionFactory.pathExp(getName());
+        return getExpression();
     }
 
     /**
      * @return An expression representing null.
      */
     public Expression isNull() {
-        return ExpressionFactory.matchExp(getName(), null);
+        return ExpressionFactory.matchExp(getExpression(), null);
     }
 
     /**
      * @return An expression representing a non-null value.
      */
     public Expression isNotNull() {
-        return ExpressionFactory.matchExp(getName(), null).notExp();
+        return ExpressionFactory.matchExp(getExpression(), null).notExp();
     }
 
     /**
      * @return An expression representing equality to TRUE.
      */
     public Expression isTrue() {
-        return ExpressionFactory.matchExp(getName(), Boolean.TRUE);
+        return ExpressionFactory.matchExp(getExpression(), Boolean.TRUE);
     }
 
     /**
      * @return An expression representing equality to FALSE.
      */
     public Expression isFalse() {
-        return ExpressionFactory.matchExp(getName(), Boolean.FALSE);
+        return ExpressionFactory.matchExp(getExpression(), Boolean.FALSE);
     }
 
     /**
      * @return An expression representing equality to a value.
      */
     public Expression eq(E value) {
-        return ExpressionFactory.matchExp(getName(), value);
+        return ExpressionFactory.matchExp(getExpression(), value);
     }
 
     /**
@@ -156,14 +224,14 @@ public class Property<E> {
      * (columns).
      */
     public Expression eq(Property<?> value) {
-        return ExpressionFactory.matchExp(getName(), new ASTObjPath(value.getName()));
+        return ExpressionFactory.matchExp(getExpression(), value.getExpression());
     }
 
     /**
      * @return An expression representing inequality to a value.
      */
     public Expression ne(E value) {
-        return ExpressionFactory.noMatchExp(getName(), value);
+        return ExpressionFactory.noMatchExp(getExpression(), value);
     }
 
     /**
@@ -171,7 +239,7 @@ public class Property<E> {
      * (columns).
      */
     public Expression ne(Property<?> value) {
-        return ExpressionFactory.noMatchExp(getName(), new ASTObjPath(value.getName()));
+        return ExpressionFactory.noMatchExp(getExpression(), value.getExpression());
     }
 
     /**
@@ -183,7 +251,7 @@ public class Property<E> {
      * @return An expression for a Database "LIKE" query.
      */
     public Expression like(String pattern) {
-        return ExpressionFactory.likeExp(getName(), pattern);
+        return ExpressionFactory.likeExp(getExpression(), pattern);
     }
 
     /**
@@ -194,28 +262,28 @@ public class Property<E> {
      * @return An expression for a Database "LIKE" query.
      */
     public Expression like(String pattern, char escapeChar) {
-        return ExpressionFactory.likeExp(getName(), pattern, escapeChar);
+        return ExpressionFactory.likeExp(getExpression(), pattern, escapeChar);
     }
 
     /**
      * @return An expression for a case insensitive "LIKE" query.
      */
     public Expression likeIgnoreCase(String pattern) {
-        return ExpressionFactory.likeIgnoreCaseExp(getName(), pattern);
+        return ExpressionFactory.likeIgnoreCaseExp(getExpression(), pattern);
     }
 
     /**
      * @return An expression for a Database "NOT LIKE" query.
      */
     public Expression nlike(String value) {
-        return ExpressionFactory.notLikeExp(getName(), value);
+        return ExpressionFactory.notLikeExp(getExpression(), value);
     }
 
     /**
      * @return An expression for a case insensitive "NOT LIKE" query.
      */
     public Expression nlikeIgnoreCase(String value) {
-        return ExpressionFactory.notLikeIgnoreCaseExp(getName(), value);
+        return ExpressionFactory.notLikeIgnoreCaseExp(getExpression(), value);
     }
 
     /**
@@ -228,7 +296,7 @@ public class Property<E> {
      * @return a newly created expression.
      */
     public Expression contains(String substring) {
-        return ExpressionFactory.containsExp(getName(), substring);
+        return ExpressionFactory.containsExp(getExpression(), substring);
     }
 
     /**
@@ -241,7 +309,7 @@ public class Property<E> {
      * @return a newly created expression.
      */
     public Expression startsWith(String value) {
-        return ExpressionFactory.startsWithExp(getName(), value);
+        return ExpressionFactory.startsWithExp(getExpression(), value);
     }
 
     /**
@@ -254,7 +322,7 @@ public class Property<E> {
      * @return a newly created expression.
      */
     public Expression endsWith(String value) {
-        return ExpressionFactory.endsWithExp(getName(), value);
+        return ExpressionFactory.endsWithExp(getExpression(), value);
     }
 
     /**
@@ -262,7 +330,7 @@ public class Property<E> {
      * comparison.
      */
     public Expression containsIgnoreCase(String value) {
-        return ExpressionFactory.containsIgnoreCaseExp(getName(), value);
+        return ExpressionFactory.containsIgnoreCaseExp(getExpression(), value);
     }
 
     /**
@@ -270,7 +338,7 @@ public class Property<E> {
      * comparison.
      */
     public Expression startsWithIgnoreCase(String value) {
-        return ExpressionFactory.startsWithIgnoreCaseExp(getName(), value);
+        return ExpressionFactory.startsWithIgnoreCaseExp(getExpression(), value);
     }
 
     /**
@@ -278,7 +346,7 @@ public class Property<E> {
      * comparison.
      */
     public Expression endsWithIgnoreCase(String value) {
-        return ExpressionFactory.endsWithIgnoreCaseExp(getName(), value);
+        return ExpressionFactory.endsWithIgnoreCaseExp(getExpression(), value);
     }
 
     /**
@@ -288,7 +356,7 @@ public class Property<E> {
      * bound inclusive
      */
     public Expression between(E lower, E upper) {
-        return ExpressionFactory.betweenExp(getName(), lower, upper);
+        return ExpressionFactory.betweenExp(getExpression(), lower, upper);
     }
 
     /**
@@ -305,7 +373,7 @@ public class Property<E> {
             System.arraycopy(moreValues, 0, values, 1, moreValuesLength);
         }
 
-        return ExpressionFactory.inExp(getName(), values);
+        return ExpressionFactory.inExp(getExpression(), values);
     }
 
     /**
@@ -323,14 +391,14 @@ public class Property<E> {
             System.arraycopy(moreValues, 0, values, 1, moreValuesLength);
         }
 
-        return ExpressionFactory.notInExp(getName(), values);
+        return ExpressionFactory.notInExp(getExpression(), values);
     }
 
     /**
      * @return An expression for finding objects with values in the given set.
      */
     public Expression in(Collection<E> values) {
-        return ExpressionFactory.inExp(getName(), values);
+        return ExpressionFactory.inExp(getExpression(), values);
     }
 
     /**
@@ -338,14 +406,14 @@ public class Property<E> {
      * set.
      */
     public Expression nin(Collection<E> values) {
-        return ExpressionFactory.notInExp(getName(), values);
+        return ExpressionFactory.notInExp(getExpression(), values);
     }
 
     /**
      * @return A greater than Expression.
      */
     public Expression gt(E value) {
-        return ExpressionFactory.greaterExp(getName(), value);
+        return ExpressionFactory.greaterExp(getExpression(), value);
     }
 
     /**
@@ -353,14 +421,14 @@ public class Property<E> {
      * (columns).
      */
     public Expression gt(Property<?> value) {
-        return ExpressionFactory.greaterExp(getName(), new ASTObjPath(value.getName()));
+        return ExpressionFactory.greaterExp(getExpression(), value.getExpression());
     }
 
     /**
      * @return A greater than or equal to Expression.
      */
     public Expression gte(E value) {
-        return ExpressionFactory.greaterOrEqualExp(getName(), value);
+        return ExpressionFactory.greaterOrEqualExp(getExpression(), value);
     }
 
     /**
@@ -368,14 +436,14 @@ public class Property<E> {
      * attributes (columns).
      */
     public Expression gte(Property<?> value) {
-        return ExpressionFactory.greaterOrEqualExp(getName(), new ASTObjPath(value.getName()));
+        return ExpressionFactory.greaterOrEqualExp(getExpression(), value.getExpression());
     }
 
     /**
      * @return A less than Expression.
      */
     public Expression lt(E value) {
-        return ExpressionFactory.lessExp(getName(), value);
+        return ExpressionFactory.lessExp(getExpression(), value);
     }
 
     /**
@@ -383,14 +451,14 @@ public class Property<E> {
      * (columns).
      */
     public Expression lt(Property<?> value) {
-        return ExpressionFactory.lessExp(getName(), new ASTObjPath(value.getName()));
+        return ExpressionFactory.lessExp(getExpression(), value.getExpression());
     }
 
     /**
      * @return A less than or equal to Expression.
      */
     public Expression lte(E value) {
-        return ExpressionFactory.lessOrEqualExp(getName(), value);
+        return ExpressionFactory.lessOrEqualExp(getExpression(), value);
     }
 
     /**
@@ -398,7 +466,7 @@ public class Property<E> {
      * attributes (columns).
      */
     public Expression lte(Property<?> value) {
-        return ExpressionFactory.lessOrEqualExp(getName(), new ASTObjPath(value.getName()));
+        return ExpressionFactory.lessOrEqualExp(getExpression(), value.getExpression());
     }
 
     /**
@@ -471,7 +539,7 @@ public class Property<E> {
      * prefetch semantics.
      */
     public PrefetchTreeNode joint() {
-        return PrefetchTreeNode.withPath(name, PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        return PrefetchTreeNode.withPath(getName(), PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
     }
 
     /**
@@ -480,7 +548,7 @@ public class Property<E> {
      * "disjoint" prefetch semantics.
      */
     public PrefetchTreeNode disjoint() {
-        return PrefetchTreeNode.withPath(name, PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
+        return PrefetchTreeNode.withPath(getName(), PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
     }
 
     /**
@@ -489,7 +557,7 @@ public class Property<E> {
      * "disjoint by id" prefetch semantics.
      */
     public PrefetchTreeNode disjointById() {
-        return PrefetchTreeNode.withPath(name, PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        return PrefetchTreeNode.withPath(getName(), PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
     }
 
     /**
@@ -534,4 +602,27 @@ public class Property<E> {
         }
     }
 
+    public Property<E> alias(String alias) {
+        return new Property<>(alias, this.getExpression(), this.getType());
+    }
+
+    public Class<? super E> getType() {
+        return type;
+    }
+
+    public static <T> Property<T> create(String name, Class<? super T> type) {
+        return new Property<>(name, type);
+    }
+
+    public static <T> Property<T> create(Expression expression, Class<? super T> type) {
+        return new Property<>(expression.expName().toLowerCase(), expression, type);
+    }
+
+    public static <T> Property<T> create(String name, Expression expression, Class<? super T> type) {
+        return new Property<>(name, expression, type);
+    }
+
+    private interface ExpressionProvider {
+        Expression get();
+    }
 }

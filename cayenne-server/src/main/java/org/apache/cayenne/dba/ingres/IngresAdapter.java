@@ -83,7 +83,7 @@ public class IngresAdapter extends JdbcAdapter {
 
 	@Override
 	public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-		return new TrimmingQualifierTranslator(queryAssembler, IngresAdapter.TRIM_FUNCTION);
+		return new IngresQualifierTranslator(queryAssembler);
 	}
 
 	@Override

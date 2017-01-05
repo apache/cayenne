@@ -162,4 +162,28 @@ public class StringUtils {
             return str + "s";
         }
     }
+
+    /**
+     * <p>
+     * Strip generic definition from string
+     * </p>
+     * <p>For example: List&gt;Integer&lt; == List</p>
+     * @since 4.0
+     */
+    public String stripGeneric(String str) {
+        if(str == null) {
+            return null;
+        }
+        int start = str.indexOf('<');
+        if(start == -1) {
+            return str;
+        }
+        int end = str.lastIndexOf('>');
+        if(end == -1) {
+            return str;
+        } else if(end == str.length() - 1) {
+            return str.substring(0, start);
+        }
+        return str.substring(0, start) + str.substring(end+1);
+    }
 }
