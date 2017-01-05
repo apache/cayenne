@@ -1575,7 +1575,7 @@
 				<dependency>
 					<groupId>org.xerial</groupId>
 					<artifactId>sqlite-jdbc</artifactId>
-					<version>3.6.16</version>
+					<version>3.15.1</version>
 				</dependency>
 			</dependencies>
 		</profile>

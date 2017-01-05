@@ -378,4 +378,8 @@ public class UnitDbAdapter {
     public boolean supportsGeneratedKeysDrop() {
         return false;
     }
+
+    public boolean supportsEscapeInLike() {
+        return true;
+    }
 }

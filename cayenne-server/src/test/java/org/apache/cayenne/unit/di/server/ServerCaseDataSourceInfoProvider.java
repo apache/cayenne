@@ -23,6 +23,7 @@ import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
+import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.di.Provider;
 import org.apache.commons.collections.ExtendedProperties;
 import org.apache.commons.logging.Log;
@@ -91,6 +92,16 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         derby.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
         derby.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
         inMemoryDataSources.put("derby", derby);
+
+        DataSourceInfo sqlite = new DataSourceInfo();
+        sqlite.setAdapterClassName(SQLiteAdapter.class.getName());
+        sqlite.setUserName("sa");
+        sqlite.setPassword("");
+        sqlite.setDataSourceUrl("jdbc:sqlite:file:memdb?mode=memory&cache=shared");
+        sqlite.setJdbcDriver("org.sqlite.JDBC");
+        sqlite.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
+        sqlite.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
+        inMemoryDataSources.put("sqlite", sqlite);
     }
 
     @Override

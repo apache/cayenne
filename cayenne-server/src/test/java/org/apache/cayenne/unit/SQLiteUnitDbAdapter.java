@@ -45,4 +45,8 @@ public class SQLiteUnitDbAdapter extends UnitDbAdapter {
     public boolean supportsAllAnySome() {
         return false;
     }
+
+    public boolean supportsEscapeInLike() {
+        return false;
+    }
 }

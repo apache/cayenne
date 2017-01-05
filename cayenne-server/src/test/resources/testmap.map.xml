@@ -59,7 +59,7 @@
 		<db-attribute name="NAME" type="VARCHAR" length="250"/>
 	</db-entity>
 	<db-entity name="NULL_TEST">
-		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 	</db-entity>
 	<db-entity name="PAINTING">

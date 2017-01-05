@@ -84,6 +84,9 @@ http://sqlite.org/datatype3.html
    <jdbc-type name="LONGVARCHAR">
        <db-type name="LONGVARCHAR"/>
    </jdbc-type>
+    <jdbc-type name="LONGNVARCHAR">
+        <db-type name="LONGNVARCHAR"/>
+    </jdbc-type>
    <jdbc-type name="NUMERIC">
        <db-type name="NUMERIC"/>
    </jdbc-type>

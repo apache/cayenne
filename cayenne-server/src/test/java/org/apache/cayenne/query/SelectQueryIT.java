@@ -274,6 +274,10 @@ public class SelectQueryIT extends ServerCase {
 	@Test
 	public void testSelectLikeSingle_WildcardMatchAndEscape() throws Exception {
 
+		if(!accessStackAdapter.supportsEscapeInLike()) {
+			return;
+		}
+
 		createArtistsWildcardDataSet();
 
 		SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
@@ -285,6 +289,10 @@ public class SelectQueryIT extends ServerCase {
 
 	@Test
 	public void testSelectLike_WildcardMatchAndEscape_AndOtherCriteria() throws Exception {
+
+		if(!accessStackAdapter.supportsEscapeInLike()) {
+			return;
+		}
 
 		createArtistsWildcardDataSet();
 
@@ -301,6 +309,10 @@ public class SelectQueryIT extends ServerCase {
 	@Test
 	public void testSelectLike_WildcardMatchIgnoreCaseAndEscape_AndOtherCriteria() throws Exception {
 
+		if(!accessStackAdapter.supportsEscapeInLike()) {
+			return;
+		}
+
 		createArtistsWildcardDataSet();
 
 		// CAY-1978 - combining LIKE..ESCAPE with another clause generated bad
@@ -315,6 +327,10 @@ public class SelectQueryIT extends ServerCase {
 
 	@Test
 	public void testSelectLike_WildcardMatchAndEscapeMulti_AndOtherCriteria() throws Exception {
+
+		if(!accessStackAdapter.supportsEscapeInLike()) {
+			return;
+		}
 
 		tArtist.insert(1, "_X_", null);
 		tArtist.insert(2, "_X", null);

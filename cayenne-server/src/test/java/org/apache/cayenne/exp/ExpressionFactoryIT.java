@@ -30,6 +30,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -40,6 +41,9 @@ public class ExpressionFactoryIT extends ServerCase {
 
 	@Inject
 	private ObjectContext context;
+
+	@Inject
+	private UnitDbAdapter accessStackAdapter;
 
 	// CAY-416
 	@Test
@@ -87,6 +91,10 @@ public class ExpressionFactoryIT extends ServerCase {
 
 	@Test
 	public void testEscapeCharacter() {
+		if(!accessStackAdapter.supportsEscapeInLike()) {
+			return;
+		}
+
 		Artist a1 = context.newObject(Artist.class);
 		a1.setArtistName("A_1");
 		Artist a2 = context.newObject(Artist.class);
@@ -106,6 +114,11 @@ public class ExpressionFactoryIT extends ServerCase {
 	
 	@Test
 	public void testContains_Escape() {
+
+		if(!accessStackAdapter.supportsEscapeInLike()) {
+			return;
+		}
+
 		Artist a1 = context.newObject(Artist.class);
 		a1.setArtistName("MA_1X");
 		Artist a2 = context.newObject(Artist.class);
