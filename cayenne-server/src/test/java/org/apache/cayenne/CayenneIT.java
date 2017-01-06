@@ -281,4 +281,15 @@ public class CayenneIT extends ServerCase {
         assertEquals(new Long(33002), Cayenne.pkForObject(object));
     }
 
+    @Test
+    public void testEjbql() throws Exception {
+        createOneArtist();
+
+        List<?> objects = context.performQuery(new EJBQLQuery("select a from Artist a"));
+        assertEquals(1, objects.size());
+        Artist object = (Artist) objects.get(0);
+
+        assertEquals(new Long(33002), Cayenne.pkForObject(object));
+    }
+
 }

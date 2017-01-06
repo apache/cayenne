@@ -26,6 +26,7 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MapLoader;
@@ -35,6 +36,7 @@ import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -56,6 +58,11 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	protected Expression qualifier;
 	protected List<Ordering> orderings;
 	protected boolean distinct;
+
+	/**
+	 * @since 4.0
+	 */
+	protected Collection<Property<?>> columns;
 
 	SelectQueryMetadata metaData = new SelectQueryMetadata();
 
@@ -852,5 +859,29 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 */
 	public void orQualifier(Expression e) {
 		qualifier = (qualifier != null) ? qualifier.orExp(e) : e;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	public void setColumns(Collection<Property<?>> columns) {
+		this.columns = columns;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	public void setColumns(Property<?>... columns) {
+		if(columns == null || columns.length == 0) {
+			return;
+		}
+		this.columns = Arrays.asList(columns);
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	public Collection<Property<?>> getColumns() {
+		return columns;
 	}
 }

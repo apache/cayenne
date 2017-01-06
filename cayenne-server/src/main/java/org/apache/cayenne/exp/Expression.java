@@ -225,6 +225,8 @@ public abstract class Expression implements Serializable, XMLSerializable {
 			return "NOT LIKE";
 		case NOT_LIKE_IGNORE_CASE:
 			return "NOT LIKE IGNORE CASE";
+		case FUNCTION_CALL:
+			return "FUNCTION_CALL";
 		default:
 			return "other";
 		}

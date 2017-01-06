@@ -33,6 +33,7 @@ import java.util.Collections;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Test;
 
@@ -427,5 +428,54 @@ public class ObjectSelectTest {
 		q.sharedCache();
 		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
 		assertNull(q.getCacheGroups());
+	}
+
+	@Test
+	public void testColumnsAddByOne() {
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
+
+		assertEquals(null, q.getColumns());
+
+		q.columns(Artist.ARTIST_NAME);
+		q.columns();
+		q.columns(Artist.DATE_OF_BIRTH);
+		q.columns();
+		q.columns(Artist.PAINTING_ARRAY);
+		q.columns();
+
+		Collection<Property<?>> properties = Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY);
+		assertEquals(properties, q.getColumns());
+	}
+
+	@Test
+	public void testColumnsAddAll() {
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
+
+		assertEquals(null, q.getColumns());
+
+		q.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY);
+		q.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY);
+
+		Collection<Property<?>> properties = Arrays.asList(
+				Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY,
+				Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY); // should it be Set instead of List?
+		assertEquals(properties, q.getColumns());
+	}
+
+	@Test
+	public void testColumnAddByOne() {
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
+
+		assertEquals(null, q.getColumns());
+
+		q.column(Artist.ARTIST_NAME);
+		q.columns();
+		q.column(Artist.DATE_OF_BIRTH);
+		q.columns();
+		q.column(Artist.PAINTING_ARRAY);
+		q.columns();
+
+		Collection<Property<?>> properties = Collections.<Property<?>>singletonList(Artist.PAINTING_ARRAY);
+		assertEquals(properties, q.getColumns());
 	}
 }

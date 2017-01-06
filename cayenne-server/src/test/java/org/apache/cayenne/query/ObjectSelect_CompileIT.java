@@ -18,10 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -166,4 +170,21 @@ public class ObjectSelect_CompileIT extends ServerCase {
 		SelectQuery selectQuery2 = (SelectQuery) q.createReplacementQuery(resolver);
 		assertTrue(selectQuery2.isFetchingDataRows());
 	}
+
+	@Test
+	public void testCreateReplacementQuery_Columns() {
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
+
+		SelectQuery selectQuery1 = (SelectQuery) q.createReplacementQuery(resolver);
+		assertNull(selectQuery1.getColumns());
+
+		q.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
+
+		SelectQuery selectQuery2 = (SelectQuery) q.createReplacementQuery(resolver);
+		assertNotNull(selectQuery2.getColumns());
+
+		Collection<Property<?>> properties = Arrays.<Property<?>>asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
+		assertEquals(properties, selectQuery2.getColumns());
+	}
+
 }

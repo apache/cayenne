@@ -101,6 +101,21 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 		setSortOrder(sortOrder);
 	}
 
+	/**
+	 * @since 4.0
+	 */
+	public Ordering(Expression sortSpec) {
+		this(sortSpec, SortOrder.ASCENDING);
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	public Ordering(Expression sortSpec, SortOrder sortOrder) {
+		setSortSpec(sortSpec);
+		setSortOrder(sortOrder);
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (this == object) {

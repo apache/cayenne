@@ -473,7 +473,7 @@ public class Property<E> {
      * @return Ascending sort orderings on this property.
      */
     public Ordering asc() {
-        return new Ordering(getName(), SortOrder.ASCENDING);
+        return new Ordering(getExpression(), SortOrder.ASCENDING);
     }
 
     /**
@@ -489,7 +489,7 @@ public class Property<E> {
      * @return Ascending case insensitive sort orderings on this property.
      */
     public Ordering ascInsensitive() {
-        return new Ordering(getName(), SortOrder.ASCENDING_INSENSITIVE);
+        return new Ordering(getExpression(), SortOrder.ASCENDING_INSENSITIVE);
     }
 
     /**
@@ -505,7 +505,7 @@ public class Property<E> {
      * @return Descending sort orderings on this property.
      */
     public Ordering desc() {
-        return new Ordering(getName(), SortOrder.DESCENDING);
+        return new Ordering(getExpression(), SortOrder.DESCENDING);
     }
 
     /**
@@ -521,7 +521,7 @@ public class Property<E> {
      * @return Descending case insensitive sort orderings on this property.
      */
     public Ordering descInsensitive() {
-        return new Ordering(getName(), SortOrder.DESCENDING_INSENSITIVE);
+        return new Ordering(getExpression(), SortOrder.DESCENDING_INSENSITIVE);
     }
 
     /**

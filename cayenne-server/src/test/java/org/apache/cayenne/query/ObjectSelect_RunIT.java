@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -36,9 +37,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
 import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -61,17 +64,31 @@ public class ObjectSelect_RunIT extends ServerCase {
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
 		long dateBase = System.currentTimeMillis();
-
 		for (int i = 1; i <= 20; i++) {
 			tArtist.insert(i, "artist" + i, new java.sql.Date(dateBase + 10000 * i));
+		}
+
+		TableHelper tGallery = new TableHelper(dbHelper, "GALLERY");
+		tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+		tGallery.insert(1, "tate modern");
+
+		TableHelper tPaintings = new TableHelper(dbHelper, "PAINTING");
+		tPaintings.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID");
+		for (int i = 1; i <= 20; i++) {
+			tPaintings.insert(i, "painting" + i, i % 5 + 1, 1);
 		}
 	}
 
 	@After
 	public void clearArtistsDataSet() throws Exception {
+		TableHelper tPaintings = new TableHelper(dbHelper, "PAINTING");
+		tPaintings.deleteAll();
+
 		TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
-		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 		tArtist.deleteAll();
+
+		TableHelper tGallery = new TableHelper(dbHelper, "GALLERY");
+		tGallery.deleteAll();
 	}
 
 	@Test
@@ -203,5 +220,89 @@ public class ObjectSelect_RunIT extends ServerCase {
 				.orderBy("db:ARTIST_ID").selectFirst(context);
 		assertNotNull(a);
 		assertEquals("artist1", a.getArtistName());
+	}
+
+	@Test
+	public void test_SelectFirst_MultiColumns() throws Exception {
+		Object[] a = ObjectSelect.query(Artist.class)
+				.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
+				.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
+				.columns(Artist.ARTIST_NAME.alias("newName"))
+				.where(Artist.ARTIST_NAME.like("artist%"))
+				.orderBy("db:ARTIST_ID")
+				.selectFirst(context);
+		assertNotNull(a);
+		assertEquals("artist1", a[0]);
+		assertEquals("artist1", a[4]);
+	}
+
+	@SuppressWarnings("ConstantConditions")
+	@Test
+	public void test_SelectFirst_EmptyColumns() throws Exception {
+		Object a = ObjectSelect.query(Artist.class)
+				.columns()
+				.where(Artist.ARTIST_NAME.like("artist%"))
+				.orderBy("db:ARTIST_ID")
+				.selectFirst(context);
+		assertNotNull(a);
+		assertTrue(a instanceof Artist);
+		assertEquals("artist1", ((Artist)a).getArtistName());
+	}
+
+	@Test
+	public void test_SelectFirst_SubstringName() throws Exception {
+		Expression exp = FunctionExpressionFactory.substringExp(Artist.ARTIST_NAME.path(), 5, 3);
+		Property<String> substrName = Property.create("substrName", exp, String.class);
+		Object[] a = ObjectSelect.query(Artist.class)
+				.columns(Artist.ARTIST_NAME, substrName)
+				.where(substrName.eq("st3"))
+				.selectFirst(context);
+
+		assertNotNull(a);
+		assertEquals("artist3", a[0]);
+		assertEquals("st3", a[1]);
+	}
+
+	@Test
+	public void test_SelectFirst_RelColumns() throws Exception {
+		// set shorter than painting_array.paintingTitle alias as some DBs doesn't support dot in alias
+		Property<String> paintingTitle = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).alias("paintingTitle");
+
+		Object[] a = ObjectSelect.query(Artist.class)
+				.columns(Artist.ARTIST_NAME, paintingTitle)
+				.orderBy(paintingTitle.asc())
+				.selectFirst(context);
+		assertNotNull(a);
+		assertEquals("painting1", a[1]);
+	}
+
+	@Test
+	public void test_SelectFirst_RelColumn() throws Exception {
+		// set shorter than painting_array.paintingTitle alias as some DBs doesn't support dot in alias
+		Property<String> paintingTitle = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).alias("paintingTitle");
+
+		String a = ObjectSelect.query(Artist.class)
+				.column(paintingTitle)
+				.orderBy(paintingTitle.asc())
+				.selectFirst(context);
+		assertNotNull(a);
+		assertEquals("painting1", a);
+	}
+
+	@Test
+	public void test_SelectFirst_RelColumnWithFunction() throws Exception {
+		Property<String> paintingTitle = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE);
+		Expression exp = FunctionExpressionFactory.substringExp(paintingTitle.path(), 7, 3);
+		exp = FunctionExpressionFactory.concatExp(exp, new ASTScalar(" "), Artist.ARTIST_NAME.path());
+		Property<String> altTitle = Property.create("altTitle", exp, String.class);
+
+		String a = ObjectSelect.query(Artist.class)
+				.column(altTitle)
+				.where(altTitle.like("ng1%"))
+				.and(Artist.ARTIST_NAME.like("%ist1"))
+//				.orderBy(altTitle.asc()) // unsupported for now
+				.selectFirst(context);
+		assertNotNull(a);
+		assertEquals("ng1 artist1", a);
 	}
 }

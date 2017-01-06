@@ -471,12 +471,12 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 	}
 
 	protected boolean parenthesisNeeded(Expression node, Expression parentNode) {
-		if (parentNode == null) {
-			return false;
-		}
-
 		if (node.getType() == Expression.FUNCTION_CALL) {
 			return true;
+		}
+
+		if (parentNode == null) {
+			return false;
 		}
 
 		// only unary expressions can go w/o parenthesis

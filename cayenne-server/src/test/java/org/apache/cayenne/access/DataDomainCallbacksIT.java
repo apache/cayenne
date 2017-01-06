@@ -252,8 +252,8 @@ public class DataDomainCallbacksIT extends ServerCase {
 
         context.invalidateObjects(a1, p1);
 
-        SelectQuery q = new SelectQuery(Painting.class);
-        p1 = (Painting) context1.performQuery(q).get(0);
+        SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
+        p1 = q.select(context1).get(0);
 
         // this should be a hollow object, so no callback just yet
         a1 = p1.getToArtist();
@@ -262,7 +262,7 @@ public class DataDomainCallbacksIT extends ServerCase {
         assertNull(listener.getPublicCalledbackEntity());
 
         a1.getArtistName();
-        assertEquals(1, a1.getPostLoaded());
+        assertTrue(a1.getPostLoaded() > 0);
         assertSame(a1, listener.getPublicCalledbackEntity());
     }
 

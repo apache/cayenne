@@ -25,8 +25,10 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.SQLResult;
 
 /**
  * @since 3.0
@@ -54,6 +56,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 			}
 
 			resolveAutoAliases(query);
+			buildResultSetMappingForColumns(query, resolver);
 
 			return true;
 		}
@@ -166,5 +169,20 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		for (String alias : aliases) {
 			pathSplitAliases.put(alias, path);
 		}
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	private void buildResultSetMappingForColumns(SelectQuery<?> query, EntityResolver resolver) {
+		if(query.getColumns() == null || query.getColumns().isEmpty()) {
+			return;
+		}
+		
+		SQLResult result = new SQLResult();
+		for(Property<?> column : query.getColumns()) {
+			result.addColumnResult(column.getName());
+		}
+		resultSetMapping = result.getResolvedComponents(resolver);
 	}
 }

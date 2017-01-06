@@ -22,8 +22,10 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -290,12 +292,30 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		List<ColumnDescriptor> columns = new ArrayList<>();
 		SelectQuery<?> query = getSelectQuery();
 
-		if (query.getRoot() instanceof DbEntity) {
+		if(query.getColumns() != null && !query.getColumns().isEmpty()) {
+			appendOverridedColumns(columns, query);
+		} else if (query.getRoot() instanceof DbEntity) {
 			appendDbEntityColumns(columns, query);
 		} else if (getQueryMetadata().getPageSize() > 0) {
 			appendIdColumns(columns, query);
 		} else {
 			appendQueryColumns(columns, query);
+		}
+
+		return columns;
+	}
+
+	<T> List<ColumnDescriptor> appendOverridedColumns(List<ColumnDescriptor> columns, SelectQuery<T> query) {
+		QualifierTranslator qualifierTranslator = adapter.getQualifierTranslator(this);
+		for(Property<?> property : query.getColumns()) {
+			StringBuilder builder = new StringBuilder();
+			qualifierTranslator.setOut(builder);
+			qualifierTranslator.doAppendPart(property.getExpression());
+
+			int type = TypesMapping.getSqlTypeByJava(property.getType());
+			ColumnDescriptor descriptor = new ColumnDescriptor(builder.toString(), type);
+			descriptor.setDataRowKey(property.getName());
+			columns.add(descriptor);
 		}
 
 		return columns;
@@ -541,9 +561,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 
 			columns.add(column);
 
-			// TODO: andrus, 5/7/2006 - replace 'columns' collection with this
-			// map, as it
-			// is redundant
+			// TODO: andrus, 5/7/2006 - replace 'columns' collection with this map, as it is redundant
 			defaultAttributesByColumn.put(column, objAttribute);
 		} else if (objAttribute != null) {
 
