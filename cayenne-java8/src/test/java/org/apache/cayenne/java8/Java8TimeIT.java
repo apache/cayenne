@@ -19,21 +19,36 @@
 
 package org.apache.cayenne.java8;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.java8.db.LocalDateTestEntity;
 import org.apache.cayenne.java8.db.LocalDateTimeTestEntity;
 import org.apache.cayenne.java8.db.LocalTimeTestEntity;
 import org.apache.cayenne.query.ObjectSelect;
+import org.junit.Assert;
 import org.junit.Test;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 public class Java8TimeIT extends RuntimeBase {
+
+	@Test
+	public void testJava8LocalDate_Null() {
+		ObjectContext context = runtime.newContext();
+
+		LocalDateTestEntity localDateTestEntity = context.newObject(LocalDateTestEntity.class);
+		localDateTestEntity.setDate(null);
+
+		context.commitChanges();
+
+		LocalDateTestEntity testRead = ObjectSelect.query(LocalDateTestEntity.class).selectOne(context);
+
+		Assert.assertNull(testRead.getDate());
+	}
 
 	@Test
 	public void testJava8LocalDate() {
