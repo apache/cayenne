@@ -24,9 +24,12 @@ import org.apache.cayenne.java8.db.LocalDateTestEntity;
 import org.apache.cayenne.java8.db.LocalDateTimeTestEntity;
 import org.apache.cayenne.java8.db.LocalTimeTestEntity;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -35,6 +38,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class Java8TimeIT extends RuntimeBase {
+
+	@Before
+	public void before() throws SQLException {
+		DBHelper dbHelper = new DBHelper(runtime.getDataSource());
+		dbHelper.deleteAll("LOCAL_DATE_TEST");
+		dbHelper.deleteAll("LOCAL_DATETIME_TEST");
+		dbHelper.deleteAll("LOCAL_TIME_TEST");
+	}
 
 	@Test
 	public void testJava8LocalDate_Null() {
