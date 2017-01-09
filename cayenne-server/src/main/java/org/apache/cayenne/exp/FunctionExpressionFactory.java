@@ -20,15 +20,20 @@
 package org.apache.cayenne.exp;
 
 import org.apache.cayenne.exp.parser.ASTAbs;
+import org.apache.cayenne.exp.parser.ASTAvg;
 import org.apache.cayenne.exp.parser.ASTConcat;
+import org.apache.cayenne.exp.parser.ASTCount;
 import org.apache.cayenne.exp.parser.ASTLength;
 import org.apache.cayenne.exp.parser.ASTLocate;
 import org.apache.cayenne.exp.parser.ASTLower;
+import org.apache.cayenne.exp.parser.ASTMax;
+import org.apache.cayenne.exp.parser.ASTMin;
 import org.apache.cayenne.exp.parser.ASTMod;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.parser.ASTSqrt;
 import org.apache.cayenne.exp.parser.ASTSubstring;
+import org.apache.cayenne.exp.parser.ASTSum;
 import org.apache.cayenne.exp.parser.ASTTrim;
 import org.apache.cayenne.exp.parser.ASTUpper;
 
@@ -284,5 +289,47 @@ public class FunctionExpressionFactory {
             expressions[i] = new ASTObjPath(paths[i]);
         }
         return new ASTConcat(expressions);
+    }
+
+    /**
+     * @return Expression COUNT(&ast;)
+     */
+    public static Expression countExp() {
+        return new ASTCount();
+    }
+
+    /**
+     * @return Expression COUNT(exp)
+     */
+    public static Expression countExp(Expression exp) {
+        return new ASTCount(exp);
+    }
+
+    /**
+     * @return Expression MIN(exp)
+     */
+    public static Expression minExp(Expression exp) {
+        return new ASTMin(exp);
+    }
+
+    /**
+     * @return Expression MAX(exp)
+     */
+    public static Expression maxExp(Expression exp) {
+        return new ASTMax(exp);
+    }
+
+    /**
+     * @return Expression AVG(exp)
+     */
+    public static Expression avgExp(Expression exp) {
+        return new ASTAvg(exp);
+    }
+
+    /**
+     * @return SUM(exp) expression
+     */
+    public static Expression sumExp(Expression exp) {
+        return new ASTSum(exp);
     }
 }

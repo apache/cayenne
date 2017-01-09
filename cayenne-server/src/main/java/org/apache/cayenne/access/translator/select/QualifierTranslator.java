@@ -383,6 +383,8 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 				out.append("1 = 1");
 			} else if (node.getType() == Expression.FALSE) {
 				out.append("1 = 0");
+			} else if (node.getType() == Expression.ASTERISK) {
+				out.append("*");
 			}
 		}
 
@@ -484,7 +486,9 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 			return true;
 		}
 
-		if (node.getType() == Expression.OBJ_PATH || node.getType() == Expression.DB_PATH) {
+		if (node.getType() == Expression.OBJ_PATH
+				|| node.getType() == Expression.DB_PATH
+				|| node.getType() == Expression.ASTERISK) {
 			return false;
 		}
 

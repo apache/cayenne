@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -155,6 +154,11 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * @since 4.0
 	 */
 	public static final int FUNCTION_CALL = 45;
+
+	/**
+	 * @since 4.0
+	 */
+	public static final int ASTERISK = 46;
 
 	protected int type;
 

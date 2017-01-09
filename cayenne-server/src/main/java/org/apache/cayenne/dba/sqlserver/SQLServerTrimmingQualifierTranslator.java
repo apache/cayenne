@@ -129,6 +129,9 @@ class SQLServerTrimmingQualifierTranslator extends TrimmingQualifierTranslator {
 			case "MOD":
 				// noop
 				break;
+			case "TRIM":
+				out.append("LTRIM(RTRIM");
+				break;
 			default:
 				super.appendFunction(functionExpression);
 		}
@@ -155,6 +158,9 @@ class SQLServerTrimmingQualifierTranslator extends TrimmingQualifierTranslator {
 			out.delete(out.length() - " % ".length(), out.length());
 		} else {
 			super.clearLastFunctionArgDivider(functionExpression);
+			if("TRIM".equals(functionExpression.getFunctionName())) {
+				out.append(")");
+			}
 		}
 	}
 }

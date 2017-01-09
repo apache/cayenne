@@ -168,7 +168,11 @@ public class DBHelper {
 
 						st.setNull(i + 1, type);
 					} else {
-						st.setObject(i + 1, values[i]);
+						if(columnTypes != null) {
+							st.setObject(i + 1, values[i], columnTypes[i]);
+						} else {
+							st.setObject(i + 1, values[i]);
+						}
 					}
 				}
 

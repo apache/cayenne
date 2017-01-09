@@ -20,20 +20,28 @@
 package org.apache.cayenne.exp;
 
 import org.apache.cayenne.exp.parser.ASTAbs;
+import org.apache.cayenne.exp.parser.ASTAsterisk;
+import org.apache.cayenne.exp.parser.ASTAvg;
 import org.apache.cayenne.exp.parser.ASTConcat;
+import org.apache.cayenne.exp.parser.ASTCount;
 import org.apache.cayenne.exp.parser.ASTLength;
 import org.apache.cayenne.exp.parser.ASTLocate;
 import org.apache.cayenne.exp.parser.ASTLower;
+import org.apache.cayenne.exp.parser.ASTMax;
+import org.apache.cayenne.exp.parser.ASTMin;
 import org.apache.cayenne.exp.parser.ASTMod;
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.parser.ASTSqrt;
 import org.apache.cayenne.exp.parser.ASTSubstring;
+import org.apache.cayenne.exp.parser.ASTSum;
 import org.apache.cayenne.exp.parser.ASTTrim;
 import org.apache.cayenne.exp.parser.ASTUpper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 
 /**
  * @since 4.0
@@ -191,5 +199,48 @@ public class FunctionExpressionFactoryTest {
         assertEquals(Artist.PAINTING_ARRAY.path(), exp2.getOperand(2));
     }
 
+    @Test
+    public void countTest() throws Exception {
+        Expression exp1 = FunctionExpressionFactory.countExp();
+        assertTrue(exp1 instanceof ASTCount);
+        assertEquals(1, exp1.getOperandCount());
+        assertEquals(new ASTAsterisk(), exp1.getOperand(0));
 
+        Expression exp2 = FunctionExpressionFactory.countExp(Artist.ARTIST_NAME.path());
+        assertTrue(exp2 instanceof ASTCount);
+        assertEquals(1, exp2.getOperandCount());
+        assertEquals(Artist.ARTIST_NAME.path(), exp2.getOperand(0));
+    }
+
+    @Test
+    public void minTest() throws Exception {
+        Expression exp1 = FunctionExpressionFactory.minExp(Artist.ARTIST_NAME.path());
+        assertTrue(exp1 instanceof ASTMin);
+        assertEquals(1, exp1.getOperandCount());
+        assertEquals(Artist.ARTIST_NAME.path(), exp1.getOperand(0));
+    }
+
+    @Test
+    public void maxTest() throws Exception {
+        Expression exp1 = FunctionExpressionFactory.maxExp(Artist.ARTIST_NAME.path());
+        assertTrue(exp1 instanceof ASTMax);
+        assertEquals(1, exp1.getOperandCount());
+        assertEquals(Artist.ARTIST_NAME.path(), exp1.getOperand(0));
+    }
+
+    @Test
+    public void avgTest() throws Exception {
+        Expression exp1 = FunctionExpressionFactory.avgExp(Artist.ARTIST_NAME.path());
+        assertTrue(exp1 instanceof ASTAvg);
+        assertEquals(1, exp1.getOperandCount());
+        assertEquals(Artist.ARTIST_NAME.path(), exp1.getOperand(0));
+    }
+
+    @Test
+    public void sumTest() throws Exception {
+        Expression exp1 = FunctionExpressionFactory.sumExp(Artist.ARTIST_NAME.path());
+        assertTrue(exp1 instanceof ASTSum);
+        assertEquals(1, exp1.getOperandCount());
+        assertEquals(Artist.ARTIST_NAME.path(), exp1.getOperand(0));
+    }
 }

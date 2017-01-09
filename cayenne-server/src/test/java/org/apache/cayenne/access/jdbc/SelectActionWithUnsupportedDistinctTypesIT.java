@@ -59,9 +59,9 @@ public class SelectActionWithUnsupportedDistinctTypesIT extends ServerCase {
     @Before
     public void setUp() throws Exception {
         tProduct = new TableHelper(dbHelper, "PRODUCT");
-        tProduct.setColumns("ID", "LONGVARCHAR_COL").setColumnTypes(Types.INTEGER, Types.LONGNVARCHAR);
+        tProduct.setColumns("ID", "LONGVARCHAR_COL");
 
-        tCustomer = new TableHelper(dbHelper, "CUSTOMER").setColumnTypes(Types.INTEGER, Types.LONGNVARCHAR);
+        tCustomer = new TableHelper(dbHelper, "CUSTOMER");
         tCustomer.setColumns("ID", "LONGVARCHAR_COL");
 
         tComposition = new TableHelper(dbHelper, "COMPOSITION");

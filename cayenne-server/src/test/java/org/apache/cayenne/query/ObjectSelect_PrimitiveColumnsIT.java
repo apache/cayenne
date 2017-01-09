@@ -35,6 +35,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.apache.cayenne.exp.FunctionExpressionFactory.avgExp;
+import static org.apache.cayenne.exp.FunctionExpressionFactory.sumExp;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
@@ -156,4 +158,26 @@ public class ObjectSelect_PrimitiveColumnsIT extends ServerCase {
         Object[] result = {11, true};
         assertArrayEquals(result, columns.get(0));
     }
+
+    @Test
+    public void testSum() throws Exception {
+        Property<Long> sumProp = Property.create(sumExp(PrimitivesTestEntity.INT_COLUMN.path()), Long.class);
+
+        long sum = ObjectSelect.query(PrimitivesTestEntity.class)
+                .column(sumProp)
+                .selectOne(context);
+        assertEquals(2100, sum);
+    }
+
+    @Test
+    public void testAvg() throws Exception {
+        Property<Double> avgProp = Property.create(avgExp(PrimitivesTestEntity.INT_COLUMN.path()), Double.class);
+
+        double avg = ObjectSelect.query(PrimitivesTestEntity.class)
+                .column(avgProp)
+                .selectOne(context);
+        assertEquals(105.0, avg, 0.00001);
+    }
+
+
 }
