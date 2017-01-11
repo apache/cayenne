@@ -29,7 +29,7 @@
         </para>
         <programlisting language="xml">
     &lt;reverseEngineering&gt;
-        &lt;skipRelationshipsLoading&gt;true&lt;skipRelationshipsLoading&gt;
+        &lt;skipRelationshipsLoading&gt;true&lt;/skipRelationshipsLoading&gt;
     &lt;/reverseEngineering&gt;</programlisting>
     </section>
     <section xml:id="skip-pk-loading">
