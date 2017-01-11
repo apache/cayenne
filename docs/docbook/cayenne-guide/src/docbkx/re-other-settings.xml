@@ -40,7 +40,7 @@
         </para>
         <programlisting language="xml">
     &lt;reverseEngineering&gt;
-        &lt;skipPrimaryKeyLoading&gt;true&lt;skipPrimaryKeyLoading&gt;
+        &lt;skipPrimaryKeyLoading&gt;true&lt;/skipPrimaryKeyLoading&gt;
     &lt;/reverseEngineering&gt;</programlisting>
     </section>
     <section>
