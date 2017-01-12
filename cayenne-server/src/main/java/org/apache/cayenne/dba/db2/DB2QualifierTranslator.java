@@ -121,7 +121,9 @@ public class DB2QualifierTranslator extends TrimmingQualifierTranslator {
      */
 	@Override
 	protected void appendFunction(ASTFunctionCall functionExpression) {
-		if(!"CONCAT".equals(functionExpression.getFunctionName())) {
+		if("SUBSTRING".equals(functionExpression.getFunctionName())) {
+			out.append("SUBSTR");
+		} else if(!"CONCAT".equals(functionExpression.getFunctionName())) {
 			super.appendFunction(functionExpression);
 		}
 	}

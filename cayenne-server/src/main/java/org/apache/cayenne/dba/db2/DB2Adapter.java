@@ -22,6 +22,8 @@ package org.apache.cayenne.dba.db2;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.types.BooleanType;
@@ -34,19 +36,14 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
-import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -61,6 +58,10 @@ import java.util.List;
  * </pre>
  */
 public class DB2Adapter extends JdbcAdapter {
+
+    private static final String FOR_BIT_DATA_SUFFIX = " FOR BIT DATA";
+
+    private static final String TRIM_FUNCTION = "RTRIM";
 
     public DB2Adapter(@Inject RuntimeProperties runtimeProperties,
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
@@ -85,114 +86,60 @@ public class DB2Adapter extends JdbcAdapter {
 
         // create specially configured CharType handler
         map.registerType(new CharType(true, true));
-
         // configure boolean type to work with numeric columns
         map.registerType(new DB2BooleanType());
-
         map.registerType(new ByteArrayType(false, false));
     }
 
     /**
-     * Returns a SQL string that can be used to create database table corresponding to
-     * <code>ent</code> parameter.
+     * @since 4.0
      */
     @Override
-    public String createTable(DbEntity ent) {
-     
-        QuotingStrategy context = getQuotingStrategy();
+    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+        String[] types = externalTypesForJdbcType(column.getType());
+        if (types == null || types.length == 0) {
+            String entityName = column.getEntity() != null ? column.getEntity().getFullyQualifiedName() : "<null>";
+            throw new CayenneRuntimeException("Undefined type for attribute '"
+                    + entityName + "." + column.getName() + "': " + column.getType());
+        }
+        String type = types[0];
 
-        StringBuilder buf = new StringBuilder();
-        buf.append("CREATE TABLE ");
-        buf.append(context.quotedFullyQualifiedName(ent));
+        sqlBuffer.append(quotingStrategy.quotedName(column)).append(' ');
 
-        buf.append(" (");
+        // DB2 GRAPHIC type that is used for NCHAR type length is in characters not in bytes
+        // so divide max size by 2 and later restore the value
+        int maxLength = column.getMaxLength();
+        if(column.getType() == Types.NCHAR) {
+            column.setMaxLength(maxLength / 2);
+        }
+        String length = sizeAndPrecision(this, column);
+        column.setMaxLength(maxLength);
 
-        // columns
-        Iterator<DbAttribute> it = ent.getAttributes().iterator();
-        boolean first = true;
-        while (it.hasNext()) {
-            if (first)
-                first = false;
-            else
-                buf.append(", ");
-
-            DbAttribute at = it.next();
-
-            // attribute may not be fully valid, do a simple check
-            if (at.getType() == TypesMapping.NOT_DEFINED) {
-                throw new CayenneRuntimeException("Undefined type for attribute '"
-                        + ent.getFullyQualifiedName()
-                        + "."
-                        + at.getName()
-                        + "'.");
-            }
-
-            String[] types = externalTypesForJdbcType(at.getType());
-            if (types == null || types.length == 0) {
-                throw new CayenneRuntimeException("Undefined type for attribute '"
-                        + ent.getFullyQualifiedName()
-                        + "."
-                        + at.getName()
-                        + "': "
-                        + at.getType());
-            }
-
-            String type = types[0];
-            buf.append(context.quotedName(at)).append(' ').append(type);
-
-            // append size and precision (if applicable)
-            if (typeSupportsLength(at.getType())) {
-                int len = at.getMaxLength();
-                int scale = TypesMapping.isDecimal(at.getType()) ? at.getScale() : -1;
-
-                // sanity check
-                if (scale > len) {
-                    scale = -1;
-                }
-
-                if (len > 0) {
-                    buf.append('(').append(len);
-
-                    if (scale >= 0) {
-                        buf.append(", ").append(scale);
-                    }
-
-                    buf.append(')');
-                }
-            }
-
-            if (at.isMandatory()) {
-                buf.append(" NOT NULL");
-            }
-
-            if (at.isGenerated()) {
-                buf.append(" GENERATED BY DEFAULT AS IDENTITY ");
-            }
+        // assemble...
+        // note that max length for types like XYZ FOR BIT DATA must be entered in the
+        // middle of type name, e.g. VARCHAR (100) FOR BIT DATA.
+        int suffixIndex = type.indexOf(FOR_BIT_DATA_SUFFIX);
+        if (!length.isEmpty() && suffixIndex > 0) {
+            sqlBuffer.append(type.substring(0, suffixIndex)).append(length).append(FOR_BIT_DATA_SUFFIX);
+        } else {
+            sqlBuffer.append(type).append(" ").append(length);
         }
 
-        // primary key clause
-        Iterator<DbAttribute> pkit = ent.getPrimaryKeys().iterator();
-        if (pkit.hasNext()) {
-            if (first)
-                first = false;
-            else
-                buf.append(", ");
-
-            buf.append("PRIMARY KEY (");
-            boolean firstPk = true;
-            while (pkit.hasNext()) {
-                if (firstPk)
-                    firstPk = false;
-                else
-                    buf.append(", ");
-
-                DbAttribute at = pkit.next();
-                buf.append(context.quotedName(at));
-            }
-            buf.append(')');
+        if (column.isMandatory()) {
+            sqlBuffer.append(" NOT NULL");
         }
-        buf.append(')');
-        return buf.toString();
+
+        if (column.isGenerated()) {
+            sqlBuffer.append(" GENERATED BY DEFAULT AS IDENTITY");
+        }
+    }
+
+    /**
+     * @since 4.0
+     */
+    @Override
+    public boolean typeSupportsLength(int type) {
+        return type == Types.LONGVARCHAR || type == Types.LONGVARBINARY || super.typeSupportsLength(type);
     }
 
     /**
@@ -200,40 +147,27 @@ public class DB2Adapter extends JdbcAdapter {
      */
     @Override
     public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        QualifierTranslator translator = new DB2QualifierTranslator(
-                queryAssembler,
-                "RTRIM");
+        QualifierTranslator translator = new DB2QualifierTranslator(queryAssembler, TRIM_FUNCTION);
         translator.setCaseInsensitive(caseInsensitiveCollations);
         return translator;
     }
 
-    final class DB2BooleanType extends BooleanType {
-
-        @Override
-        public void setJdbcObject(
-                PreparedStatement st,
-                Object val,
-                int pos,
-                int type,
-                int precision) throws Exception {
-
-            if (val != null) {
-                st.setInt(pos, ((Boolean) val).booleanValue() ? 1 : 0);
-            }
-            else {
-                st.setNull(pos, type);
-            }
-        }
+    /**
+     * @since 4.0
+     */
+    @Override
+    public EJBQLTranslatorFactory getEjbqlTranslatorFactory() {
+        JdbcEJBQLTranslatorFactory translatorFactory = new DB2EJBQLTranslatorFactory();
+        translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
+        return translatorFactory;
     }
 
     @Override
-    public void bindParameter(
-            PreparedStatement statement, ParameterBinding binding) throws SQLException, Exception {
-
+    public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
         if (binding.getValue() == null && (binding.getType() == 0 || binding.getType() == Types.BOOLEAN)) {
             statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
-        }
-        else {
+        } else {
+            binding.setType(convertNTypes(binding.getType()));
             super.bindParameter(statement, binding);
         }
     }
@@ -246,5 +180,35 @@ public class DB2Adapter extends JdbcAdapter {
     @Override
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new DB2ActionBuilder(node));
+    }
+
+    /**
+     * @since 4.0
+     */
+    private int convertNTypes(int sqlType) {
+        switch (sqlType) {
+            case Types.NCHAR:
+                return Types.CHAR;
+            case Types.NVARCHAR:
+                return Types.VARCHAR;
+            case Types.LONGNVARCHAR:
+                return Types.LONGVARCHAR;
+            case Types.NCLOB:
+                return Types.CLOB;
+
+            default:
+                return sqlType;
+        }
+    }
+
+    final class DB2BooleanType extends BooleanType {
+        @Override
+        public void setJdbcObject(PreparedStatement st, Object val, int pos, int type, int precision) throws Exception {
+            if (val != null) {
+                st.setInt(pos, ((Boolean) val) ? 1 : 0);
+            } else {
+                st.setNull(pos, type);
+            }
+        }
     }
 }

@@ -31,7 +31,7 @@ IBM DB2 types mapping
        <db-type name="BIGINT"/>
    </jdbc-type>
    <jdbc-type name="BINARY">
-       <db-type name="BLOB"/>
+       <db-type name="CHAR FOR BIT DATA"/>
    </jdbc-type>
    <jdbc-type name="BIT">
        <db-type name="SMALLINT"/>
@@ -46,7 +46,7 @@ IBM DB2 types mapping
        <db-type name="CHAR"/>
    </jdbc-type>
    <jdbc-type name="NCHAR">
-       <db-type name="NCHAR"/>
+       <db-type name="GRAPHIC"/>
    </jdbc-type>
    <jdbc-type name="CLOB">
        <db-type name="CLOB"/>
@@ -79,10 +79,10 @@ IBM DB2 types mapping
        <db-type name="BLOB"/>
    </jdbc-type>
    <jdbc-type name="LONGVARCHAR">
-       <db-type name="LONG VARCHAR"/>
+       <db-type name="CLOB"/>
    </jdbc-type>
    <jdbc-type name="LONGNVARCHAR">
-       <db-type name="LONG NVARCHAR"/>
+       <db-type name="DBCLOB"/>
    </jdbc-type>
    <jdbc-type name="NUMERIC">
        <db-type name="DECIMAL"/>
@@ -112,12 +112,12 @@ IBM DB2 types mapping
        <db-type name="SMALLINT"/>
    </jdbc-type>
    <jdbc-type name="VARBINARY">
-       <db-type name="BLOB"/>
+       <db-type name="VARCHAR FOR BIT DATA"/>
    </jdbc-type>
    <jdbc-type name="VARCHAR">
        <db-type name="VARCHAR"/>
    </jdbc-type>
    <jdbc-type name="NVARCHAR">
-       <db-type name="NVARCHAR"/>
+       <db-type name="VARGRAPHIC"/>
    </jdbc-type>
 </types>
