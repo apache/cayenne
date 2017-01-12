@@ -61,12 +61,18 @@ class OracleSelectTranslator extends DefaultSelectTranslator {
 
 		// append columns (unroll the loop's first element)
 		int columnCount = selectColumnExpList.size();
-		buffer.append(selectColumnExpList.get(0)).append(" AS c0");
+		buffer.append(selectColumnExpList.get(0));
+		if(!selectColumnExpList.get(0).contains(" AS ")) {
+			buffer.append(" AS c0");
+		}
 
 		// assume there is at least 1 element
 		for (int i = 1; i < columnCount; i++) {
 			buffer.append(", ");
-			buffer.append(selectColumnExpList.get(i)).append(" AS c" + i);
+			buffer.append(selectColumnExpList.get(i));
+			if(!selectColumnExpList.get(i).contains(" AS ")) {
+				buffer.append(" AS c").append(i);
+			}
 		}
 	}
 }

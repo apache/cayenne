@@ -21,6 +21,7 @@ package org.apache.cayenne.query;
 
 import java.sql.Types;
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -54,6 +55,8 @@ public class ObjectSelect_AggregateIT extends ServerCase {
     @Inject
     private DBHelper dbHelper;
 
+    // Format: d/m/YY
+    DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
 
     @Before
     public void createArtistsDataSet() throws Exception {
@@ -62,8 +65,6 @@ public class ObjectSelect_AggregateIT extends ServerCase {
         tArtist.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DATE);
 
         java.sql.Date[] dates = new java.sql.Date[5];
-        // Format: d/m/YY
-        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
         for(int i=1; i<=5; i++) {
             dates[i-1] = new java.sql.Date(dateFormat.parse("1/" + i + "/17").getTime());
         }
@@ -80,18 +81,15 @@ public class ObjectSelect_AggregateIT extends ServerCase {
         for (int i = 1; i <= 20; i++) {
             tPaintings.insert(i, "painting" + i, i % 5 + 1, 1);
         }
+        tPaintings.insert(21, "painting21", 2, 1);
     }
 
     @After
     public void clearArtistsDataSet() throws Exception {
-        TableHelper tPaintings = new TableHelper(dbHelper, "PAINTING");
-        tPaintings.deleteAll();
-
-        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
-        tArtist.deleteAll();
-
-        TableHelper tGallery = new TableHelper(dbHelper, "GALLERY");
-        tGallery.deleteAll();
+        for(String table : Arrays.asList("PAINTING", "ARTIST", "GALLERY")) {
+            TableHelper tHelper = new TableHelper(dbHelper, table);
+            tHelper.deleteAll();
+        }
     }
 
     @Test
@@ -112,7 +110,6 @@ public class ObjectSelect_AggregateIT extends ServerCase {
         Date avg = ObjectSelect.query(Artist.class)
                 .column(avgProp)
                 .selectOne(context);
-        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
         Date date = dateFormat.parse("1/3/17");
         assertEquals(date, avg);
     }
@@ -124,7 +121,6 @@ public class ObjectSelect_AggregateIT extends ServerCase {
         Date avg = ObjectSelect.query(Artist.class)
                 .column(minProp)
                 .selectOne(context);
-        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
         Date date = dateFormat.parse("1/1/17");
         assertEquals(date, avg);
     }
@@ -136,7 +132,6 @@ public class ObjectSelect_AggregateIT extends ServerCase {
         Date avg = ObjectSelect.query(Artist.class)
                 .column(maxProp)
                 .selectOne(context);
-        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
         Date date = dateFormat.parse("1/5/17");
         assertEquals(date, avg);
     }
@@ -149,7 +144,6 @@ public class ObjectSelect_AggregateIT extends ServerCase {
                 .columns(countProp, Artist.DATE_OF_BIRTH)
                 .orderBy(Artist.DATE_OF_BIRTH.asc())
                 .select(context);
-        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
         Date date = dateFormat.parse("1/2/17");
         assertEquals(5L, count.size());
         assertEquals(4L, count.get(1)[0]);

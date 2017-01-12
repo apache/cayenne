@@ -23,6 +23,7 @@ import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
@@ -46,6 +47,10 @@ public abstract class QueryAssembler {
 	protected DbAdapter adapter;
 	protected EntityResolver entityResolver;
 	protected List<DbAttributeBinding> bindings;
+	/**
+	 * @since 4.0
+	 */
+	protected AddBindingListener addBindingListener;
 
 	/**
 	 * @since 4.0
@@ -158,6 +163,9 @@ public abstract class QueryAssembler {
 		binding.setValue(anObject);
 		binding.setStatementPosition(bindings.size() + 1);
 		bindings.add(binding);
+		if(addBindingListener != null) {
+			addBindingListener.onAdd(binding);
+		}
 	}
 
 	/**
@@ -165,5 +173,24 @@ public abstract class QueryAssembler {
 	 */
 	public DbAttributeBinding[] getBindings() {
 		return bindings.toArray(new DbAttributeBinding[bindings.size()]);
+	}
+
+    /**
+     * @since 4.0
+     */
+	public abstract String getAliasForExpression(Expression exp);
+
+	/**
+	 * @since 4.0
+	 */
+	public void setAddBindingListener(AddBindingListener addBindingListener) {
+		this.addBindingListener = addBindingListener;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	protected interface AddBindingListener {
+		void onAdd(DbAttributeBinding binding);
 	}
 }

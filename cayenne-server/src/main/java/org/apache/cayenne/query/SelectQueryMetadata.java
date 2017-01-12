@@ -181,7 +181,8 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		
 		SQLResult result = new SQLResult();
 		for(Property<?> column : query.getColumns()) {
-			result.addColumnResult(column.getName());
+			String name = column.getName() == null ? column.getExpression().expName() : column.getName();
+			result.addColumnResult(name);
 		}
 		resultSetMapping = result.getResolvedComponents(resolver);
 	}

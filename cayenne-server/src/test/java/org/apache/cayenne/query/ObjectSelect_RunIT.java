@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -81,14 +82,10 @@ public class ObjectSelect_RunIT extends ServerCase {
 
 	@After
 	public void clearArtistsDataSet() throws Exception {
-		TableHelper tPaintings = new TableHelper(dbHelper, "PAINTING");
-		tPaintings.deleteAll();
-
-		TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
-		tArtist.deleteAll();
-
-		TableHelper tGallery = new TableHelper(dbHelper, "GALLERY");
-		tGallery.deleteAll();
+		for(String table : Arrays.asList("PAINTING", "ARTIST", "GALLERY")) {
+			TableHelper tHelper = new TableHelper(dbHelper, table);
+			tHelper.deleteAll();
+		}
 	}
 
 	@Test

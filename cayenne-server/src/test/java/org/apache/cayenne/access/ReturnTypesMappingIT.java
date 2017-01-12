@@ -821,7 +821,7 @@ public class    ReturnTypesMappingIT extends ServerCase {
         DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        assertTrue(Short.class.equals(columnValue.getClass()));
+        assertEquals(Short.class, columnValue.getClass());
         assertEquals(tinyintValue.intValue(), ((Number)columnValue).intValue());
     }
 

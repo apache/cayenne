@@ -382,4 +382,8 @@ public class UnitDbAdapter {
     public boolean supportsEscapeInLike() {
         return true;
     }
+
+    public boolean supportsExpressionInHaving() {
+        return true;
+    }
 }

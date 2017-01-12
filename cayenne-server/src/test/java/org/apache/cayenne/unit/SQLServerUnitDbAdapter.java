@@ -81,4 +81,9 @@ public class SQLServerUnitDbAdapter extends SybaseUnitDbAdapter {
     // ((JdbcAdapter) getAdapter()).setSupportsGeneratedKeys(false);
     // }
     // }
+
+    @Override
+    public boolean supportsExpressionInHaving() {
+        return false;
+    }
 }

@@ -178,9 +178,9 @@ public class ObjectSelect_CompileIT extends ServerCase {
 		SelectQuery selectQuery1 = (SelectQuery) q.createReplacementQuery(resolver);
 		assertNull(selectQuery1.getColumns());
 
-		q.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
+		ColumnSelect<Object[]> newQ = q.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
 
-		SelectQuery selectQuery2 = (SelectQuery) q.createReplacementQuery(resolver);
+		SelectQuery selectQuery2 = (SelectQuery) newQ.createReplacementQuery(resolver);
 		assertNotNull(selectQuery2.getColumns());
 
 		Collection<Property<?>> properties = Arrays.<Property<?>>asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);

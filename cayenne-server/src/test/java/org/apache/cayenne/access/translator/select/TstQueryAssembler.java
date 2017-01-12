@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.JoinType;
@@ -55,6 +56,11 @@ public class TstQueryAssembler extends QueryAssembler {
 	@Override
 	public boolean supportsTableAliases() {
 		return true;
+	}
+
+	@Override
+	public String getAliasForExpression(Expression exp) {
+		return null;
 	}
 
 	@Override

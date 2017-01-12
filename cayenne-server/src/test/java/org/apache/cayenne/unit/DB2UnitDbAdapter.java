@@ -63,4 +63,9 @@ public class DB2UnitDbAdapter extends UnitDbAdapter {
     public boolean supportsGeneratedKeysAdd() {
         return true;
     }
+
+    @Override
+    public boolean supportsExpressionInHaving() {
+        return false;
+    }
 }

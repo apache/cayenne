@@ -64,6 +64,11 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 */
 	protected Collection<Property<?>> columns;
 
+	/**
+	 * @since 4.0
+	 */
+	protected Expression havingQualifier;
+
 	SelectQueryMetadata metaData = new SelectQueryMetadata();
 
 	/**
@@ -875,7 +880,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 		if(columns == null || columns.length == 0) {
 			return;
 		}
-		this.columns = Arrays.asList(columns);
+		setColumns(Arrays.asList(columns));
 	}
 
 	/**
@@ -883,5 +888,37 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 */
 	public Collection<Property<?>> getColumns() {
 		return columns;
+	}
+
+	/**
+	 * Sets new query HAVING qualifier.
+	 * @since 4.0
+	 */
+	public void setHavingQualifier(Expression qualifier) {
+		this.havingQualifier = qualifier;
+	}
+
+	/**
+	 * Returns query HAVING qualifier.
+	 * @since 4.0
+	 */
+	public Expression getHavingQualifier() {
+		return havingQualifier;
+	}
+
+	/**
+	 * Adds specified HAVING qualifier to the existing HAVING qualifier joining it using "AND".
+	 * @since 4.0
+	 */
+	public void andHavingQualifier(Expression e) {
+		havingQualifier = (havingQualifier != null) ? havingQualifier.andExp(e) : e;
+	}
+
+	/**
+	 * Adds specified HAVING qualifier to the existing HAVING qualifier joining it using "OR".
+	 * @since 4.0
+	 */
+	public void orHavingQualifier(Expression e) {
+		havingQualifier = (havingQualifier != null) ? havingQualifier.orExp(e) : e;
 	}
 }

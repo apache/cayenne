@@ -130,4 +130,9 @@ public class OracleUnitDbAdapter extends UnitDbAdapter {
     public boolean onlyGenericNumberType() {
         return true;
     }
+
+    @Override
+    public boolean supportsExpressionInHaving() {
+        return false;
+    }
 }

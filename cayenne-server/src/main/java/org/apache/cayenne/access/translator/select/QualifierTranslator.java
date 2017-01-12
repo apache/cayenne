@@ -54,6 +54,21 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 	protected boolean matchingObject;
 	protected boolean caseInsensitive;
 
+	/**
+	 * @since 4.0
+	 */
+	protected boolean useAliasForExpressions;
+
+	/**
+	 * @since 4.0
+	 */
+	protected Expression waitingForEndNode;
+
+	/**
+	 * @since 4.0
+	 */
+	protected Expression qualifier;
+
 	public QualifierTranslator(QueryAssembler queryAssembler) {
 		super(queryAssembler);
 
@@ -76,6 +91,22 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 	}
 
 	/**
+	 * Explicitly set qualifier.
+	 * It will be used instead of extracting qualifier from the query itself.
+	 * @since 4.0
+	 */
+	public void setQualifier(Expression qualifier) {
+		this.qualifier = qualifier;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	public void setUseAliasForExpressions(boolean useAliasForExpressions) {
+		this.useAliasForExpressions = useAliasForExpressions;
+	}
+
+	/**
 	 * Translates query qualifier to SQL WHERE clause. Qualifier is a method
 	 * parameter.
 	 * 
@@ -89,6 +120,11 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 	}
 
 	protected Expression extractQualifier() {
+		// if additional qualifier is set, use it
+		if(this.qualifier != null) {
+			return this.qualifier;
+		}
+
 		Query q = queryAssembler.getQuery();
 
 		Expression qualifier = ((SelectQuery<?>) q).getQualifier();
@@ -193,6 +229,10 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 
 	@Override
 	public void finishedChild(Expression node, int childIndex, boolean hasMoreChildren) {
+
+		if(waitingForEndNode != null) {
+			return;
+		}
 
 		if (!hasMoreChildren) {
 			return;
@@ -356,6 +396,20 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 
 	@Override
 	public void startNode(Expression node, Expression parentNode) {
+
+		if(waitingForEndNode != null) {
+			return;
+		}
+
+		if(useAliasForExpressions) {
+			String alias = queryAssembler.getAliasForExpression(node);
+			if(alias != null) {
+				out.append(alias);
+				waitingForEndNode = node;
+				return;
+			}
+		}
+
 		boolean parenthesisNeeded = parenthesisNeeded(node, parentNode);
 
 		if(node.getType() == Expression.FUNCTION_CALL) {
@@ -409,6 +463,13 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 	@Override
 	public void endNode(Expression node, Expression parentNode) {
 
+		if(waitingForEndNode != null) {
+			if(node == waitingForEndNode) {
+				waitingForEndNode = null;
+			}
+			return;
+		}
+
 		try {
 			// check if we need to use objectMatchTranslator to finish building the expression
 			if (node.getOperandCount() == 2 && matchingObject) {
@@ -449,6 +510,9 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 
 	@Override
 	public void objectNode(Object leaf, Expression parentNode) {
+		if(waitingForEndNode != null) {
+			return;
+		}
 
 		try {
 			switch (parentNode.getType()) {
