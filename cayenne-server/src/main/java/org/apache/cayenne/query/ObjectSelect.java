@@ -178,7 +178,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      * @see ColumnSelect#columns(Property[])
      */
     @SuppressWarnings("unchecked")
-    protected <E> ColumnSelect<E> column(Property<E> property) {
+    public <E> ColumnSelect<E> column(Property<E> property) {
         return new ColumnSelect<>(this).column(property);
     }
 
