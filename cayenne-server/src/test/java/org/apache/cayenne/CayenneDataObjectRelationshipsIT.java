@@ -193,6 +193,9 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         childGroup1.setName("child1");
         childGroup1.setToParentGroup(parentGroup);
         context.commitChanges();
+
+        childGroup1.setToParentGroup(null);
+        context.commitChanges();
     }
 
     @Test
@@ -206,6 +209,9 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
 
         childGroup1.setToParentGroup(parentGroup);
 
+        context.commitChanges();
+
+        childGroup1.setToParentGroup(null);
         context.commitChanges();
     }
 
@@ -226,6 +232,12 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         childGroup2.setToParentGroup(parentGroup);
 
         context.commitChanges();
+
+        childGroup1.setToParentGroup(null);
+        context.commitChanges();
+
+        childGroup2.setToParentGroup(null);
+        context.commitChanges();
     }
 
     @Test
@@ -244,6 +256,12 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         childGroup2.setName("subchild");
         childGroup2.setToParentGroup(childGroup1);
 
+        context.commitChanges();
+
+        childGroup1.setToParentGroup(null);
+        context.commitChanges();
+
+        childGroup2.setToParentGroup(null);
         context.commitChanges();
     }
 

@@ -25,6 +25,8 @@ import org.apache.cayenne.dba.oracle.OracleQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
 
+import java.io.IOException;
+
 public class FirebirdQualifierTranslator extends QualifierTranslator {
 
 	private int substringArg = 0;
@@ -67,6 +69,36 @@ public class FirebirdQualifierTranslator extends QualifierTranslator {
 	}
 
 	/**
+	 * A little bit ugly code that wraps String scalars to CAST(? AS VARCHAR(length))
+	 * because otherwise derby don't know what type will be at the placeholder and
+	 * use LONG VARCHAR that isn't comparable what leads to statement preparation failure.
+	 *
+	 * @since 4.0
+	 */
+	protected void appendFunctionArg(Object value, ASTFunctionCall functionExpression) throws IOException {
+		if("CONCAT".equals(functionExpression.getFunctionName())) {
+			if(value instanceof String) {
+				out.append("CAST(");
+			}
+			super.appendFunctionArg(value, functionExpression);
+			if(value instanceof String) {
+				clearLastFunctionArgDivider(functionExpression);
+				out.append(" AS VARCHAR(").append(((String)value).length()).append("))");
+				appendFunctionArgDivider(functionExpression);
+			}
+		} else if("SUBSTRING".equals(functionExpression.getFunctionName())) {
+			out.append("CAST(");
+			super.appendFunctionArg(value, functionExpression);
+			clearLastFunctionArgDivider(functionExpression);
+			substringArg--;
+			out.append(" AS INTEGER)");
+			appendFunctionArgDivider(functionExpression);
+		} else {
+			super.appendFunctionArg(value, functionExpression);
+		}
+	}
+
+	/**
 	 * @since 4.0
 	 */
 	@Override
@@ -100,8 +132,9 @@ public class FirebirdQualifierTranslator extends QualifierTranslator {
 				out.delete(out.length() - 4, out.length());
 				break;
 			case "SUBSTRING":
-				// no offset arg
-				if(substringArg == 2) {
+				if(substringArg == 1) {
+					out.delete(out.length() - " FROM ".length(), out.length());
+				} else if(substringArg == 2) {
 					out.delete(out.length() - " FOR ".length(), out.length());
 				}
 				break;

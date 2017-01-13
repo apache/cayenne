@@ -110,5 +110,8 @@ public class CAY_194IT extends ServerCase {
                 qualifier));
         assertEquals(1, children.size());
         assertSame(o2, children.get(0));
+
+        o2.setToParent(null);
+        context.commitChanges();
     }
 }

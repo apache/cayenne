@@ -84,5 +84,9 @@ public class AshwoodEntitySorter_RelationshipsIT extends ServerCase {
 		assertEquals("r3", ((ReflexiveAndToOne) objects.get(0)).getName());
 		assertEquals("r2", ((ReflexiveAndToOne) objects.get(1)).getName());
 		assertEquals("r1", ((ReflexiveAndToOne) objects.get(2)).getName());
+
+		tReflexiveAndToOne.delete().where("PARENT_ID", 2).execute();
+		tReflexiveAndToOne.delete().where("PARENT_ID", 1).execute();
+		tReflexiveAndToOne.deleteAll();
 	}
 }

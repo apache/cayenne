@@ -31,7 +31,6 @@ import org.apache.cayenne.testdo.primitive.PrimitivesTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -60,12 +59,6 @@ public class ObjectSelect_PrimitiveColumnsIT extends ServerCase {
         }
     }
 
-    @After
-    public void cleanTestRecords() throws Exception {
-        TableHelper tPrimitives = new TableHelper(dbHelper, "PRIMITIVES_TEST");
-        tPrimitives.deleteAll();
-    }
-
     @Test
     public void test_SelectIntegerColumn() throws Exception {
         int intColumn2 = ObjectSelect.query(PrimitivesTestEntity.class)
@@ -88,13 +81,13 @@ public class ObjectSelect_PrimitiveColumnsIT extends ServerCase {
     @Test
     public void test_SelectIntegerExpColumn() throws Exception {
         Property<Integer> property = Property.create("intColumn",
-                ExpressionFactory.exp("(obj:intColumn + 1)"), Integer.class);
+                ExpressionFactory.exp("(obj:intColumn + obj:intColumn)"), Integer.class);
 
         int intColumn2 = ObjectSelect.query(PrimitivesTestEntity.class)
                 .column(property)
                 .orderBy(PrimitivesTestEntity.INT_COLUMN.asc())
                 .selectFirst(context);
-        assertEquals(11, intColumn2);
+        assertEquals(20, intColumn2);
     }
 
     @Test

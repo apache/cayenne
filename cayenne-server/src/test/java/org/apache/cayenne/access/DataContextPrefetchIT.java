@@ -510,6 +510,9 @@ public class DataContextPrefetchIT extends ServerCase {
 				assertEquals(PersistenceState.COMMITTED, fetchedChild.getToParentGroup().getPersistenceState());
 			}
 		});
+
+		child.setToParentGroup(null);
+		context.commitChanges();
 	}
 
 	@Test

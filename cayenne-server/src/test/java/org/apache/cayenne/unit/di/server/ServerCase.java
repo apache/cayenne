@@ -40,7 +40,11 @@ public class ServerCase extends DICase {
 
 	@Before
 	public void cleanUpDB() throws Exception {
-		dbCleaner.clean();
+		try {
+			dbCleaner.clean();
+		} catch (Exception ex) {
+			dbCleaner.clean();
+		}
 	}
 
 	@Override

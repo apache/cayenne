@@ -123,6 +123,9 @@ public class CDOReflexiveRelIT extends ServerCase {
         childGroup1.setName("child1");
         childGroup1.setToParentGroup(parentGroup);
         context.commitChanges();
+
+        childGroup1.setToParentGroup(null);
+        context.commitChanges();
     }
 
 }

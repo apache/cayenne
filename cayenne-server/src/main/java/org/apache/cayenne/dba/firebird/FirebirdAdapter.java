@@ -20,6 +20,7 @@
 package org.apache.cayenne.dba.firebird;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.types.ByteArrayType;
@@ -107,5 +108,8 @@ public class FirebirdAdapter extends JdbcAdapter {
         return new FirebirdQualifierTranslator(queryAssembler);
     }
 
-
+    @Override
+    public EJBQLTranslatorFactory getEjbqlTranslatorFactory() {
+        return new FirebirdEJBQLTranslatorFactory();
+    }
 }

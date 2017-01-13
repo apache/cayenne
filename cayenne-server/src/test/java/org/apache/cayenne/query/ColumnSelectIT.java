@@ -21,7 +21,6 @@ package org.apache.cayenne.query;
 
 import java.sql.Types;
 import java.text.DateFormat;
-import java.util.Arrays;
 import java.util.Locale;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -35,7 +34,6 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -88,14 +86,6 @@ public class ColumnSelectIT extends ServerCase {
             tPaintings.insert(i, "painting" + i, i % 5 + 1, 1);
         }
         tPaintings.insert(21, "painting21", 2, 1);
-    }
-
-    @After
-    public void clearArtistsDataSet() throws Exception {
-        for(String table : Arrays.asList("PAINTING", "ARTIST", "GALLERY")) {
-            TableHelper tHelper = new TableHelper(dbHelper, table);
-            tHelper.deleteAll();
-        }
     }
 
     @Test

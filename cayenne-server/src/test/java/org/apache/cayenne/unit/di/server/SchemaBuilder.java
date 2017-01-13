@@ -160,6 +160,7 @@ public class SchemaBuilder {
 		for (Procedure proc : map.getProcedures()) {
 			unitDbAdapter.tweakProcedure(proc);
 		}
+		filterDataMap(map);
 
 		node.addDataMap(map);
 
@@ -168,6 +169,37 @@ public class SchemaBuilder {
 		node.setBatchTranslatorFactory(new DefaultBatchTranslatorFactory());
 		node.setSelectTranslatorFactory(new DefaultSelectTranslatorFactory());
 		domain.addNode(node);
+	}
+
+	/**
+	 * Remote binary pk {@link DbEntity} for {@link DbAdapter} not supporting
+	 * that and so on.
+	 */
+	protected void filterDataMap(DataMap map) {
+		boolean supportsBinaryPK = unitDbAdapter.supportsBinaryPK();
+
+		if (supportsBinaryPK) {
+			return;
+		}
+
+		List<DbEntity> entitiesToRemove = new ArrayList<DbEntity>();
+
+		for (DbEntity ent : map.getDbEntities()) {
+			for (DbAttribute attr : ent.getAttributes()) {
+				// check for BIN PK or FK to BIN Pk
+				if (attr.getType() == Types.BINARY || attr.getType() == Types.VARBINARY
+						|| attr.getType() == Types.LONGVARBINARY) {
+					if (attr.isPrimaryKey() || attr.isForeignKey()) {
+						entitiesToRemove.add(ent);
+						break;
+					}
+				}
+			}
+		}
+
+		for (DbEntity e : entitiesToRemove) {
+			map.removeDbEntity(e.getName(), true);
+		}
 	}
 
 	/** Drops all test tables. */

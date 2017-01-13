@@ -25,7 +25,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -46,7 +45,6 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -77,14 +75,6 @@ public class ObjectSelect_RunIT extends ServerCase {
 		tPaintings.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID");
 		for (int i = 1; i <= 20; i++) {
 			tPaintings.insert(i, "painting" + i, i % 5 + 1, 1);
-		}
-	}
-
-	@After
-	public void clearArtistsDataSet() throws Exception {
-		for(String table : Arrays.asList("PAINTING", "ARTIST", "GALLERY")) {
-			TableHelper tHelper = new TableHelper(dbHelper, table);
-			tHelper.deleteAll();
 		}
 	}
 
