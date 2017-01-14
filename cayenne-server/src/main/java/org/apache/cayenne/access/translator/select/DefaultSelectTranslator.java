@@ -157,14 +157,19 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 			}
 
 			if (!suppressingDistinct) {
-				queryBuf.append(buildDistinctStatement() + " ");
+				queryBuf.append(buildDistinctStatement()).append(" ");
 			}
 		}
 
 		// convert ColumnDescriptors to column names
 		List<String> selectColumnExpList = new ArrayList<>();
 		for (ColumnDescriptor column : resultColumns) {
-			String fullName = strategy.quotedIdentifier(dataMap, column.getNamePrefix(), column.getName());
+			String fullName;
+			if(column.isExpression()) {
+				fullName = column.getName();
+			} else {
+				fullName = strategy.quotedIdentifier(dataMap, column.getNamePrefix(), column.getName());
+			}
 			selectColumnExpList.add(fullName);
 		}
 
@@ -351,7 +356,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		SelectQuery<?> query = getSelectQuery();
 
 		if(query.getColumns() != null && !query.getColumns().isEmpty()) {
-			appendOverridedColumns(columns, query);
+			appendOverriddenColumns(columns, query);
 		} else if (query.getRoot() instanceof DbEntity) {
 			appendDbEntityColumns(columns, query);
 		} else if (getQueryMetadata().getPageSize() > 0) {
@@ -366,7 +371,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 	/**
 	 * If query contains explicit column list, use only them
 	 */
-	<T> List<ColumnDescriptor> appendOverridedColumns(List<ColumnDescriptor> columns, SelectQuery<T> query) {
+	<T> List<ColumnDescriptor> appendOverriddenColumns(List<ColumnDescriptor> columns, SelectQuery<T> query) {
 		groupByColumns = new HashMap<>();
 
 		QualifierTranslator qualifierTranslator = adapter.getQualifierTranslator(this);
@@ -385,6 +390,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 			}
 			ColumnDescriptor descriptor = new ColumnDescriptor(builder.toString(), type);
 			descriptor.setDataRowKey(alias);
+			descriptor.setIsExpression(true);
 			columns.add(descriptor);
 
 			if(isAggregate(property)) {

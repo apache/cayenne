@@ -30,6 +30,7 @@ import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.unit.PostgresUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -228,5 +229,53 @@ public class ColumnSelectIT extends ServerCase {
         assertEquals(5L, result[1]);
     }
 
+    @Test
+    public void testSelectWithQuoting() throws Exception {
+        if(unitDbAdapter instanceof PostgresUnitDbAdapter) {
+            // we need to convert somehow all names to lowercase on postgres, so skip it for now
+            return;
+        }
 
+        Property<Long> paintingCount = Property.create(countExp(Artist.PAINTING_ARRAY.path()), Long.class);
+        context.getEntityResolver().getDataMap("testmap").setQuotingSQLIdentifiers(true);
+
+        Object[] result = null;
+        try {
+            result = ColumnSelect.query(Artist.class)
+                    .columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, paintingCount)
+                    .having(paintingCount.gt(4L))
+                    .selectOne(context);
+        } catch (CayenneRuntimeException ex) {
+            if(unitDbAdapter.supportsExpressionInHaving()) {
+                fail();
+            } else {
+                return;
+            }
+        }
+        assertEquals("artist2", result[0]);
+        assertEquals(5L, result[2]);
+
+        context.getEntityResolver().getDataMap("testmap").setQuotingSQLIdentifiers(false);
+    }
+
+    @Test
+    public void testSelectGroupByWithQuoting() throws Exception {
+        if(unitDbAdapter instanceof PostgresUnitDbAdapter) {
+            // we need to convert somehow all names to lowercase on postgres, so skip it for now
+            return;
+        }
+
+        Property<Long> count = Property.create(countExp(), Long.class);
+        context.getEntityResolver().getDataMap("testmap").setQuotingSQLIdentifiers(true);
+
+        Object[] result = ColumnSelect.query(Artist.class)
+                .columns(Artist.DATE_OF_BIRTH, count)
+                .orderBy(Artist.DATE_OF_BIRTH.asc())
+                .selectFirst(context);
+
+        assertEquals(dateFormat.parse("1/1/17"), result[0]);
+        assertEquals(4L, result[1]);
+
+        context.getEntityResolver().getDataMap("testmap").setQuotingSQLIdentifiers(false);
+    }
 }

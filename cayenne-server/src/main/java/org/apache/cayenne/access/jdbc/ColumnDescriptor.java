@@ -52,6 +52,11 @@ public class ColumnDescriptor {
     protected String javaClass;
 
     /**
+     * @since 4.0
+     */
+    protected boolean isExpression;
+
+    /**
      * Creates a ColumnDescriptor
      */
     public ColumnDescriptor() {
@@ -279,5 +284,21 @@ public class ColumnDescriptor {
      */
     public void setDataRowKey(String dataRowKey) {
         this.dataRowKey = dataRowKey;
+    }
+
+    /**
+     * @since 4.0
+     * @param isExpression is this column is an expression
+     */
+    public void setIsExpression(boolean isExpression) {
+        this.isExpression = isExpression;
+    }
+
+    /**
+     * @since 4.0
+     * @return is this column is an expression
+     */
+    public boolean isExpression() {
+        return isExpression;
     }
 }
