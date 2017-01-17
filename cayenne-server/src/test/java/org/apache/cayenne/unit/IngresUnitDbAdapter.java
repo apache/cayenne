@@ -41,4 +41,9 @@ public class IngresUnitDbAdapter extends UnitDbAdapter {
     public boolean supportsLobs() {
         return true;
     }
+
+    @Override
+    public boolean supportsExpressionInHaving() {
+        return false;
+    }
 }

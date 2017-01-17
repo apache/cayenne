@@ -19,9 +19,13 @@
 
 package org.apache.cayenne.dba.ingres;
 
+import java.io.IOException;
+
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
+import org.apache.cayenne.exp.parser.Node;
 
 /**
  * @since 4.0
@@ -33,8 +37,29 @@ class IngresQualifierTranslator extends TrimmingQualifierTranslator {
     }
 
     @Override
+    public void endNode(Expression node, Expression parentNode) {
+        super.endNode(node, parentNode);
+        if(node.getType() == Expression.FUNCTION_CALL) {
+            if("LOCATE".equals(((ASTFunctionCall)node).getFunctionName())) {
+                // order of args in ingres version of LOCATE is different, so swap them back
+                swapNodeChildren((ASTFunctionCall)node, 0, 1);
+            }
+        }
+    }
+
+    @Override
     protected void appendFunction(ASTFunctionCall functionExpression) {
-        if(!"CONCAT".equals(functionExpression.getFunctionName())) {
+        if("CONCAT".equals(functionExpression.getFunctionName())) {
+            // noop
+        } else if("LOCATE".equals(functionExpression.getFunctionName())) {
+            // order of args in ingres version of LOCATE is different
+            // LOCATE(substr, str) -> LOCATE(str, substr)
+            out.append("LOCATE");
+            swapNodeChildren(functionExpression, 0, 1);
+        } else if("TRIM".equals(functionExpression.getFunctionName())) {
+            // simple TRIM removes only trailing spaces
+            out.append("LTRIM(RTRIM");
+        } else {
             super.appendFunction(functionExpression);
         }
     }
@@ -49,11 +74,34 @@ class IngresQualifierTranslator extends TrimmingQualifierTranslator {
     }
 
     @Override
+    protected void appendFunctionArg(Object value, ASTFunctionCall functionExpression) throws IOException {
+        if("SUBSTRING".equals(functionExpression.getFunctionName())) {
+            out.append("CAST(");
+            super.appendFunctionArg(value, functionExpression);
+            clearLastFunctionArgDivider(functionExpression);
+            out.append(" AS INTEGER)");
+            appendFunctionArgDivider(functionExpression);
+        } else {
+            super.appendFunctionArg(value, functionExpression);
+        }
+    }
+
+    @Override
     protected void clearLastFunctionArgDivider(ASTFunctionCall functionExpression) {
         if("CONCAT".equals(functionExpression.getFunctionName())) {
             out.delete(out.length() - " + ".length(), out.length());
         } else {
             super.clearLastFunctionArgDivider(functionExpression);
+            if("TRIM".equals(functionExpression.getFunctionName())) {
+                out.append(")");
+            }
         }
+    }
+
+    private void swapNodeChildren(Node node, int i, int j) {
+        Node ni = node.jjtGetChild(i);
+        Node nj = node.jjtGetChild(j);
+        node.jjtAddChild(ni, j);
+        node.jjtAddChild(nj, i);
     }
 }
