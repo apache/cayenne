@@ -297,6 +297,14 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 	}
 
 	/**
+	 * @since 4.0
+	 */
+	@Override
+	public boolean isSingleResultSetMapping() {
+		return resultSetMapping != null && resultSetMapping.size() == 1;
+	}
+
+	/**
 	 * @since 1.2
 	 */
 	public PrefetchTreeNode getPrefetchTree() {

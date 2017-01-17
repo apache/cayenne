@@ -223,17 +223,15 @@ public class ObjectSelect_RunIT extends ServerCase {
 		assertEquals("artist1", a[4]);
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	@Test
-	public void test_SelectFirst_EmptyColumns() throws Exception {
-		Object a = ObjectSelect.query(Artist.class)
-				.columns()
+	public void test_SelectFirst_SingleValueInColumns() throws Exception {
+		Object[] a = ObjectSelect.query(Artist.class)
+				.columns(Artist.ARTIST_NAME)
 				.where(Artist.ARTIST_NAME.like("artist%"))
 				.orderBy("db:ARTIST_ID")
 				.selectFirst(context);
 		assertNotNull(a);
-		assertTrue(a instanceof Artist);
-		assertEquals("artist1", ((Artist)a).getArtistName());
+		assertEquals("artist1", a[0]);
 	}
 
 	@Test

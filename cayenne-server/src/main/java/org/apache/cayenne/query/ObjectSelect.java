@@ -158,24 +158,24 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      * @see ColumnSelect#column(Property)
      */
     @SuppressWarnings("unchecked")
-    public ColumnSelect<Object[]> columns(Property<?>... properties) {
-        return new ColumnSelect<>(this).columns(properties);
+    public ColumnSelect<Object[]> columns(Property<?> firstProperty, Property<?>... properties) {
+        return new ColumnSelect<>(this).columns(firstProperty, properties);
     }
 
     /**
      * <p>Select one specific property.</p>
      * <p>Can be any property that can be resolved against root entity type
      * (root entity property, function call expression, property of relationships, etc)</p>
-     * <p>If you need several columns use {@link ColumnSelect#columns(Property[])} method as subsequent
+     * <p>If you need several columns use {@link ColumnSelect#columns(Property, Property[])} method as subsequent
      * call to this method will override previous columns set via this or
-     * {@link ColumnSelect#columns(Property[])} method.</p>
+     * {@link ColumnSelect#columns(Property, Property[])} method.</p>
      * <p>
      * <pre>
      * List&lt;String&gt; names = ObjectSelect.query(Artist.class).column(Artist.ARTIST_NAME).select(context);
      * </pre>
      *
      * @param property single property to select
-     * @see ColumnSelect#columns(Property[])
+     * @see ColumnSelect#columns(Property, Property[])
      */
     @SuppressWarnings("unchecked")
     public <E> ColumnSelect<E> column(Property<E> property) {

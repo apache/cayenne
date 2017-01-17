@@ -487,8 +487,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 if (rsMapping == null) {
                     converter = new SingleObjectConversionStrategy();
                 } else {
-
-                    if (rsMapping.size() == 1) {
+                    if (metadata.isSingleResultSetMapping()) {
                         if (rsMapping.get(0) instanceof EntityResultSegment) {
                             converter = new SingleObjectConversionStrategy();
                         } else {

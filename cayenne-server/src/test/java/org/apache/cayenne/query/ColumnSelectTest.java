@@ -62,8 +62,6 @@ public class ColumnSelectTest {
     public void columns() throws Exception {
         ColumnSelect q = ColumnSelect.query(Artist.class);
         assertNull(q.getColumns());
-        q.columns();
-        assertNull(q.getColumns());
         q.columns(Artist.ARTIST_NAME, Artist.PAINTING_ARRAY);
         assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.PAINTING_ARRAY), q.getColumns());
 
@@ -154,11 +152,8 @@ public class ColumnSelectTest {
         assertEquals(null, q.getColumns());
 
         q.columns(Artist.ARTIST_NAME);
-        q.columns();
         q.columns(Artist.DATE_OF_BIRTH);
-        q.columns();
         q.columns(Artist.PAINTING_ARRAY);
-        q.columns();
 
         Collection<Property<?>> properties = Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY);
         assertEquals(properties, q.getColumns());
@@ -186,11 +181,8 @@ public class ColumnSelectTest {
         assertEquals(null, q.getColumns());
 
         q.column(Artist.ARTIST_NAME);
-        q.columns();
         q.column(Artist.DATE_OF_BIRTH);
-        q.columns();
         q.column(Artist.PAINTING_ARRAY);
-        q.columns();
 
         Collection<Property<?>> properties = Collections.<Property<?>>singletonList(Artist.PAINTING_ARRAY);
         assertEquals(properties, q.getColumns());

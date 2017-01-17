@@ -34,6 +34,11 @@ public class MockQueryMetadata implements QueryMetadata {
         return null;
     }
 
+    @Override
+    public boolean isSingleResultSetMapping() {
+        return false;
+    }
+
     public ObjEntity getObjEntity() {
         return null;
     }

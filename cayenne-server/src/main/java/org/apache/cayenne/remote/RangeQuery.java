@@ -22,16 +22,15 @@ package org.apache.cayenne.remote;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.QueryMetadataProxy;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
@@ -71,7 +70,7 @@ class RangeQuery implements Query {
     public QueryMetadata getMetaData(EntityResolver resolver) {
         final QueryMetadata originatingMetadata = originatingQuery.getMetaData(resolver);
 
-        return new QueryMetadata() {
+        return new QueryMetadataProxy(originatingMetadata) {
 
             public Query getOrginatingQuery() {
                 return originatingQuery;
@@ -79,6 +78,10 @@ class RangeQuery implements Query {
 
             public List<Object> getResultSetMapping() {
                 return null;
+            }
+
+            public boolean isSingleResultSetMapping() {
+                return false;
             }
 
             public String getCacheKey() {
@@ -97,10 +100,6 @@ class RangeQuery implements Query {
                 return fetchLimit;
             }
 
-            public boolean isFetchingDataRows() {
-                return originatingMetadata.isFetchingDataRows();
-            }
-
             public int getPageSize() {
                 return 0;
             }
@@ -110,10 +109,6 @@ class RangeQuery implements Query {
              */
             public QueryCacheStrategy getCacheStrategy() {
                 return QueryCacheStrategy.getDefaultStrategy();
-            }
-
-            public PrefetchTreeNode getPrefetchTree() {
-                return originatingMetadata.getPrefetchTree();
             }
 
             public DataMap getDataMap() {

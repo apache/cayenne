@@ -20,8 +20,8 @@
 package org.apache.cayenne.query;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -29,29 +29,31 @@ import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.map.EntityResolver;
 
 /**
+ * <p>A selecting query providing individual properties based on the root object.</p>
  * <p>
- *     A selecting query providing individual properties based on the root object.
- *
- * </p>
- * <p>
- *     It can be properties of the object itself or some function calls (including aggregate functions)
- * </p>
- * <p>
- * Usage examples:
- * <pre>
- *      // selecting list of names:
+ *     It can be properties of the object itself, properties of related entities
+ *     or some function calls (including aggregate functions).
+ * </p><p>
+ * Usage examples: <pre>
+ *      // select list of names:
  *      List&lt;String&gt; names = ColumnSelect.query(Artist.class, Artist.ARTIST_NAME).select(context);
  *
- *      // selecting count:
- *      long count = ColumnSelect.query(Artist.class, Property.COUNT).selectOne();
- * </pre>
- * </p>
+ *      // select count:
+ *      Property<Long> countProperty = Property.create(FunctionExpressionFactory.countExp(), Long.class);
+ *      long count = ColumnSelect.query(Artist.class, countProperty).selectOne();
+ *
+ *      // select only required properties of an entity:
+ *      List&lt;Object[]&gt; data = ColumnSelect.query(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
+ *                                  .where(Artist.ARTIST_NAME.like("Picasso%))
+ *                                  .select(context);
+ * </pre></p>
  * @since 4.0
  */
 public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
 
     private Collection<Property<?>> columns;
     private boolean havingExpressionIsActive = false;
+    private boolean singleColumn = true;
     private Expression having;
 
     /**
@@ -74,16 +76,20 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
     /**
      *
      * @param entityType base persistent class that will be used as a root for this query
-     * @param columns columns to select
+     * @param firstColumn column to select
+     * @param otherColumns columns to select
      */
-    public static ColumnSelect<Object[]> query(Class<?> entityType, Property<?>... columns) {
-        return new ColumnSelect<Object[]>().entityType(entityType).columns(columns);
+    public static ColumnSelect<Object[]> query(Class<?> entityType, Property<?> firstColumn, Property<?>... otherColumns) {
+        return new ColumnSelect<Object[]>().entityType(entityType).columns(firstColumn, otherColumns);
     }
 
     protected ColumnSelect() {
         super();
     }
 
+    /**
+     * Copy constructor to convert ObjectSelect to ColumnSelect
+     */
     protected ColumnSelect(ObjectSelect<T> select) {
         super();
         this.entityType = select.entityType;
@@ -105,6 +111,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
         SelectQuery<?> replacement = (SelectQuery)super.createReplacementQuery(resolver);
         replacement.setColumns(columns);
         replacement.setHavingQualifier(having);
+        replacement.setCanReturnScalarValue(singleColumn);
         return replacement;
     }
 
@@ -119,22 +126,37 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
      *                                    .select(context);
      * </pre>
      *
-     * @param properties array of properties to select
+     * @param firstProperty first property
+     * @param otherProperties array of properties to select
      * @see ColumnSelect#column(Property)
+     * @see ColumnSelect#columns(Collection)
      */
     @SuppressWarnings("unchecked")
-    public ColumnSelect<Object[]> columns(Property<?>... properties) {
-        if (properties == null || properties.length == 0) {
-            return (ColumnSelect<Object[]>)this;
+    public ColumnSelect<Object[]> columns(Property<?> firstProperty, Property<?>... otherProperties) {
+        if (columns == null) {
+            columns = new ArrayList<>(otherProperties.length + 1);
         }
-
-        return columns(Arrays.asList(properties));
+        columns.add(firstProperty);
+        Collections.addAll(columns, otherProperties);
+        singleColumn = false;
+        return (ColumnSelect<Object[]>)this;
     }
 
+    /**
+     * <p>Select only specific properties.</p>
+     * <p>Can be any properties that can be resolved against root entity type
+     * (root entity properties, function call expressions, properties of relationships, etc).</p>
+     * <p>
+     * @param properties collection of properties, <b>must</b> contain at least one element
+     * @see ColumnSelect#columns(Property, Property[])
+     */
     @SuppressWarnings("unchecked")
     public ColumnSelect<Object[]> columns(Collection<Property<?>> properties) {
-        if (properties == null || properties.isEmpty()) {
-            return (ColumnSelect<Object[]>)this;
+        if (properties == null){
+            throw new NullPointerException("properties is null");
+        }
+        if (properties.isEmpty()) {
+            throw new IllegalArgumentException("properties must contain at least one element");
         }
 
         if (this.columns == null) {
@@ -142,6 +164,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
         }
 
         columns.addAll(properties);
+        singleColumn = false;
         return (ColumnSelect<Object[]>)this;
     }
 
@@ -149,16 +172,16 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
      * <p>Select one specific property.</p>
      * <p>Can be any property that can be resolved against root entity type
      * (root entity property, function call expression, property of relationships, etc)</p>
-     * <p>If you need several columns use {@link ColumnSelect#columns(Property[])} method as subsequent
+     * <p>If you need several columns use {@link ColumnSelect#columns(Property, Property[])} method as subsequent
      * call to this method will override previous columns set via this or
-     * {@link ColumnSelect#columns(Property[])} method.</p>
+     * {@link ColumnSelect#columns(Property, Property[])} method.</p>
      * <p>
      * <pre>
      * List&lt;String&gt; names = ColumnSelect.query(Artist.class, Artist.ARTIST_NAME).select(context);
      * </pre>
      *
      * @param property single property to select
-     * @see ColumnSelect#columns(Property[])
+     * @see ColumnSelect#columns(Property, Property[])
      */
     @SuppressWarnings("unchecked")
     protected  <E> ColumnSelect<E> column(Property<E> property) {

@@ -39,13 +39,13 @@ public interface QueryMetadata {
      * Defines the name of the property for the query {@link #getFetchLimit() fetch limit}
      * .
      */
-    public static final String FETCH_LIMIT_PROPERTY = "cayenne.GenericSelectQuery.fetchLimit";
+    String FETCH_LIMIT_PROPERTY = "cayenne.GenericSelectQuery.fetchLimit";
 
     /**
      * Defines default query fetch limit, which is zero, meaning that all matching rows
      * should be fetched.
      */
-    public static final int FETCH_LIMIT_DEFAULT = 0;
+    int FETCH_LIMIT_DEFAULT = 0;
 
     /**
      * Defines the name of the property for the query {@link #getFetchOffset() fetch
@@ -53,7 +53,7 @@ public interface QueryMetadata {
      * 
      * @since 3.0
      */
-    public static final String FETCH_OFFSET_PROPERTY = "cayenne.GenericSelectQuery.fetchOffset";
+    String FETCH_OFFSET_PROPERTY = "cayenne.GenericSelectQuery.fetchOffset";
 
     /**
      * Defines default query fetch start index, which is 0, meaning that matching rows
@@ -61,31 +61,31 @@ public interface QueryMetadata {
      * 
      * @since 3.0
      */
-    public static final int FETCH_OFFSET_DEFAULT = 0;
+    int FETCH_OFFSET_DEFAULT = 0;
 
     /**
      * Defines the name of the property for the query {@link #getPageSize() page size}.
      */
-    public static final String PAGE_SIZE_PROPERTY = "cayenne.GenericSelectQuery.pageSize";
+    String PAGE_SIZE_PROPERTY = "cayenne.GenericSelectQuery.pageSize";
 
     /**
      * Defines default query page size, which is zero for no pagination.
      */
-    public static final int PAGE_SIZE_DEFAULT = 0;
+    int PAGE_SIZE_DEFAULT = 0;
 
-    public static final String FETCHING_DATA_ROWS_PROPERTY = "cayenne.GenericSelectQuery.fetchingDataRows";
+    String FETCHING_DATA_ROWS_PROPERTY = "cayenne.GenericSelectQuery.fetchingDataRows";
 
-    public static final boolean FETCHING_DATA_ROWS_DEFAULT = false;
-
-    /**
-     * @since 3.0
-     */
-    public static final String CACHE_STRATEGY_PROPERTY = "cayenne.GenericSelectQuery.cacheStrategy";
+    boolean FETCHING_DATA_ROWS_DEFAULT = false;
 
     /**
      * @since 3.0
      */
-    public static final String CACHE_GROUPS_PROPERTY = "cayenne.GenericSelectQuery.cacheGroups";
+    String CACHE_STRATEGY_PROPERTY = "cayenne.GenericSelectQuery.cacheStrategy";
+
+    /**
+     * @since 3.0
+     */
+    String CACHE_GROUPS_PROPERTY = "cayenne.GenericSelectQuery.cacheGroups";
 
     /**
      * Defines the name of the property for the query {@link #getStatementFetchSize() fetch
@@ -93,7 +93,7 @@ public interface QueryMetadata {
      * 
      * @since 3.0
      */
-    public static final String STATEMENT_FETCH_SIZE_PROPERTY = "cayenne.GenericSelectQuery.statementFetchSize";
+    String STATEMENT_FETCH_SIZE_PROPERTY = "cayenne.GenericSelectQuery.statementFetchSize";
 
     /**
      * Defines default query fetch start index, which is 0, meaning that matching rows
@@ -101,7 +101,7 @@ public interface QueryMetadata {
      * 
      * @since 3.0
      */
-    public static final int STATEMENT_FETCH_SIZE_DEFAULT = 0;
+    int STATEMENT_FETCH_SIZE_DEFAULT = 0;
 
     /**
      * @since 3.0
@@ -226,10 +226,17 @@ public interface QueryMetadata {
      * @since 3.0
      */
     List<Object> getResultSetMapping();
+
+    /**
+     * @return should the result be mapped to single object (scalar or entity)
+     * @see QueryMetadata#getResultSetMapping()
+     * @since 4.0
+     */
+    boolean isSingleResultSetMapping();
     
     /**
      * @return statement's fetch size
      * @since 3.0
      */
-    public int getStatementFetchSize();
+    int getStatementFetchSize();
 }

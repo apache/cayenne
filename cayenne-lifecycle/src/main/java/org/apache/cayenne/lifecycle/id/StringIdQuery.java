@@ -155,6 +155,11 @@ public class StringIdQuery implements Query {
                 return null;
             }
 
+            @Override
+            public boolean isSingleResultSetMapping() {
+                return false;
+            }
+
             public Query getOrginatingQuery() {
                 return null;
             }

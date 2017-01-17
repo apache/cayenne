@@ -66,6 +66,14 @@ class DefaultQueryMetadata implements QueryMetadata {
     }
 
     /**
+     * @since 4.0
+     */
+    @Override
+    public boolean isSingleResultSetMapping() {
+        return false;
+    }
+
+    /**
      * @since 3.0
      */
     public Query getOrginatingQuery() {

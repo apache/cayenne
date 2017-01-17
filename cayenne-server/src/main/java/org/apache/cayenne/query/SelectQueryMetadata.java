@@ -38,6 +38,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 	private static final long serialVersionUID = 7465922769303943945L;
 	
 	Map<String, String> pathSplitAliases;
+	boolean isSingleResultSetMapping;
 
 	@Override
 	void copyFromInfo(QueryMetadata info) {
@@ -57,6 +58,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 
 			resolveAutoAliases(query);
 			buildResultSetMappingForColumns(query, resolver);
+			isSingleResultSetMapping = query.canReturnScalarValue() && super.isSingleResultSetMapping();
 
 			return true;
 		}
@@ -185,5 +187,13 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 			result.addColumnResult(name);
 		}
 		resultSetMapping = result.getResolvedComponents(resolver);
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public boolean isSingleResultSetMapping() {
+		return isSingleResultSetMapping;
 	}
 }

@@ -69,6 +69,14 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 */
 	protected Expression havingQualifier;
 
+	/**
+	 * <p>Flag that indicates whether this query can return single value or
+	 * it should always return some complex data (Object[] for now)</p>
+	 * <p>Default value is <b>true</b></p>
+	 * @since 4.0
+	 */
+	protected boolean canReturnScalarValue = true;
+
 	SelectQueryMetadata metaData = new SelectQueryMetadata();
 
 	/**
@@ -868,6 +876,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 
 	/**
 	 * @since 4.0
+	 * @see SelectQuery#setCanReturnScalarValue(boolean)
 	 */
 	public void setColumns(Collection<Property<?>> columns) {
 		this.columns = columns;
@@ -881,6 +890,26 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 			return;
 		}
 		setColumns(Arrays.asList(columns));
+	}
+
+	/**
+	 * <p>Flag that indicates whether this query can return single  value or
+	 * it should always return some complex data (Object[] for now)</p>
+	 * <p>Default value is <b>true</b></p>
+	 * @param canReturnScalarValue can this query return single value
+	 * @since 4.0
+	 * @see SelectQuery#setColumns
+	 */
+	public void setCanReturnScalarValue(boolean canReturnScalarValue) {
+		this.canReturnScalarValue = canReturnScalarValue;
+	}
+
+	/**
+	 * @return can this query return single value
+	 * @since 4.0
+	 */
+	public boolean canReturnScalarValue() {
+		return canReturnScalarValue;
 	}
 
 	/**

@@ -60,7 +60,9 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 		int resultWidth = rsMapping.size();
 		if (resultWidth == 0) {
 			throw new CayenneRuntimeException("Empty result descriptor");
-		} else if (resultWidth == 1) {
+		}
+
+		if (queryMetadata.isSingleResultSetMapping()) {
 
 			Object segment = rsMapping.get(0);
 

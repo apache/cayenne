@@ -19,23 +19,14 @@
 
 package org.apache.cayenne.remote;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.QueryMetadataProxy;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * A client wrapper for the incremental query that overrides the metadata to ensure that
@@ -61,82 +52,13 @@ class IncrementalQuery implements Query {
         // (IncrementalFaultList interception happens before cache interception). So
         // overriding caching settings in the metadata will only affect
         // ClientServerChannel behavior
-
-        return new QueryMetadata() {
-
+        return new QueryMetadataProxy(metadata) {
             public Query getOrginatingQuery() {
                 return null;
             }
 
             public String getCacheKey() {
                 return cacheKey;
-            }
-
-            public List<Object> getResultSetMapping() {
-                return metadata.getResultSetMapping();
-            }
-
-            public String[] getCacheGroups() {
-                return metadata.getCacheGroups();
-            }
-
-            /**
-             * @since 3.0
-             */
-            public QueryCacheStrategy getCacheStrategy() {
-                return metadata.getCacheStrategy();
-            }
-
-            public DataMap getDataMap() {
-                return metadata.getDataMap();
-            }
-
-            public DbEntity getDbEntity() {
-                return metadata.getDbEntity();
-            }
-
-            public int getFetchLimit() {
-                return metadata.getFetchLimit();
-            }
-
-            public int getFetchOffset() {
-                return metadata.getFetchOffset();
-            }
-
-            public ObjEntity getObjEntity() {
-                return metadata.getObjEntity();
-            }
-
-            public ClassDescriptor getClassDescriptor() {
-                return metadata.getClassDescriptor();
-            }
-
-            public int getPageSize() {
-                return metadata.getPageSize();
-            }
-
-            public PrefetchTreeNode getPrefetchTree() {
-                return metadata.getPrefetchTree();
-            }
-
-            public Procedure getProcedure() {
-                return metadata.getProcedure();
-            }
-
-            public Map<String, String> getPathSplitAliases() {
-                return metadata.getPathSplitAliases();
-            }
-
-            public boolean isFetchingDataRows() {
-                return metadata.isFetchingDataRows();
-            }
-
-            public boolean isRefreshingObjects() {
-                return metadata.isRefreshingObjects();
-            }
-
-            public int getStatementFetchSize() {
-                return metadata.getStatementFetchSize();
             }
         };
     }

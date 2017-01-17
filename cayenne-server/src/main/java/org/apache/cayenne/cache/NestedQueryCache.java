@@ -18,18 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.query.QueryMetadataProxy;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * A {@link QueryCache} wrapper that introduces a key namespace on top of a
@@ -129,105 +121,11 @@ public class NestedQueryCache implements QueryCache {
     }
 
     private QueryMetadata qualifiedMetadata(QueryMetadata md) {
-        return new QualifiedKeyQueryMetadata(md);
-    }
-
-    final class QualifiedKeyQueryMetadata implements QueryMetadata {
-
-        private QueryMetadata mdDelegate;
-
-        QualifiedKeyQueryMetadata(QueryMetadata mdDelegate) {
-            this.mdDelegate = mdDelegate;
-        }
-
-        @Override
-        public String[] getCacheGroups() {
-            return mdDelegate.getCacheGroups();
-        }
-
-        @Override
-        public String getCacheKey() {
-            return qualifiedKey(mdDelegate.getCacheKey());
-        }
-
-        @Override
-        public QueryCacheStrategy getCacheStrategy() {
-            return mdDelegate.getCacheStrategy();
-        }
-
-        @Override
-        public ClassDescriptor getClassDescriptor() {
-            return mdDelegate.getClassDescriptor();
-        }
-
-        @Override
-        public DataMap getDataMap() {
-            return mdDelegate.getDataMap();
-        }
-
-        @Override
-        public DbEntity getDbEntity() {
-            return mdDelegate.getDbEntity();
-        }
-
-        @Override
-        public int getFetchLimit() {
-            return mdDelegate.getFetchLimit();
-        }
-
-        @Override
-        public int getFetchOffset() {
-            return mdDelegate.getFetchOffset();
-        }
-
-        @Override
-        public ObjEntity getObjEntity() {
-            return mdDelegate.getObjEntity();
-        }
-
-        @Override
-        public Query getOrginatingQuery() {
-            return mdDelegate.getOrginatingQuery();
-        }
-
-        @Override
-        public int getPageSize() {
-            return mdDelegate.getPageSize();
-        }
-
-        @Override
-        public PrefetchTreeNode getPrefetchTree() {
-            return mdDelegate.getPrefetchTree();
-        }
-
-        @Override
-        public Map<String, String> getPathSplitAliases() {
-            return mdDelegate.getPathSplitAliases();
-        }
-
-        @Override
-        public Procedure getProcedure() {
-            return mdDelegate.getProcedure();
-        }
-
-        @Override
-        public List<Object> getResultSetMapping() {
-            return mdDelegate.getResultSetMapping();
-        }
-
-        @Override
-        public boolean isFetchingDataRows() {
-            return mdDelegate.isFetchingDataRows();
-        }
-
-        @Override
-        public boolean isRefreshingObjects() {
-            return mdDelegate.isRefreshingObjects();
-        }
-
-        @Override
-        public int getStatementFetchSize() {
-            return mdDelegate.getStatementFetchSize();
-        }
+        return new QueryMetadataProxy(md) {
+            @Override
+            public String getCacheKey() {
+                return qualifiedKey(mdDelegate.getCacheKey());
+            }
+        };
     }
 }

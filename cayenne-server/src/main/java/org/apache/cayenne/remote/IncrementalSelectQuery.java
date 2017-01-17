@@ -28,22 +28,17 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.access.IncrementalFaultList;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.QueryMetadataProxy;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
-import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
@@ -75,79 +70,13 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 		// interception). So
 		// overriding caching settings in the metadata will only affect
 		// ClientServerChannel behavior
-
-		return new QueryMetadata() {
-
+		return new QueryMetadataProxy(metadata) {
 			public Query getOrginatingQuery() {
 				return null;
 			}
 
 			public String getCacheKey() {
 				return cacheKey;
-			}
-
-			public List<Object> getResultSetMapping() {
-				return metadata.getResultSetMapping();
-			}
-
-			public String[] getCacheGroups() {
-				return metadata.getCacheGroups();
-			}
-
-			public QueryCacheStrategy getCacheStrategy() {
-				return metadata.getCacheStrategy();
-			}
-
-			public DataMap getDataMap() {
-				return metadata.getDataMap();
-			}
-
-			public DbEntity getDbEntity() {
-				return metadata.getDbEntity();
-			}
-
-			public int getFetchLimit() {
-				return metadata.getFetchLimit();
-			}
-
-			public int getFetchOffset() {
-				return metadata.getFetchOffset();
-			}
-
-			public ObjEntity getObjEntity() {
-				return metadata.getObjEntity();
-			}
-
-			public ClassDescriptor getClassDescriptor() {
-				return metadata.getClassDescriptor();
-			}
-
-			public int getPageSize() {
-				return metadata.getPageSize();
-			}
-
-			public PrefetchTreeNode getPrefetchTree() {
-				return metadata.getPrefetchTree();
-			}
-
-			public Procedure getProcedure() {
-				return metadata.getProcedure();
-			}
-
-			public Map<String, String> getPathSplitAliases() {
-				return metadata.getPathSplitAliases();
-			}
-
-			public boolean isFetchingDataRows() {
-				return metadata.isFetchingDataRows();
-			}
-
-			public boolean isRefreshingObjects() {
-				return metadata.isRefreshingObjects();
-			}
-
-			public int getStatementFetchSize() {
-				return metadata.getStatementFetchSize();
 			}
 		};
 	}
@@ -188,7 +117,7 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 	}
 
 	@Override
-	public SelectQuery<T> createQuery(Map parameters) {
+	public SelectQuery<T> createQuery(Map<String, ?> parameters) {
 		return query.createQuery(parameters);
 	}
 
@@ -253,7 +182,7 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 	}
 
 	@Override
-	public void initWithProperties(Map properties) {
+	public void initWithProperties(Map<String, ?> properties) {
 		query.initWithProperties(properties);
 	}
 
@@ -273,12 +202,12 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 	}
 
 	@Override
-	public SelectQuery<T> queryWithParameters(Map parameters, boolean pruneMissing) {
+	public SelectQuery<T> queryWithParameters(Map<String, ?> parameters, boolean pruneMissing) {
 		return query.queryWithParameters(parameters, pruneMissing);
 	}
 
 	@Override
-	public SelectQuery<T> queryWithParameters(Map parameters) {
+	public SelectQuery<T> queryWithParameters(Map<String, ?> parameters) {
 		return query.queryWithParameters(parameters);
 	}
 

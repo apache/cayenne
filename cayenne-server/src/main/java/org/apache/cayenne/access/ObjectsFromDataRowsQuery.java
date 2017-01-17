@@ -140,6 +140,11 @@ class ObjectsFromDataRowsQuery implements Query, QueryMetadata {
         return null;
     }
 
+    @Override
+    public boolean isSingleResultSetMapping() {
+        return false;
+    }
+
     public int getStatementFetchSize() {
         return 0;
     }
