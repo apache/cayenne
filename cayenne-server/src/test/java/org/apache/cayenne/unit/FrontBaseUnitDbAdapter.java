@@ -76,4 +76,14 @@ public class FrontBaseUnitDbAdapter extends UnitDbAdapter {
 
         return false;
     }
+
+    @Override
+    public boolean supportsEscapeInLike() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsExpressionInHaving() {
+        return false;
+    }
 }

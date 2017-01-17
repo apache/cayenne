@@ -43,6 +43,9 @@ public class FrontBaseQualifierTranslator extends QualifierTranslator {
             case "LOCATE":
                 out.append("POSITION");
                 break;
+            case "LENGTH":
+                out.append("CHAR_LENGTH");
+                break;
             case "SUBSTRING":
                 substringArg = 0;
             default:
@@ -54,7 +57,10 @@ public class FrontBaseQualifierTranslator extends QualifierTranslator {
     protected void appendFunctionArgDivider(ASTFunctionCall functionExpression) {
         switch (functionExpression.getFunctionName()) {
             case "CONCAT":
-                out.append(" | ");
+                out.append(" || ");
+                break;
+            case "LOCATE":
+                out.append(" IN ");
                 break;
             case "SUBSTRING":
                 // SUBSTRING (str FROM offset FOR length)
@@ -76,7 +82,10 @@ public class FrontBaseQualifierTranslator extends QualifierTranslator {
     protected void clearLastFunctionArgDivider(ASTFunctionCall functionExpression) {
         switch (functionExpression.getFunctionName()) {
             case "CONCAT":
-                out.delete(out.length() - 3, out.length());
+                out.delete(out.length() - " || ".length(), out.length());
+                break;
+            case "LOCATE":
+                out.delete(out.length() - " IN ".length(), out.length());
                 break;
             case "SUBSTRING":
                 // no offset arg
