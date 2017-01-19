@@ -31,7 +31,7 @@ public class ASTSum extends ASTAggregateFunctionCall {
     }
 
     public ASTSum(Expression expression) {
-        super("SUM", expression);
+        super(0, "SUM", expression);
     }
 
 

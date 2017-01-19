@@ -199,11 +199,21 @@
 							<goal>jjtree-javacc</goal>
 						</goals>
 					</execution>
-					<!-- src/main/jjtree/org/apache/cayenne/exp/parser for now is generated 
-						outside of Maven with JavaCC command line tools (maybe we should do the same 
-						for EJBQL) : # Parser grammar out of tree grammar: $ ./javacc-5.0/bin/jjtree 
-						src/main/jjtree/org/apache/cayenne/exp/parser/ExpressionParser.jjt # docs 
-						$ ./javacc-5.0/bin/jjdoc -TEXT=true ExpressionParser.jj -->
+					<!--
+						src/main/jjtree/org/apache/cayenne/exp/parser for now is generated
+						outside of Maven with JavaCC command line tools (maybe we should do the same for EJBQL) :
+							$ cd cayenne-server/src/main/jjtree/org/apache/cayenne/exp/parser
+						# Parser grammar out of tree grammar:
+							$ ~/javacc-5.0/bin/jjtree ExpressionParser.jjt
+						# Parser java code:
+							$ ~/javacc-5.0/bin/javacc ExpressionParser.jj
+
+						# Copy generated classes to src/main/jjtree/org/apache/cayenne/exp/parser
+						# except all AST*, Node, SimpleNode, JavaCharStream
+
+						# docs
+							$ ./javacc-5.0/bin/jjdoc -TEXT=true ExpressionParser.jj
+					-->
 				</executions>
 			</plugin>
 			<plugin>

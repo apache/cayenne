@@ -57,7 +57,6 @@ import org.apache.cayenne.exp.parser.ASTTrue;
 import org.apache.cayenne.exp.parser.ExpressionParser;
 import org.apache.cayenne.exp.parser.ExpressionParserTokenManager;
 import org.apache.cayenne.exp.parser.JavaCharStream;
-import org.apache.cayenne.exp.parser.ParseException;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.map.Entity;
 
@@ -1310,8 +1309,8 @@ public class ExpressionFactory {
 		// optimizing parser buffers per CAY-1667...
 		// adding 1 extra char to the buffer size above the String length, as
 		// otherwise resizing still occurs at the end of the stream
-		int bufferSize = expressionString.length() > PARSE_BUFFER_MAX_SIZE ? PARSE_BUFFER_MAX_SIZE : expressionString
-				.length() + 1;
+		int bufferSize = expressionString.length() > PARSE_BUFFER_MAX_SIZE ?
+				PARSE_BUFFER_MAX_SIZE : expressionString.length() + 1;
 		Reader reader = new StringReader(expressionString);
 		JavaCharStream stream = new JavaCharStream(reader, 1, 1, bufferSize);
 		ExpressionParserTokenManager tm = new ExpressionParserTokenManager(stream);
@@ -1319,17 +1318,9 @@ public class ExpressionFactory {
 
 		try {
 			return parser.expression();
-		} catch (ParseException ex) {
-
-			// can be null
-			String message = ex.getMessage();
-			throw new ExpressionException(message != null ? message : "", ex);
 		} catch (Throwable th) {
-			// can be null
 			String message = th.getMessage();
-
-			// another common error is TokenManagerError
-			throw new ExpressionException(message != null ? message : "", th);
+			throw new ExpressionException("%s", th, message != null ? message : "");
 		}
 	}
 }

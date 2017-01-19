@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.apache.cayenne.exp.parser.ASTLike;
 import org.apache.cayenne.exp.parser.ASTLikeIgnoreCase;
+import org.apache.cayenne.exp.parser.ASTTrim;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -471,4 +472,16 @@ public class ExpressionFactoryTest {
 	public void testDbPathExp() {
 		assertEquals("db:abc.xyz", ExpressionFactory.dbPathExp("abc.xyz").toString());
 	}
+
+	@Test
+	public void testFuncExp() {
+		Expression e = ExpressionFactory.exp("TRIM(abc.xyz)");
+		assertEquals(ASTTrim.class, e.getClass());
+	}
+
+    // CAY-2081
+    @Test(expected = ExpressionException.class)
+    public void testExceptionInParse() {
+        ExpressionFactory.exp("name like %32_65415'");
+    }
 }

@@ -19,8 +19,12 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.math.BigDecimal;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.table_primitives.TablePrimitives;
@@ -80,4 +84,27 @@ public class ASTFunctionCallMathIT extends ServerCase {
         assertEquals(p1, p2);
     }
 
+    @Test
+    public void testASTAbsParse() {
+        Expression exp = ExpressionFactory.exp("ABS(-3)");
+        assertEquals(3.0, exp.evaluate(new Object()));
+    }
+
+    @Test
+    public void testASTSqrtParse() {
+        Expression exp = ExpressionFactory.exp("SQRT(16)");
+        assertEquals(4.0, exp.evaluate(new Object()));
+    }
+
+    @Test
+    public void testASTModParse() {
+        Expression exp = ExpressionFactory.exp("MOD(11,2)");
+        assertEquals(1.0, exp.evaluate(new Object()));
+    }
+
+    @Test
+    public void testComplexParse() {
+        Expression exp = ExpressionFactory.exp("10 - MOD(SQRT(ABS(-9)), 2)");
+        assertEquals(BigDecimal.valueOf(9L), exp.evaluate(new Object()));
+    }
 }

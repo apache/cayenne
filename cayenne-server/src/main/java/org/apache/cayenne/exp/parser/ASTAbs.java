@@ -32,7 +32,7 @@ public class ASTAbs extends ASTFunctionCall {
     }
 
     public ASTAbs(Expression expression) {
-        super("ABS", expression);
+        super(ExpressionParserTreeConstants.JJTABS, "ABS", expression);
     }
 
     @Override

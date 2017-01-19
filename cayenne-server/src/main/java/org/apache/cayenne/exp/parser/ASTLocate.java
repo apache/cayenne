@@ -32,11 +32,11 @@ public class ASTLocate extends ASTFunctionCall {
     }
 
     public ASTLocate(Expression substring, Expression path) {
-        super("LOCATE", substring, path);
+        super(ExpressionParserTreeConstants.JJTLOCATE, "LOCATE", substring, path);
     }
 
     public ASTLocate(Expression substring, Expression path, Expression offset) {
-        super("LOCATE", substring, path, offset);
+        super(ExpressionParserTreeConstants.JJTLOCATE, "LOCATE", substring, path, offset);
     }
 
     @Override

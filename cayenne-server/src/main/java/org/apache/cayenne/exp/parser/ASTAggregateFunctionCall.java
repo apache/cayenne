@@ -30,7 +30,7 @@ public abstract class ASTAggregateFunctionCall extends ASTFunctionCall {
         super(id, functionName);
     }
 
-    ASTAggregateFunctionCall(String functionName, Object... nodes) {
-        super(functionName, nodes);
+    ASTAggregateFunctionCall(int id, String functionName, Object... nodes) {
+        super(id, functionName, nodes);
     }
 }

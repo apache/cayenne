@@ -31,7 +31,7 @@ public class ASTMin extends ASTAggregateFunctionCall {
     }
 
     public ASTMin(Expression expression) {
-        super("MIN", expression);
+        super(0, "MIN", expression);
     }
 
 

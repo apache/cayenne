@@ -23,6 +23,8 @@ import java.util.Date;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -152,4 +154,45 @@ public class ASTFunctionCallStringIT extends ServerCase {
         assertEquals(a1, a2);
     }
 
+    @Test
+    public void testASTConcatParse() {
+        Expression exp = ExpressionFactory.exp("CONCAT('abc', 'def')");
+        assertEquals("abcdef", exp.evaluate(new Object()));
+    }
+
+    @Test
+    public void testASTSubstringParse() {
+        Expression exp = ExpressionFactory.exp("SUBSTRING('123456789', 3, 2)");
+        assertEquals("45", exp.evaluate(new Object()));
+    }
+
+    @Test
+    public void testASTTrimParse() {
+        Expression exp = ExpressionFactory.exp("TRIM(' abc ')");
+        assertEquals("abc", exp.evaluate(new Object()));
+    }
+
+    @Test
+    public void testASTLowerParse() {
+        Expression exp = ExpressionFactory.exp("LOWER('AbC')");
+        assertEquals("abc", exp.evaluate(new Object()));
+    }
+
+    @Test
+    public void testASTUpperParse() {
+        Expression exp = ExpressionFactory.exp("UPPER('aBc')");
+        assertEquals("ABC", exp.evaluate(new Object()));
+    }
+
+    @Test
+    public void testASTLocateParse() {
+        Expression exp = ExpressionFactory.exp("LOCATE('Bc', 'aBc')");
+        assertEquals(2, exp.evaluate(new Object()));
+    }
+
+    @Test
+    public void testComplexParse() {
+        Expression exp = ExpressionFactory.exp("LOCATE(UPPER('Bc'), UPPER('aBc')) = LENGTH(SUBSTRING(TRIM(LOWER(CONCAT('   abc', 'def   '))), 3, 2))");
+        assertEquals(true, exp.evaluate(new Object()));
+    }
 }

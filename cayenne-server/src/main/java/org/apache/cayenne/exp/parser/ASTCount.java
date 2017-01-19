@@ -31,11 +31,11 @@ public class ASTCount extends ASTAggregateFunctionCall {
     }
 
     public ASTCount(Expression expression) {
-        super("COUNT", expression);
+        super(0, "COUNT", expression);
     }
 
     public ASTCount() {
-        super("COUNT", new ASTAsterisk());
+        super(0, "COUNT", new ASTAsterisk());
     }
 
     @Override

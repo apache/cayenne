@@ -31,7 +31,7 @@ public class ASTMax extends ASTAggregateFunctionCall {
     }
 
     public ASTMax(Expression expression) {
-        super("MAX", expression);
+        super(0, "MAX", expression);
     }
 
 

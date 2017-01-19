@@ -33,8 +33,8 @@ public abstract class ASTFunctionCall extends SimpleNode {
         this.functionName = functionName;
     }
 
-    public ASTFunctionCall(String functionName, Object... nodes) {
-        this(0, functionName);
+    public ASTFunctionCall(int id, String functionName, Object... nodes) {
+        this(id, functionName);
         this.functionName = functionName;
         int len = nodes.length;
         for (int i = 0; i < len; i++) {

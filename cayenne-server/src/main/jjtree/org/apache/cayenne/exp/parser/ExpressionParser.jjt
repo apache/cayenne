@@ -77,82 +77,91 @@ void notCondition() : {}
 
 void simpleCondition() : {} 
 {
-	<TRUE> #True
-	| 
-	<FALSE> #False
-	| 
-	  scalarConditionExpression()
+	  <TRUE> #True
+	|
+	  <FALSE> #False
+	|
+	  conditionExpression()
 	(
-	   simpleNotCondition()
-	| 
-	  ("="  | "==") scalarExpression() #Equal(2)
-	| 
-	  ("!=" | "<>")  scalarExpression() #NotEqual(2)
-	|
-	  "<=" scalarExpression() #LessOrEqual(2)
-	| 
-	  "<" scalarExpression() #Less(2)
-	| 
-	  ">"  scalarExpression() #Greater(2)
-	| 
-	  ">=" scalarExpression() #GreaterOrEqual(2)
-	|
-		"like" scalarExpression() #Like(2)
-	|
-	    "likeIgnoreCase"  scalarExpression() #LikeIgnoreCase(2)
-	|  
-		"in"  
-		(  namedParameter() | "(" scalarCommaList() ")" )
-		#In(2)
-	|  
-		"between"  scalarExpression() "and" scalarExpression() #Between(3)
+          ("="  | "==") scalarExpression() #Equal(2)
+        |
+          ("!=" | "<>")  scalarExpression() #NotEqual(2)
+        |
+          "<=" scalarExpression() #LessOrEqual(2)
+        |
+          "<" scalarExpression() #Less(2)
+        |
+          ">"  scalarExpression() #Greater(2)
+        |
+          ">=" scalarExpression() #GreaterOrEqual(2)
+        |
+          "like" scalarExpression() #Like(2)
+        |
+          "likeIgnoreCase"  scalarExpression() #LikeIgnoreCase(2)
+        |
+          "in" ( namedParameter() | "(" scalarCommaList() ")" ) #In(2)
+        |
+          "between"  scalarExpression() "and" scalarExpression() #Between(3)
+        |
+          simpleNotCondition()
 	)?
 }
 
 void simpleNotCondition() : {} 
 {
 	("not" | "!" )
-	
 	(
 		"like" scalarExpression() #NotLike(2)
 	|
 	    "likeIgnoreCase"  scalarExpression() #NotLikeIgnoreCase(2)
-	|  
-		"in"  
-		(  namedParameter() |  "(" scalarCommaList() ")" )
-		#NotIn(2)
-	|  
+	|
+		"in" (  namedParameter() |  "(" scalarCommaList() ")" ) #NotIn(2)
+	|
 		"between"  scalarExpression() "and" scalarExpression() #NotBetween(3)
 	)
 }
 
 void scalarCommaList() : {}
 {
-	(
-		scalarConstExpression()
-		( ","  scalarConstExpression() )*
-	) #List
+	( scalarConstExpression() ( ","  scalarConstExpression() )* ) #List
 }
 
-void scalarConditionExpression() : {} 
+void conditionExpression() : {}
 {
    // TODO: once we switch expression package to use AST* from parser package,
    // we might need implement special subclasses for numeric and character constant
    // nodes for the purpose of expression evaluation, instead . For now keep them as 
    // generic ASTScalar and purge from the parent node to keep compatible with QualifierTranslator.
-   
-		scalarNumericExpression()
+
+        // Path without any operator will go to numeric expression.
+        // This done intentionally to remove lookahead that leads
+        // to dramatically perfomance degradation (parser can become 3 times slower)
+		numericExpression()
+    |
+        stringExpression()
 	|
-		<SINGLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
-	| 
-	  	<DOUBLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
-	| 
-		<NULL> #Scalar(0) 
+		<NULL> #Scalar(0)
+}
+
+void stringParameter() : {}
+{
+        pathExpression()
+    |
+        stringExpression()
+}
+
+void stringExpression() : {}
+{
+    <SINGLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
+    |
+    <DOUBLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
+    |
+    functionsReturningStrings()
 }
 
 void scalarExpression() : {} 
 {
-  	   scalarConditionExpression()
+  	   conditionExpression()
 	|
 	  <TRUE> { jjtThis.setValue(true); }  #Scalar(0)
 	| 
@@ -176,7 +185,7 @@ void scalarConstExpression() : {}
 	  <FALSE> { jjtThis.setValue(false); }  #Scalar(0)
 }
 
-void scalarNumericExpression() : {}
+void numericExpression() : {}
 {
     bitwiseOr()
 }
@@ -259,40 +268,75 @@ void numericPrimary() : {}
 		
 		"(" orCondition() ")"
 	|
-		pathExpression()
-	|
-		namedParameter()
-	|
 	   <INT_LITERAL> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
 	| 
 	   <FLOAT_LITERAL>{ jjtThis.setValue(token_source.literalValue); }  #Scalar(0)
+	|
+        namedParameter()
+    |
+        functionsReturningNumerics()
+	|
+        pathExpression()
 }
 
-void namedParameter() : 
+void functionsReturningStrings() : { }
 {
-	Token t;
-}
-{
-	"$" t = <PROPERTY_PATH> { jjtThis.setValue(t.image); } #NamedParameter(0)
+	concat() | substring() | trim() | lower() | upper()
 }
 
-
-void pathExpression() : {
-   Token t;
-}
+void concat() #Concat : { }
 {
-   ( 
-     t = <PROPERTY_PATH> { jjtThis.setPath(t.image); } #ObjPath(0)
-   | 
-     "obj:" 
-     t = <PROPERTY_PATH> { jjtThis.setPath(t.image); } #ObjPath(0)
-   |
-     "db:" 
-     t = <PROPERTY_PATH> { jjtThis.setPath(t.image); } #DbPath(0)
-   |
-     "enum:" 
-     t = <PROPERTY_PATH> { jjtThis.setValue(ParserUtil.makeEnum(t.image)); } #Scalar(0)
-   )
+	<CONCAT> "(" stringParameter() "," stringParameter() ")"
+}
+
+void substring() #Substring : { }
+{
+	<SUBSTRING> "(" stringParameter() "," numericExpression() ["," numericExpression()] ")"
+}
+
+void trim() #Trim : { }
+{
+	<TRIM> "(" stringParameter() ")"
+}
+
+void lower() #Lower : { }
+{
+	<LOWER> "(" stringParameter() ")"
+}
+
+void upper() #Upper : { }
+{
+	<UPPER> "(" stringParameter() ")"
+}
+
+void functionsReturningNumerics() : { }
+{
+	length() | locate() | abs() | sqrt() | mod()
+}
+
+void length() #Length : { }
+{
+	<LENGTH> "(" stringParameter() ")"
+}
+
+void locate() #Locate : { }
+{
+	<LOCATE> "(" stringParameter() "," stringParameter() ["," numericExpression()] ")"
+}
+
+void abs() #Abs : { }
+{
+	<ABS> "(" numericExpression() ")"
+}
+
+void sqrt() #Sqrt : { }
+{
+	<SQRT> "(" numericExpression() ")"
+}
+
+void mod() #Mod : { }
+{
+	<MOD> "(" numericExpression() "," numericExpression() ")"
 }
 
 
@@ -381,10 +425,65 @@ SKIP :
 
 TOKEN : {
 	<NULL: "null" | "NULL" >
-|
-	<TRUE: "true" | "TRUE" >
-|
-	<FALSE: "false" | "FALSE" >
+    |   <TRUE: "true" | "TRUE" >
+    |   <FALSE: "false" | "FALSE" >
+}
+
+TOKEN [ IGNORE_CASE ]: /* aggregates */
+{
+	<AVG: "AVG" >
+	|	<MIN: "MIN" >
+	|	<MAX: "MAX" >
+	|	<SUM: "SUM" >
+	|	<COUNT: "COUNT" >
+}
+
+TOKEN [ IGNORE_CASE ]: /* functions returning strings */
+{
+	<CONCAT: "CONCAT" >
+	|	<SUBSTRING: "SUBSTRING" >
+	|	<TRIM: "TRIM" >
+	|	<LOWER: "LOWER" >
+	|	<UPPER: "UPPER" >
+}
+
+TOKEN [ IGNORE_CASE ]: /* functions returning numerics */
+{
+	<LENGTH: "LENGTH" >
+	|	<LOCATE: "LOCATE" >
+	|	<ABS: "ABS" >
+	|	<SQRT: "SQRT" >
+	|	<MOD: "MOD" >
+}
+
+TOKEN [ IGNORE_CASE ]: /* functions returning datetime */
+{
+	<CURRENT_DATE: "CURRENT_DATE" >
+	|	<CURRENT_TIME: "CURRENT_TIME" >
+	|	<CURRENT_TIMESTAMP: "CURRENT_TIMESTAMP" >
+}
+
+void namedParameter() :
+{
+	Token t;
+}
+{
+	"$" t = <PROPERTY_PATH> { jjtThis.setValue(t.image); } #NamedParameter(0)
+}
+
+void pathExpression() : {
+   Token t;
+}
+{
+   (
+             t = <PROPERTY_PATH> { jjtThis.setPath(t.image); } #ObjPath(0)
+   |
+     "obj:"  t = <PROPERTY_PATH> { jjtThis.setPath(t.image); } #ObjPath(0)
+   |
+     "db:"   t = <PROPERTY_PATH> { jjtThis.setPath(t.image); } #DbPath(0)
+   |
+     "enum:" t = <PROPERTY_PATH> { jjtThis.setValue(ParserUtil.makeEnum(t.image)); } #Scalar(0)
+   )
 }
 
 TOKEN : {
@@ -400,8 +499,7 @@ TOKEN :
   < #DIGIT: ["0"-"9"] >
 }
 
-
-/** 
+/**
  * Quoted Strings, whose object value is stored in the token manager's
  * "literalValue" field. Both single and double qoutes are allowed 
  */

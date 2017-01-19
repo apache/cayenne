@@ -32,7 +32,7 @@ public class ASTUpper extends ASTFunctionCall {
     }
 
     public ASTUpper(Expression expression) {
-        super("UPPER", expression);
+        super(ExpressionParserTreeConstants.JJTUPPER, "UPPER", expression);
     }
 
     @Override

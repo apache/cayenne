@@ -32,7 +32,7 @@ public class ASTMod extends ASTFunctionCall {
     }
 
     public ASTMod(Expression expression, Expression divisor) {
-        super("MOD", expression, divisor);
+        super(ExpressionParserTreeConstants.JJTMOD, "MOD", expression, divisor);
     }
 
     @Override

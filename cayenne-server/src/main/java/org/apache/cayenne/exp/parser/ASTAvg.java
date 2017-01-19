@@ -31,7 +31,7 @@ public class ASTAvg extends ASTAggregateFunctionCall {
     }
 
     public ASTAvg(Expression expression) {
-        super("AVG", expression);
+        super(0, "AVG", expression);
     }
 
 

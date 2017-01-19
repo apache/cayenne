@@ -33,7 +33,7 @@ public class ASTSubstring extends ASTFunctionCall {
     }
 
     public ASTSubstring(Expression path, Expression length, Expression offset) {
-        super("SUBSTRING", path, length, offset);
+        super(ExpressionParserTreeConstants.JJTSUBSTRING, "SUBSTRING", path, length, offset);
     }
 
     @Override
