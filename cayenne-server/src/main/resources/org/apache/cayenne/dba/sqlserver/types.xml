@@ -55,7 +55,7 @@
    </jdbc-type>
    <jdbc-type name="DATALINK"/>
    <jdbc-type name="DATE">
-       <db-type name="datetime"/>
+       <db-type name="date"/>
    </jdbc-type>
    <jdbc-type name="DECIMAL">
        <db-type name="decimal"/>
@@ -92,7 +92,7 @@
    </jdbc-type>
    <jdbc-type name="STRUCT"/>
    <jdbc-type name="TIME">
-       <db-type name="datetime"/>
+       <db-type name="time"/>
    </jdbc-type>
    <jdbc-type name="TIMESTAMP">
        <db-type name="datetime"/>

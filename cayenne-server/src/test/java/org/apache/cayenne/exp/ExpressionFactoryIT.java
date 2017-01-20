@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.exp;
 
+import static org.apache.cayenne.exp.ExpressionFactory.exp;
+import static org.apache.cayenne.exp.ExpressionFactory.greaterExp;
+import static org.apache.cayenne.exp.FunctionExpressionFactory.lengthExp;
+import static org.apache.cayenne.exp.FunctionExpressionFactory.substringExp;
+import static org.apache.cayenne.exp.FunctionExpressionFactory.trimExp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -27,6 +32,7 @@ import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -134,5 +140,36 @@ public class ExpressionFactoryIT extends ServerCase {
 		SelectQuery<Artist> q2 = new SelectQuery<Artist>(Artist.class, ex2);
 		artists = context.select(q2);
 		assertEquals(1, artists.size());
+	}
+
+	@Test
+	public void testDifferentExpressionAPI() throws Exception {
+		List<Artist> res;
+
+		// First version via expression string
+		Expression exp1 = exp(
+				"length(substring(artistName, 1, 3)) > length(trim(artistName))"
+		);
+		res = ObjectSelect.query(Artist.class, exp1).select(context);
+		assertEquals(0, res.size());
+
+		// Second version via FunctionExpressionFactory API
+		Expression exp2 = greaterExp(
+				lengthExp(substringExp(Artist.ARTIST_NAME.path(), 1, 3)),
+				lengthExp(trimExp(Artist.ARTIST_NAME.path()))
+		);
+		res = ObjectSelect.query(Artist.class, exp2).select(context);
+		assertEquals(0, res.size());
+
+		// Third version via Property API
+		Property<Integer> lengthSub = Property.create(lengthExp(substringExp(Artist.ARTIST_NAME.path(), 1, 3)), Integer.class);
+		Property<Integer> length = Property.create(lengthExp(trimExp(Artist.ARTIST_NAME.path())), Integer.class);
+		Expression exp3 = lengthSub.gt(length);
+		res = ObjectSelect.query(Artist.class, exp3).select(context);
+		assertEquals(0, res.size());
+
+		// Check that all expressions are equal
+		assertEquals(exp1, exp2);
+		assertEquals(exp3, exp3);
 	}
 }

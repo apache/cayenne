@@ -24,6 +24,9 @@ import org.apache.cayenne.exp.parser.ASTAsterisk;
 import org.apache.cayenne.exp.parser.ASTAvg;
 import org.apache.cayenne.exp.parser.ASTConcat;
 import org.apache.cayenne.exp.parser.ASTCount;
+import org.apache.cayenne.exp.parser.ASTCurrentDate;
+import org.apache.cayenne.exp.parser.ASTCurrentTime;
+import org.apache.cayenne.exp.parser.ASTCurrentTimestamp;
 import org.apache.cayenne.exp.parser.ASTLength;
 import org.apache.cayenne.exp.parser.ASTLocate;
 import org.apache.cayenne.exp.parser.ASTLower;
@@ -242,5 +245,23 @@ public class FunctionExpressionFactoryTest {
         assertTrue(exp1 instanceof ASTSum);
         assertEquals(1, exp1.getOperandCount());
         assertEquals(Artist.ARTIST_NAME.path(), exp1.getOperand(0));
+    }
+
+    @Test
+    public void currentDateTest() throws Exception {
+        Expression exp = FunctionExpressionFactory.currentDate();
+        assertTrue(exp instanceof ASTCurrentDate);
+    }
+
+    @Test
+    public void currentTimeTest() throws Exception {
+        Expression exp = FunctionExpressionFactory.currentTime();
+        assertTrue(exp instanceof ASTCurrentTime);
+    }
+
+    @Test
+    public void currentTimestampTest() throws Exception {
+        Expression exp = FunctionExpressionFactory.currentTimestamp();
+        assertTrue(exp instanceof ASTCurrentTimestamp);
     }
 }

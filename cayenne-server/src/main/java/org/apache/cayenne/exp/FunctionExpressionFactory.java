@@ -23,6 +23,9 @@ import org.apache.cayenne.exp.parser.ASTAbs;
 import org.apache.cayenne.exp.parser.ASTAvg;
 import org.apache.cayenne.exp.parser.ASTConcat;
 import org.apache.cayenne.exp.parser.ASTCount;
+import org.apache.cayenne.exp.parser.ASTCurrentDate;
+import org.apache.cayenne.exp.parser.ASTCurrentTime;
+import org.apache.cayenne.exp.parser.ASTCurrentTimestamp;
 import org.apache.cayenne.exp.parser.ASTLength;
 import org.apache.cayenne.exp.parser.ASTLocate;
 import org.apache.cayenne.exp.parser.ASTLower;
@@ -331,5 +334,26 @@ public class FunctionExpressionFactory {
      */
     public static Expression sumExp(Expression exp) {
         return new ASTSum(exp);
+    }
+
+    /**
+     * @return CURRENT_DATE expression
+     */
+    public static Expression currentDate() {
+        return new ASTCurrentDate();
+    }
+
+    /**
+     * @return CURRENT_TIME expression
+     */
+    public static Expression currentTime() {
+        return new ASTCurrentTime();
+    }
+
+    /**
+     * @return CURRENT_TIMESTAMP expression
+     */
+    public static Expression currentTimestamp() {
+        return new ASTCurrentTimestamp();
     }
 }

@@ -68,13 +68,15 @@ public class DataContextEJBQLDateTimeFunctionalExpressionsIT extends ServerCase 
 
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
 
         DateTestEntity o1 = context.newObject(DateTestEntity.class);
-        cal.set(year, 1, 1, 0, 0, 0);
+        cal.set(year, month, day, 0, 0, 0);
         o1.setTimeColumn(cal.getTime());
 
         DateTestEntity o2 = context.newObject(DateTestEntity.class);
-        cal.set(year, 1, 1, 23, 59, 59);
+        cal.set(year, month, day, 23, 59, 59);
         o2.setTimeColumn(cal.getTime());
 
         context.commitChanges();

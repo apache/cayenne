@@ -132,6 +132,12 @@ class SQLServerTrimmingQualifierTranslator extends TrimmingQualifierTranslator {
 			case "TRIM":
 				out.append("LTRIM(RTRIM");
 				break;
+			case "CURRENT_DATE":
+				out.append("{fn CURDATE()}");
+				break;
+			case "CURRENT_TIME":
+				out.append("{fn CURTIME()}");
+				break;
 			default:
 				super.appendFunction(functionExpression);
 		}

@@ -97,7 +97,7 @@
    </jdbc-type>
    <jdbc-type name="STRUCT"/>
    <jdbc-type name="TIME">
-       <db-type name="TIMESTAMP"/>
+       <db-type name="TIME"/>
    </jdbc-type>
    <jdbc-type name="TIMESTAMP">
        <db-type name="TIMESTAMP"/>

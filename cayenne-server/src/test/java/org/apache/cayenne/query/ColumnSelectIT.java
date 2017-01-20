@@ -251,11 +251,11 @@ public class ColumnSelectIT extends ServerCase {
             } else {
                 return;
             }
+        } finally {
+            context.getEntityResolver().getDataMap("testmap").setQuotingSQLIdentifiers(false);
         }
         assertEquals("artist2", result[0]);
         assertEquals(5L, result[2]);
-
-        context.getEntityResolver().getDataMap("testmap").setQuotingSQLIdentifiers(false);
     }
 
     @Test
@@ -268,14 +268,16 @@ public class ColumnSelectIT extends ServerCase {
         Property<Long> count = Property.create(countExp(), Long.class);
         context.getEntityResolver().getDataMap("testmap").setQuotingSQLIdentifiers(true);
 
-        Object[] result = ColumnSelect.query(Artist.class)
-                .columns(Artist.DATE_OF_BIRTH, count)
-                .orderBy(Artist.DATE_OF_BIRTH.asc())
-                .selectFirst(context);
+        try {
+            Object[] result = ColumnSelect.query(Artist.class)
+                    .columns(Artist.DATE_OF_BIRTH, count)
+                    .orderBy(Artist.DATE_OF_BIRTH.asc())
+                    .selectFirst(context);
 
-        assertEquals(dateFormat.parse("1/1/17"), result[0]);
-        assertEquals(4L, result[1]);
-
-        context.getEntityResolver().getDataMap("testmap").setQuotingSQLIdentifiers(false);
+            assertEquals(dateFormat.parse("1/1/17"), result[0]);
+            assertEquals(4L, result[1]);
+        } finally {
+            context.getEntityResolver().getDataMap("testmap").setQuotingSQLIdentifiers(false);
+        }
     }
 }

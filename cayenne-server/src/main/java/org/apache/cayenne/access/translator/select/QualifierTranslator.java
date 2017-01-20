@@ -538,7 +538,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 
 	protected boolean parenthesisNeeded(Expression node, Expression parentNode) {
 		if (node.getType() == Expression.FUNCTION_CALL) {
-			return true;
+			return ((ASTFunctionCall)node).needParenthesis();
 		}
 
 		if (parentNode == null) {
@@ -651,7 +651,9 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 	 * @since 4.0
 	 */
 	protected void clearLastFunctionArgDivider(ASTFunctionCall functionExpression) {
-		out.delete(out.length() - 2, out.length());
+		if(functionExpression.getOperandCount() > 0) {
+			out.delete(out.length() - 2, out.length());
+		}
 	}
 
 	/**

@@ -19,50 +19,35 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.util.Date;
+
 import org.apache.cayenne.exp.Expression;
 
 /**
  * @since 4.0
  */
-public abstract class ASTFunctionCall extends SimpleNode {
+public class ASTCurrentDate extends ASTFunctionCall {
 
-    private String functionName;
-
-    ASTFunctionCall(int id, String functionName) {
-        super(id);
-        this.functionName = functionName;
+    public ASTCurrentDate() {
+        this(0);
     }
 
-    public ASTFunctionCall(int id, String functionName, Object... nodes) {
-        this(id, functionName);
-        this.functionName = functionName;
-        int len = nodes.length;
-        for (int i = 0; i < len; i++) {
-            jjtAddChild(wrapChild(nodes[i]), i);
-        }
-
-        connectChildren();
+    ASTCurrentDate(int id) {
+        super(id, "CURRENT_DATE");
     }
 
     @Override
-    public int getType() {
-        return Expression.FUNCTION_CALL;
-    }
-
     public boolean needParenthesis() {
-        return true;
+        return false;
     }
 
-    public String getFunctionName() {
-        return functionName;
-    }
-
-    /**
-     * TODO what should this method return?
-     */
     @Override
-    protected String getExpressionOperator(int index) {
-        return functionName;
+    protected Object evaluateNode(Object o) throws Exception {
+        return new Date();
     }
 
+    @Override
+    public Expression shallowCopy() {
+        return new ASTCurrentDate(id);
+    }
 }

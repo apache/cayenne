@@ -123,6 +123,8 @@ public class OracleQualifierTranslator extends TrimmingQualifierTranslator {
 			// LOCATE(substr, str) -> INSTR(str, substr)
 			out.append("INSTR");
 			swapNodeChildren(functionExpression, 0, 1);
+		} else if("CURRENT_TIME".equals(functionExpression.getFunctionName())) {
+			out.append("{fn CURTIME()}");
 		} else {
 			super.appendFunction(functionExpression);
 		}
