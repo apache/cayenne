@@ -31,7 +31,7 @@ import org.apache.cayenne.modeler.util.CayenneTableModel;
  *  don't take place until commit() is called. Creation of the new
  *  DbAttributes is not allowed - user should choose from the existing ones.
 */
-public class DbJoinTableModel extends CayenneTableModel {
+public class DbJoinTableModel extends CayenneTableModel<DbJoin> {
 
     // Columns
     static final int SOURCE = 0;
@@ -49,10 +49,10 @@ public class DbJoinTableModel extends CayenneTableModel {
         ProjectController mediator,
         Object src) {
 
-        super(mediator, src, new ArrayList(relationship.getJoins()));
+        super(mediator, src, new ArrayList<>(relationship.getJoins()));
         this.relationship = relationship;
-        this.source = (DbEntity) relationship.getSourceEntity();
-        this.target = (DbEntity) relationship.getTargetEntity();
+        this.source = relationship.getSourceEntity();
+        this.target = relationship.getTargetEntity();
     }
 
     public DbJoinTableModel(
@@ -96,7 +96,7 @@ public class DbJoinTableModel extends CayenneTableModel {
 
     public DbJoin getJoin(int row) {
         return (row >= 0 && row < objectList.size())
-            ? (DbJoin) objectList.get(row)
+            ? objectList.get(row)
             : null;
     }
 

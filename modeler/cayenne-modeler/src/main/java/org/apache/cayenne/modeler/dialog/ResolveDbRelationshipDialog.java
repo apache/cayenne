@@ -178,9 +178,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         TableColumn sourceColumn = table.getColumnModel().getColumn(
                 DbJoinTableModel.SOURCE);
         JComboBox comboBox = Application.getWidgetFactory().createComboBox(
-                ModelerUtil.getDbAttributeNames(getMediator(), (DbEntity) relationship
-                        .getSourceEntity()),
-                true);
+                ModelerUtil.getDbAttributeNames(getMediator(), relationship.getSourceEntity()), true);
 
         AutoCompletion.enable(comboBox);
         sourceColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(
@@ -189,9 +187,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         TableColumn targetColumn = table.getColumnModel().getColumn(
                 DbJoinTableModel.TARGET);
         comboBox = Application.getWidgetFactory().createComboBox(
-                ModelerUtil.getDbAttributeNames(getMediator(), (DbEntity) relationship
-                        .getTargetEntity()),
-                true);
+                ModelerUtil.getDbAttributeNames(getMediator(), relationship.getTargetEntity()), true);
         AutoCompletion.enable(comboBox);
 
         targetColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(
@@ -272,28 +268,11 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
     private void save() {
         stopEditing();
 
-        // extract names...
-        String sourceEntityName = NameBuilder
-                .builder(relationship, relationship.getSourceEntity())
-                .baseName(name.getText().trim())
-                .name();
-
-        // check if reverse name is valid
         DbJoinTableModel model = (DbJoinTableModel) table.getModel();
         boolean updatingReverse = model.getObjectList().size() > 0;
 
         // handle name update
-        if (!Util.nullSafeEquals(sourceEntityName, relationship.getName())) {
-            String oldName = relationship.getName();
-
-            relationship.setName(sourceEntityName);
-
-            undo.addNameUndo(relationship, oldName, sourceEntityName);
-
-            getMediator().fireDbRelationshipEvent(
-                    new RelationshipEvent(this, relationship, relationship
-                            .getSourceEntity(), oldName));
-        }
+        handleNameUpdate(relationship, name.getText().trim());
 
         model.commit();
 
@@ -331,28 +310,10 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
                                     MapEvent.ADD));
                 }
             } else {
-
-                String targetEntityName = NameBuilder
-                        .builder(reverseRelationship, relationship.getTargetEntity())
-                        .baseName(reverseName.getText().trim())
-                        .name();
-
-                if (!Util.nullSafeEquals(targetEntityName, reverseRelationship.getName())) {
-
-                    String oldName = reverseRelationship.getName();
-                    reverseRelationship.setName(targetEntityName);
-                    undo.addNameUndo(reverseRelationship, oldName, targetEntityName);
-
-                    getMediator().fireDbRelationshipEvent(
-                            new RelationshipEvent(
-                                    this,
-                                    reverseRelationship,
-                                    reverseRelationship.getSourceEntity(),
-                                    oldName));
-                }
+                handleNameUpdate(reverseRelationship, reverseName.getText().trim());
             }
 
-            Collection reverseJoins = getReverseJoins();
+            Collection<DbJoin> reverseJoins = getReverseJoins();
             reverseRelationship.setJoins(reverseJoins);
 
             // check if joins map to a primary key of this entity
@@ -363,20 +324,39 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
 
         Application.getInstance().getUndoManager().addEdit(undo);
 
-        getMediator()
-                .fireDbRelationshipEvent(
-                        new RelationshipEvent(this, relationship, relationship
-                                .getSourceEntity()));
+        getMediator().fireDbRelationshipEvent(
+                new RelationshipEvent(this, relationship, relationship.getSourceEntity()));
     }
 
-    private Collection getReverseJoins() {
+    private void handleNameUpdate(DbRelationship relationship, String userInputName) {
+        if(Util.nullSafeEquals(relationship.getName(), userInputName)) {
+            return;
+        }
+
+        String sourceEntityName = NameBuilder
+                .builder(relationship, relationship.getSourceEntity())
+                .baseName(userInputName)
+                .name();
+
+        if (Util.nullSafeEquals(sourceEntityName, relationship.getName())) {
+            return;
+        }
+        String oldName = relationship.getName();
+        relationship.setName(sourceEntityName);
+        undo.addNameUndo(relationship, oldName, sourceEntityName);
+
+        getMediator().fireDbRelationshipEvent(
+                new RelationshipEvent(this, relationship, relationship.getSourceEntity(), oldName));
+    }
+
+    private Collection<DbJoin> getReverseJoins() {
         Collection<DbJoin> joins = relationship.getJoins();
 
         if ((joins == null) || (joins.size() == 0)) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
-        List reverseJoins = new ArrayList(joins.size());
+        List<DbJoin> reverseJoins = new ArrayList<>(joins.size());
 
         // Loop through the list of attribute pairs, create reverse pairs
         // and put them to the reverse list.
