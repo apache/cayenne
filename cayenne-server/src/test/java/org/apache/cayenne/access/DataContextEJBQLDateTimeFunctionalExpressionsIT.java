@@ -23,6 +23,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.testdo.date_time.DateTestEntity;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -39,6 +40,9 @@ public class DataContextEJBQLDateTimeFunctionalExpressionsIT extends ServerCase 
 
     @Inject
     private ObjectContext context;
+
+    @Inject
+    private UnitDbAdapter unitDbAdapter;
 
     @Test
     public void testCURRENT_DATE() {
@@ -84,6 +88,11 @@ public class DataContextEJBQLDateTimeFunctionalExpressionsIT extends ServerCase 
         EJBQLQuery query = new EJBQLQuery(
                 "SELECT d FROM DateTestEntity d WHERE d.timeColumn < CURRENT_TIME");
         List<?> objects = context.performQuery(query);
+        if(!unitDbAdapter.supportsTimeSqlType()) {
+            // check only that query is executed without error
+            // result will be invalid most likely as DB doesn't support TIME data type
+            return;
+        }
         assertEquals(1, objects.size());
         assertTrue(objects.contains(o1));
     }

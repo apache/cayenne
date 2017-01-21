@@ -86,4 +86,9 @@ public class SQLServerUnitDbAdapter extends SybaseUnitDbAdapter {
     public boolean supportsExpressionInHaving() {
         return false;
     }
+
+    @Override
+    public boolean supportsSelectBooleanExpression() {
+        return false;
+    }
 }

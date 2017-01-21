@@ -20,7 +20,7 @@
 package org.apache.cayenne.exp.parser;
 
 import java.util.Calendar;
-import java.util.TimeZone;
+import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
@@ -29,12 +29,14 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.date_time.DateTestEntity;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -50,9 +52,12 @@ public class ASTFunctionCallDateIT extends ServerCase {
     @Inject
     private DBHelper dbHelper;
 
+    @Inject
+    private UnitDbAdapter unitDbAdapter;
+
     @Before
     public void createDataSet() throws Exception {
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
@@ -92,8 +97,14 @@ public class ASTFunctionCallDateIT extends ServerCase {
     @Test
     public void testCurrentTime() throws Exception {
         Expression exp = ExpressionFactory.greaterOrEqualExp("timeColumn", new ASTCurrentTime());
-        DateTestEntity res1 = ObjectSelect.query(DateTestEntity.class, exp).selectOne(context);
-        assertNotNull(res1);
+        List<DateTestEntity> res = ObjectSelect.query(DateTestEntity.class, exp).select(context);
+        if(!unitDbAdapter.supportsTimeSqlType()) {
+            // check only that query is executed without error
+            // result will be invalid most likely as DB doesn't support TIME data type
+            return;
+        }
+        assertEquals(1, res.size());
+        DateTestEntity res1 = res.get(0);
 
         Expression exp2 = ExpressionFactory.lessExp("timeColumn", new ASTCurrentTime());
         DateTestEntity res2 = ObjectSelect.query(DateTestEntity.class, exp2).selectOne(context);

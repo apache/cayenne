@@ -28,6 +28,7 @@ import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.primitive.PrimitivesTestEntity;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -49,6 +50,9 @@ public class ObjectSelect_PrimitiveColumnsIT extends ServerCase {
 
     @Inject
     private DBHelper dbHelper;
+
+    @Inject
+    private UnitDbAdapter unitDbAdapter;
 
     @Before
     public void createTestRecords() throws Exception {
@@ -111,6 +115,10 @@ public class ObjectSelect_PrimitiveColumnsIT extends ServerCase {
 
     @Test
     public void test_SelectBooleanExpColumn() throws Exception {
+        if(!unitDbAdapter.supportsSelectBooleanExpression()) {
+            return;
+        }
+
         Property<Boolean> property = Property.create("boolColumn",
                 ExpressionFactory.exp("(obj:intColumn < 10)"), Boolean.class);
 
@@ -135,6 +143,9 @@ public class ObjectSelect_PrimitiveColumnsIT extends ServerCase {
 
     @Test
     public void test_SelectColumnsExpList() throws Exception {
+        if(!unitDbAdapter.supportsSelectBooleanExpression()) {
+            return;
+        }
 
         Property<Integer> intProperty = Property.create("intColumn",
                 ExpressionFactory.exp("(obj:intColumn + 1)"), Integer.class);

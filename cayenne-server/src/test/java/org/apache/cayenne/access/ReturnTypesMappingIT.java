@@ -45,7 +45,7 @@ import static org.junit.Assume.assumeTrue;
  * Test Types mapping for selected columns
  */
 @UseServerRuntime(CayenneProjects.RETURN_TYPES_PROJECT)
-public class    ReturnTypesMappingIT extends ServerCase {
+public class ReturnTypesMappingIT extends ServerCase {
 
     @Inject
     private DataContext context;
@@ -69,8 +69,13 @@ public class    ReturnTypesMappingIT extends ServerCase {
         DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        assertEquals(Long.class, columnValue.getClass());
-        assertEquals(bigintValue, columnValue);
+        if(unitDbAdapter.onlyGenericNumberType()) {
+            assertEquals(BigDecimal.class, columnValue.getClass());
+            assertEquals(BigDecimal.valueOf(bigintValue), columnValue);
+        } else {
+            assertEquals(Long.class, columnValue.getClass());
+            assertEquals(bigintValue, columnValue);
+        }
     }
 
     @Test
@@ -142,7 +147,8 @@ public class    ReturnTypesMappingIT extends ServerCase {
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertTrue(Boolean.class.equals(columnValue.getClass())
-                || Short.class.equals(columnValue.getClass()));
+                || Short.class.equals(columnValue.getClass())
+                || Integer.class.equals(columnValue.getClass()));
         assertTrue(bitValue.equals(columnValue) || ((Number) columnValue).intValue() == 1);
     }
 
@@ -218,7 +224,8 @@ public class    ReturnTypesMappingIT extends ServerCase {
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertTrue(Boolean.class.equals(columnValue.getClass())
-                || Short.class.equals(columnValue.getClass()));
+                || Short.class.equals(columnValue.getClass())
+                || Integer.class.equals(columnValue.getClass()));
         assertTrue(booleanValue.equals(columnValue)
                 || ((Number) columnValue).intValue() == 1);
     }
@@ -442,8 +449,13 @@ public class    ReturnTypesMappingIT extends ServerCase {
         DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        assertEquals(Double.class, columnValue.getClass());
-        assertEquals(doubleValue, columnValue);
+        if(unitDbAdapter.onlyGenericNumberType()) {
+            assertEquals(BigDecimal.class, columnValue.getClass());
+            assertEquals(BigDecimal.valueOf(doubleValue), columnValue);
+        } else {
+            assertEquals(Double.class, columnValue.getClass());
+            assertEquals(doubleValue, columnValue);
+        }
     }
 
     @Test
@@ -474,8 +486,12 @@ public class    ReturnTypesMappingIT extends ServerCase {
         DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        assertTrue(Float.class.equals(columnValue.getClass())
-                || Double.class.equals(columnValue.getClass()));
+        if(unitDbAdapter.onlyGenericNumberType()) {
+            assertEquals(BigDecimal.class, columnValue.getClass());
+        } else {
+            assertTrue(Float.class.equals(columnValue.getClass())
+                    || Double.class.equals(columnValue.getClass()));
+        }
         assertEquals(floatValue.floatValue(), ((Number)columnValue).floatValue(), 0);
     }
 
@@ -674,12 +690,16 @@ public class    ReturnTypesMappingIT extends ServerCase {
 
         // MySQL can treat REAL as either DOUBLE or FLOAT depending on the
         // engine settings
-        if (unitDbAdapter.realAsDouble()) {
-            assertEquals(Double.class, columnValue.getClass());
-            assertEquals(Double.valueOf(realValue), (Double) columnValue, 0.0001);
+        if(unitDbAdapter.onlyGenericNumberType()) {
+            assertEquals(BigDecimal.class, columnValue.getClass());
         } else {
-            assertEquals(Float.class, columnValue.getClass());
-            assertEquals(realValue, columnValue);
+            if (unitDbAdapter.realAsDouble()) {
+                assertEquals(Double.class, columnValue.getClass());
+                assertEquals(Double.valueOf(realValue), (Double) columnValue, 0.0001);
+            } else {
+                assertEquals(Float.class, columnValue.getClass());
+                assertEquals(realValue, columnValue);
+            }
         }
     }
 
@@ -705,14 +725,20 @@ public class    ReturnTypesMappingIT extends ServerCase {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         Short smallintValue = 32564;
+        Integer intValue = 32564;
         test.setSmallintColumn(smallintValue);
         context.commitChanges();
 		
         DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        assertEquals(Short.class, columnValue.getClass());
-        assertEquals(smallintValue, columnValue);
+        if(unitDbAdapter.onlyGenericNumberType()) {
+            assertEquals(Integer.class, columnValue.getClass());
+            assertEquals(intValue, columnValue);
+        } else {
+            assertEquals(Short.class, columnValue.getClass());
+            assertEquals(smallintValue, columnValue);
+        }
     }
 
     @Test
@@ -815,13 +841,18 @@ public class    ReturnTypesMappingIT extends ServerCase {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
         Byte tinyintValue = 89;
+        Integer intValue = 89;
         test.setTinyintColumn(tinyintValue);
         context.commitChanges();
 		
         DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectReturnTypesMap1")).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        assertEquals(Short.class, columnValue.getClass());
+        if(unitDbAdapter.onlyGenericNumberType()) {
+            assertEquals(Integer.class, columnValue.getClass());
+        } else {
+            assertEquals(Short.class, columnValue.getClass());
+        }
         assertEquals(tinyintValue.intValue(), ((Number)columnValue).intValue());
     }
 

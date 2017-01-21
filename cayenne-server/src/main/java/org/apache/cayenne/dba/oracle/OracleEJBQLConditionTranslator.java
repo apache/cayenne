@@ -25,6 +25,7 @@ import org.apache.cayenne.access.translator.ejbql.EJBQLMultiColumnOperand;
 import org.apache.cayenne.access.translator.ejbql.EJBQLPathTranslator;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.ejbql.parser.Node;
 import org.apache.cayenne.map.ObjAttribute;
 
 /**
@@ -60,5 +61,37 @@ class OracleEJBQLConditionTranslator extends EJBQLConditionTranslator {
         });
 
         return false;
+    }
+
+    /**
+     * The order of arguments is inverted in Oracle.
+     * LOCATE(substr, str) -> INSTR(str, substr)
+     * @since 4.0
+     */
+    @Override
+    public boolean visitLocate(EJBQLExpression expression, int finishedChildIndex) {
+        if(finishedChildIndex < 0) {
+            swapNodeChildren(expression, 0, 1);
+            context.append(" INSTR(");
+        } else if (finishedChildIndex + 1 == expression.getChildrenCount()) {
+            context.append(")");
+            swapNodeChildren(expression, 0, 1);
+        } else {
+            context.append(',');
+        }
+        return true;
+    }
+
+    /**
+     * @since 4.0
+     */
+    private void swapNodeChildren(EJBQLExpression expression, int i, int j) {
+        if(!(expression instanceof Node)) {
+            return;
+        }
+        Node node = (Node)expression;
+        Node tmp = node.jjtGetChild(i);
+        node.jjtAddChild(node.jjtGetChild(j), i);
+        node.jjtAddChild(tmp, j);
     }
 }

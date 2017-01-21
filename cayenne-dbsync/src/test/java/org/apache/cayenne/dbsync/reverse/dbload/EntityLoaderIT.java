@@ -19,10 +19,11 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
+import java.sql.SQLException;
+
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 
 import org.junit.Test;
@@ -43,7 +44,12 @@ public class EntityLoaderIT extends BaseLoaderIT {
         );
 
         EntityLoader loader = new EntityLoader(adapter, config, new DefaultDbLoaderDelegate());
-        loader.load(connection.getMetaData(), store);
+        try {
+            loader.load(connection.getMetaData(), store);
+        } catch (SQLException ex) {
+            // SQL Server will throw exception here.
+            assertTrue(ex.getMessage().contains("WRONG")); // just check that message is about "WRONG" catalog
+        }
 
         assertTrue("Store is not empty", store.getDbEntities().isEmpty());
     }

@@ -132,7 +132,17 @@ public class OracleUnitDbAdapter extends UnitDbAdapter {
     }
 
     @Override
+    public boolean supportsTimeSqlType() {
+        return false;
+    }
+
+    @Override
     public boolean supportsExpressionInHaving() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsSelectBooleanExpression() {
         return false;
     }
 }

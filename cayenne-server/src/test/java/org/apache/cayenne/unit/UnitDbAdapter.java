@@ -355,6 +355,10 @@ public class UnitDbAdapter {
         return false;
     }
 
+    public boolean supportsTimeSqlType() {
+        return true;
+    }
+
     public boolean onlyGenericDateType() {
         return false;
     }
@@ -384,6 +388,14 @@ public class UnitDbAdapter {
     }
 
     public boolean supportsExpressionInHaving() {
+        return true;
+    }
+
+    /**
+     * Support for select like this:
+     * SELECT (intColumn < 10) AS bool FROM table
+     */
+    public boolean supportsSelectBooleanExpression() {
         return true;
     }
 }

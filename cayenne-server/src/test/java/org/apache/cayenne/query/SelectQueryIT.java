@@ -247,6 +247,10 @@ public class SelectQueryIT extends ServerCase {
 		assertEquals(19, objects.size());
 	}
 
+	/**
+	 * SQL Server failure:
+	 * http://stackoverflow.com/questions/14962419/is-the-like-operator-case-sensitive-with-ms-sql-server
+	 */
 	@Test
 	public void testSelectLikeCaseSensitive() throws Exception {
 		if (!accessStackAdapter.supportsCaseSensitiveLike()) {

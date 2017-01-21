@@ -24,6 +24,7 @@ import java.io.IOException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
+import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 
 /**
@@ -52,6 +53,20 @@ public class HSQLQualifierTranslator extends TrimmingQualifierTranslator {
             out.append(" ESCAPE '");
             out.append(escapeChar);
             out.append("'");
+        }
+    }
+
+    @Override
+    protected void appendFunction(ASTFunctionCall functionExpression) {
+        // from documentation:
+        // CURRENT_TIME returns a value of TIME WITH TIME ZONE type.
+        // LOCALTIME returns a value of TIME type.
+        // CURTIME() is a synonym for LOCALTIME.
+        // use LOCALTIME to better align with other DBs
+        if("CURRENT_TIME".equals(functionExpression.getFunctionName())) {
+            out.append("LOCALTIME");
+        } else {
+            super.appendFunction(functionExpression);
         }
     }
 }

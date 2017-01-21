@@ -51,4 +51,9 @@ public class FirebirdUnitDbAdapter extends UnitDbAdapter {
     public boolean supportsPKGeneratorConcurrency() {
         return false;
     }
+
+    @Override
+    public boolean supportsSelectBooleanExpression() {
+        return false;
+    }
 }
