@@ -19,6 +19,19 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
@@ -39,19 +52,6 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.collections.IteratorUtils;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Implements a strategy for execution of SQLTemplates.
@@ -235,9 +235,7 @@ public class SQLTemplateAction implements SQLAction {
 		RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
 		RowReader<?> rowReader = dataNode.rowReader(builder.getDescriptor(types), queryMetadata);
 
-		JDBCResultIterator result = new JDBCResultIterator(statement, resultSet, rowReader);
-
-		ResultIterator it = result;
+		ResultIterator it = new JDBCResultIterator(statement, resultSet, rowReader);
 
 		if (iteratedResult) {
 
@@ -357,10 +355,11 @@ public class SQLTemplateAction implements SQLAction {
 						? getAdapter().getExtendedTypes().getRegisteredType(value.getClass())
 						: getAdapter().getExtendedTypes().getDefaultType();
 
-				ParameterBinding binding = new ParameterBinding(extendedType);
+				ParameterBinding binding = new ParameterBinding();
 				binding.setType(bindings[i].getJdbcType());
 				binding.setStatementPosition(i + 1);
 				binding.setValue(value);
+				binding.setExtendedType(extendedType);
 				dataNode.getAdapter().bindParameter(preparedStatement, binding);
 			}
 		}

@@ -19,17 +19,16 @@
 
 package org.apache.cayenne.access.translator.batch;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.UpdateBatchQuery;
-
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * A translator for UpdateBatchQueries that produces parameterized SQL.
@@ -93,19 +92,11 @@ public class UpdateBatchTranslator extends DefaultBatchTranslator {
         DbAttributeBinding[] bindings = new DbAttributeBinding[ul + ql];
 
         for (int i = 0; i < ul; i++) {
-            DbAttribute a = updatedDbAttributes.get(i);
-
-            String typeName = TypesMapping.getJavaBySqlType(a.getType());
-            ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
-            bindings[i] = new DbAttributeBinding(a, extendedType);
+            bindings[i] = new DbAttributeBinding(updatedDbAttributes.get(i));
         }
 
         for (int i = 0; i < ql; i++) {
-            DbAttribute a = qualifierAttributes.get(i);
-
-            String typeName = TypesMapping.getJavaBySqlType(a.getType());
-            ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
-            bindings[ul + i] = new DbAttributeBinding(a, extendedType);
+            bindings[ul + i] = new DbAttributeBinding(qualifierAttributes.get(i));
         }
 
         return bindings;
@@ -126,7 +117,11 @@ public class UpdateBatchTranslator extends DefaultBatchTranslator {
 
         for (int i = 0; i < ul; i++) {
             Object value = row.getValue(i);
-            bindings[i].include(j++, value);
+            ExtendedType extendedType = value != null
+                    ? adapter.getExtendedTypes().getRegisteredType(value.getClass())
+                    : adapter.getExtendedTypes().getDefaultType();
+
+            bindings[i].include(j++, value, extendedType);
         }
 
         for (int i = 0; i < ql; i++) {
@@ -139,7 +134,11 @@ public class UpdateBatchTranslator extends DefaultBatchTranslator {
             }
 
             Object value = row.getValue(ul + i);
-            bindings[ul + i].include(j++, value);
+            ExtendedType extendedType = value != null
+                    ? adapter.getExtendedTypes().getRegisteredType(value.getClass())
+                    : adapter.getExtendedTypes().getDefaultType();
+
+            bindings[ul + i].include(j++, value, extendedType);
         }
 
         return bindings;

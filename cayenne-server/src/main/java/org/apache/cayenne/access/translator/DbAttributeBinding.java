@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator;
 
-import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
@@ -30,8 +29,8 @@ public class DbAttributeBinding extends ParameterBinding {
 
 	private final DbAttribute attribute;
 
-	public DbAttributeBinding(DbAttribute attribute, ExtendedType extendedType) {
-		super(extendedType);
+	public DbAttributeBinding(DbAttribute attribute) {
+		super();
 		this.attribute = attribute;
 	}
 

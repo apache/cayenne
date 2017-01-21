@@ -68,8 +68,8 @@ public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
         String typeName = TypesMapping.getJavaBySqlType(deleteAttribute.getType());
         ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
 
-        bindings[0] = new DbAttributeBinding(deleteAttribute, extendedType);
-        bindings[0].include(1, true);
+        bindings[0] = new DbAttributeBinding(deleteAttribute);
+        bindings[0].include(1, true, extendedType);
         
         System.arraycopy(superBindings, 0, bindings, 1, slen);
 
@@ -91,7 +91,12 @@ public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
             if (deleteBatch.isNull(b.getAttribute())) {
                 b.exclude();
             } else {
-                b.include(j++, row.getValue(i - 1));
+                Object value = row.getValue(i - 1);
+                ExtendedType extendedType = value != null
+                        ? adapter.getExtendedTypes().getRegisteredType(value.getClass())
+                        : adapter.getExtendedTypes().getDefaultType();
+
+                b.include(j++, value, extendedType);
             }
         }
 

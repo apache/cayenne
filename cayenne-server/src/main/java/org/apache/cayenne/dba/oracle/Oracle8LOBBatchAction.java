@@ -19,22 +19,33 @@
 
 package org.apache.cayenne.dba.oracle;
 
+import java.io.OutputStream;
+import java.io.Writer;
+import java.lang.reflect.Method;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.*;
+import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.BatchQueryRow;
+import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.util.Util;
-
-import java.io.OutputStream;
-import java.io.Writer;
-import java.lang.reflect.Method;
-import java.sql.*;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @since 3.0
@@ -49,8 +60,7 @@ class Oracle8LOBBatchAction implements SQLAction {
 			throws SQLException, Exception {
 
 		for (DbAttributeBinding b : bindings) {
-			DbAttributeBinding binding = new DbAttributeBinding(b.getAttribute(), adapter.getExtendedTypes()
-					.getRegisteredType(b.getValue().getClass()));
+			DbAttributeBinding binding = new DbAttributeBinding(b.getAttribute());
 			adapter.bindParameter(statement, binding);
 		}
 	}
@@ -95,7 +105,7 @@ class Oracle8LOBBatchAction implements SQLAction {
 			// 1. run row update
 			logger.logQuery(updateStr, Collections.EMPTY_LIST);
 
-			try (PreparedStatement statement = connection.prepareStatement(updateStr);) {
+			try (PreparedStatement statement = connection.prepareStatement(updateStr)) {
 
 				DbAttributeBinding[] bindings = translator.updateBindings(row);
 				logger.logQueryParameters("bind", bindings);
@@ -136,19 +146,22 @@ class Oracle8LOBBatchAction implements SQLAction {
 			logger.logQueryParameters("write LOB", null, lobValues, false);
 		}
 
-		try (PreparedStatement selectStatement = con.prepareStatement(selectStr);) {
+		try (PreparedStatement selectStatement = con.prepareStatement(selectStr)) {
 			for (int i = 0; i < parametersSize; i++) {
-				Object value = qualifierValues.get(i);
 				DbAttribute attribute = qualifierAttributes.get(i);
+				Object value = qualifierValues.get(i);
+				ExtendedType extendedType = value != null
+						? adapter.getExtendedTypes().getRegisteredType(value.getClass())
+						: adapter.getExtendedTypes().getDefaultType();
 
-				DbAttributeBinding binding = new DbAttributeBinding(attribute, adapter.getExtendedTypes()
-						.getRegisteredType(value.getClass()));
+				DbAttributeBinding binding = new DbAttributeBinding(attribute);
 				binding.setStatementPosition(i + 1);
 				binding.setValue(value);
-				adapter.bindParameter(selectStatement,binding);
+				binding.setExtendedType(extendedType);
+				adapter.bindParameter(selectStatement, binding);
 			}
 
-			try (ResultSet result = selectStatement.executeQuery();) {
+			try (ResultSet result = selectStatement.executeQuery()) {
 				if (!result.next()) {
 					throw new CayenneRuntimeException("Missing LOB row.");
 				}
@@ -200,7 +213,7 @@ class Oracle8LOBBatchAction implements SQLAction {
 		Method getBinaryStreamMethod = Oracle8Adapter.getOutputStreamFromBlobMethod();
 		try {
 
-			try (OutputStream out = (OutputStream) getBinaryStreamMethod.invoke(blob, (Object[]) null);) {
+			try (OutputStream out = (OutputStream) getBinaryStreamMethod.invoke(blob, (Object[]) null)) {
 				out.write(value);
 				out.flush();
 			}
@@ -217,7 +230,7 @@ class Oracle8LOBBatchAction implements SQLAction {
 		Method getWriterMethod = Oracle8Adapter.getWriterFromClobMethod();
 		try {
 
-			try (Writer out = (Writer) getWriterMethod.invoke(clob, (Object[]) null);) {
+			try (Writer out = (Writer) getWriterMethod.invoke(clob, (Object[]) null)) {
 				out.write(value);
 				out.flush();
 			}
@@ -235,7 +248,7 @@ class Oracle8LOBBatchAction implements SQLAction {
 		Method getWriterMethod = Oracle8Adapter.getWriterFromClobMethod();
 		try {
 
-			try (Writer out = (Writer) getWriterMethod.invoke(clob, (Object[]) null);) {
+			try (Writer out = (Writer) getWriterMethod.invoke(clob, (Object[]) null)) {
 				out.write(value);
 				out.flush();
 			}
