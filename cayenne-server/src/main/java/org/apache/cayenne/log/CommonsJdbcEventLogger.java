@@ -376,7 +376,12 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 				}
 
 				buffer.append(":");
-				buffer.append(b.getExtendedType().toString(b.getValue()));
+
+				if (b.getExtendedType() != null) {
+					buffer.append(b.getExtendedType().toString(b.getValue()));
+				} else {
+					buffer.append(b.getValue());
+				}
 			}
 
 			if (hasIncluded) {
