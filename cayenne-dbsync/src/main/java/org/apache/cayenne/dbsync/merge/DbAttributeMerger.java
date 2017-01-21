@@ -28,7 +28,6 @@ import java.util.List;
 import org.apache.cayenne.dbsync.merge.token.ValueForNullProvider;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -139,7 +138,7 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
             }
         }
 
-        if(original.getScale() != imported.getScale()) {
+        if(needUpdateScale(original, imported)) {
             return true;
         }
 
@@ -148,6 +147,20 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
         }
 
         return false;
+    }
+
+    private boolean needUpdateScale(DbAttribute original, DbAttribute imported) {
+        if(original.getScale() == imported.getScale()) {
+            return false;
+        }
+
+        // -1 and 0 are actually equal values for scale
+        if((original.getScale() == -1 || original.getScale() == 0)
+                && (imported.getScale() == -1 || imported.getScale() == 0)) {
+            return false;
+        }
+
+        return true;
     }
 
     private void checkType(DbAttribute original, DbAttribute imported, List<MergerToken> tokens) {
