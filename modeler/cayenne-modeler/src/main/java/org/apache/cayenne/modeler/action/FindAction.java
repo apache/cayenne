@@ -19,30 +19,61 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.CayenneModelerFrame;
+import org.apache.cayenne.modeler.ProjectTreeModel;
+import org.apache.cayenne.modeler.ProjectTreeView;
 import org.apache.cayenne.modeler.dialog.FindDialog;
+import org.apache.cayenne.modeler.editor.EditorView;
+import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
+import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
+import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.QueryDisplayEvent;
+import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.map.QueryDescriptor;
 
 import javax.swing.JTextField;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.regex.Matcher;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class FindAction extends CayenneAction {
-    private java.util.List<Object> paths;
+
+    /**
+     * Result sort priority based on result type
+     */
+    private static final Map<Class<?>, Integer> PRIORITY_BY_TYPE = new HashMap<>();
+    static {
+        PRIORITY_BY_TYPE.put(ObjEntity.class,         1);
+        PRIORITY_BY_TYPE.put(DbEntity.class,          2);
+        PRIORITY_BY_TYPE.put(ObjAttribute.class,      5);
+        PRIORITY_BY_TYPE.put(DbAttribute.class,       6);
+        PRIORITY_BY_TYPE.put(ObjRelationship.class,   7);
+        PRIORITY_BY_TYPE.put(DbRelationship.class,    8);
+        PRIORITY_BY_TYPE.put(QueryDescriptor.class,   9);
+        PRIORITY_BY_TYPE.put(Embeddable.class,        10);
+    }
 
     public static String getActionName() {
         return "Find";
@@ -54,144 +85,277 @@ public class FindAction extends CayenneAction {
 
     /**
      * All entities that contain a pattern substring (case-indifferent) in the name are produced.
-     * @param e
      */
     public void performAction(ActionEvent e) {
         JTextField source = (JTextField) e.getSource();
-        String sourceStr = source.getText().trim();
-
-        paths = new ArrayList<>();
-        if (sourceStr != null && !sourceStr.isEmpty()) {
-
-            if (sourceStr.startsWith("*")) {
-                sourceStr = sourceStr.substring(1);
-            }
-
-            Pattern pattern = Pattern.compile(sourceStr, Pattern.CASE_INSENSITIVE);
-
-            Iterator<DataMap> it = ((DataChannelDescriptor)getProjectController().getProject().getRootNode()).getDataMaps().iterator();
-            
-            while(it.hasNext()) {
-                
-                  DataMap dm = it.next();
-                 
-                  Iterator<QueryDescriptor> querIterator = dm.getQueryDescriptors().iterator();
-                  
-                  while(querIterator.hasNext()) {
-                      QueryDescriptor q = querIterator.next();
-                      if(matchFound(q.getName(), pattern)){
-                          paths.add(q);
-                      }
-                  }
-                  
-                  Iterator<Embeddable> embIterator = dm.getEmbeddables().iterator();
-                  
-                  while(embIterator.hasNext()) {
-                      Embeddable emb = embIterator.next();
-                      if(matchFound(emb.getClassName(), pattern)){
-                          paths.add(emb);
-                      }
-                      
-                      Iterator<EmbeddableAttribute> attrIterator = emb.getAttributes().iterator();
-                      
-                      while(attrIterator.hasNext()) {
-                          EmbeddableAttribute attr = attrIterator.next();
-                          if(matchFound(attr.getName(), pattern)){
-                              paths.add(attr);
-                          }
-                      }
-                  }
-                  
-                  
-                  Iterator<DbEntity> dbEntIterator = dm.getDbEntities().iterator();
-                  
-                  while(dbEntIterator.hasNext()) {
-                      DbEntity ent = dbEntIterator.next();
-                      if(matchFound(ent.getName(), pattern)){
-                          paths.add(ent);
-                      }
-                      
-                      Iterator<DbAttribute> attrIterator = ent.getAttributes().iterator();
-                      
-                      while(attrIterator.hasNext()) {
-                          DbAttribute attr = attrIterator.next();
-                          if(matchFound(attr.getName(), pattern)){
-                              paths.add(attr);
-                          }
-                      }
-                      
-                      Iterator<DbRelationship> relIterator = ent.getRelationships().iterator();
-                      
-                      while(relIterator.hasNext()) {
-                          DbRelationship rel = relIterator.next();
-                          if(matchFound(rel.getName(), pattern)){
-                              paths.add(rel);
-                          }
-                      }
-
-                      String catalog = ent.getCatalog();
-                      if (catalog != null && !catalog.isEmpty()) {
-                          if(matchFound(catalog, pattern) && !paths.contains(ent)){
-                              paths.add(ent);
-                          }
-                      }
-
-                      String schema = ent.getSchema();
-                      if (schema != null && !schema.isEmpty()) {
-                          if(matchFound(schema, pattern) && !paths.contains(ent)){
-                              paths.add(ent);
-                          }
-                      }
-
-                  }
-                  
-                  Iterator<ObjEntity> entIterator = dm.getObjEntities().iterator();
-                  
-                  while(entIterator.hasNext()) {
-                      ObjEntity ent = entIterator.next();
-                      if(matchFound(ent.getName(), pattern)){
-                          paths.add(ent);
-                      }
-                      
-                      Iterator<ObjAttribute> attrIterator = ent.getAttributes().iterator();
-                      
-                      while(attrIterator.hasNext()) {
-                          ObjAttribute attr = attrIterator.next();
-                          if(matchFound(attr.getName(), pattern)){
-                              paths.add(attr);
-                          }
-                      }
-                      
-                      Iterator<ObjRelationship> relIterator = ent.getRelationships().iterator();
-                      
-                      while(relIterator.hasNext()) {
-                          ObjRelationship rel = relIterator.next();
-                          if(matchFound(rel.getName(), pattern)){
-                              paths.add(rel);
-                          }
-                      }
-                  }
-            }
+        String searchStr = source.getText().trim();
+        if (searchStr.startsWith("*")) {
+            searchStr = searchStr.substring(1);
         }
-     
-        if(paths.size()==0){
-            source.setBackground(Color.pink);
-        } else if(paths.size()!=1){
-            new FindDialog(getApplication().getFrameController(), paths).startupAction();
+
+        if(searchStr.isEmpty()) {
+            markEmptySearch(source);
+            return;
+        }
+
+        List<SearchResultEntry> searchResults = search(searchStr);
+        if(searchResults.isEmpty()){
+            markEmptySearch(source);
+        } else if(searchResults.size() == 1){
+            jumpToResult(searchResults.iterator().next());
         } else {
-           
-            Iterator it = paths.iterator();
-            if (it.hasNext()) {
-                Object path = it.next();
-                FindDialog.jumpToResult(path);
-            }   
+            new FindDialog(getApplication().getFrameController(), searchResults).startupAction();
         }
     }
 
-    private boolean matchFound(String entityName, Pattern pattern) {
-        Matcher m = pattern.matcher(entityName);
-
-        return m.find();
+    private void markEmptySearch(JTextField source) {
+        source.setBackground(Color.pink);
     }
 
+    /**
+     * Navigate to search result
+     * Used also in {@link org.apache.cayenne.modeler.graph.action.EntityDisplayAction}
+     */
+    public static void jumpToResult(FindAction.SearchResultEntry searchResultEntry) {
+        EditorView editor = ((CayenneModelerFrame) Application.getInstance().getFrameController().getView()).getView();
+        DataChannelDescriptor domain = (DataChannelDescriptor) Application.getInstance().getProject().getRootNode();
+
+        if (searchResultEntry.getObject() instanceof Entity) {
+            jumpToEntityResult((Entity) searchResultEntry.getObject(), editor, domain);
+        } else if (searchResultEntry.getObject() instanceof QueryDescriptor) {
+            jumpToQueryResult((QueryDescriptor)searchResultEntry.getObject(), editor, domain);
+        } else if (searchResultEntry.getObject() instanceof Embeddable) {
+            jumpToEmbeddableResult((Embeddable)searchResultEntry.getObject(), editor, domain);
+        } else if (searchResultEntry.getObject() instanceof EmbeddableAttribute) {
+            jumpToEmbeddableAttributeResult((EmbeddableAttribute)searchResultEntry.getObject(), editor, domain);
+        } else if (searchResultEntry.getObject() instanceof Attribute || searchResultEntry.getObject() instanceof Relationship) {
+            jumpToAttributeResult(searchResultEntry, editor, domain);
+        }
+    }
+
+    private List<SearchResultEntry> search(String searchStr) {
+        Pattern pattern = Pattern.compile(searchStr, Pattern.CASE_INSENSITIVE);
+        List<SearchResultEntry> result = new ArrayList<>();
+        for (DataMap dataMap : ((DataChannelDescriptor) getProjectController().getProject().getRootNode()).getDataMaps()) {
+            searchInQueryDescriptors(pattern, result, dataMap);
+            searchInEmbeddables(pattern, result, dataMap);
+            searchInDbEntities(pattern, result, dataMap);
+            searchInObjEntities(pattern, result, dataMap);
+        }
+        Collections.sort(result);
+        return result;
+    }
+
+    private void searchInQueryDescriptors(Pattern pattern, List<SearchResultEntry> result, DataMap dataMap) {
+        for (QueryDescriptor q : dataMap.getQueryDescriptors()) {
+            if (match(q.getName(), pattern)) {
+                result.add(new SearchResultEntry(q, q.getName()));
+            }
+        }
+    }
+
+    private void searchInEmbeddables(Pattern pattern, List<SearchResultEntry> result, DataMap dataMap) {
+        for (Embeddable emb : dataMap.getEmbeddables()) {
+            if (match(emb.getClassName(), pattern)) {
+                result.add(new SearchResultEntry(emb, emb.getClassName()));
+            }
+            for (EmbeddableAttribute attr : emb.getAttributes()) {
+                if (match(attr.getName(), pattern)) {
+                    result.add(new SearchResultEntry(attr, emb.getClassName() + "." + attr.getName()));
+                }
+            }
+        }
+    }
+
+    private void searchInObjEntities(Pattern pattern, List<SearchResultEntry> result, DataMap dataMap) {
+        for (ObjEntity ent : dataMap.getObjEntities()) {
+            if (match(ent.getName(), pattern)) {
+                result.add(new SearchResultEntry(ent, ent.getName()));
+            }
+            for (ObjAttribute attr : ent.getAttributes()) {
+                if (match(attr.getName(), pattern)) {
+                    result.add(new SearchResultEntry(attr, ent.getName() + "." + attr.getName()));
+                }
+            }
+            for (ObjRelationship rel : ent.getRelationships()) {
+                if (match(rel.getName(), pattern)) {
+                    result.add(new SearchResultEntry(rel, ent.getName() + "." + rel.getName()));
+                }
+            }
+        }
+    }
+
+    private void searchInDbEntities(Pattern pattern, List<SearchResultEntry> result, DataMap dataMap) {
+        for (DbEntity ent : dataMap.getDbEntities()) {
+            if (match(ent.getName(), pattern)) {
+                result.add(new SearchResultEntry(ent, ent.getName()));
+            }
+            for (DbAttribute attr : ent.getAttributes()) {
+                if (match(attr.getName(), pattern)) {
+                    result.add(new SearchResultEntry(attr, ent.getName() + "." + attr.getName()));
+                }
+            }
+            for (DbRelationship rel : ent.getRelationships()) {
+                if (match(rel.getName(), pattern)) {
+                    result.add(new SearchResultEntry(rel, ent.getName() + "." + rel.getName()));
+                }
+            }
+
+            checkCatalogOrSchema(pattern, result, ent, ent.getCatalog());
+            checkCatalogOrSchema(pattern, result, ent, ent.getSchema());
+        }
+    }
+
+    private void checkCatalogOrSchema(Pattern pattern, List<SearchResultEntry> paths, DbEntity ent, String catalogOrSchema) {
+        if (catalogOrSchema != null && !catalogOrSchema.isEmpty()) {
+            if (match(catalogOrSchema, pattern)) {
+                SearchResultEntry entry = new SearchResultEntry(ent, ent.getName());
+                if(!paths.contains(entry)) {
+                    paths.add(entry);
+                }
+            }
+        }
+    }
+
+    private boolean match(String entityName, Pattern pattern) {
+        return pattern.matcher(entityName).find();
+    }
+
+    private static void jumpToAttributeResult(SearchResultEntry searchResultEntry, EditorView editor, DataChannelDescriptor domain) {
+        DataMap map;
+        Entity entity;
+        if (searchResultEntry.getObject() instanceof Attribute) {
+            map = ((Attribute) searchResultEntry.getObject()).getEntity().getDataMap();
+            entity = ((Attribute) searchResultEntry.getObject()).getEntity();
+        } else {
+            map = ((Relationship) searchResultEntry.getObject()).getSourceEntity().getDataMap();
+            entity = ((Relationship) searchResultEntry.getObject()).getSourceEntity();
+        }
+        buildAndSelectTreePath(map, entity, editor);
+
+        if (searchResultEntry.getObject() instanceof Attribute) {
+            AttributeDisplayEvent event = new AttributeDisplayEvent(editor.getProjectTreeView(),
+                    (Attribute) searchResultEntry.getObject(), entity, map, domain);
+            event.setMainTabFocus(true);
+            if(searchResultEntry.getObject() instanceof DbAttribute) {
+                editor.getDbDetailView().currentDbAttributeChanged(event);
+            } else {
+                editor.getObjDetailView().currentObjAttributeChanged(event);
+            }
+        } else if (searchResultEntry.getObject() instanceof Relationship) {
+            RelationshipDisplayEvent event = new RelationshipDisplayEvent(editor.getProjectTreeView(),
+                    (Relationship) searchResultEntry.getObject(), entity, map, domain);
+            event.setMainTabFocus(true);
+            if(searchResultEntry.getObject() instanceof DbRelationship) {
+                editor.getDbDetailView().currentDbRelationshipChanged(event);
+            } else {
+                editor.getObjDetailView().currentObjRelationshipChanged(event);
+            }
+        }
+    }
+
+    private static void jumpToEmbeddableAttributeResult(EmbeddableAttribute attribute, EditorView editor, DataChannelDescriptor domain) {
+        Embeddable embeddable = attribute.getEmbeddable();
+        DataMap map = embeddable.getDataMap();
+        buildAndSelectTreePath(map, embeddable, editor);
+        EmbeddableAttributeDisplayEvent event = new EmbeddableAttributeDisplayEvent(editor.getProjectTreeView(),
+                embeddable, attribute, map, domain);
+        event.setMainTabFocus(true);
+        editor.getEmbeddableView().currentEmbeddableAttributeChanged(event);
+    }
+
+    private static void jumpToEmbeddableResult(Embeddable embeddable, EditorView editor, DataChannelDescriptor domain) {
+        DataMap map = embeddable.getDataMap();
+        buildAndSelectTreePath(map, embeddable, editor);
+        EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(editor.getProjectTreeView(), embeddable, map, domain);
+        event.setMainTabFocus(true);
+        editor.currentEmbeddableChanged(event);
+    }
+
+    private static void jumpToQueryResult(QueryDescriptor queryDescriptor, EditorView editor, DataChannelDescriptor domain) {
+        DataMap map = queryDescriptor.getDataMap();
+        buildAndSelectTreePath(map, queryDescriptor, editor);
+        QueryDisplayEvent event = new QueryDisplayEvent(editor.getProjectTreeView(), queryDescriptor, map, domain);
+        editor.currentQueryChanged(event);
+    }
+
+    private static void jumpToEntityResult(Entity entity, EditorView editor, DataChannelDescriptor domain) {
+        DataMap map = entity.getDataMap();
+        buildAndSelectTreePath(map, entity, editor);
+        EntityDisplayEvent event = new EntityDisplayEvent(editor.getProjectTreeView(), entity, map, domain);
+        event.setMainTabFocus(true);
+
+        if (entity instanceof ObjEntity) {
+            editor.getObjDetailView().currentObjEntityChanged(event);
+        } else if (entity instanceof DbEntity) {
+            editor.getDbDetailView().currentDbEntityChanged(event);
+        }
+    }
+
+    /**
+     * Builds a tree path for a given path and make selection in it
+     */
+    private static TreePath buildAndSelectTreePath(DataMap map, Object object, EditorView editor) {
+        ProjectTreeView projectTreeView = editor.getProjectTreeView();
+        ProjectTreeModel treeModel = (ProjectTreeModel) projectTreeView.getModel();
+
+        DefaultMutableTreeNode[] mutableTreeNodes = new DefaultMutableTreeNode[] {
+            treeModel.getRootNode(),
+            treeModel.getNodeForObjectPath(new Object[]{map}),
+            treeModel.getNodeForObjectPath(new Object[]{map, object})
+        };
+
+        TreePath treePath = new TreePath(mutableTreeNodes);
+        if (!projectTreeView.isExpanded(treePath.getParentPath())) {
+            projectTreeView.expandPath(treePath.getParentPath());
+        }
+        projectTreeView.getSelectionModel().setSelectionPath(treePath);
+        return treePath;
+    }
+
+    /**
+     * Search result holder
+     */
+    public static class SearchResultEntry implements Comparable<SearchResultEntry>{
+        private final Object object;
+        private final String name;
+
+        public SearchResultEntry(Object object, String name) {
+            this.object = object;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Object getObject() {
+            return object;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            SearchResultEntry entry = (SearchResultEntry) o;
+            return name.equals(entry.name) && object.getClass().equals(entry.object.getClass());
+        }
+
+        @Override
+        public int hashCode() {
+            int result = object.getClass().hashCode();
+            result = 31 * result + name.hashCode();
+            return result;
+        }
+
+        @Override
+        public int compareTo(SearchResultEntry o) {
+            int res = PRIORITY_BY_TYPE.get(getObject().getClass())
+                    - PRIORITY_BY_TYPE.get(o.getObject().getClass());
+            if(res != 0) {
+                return res;
+            }
+            return getName().compareTo(o.getName());
+        }
+    }
 }

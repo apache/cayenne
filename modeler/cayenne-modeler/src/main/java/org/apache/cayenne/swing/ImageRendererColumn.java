@@ -22,38 +22,28 @@ import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.apache.cayenne.modeler.dialog.FindDialog;
-
 public class ImageRendererColumn extends DefaultTableCellRenderer {
 
-    JLabel lbl = new JLabel();
-    ImageIcon icon = null;
+    private final Color ROLLOVER_BACKGROUND = new Color(223, 223, 223);
+
+    private JLabel lbl = new JLabel();
 
     public ImageRendererColumn() {
         super();
     }
 
-    public Component getTableCellRendererComponent(
-            JTable table,
-            Object value,
-            boolean isSelected,
-            boolean hasFocus,
-            int row,
-            int column) {
+    public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected, boolean hasFocus, int row, int column) {
         lbl.setOpaque(true);
-        lbl.setText(((JLabel) value).getText().toString());
+        lbl.setText(((JLabel) value).getText());
         lbl.setIcon(((JLabel) value).getIcon());
-        lbl.setBorder(BorderFactory.createLineBorder(Color.WHITE, 0));
-        lbl.setBackground(Color.WHITE);
-
+        lbl.setBorder(BorderFactory.createEmptyBorder());
+        lbl.setBackground(isSelected ? ROLLOVER_BACKGROUND : Color.WHITE);
         lbl.setHorizontalAlignment(JLabel.LEFT);
-        lbl.setFont(isSelected ? FindDialog.getFontSelected() : FindDialog.getFont());
-
         return lbl;
     }
 }

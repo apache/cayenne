@@ -18,17 +18,14 @@ package org.apache.cayenne.modeler.event;
  *  under the License.
  ****************************************************************/
 
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 
-/** 
-  */
 public class AttributeDisplayEvent extends EntityDisplayEvent {
    
-    protected Attribute[] attributes;
+    protected final Attribute[] attributes;
     
     public AttributeDisplayEvent(
             Object src,
@@ -36,18 +33,15 @@ public class AttributeDisplayEvent extends EntityDisplayEvent {
             Entity entity,
             DataMap dataMap,
             DataChannelDescriptor domain) {
-        
-            super(src, entity, dataMap, domain);
-            attributes = new Attribute[] { attribute };
+        this(src, new Attribute[]{attribute}, entity, dataMap, domain);
     }
 
     public AttributeDisplayEvent(
-        Object src,
-        Attribute[] attributes,
-        Entity entity,
-        DataMap dataMap,
-        DataChannelDescriptor domain) {
-
+            Object src,
+            Attribute[] attributes,
+            Entity entity,
+            DataMap dataMap,
+            DataChannelDescriptor domain) {
         super(src, entity, dataMap, domain);
         this.attributes = attributes;
     }

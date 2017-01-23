@@ -146,7 +146,11 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         graph.addMouseWheelListener(new MouseWheelListener() {
 
             public void mouseWheelMoved(MouseWheelEvent e) {
-                graph.setScale(graph.getScale() / Math.pow(ZOOM_FACTOR, e.getWheelRotation()));
+                // limit scale
+                double scale = graph.getScale() / Math.pow(ZOOM_FACTOR, e.getWheelRotation());
+                scale = Math.max(scale, 0.1);
+                scale = Math.min(scale, 3);
+                graph.setScale(scale);
             }
         });
 

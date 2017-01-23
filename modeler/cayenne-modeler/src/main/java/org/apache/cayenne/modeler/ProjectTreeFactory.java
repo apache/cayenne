@@ -51,7 +51,7 @@ public class ProjectTreeFactory {
         private LinkedList<DefaultMutableTreeNode> stack;
 
         TreeWrapper() {
-            stack = new LinkedList<DefaultMutableTreeNode>();
+            stack = new LinkedList<>();
         }
 
         private <T extends Comparable<T>> Collection<T> sort(Collection<T> unsorted) {

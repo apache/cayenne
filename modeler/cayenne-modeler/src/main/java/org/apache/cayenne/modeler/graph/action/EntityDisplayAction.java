@@ -24,26 +24,23 @@ import javax.swing.Action;
 import javax.swing.Icon;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.FindDialog;
+import org.apache.cayenne.modeler.action.FindAction;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
- * Action that displays one of the objects in main tree, and then fires another action (if
- * specified)
+ * Action that displays one of the objects in main tree, and then fires another action (if specified)
  */
 public class EntityDisplayAction extends CayenneAction {
 
     /**
      * Action that will be performed after selection
      */
-    CayenneAction delegate;
+    private CayenneAction delegate;
 
-    GraphBuilder builder;
+    private GraphBuilder builder;
 
     public EntityDisplayAction(GraphBuilder builder) {
         super("Show", Application.getInstance());
@@ -61,9 +58,7 @@ public class EntityDisplayAction extends CayenneAction {
     private void init() {
         setEnabled(true);
 
-        /**
-         * Create icon manually, because at creation of super object delegate is null
-         */
+        // Create icon manually, because at creation of super object delegate is null
         Icon icon = createIcon();
         if (icon != null) {
             super.putValue(Action.SMALL_ICON, icon);
@@ -79,21 +74,14 @@ public class EntityDisplayAction extends CayenneAction {
         }
     }
 
-    boolean display() {
+    private boolean display() {
         Entity entity = builder.getSelectedEntity();
         if (entity == null) {
             return false;
         }
 
-        ProjectController mediator = getProjectController();
-
-        // we're always in same domain
-        FindDialog.jumpToResult(new Object[] {
-                getApplication().getProject(),
-                (DataChannelDescriptor) mediator.getProject().getRootNode(),
-                entity.getDataMap(), entity
-        });
-
+        // reusing logic from FindAction
+        FindAction.jumpToResult(new FindAction.SearchResultEntry(entity, entity.getName()));
         return true;
     }
 
