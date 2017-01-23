@@ -52,7 +52,7 @@ public class FunctionExpressionFactory {
      *
      * @param exp expression that must evaluate to string
      * @param offset start offset of substring
-     * @param length length of subtring
+     * @param length length of substring
      * @return SUBSTRING() call expression
      */
     public static Expression substringExp(Expression exp, int offset, int length) {
@@ -64,7 +64,7 @@ public class FunctionExpressionFactory {
      *
      * @param path Object path value
      * @param offset start offset of substring
-     * @param length length of subtring
+     * @param length length of substring
      * @return SUBSTRING() call expression
      */
     public static Expression substringExp(String path, int offset, int length) {
@@ -76,7 +76,7 @@ public class FunctionExpressionFactory {
      *
      * @param exp expression that must evaluate to string
      * @param offset start offset of substring must evaluate to int
-     * @param length length of subtring must evaluate to int
+     * @param length length of substring must evaluate to int
      * @return SUBSTRING() call expression
      */
     public static Expression substringExp(Expression exp, Expression offset, Expression length) {
