@@ -44,7 +44,7 @@ public class CryptoBatchTranslatorFactoryDecorator implements BatchTranslatorFac
     }
 
     @Override
-    public BatchTranslator translator(BatchQuery query, DbAdapter adapter, String trimFunction) {
+    public BatchTranslator translator(BatchQuery query, final DbAdapter adapter, String trimFunction) {
         final BatchTranslator delegateTranslator = delegate.translator(query, adapter, trimFunction);
 
         return new BatchTranslator() {
@@ -54,7 +54,7 @@ public class CryptoBatchTranslatorFactoryDecorator implements BatchTranslatorFac
 
             private void ensureEncryptorCompiled() {
                 if (!encryptorCompiled) {
-                    encryptor = cryptoFactory.encryptor(getBindings());
+                    encryptor = cryptoFactory.encryptor(getBindings(), adapter.getExtendedTypes());
                     encryptorCompiled = true;
                 }
             }

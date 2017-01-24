@@ -19,6 +19,8 @@
 package org.apache.cayenne.crypto.transformer;
 
 import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueEncryptor;
 
@@ -30,11 +32,16 @@ public class DefaultBindingsTransformer implements BindingsTransformer {
     private int[] positions;
     private ValueEncryptor[] transformers;
     private BytesEncryptor encryptor;
+    private ExtendedTypeMap extendedTypeMap;
 
-    public DefaultBindingsTransformer(int[] positions, ValueEncryptor[] transformers, BytesEncryptor encryptor) {
+    public DefaultBindingsTransformer(int[] positions,
+                                      ValueEncryptor[] transformers,
+                                      BytesEncryptor encryptor,
+                                      ExtendedTypeMap extendedTypeMap) {
         this.positions = positions;
         this.transformers = transformers;
         this.encryptor = encryptor;
+        this.extendedTypeMap = extendedTypeMap;
     }
 
     @Override
@@ -46,7 +53,12 @@ public class DefaultBindingsTransformer implements BindingsTransformer {
             DbAttributeBinding b = bindings[positions[i]];
             Object transformed = transformers[i].encrypt(encryptor, b.getValue());
             b.setValue(transformed);
-            b.setExtendedType(null); // TODO fast hack
+
+            ExtendedType extendedType = transformed != null
+                    ? extendedTypeMap.getRegisteredType(transformed.getClass())
+                    : extendedTypeMap.getDefaultType();
+
+            b.setExtendedType(extendedType);
         }
     }
 
