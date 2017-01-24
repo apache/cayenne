@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.parser;
 
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Test;
 
@@ -43,6 +45,20 @@ public class ASTConcatTest {
         a.setArtistName("name");
 
         Object res = concat.evaluateNode(a);
+        assertTrue(res instanceof String);
+        assertEquals("name test", res);
+    }
+
+    @Test
+    public void testParseConcat() throws Exception {
+        Expression exp = ExpressionFactory.exp("CONCAT(artistName, ' ', 'test')");
+        assertEquals(ASTConcat.class, exp.getClass());
+        assertEquals(3, exp.getOperandCount());
+
+        Artist a = new Artist();
+        a.setArtistName("name");
+
+        Object res = exp.evaluate(a);
         assertTrue(res instanceof String);
         assertEquals("name test", res);
     }

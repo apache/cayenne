@@ -31,13 +31,7 @@ public class ASTMin extends ASTAggregateFunctionCall {
     }
 
     public ASTMin(Expression expression) {
-        super(0, "MIN", expression);
-    }
-
-
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        return o; // TODO: how to evaluate aggregation function?
+        super(ExpressionParserTreeConstants.JJTMIN, "MIN", expression);
     }
 
     @Override

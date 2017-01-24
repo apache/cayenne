@@ -31,13 +31,7 @@ public class ASTMax extends ASTAggregateFunctionCall {
     }
 
     public ASTMax(Expression expression) {
-        super(0, "MAX", expression);
-    }
-
-
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        return o; // TODO: how to evaluate aggregation function?
+        super(ExpressionParserTreeConstants.JJTMAX, "MAX", expression);
     }
 
     @Override

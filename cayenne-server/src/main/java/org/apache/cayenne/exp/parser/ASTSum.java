@@ -31,13 +31,7 @@ public class ASTSum extends ASTAggregateFunctionCall {
     }
 
     public ASTSum(Expression expression) {
-        super(0, "SUM", expression);
-    }
-
-
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        return o; // TODO: how to evaluate aggregation function?
+        super(ExpressionParserTreeConstants.JJTSUM, "SUM", expression);
     }
 
     @Override

@@ -34,10 +34,9 @@ PARSER_BEGIN(ExpressionParser)
 
 package org.apache.cayenne.exp.parser;
 
-import java.io.*;
-import java.util.*;
-import java.math.*;
-import org.apache.cayenne.exp.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import org.apache.cayenne.exp.Expression;
 
 /**
   * Parser of Cayenne Expressions. 
@@ -141,6 +140,8 @@ void conditionExpression() : {}
         stringExpression()
 	|
 		<NULL> #Scalar(0)
+	|
+    	aggregateExpression()
 }
 
 void stringParameter() : {}
@@ -239,7 +240,7 @@ void multiplySubtractExp() : {}
 {
     numericTermExt() 
     ( 
-        "*" numericTermExt() #Multiply(2)
+        <ASTERISK> numericTermExt() #Multiply(2)
     |
         "/" numericTermExt() #Divide(2)
     )*
@@ -286,7 +287,7 @@ void functionsReturningStrings() : { }
 
 void concat() #Concat : { }
 {
-	<CONCAT> "(" stringParameter() "," stringParameter() ")"
+	<CONCAT> "(" stringParameter() ( "," stringParameter() )* ")"
 }
 
 void substring() #Substring : { }
@@ -337,6 +338,41 @@ void sqrt() #Sqrt : { }
 void mod() #Mod : { }
 {
 	<MOD> "(" numericExpression() "," numericExpression() ")"
+}
+
+void aggregateExpression() : { }
+{
+	(avg() | max() | min() | sum() | count())
+}
+
+void asterisk() #Asterisk : {}
+{
+    <ASTERISK>
+}
+
+void count() #Count : { }
+{
+	<COUNT> "(" ( asterisk() | numericExpression() ) ")"
+}
+
+void avg() #Avg : { }
+{
+	<AVG> "(" numericExpression() ")"
+}
+
+void max() #Max : { }
+{
+	<MAX> "(" numericExpression() ")"
+}
+
+void min() #Min : { }
+{
+	<MIN> "(" numericExpression() ")"
+}
+
+void sum() #Sum : { }
+{
+	<SUM> "(" numericExpression() ")"
 }
 
 
@@ -484,6 +520,10 @@ void pathExpression() : {
    |
      "enum:" t = <PROPERTY_PATH> { jjtThis.setValue(ParserUtil.makeEnum(t.image)); } #Scalar(0)
    )
+}
+
+TOKEN : {
+    <ASTERISK: "*">
 }
 
 TOKEN : {

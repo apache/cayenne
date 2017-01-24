@@ -31,16 +31,11 @@ public class ASTCount extends ASTAggregateFunctionCall {
     }
 
     public ASTCount(Expression expression) {
-        super(0, "COUNT", expression);
+        super(ExpressionParserTreeConstants.JJTCOUNT, "COUNT", expression);
     }
 
     public ASTCount() {
-        super(0, "COUNT", new ASTAsterisk());
-    }
-
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        return o; // TODO: how to evaluate aggregation function?
+        this(new ASTAsterisk());
     }
 
     @Override

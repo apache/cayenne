@@ -38,7 +38,7 @@ public class ASTAsterisk extends SimpleNode {
     }
 
     public ASTAsterisk() {
-        super(ExpressionParserTreeConstants.JJTMULTIPLY);
+        super(ExpressionParserTreeConstants.JJTASTERISK);
     }
 
     @Override
@@ -48,8 +48,7 @@ public class ASTAsterisk extends SimpleNode {
 
     @Override
     protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
-                + "'");
+        throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id] + "'");
     }
 
     @Override

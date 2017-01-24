@@ -31,13 +31,7 @@ public class ASTAvg extends ASTAggregateFunctionCall {
     }
 
     public ASTAvg(Expression expression) {
-        super(0, "AVG", expression);
-    }
-
-
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        return o; // TODO: how to evaluate aggregation function?
+        super(ExpressionParserTreeConstants.JJTAVG, "AVG", expression);
     }
 
     @Override

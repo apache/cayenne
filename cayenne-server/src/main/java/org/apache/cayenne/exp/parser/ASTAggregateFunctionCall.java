@@ -33,4 +33,9 @@ public abstract class ASTAggregateFunctionCall extends ASTFunctionCall {
     ASTAggregateFunctionCall(int id, String functionName, Object... nodes) {
         super(id, functionName, nodes);
     }
+
+    @Override
+    protected Object evaluateNode(Object o) throws Exception {
+        throw new UnsupportedOperationException("In-memory evaluation of aggregate functions not implemented yet.");
+    }
 }

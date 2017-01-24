@@ -31,47 +31,49 @@ public interface ExpressionParserConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int NULL = 34;
+  int NULL = 33;
   /** RegularExpression Id. */
-  int TRUE = 35;
+  int TRUE = 34;
   /** RegularExpression Id. */
-  int FALSE = 36;
+  int FALSE = 35;
   /** RegularExpression Id. */
-  int AVG = 37;
+  int AVG = 36;
   /** RegularExpression Id. */
-  int MIN = 38;
+  int MIN = 37;
   /** RegularExpression Id. */
-  int MAX = 39;
+  int MAX = 38;
   /** RegularExpression Id. */
-  int SUM = 40;
+  int SUM = 39;
   /** RegularExpression Id. */
-  int COUNT = 41;
+  int COUNT = 40;
   /** RegularExpression Id. */
-  int CONCAT = 42;
+  int CONCAT = 41;
   /** RegularExpression Id. */
-  int SUBSTRING = 43;
+  int SUBSTRING = 42;
   /** RegularExpression Id. */
-  int TRIM = 44;
+  int TRIM = 43;
   /** RegularExpression Id. */
-  int LOWER = 45;
+  int LOWER = 44;
   /** RegularExpression Id. */
-  int UPPER = 46;
+  int UPPER = 45;
   /** RegularExpression Id. */
-  int LENGTH = 47;
+  int LENGTH = 46;
   /** RegularExpression Id. */
-  int LOCATE = 48;
+  int LOCATE = 47;
   /** RegularExpression Id. */
-  int ABS = 49;
+  int ABS = 48;
   /** RegularExpression Id. */
-  int SQRT = 50;
+  int SQRT = 49;
   /** RegularExpression Id. */
-  int MOD = 51;
+  int MOD = 50;
   /** RegularExpression Id. */
-  int CURRENT_DATE = 52;
+  int CURRENT_DATE = 51;
   /** RegularExpression Id. */
-  int CURRENT_TIME = 53;
+  int CURRENT_TIME = 52;
   /** RegularExpression Id. */
-  int CURRENT_TIMESTAMP = 54;
+  int CURRENT_TIMESTAMP = 53;
+  /** RegularExpression Id. */
+  int ASTERISK = 58;
   /** RegularExpression Id. */
   int PROPERTY_PATH = 59;
   /** RegularExpression Id. */
@@ -137,7 +139,6 @@ public interface ExpressionParserConstants {
     "\">>\"",
     "\"+\"",
     "\"-\"",
-    "\"*\"",
     "\"/\"",
     "\"~\"",
     "\" \"",
@@ -169,6 +170,7 @@ public interface ExpressionParserConstants {
     "\"obj:\"",
     "\"db:\"",
     "\"enum:\"",
+    "\"*\"",
     "<PROPERTY_PATH>",
     "<IDENTIFIER>",
     "<LETTER>",

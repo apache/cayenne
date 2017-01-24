@@ -65,9 +65,15 @@ public interface ExpressionParserTreeConstants
   public int JJTABS = 40;
   public int JJTSQRT = 41;
   public int JJTMOD = 42;
-  public int JJTNAMEDPARAMETER = 43;
-  public int JJTOBJPATH = 44;
-  public int JJTDBPATH = 45;
+  public int JJTASTERISK = 43;
+  public int JJTCOUNT = 44;
+  public int JJTAVG = 45;
+  public int JJTMAX = 46;
+  public int JJTMIN = 47;
+  public int JJTSUM = 48;
+  public int JJTNAMEDPARAMETER = 49;
+  public int JJTOBJPATH = 50;
+  public int JJTDBPATH = 51;
 
 
   public String[] jjtNodeName = {
@@ -114,9 +120,15 @@ public interface ExpressionParserTreeConstants
     "Abs",
     "Sqrt",
     "Mod",
+    "Asterisk",
+    "Count",
+    "Avg",
+    "Max",
+    "Min",
+    "Sum",
     "NamedParameter",
     "ObjPath",
     "DbPath",
   };
 }
-/* JavaCC - OriginalChecksum=3658f423e33338225cd28f666e76c706 (do not edit this line) */
+/* JavaCC - OriginalChecksum=0fe59a033c5f411d1c7cc0cc441fabf6 (do not edit this line) */
