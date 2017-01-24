@@ -33,6 +33,7 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.util.ConversionUtil;
+import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -257,6 +258,16 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		}
 
 		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		HashCodeBuilder builder = new HashCodeBuilder().append(getType());
+		int opCount = getOperandCount();
+		for(int i=0; i<opCount; i++) {
+			builder.append(getOperand(i));
+		}
+		return builder.toHashCode();
 	}
 
 	/**

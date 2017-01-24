@@ -19,6 +19,7 @@
 package org.apache.cayenne.exp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -133,7 +134,7 @@ public class PropertyTest {
     }
 
     @Test
-    public void testEquals() {
+    public void testEqualsWithName() {
         Property<Integer> INT_FIELD = new Property<>("intField");
         Property<Integer> INT_FIELD2 = new Property<>("intField");
 
@@ -142,13 +143,51 @@ public class PropertyTest {
     }
 
     @Test
-    public void testHashCode() {
+    public void testHashCodeWithName() {
         Property<Integer> INT_FIELD = new Property<>("intField");
         Property<Integer> INT_FIELD2 = new Property<>("intField");
         Property<Long> LONG_FIELD = new Property<>("longField");
 
         assertTrue(INT_FIELD.hashCode() == INT_FIELD2.hashCode());
         assertTrue(INT_FIELD.hashCode() != LONG_FIELD.hashCode());
+    }
+
+    @Test
+    public void testEqualsWithNameAndType() {
+        Property<Integer> INT_FIELD = new Property<>("intField", Integer.class);
+        Property<Integer> INT_FIELD2 = new Property<>("intField", Integer.class);
+
+        assertTrue(INT_FIELD != INT_FIELD2);
+        assertTrue(INT_FIELD.equals(INT_FIELD2));
+    }
+
+    @Test
+    public void testHashCodeWithNameAndType() {
+        Property<Integer> INT_FIELD = new Property<>("intField", Integer.class);
+        Property<Integer> INT_FIELD2 = new Property<>("intField", Integer.class);
+        Property<Long> LONG_FIELD = new Property<>("longField", Long.class);
+
+        assertTrue(INT_FIELD.hashCode() == INT_FIELD2.hashCode());
+        assertTrue(INT_FIELD.hashCode() != LONG_FIELD.hashCode());
+    }
+
+    @Test
+    public void testEqualsWithExpAndType() {
+        Property<Integer> INT_FIELD = new Property<>(null, ExpressionFactory.exp("1"), Integer.class);
+        Property<Integer> INT_FIELD2 = new Property<>(null, ExpressionFactory.exp("1"), Integer.class);
+
+        assertTrue(INT_FIELD != INT_FIELD2);
+        assertTrue(INT_FIELD.equals(INT_FIELD2));
+    }
+
+    @Test
+    public void testHashCodeWithExpAndType() {
+        Property<Integer> INT_FIELD = new Property<>(null, ExpressionFactory.exp("1"), Integer.class);
+        Property<Integer> INT_FIELD2 = new Property<>(null, ExpressionFactory.exp("1"), Integer.class);
+        Property<Integer> INT_FIELD3 = new Property<>(null, ExpressionFactory.exp("2"), Integer.class);
+
+        assertEquals(INT_FIELD.hashCode(), INT_FIELD2.hashCode());
+        assertNotEquals(INT_FIELD.hashCode(), INT_FIELD3.hashCode());
     }
 
     @Test

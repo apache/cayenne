@@ -16,37 +16,42 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.exp.parser;
 
 import org.junit.Test;
 
-import java.io.IOException;
+import static org.junit.Assert.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
-public class ASTDbPathTest {
-
-    @Test
-    public void testToString() {
-        assertEquals("db:x.y", new ASTDbPath("x.y").toString());
-    }
-
-    @Test
-    public void testAppendAsString() throws IOException {
-        StringBuilder buffer = new StringBuilder();
-        new ASTDbPath("x.y").appendAsString(buffer);
-        assertEquals("db:x.y", buffer.toString());
-    }
+/**
+ * @since 4.0
+ */
+public class ASTScalarTest {
 
     @Test
     public void testEquals() throws Exception {
-        ASTPath path1 = new ASTDbPath("x.y.z");
-        ASTPath path2 = new ASTDbPath("x.y.z");
-        ASTPath path3 = new ASTDbPath("x.x.z");
+        ASTScalar strScalar1 = new ASTScalar("test");
+        ASTScalar strScalar2 = new ASTScalar("test");
+        assertEquals(strScalar1, strScalar2);
 
-        assertEquals(path1, path2);
-        assertNotEquals(path1, path3);
+        ASTScalar nullScalar1 = new ASTScalar(null);
+        ASTScalar nullScalar2 = new ASTScalar(null);
+        assertEquals(nullScalar1, nullScalar2);
+
+        assertNotEquals(strScalar1, nullScalar1);
+    }
+
+    @Test
+    public void testHashCode() throws Exception {
+        ASTScalar strScalar1 = new ASTScalar("test");
+        ASTScalar strScalar2 = new ASTScalar("test");
+        assertEquals(strScalar1.hashCode(), strScalar2.hashCode());
+
+        ASTScalar nullScalar1 = new ASTScalar(null);
+        ASTScalar nullScalar2 = new ASTScalar(null);
+        assertEquals(nullScalar1.hashCode(), nullScalar2.hashCode());
+
+        assertNotEquals(strScalar1.hashCode(), nullScalar1.hashCode());
     }
 
 }

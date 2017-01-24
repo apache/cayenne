@@ -23,9 +23,11 @@ import org.apache.cayenne.Persistent;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,13 +40,46 @@ public class ASTListTest {
 		Persistent artist = mock(Persistent.class);
 		when(artist.getObjectId()).thenReturn(objectId);
 
-		ASTList exp = new ASTList(Arrays.asList(artist));
-		assertNotNull(exp);
+		ASTList exp = new ASTList(Collections.singletonList(artist));
+		assertNotNull(exp.getOperand(0));
 
-		List<Persistent> collection = new ArrayList<Persistent>();
+		List<Persistent> collection = new ArrayList<>();
 		collection.add(artist);
 		exp = new ASTList(collection);
-		assertNotNull(exp);
+		assertNotNull(exp.getOperand(0));
+	}
+
+	@Test
+	public void testEquals() throws Exception {
+		ObjectId objectId = new ObjectId("Artist", "ARTIST_ID", 1);
+		Persistent artist = mock(Persistent.class);
+		when(artist.getObjectId()).thenReturn(objectId);
+
+		ASTList exp = new ASTList(Collections.singletonList(artist));
+
+		List<Persistent> collection = new ArrayList<>();
+		collection.add(artist);
+		ASTList exp2 = new ASTList(collection);
+		ASTList exp3 = new ASTList(Collections.emptyList());
+
+		assertEquals(exp, exp2);
+		assertNotEquals(exp, exp3);
+	}
+
+	@Test
+	public void testHashCode() throws Exception {
+		ObjectId objectId = new ObjectId("Artist", "ARTIST_ID", 1);
+		Persistent artist = mock(Persistent.class);
+		when(artist.getObjectId()).thenReturn(objectId);
+
+		ASTList exp = new ASTList(Collections.singletonList(artist));
+		List<Persistent> collection = new ArrayList<>();
+		collection.add(artist);
+		ASTList exp2 = new ASTList(collection);
+		ASTList exp3 = new ASTList(Collections.emptyList());
+
+		assertEquals(exp.hashCode(), exp2.hashCode());
+		assertNotEquals(exp.hashCode(), exp3.hashCode());
 	}
     
 }

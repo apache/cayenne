@@ -65,4 +65,17 @@ public abstract class ASTFunctionCall extends SimpleNode {
         return functionName;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ASTFunctionCall that = (ASTFunctionCall) o;
+        return functionName.equals(that.functionName);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * super.hashCode() + functionName.hashCode();
+    }
 }

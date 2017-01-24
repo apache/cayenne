@@ -24,6 +24,7 @@ import org.apache.cayenne.exp.Expression;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -224,5 +225,10 @@ public class ASTList extends SimpleNode {
 
 		// clean children - we are not supposed to use them anymore
 		children = null;
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(values);
 	}
 }

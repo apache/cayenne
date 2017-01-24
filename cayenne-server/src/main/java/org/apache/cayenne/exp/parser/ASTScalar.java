@@ -111,7 +111,19 @@ public class ASTScalar extends SimpleNode {
 
     @Override
     protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
-                + "'");
+        throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id] + "'");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ASTScalar other = (ASTScalar) o;
+        return value != null ? value.equals(other.value) : other.value == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return value != null ? value.hashCode() : 0;
     }
 }

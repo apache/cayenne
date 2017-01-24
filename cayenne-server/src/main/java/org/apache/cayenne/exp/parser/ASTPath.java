@@ -105,4 +105,9 @@ public abstract class ASTPath extends SimpleNode {
 		throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
 				+ "'");
 	}
+
+	@Override
+	public int hashCode() {
+		return path.hashCode();
+	}
 }

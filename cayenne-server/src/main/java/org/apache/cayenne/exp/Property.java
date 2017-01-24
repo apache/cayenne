@@ -155,12 +155,22 @@ public class Property<E> {
 
     @Override
     public int hashCode() {
-        return getName().hashCode();
+        int result = name != null ? name.hashCode() : expressionProvider.get().hashCode();
+        if(type != null) {
+            result = 31 * result + type.hashCode();
+        }
+        return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Property && ((Property<?>) obj).getName().equals(getName());
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Property<?> property = (Property<?>) o;
+        if (name != null ? !name.equals(property.name) : property.name != null) return false;
+        if (name == null && !expressionProvider.get().equals(property.expressionProvider.get())) return false;
+        return (type == null ? property.type == null : type.equals(property.type));
     }
 
     /**
