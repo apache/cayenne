@@ -38,10 +38,10 @@ import java.util.Map;
  * 
  * @since 3.0
  */
-public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType {
+public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType<T> {
 
     private Class<T> enumerationClass = null;
-    private Object[] values = null;
+    private T[] values = null;
 
     // Contains a mapping of database values (Integer or String) and the
     // Enum for that value. This is to facilitate mapping database values
@@ -57,10 +57,10 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType {
         try {
             Method m = enumerationClass.getMethod("values");
 
-            values = (Object[]) m.invoke(null);
+            values = (T[]) m.invoke(null);
 
             for (int i = 0; i < values.length; i++)
-                register((Enum<T>) values[i], ((ExtendedEnumeration) values[i])
+                register(values[i], ((ExtendedEnumeration) values[i])
                         .getDatabaseValue());
 
         }
@@ -77,7 +77,7 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public T materializeObject(ResultSet rs, int index, int type) throws Exception {
         if (TypesMapping.isNumeric(type)) {
             int i = rs.getInt(index);
             return (rs.wasNull() || index < 0) ? null : lookup(i);
@@ -89,7 +89,7 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public T materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         if (TypesMapping.isNumeric(type)) {
             int i = rs.getInt(index);
@@ -104,7 +104,7 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            T value,
             int pos,
             int type,
             int precision) throws Exception {
@@ -138,8 +138,8 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType {
     /**
      * Lookup the giving database value and return the matching enum.
      */
-    private Enum<T> lookup(Object databaseValue) {
-        if (enumerationMappings.containsKey(databaseValue) == false) {
+    private T lookup(Object databaseValue) {
+        if (!enumerationMappings.containsKey(databaseValue)) {
             // All integers enums are mapped. Not necessarily all strings.
             if (databaseValue instanceof Integer)
                 throw new CayenneRuntimeException("Missing enumeration mapping for "
@@ -153,7 +153,31 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType {
         }
 
         // Mapped value->enum exists, return it.
-        return enumerationMappings.get(databaseValue);
+        return (T) enumerationMappings.get(databaseValue);
+    }
+
+    @Override
+    public String toString(T value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        StringBuilder buffer = new StringBuilder();
+        // buffer.append(object.getClass().getName()).append(".");
+        buffer.append(value.name()).append("=");
+        if (value instanceof ExtendedEnumeration) {
+            Object dbValue = ((ExtendedEnumeration) value).getDatabaseValue();
+            if (dbValue instanceof String)
+                buffer.append("'");
+            buffer.append(value);
+            if (dbValue instanceof String)
+                buffer.append("'");
+        } else {
+            buffer.append((value).ordinal());
+            // FIXME -- this isn't quite right
+        }
+
+        return buffer.toString();
     }
 
     /**

@@ -28,7 +28,7 @@ import org.apache.cayenne.access.types.ExtendedType;
 /**
  * @since 3.0
  */
-class SQLiteBigDecimalType implements ExtendedType {
+class SQLiteBigDecimalType implements ExtendedType<BigDecimal> {
 
     @Override
     public String getClassName() {
@@ -36,7 +36,7 @@ class SQLiteBigDecimalType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public BigDecimal materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         // BigDecimals are not supported by the zentus driver... in addition the driver
         // throws an NPE on 'getDouble' if the value is null, and also there are rounding
@@ -46,7 +46,7 @@ class SQLiteBigDecimalType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public BigDecimal materializeObject(ResultSet rs, int index, int type) throws Exception {
         // BigDecimals are not supported by the zentus driver... in addition the driver
         // throws an NPE on 'getDouble' if the value is null, and also there are rounding
         // errors. So will read it as a String...
@@ -57,7 +57,7 @@ class SQLiteBigDecimalType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement st,
-            Object val,
+            BigDecimal val,
             int pos,
             int type,
             int scale) throws Exception {
@@ -68,5 +68,14 @@ class SQLiteBigDecimalType implements ExtendedType {
         else {
             st.setObject(pos, val, type);
         }
+    }
+
+    @Override
+    public String toString(BigDecimal value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.toString();
     }
 }

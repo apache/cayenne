@@ -19,6 +19,10 @@
 
 package org.apache.cayenne.dba.db2;
 
+import java.sql.PreparedStatement;
+import java.sql.Types;
+import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.ParameterBinding;
@@ -41,10 +45,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
-
-import java.sql.PreparedStatement;
-import java.sql.Types;
-import java.util.List;
 
 /**
  * DbAdapter implementation for the <a href="http://www.ibm.com/db2/"> DB2 RDBMS </a>.
@@ -203,9 +203,9 @@ public class DB2Adapter extends JdbcAdapter {
 
     final class DB2BooleanType extends BooleanType {
         @Override
-        public void setJdbcObject(PreparedStatement st, Object val, int pos, int type, int precision) throws Exception {
+        public void setJdbcObject(PreparedStatement st, Boolean val, int pos, int type, int precision) throws Exception {
             if (val != null) {
-                st.setInt(pos, ((Boolean) val) ? 1 : 0);
+                st.setInt(pos, val ? 1 : 0);
             } else {
                 st.setNull(pos, type);
             }

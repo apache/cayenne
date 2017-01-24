@@ -26,7 +26,7 @@ import java.sql.ResultSet;
 /**
  * @since 3.0
  */
-public class DateType implements ExtendedType {
+public class DateType implements ExtendedType<Date> {
 
     @Override
     public String getClassName() {
@@ -34,12 +34,12 @@ public class DateType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public Date materializeObject(ResultSet rs, int index, int type) throws Exception {
         return rs.getDate(index);
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public Date materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return rs.getDate(index);
     }
@@ -47,7 +47,7 @@ public class DateType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            Date value,
             int pos,
             int type,
             int scale) throws Exception {
@@ -56,8 +56,16 @@ public class DateType implements ExtendedType {
             statement.setNull(pos, type);
         }
         else {
-            statement.setDate(pos, (Date) value);
+            statement.setDate(pos, value);
         }
     }
 
+    @Override
+    public String toString(Date value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return '\'' + value.toString() + '\'';
+    }
 }

@@ -19,58 +19,61 @@
 
 package org.apache.cayenne.joda.access.types;
 
-import org.apache.cayenne.access.types.ExtendedType;
-import org.joda.time.LocalDateTime;
-
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.sql.Types;
 
+import org.apache.cayenne.access.types.ExtendedType;
+import org.joda.time.LocalDateTime;
+
 /**
  * Handles <code>org.joda.time.LocalDateTime</code> type mapping.
- * 
+ *
  * @since 4.0
  */
-public class LocalDateTimeType implements ExtendedType {
+public class LocalDateTimeType implements ExtendedType<LocalDateTime> {
 
-	@Override
-	public String getClassName() {
-		return LocalDateTime.class.getName();
-	}
+    @Override
+    public String getClassName() {
+        return LocalDateTime.class.getName();
+    }
 
-	@Override
-	public LocalDateTime materializeObject(ResultSet rs, int index, int type) throws Exception {
-		if (rs.getTimestamp(index) != null) {
-			return new LocalDateTime(rs.getTimestamp(index).getTime());
-		} else {
-			return null;
-		}
-	}
+    @Override
+    public void setJdbcObject(PreparedStatement statement, LocalDateTime value, int pos, int type, int scale) throws Exception {
+        if (value == null) {
+            statement.setNull(pos, type);
+        } else {
+            Timestamp ts = new Timestamp(value.toDateTime().getMillis());
+            statement.setTimestamp(pos, ts);
+        }
+    }
 
-	@Override
-	public LocalDateTime materializeObject(CallableStatement rs, int index, int type) throws Exception {
-		if (type == Types.TIMESTAMP && rs.getTimestamp(index) != null) {
-			return new LocalDateTime(rs.getTimestamp(index).getTime());
-		} else {
-			return null;
-		}
-	}
+    @Override
+    public LocalDateTime materializeObject(ResultSet rs, int index, int type) throws Exception {
+        if (rs.getTimestamp(index) != null) {
+            return new LocalDateTime(rs.getTimestamp(index).getTime());
+        } else {
+            return null;
+        }
+    }
 
-	@Override
-	public void setJdbcObject(PreparedStatement statement, Object value, int pos, int type, int scale) throws Exception {
+    @Override
+    public LocalDateTime materializeObject(CallableStatement rs, int index, int type) throws Exception {
+        if (type == Types.TIMESTAMP && rs.getTimestamp(index) != null) {
+            return new LocalDateTime(rs.getTimestamp(index).getTime());
+        } else {
+            return null;
+        }
+    }
 
-		if (value == null) {
-			statement.setNull(pos, type);
-		} else {
-			Timestamp ts = new Timestamp(getMillis(value));
-			statement.setTimestamp(pos, ts);
-		}
-	}
+    @Override
+    public String toString(LocalDateTime value) {
+        if (value == null) {
+            return "\'null\'";
+        }
 
-	protected long getMillis(Object value) {
-		return ((LocalDateTime) value).toDateTime().getMillis();
-	}
-
+        return '\'' + value.toString() + '\'';
+    }
 }

@@ -27,7 +27,7 @@ import org.apache.cayenne.access.types.ExtendedType;
 /**
  * @since 3.0
  */
-class SQLiteFloatType implements ExtendedType {
+class SQLiteFloatType implements ExtendedType<Float> {
 
     @Override
     public String getClassName() {
@@ -35,26 +35,26 @@ class SQLiteFloatType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public Float materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         // the driver throws an NPE on 'getFloat' if the value is null, so must read it as
         // an object.
         Number n = (Number) rs.getObject(index);
-        return n == null ? null : new Float(n.floatValue());
+        return n == null ? null : n.floatValue();
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public Float materializeObject(ResultSet rs, int index, int type) throws Exception {
         // the driver throws an NPE on 'getFloat' if the value is null, so must read it as
         // an object.
         Number n = (Number) rs.getObject(index);
-        return n == null ? null : new Float(n.floatValue());
+        return n == null ? null : n.floatValue();
     }
     
     @Override
     public void setJdbcObject(
             PreparedStatement st,
-            Object val,
+            Float val,
             int pos,
             int type,
             int scale) throws Exception {
@@ -65,5 +65,14 @@ class SQLiteFloatType implements ExtendedType {
         else {
             st.setObject(pos, val, type);
         }
+    }
+
+    @Override
+    public String toString(Float value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.toString();
     }
 }

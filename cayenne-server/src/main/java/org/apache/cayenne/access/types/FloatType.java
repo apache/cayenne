@@ -25,7 +25,7 @@ import java.sql.ResultSet;
 /**
  * @since 3.0
  */
-public class FloatType implements ExtendedType {
+public class FloatType implements ExtendedType<Float> {
 
     @Override
     public String getClassName() {
@@ -33,13 +33,13 @@ public class FloatType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public Float materializeObject(ResultSet rs, int index, int type) throws Exception {
         float f = rs.getFloat(index);
         return rs.wasNull() ? null : f;
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public Float materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         float f = rs.getFloat(index);
         return rs.wasNull() ? null : f;
@@ -48,7 +48,7 @@ public class FloatType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            Float value,
             int pos,
             int type,
             int scale) throws Exception {
@@ -57,8 +57,16 @@ public class FloatType implements ExtendedType {
             statement.setNull(pos, type);
         }
         else {
-            statement.setFloat(pos, ((Number) value).floatValue());
+            statement.setFloat(pos, value);
         }
     }
 
+    @Override
+    public String toString(Float value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.toString();
+    }
 }

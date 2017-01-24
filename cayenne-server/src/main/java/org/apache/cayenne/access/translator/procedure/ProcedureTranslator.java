@@ -19,6 +19,13 @@
 
 package org.apache.cayenne.access.translator.procedure;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.access.translator.ProcedureParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
@@ -28,13 +35,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.ProcedureQuery;
-
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Stored procedure query translator.
@@ -229,11 +229,14 @@ public class ProcedureTranslator {
 			ProcedureParameter param,
 			Object val,
 			int pos) throws Exception {
-		ExtendedType extendedType = val != null ? adapter.getExtendedTypes().getRegisteredType(val.getClass())
+		ExtendedType extendedType = val != null
+				? adapter.getExtendedTypes().getRegisteredType(val.getClass())
 				: adapter.getExtendedTypes().getDefaultType();
-		ProcedureParameterBinding binding = new ProcedureParameterBinding(param, extendedType);
-		binding.setValue(val);
+
+		ProcedureParameterBinding binding = new ProcedureParameterBinding(param);
 		binding.setStatementPosition(pos);
+		binding.setValue(val);
+		binding.setExtendedType(extendedType);
 		adapter.bindParameter(stmt, binding);
 	}
 

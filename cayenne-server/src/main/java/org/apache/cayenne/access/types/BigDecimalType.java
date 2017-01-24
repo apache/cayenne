@@ -26,7 +26,7 @@ import java.sql.ResultSet;
 /**
  * @since 3.0
  */
-public class BigDecimalType implements ExtendedType {
+public class BigDecimalType implements ExtendedType<BigDecimal> {
 
     @Override
     public String getClassName() {
@@ -34,12 +34,12 @@ public class BigDecimalType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public BigDecimal materializeObject(ResultSet rs, int index, int type) throws Exception {
         return rs.getBigDecimal(index);
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public BigDecimal materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return rs.getBigDecimal(index);
     }
@@ -47,7 +47,7 @@ public class BigDecimalType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            BigDecimal value,
             int pos,
             int type,
             int scale) throws Exception {
@@ -56,8 +56,16 @@ public class BigDecimalType implements ExtendedType {
             statement.setNull(pos, type);
         }
         else {
-            statement.setBigDecimal(pos, (BigDecimal) value);
+            statement.setBigDecimal(pos, value);
         }
     }
 
+    @Override
+    public String toString(BigDecimal value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.toString();
+    }
 }

@@ -35,9 +35,8 @@ public class ParameterBinding {
 	private Integer type;
 	private int scale;
 
-	public ParameterBinding(ExtendedType extendedType) {
+	public ParameterBinding() {
 		this.statementPosition = EXCLUDED_POSITION;
-		this.extendedType = extendedType;
 	}
 
 	public Object getValue() {
@@ -64,21 +63,27 @@ public class ParameterBinding {
 		return extendedType;
 	}
 
+	public void setExtendedType(ExtendedType extendedType) {
+		this.extendedType = extendedType;
+	}
+
 	/**
 	 * Marks the binding object as excluded for the current iteration.
 	 */
 	public void exclude() {
 		this.statementPosition = EXCLUDED_POSITION;
 		this.value = null;
+		this.extendedType = null;
 	}
 
 	/**
 	 * Sets the value of the binding and initializes statement position var,
 	 * thus "including" this binding in the current iteration.
 	 */
-	public void include(int statementPosition, Object value) {
+	public void include(int statementPosition, Object value, ExtendedType extendedType) {
 		this.statementPosition = statementPosition;
 		this.value = value;
+		this.extendedType = extendedType;
 	}
 
 	public Integer getType() {

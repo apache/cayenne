@@ -27,39 +27,48 @@ import java.sql.ResultSet;
  * 
  * @since 3.0
  */
-abstract class ExtendedTypeDecorator implements ExtendedType {
+abstract class ExtendedTypeDecorator<T, E> implements ExtendedType<T> {
 
-    private ExtendedType decorated;
+    private ExtendedType<E> decorated;
 
-    ExtendedTypeDecorator(ExtendedType decorated) {
+    ExtendedTypeDecorator(ExtendedType<E> decorated) {
         this.decorated = decorated;
     }
 
-    abstract Object toJavaObject(Object object);
+    abstract T toJavaObject(E object);
 
-    abstract Object fromJavaObject(Object object);
+    abstract E fromJavaObject(T object);
 
     @Override
     public abstract String getClassName();
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public T materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return toJavaObject(decorated.materializeObject(rs, index, type));
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public T materializeObject(ResultSet rs, int index, int type) throws Exception {
         return toJavaObject(decorated.materializeObject(rs, index, type));
     }
 
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            T value,
             int pos,
             int type,
             int precision) throws Exception {
         decorated.setJdbcObject(statement, fromJavaObject(value), pos, type, precision);
+    }
+
+    @Override
+    public String toString(T value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.toString();
     }
 }

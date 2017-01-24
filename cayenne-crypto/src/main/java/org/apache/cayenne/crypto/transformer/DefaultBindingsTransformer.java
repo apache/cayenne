@@ -46,6 +46,7 @@ public class DefaultBindingsTransformer implements BindingsTransformer {
             DbAttributeBinding b = bindings[positions[i]];
             Object transformed = transformers[i].encrypt(encryptor, b.getValue());
             b.setValue(transformed);
+            b.setExtendedType(null); // TODO fast hack
         }
     }
 

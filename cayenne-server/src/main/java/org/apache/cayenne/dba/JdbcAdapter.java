@@ -19,6 +19,15 @@
 
 package org.apache.cayenne.dba;
 
+import java.net.URL;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.ParameterBinding;
@@ -47,15 +56,6 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.util.Util;
-
-import java.net.URL;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * A generic DbAdapter implementation. Can be used as a default adapter or as a
@@ -443,7 +443,7 @@ public class JdbcAdapter implements DbAdapter {
 	@Override
 	public String createFkConstraint(DbRelationship rel) {
 
-		DbEntity source = (DbEntity) rel.getSourceEntity();
+		DbEntity source = rel.getSourceEntity();
 		StringBuilder buf = new StringBuilder();
 		StringBuilder refBuf = new StringBuilder();
 
@@ -468,7 +468,7 @@ public class JdbcAdapter implements DbAdapter {
 
 		buf.append(") REFERENCES ");
 
-		buf.append(quotingStrategy.quotedFullyQualifiedName((DbEntity) rel.getTargetEntity()));
+		buf.append(quotingStrategy.quotedFullyQualifiedName(rel.getTargetEntity()));
 
 		buf.append(" (").append(refBuf.toString()).append(')');
 		return buf.toString();
@@ -545,12 +545,15 @@ public class JdbcAdapter implements DbAdapter {
 		if (binding.getValue() == null) {
 			statement.setNull(binding.getStatementPosition(), binding.getType());
 		} else {
-			ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(binding.getValue().getClass());
-			typeProcessor.setJdbcObject(statement
-					, binding.getValue()
-					, binding.getStatementPosition()
-					, binding.getType()
-					, binding.getScale());
+			ExtendedType typeProcessor = binding.getExtendedType() != null
+					? binding.getExtendedType()
+					: getExtendedTypes().getRegisteredType(binding.getValue().getClass());
+
+			typeProcessor.setJdbcObject(statement,
+					binding.getValue(),
+					binding.getStatementPosition(),
+					binding.getType(),
+					binding.getScale());
 		}
 	}
 

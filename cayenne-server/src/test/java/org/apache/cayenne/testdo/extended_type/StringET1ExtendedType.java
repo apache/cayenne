@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.testdo.extended_type;
 
-import org.apache.cayenne.access.types.ExtendedType;
-
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class StringET1ExtendedType implements ExtendedType {
+import org.apache.cayenne.access.types.ExtendedType;
+
+public class StringET1ExtendedType implements ExtendedType<StringET1> {
 
     @Override
     public String getClassName() {
@@ -32,13 +32,13 @@ public class StringET1ExtendedType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public StringET1 materializeObject(ResultSet rs, int index, int type) throws Exception {
         String string = rs.getString(index);
         return string != null ? new StringET1(string) : null;
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public StringET1 materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         String string = rs.getString(index);
         return string != null ? new StringET1(string) : null;
@@ -47,16 +47,25 @@ public class StringET1ExtendedType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            StringET1 value,
             int pos,
             int type,
             int precision) throws Exception {
 
-        if (value instanceof StringET1) {
-            statement.setString(pos, ((StringET1) value).getString());
+        if (value != null) {
+            statement.setString(pos, value.getString());
         }
         else {
             statement.setNull(pos, type);
         }
+    }
+
+    @Override
+    public String toString(StringET1 value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.toString();
     }
 }

@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator;
 
-import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.ProcedureParameter;
 
 /**
@@ -30,8 +29,8 @@ public class ProcedureParameterBinding extends ParameterBinding {
 
 	private final ProcedureParameter parameter;
 
-	public ProcedureParameterBinding(ProcedureParameter procedureParameter, ExtendedType extendedType) {
-		super(extendedType);
+	public ProcedureParameterBinding(ProcedureParameter procedureParameter) {
+		super();
 		this.parameter = procedureParameter;
 	}
 

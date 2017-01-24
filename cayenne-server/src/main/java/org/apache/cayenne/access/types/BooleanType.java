@@ -32,7 +32,7 @@ import java.sql.Types;
  * 
  * @since 1.2
  */
-public class BooleanType implements ExtendedType {
+public class BooleanType implements ExtendedType<Boolean> {
 
     @Override
     public String getClassName() {
@@ -42,7 +42,7 @@ public class BooleanType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement st,
-            Object val,
+            Boolean val,
             int pos,
             int type,
             int precision) throws Exception {
@@ -60,15 +60,24 @@ public class BooleanType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public Boolean materializeObject(ResultSet rs, int index, int type) throws Exception {
         boolean b = rs.getBoolean(index);
         return (rs.wasNull()) ? null : b ? Boolean.TRUE : Boolean.FALSE;
     }
 
     @Override
-    public Object materializeObject(CallableStatement st, int index, int type)
+    public Boolean materializeObject(CallableStatement st, int index, int type)
             throws Exception {
         boolean b = st.getBoolean(index);
         return (st.wasNull()) ? null : b ? Boolean.TRUE : Boolean.FALSE;
+    }
+
+    @Override
+    public String toString(Boolean value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return '\'' + value.toString() + '\'';
     }
 }

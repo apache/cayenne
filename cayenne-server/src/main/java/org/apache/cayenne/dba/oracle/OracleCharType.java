@@ -41,7 +41,7 @@ public class OracleCharType extends CharType {
     @Override
     public void setJdbcObject(
             PreparedStatement st,
-            Object val,
+            String val,
             int pos,
             int type,
             int precision) throws Exception {
@@ -50,11 +50,11 @@ public class OracleCharType extends CharType {
             if (isUsingClobs()) {
 
                 Clob clob = st.getConnection().createClob();
-                clob.setString(1, (String) val);
+                clob.setString(1, val);
                 st.setClob(pos, clob);
                 
             } else {
-                st.setString(pos, (String) val);
+                st.setString(pos, val);
             }
         }
         else {

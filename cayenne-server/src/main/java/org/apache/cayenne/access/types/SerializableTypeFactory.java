@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.access.types;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * ExtendedTypeFactory for handling serializable objects. Returned ExtendedType
@@ -59,15 +59,7 @@ class SerializableTypeFactory implements ExtendedTypeFactory {
 
 			// note - can't use "getRegisteredType" as it causes infinite
 			// recursion
-			ExtendedType bytesType = map.getExplictlyRegisteredType("byte[]");
-
-			// not sure if this type of recursion can occur, still worth
-			// checking
-			if (bytesType instanceof SerializableType) {
-				throw new IllegalStateException("Can't create Serializable ExtendedType for "
-						+ objectClass.getCanonicalName() + ": no ExtendedType exists for byte[]");
-			}
-
+			ExtendedType<byte[]> bytesType = map.getExplictlyRegisteredType("byte[]");
 			return new SerializableType(objectClass, bytesType);
 		}
 
@@ -77,11 +69,11 @@ class SerializableTypeFactory implements ExtendedTypeFactory {
 	/**
 	 * A serialization wrapper on top of byte[] ExtendedType
 	 */
-	final class SerializableType extends ExtendedTypeDecorator {
+	final class SerializableType extends ExtendedTypeDecorator<Object, byte[]> {
 
 		private Class<?> javaClass;
 
-		SerializableType(Class<?> javaClass, ExtendedType bytesType) {
+		SerializableType(Class<?> javaClass, ExtendedType<byte[]> bytesType) {
 			super(bytesType);
 			this.javaClass = javaClass;
 		}
@@ -92,7 +84,7 @@ class SerializableTypeFactory implements ExtendedTypeFactory {
 		}
 
 		@Override
-		Object fromJavaObject(Object object) {
+		byte[] fromJavaObject(Object object) {
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream() {
 
 				// avoid unneeded array copy...
@@ -112,8 +104,7 @@ class SerializableTypeFactory implements ExtendedTypeFactory {
 		}
 
 		@Override
-		Object toJavaObject(Object object) {
-			byte[] bytes = (byte[]) object;
+		Object toJavaObject(byte[] bytes) {
 			try {
 				return bytes != null && bytes.length > 0 ? new ObjectInputStream(new ByteArrayInputStream(bytes))
 						.readObject() : null;

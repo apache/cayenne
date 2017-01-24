@@ -24,6 +24,7 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.apache.cayenne.ExtendedEnumeration;
 import org.apache.cayenne.dba.TypesMapping;
 
 /**
@@ -36,10 +37,10 @@ import org.apache.cayenne.dba.TypesMapping;
  * 
  * @since 1.2
  */
-public class EnumType<T extends Enum<T>> implements ExtendedType {
+public class EnumType<T extends Enum<T>> implements ExtendedType<T> {
 
     protected Class<T> enumClass;
-    protected Object[] values;
+    protected T[] values;
     protected String canonicalName;
 
     public EnumType(Class<T> enumClass) {
@@ -52,7 +53,7 @@ public class EnumType<T extends Enum<T>> implements ExtendedType {
 
         try {
             Method m = enumClass.getMethod("values");
-            this.values = (Object[]) m.invoke(null);
+            this.values = (T[]) m.invoke(null);
         }
         catch (Exception e) {
             throw new IllegalArgumentException("Class "
@@ -69,20 +70,17 @@ public class EnumType<T extends Enum<T>> implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            T value,
             int pos,
             int type,
             int precision) throws Exception {
 
-        if (value instanceof Enum<?>) {
-
-            Enum<?> e = (Enum<?>) value;
-
+        if (value != null) {
             if (TypesMapping.isNumeric(type)) {
-                statement.setInt(pos, e.ordinal());
+                statement.setInt(pos, value.ordinal());
             }
             else {
-                statement.setString(pos, e.name());
+                statement.setString(pos, value.name());
             }
         }
         else {
@@ -91,7 +89,7 @@ public class EnumType<T extends Enum<T>> implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public T materializeObject(ResultSet rs, int index, int type) throws Exception {
         if (TypesMapping.isNumeric(type)) {
             int i = rs.getInt(index);
             return (rs.wasNull() || index < 0) ? null : values[i];
@@ -103,9 +101,8 @@ public class EnumType<T extends Enum<T>> implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public T materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
-
         if (TypesMapping.isNumeric(type)) {
             int i = rs.getInt(index);
             return (rs.wasNull() || index < 0) ? null : values[i];
@@ -114,5 +111,29 @@ public class EnumType<T extends Enum<T>> implements ExtendedType {
             String string = rs.getString(index);
             return string != null ? Enum.valueOf(enumClass, string) : null;
         }
+    }
+
+    @Override
+    public String toString(T value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        StringBuilder buffer = new StringBuilder();
+        // buffer.append(object.getClass().getName()).append(".");
+        buffer.append(value.name()).append("=");
+        if (value instanceof ExtendedEnumeration) {
+            Object dbValue = ((ExtendedEnumeration) value).getDatabaseValue();
+            if (dbValue instanceof String)
+                buffer.append("'");
+            buffer.append(value);
+            if (dbValue instanceof String)
+                buffer.append("'");
+        } else {
+            buffer.append((value).ordinal());
+            // FIXME -- this isn't quite right
+        }
+
+        return buffer.toString();
     }
 }

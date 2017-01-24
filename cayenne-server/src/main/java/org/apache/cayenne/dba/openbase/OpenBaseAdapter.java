@@ -19,6 +19,13 @@
 
 package org.apache.cayenne.dba.openbase;
 
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Types;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
@@ -41,13 +48,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
-
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Types;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * DbAdapter implementation for <a href="http://www.openbase.com">OpenBase</a>.
@@ -259,19 +259,19 @@ public class OpenBaseAdapter extends JdbcAdapter {
         }
 
         @Override
-        public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+        public Byte materializeObject(ResultSet rs, int index, int type) throws Exception {
 
             // read value as int, and then narrow it down
             int val = rs.getInt(index);
-            return (rs.wasNull()) ? null : Byte.valueOf((byte) val);
+            return (rs.wasNull()) ? null : (byte) val;
         }
 
         @Override
-        public Object materializeObject(CallableStatement rs, int index, int type) throws Exception {
+        public Byte materializeObject(CallableStatement rs, int index, int type) throws Exception {
 
             // read value as int, and then narrow it down
             int val = rs.getInt(index);
-            return (rs.wasNull()) ? null : Byte.valueOf((byte) val);
+            return (rs.wasNull()) ? null : (byte) val;
         }
     }
 
@@ -282,12 +282,12 @@ public class OpenBaseAdapter extends JdbcAdapter {
         }
 
         @Override
-        public void setJdbcObject(PreparedStatement st, Object val, int pos, int type, int precision) throws Exception {
+        public void setJdbcObject(PreparedStatement st, String val, int pos, int type, int precision) throws Exception {
 
             // These to types map to "text"; and when setting "text" as object
             // OB assumes that the object is the actual CLOB... weird
             if (type == Types.CLOB || type == Types.LONGVARCHAR) {
-                st.setString(pos, (String) val);
+                st.setString(pos, val);
             } else {
                 super.setJdbcObject(st, val, pos, type, precision);
             }

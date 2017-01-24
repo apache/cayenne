@@ -28,13 +28,13 @@ public class IngresBooleanType extends BooleanType {
     @Override
     public void setJdbcObject(
             PreparedStatement st,
-            Object val,
+            Boolean val,
             int pos,
             int type,
             int precision) throws Exception {
 
         if (val != null) {
-            st.setInt(pos, ((Boolean) val).booleanValue() ? 1 : 0);
+            st.setInt(pos, val.booleanValue() ? 1 : 0);
         } else {
             st.setNull(pos, type);
         }

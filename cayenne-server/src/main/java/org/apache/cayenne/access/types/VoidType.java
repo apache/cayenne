@@ -29,7 +29,7 @@ import java.sql.ResultSet;
  * 
  * @since 1.2
  */
-public class VoidType implements ExtendedType {
+public class VoidType implements ExtendedType<Void> {
 
     @Override
     public String getClassName() {
@@ -39,7 +39,7 @@ public class VoidType implements ExtendedType {
     @Override
     public void setJdbcObject(
             PreparedStatement statement,
-            Object value,
+            Void value,
             int pos,
             int type,
             int precision) throws Exception {
@@ -47,13 +47,22 @@ public class VoidType implements ExtendedType {
     }
 
     @Override
-    public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
+    public Void materializeObject(ResultSet rs, int index, int type) throws Exception {
         return null;
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
+    public Void materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
+        return null;
+    }
+
+    @Override
+    public String toString(Void value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
         return null;
     }
 }

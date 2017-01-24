@@ -19,17 +19,16 @@
 
 package org.apache.cayenne.access.translator.batch;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.DeleteBatchQuery;
-
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Translator for delete BatchQueries. Creates parameterized DELETE SQL
@@ -82,11 +81,7 @@ public class DeleteBatchTranslator extends DefaultBatchTranslator {
         DbAttributeBinding[] bindings = new DbAttributeBinding[len];
 
         for (int i = 0; i < len; i++) {
-            DbAttribute a = attributes.get(i);
-
-            String typeName = TypesMapping.getJavaBySqlType(a.getType());
-            ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
-            bindings[i] = new DbAttributeBinding(a, extendedType);
+            bindings[i] = new DbAttributeBinding(attributes.get(i));
         }
 
         return bindings;
@@ -107,7 +102,12 @@ public class DeleteBatchTranslator extends DefaultBatchTranslator {
             if (deleteBatch.isNull(b.getAttribute())) {
                 b.exclude();
             } else {
-                b.include(j++, row.getValue(i));
+                Object value = row.getValue(i);
+                ExtendedType extendedType = value != null
+                        ? adapter.getExtendedTypes().getRegisteredType(value.getClass())
+                        : adapter.getExtendedTypes().getDefaultType();
+
+                b.include(j++, value, extendedType);
             }
         }
 

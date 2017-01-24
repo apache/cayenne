@@ -19,6 +19,10 @@
 
 package org.apache.cayenne.dba.oracle;
 
+import java.sql.Types;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslator;
@@ -29,10 +33,6 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
-
-import java.sql.Types;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Superclass of query builders for the DML operations involving LOBs.
@@ -76,7 +76,7 @@ abstract class Oracle8LOBBatchTranslator extends DefaultBatchTranslator {
 
         it = qualifierAttributes.iterator();
         while (it.hasNext()) {
-            DbAttribute attribute = (DbAttribute) it.next();
+            DbAttribute attribute = it.next();
             appendDbAttribute(buf, attribute);
             buf.append(" = ?");
             if (it.hasNext()) {
@@ -118,11 +118,7 @@ abstract class Oracle8LOBBatchTranslator extends DefaultBatchTranslator {
         DbAttributeBinding[] bindings = new DbAttributeBinding[len];
 
         for (int i = 0; i < len; i++) {
-            DbAttribute attribute = dbAttributes.get(i);
-
-            String typeName = TypesMapping.getJavaBySqlType(attribute.getType());
-            ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
-            bindings[i] = new DbAttributeBinding(attribute, extendedType);
+            bindings[i] = new DbAttributeBinding(dbAttributes.get(i));
         }
 
         return bindings;
@@ -144,7 +140,11 @@ abstract class Oracle8LOBBatchTranslator extends DefaultBatchTranslator {
             // TODO: (Andrus) This works as long as there is no LOBs in
             // qualifier
             if (isUpdateableColumn(value, type)) {
-                b.include(j++, value);
+                ExtendedType extendedType = value != null
+                        ? adapter.getExtendedTypes().getRegisteredType(value.getClass())
+                        : adapter.getExtendedTypes().getDefaultType();
+
+                b.include(j++, value, extendedType);
             } else {
                 b.exclude();
             }

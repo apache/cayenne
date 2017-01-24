@@ -46,7 +46,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 
 	private static final Log logger = LogFactory.getLog(CommonsJdbcEventLogger.class);
 
-	private static final int TRIM_VALUES_THRESHOLD = 30;
+	public static final int TRIM_VALUES_THRESHOLD = 30;
 
 	protected long queryExecutionTimeLoggingThreshold;
 
@@ -263,7 +263,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 				while (attributeIterator != null && attributeIterator.hasNext()) {
 					attribute = attributeIterator.next();
 
-					if (isInserting == false || attribute.isGenerated() == false)
+					if (!isInserting || !attribute.isGenerated())
 						break;
 				}
 
@@ -288,10 +288,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 
 		char firstCharacter = query.charAt(0);
 
-		if (firstCharacter == 'I' || firstCharacter == 'i')
-			return true;
-		else
-			return false;
+		return firstCharacter == 'I' || firstCharacter == 'i';
 	}
 
 	@Override
@@ -379,7 +376,12 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 				}
 
 				buffer.append(":");
-				sqlLiteralForObject(buffer, b.getValue());
+
+				if (b.getExtendedType() != null) {
+					buffer.append(b.getExtendedType().toString(b.getValue()));
+				} else {
+					buffer.append(b.getValue());
+				}
 			}
 
 			if (hasIncluded) {

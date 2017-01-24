@@ -23,7 +23,7 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class MockExtendedType implements ExtendedType {
+public class MockExtendedType implements ExtendedType<Object> {
 
     protected Class<?> objectClass;
 
@@ -58,5 +58,14 @@ public class MockExtendedType implements ExtendedType {
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
         return objectClass.newInstance();
+    }
+
+    @Override
+    public String toString(Object value) {
+        if (value == null) {
+            return "\'null\'";
+        }
+
+        return value.toString();
     }
 }
