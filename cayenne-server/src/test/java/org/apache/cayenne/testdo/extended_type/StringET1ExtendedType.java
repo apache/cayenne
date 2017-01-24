@@ -18,11 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.testdo.extended_type;
 
+import org.apache.cayenne.access.types.ExtendedType;
+
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
-import org.apache.cayenne.access.types.ExtendedType;
 
 public class StringET1ExtendedType implements ExtendedType<StringET1> {
 
@@ -63,7 +63,7 @@ public class StringET1ExtendedType implements ExtendedType<StringET1> {
     @Override
     public String toString(StringET1 value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return value.toString();

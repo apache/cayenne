@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sqlite;
 
+import org.apache.cayenne.access.types.ByteArrayType;
+import org.apache.cayenne.access.types.ExtendedType;
+
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
-import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.util.IDUtil;
 
 /**
  * @since 3.0
@@ -70,11 +70,11 @@ class SQLiteByteArrayType implements ExtendedType<byte[]> {
     @Override
     public String toString(byte[] value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         StringBuilder buffer = new StringBuilder();
-        IDUtil.appendFormattedBytes(buffer, value);
+        ByteArrayType.logBytes(buffer, value);
         return buffer.toString();
     }
 }

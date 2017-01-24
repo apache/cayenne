@@ -64,7 +64,7 @@ public class LongType implements ExtendedType<Long> {
     @Override
     public String toString(Long value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return value.toString();

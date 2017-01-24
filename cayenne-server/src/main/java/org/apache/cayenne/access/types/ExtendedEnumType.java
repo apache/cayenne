@@ -159,7 +159,7 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType<T> {
     @Override
     public String toString(T value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         StringBuilder buffer = new StringBuilder();

@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.unit.jira;
 
+import org.apache.cayenne.access.types.ExtendedType;
+
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
-import org.apache.cayenne.access.types.ExtendedType;
 
 /**
  */
@@ -64,7 +64,7 @@ public class CAY_207StringType2 implements ExtendedType<CAY_207String2> {
     @Override
     public String toString(CAY_207String2 value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return value.toString();

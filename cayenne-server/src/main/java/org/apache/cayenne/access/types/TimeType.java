@@ -63,7 +63,7 @@ public class TimeType implements ExtendedType<Time> {
     @Override
     public String toString(Time value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return '\'' + value.toString() + '\'';

@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.util.IDUtil;
+
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
-import org.apache.cayenne.util.IDUtil;
 
 /**
  * Handles <code>java.lang.Byte</code> type mapping. Can be configured to recast
@@ -83,7 +83,7 @@ public class ByteType implements ExtendedType<Byte> {
     @Override
     public String toString(Byte value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         StringBuilder buffer = new StringBuilder();

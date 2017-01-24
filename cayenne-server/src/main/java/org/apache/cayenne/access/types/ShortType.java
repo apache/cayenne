@@ -82,7 +82,7 @@ public class ShortType implements ExtendedType<Short> {
     @Override
     public String toString(Short value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return value.toString();

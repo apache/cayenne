@@ -63,7 +63,7 @@ public class ObjectType implements ExtendedType<Object> {
     @Override
     public String toString(Object value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return value.toString();

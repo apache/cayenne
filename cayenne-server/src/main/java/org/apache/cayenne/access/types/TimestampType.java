@@ -63,7 +63,7 @@ public class TimestampType implements ExtendedType<Timestamp> {
     @Override
     public String toString(Timestamp value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return '\'' + value.toString() + '\'';

@@ -66,7 +66,7 @@ abstract class ExtendedTypeDecorator<T, E> implements ExtendedType<T> {
     @Override
     public String toString(T value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return value.toString();

@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.java8.access.types;
 
+import org.apache.cayenne.access.types.ExtendedType;
+
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Time;
 import java.time.LocalTime;
-
-import org.apache.cayenne.access.types.ExtendedType;
 
 public class LocalTimeType implements ExtendedType<LocalTime> {
 
@@ -54,7 +54,7 @@ public class LocalTimeType implements ExtendedType<LocalTime> {
     @Override
     public String toString(LocalTime value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return '\'' + value.toString() + '\'';

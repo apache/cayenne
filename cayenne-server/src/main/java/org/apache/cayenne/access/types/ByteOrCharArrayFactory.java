@@ -18,11 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.access.types;
 
-import java.lang.reflect.Array;
-
 import org.apache.cayenne.util.IDUtil;
 
-import static org.apache.cayenne.log.CommonsJdbcEventLogger.TRIM_VALUES_THRESHOLD;
+import java.lang.reflect.Array;
 
 /**
  * A factory that dynamically creates ExtendedTypes for Character, Character[], Byte[] and
@@ -123,7 +121,7 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
         @Override
         public String toString(char[] value) {
             if (value == null) {
-                return "\'null\'";
+                return "NULL";
             }
 
             StringBuilder buffer = new StringBuilder();
@@ -194,7 +192,7 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
         @Override
         public String toString(Character[] value) {
             if (value == null) {
-                return "\'null\'";
+                return "NULL";
             }
 
             StringBuilder buffer = new StringBuilder();
@@ -265,7 +263,7 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
         @Override
         public String toString(Byte[] value) {
             if (value == null) {
-                return "\'null\'";
+                return "NULL";
             }
 
             StringBuilder buffer = new StringBuilder();

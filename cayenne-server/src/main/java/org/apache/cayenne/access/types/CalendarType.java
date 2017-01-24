@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.dba.TypesMapping;
+
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,9 +28,6 @@ import java.sql.Types;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.dba.TypesMapping;
 
 /**
  * ExtendedType that handles {@link java.util.Calendar} fields.
@@ -172,7 +172,7 @@ public class CalendarType<T extends Calendar> implements ExtendedType<Calendar> 
     @Override
     public String toString(Calendar value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return value.getClass().getName() + '(' + new java.sql.Timestamp(value.getTimeInMillis()) + ')';

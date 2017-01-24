@@ -63,7 +63,7 @@ public class BigDecimalType implements ExtendedType<BigDecimal> {
     @Override
     public String toString(BigDecimal value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return value.toString();

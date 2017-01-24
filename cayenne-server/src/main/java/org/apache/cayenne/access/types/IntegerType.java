@@ -64,7 +64,7 @@ public class IntegerType implements ExtendedType<Integer> {
     @Override
     public String toString(Integer value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return value.toString();

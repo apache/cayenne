@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.CayenneRuntimeException;
+
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.UUID;
-
-import org.apache.cayenne.CayenneRuntimeException;
 
 /**
  * An ExtendedType to map Java UUIDs as persistent attributes.
@@ -87,7 +87,7 @@ public class UUIDType implements ExtendedType<UUID> {
     @Override
     public String toString(UUID value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return value.toString();

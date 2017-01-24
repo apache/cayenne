@@ -19,6 +19,10 @@
 
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.util.IDUtil;
+import org.apache.cayenne.util.MemoryBlob;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,10 +32,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-
-import org.apache.cayenne.CayenneException;
-import org.apache.cayenne.util.IDUtil;
-import org.apache.cayenne.util.MemoryBlob;
 
 /**
  * Handles <code>byte[]</code>, mapping it as either of JDBC types - BLOB or
@@ -43,6 +43,30 @@ public class ByteArrayType implements ExtendedType<byte[]> {
 
 	protected boolean trimmingBytes;
 	protected boolean usingBlobs;
+
+    public static void logBytes(StringBuilder buffer, byte[] bytes) {
+        buffer.append("< ");
+
+        int len = bytes.length;
+        boolean trimming = false;
+        if (len > TRIM_VALUES_THRESHOLD) {
+            len = TRIM_VALUES_THRESHOLD;
+            trimming = true;
+        }
+
+        for (int i = 0; i < len; i++) {
+            if (i > 0) {
+                buffer.append(",");
+            }
+            IDUtil.appendFormattedByte(buffer, bytes[i]);
+        }
+
+        if (trimming) {
+            buffer.append("...");
+        }
+
+        buffer.append('>');
+    }
 
 	/**
 	 * Strips null bytes from the byte array, returning a potentially smaller
@@ -141,11 +165,11 @@ public class ByteArrayType implements ExtendedType<byte[]> {
 	@Override
 	public String toString(byte[] value) {
 		if (value == null) {
-			return "\'null\'";
+			return "NULL";
 		}
 
 		StringBuilder buffer = new StringBuilder();
-		IDUtil.appendFormattedBytes(buffer, value);
+		logBytes(buffer, value);
 		return buffer.toString();
 	}
 

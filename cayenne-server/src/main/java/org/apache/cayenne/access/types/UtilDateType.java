@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.dba.TypesMapping;
+
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
 import java.util.Date;
-
-import org.apache.cayenne.dba.TypesMapping;
 
 /**
  * Maps <code>java.util.Date</code> to any of the three database date/time types: TIME,
@@ -122,7 +122,7 @@ public class UtilDateType implements ExtendedType<Date> {
     @Override
     public String toString(Date value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         long time = value.getTime();

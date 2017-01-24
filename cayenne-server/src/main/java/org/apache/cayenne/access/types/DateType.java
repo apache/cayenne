@@ -63,7 +63,7 @@ public class DateType implements ExtendedType<Date> {
     @Override
     public String toString(Date value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return '\'' + value.toString() + '\'';

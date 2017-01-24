@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.log;
 
-import java.lang.reflect.Array;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ExtendedEnumeration;
 import org.apache.cayenne.access.jdbc.SQLParameterBinding;
@@ -37,6 +32,11 @@ import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.lang.reflect.Array;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * A {@link JdbcEventLogger} built on top of commons-logging.
  * 
@@ -46,7 +46,10 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 
 	private static final Log logger = LogFactory.getLog(CommonsJdbcEventLogger.class);
 
-	public static final int TRIM_VALUES_THRESHOLD = 30;
+    /**
+     * @deprecated  since 4.0
+     */
+	private static final int TRIM_VALUES_THRESHOLD = 30;
 
 	protected long queryExecutionTimeLoggingThreshold;
 
@@ -55,6 +58,8 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 				Constants.QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY, 0);
 	}
 
+	// this should go away once we can remove 4.0 deprecated API. The actual logic for printing a value is now
+    // spread around the ExtendedTypes
 	void sqlLiteralForObject(StringBuilder buffer, Object object) {
 		if (object == null) {
 			buffer.append("NULL");
@@ -320,6 +325,9 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 		}
 	}
 
+	/**
+	 * @deprecated since 4.0
+	 */
 	@Deprecated
 	@Override
 	public void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting) {
@@ -379,8 +387,13 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 
 				if (b.getExtendedType() != null) {
 					buffer.append(b.getExtendedType().toString(b.getValue()));
-				} else {
-					buffer.append(b.getValue());
+				} else if(b.getValue() == null) {
+				    buffer.append("NULL");
+                }
+                else {
+					buffer.append(b.getValue().getClass().getName())
+                            .append("@")
+                            .append(System.identityHashCode(b.getValue()));
 				}
 			}
 

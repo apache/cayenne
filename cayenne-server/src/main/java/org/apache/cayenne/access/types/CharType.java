@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.CayenneException;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -28,8 +30,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-
-import org.apache.cayenne.CayenneException;
 
 /**
  * Handles <code>java.lang.String</code>, mapping it as either of JDBC types -
@@ -117,18 +117,19 @@ public class CharType implements ExtendedType<String> {
 	@Override
 	public String toString(String value) {
 		if (value == null) {
-			return "\'null\'";
+			return "NULL";
 		}
 
 		StringBuilder buffer = new StringBuilder();
 
 		buffer.append('\'');
-		// lets escape quotes
+
 		String literal = value;
 		if (literal.length() > TRIM_VALUES_THRESHOLD) {
 			literal = literal.substring(0, TRIM_VALUES_THRESHOLD) + "...";
 		}
 
+		// escape quotes
 		int curPos = 0;
 		int endPos = 0;
 
@@ -137,8 +138,9 @@ public class CharType implements ExtendedType<String> {
 			curPos = endPos + 1;
 		}
 
-		if (curPos < literal.length())
+		if (curPos < literal.length()) {
 			buffer.append(literal.substring(curPos));
+		}
 
 		buffer.append('\'');
 

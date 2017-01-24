@@ -64,7 +64,7 @@ public class FloatType implements ExtendedType<Float> {
     @Override
     public String toString(Float value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return value.toString();

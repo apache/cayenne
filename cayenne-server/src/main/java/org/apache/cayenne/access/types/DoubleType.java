@@ -64,7 +64,7 @@ public class DoubleType implements ExtendedType<Double> {
     @Override
     public String toString(Double value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return value.toString();

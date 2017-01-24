@@ -60,7 +60,7 @@ public class VoidType implements ExtendedType<Void> {
     @Override
     public String toString(Void value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return null;

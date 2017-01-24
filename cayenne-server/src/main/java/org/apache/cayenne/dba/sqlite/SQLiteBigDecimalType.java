@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sqlite;
 
+import org.apache.cayenne.access.types.ExtendedType;
+
 import java.math.BigDecimal;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
-import org.apache.cayenne.access.types.ExtendedType;
 
 /**
  * @since 3.0
@@ -73,7 +73,7 @@ class SQLiteBigDecimalType implements ExtendedType<BigDecimal> {
     @Override
     public String toString(BigDecimal value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return value.toString();

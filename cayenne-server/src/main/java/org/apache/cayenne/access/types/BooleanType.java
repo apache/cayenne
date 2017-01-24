@@ -75,7 +75,7 @@ public class BooleanType implements ExtendedType<Boolean> {
     @Override
     public String toString(Boolean value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return '\'' + value.toString() + '\'';

@@ -19,17 +19,17 @@
 
 package org.apache.cayenne.joda.access.types;
 
+import org.apache.cayenne.access.types.ExtendedType;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
-
-import org.apache.cayenne.access.types.ExtendedType;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 
 /**
  * Handles <code>org.joda.time.LocalTime</code> type mapping.
@@ -86,7 +86,7 @@ public class LocalTimeType implements ExtendedType<LocalTime> {
     @Override
     public String toString(LocalTime value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return '\'' + value.toString() + '\'';

@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.access.types;
 
+import org.apache.cayenne.dba.TypesMapping;
+
 import java.math.BigInteger;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
-import org.apache.cayenne.dba.TypesMapping;
 
 /**
  * @since 3.0
@@ -80,7 +80,7 @@ public class BigIntegerType implements ExtendedType<BigInteger> {
     @Override
     public String toString(BigInteger value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return value.toString();

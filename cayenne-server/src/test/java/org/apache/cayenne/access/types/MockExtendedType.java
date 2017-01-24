@@ -63,7 +63,7 @@ public class MockExtendedType implements ExtendedType<Object> {
     @Override
     public String toString(Object value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return value.toString();

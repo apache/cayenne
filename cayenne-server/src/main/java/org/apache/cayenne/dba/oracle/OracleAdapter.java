@@ -19,16 +19,6 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import java.lang.reflect.Field;
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.ParameterBinding;
@@ -56,6 +46,16 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.resource.ResourceLocator;
+
+import java.lang.reflect.Field;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * DbAdapter implementation for <a href="http://www.oracle.com">Oracle RDBMS
@@ -345,7 +345,7 @@ public class OracleAdapter extends JdbcAdapter {
 		@Override
 		public String toString(Boolean value) {
 			if (value == null) {
-				return "\'null\'";
+				return "NULL";
 			}
 
 			return '\'' + value.toString() + '\'';

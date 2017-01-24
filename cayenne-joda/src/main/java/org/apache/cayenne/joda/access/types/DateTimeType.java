@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.joda.access.types;
 
+import org.apache.cayenne.access.types.ExtendedType;
+import org.joda.time.DateTime;
+
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-
-import org.apache.cayenne.access.types.ExtendedType;
-import org.joda.time.DateTime;
 
 /**
  * Handles <code>org.joda.time.DateTime</code> type mapping.
@@ -70,7 +70,7 @@ public class DateTimeType implements ExtendedType<DateTime> {
     @Override
     public String toString(DateTime value) {
         if (value == null) {
-            return "\'null\'";
+            return "NULL";
         }
 
         return '\'' + value.toString() + '\'';
