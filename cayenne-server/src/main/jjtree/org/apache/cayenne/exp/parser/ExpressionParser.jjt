@@ -342,7 +342,7 @@ void mod() #Mod : { }
 
 void aggregateExpression() : { }
 {
-	(avg() | max() | min() | sum() | count())
+	avg() | max() | min() | sum() | count()
 }
 
 void asterisk() #Asterisk : {}
@@ -352,7 +352,7 @@ void asterisk() #Asterisk : {}
 
 void count() #Count : { }
 {
-	<COUNT> "(" ( asterisk() | numericExpression() ) ")"
+	<COUNT> "(" ( asterisk() | pathExpression() ) ")"
 }
 
 void avg() #Avg : { }
