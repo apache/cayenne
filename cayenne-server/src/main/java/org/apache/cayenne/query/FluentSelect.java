@@ -38,7 +38,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
- * Base class for ObjectSelect and ColumnSelect
+ * Base class for {@link ObjectSelect} and {@link ColumnSelect}
  *
  * @since 4.0
  */

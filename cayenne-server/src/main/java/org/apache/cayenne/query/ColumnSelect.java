@@ -29,59 +29,39 @@ import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.map.EntityResolver;
 
 /**
- * <p>A selecting query providing individual properties based on the root object.</p>
+ * <p>A helper builder for queries selecting individual properties based on the root object.</p>
  * <p>
- *     It can be properties of the object itself, properties of related entities
+ *     It can be used to select properties of the object itself, properties of related entities
  *     or some function calls (including aggregate functions).
- * </p><p>
+ * </p>
+ * <p>
  * Usage examples: <pre>
+ * {@code
  *      // select list of names:
- *      List&lt;String&gt; names = ColumnSelect.query(Artist.class, Artist.ARTIST_NAME).select(context);
+ *      List<String> names = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME).select(context);
  *
  *      // select count:
- *      Property<Long> countProperty = Property.create(FunctionExpressionFactory.countExp(), Long.class);
- *      long count = ColumnSelect.query(Artist.class, countProperty).selectOne();
+ *      long count = ObjectSelect.columnQuery(Artist.class, Property.COUNT).selectOne();
  *
  *      // select only required properties of an entity:
- *      List&lt;Object[]&gt; data = ColumnSelect.query(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
+ *      List<Object[]> data = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
  *                                  .where(Artist.ARTIST_NAME.like("Picasso%))
  *                                  .select(context);
- * </pre></p>
+ * }
+ * </pre>
+ * </p>
+ * <p><b>Note: this class can't be instantiated directly. Use {@link ObjectSelect}.</b></p>
+ * @see ObjectSelect#columnQuery(Class, Property)
+ *
  * @since 4.0
  */
 public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
 
     private Collection<Property<?>> columns;
     private boolean havingExpressionIsActive = false;
-    private boolean singleColumn = true;
+    // package private for tests
+    boolean singleColumn = true;
     private Expression having;
-
-    /**
-     *
-     * @param entityType base persistent class that will be used as a root for this query
-     */
-    public static <T> ColumnSelect<T> query(Class<T> entityType) {
-        return new ColumnSelect<T>().entityType(entityType);
-    }
-
-    /**
-     *
-     * @param entityType base persistent class that will be used as a root for this query
-     * @param column single column to select
-     */
-    public static <E> ColumnSelect<E> query(Class<?> entityType, Property<E> column) {
-        return new ColumnSelect<>().entityType(entityType).column(column);
-    }
-
-    /**
-     *
-     * @param entityType base persistent class that will be used as a root for this query
-     * @param firstColumn column to select
-     * @param otherColumns columns to select
-     */
-    public static ColumnSelect<Object[]> query(Class<?> entityType, Property<?> firstColumn, Property<?>... otherColumns) {
-        return new ColumnSelect<Object[]>().entityType(entityType).columns(firstColumn, otherColumns);
-    }
 
     protected ColumnSelect() {
         super();
@@ -116,14 +96,16 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
     }
 
     /**
-     * <p>Select only specific properties.</p>
+     * <p>Add properties to select.</p>
      * <p>Can be any properties that can be resolved against root entity type
      * (root entity properties, function call expressions, properties of relationships, etc).</p>
      * <p>
      * <pre>
-     * List&lt;Object[]&gt; columns = ColumnSelect.query(Artist.class)
-     *                                    .columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
+     * {@code
+     * List<Object[]> columns = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME)
+     *                                    .columns(Artist.ARTIST_SALARY, Artist.DATE_OF_BIRTH)
      *                                    .select(context);
+     * }
      * </pre>
      *
      * @param firstProperty first property
@@ -143,7 +125,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
     }
 
     /**
-     * <p>Select only specific properties.</p>
+     * <p>Add properties to select.</p>
      * <p>Can be any properties that can be resolved against root entity type
      * (root entity properties, function call expressions, properties of relationships, etc).</p>
      * <p>
@@ -168,21 +150,6 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
         return (ColumnSelect<Object[]>)this;
     }
 
-    /**
-     * <p>Select one specific property.</p>
-     * <p>Can be any property that can be resolved against root entity type
-     * (root entity property, function call expression, property of relationships, etc)</p>
-     * <p>If you need several columns use {@link ColumnSelect#columns(Property, Property[])} method as subsequent
-     * call to this method will override previous columns set via this or
-     * {@link ColumnSelect#columns(Property, Property[])} method.</p>
-     * <p>
-     * <pre>
-     * List&lt;String&gt; names = ColumnSelect.query(Artist.class, Artist.ARTIST_NAME).select(context);
-     * </pre>
-     *
-     * @param property single property to select
-     * @see ColumnSelect#columns(Property, Property[])
-     */
     @SuppressWarnings("unchecked")
     protected  <E> ColumnSelect<E> column(Property<E> property) {
         if (this.columns == null) {
@@ -192,6 +159,54 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
         }
         this.columns.add(property);
         return (ColumnSelect<E>) this;
+    }
+
+    /**
+     * <p>Shortcut for {@link #columns(Property, Property[])} columns}(Property.COUNT)</p>
+     */
+    public ColumnSelect<Object[]> count() {
+        return columns(Property.COUNT);
+    }
+
+    /**
+     * <p>Select COUNT(property)</p>
+     * <p>Can return different result than COUNT(*) as it will count only non null values</p>
+     * @see ColumnSelect#count()
+     */
+    public ColumnSelect<Object[]> count(Property<?> property) {
+        return columns(property.count());
+    }
+
+    /**
+     * <p>Select minimum value of property</p>
+     * @see ColumnSelect#columns(Property, Property[])
+     */
+    public ColumnSelect<Object[]> min(Property<?> property) {
+        return columns(property.min());
+    }
+
+    /**
+     * <p>Select maximum value of property</p>
+     * @see ColumnSelect#columns(Property, Property[])
+     */
+    public ColumnSelect<Object[]> max(Property<?> property) {
+        return columns(property.max());
+    }
+
+    /**
+     * <p>Select average value of property</p>
+     * @see ColumnSelect#columns(Property, Property[])
+     */
+    public ColumnSelect<Object[]> avg(Property<?> property) {
+        return columns(property.avg());
+    }
+
+    /**
+     * <p>Select sum of values</p>
+     * @see ColumnSelect#columns(Property, Property[])
+     */
+    public <E extends Number> ColumnSelect<Object[]> sum(Property<E> property) {
+        return columns(property.sum());
     }
 
     /**

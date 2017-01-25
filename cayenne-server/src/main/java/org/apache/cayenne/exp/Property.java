@@ -50,6 +50,8 @@ import java.util.List;
  */
 public class Property<E> {
 
+    public static final Property<Long> COUNT = Property.create(FunctionExpressionFactory.countExp(), Long.class);
+
     /**
      * Name of the property in the object
      */
@@ -631,6 +633,26 @@ public class Property<E> {
         for (Object bean : beans) {
             setIn(bean, value);
         }
+    }
+
+    public Property<Long> count() {
+        return create(FunctionExpressionFactory.countExp(getExpression()), Long.class);
+    }
+
+    public Property<E> max() {
+        return create(FunctionExpressionFactory.maxExp(getExpression()), getType());
+    }
+
+    public Property<E> min() {
+        return create(FunctionExpressionFactory.minExp(getExpression()), getType());
+    }
+
+    public Property<E> avg() {
+        return create(FunctionExpressionFactory.avgExp(getExpression()), getType());
+    }
+
+    public Property<E> sum() {
+        return create(FunctionExpressionFactory.sumExp(getExpression()), getType());
     }
 
     public Property<E> alias(String alias) {

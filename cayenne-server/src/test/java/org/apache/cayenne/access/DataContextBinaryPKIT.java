@@ -76,9 +76,7 @@ public class DataContextBinaryPKIT extends ServerCase {
             context.commitChanges();
             context.invalidateObjects(master, detail);
 
-            BinaryPKTest2 fetchedDetail = (BinaryPKTest2) context1.performQuery(
-                    new SelectQuery(BinaryPKTest2.class)).get(0);
-
+            BinaryPKTest2 fetchedDetail = new SelectQuery<>(BinaryPKTest2.class).select(context1).get(0);
             assertNotNull(fetchedDetail.readPropertyDirectly("toBinaryPKMaster"));
 
             BinaryPKTest1 fetchedMaster = fetchedDetail.getToBinaryPKMaster();

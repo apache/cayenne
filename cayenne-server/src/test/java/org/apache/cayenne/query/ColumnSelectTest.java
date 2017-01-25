@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.query;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -38,34 +40,81 @@ public class ColumnSelectTest {
 
     @Test
     public void query() throws Exception {
-        ColumnSelect<Artist> q = ColumnSelect.query(Artist.class);
+        ColumnSelect<Artist> q = new ColumnSelect<>();
         assertNull(q.getColumns());
         assertNull(q.getHaving());
+        assertNull(q.getWhere());
     }
 
     @Test
-    public void queryWithColumn() throws Exception {
-        ColumnSelect<String> q = ColumnSelect.query(Artist.class, Artist.ARTIST_NAME);
-        assertEquals(Arrays.asList(Artist.ARTIST_NAME), q.getColumns());
+    public void queryWithOneColumn() throws Exception {
+        ColumnSelect<String> q = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME);
+        assertEquals(Collections.singletonList(Artist.ARTIST_NAME), q.getColumns());
+        assertTrue(q.singleColumn);
         assertNull(q.getHaving());
+        assertNull(q.getWhere());
     }
 
     @Test
-    public void queryWithColumns() throws Exception {
-        ColumnSelect<Object[]> q = ColumnSelect.query(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
+    public void queryWithOneColumn2() throws Exception {
+        ColumnSelect<String> q = ObjectSelect.query(Artist.class).column(Artist.ARTIST_NAME);
+        assertEquals(Collections.singletonList(Artist.ARTIST_NAME), q.getColumns());
+        assertTrue(q.singleColumn);
+        assertNull(q.getHaving());
+        assertNull(q.getWhere());
+    }
+
+    @Test
+    public void queryWithOneColumn3() throws Exception {
+        ColumnSelect<Object[]> q = ObjectSelect.query(Artist.class).columns(Artist.ARTIST_NAME);
+        assertEquals(Collections.singletonList(Artist.ARTIST_NAME), q.getColumns());
+        assertFalse(q.singleColumn);
+        assertNull(q.getHaving());
+        assertNull(q.getWhere());
+    }
+
+    @Test
+    public void queryWithMultipleColumns() throws Exception {
+        ColumnSelect<Object[]> q = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
         assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH), q.getColumns());
+        assertFalse(q.singleColumn);
         assertNull(q.getHaving());
+        assertNull(q.getWhere());
+    }
+
+    @Test
+    public void queryCount() throws Exception {
+        ColumnSelect<Long> q = ObjectSelect.query(Artist.class).count();
+        assertEquals(Collections.singletonList(Property.COUNT), q.getColumns());
+        assertNull(q.getHaving());
+        assertNull(q.getWhere());
+    }
+
+    @Test
+    public void queryCountWithProperty() throws Exception {
+        ColumnSelect<Long> q = ObjectSelect.query(Artist.class).count(Artist.ARTIST_NAME);
+        assertEquals(Collections.singletonList(Artist.ARTIST_NAME.count()), q.getColumns());
+        assertNull(q.getHaving());
+        assertNull(q.getWhere());
+    }
+
+    @Test
+    public void queryMinWithProperty() throws Exception {
+        ColumnSelect<BigDecimal> q = ObjectSelect.query(Artist.class).min(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE));
+        assertEquals(Collections.singletonList(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).min()), q.getColumns());
+        assertNull(q.getHaving());
+        assertNull(q.getWhere());
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void columns() throws Exception {
-        ColumnSelect q = ColumnSelect.query(Artist.class);
+        ColumnSelect q = new ColumnSelect();
         assertNull(q.getColumns());
         q.columns(Artist.ARTIST_NAME, Artist.PAINTING_ARRAY);
         assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.PAINTING_ARRAY), q.getColumns());
 
-        q = ColumnSelect.query(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
+        q = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
         assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH), q.getColumns());
         q.columns(Artist.PAINTING_ARRAY);
         assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY), q.getColumns());
@@ -74,7 +123,7 @@ public class ColumnSelectTest {
 
     @Test
     public void havingExpression() throws Exception {
-        ColumnSelect q = ColumnSelect.query(Artist.class);
+        ColumnSelect q = new ColumnSelect();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
 
@@ -91,7 +140,7 @@ public class ColumnSelectTest {
 
     @Test
     public void havingString() throws Exception {
-        ColumnSelect q = ColumnSelect.query(Artist.class);
+        ColumnSelect q = new ColumnSelect();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
 
@@ -108,7 +157,7 @@ public class ColumnSelectTest {
 
     @Test
     public void and() throws Exception {
-        ColumnSelect q = ColumnSelect.query(Artist.class);
+        ColumnSelect q = new ColumnSelect();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
 
@@ -127,7 +176,7 @@ public class ColumnSelectTest {
 
     @Test
     public void or() throws Exception {
-        ColumnSelect q = ColumnSelect.query(Artist.class);
+        ColumnSelect q = new ColumnSelect();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
 
@@ -147,7 +196,7 @@ public class ColumnSelectTest {
 
     @Test
     public void testColumnsAddByOne() {
-        ColumnSelect<Artist> q = ColumnSelect.query(Artist.class);
+        ColumnSelect<Artist> q = new ColumnSelect<>();
 
         assertEquals(null, q.getColumns());
 
@@ -161,7 +210,7 @@ public class ColumnSelectTest {
 
     @Test
     public void testColumnsAddAll() {
-        ColumnSelect<Artist> q = ColumnSelect.query(Artist.class);
+        ColumnSelect<Artist> q = new ColumnSelect<>();
 
         assertEquals(null, q.getColumns());
 
@@ -176,7 +225,7 @@ public class ColumnSelectTest {
 
     @Test
     public void testColumnAddByOne() {
-        ColumnSelect<Artist> q = ColumnSelect.query(Artist.class);
+        ColumnSelect<Artist> q = new ColumnSelect<>();
 
         assertEquals(null, q.getColumns());
 

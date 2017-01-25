@@ -19,6 +19,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.map.DbEntity;
@@ -34,9 +35,9 @@ import java.util.List;
  * <pre>
  * {@code
  * Artist a = ObjectSelect
- * .query(Artist.class)
- * .where(Artist.NAME.eq("Picasso"))
- * .selectOne(context);
+ *      .query(Artist.class)
+ *      .where(Artist.NAME.eq("Picasso"))
+ *      .selectOne(context);
  * }
  * </pre>
  *
@@ -117,6 +118,28 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
         return new ObjectSelect<DataRow>().fetchDataRows().dbEntityName(dbEntityName).where(expression);
     }
 
+    /**
+     * Creates a ColumnSelect that will fetch single property that can be resolved
+     * against a given {@link ObjEntity} class.
+     *
+     * @param entityType base persistent class that will be used as a root for this query
+     * @param column single column to select
+     */
+    protected static <E> ColumnSelect<E> columnQuery(Class<?> entityType, Property<E> column) {
+        return new ColumnSelect<>().entityType(entityType).column(column);
+    }
+
+    /**
+     * Creates a ColumnSelect that will fetch multiple columns of a given {@link ObjEntity}
+     *
+     * @param entityType base persistent class that will be used as a root for this query
+     * @param firstColumn column to select
+     * @param otherColumns columns to select
+     */
+    protected static ColumnSelect<Object[]> columnQuery(Class<?> entityType, Property<?> firstColumn, Property<?>... otherColumns) {
+        return new ColumnSelect<Object[]>().entityType(entityType).columns(firstColumn, otherColumns);
+    }
+
     protected ObjectSelect() {
     }
 
@@ -146,18 +169,19 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
     /**
      * <p>Select only specific properties.</p>
      * <p>Can be any properties that can be resolved against root entity type
-     * (root entity properties, function call expressions, properties of relationships, etc).</p>
+     * (root entity's properties, function call expressions, properties of relationships, etc).</p>
      * <p>
      * <pre>
-     * List&lt;Object[]&gt; columns = ColumnSelect.query(Artist.class)
+     * {@code
+     * List<Object[]> columns = ObjectSelect.query(Artist.class)
      *                                    .columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
      *                                    .select(context);
+     * }
      * </pre>
      *
      * @param properties array of properties to select
-     * @see ColumnSelect#column(Property)
+     * @see ObjectSelect#column(Property)
      */
-    @SuppressWarnings("unchecked")
     public ColumnSelect<Object[]> columns(Property<?> firstProperty, Property<?>... properties) {
         return new ColumnSelect<>(this).columns(firstProperty, properties);
     }
@@ -165,21 +189,90 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
     /**
      * <p>Select one specific property.</p>
      * <p>Can be any property that can be resolved against root entity type
-     * (root entity property, function call expression, property of relationships, etc)</p>
-     * <p>If you need several columns use {@link ColumnSelect#columns(Property, Property[])} method as subsequent
-     * call to this method will override previous columns set via this or
-     * {@link ColumnSelect#columns(Property, Property[])} method.</p>
+     * (root entity's property, function call expression, property of relationships, etc)</p>
+     * <p>If you need several columns use {@link ObjectSelect#columns(Property, Property[])} method.</p>
      * <p>
      * <pre>
-     * List&lt;String&gt; names = ObjectSelect.query(Artist.class).column(Artist.ARTIST_NAME).select(context);
+     * {@code
+     * List<String> names = ObjectSelect.query(Artist.class)
+     *                                  .column(Artist.ARTIST_NAME)
+     *                                  .select(context);
+     * }
      * </pre>
-     *
+     * </p>
      * @param property single property to select
-     * @see ColumnSelect#columns(Property, Property[])
+     * @see ObjectSelect#columns(Property, Property[])
      */
-    @SuppressWarnings("unchecked")
     public <E> ColumnSelect<E> column(Property<E> property) {
         return new ColumnSelect<>(this).column(property);
+    }
+
+    /**
+     * Select COUNT(*)
+     * @see ObjectSelect#column(Property)
+     */
+    public ColumnSelect<Long> count() {
+        return column(Property.COUNT);
+    }
+
+    /**
+     * <p>Select COUNT(property)</p>
+     * <p>Can return different result than COUNT(*) as it will count only non null values</p>
+     * @see ObjectSelect#count()
+     * @see ObjectSelect#column(Property)
+     */
+    public ColumnSelect<Long> count(Property<?> property) {
+        return column(property.count());
+    }
+
+    /**
+     * <p>Select minimum value of property</p>
+     * @see ObjectSelect#column(Property)
+     */
+    public <E> ColumnSelect<E> min(Property<E> property) {
+        return column(property.min());
+    }
+
+    /**
+     * <p>Select maximum value of property</p>
+     * @see ObjectSelect#column(Property)
+     */
+    public <E> ColumnSelect<E> max(Property<E> property) {
+        return column(property.max());
+    }
+
+    /**
+     * <p>Select average value of property</p>
+     * @see ObjectSelect#column(Property)
+     */
+    public <E> ColumnSelect<E> avg(Property<E> property) {
+        return column(property.avg());
+    }
+
+    /**
+     * <p>Select sum of values</p>
+     * @see ObjectSelect#column(Property)
+     */
+    public <E extends Number> ColumnSelect<E> sum(Property<E> property) {
+        return column(property.sum());
+    }
+
+    /**
+     * <p>Quick way to select count of records</p>
+     * <p>Usage:
+     * <pre>
+     * {@code
+     *     long count = ObjectSelect.query(Artist.class)
+     *                      .where(Artist.ARTIST_NAME.like("a%"))
+     *                      .selectCount(context);
+     * }
+     * </pre>
+     * </p>
+     * @param context to perform query
+     * @return count of rows
+     */
+    public long selectCount(ObjectContext context) {
+        return count().selectOne(context);
     }
 
     public boolean isFetchingDataRows() {
