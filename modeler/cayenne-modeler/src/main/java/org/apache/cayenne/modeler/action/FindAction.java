@@ -65,14 +65,15 @@ public class FindAction extends CayenneAction {
      */
     private static final Map<Class<?>, Integer> PRIORITY_BY_TYPE = new HashMap<>();
     static {
-        PRIORITY_BY_TYPE.put(ObjEntity.class,         1);
-        PRIORITY_BY_TYPE.put(DbEntity.class,          2);
-        PRIORITY_BY_TYPE.put(ObjAttribute.class,      5);
-        PRIORITY_BY_TYPE.put(DbAttribute.class,       6);
-        PRIORITY_BY_TYPE.put(ObjRelationship.class,   7);
-        PRIORITY_BY_TYPE.put(DbRelationship.class,    8);
-        PRIORITY_BY_TYPE.put(QueryDescriptor.class,   9);
-        PRIORITY_BY_TYPE.put(Embeddable.class,        10);
+        PRIORITY_BY_TYPE.put(ObjEntity.class,          1);
+        PRIORITY_BY_TYPE.put(DbEntity.class,           2);
+        PRIORITY_BY_TYPE.put(ObjAttribute.class,       5);
+        PRIORITY_BY_TYPE.put(DbAttribute.class,        6);
+        PRIORITY_BY_TYPE.put(ObjRelationship.class,    7);
+        PRIORITY_BY_TYPE.put(DbRelationship.class,     8);
+        PRIORITY_BY_TYPE.put(QueryDescriptor.class,    9);
+        PRIORITY_BY_TYPE.put(Embeddable.class,         10);
+        PRIORITY_BY_TYPE.put(EmbeddableAttribute.class,11);
     }
 
     public static String getActionName() {
