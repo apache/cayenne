@@ -118,10 +118,7 @@ public class DataContextOrderingIT extends ServerCase {
         assertEquals(2, list1.size());
     }
 
-    /**
-     * For now Ordering doesn't support custom expression
-     */
-    @Test(expected = CayenneRuntimeException.class)
+    @Test
     public void testCustomPropertySort() throws Exception {
         Calendar c = Calendar.getInstance();
 

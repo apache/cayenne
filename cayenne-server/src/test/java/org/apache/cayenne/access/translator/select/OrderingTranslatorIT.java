@@ -23,8 +23,11 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.FunctionExpressionFactory;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
@@ -95,6 +98,28 @@ public class OrderingTranslatorIT extends ServerCase {
 		Ordering o2 = new Ordering("paintingArray.estimatedPrice", SortOrder.ASCENDING_INSENSITIVE);
 
 		doTestAppendPart("UPPER(ta.ARTIST_NAME), UPPER(ta.ESTIMATED_PRICE)", o1, o2);
+	}
+
+	@Test
+	public void testAppendFunctionExpression1() throws Exception {
+		Ordering o1 = new Ordering(FunctionExpressionFactory.absExp("paintingArray.estimatedPrice"));
+
+		doTestAppendPart("ABS(ta.ESTIMATED_PRICE)", o1);
+	}
+
+	@Test
+	public void testAppendFunctionExpression2() throws Exception {
+		Ordering o1 = new Ordering(FunctionExpressionFactory.countExp(ExpressionFactory.pathExp("dateOfBirth")), SortOrder.ASCENDING_INSENSITIVE);
+		Ordering o2 = new Ordering(FunctionExpressionFactory.modExp("paintingArray.estimatedPrice", 3), SortOrder.DESCENDING);
+
+		doTestAppendPart("UPPER(COUNT(ta.DATE_OF_BIRTH)), MOD(ta.ESTIMATED_PRICE, ?) DESC", o1, o2);
+	}
+
+	@Test(expected = CayenneRuntimeException.class)
+	public void testAppendIllegalExpression() throws Exception {
+		Ordering o1 = new Ordering(ExpressionFactory.and(ExpressionFactory.expTrue(), ExpressionFactory.expFalse()));
+		// should throw exception
+		doTestAppendPart("TRUE AND FALSE", o1);
 	}
 
 	private void doTestAppendPart(String expectedSQL, Ordering... orderings) {

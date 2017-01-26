@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.FunctionExpressionFactory;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.util.TstBean;
 import org.junit.Test;
@@ -121,6 +123,19 @@ public class OrderingTest {
     public void testCaseInsensitive6() {
         Ordering ord = new Ordering("N", SortOrder.DESCENDING);
         assertFalse(ord.isCaseInsensitive());
+    }
+
+    @Test
+    public void testOrderingWithExpression() {
+        Expression exp = FunctionExpressionFactory.absExp("x");
+        Ordering ord = new Ordering();
+        ord.setSortSpec(exp);
+        ord.setSortOrder(SortOrder.ASCENDING);
+
+        Ordering ord2 = new Ordering(exp);
+        assertEquals(ord, ord2);
+        assertEquals(exp, ord2.getSortSpec());
+        assertEquals(SortOrder.ASCENDING, ord2.getSortOrder());
     }
 
     @Test
@@ -257,6 +272,67 @@ public class OrderingTest {
         List<Ordering> orderings = asList(
                 new Ordering("string", SortOrder.ASCENDING),
                 new Ordering("integer", SortOrder.DESCENDING));
+
+        List<TstBean> orderedList = Ordering.orderedList(set, orderings);
+
+        assertEquals(shouldBe0, orderedList.get(0));
+        assertEquals(shouldBe1, orderedList.get(1));
+        assertEquals(shouldBe2, orderedList.get(2));
+        assertEquals(shouldBe3, orderedList.get(3));
+        assertEquals(shouldBe4, orderedList.get(4));
+        assertEquals(shouldBe5, orderedList.get(5));
+    }
+
+    @Test
+    public void testOrderListWithFunction() {
+        Collection<TstBean> set = new HashSet<>(6);
+
+        TstBean shouldBe0 = new TstBean("", 0);
+        TstBean shouldBe1 = new TstBean("", -1);
+        TstBean shouldBe2 = new TstBean("", -2);
+        TstBean shouldBe3 = new TstBean("", 5);
+        TstBean shouldBe4 = new TstBean("", -6);
+        TstBean shouldBe5 = new TstBean("", -30);
+
+        set.add(shouldBe4);
+        set.add(shouldBe2);
+        set.add(shouldBe1);
+        set.add(shouldBe5);
+        set.add(shouldBe0);
+        set.add(shouldBe3);
+
+        List<TstBean> orderedList = new Ordering(FunctionExpressionFactory.absExp("integer"), SortOrder.ASCENDING).orderedList(set);
+
+        assertEquals(shouldBe0, orderedList.get(0));
+        assertEquals(shouldBe1, orderedList.get(1));
+        assertEquals(shouldBe2, orderedList.get(2));
+        assertEquals(shouldBe3, orderedList.get(3));
+        assertEquals(shouldBe4, orderedList.get(4));
+        assertEquals(shouldBe5, orderedList.get(5));
+    }
+
+    @Test
+    public void testOrderListWithFunction_Static() {
+        Collection<TstBean> set = new HashSet<>(6);
+
+        TstBean shouldBe0 = new TstBean("cx", -2);
+        TstBean shouldBe1 = new TstBean("cf", -1);
+        TstBean shouldBe2 = new TstBean("basa", 2);
+        TstBean shouldBe3 = new TstBean("abcd", -1);
+        TstBean shouldBe4 = new TstBean("bdsasd", -2);
+        TstBean shouldBe5 = new TstBean("bdsadf", 1);
+
+        set.add(shouldBe4);
+        set.add(shouldBe2);
+        set.add(shouldBe1);
+        set.add(shouldBe5);
+        set.add(shouldBe0);
+        set.add(shouldBe3);
+
+        List<Ordering> orderings = asList(
+                new Ordering(FunctionExpressionFactory.lengthExp("string"), SortOrder.ASCENDING),
+                new Ordering(FunctionExpressionFactory.absExp("integer"), SortOrder.DESCENDING)
+        );
 
         List<TstBean> orderedList = Ordering.orderedList(set, orderings);
 

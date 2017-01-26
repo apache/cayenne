@@ -80,6 +80,8 @@ public class OrderingTranslator extends QueryAssemblerHelper {
 					appendObjPath(exp);
 				} else if (exp.getType() == Expression.DB_PATH) {
 					appendDbPath(exp);
+				} else if (exp.getType() == Expression.FUNCTION_CALL) {
+					appendFunction(exp);
 				} else {
 					throw new CayenneRuntimeException("Unsupported ordering expression: " + exp);
 				}
@@ -105,6 +107,13 @@ public class OrderingTranslator extends QueryAssemblerHelper {
 		} finally {
 			this.out = mainBuffer;
 		}
+	}
+
+	protected void appendFunction(Expression exp) {
+		QualifierTranslator qualifierTranslator = queryAssembler.getAdapter().getQualifierTranslator(queryAssembler);
+		qualifierTranslator.setQualifier(exp);
+		StringBuilder builder = qualifierTranslator.appendPart(new StringBuilder());
+		out.append(builder.toString());
 	}
 
 	/**

@@ -147,6 +147,15 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 		return true;
 	}
 
+	@Override
+	public int hashCode() {
+		int result = sortSpecString != null ? sortSpecString.hashCode() : 0;
+		result = 31 * result + (sortOrder != null ? sortOrder.hashCode() : 0);
+		result = 31 * result + (pathExceptionSuppressed ? 1 : 0);
+		result = 31 * result + (nullSortedFirst ? 1 : 0);
+		return result;
+	}
+
 	/**
 	 * Sets sortSpec to be an expression represented by string argument.
 	 * 
