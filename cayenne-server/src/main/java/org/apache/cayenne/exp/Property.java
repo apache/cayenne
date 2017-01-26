@@ -30,14 +30,16 @@ import java.util.List;
 
 /**
  * <p>
- * A property in a DataObject.
+ * A property in a {@link org.apache.cayenne.DataObject}.
  * </p>
  * <p>
- * Used to construct Expressions quickly and with type-safety, and to construct Orderings
+ * Used to construct Expressions quickly and with type-safety, and to construct Orderings.
  * </p>
  * <p>
- * Instances of this class are immutable
- * Construct via factory methods Property.create(..)
+ * Instances of this class are immutable.
+ * </p>
+ * <p>
+ * Must be created via factory methods {@link Property#create(String, Class) Property.create(..)}
  * </p>
  *
  * @param <E> The type this property returns.
@@ -50,6 +52,17 @@ import java.util.List;
  */
 public class Property<E> {
 
+    /**
+     * <p>Property that can be used in COUNT(*) queries</p>
+     * <p>
+     * <pre>{@code
+     * List<Object[]> result = ObjectSelect
+     *         .columnQuery(Artist.class, Property.COUNT, Artist.ARTIST_NAME)
+     *         .having(Property.COUNT.gt(1L))
+     *         .select(context);
+     * }</pre>
+     * </p>
+     */
     public static final Property<Long> COUNT = Property.create(FunctionExpressionFactory.countExp(), Long.class);
 
     /**
@@ -59,13 +72,11 @@ public class Property<E> {
 
     /**
      * Expression provider for the property
-     * @since 4.0
      */
     private final ExpressionProvider expressionProvider;
 
     /**
      * Explicit type of the property
-     * @since 4.0
      */
     private final Class<? super E> type;
 
@@ -106,7 +117,6 @@ public class Property<E> {
      * @param name of the property (will be used as alias for the expression)
      * @param expression expression for property
      * @param type of the property
-     * @since 4.0
      *
      * @see Property#create(String, Expression, Class)
      */
@@ -129,7 +139,6 @@ public class Property<E> {
     }
 
     /**
-     * @since 4.0
      * @return alias for this property
      */
     public String getAlias() {
@@ -149,7 +158,7 @@ public class Property<E> {
     }
 
     /**
-     * @since 4.0
+     * @return expression that represents this Property
      */
     public Expression getExpression() {
         return expressionProvider.get();
@@ -635,26 +644,146 @@ public class Property<E> {
         }
     }
 
+    /**
+     * @see FunctionExpressionFactory#countExp(Expression)
+     */
     public Property<Long> count() {
         return create(FunctionExpressionFactory.countExp(getExpression()), Long.class);
     }
 
+    /**
+     * @see FunctionExpressionFactory#maxExp(Expression)
+     */
     public Property<E> max() {
         return create(FunctionExpressionFactory.maxExp(getExpression()), getType());
     }
 
+    /**
+     * @see FunctionExpressionFactory#minExp(Expression)
+     */
     public Property<E> min() {
         return create(FunctionExpressionFactory.minExp(getExpression()), getType());
     }
 
+    /**
+     * @see FunctionExpressionFactory#avgExp(Expression)
+     */
     public Property<E> avg() {
         return create(FunctionExpressionFactory.avgExp(getExpression()), getType());
     }
 
+    /**
+     * @see FunctionExpressionFactory#sumExp(Expression)
+     */
     public Property<E> sum() {
         return create(FunctionExpressionFactory.sumExp(getExpression()), getType());
     }
 
+    /**
+     * @see FunctionExpressionFactory#modExp(Expression, Number)
+     */
+    public Property<E> mod(Number number) {
+        return create(FunctionExpressionFactory.modExp(getExpression(), number), getType());
+    }
+
+    /**
+     * @see FunctionExpressionFactory#absExp(Expression)
+     */
+    public Property<E> abs() {
+        return create(FunctionExpressionFactory.absExp(getExpression()), getType());
+    }
+
+    /**
+     * @see FunctionExpressionFactory#sqrtExp(Expression)
+     */
+    public Property<E> sqrt() {
+        return create(FunctionExpressionFactory.sqrtExp(getExpression()), getType());
+    }
+
+    /**
+     * @see FunctionExpressionFactory#lengthExp(Expression)
+     */
+    public Property<Integer> length() {
+        return create(FunctionExpressionFactory.lengthExp(getExpression()), Integer.class);
+    }
+
+    /**
+     * @see FunctionExpressionFactory#locateExp(String, Expression)
+     */
+    public Property<Integer> locate(String string) {
+        return create(FunctionExpressionFactory.locateExp(ExpressionFactory.wrapScalarValue(string), getExpression()), Integer.class);
+    }
+
+    /**
+     * @see FunctionExpressionFactory#locateExp(Expression, Expression)
+     */
+    public Property<Integer> locate(Property<? extends String> property) {
+        return create(FunctionExpressionFactory.locateExp(property.getExpression(), getExpression()), Integer.class);
+    }
+
+    /**
+     * @see FunctionExpressionFactory#trimExp(Expression)
+     */
+    public Property<String> trim() {
+        return create(FunctionExpressionFactory.trimExp(getExpression()), String.class);
+    }
+
+    /**
+     * @see FunctionExpressionFactory#upperExp(Expression)
+     */
+    public Property<String> upper() {
+        return create(FunctionExpressionFactory.upperExp(getExpression()), String.class);
+    }
+
+    /**
+     * @see FunctionExpressionFactory#lowerExp(Expression)
+     */
+    public Property<String> lower() {
+        return create(FunctionExpressionFactory.lowerExp(getExpression()), String.class);
+    }
+
+    /**
+     * <p>Arguments will be converted as follows:
+     * <ul>
+     *      <li>if argument is a {@link Property} than its expression will be used</li>
+     *      <li>if argument is a {@link Expression} than it will be used as is </li>
+     *      <li>all other values will be converted to String</li>
+     * </ul>
+     * </p>
+     * <p>
+     *     Usage:
+     *     <pre>{@code
+     *     Property<String> fullName = Artist.FIRST_NAME.concat(" ", Artist.SECOND_NAME);
+     *     }</pre>
+     * </p>
+     * @see FunctionExpressionFactory#concatExp(Expression...)
+     */
+    public Property<String> concat(Object... args) {
+        Expression[] exp = new Expression[args.length + 1];
+        int i = 0;
+        exp[i++] = getExpression();
+        for(Object arg : args) {
+            if(arg instanceof Property) {
+                exp[i++] = ((Property) arg).getExpression();
+            } else if(arg instanceof Expression) {
+                exp[i++] = (Expression) arg;
+            } else if(arg != null) {
+                exp[i++] = ExpressionFactory.wrapScalarValue(arg.toString());
+            }
+        }
+        return create(FunctionExpressionFactory.concatExp(exp), String.class);
+    }
+
+    /**
+     * @see FunctionExpressionFactory#substringExp(Expression, int, int)
+     */
+    public Property<String> substring(int offset, int length) {
+        return create(FunctionExpressionFactory.substringExp(getExpression(), offset, length), String.class);
+    }
+
+    /**
+     * Creates alias with different name for this property
+     */
     public Property<E> alias(String alias) {
         return new Property<>(alias, this.getExpression(), this.getType());
     }
@@ -663,18 +792,39 @@ public class Property<E> {
         return type;
     }
 
+    /**
+     * Creates property with name and type
+     * @see Property#create(Expression, Class)
+     * @see Property#create(String, Expression, Class)
+     */
     public static <T> Property<T> create(String name, Class<? super T> type) {
         return new Property<>(name, type);
     }
 
+    /**
+     * Creates property with expression and type
+     * @see Property#create(String, Class)
+     * @see Property#create(String, Expression, Class)
+     */
     public static <T> Property<T> create(Expression expression, Class<? super T> type) {
         return new Property<>(null, expression, type);
     }
 
+    /**
+     * Creates property with name, expression and type
+     * @see Property#create(String, Class)
+     * @see Property#create(Expression, Class)
+     */
     public static <T> Property<T> create(String name, Expression expression, Class<? super T> type) {
         return new Property<>(name, expression, type);
     }
 
+    /**
+     * Since Expression is mutable we need to provide clean Expression for every getter call.
+     * So to keep Property itself immutable we use ExpressionProvider.
+     * @see Property#Property(String, Class)
+     * @see Property#Property(String, Expression, Class)
+     */
     private interface ExpressionProvider {
         Expression get();
     }

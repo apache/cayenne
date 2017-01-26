@@ -52,6 +52,7 @@ import org.apache.cayenne.exp.parser.ASTNotLikeIgnoreCase;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTOr;
 import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.parser.ASTSubtract;
 import org.apache.cayenne.exp.parser.ASTTrue;
 import org.apache.cayenne.exp.parser.ExpressionParser;
@@ -1292,6 +1293,14 @@ public class ExpressionFactory {
 		}
 
 		return e;
+	}
+
+	/**
+	 * Wrap value into ASTScalar
+	 * @since 4.0
+	 */
+	static Expression wrapScalarValue(Object value) {
+		return new ASTScalar(value);
 	}
 
 	/**

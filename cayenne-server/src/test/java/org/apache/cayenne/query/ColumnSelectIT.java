@@ -117,7 +117,7 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test(expected = Exception.class)
     public void testHavingOnNonGroupByColumn() throws Exception {
-        Property<String> nameSubstr = Property.create(substringExp(Artist.ARTIST_NAME.path(), 1, 6), String.class);
+        Property<String> nameSubstr = Artist.ARTIST_NAME.substring(1, 6);
 
         Object[] q = ObjectSelect.columnQuery(Artist.class, nameSubstr, Property.COUNT)
                 .having(Artist.ARTIST_NAME.like("artist%"))
@@ -139,10 +139,10 @@ public class ColumnSelectIT extends ServerCase {
     @Test
     public void testSelectHavingWithExpressionAlias() throws Exception {
 
-        Property<String> nameSubstr = Property.create("name_substr", substringExp(Artist.ARTIST_NAME.path(), 1, 6), String.class);
         Object[] q = null;
         try {
-            q = ObjectSelect.columnQuery(Artist.class, nameSubstr, Property.COUNT)
+            q = ObjectSelect
+                    .columnQuery(Artist.class, Artist.ARTIST_NAME.substring(1, 6).alias("name_substr"), Property.COUNT)
                     .having(Property.COUNT.gt(10L))
                     .selectOne(context);
         } catch (CayenneRuntimeException ex) {
@@ -160,10 +160,9 @@ public class ColumnSelectIT extends ServerCase {
     @Test
     public void testSelectHavingWithExpressionNoAlias() throws Exception {
 
-        Property<String> nameSubstr = Property.create(substringExp(Artist.ARTIST_NAME.path(), 1, 6), String.class);
         Object[] q = null;
         try {
-            q = ObjectSelect.columnQuery(Artist.class, nameSubstr, Property.COUNT)
+            q = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME.substring(1, 6), Property.COUNT)
                     .having(Property.COUNT.gt(10L))
                     .selectOne(context);
         } catch (CayenneRuntimeException ex) {
@@ -179,13 +178,10 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testSelectWhereAndHaving() throws Exception {
-        Property<String> nameFirstLetter = Property.create(substringExp(Artist.ARTIST_NAME.path(), 1, 1), String.class);
-        Property<String> nameSubstr = Property.create("name_substr", substringExp(Artist.ARTIST_NAME.path(), 1, 6), String.class);
-
         Object[] q = null;
         try {
-            q = ObjectSelect.columnQuery(Artist.class, nameSubstr, Property.COUNT)
-                    .where(nameFirstLetter.eq("a"))
+            q = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME.substring(1, 6).alias("name_substr"), Property.COUNT)
+                    .where(Artist.ARTIST_NAME.substring(1, 1).eq("a"))
                     .having(Property.COUNT.gt(10L))
                     .selectOne(context);
         } catch (CayenneRuntimeException ex) {
@@ -336,7 +332,5 @@ public class ColumnSelectIT extends ServerCase {
                 .count(Artist.DATE_OF_BIRTH)
                 .selectOne(context);
         assertEquals(count2, count3);
-
-
     }
 }
