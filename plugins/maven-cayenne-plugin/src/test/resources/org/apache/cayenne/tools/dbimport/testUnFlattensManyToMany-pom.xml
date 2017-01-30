@@ -29,9 +29,13 @@
 				<artifactId>maven-cayenne-plugin</artifactId>
 				<configuration>
 					<map>target/test-classes/org/apache/cayenne/tools/dbimport/testUnFlattensManyToMany.map.xml</map>
-                    <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
-                    <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
-                    <defaultPackage>org.not.my.home</defaultPackage>
+					<dataSource>
+						<driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
+						<url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
+					</dataSource>
+					<dbimport>
+                    	<defaultPackage>org.not.my.home</defaultPackage>
+					</dbimport>
 				</configuration>
 			</plugin>
 		</plugins>

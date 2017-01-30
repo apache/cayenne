@@ -43,36 +43,26 @@ class DbImportConfigurationValidator implements Cloneable {
 
     void validate() throws Exception {
         DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
-        DataSource dataSource;
         DbAdapter adapter;
 
         try {
-            dataSource = injector.getInstance(DataSourceFactory.class)
-                    .getDataSource(dataNodeDescriptor);
-            adapter = injector.getInstance(DbAdapterFactory.class)
-                    .createAdapter(dataNodeDescriptor, dataSource);
+            DataSource dataSource = injector.getInstance(DataSourceFactory.class).getDataSource(dataNodeDescriptor);
+            adapter = injector.getInstance(DbAdapterFactory.class).createAdapter(dataNodeDescriptor, dataSource);
         } catch (Exception ex) {
-            throw new Exception("Error creating DataSource or DbAdapter " +
-                    "for DataNodeDescriptor (" + dataNodeDescriptor + ")", ex);
+            throw new Exception("Error creating DataSource or DbAdapter for DataNodeDescriptor (" + dataNodeDescriptor + ")", ex);
         }
 
-        if (adapter != null
-                && !adapter.supportsCatalogsOnReverseEngineering()
-                && !isReverseEngineeringCatalogsEmpty()) {
+        if (adapter != null && !adapter.supportsCatalogsOnReverseEngineering() && !isReverseEngineeringCatalogsEmpty()) {
             String message = "Your database does not support catalogs on reverse engineering. " +
                     "It allows to connect to only one at the moment. " +
-                    "Please don't note catalogs as param.";
+                    "Please don't note catalogs in <dbimport> configuration.";
             throw new Exception(message);
         }
     }
 
     private boolean isReverseEngineeringCatalogsEmpty() {
         Collection<Catalog> catalogs = reverseEngineering.getCatalogs();
-        if (catalogs == null) {
-            return true;
-        }
-
-        if (catalogs.isEmpty()) {
+        if (catalogs == null || catalogs.isEmpty()) {
             return true;
         }
 

@@ -33,7 +33,7 @@
 		<db-attribute name="PLAYER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
 	</db-entity>
 	<obj-entity name="PickSchedule" className="PickSchedule" dbEntityName="PICK_SCHEDULE">
-		<obj-attribute name="ownerId" type="java.lang.Integer" db-attribute-path="OWNER_ID"/>
+		<obj-attribute name="ownerId" type="int" db-attribute-path="OWNER_ID"/>
 	</obj-entity>
 	<obj-entity name="Player" className="Player" dbEntityName="PLAYER">
 	</obj-entity>

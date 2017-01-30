@@ -37,6 +37,7 @@ import java.util.List;
 
 /**
  * @since 4.0.
+ * @deprecated
  */
 public class DefaultReverseEngineeringLoader implements ReverseEngineeringLoader {
 

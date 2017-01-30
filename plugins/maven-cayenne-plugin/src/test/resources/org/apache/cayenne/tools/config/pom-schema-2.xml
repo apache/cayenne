@@ -26,13 +26,13 @@
             <plugin>
                 <artifactId>maven-cayenne-plugin</artifactId>
                 <configuration>
-                    <reverseEngineering>
+                    <dbimport>
                         <schema>
                             <name>NHL_STATS</name>
                             <excludeTable>^ETL_.*</excludeTable>
                             <excludeColumn>^ETL_.*</excludeColumn>
                         </schema>
-                    </reverseEngineering>
+                    </dbimport>
                 </configuration>
             </plugin>
         </plugins>

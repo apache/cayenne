@@ -16,23 +16,47 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbimport;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+package org.apache.cayenne.tools;
 
 /**
- * @since 4.0.
- * @deprecated
+ * @since 4.0
  */
-public interface ReverseEngineeringLoader {
+public class DbImportDataSourceConfig {
 
-    ReverseEngineering load(InputStream inputStream) throws CayenneRuntimeException, SAXException, 
-            ParserConfigurationException, IOException, ReverseEngineeringLoaderException;
+    /**
+     * A class of JDBC driver to use for the target database.
+     */
+    private String driver;
 
+    /**
+     * JDBC connection URL of a target database.
+     */
+    private String url;
+
+    /**
+     * Database user name.
+     */
+    private String username;
+
+    /**
+     * Database user password.
+     */
+    private String password;
+
+    public String getDriver() {
+        return driver;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 }

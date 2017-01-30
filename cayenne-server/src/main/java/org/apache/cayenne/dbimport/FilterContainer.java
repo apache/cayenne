@@ -18,35 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.dbimport;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
  * @since 4.0.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class FilterContainer {
 
-    @XmlElement(name = "includeTable")
-    private Collection<IncludeTable> includeTables = new LinkedList<IncludeTable>();
+    private Collection<IncludeTable> includeTables = new LinkedList<>();
 
-    @XmlElement(name = "excludeTable")
-    private Collection<ExcludeTable> excludeTables = new LinkedList<ExcludeTable>();
+    private Collection<ExcludeTable> excludeTables = new LinkedList<>();
 
-    @XmlElement(name = "includeColumn")
-    private Collection<IncludeColumn> includeColumns = new LinkedList<IncludeColumn>();
+    private Collection<IncludeColumn> includeColumns = new LinkedList<>();
 
-    @XmlElement(name = "excludeColumn")
-    private Collection<ExcludeColumn> excludeColumns = new LinkedList<ExcludeColumn>();
+    private Collection<ExcludeColumn> excludeColumns = new LinkedList<>();
 
-    @XmlElement(name = "includeProcedure")
-    private Collection<IncludeProcedure> includeProcedures = new LinkedList<IncludeProcedure>();
+    private Collection<IncludeProcedure> includeProcedures = new LinkedList<>();
 
-    @XmlElement(name = "excludeProcedure")
-    private Collection<ExcludeProcedure> excludeProcedures = new LinkedList<ExcludeProcedure>();
+    private Collection<ExcludeProcedure> excludeProcedures = new LinkedList<>();
 
     public Collection<IncludeTable> getIncludeTables() {
         return includeTables;
@@ -95,7 +85,6 @@ public abstract class FilterContainer {
     public void setExcludeProcedures(Collection<ExcludeProcedure> excludeProcedures) {
         this.excludeProcedures = excludeProcedures;
     }
-
 
     public void addIncludeColumn(IncludeColumn includeColumn) {
         this.includeColumns.add(includeColumn);
@@ -154,6 +143,4 @@ public abstract class FilterContainer {
             }
         }
     }
-
-
 }

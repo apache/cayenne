@@ -30,14 +30,17 @@
                 <artifactId>maven-cayenne-plugin</artifactId>
                 <configuration>
                     <map>target/test-classes/org/apache/cayenne/tools/dbimport/testFkAttributeRename.map.xml</map>
-                    <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
-                    <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
 
-                    <reverseEngineering>
+                    <dataSource>
+                        <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
+                        <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
+                    </dataSource>
+
+                    <dbimport>
                         <schema>
                             <name>SCHEMA_01</name>
                         </schema>
-                    </reverseEngineering>
+                    </dbimport>
                 </configuration>
             </plugin>
         </plugins>

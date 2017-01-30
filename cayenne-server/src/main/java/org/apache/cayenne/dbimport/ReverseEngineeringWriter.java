@@ -25,6 +25,7 @@ import java.io.Writer;
 
 /**
  * @since 4.0
+ * @deprecated
  */
 public interface ReverseEngineeringWriter {
 

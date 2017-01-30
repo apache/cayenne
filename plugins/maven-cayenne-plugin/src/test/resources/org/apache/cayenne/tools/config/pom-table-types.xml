@@ -28,11 +28,11 @@
                 <configuration>
                     <map>target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml</map>
 
-                    <reverseEngineering>
+                    <dbimport>
                         <tableType>type1</tableType>
                         <tableType>type2</tableType>
                         <tableType>type3</tableType>
-                    </reverseEngineering>
+                    </dbimport>
                 </configuration>
             </plugin>
         </plugins>

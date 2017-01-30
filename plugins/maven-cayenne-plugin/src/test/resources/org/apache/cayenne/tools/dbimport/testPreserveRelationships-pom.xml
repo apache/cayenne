@@ -29,13 +29,14 @@
 				<artifactId>maven-cayenne-plugin</artifactId>
 				<configuration>
 					<map>target/test-classes/org/apache/cayenne/tools/dbimport/testPreserveRelationships.map.xml</map>
-                    <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
-                    <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
-
-                    <reverseEngineering>
+					<dataSource>
+						<driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
+						<url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
+					</dataSource>
+                    <dbimport>
                         <!-- it doesn't matter true or false, but initial question was about this flag -->
                         <skipRelationshipsLoading>true</skipRelationshipsLoading>
-                    </reverseEngineering>
+                    </dbimport>
 				</configuration>
 			</plugin>
 		</plugins>

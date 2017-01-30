@@ -28,7 +28,9 @@
 			<plugin>
 				<artifactId>maven-cayenne-plugin</artifactId>
 				<configuration>
-					<meaningfulPkTables>*</meaningfulPkTables>
+					<dbimport>
+						<meaningfulPkTables>*</meaningfulPkTables>
+					</dbimport>
 				</configuration>
 			</plugin>
 		</plugins>

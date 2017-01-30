@@ -78,7 +78,7 @@ public final class FiltersConfigBuilder {
     }
 
     private SortedSet<Pattern> transformExcludeTable(Collection<ExcludeTable> excludeTables) {
-        SortedSet<Pattern> res = new TreeSet<Pattern>(PatternFilter.PATTERN_COMPARATOR);
+        SortedSet<Pattern> res = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
         for (ExcludeTable exclude : excludeTables) {
             res.add(PatternFilter.pattern(exclude.getPattern()));
         }
@@ -86,7 +86,7 @@ public final class FiltersConfigBuilder {
     }
 
     private SortedSet<IncludeTableFilter> transformIncludeTable(Collection<IncludeTable> includeTables) {
-        SortedSet<IncludeTableFilter> includeTableFilters = new TreeSet<IncludeTableFilter>();
+        SortedSet<IncludeTableFilter> includeTableFilters = new TreeSet<>();
         for (IncludeTable includeTable : includeTables) {
             includeTableFilters.add(new IncludeTableFilter(includeTable.getPattern(),
                     transform(includeTable.getIncludeColumns(), includeTable.getExcludeColumns())));
@@ -266,18 +266,16 @@ public final class FiltersConfigBuilder {
                 schema.setIncludeColumns(null);
                 schema.setExcludeColumns(null);
 
-                if (schema != null) {
-                    for (IncludeTable includeTable : schema.getIncludeTables()) {
-                        if (engIncludeColumns != null) {
-                            includeTable.getIncludeColumns().addAll(engIncludeColumns);
-                            includeTable.getIncludeColumns().addAll(catalogIncludeColumns);
-                            includeTable.getIncludeColumns().addAll(schemaIncludeColumns);
-                        }
-                        if (engExcludeColumns != null) {
-                            includeTable.getExcludeColumns().addAll(engExcludeColumns);
-                            includeTable.getExcludeColumns().addAll(catalogExcludeColumns);
-                            includeTable.getExcludeColumns().addAll(schemaExcludeColumns);
-                        }
+                for (IncludeTable includeTable : schema.getIncludeTables()) {
+                    if (engIncludeColumns != null) {
+                        includeTable.getIncludeColumns().addAll(engIncludeColumns);
+                        includeTable.getIncludeColumns().addAll(catalogIncludeColumns);
+                        includeTable.getIncludeColumns().addAll(schemaIncludeColumns);
+                    }
+                    if (engExcludeColumns != null) {
+                        includeTable.getExcludeColumns().addAll(engExcludeColumns);
+                        includeTable.getExcludeColumns().addAll(catalogExcludeColumns);
+                        includeTable.getExcludeColumns().addAll(schemaExcludeColumns);
                     }
                 }
             }

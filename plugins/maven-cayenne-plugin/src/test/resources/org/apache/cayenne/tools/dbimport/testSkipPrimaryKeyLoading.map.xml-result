@@ -36,6 +36,6 @@
     <obj-entity name="B" className="B" dbEntityName="B">
     </obj-entity>
 	<obj-entity name="C" className="com.my.home.C" dbEntityName="C">
-		<obj-attribute name="id" type="java.lang.Integer" db-attribute-path="ID"/>
+		<obj-attribute name="id" type="int" db-attribute-path="ID"/>
     </obj-entity>
 </data-map>

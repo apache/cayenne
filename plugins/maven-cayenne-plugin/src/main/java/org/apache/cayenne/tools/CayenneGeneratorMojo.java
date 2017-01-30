@@ -36,7 +36,7 @@ import java.io.FilenameFilter;
  * adapter to DefaultClassGenerator class.
  * 
  * @since 3.0
- * 
+ *
  * @phase generate-sources
  * @goal cgen
  */
@@ -45,7 +45,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
     public static final File[] NO_FILES = new File[0];
     /**
 	 * Path to additional DataMap XML files to use for class generation.
-	 * 
+	 *
 	 * @parameter additionalMaps="additionalMaps"
 	 */
 	private File additionalMaps;
@@ -53,14 +53,14 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	/**
 	 * Whether we are generating classes for the client tier in a Remote Object
 	 * Persistence application. Default is <code>false</code>.
-	 * 
+	 *
 	 * @parameter client="client" default-value="false"
 	 */
 	private boolean client;
 
 	/**
 	 * Destination directory for Java classes (ignoring their package names).
-	 * 
+	 *
 	 * @parameter destDir="destDir" default-value="${project.build.sourceDirectory}"
 	 */
 	private File destDir;
@@ -71,7 +71,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * build. Standard encodings supported by Java on all platforms are
 	 * US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, UTF-16. See Sun Java
 	 * Docs for java.nio.charset.Charset for more information.
-	 * 
+	 *
 	 * @parameter encoding="encoding"
 	 */
 	private String encoding;
@@ -79,7 +79,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	/**
 	 * Entities (expressed as a perl5 regex) to exclude from template
 	 * generation. (Default is to include all entities in the DataMap).
-	 * 
+	 *
 	 * @parameter excludeEntities="excludeEntities"
 	 */
 	private String excludeEntities;
@@ -87,7 +87,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	/**
 	 * Entities (expressed as a perl5 regex) to include in template generation.
 	 * (Default is to include all entities in the DataMap).
-	 * 
+	 *
 	 * @parameter includeEntities="includeEntities"
 	 */
 	private String includeEntities;
@@ -96,14 +96,14 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * If set to <code>true</code>, will generate subclass/superclass pairs,
 	 * with all generated code included in superclass (default is
 	 * <code>true</code>).
-	 * 
+	 *
 	 * @parameter makePairs="makePairs" default-value="true"
 	 */
 	private boolean makePairs;
 
 	/**
 	 * DataMap XML file to use as a base for class generation.
-	 * 
+	 *
 	 * @parameter map="map"
 	 * @required
 	 */
@@ -115,14 +115,14 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * iteration per datamap (This is always one iteration since cgen currently
 	 * supports specifying one-and-only-one datamap). (Default is
 	 * &quot;entity&quot;)
-	 * 
+	 *
 	 * @parameter mode="mode" default-value="entity"
 	 */
 	private String mode;
 
 	/**
 	 * Name of file for generated output. (Default is &quot;*.java&quot;)
-	 * 
+	 *
 	 * @parameter outputPattern="outputPattern" default-value="*.java"
 	 */
 	private String outputPattern;
@@ -130,7 +130,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	/**
 	 * If set to <code>true</code>, will overwrite older versions of generated
 	 * classes. Ignored unless makepairs is set to <code>false</code>.
-	 * 
+	 *
 	 * @parameter overwrite="overwrite" default-value="false"
 	 */
 	private boolean overwrite;
@@ -142,8 +142,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * having superclass in a different package would only make sense when
 	 * <code>usepkgpath</code> is set to <code>true</code>. Otherwise classes
 	 * from different packages will end up in the same directory.
-	 * 
-	 * @parameter superPkg="superPkg" 
+	 *
+	 * @parameter superPkg="superPkg"
 	 */
 	private String superPkg;
 
@@ -151,7 +151,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * Location of Velocity template file for Entity superclass generation.
 	 * Ignored unless <code>makepairs</code> set to <code>true</code>. If
 	 * omitted, default template is used.
-	 * 
+	 *
 	 * @parameter superTemplate="superTemplate"
 	 */
 	private String superTemplate;
@@ -159,7 +159,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	/**
 	 * Location of Velocity template file for Entity class generation. If
 	 * omitted, default template is used.
-	 * 
+	 *
 	 * @parameter template="template"
 	 */
 	private String template;
@@ -168,7 +168,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * Location of Velocity template file for Embeddable superclass generation.
 	 * Ignored unless <code>makepairs</code> set to <code>true</code>. If
 	 * omitted, default template is used.
-	 * 
+	 *
 	 * @parameter embeddableSuperTemplate="embeddableSuperTemplate"
 	 */
 	private String embeddableSuperTemplate;
@@ -176,7 +176,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	/**
 	 * Location of Velocity template file for Embeddable class generation. If
 	 * omitted, default template is used.
-	 * 
+	 *
 	 * @parameter embeddableTemplate="embeddableTemplate"
 	 */
 	private String embeddableTemplate;
@@ -186,7 +186,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * in "destDir" corresponding to the class package structure, if set to
 	 * <code>false</code>, classes will be generated in &quot;destDir&quot;
 	 * ignoring their package.
-	 * 
+	 *
 	 * @parameter usePkgPath="usePkgPath" default-value="true"
 	 */
 	private boolean usePkgPath;

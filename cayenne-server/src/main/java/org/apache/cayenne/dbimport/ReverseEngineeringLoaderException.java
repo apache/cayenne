@@ -25,6 +25,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * @since 4.0
+ * @deprecated
  */
 public class ReverseEngineeringLoaderException extends CayenneRuntimeException {
 

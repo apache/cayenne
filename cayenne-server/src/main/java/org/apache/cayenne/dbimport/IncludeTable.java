@@ -18,23 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.dbimport;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
  * @since 4.0.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 public class IncludeTable extends PatternParam {
 
-    @XmlElement(name = "includeColumn")
-    private Collection<IncludeColumn> includeColumns = new LinkedList<IncludeColumn>();
+    private Collection<IncludeColumn> includeColumns = new LinkedList<>();
 
-    @XmlElement(name = "excludeColumn")
-    private Collection<ExcludeColumn> excludeColumns = new LinkedList<ExcludeColumn>();
+    private Collection<ExcludeColumn> excludeColumns = new LinkedList<>();
 
     public IncludeTable() {
     }

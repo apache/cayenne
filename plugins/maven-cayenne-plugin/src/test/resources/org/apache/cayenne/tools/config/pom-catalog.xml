@@ -28,7 +28,7 @@
                 <configuration>
                     <map>target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml</map>
 
-                    <reverseEngineering>
+                    <dbimport>
                         <catalog>catalog-name-01</catalog>
 
                         <catalog>
@@ -78,7 +78,7 @@
                             </excludeProcedure>
                             <excludeProcedure>excludeProcedure-03</excludeProcedure>
                         </catalog>
-                    </reverseEngineering>
+                    </dbimport>
                 </configuration>
             </plugin>
         </plugins>

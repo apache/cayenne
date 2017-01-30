@@ -18,17 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.dbimport;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
 /**
  * @since 4.0.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Schema extends FilterContainer {
 
-    @XmlAttribute(name = "name")
     private String name;
 
     public Schema() {

@@ -29,12 +29,14 @@
 				<artifactId>maven-cayenne-plugin</artifactId>
 				<configuration>
 					<map>target/test-classes/org/apache/cayenne/tools/dbimport/testSkipPrimaryKeyLoading.map.xml</map>
-                    <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
-                    <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
+					<dataSource>
+						<driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
+						<url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
+					</dataSource>
 
-                    <reverseEngineering>
+                    <dbimport>
                         <skipPrimaryKeyLoading>true</skipPrimaryKeyLoading>
-                    </reverseEngineering>
+                    </dbimport>
 				</configuration>
 			</plugin>
 		</plugins>

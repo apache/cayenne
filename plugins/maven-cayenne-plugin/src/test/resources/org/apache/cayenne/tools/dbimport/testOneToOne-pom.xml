@@ -29,8 +29,10 @@
 				<artifactId>maven-cayenne-plugin</artifactId>
 				<configuration>
 					<map>target/test-classes/org/apache/cayenne/tools/dbimport/testOneToOne.map.xml</map>
-                    <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
-                    <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
+					<dataSource>
+						<driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
+						<url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
+					</dataSource>
 				</configuration>
 			</plugin>
 		</plugins>

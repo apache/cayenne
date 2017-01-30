@@ -29,13 +29,16 @@
                 <artifactId>maven-cayenne-plugin</artifactId>
                 <configuration>
                     <map>target/test-classes/org/apache/cayenne/tools/dbimport/testDefaultPackage.map.xml</map>
-                    <defaultPackage>com.example.test</defaultPackage>
-                    <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
-                    <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
 
-                    <reverseEngineering>
+                    <dataSource>
+                        <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
+                        <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
+                    </dataSource>
+
+                    <dbimport>
+                        <defaultPackage>com.example.test</defaultPackage>
                         <schema>SCHEMA_01</schema>
-                    </reverseEngineering>
+                    </dbimport>
                 </configuration>
             </plugin>
         </plugins>

@@ -31,6 +31,7 @@ import java.io.Writer;
 
 /**
  * @since 4.0
+ * @deprecated
  */
 public class DefaultReverseEngineeringWriter implements ReverseEngineeringWriter {
     private final static Log LOGGER = LogFactory.getLog(DefaultReverseEngineeringWriter.class);
@@ -49,7 +50,7 @@ public class DefaultReverseEngineeringWriter implements ReverseEngineeringWriter
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             marshaller.marshal(reverseEngineering, writer);
             writer.close();
-            return reverseEngineering.getConfigurationSource();
+            return null;//reverseEngineering.getConfigurationSource();
         } catch (JAXBException | IOException e) {
             LOGGER.error(e.getMessage(), e);
             throw new CayenneRuntimeException(e);

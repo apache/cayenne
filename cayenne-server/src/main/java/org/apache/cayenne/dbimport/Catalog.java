@@ -18,21 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.dbimport;
 
-import javax.xml.bind.annotation.*;
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
  * @since 4.0.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Catalog extends FilterContainer {
 
-    @XmlAttribute(name = "name")
     private String name;
 
-    @XmlElement(name = "schema")
-    private Collection<Schema> schemas = new LinkedList<Schema>();
+    private Collection<Schema> schemas = new LinkedList<>();
 
     public Catalog() {
     }

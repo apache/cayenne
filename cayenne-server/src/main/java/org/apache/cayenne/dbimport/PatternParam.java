@@ -18,17 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.dbimport;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
 /**
  * @since 4.0.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 public class PatternParam {
 
-    @XmlAttribute(name = "pattern")
     private String pattern;
 
     public PatternParam() {
@@ -47,9 +41,7 @@ public class PatternParam {
     }
 
     /**
-     * used my maven
-     *
-     * @param pattern
+     * Used by Maven plugin
      */
     public void set(String pattern) {
         setPattern(pattern);
@@ -57,9 +49,7 @@ public class PatternParam {
 
 
     /**
-     * used my ant
-     *
-     * @param pattern
+     * Used by Ant task
      */
     public void addText(String pattern) {
         if (pattern.trim().isEmpty()) {
@@ -69,6 +59,9 @@ public class PatternParam {
         setPattern(pattern);
     }
 
+    /**
+     * used by Ant?
+     */
     public void addConfiguredPattern(AntNestedElement pattern) {
         set(pattern.getName());
     }

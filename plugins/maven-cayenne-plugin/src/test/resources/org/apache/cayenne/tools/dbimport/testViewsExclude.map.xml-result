@@ -32,7 +32,7 @@
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
     </db-entity>
     <obj-entity name="Girl" className="Girl" dbEntityName="GIRL">
-        <obj-attribute name="id" type="java.lang.Integer" db-attribute-path="ID"/>
+        <obj-attribute name="id" type="int" db-attribute-path="ID"/>
     </obj-entity>
     <obj-entity name="Person" className="Person" dbEntityName="PERSON">
         <obj-attribute name="col2" type="java.lang.String" db-attribute-path="COL2"/>

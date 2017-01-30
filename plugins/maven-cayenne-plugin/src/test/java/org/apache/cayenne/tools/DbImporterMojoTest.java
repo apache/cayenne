@@ -36,7 +36,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.FileReader;
@@ -47,9 +46,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -310,7 +307,7 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 
         Exception exceptedException = null;
         String exceptedMessage = "Your database does not support catalogs on reverse engineering. " +
-                "It allows to connect to only one at the moment. Please don't note catalogs as param.";
+                "It allows to connect to only one at the moment. Please don't note catalogs in <dbimport> configuration.";
 
         try {
             cdbImport.execute();
@@ -319,7 +316,7 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         }
 
         assertNotNull(exceptedException);
-        assertEquals(exceptedException.getCause().getMessage(), exceptedMessage);
+        assertEquals(exceptedMessage, exceptedException.getCause().getMessage());
     }
 
     private void test(String name) throws Exception {
@@ -344,8 +341,7 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         }
     }
 
-    private void cleanDb(DbImportConfiguration dbImportConfiguration) throws ClassNotFoundException,
-            IllegalAccessException, InstantiationException, SQLException {
+    private void cleanDb(DbImportConfiguration dbImportConfiguration) throws Exception {
 
         // TODO: refactor to common DB management code... E.g. bootique-jdbc-test?
         // TODO: with in-memory Derby, it is easier to just stop and delete the database.. again see bootique-jdbc-test
@@ -354,16 +350,16 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 
         try (Connection connection = DriverManager.getConnection(dbImportConfiguration.getUrl())) {
 
-            try (Statement stmt = connection.createStatement();) {
+            try (Statement stmt = connection.createStatement()) {
 
-                try (ResultSet views = connection.getMetaData().getTables(null, null, null, new String[]{"VIEW"});) {
+                try (ResultSet views = connection.getMetaData().getTables(null, null, null, new String[]{"VIEW"})) {
                     while (views.next()) {
                         String schema = views.getString("TABLE_SCHEM");
                         execute(stmt, "DROP VIEW " + (isBlank(schema) ? "" : schema + ".") + views.getString("TABLE_NAME"));
                     }
                 }
 
-                try (ResultSet tables = connection.getMetaData().getTables(null, null, null, new String[]{"TABLE"});) {
+                try (ResultSet tables = connection.getMetaData().getTables(null, null, null, new String[]{"TABLE"})) {
                     while (tables.next()) {
                         String schema = tables.getString("TABLE_SCHEM");
                         String tableName = tables.getString("TABLE_NAME");
@@ -382,7 +378,7 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
                     }
                 }
 
-                try (ResultSet schemas = connection.getMetaData().getSchemas();) {
+                try (ResultSet schemas = connection.getMetaData().getSchemas()) {
                     while (schemas.next()) {
                         String schem = schemas.getString("TABLE_SCHEM");
                         if (schem.startsWith("SCHEMA")) {
@@ -410,11 +406,7 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
             if (!diff.similar()) {
                 fail(diff.toString());
             }
-
-        } catch (SAXException e) {
-            e.printStackTrace();
-            fail();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail();
         }

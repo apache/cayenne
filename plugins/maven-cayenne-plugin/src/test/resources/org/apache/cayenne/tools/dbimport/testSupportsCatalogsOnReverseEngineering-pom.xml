@@ -31,13 +31,17 @@
                     <map>
                         target/test-classes/org/apache/cayenne/tools/dbimport/testSupportsCatalogsOnReverseEngineering.map.xml
                     </map>
-                    <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
-                    <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
+
+                    <dataSource>
+                        <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
+                        <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
+                    </dataSource>
+
                     <adapter>org.apache.cayenne.dba.postgres.PostgresAdapter</adapter>
 
-                    <reverseEngineering>
+                    <dbimport>
                         <catalog>DbImporterMojoTest1</catalog>
-                    </reverseEngineering>
+                    </dbimport>
                 </configuration>
             </plugin>
         </plugins>

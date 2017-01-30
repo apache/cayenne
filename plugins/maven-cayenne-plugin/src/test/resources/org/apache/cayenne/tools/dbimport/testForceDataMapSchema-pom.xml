@@ -29,15 +29,19 @@
                 <artifactId>maven-cayenne-plugin</artifactId>
                 <configuration>
                     <map>target/test-classes/org/apache/cayenne/tools/dbimport/testForceDataMapSchema.map.xml</map>
-                    <defaultPackage>com.example.test</defaultPackage>
-                    <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
-                    <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
-                    <forceDataMapCatalog>true</forceDataMapCatalog>
-                    <forceDataMapSchema>true</forceDataMapSchema>
 
-                    <reverseEngineering>
+                    <dataSource>
+                        <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
+                        <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
+                    </dataSource>
+
+                    <dbimport>
+                        <defaultPackage>com.example.test</defaultPackage>
+                        <forceDataMapCatalog>true</forceDataMapCatalog>
+                        <forceDataMapSchema>true</forceDataMapSchema>
+
                         <schema>SCHEMA_01</schema>
-                    </reverseEngineering>
+                    </dbimport>
                 </configuration>
             </plugin>
         </plugins>

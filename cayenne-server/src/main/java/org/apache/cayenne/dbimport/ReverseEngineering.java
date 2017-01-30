@@ -18,46 +18,99 @@
  ****************************************************************/
 package org.apache.cayenne.dbimport;
 
-
-import org.apache.cayenne.resource.Resource;
-
-import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * @since 4.0.
+ * @since 4.0
  */
-@XmlRootElement(name = "reverseEngineering")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class ReverseEngineering extends FilterContainer implements Serializable {
 
-    @XmlTransient
-    protected Resource configurationSource;
-    @XmlTransient
-    private String name;
-
     private Boolean skipRelationshipsLoading;
+
     private Boolean skipPrimaryKeyLoading;
 
     /*
-     * Typical types are "TABLE",
-     * "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY",
-     * "LOCAL TEMPORARY", "ALIAS", "SYNONYM"., etc.
+     * <p>
+     * A default package for ObjEntity Java classes.
+     * </p>
+     * <p>
+     * If not specified, and the existing DataMap already has the default package,
+     * the existing package will be used.
+     * </p>
      */
-    @XmlElement(name = "tableType")
-    private Collection<String> tableTypes = new LinkedList<String>();
+    private String defaultPackage;
 
-    @XmlElement(name = "catalog")
-    private Collection<Catalog> catalogs = new LinkedList<Catalog>();
+    /**
+     * <p>
+     * Automatically tagging each DbEntity with the actual DB catalog/schema (default behavior) may sometimes be undesirable.
+     * If this is the case then setting forceDataMapCatalog to true will set DbEntity catalog to one in the DataMap.
+     * </p>
+     * <p>
+     * Default value is <b>false</b>.
+     * </p>
+     */
+    private boolean forceDataMapCatalog;
 
-    @XmlElement(name = "schema")
-    private Collection<Schema> schemas = new LinkedList<Schema>();
+    /**
+     * <p>
+     * Automatically tagging each DbEntity with the actual DB catalog/schema (default behavior) may sometimes be undesirable.
+     * If this is the case then setting forceDataMapSchema to true will set DbEntity schema to one in the DataMap.
+     * </p>
+     * <p>
+     * Default value is <b>false</b>.
+     * </p>
+     */
+    private boolean forceDataMapSchema;
 
-    public ReverseEngineering(String name) {
-        this.name = name;
-    }
+    /**
+     * <p>
+     * A comma-separated list of Perl5 patterns that defines which imported tables should have their primary key columns
+     * mapped as ObjAttributes.
+     * </p>
+     * <p><b>"*"</b> would indicate all tables.</p>
+     */
+    private String meaningfulPkTables;
+
+    /**
+     * <p>
+     * Object layer naming generator implementation.
+     * Should be fully qualified Java class name implementing "org.apache.cayenne.dbsync.naming.ObjectNameGenerator".
+     * </p>
+     * <p>
+     * The default is "org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator".
+     * </p>
+     */
+    private String namingStrategy = "org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator";
+
+    /**
+     * A regular expression that should match the part of the table name to strip before generating DB names.
+     */
+    private String stripFromTableNames = "";
+
+    /**
+     * <p>If true, would use primitives instead of numeric and boolean classes.</p>
+     * <p>Default is <b>"true"</b>, i.e. primitives will be used.</p>
+     */
+    private boolean usePrimitives = true;
+
+    /**
+     * Typical types are: <ul>
+     * <li> "TABLE"
+     * <li> "VIEW"
+     * <li> "SYSTEM TABLE"
+     * <li> "GLOBAL TEMPORARY",
+     * <li> "LOCAL TEMPORARY"
+     * <li> "ALIAS"
+     * <li> "SYNONYM"
+     * </ul>
+     */
+    private Collection<String> tableTypes = new LinkedList<>();
+
+    private Collection<Catalog> catalogs = new LinkedList<>();
+
+    private Collection<Schema> schemas = new LinkedList<>();
 
     public ReverseEngineering() {
     }
@@ -76,14 +129,6 @@ public class ReverseEngineering extends FilterContainer implements Serializable 
 
     public void setSkipPrimaryKeyLoading(Boolean skipPrimaryKeyLoading) {
         this.skipPrimaryKeyLoading = skipPrimaryKeyLoading;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Collection<Catalog> getCatalogs() {
@@ -150,26 +195,40 @@ public class ReverseEngineering extends FilterContainer implements Serializable 
         }
 
         if (skipRelationshipsLoading != null && skipRelationshipsLoading) {
-            res.append("\n").append("        Skip Relationships Loading");
+            res.append("\n        Skip Relationships Loading");
         }
         if (skipPrimaryKeyLoading != null && skipPrimaryKeyLoading) {
-            res.append("\n").append("        Skip PrimaryKey Loading");
+            res.append("\n        Skip PrimaryKey Loading");
         }
 
         return super.toString(res, "  ").toString();
     }
 
-    /**
-     * @since 4.0
-     */
-    public Resource getConfigurationSource() {
-        return configurationSource;
+    public String getDefaultPackage() {
+        return defaultPackage;
     }
 
-    /**
-     * @since 4.0
-     */
-    public void setConfigurationSource(Resource configurationSource) {
-        this.configurationSource = configurationSource;
+    public boolean isForceDataMapCatalog() {
+        return forceDataMapCatalog;
+    }
+
+    public boolean isForceDataMapSchema() {
+        return forceDataMapSchema;
+    }
+
+    public String getMeaningfulPkTables() {
+        return meaningfulPkTables;
+    }
+
+    public String getNamingStrategy() {
+        return namingStrategy;
+    }
+
+    public String getStripFromTableNames() {
+        return stripFromTableNames;
+    }
+
+    public boolean isUsePrimitives() {
+        return usePrimitives;
     }
 }

@@ -29,15 +29,17 @@
                 <artifactId>maven-cayenne-plugin</artifactId>
                 <configuration>
                     <map>target/test-classes/org/apache/cayenne/tools/dbimport/testSchemasAndTableExclude.map.xml</map>
-                    <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
-                    <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
+                    <dataSource>
+                        <driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
+                        <url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
+                    </dataSource>
 
-                    <reverseEngineering>
+                    <dbimport>
                         <schema>
                             <name>SCHEMA_01</name>
                         </schema>
                         <excludeTable>Child</excludeTable>
-                    </reverseEngineering>
+                    </dbimport>
                 </configuration>
             </plugin>
         </plugins>

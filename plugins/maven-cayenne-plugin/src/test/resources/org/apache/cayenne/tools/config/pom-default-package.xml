@@ -27,7 +27,9 @@
                 <artifactId>maven-cayenne-plugin</artifactId>
                 <configuration>
                     <map>target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml</map>
-                    <defaultPackage>com.example.test</defaultPackage>
+                    <dbimport>
+                        <defaultPackage>com.example.test</defaultPackage>
+                    </dbimport>
                 </configuration>
             </plugin>
         </plugins>
