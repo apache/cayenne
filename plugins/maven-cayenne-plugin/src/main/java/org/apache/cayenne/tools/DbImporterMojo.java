@@ -72,8 +72,33 @@ public class DbImporterMojo extends AbstractMojo {
     /**
      * An object that contains reverse engineering rules.
      */
-    @Parameter(property = "dbimport", alias = "dbImport")
-    private ReverseEngineering reverseEngineering = new ReverseEngineering();
+    @Parameter(name = "dbimport", property = "dbimport", alias = "dbImport")
+    private ReverseEngineering dbImportConfig = new ReverseEngineering();
+
+    /**
+     * @deprecated use {@code <dataSource>} tag to set connection properties
+     */
+    @Deprecated @Parameter(name = "url", property = "url")
+    private final String oldUrl = "";                // TODO remove in 4.0.BETA
+
+    /**
+     * @deprecated moved to {@code <dbimport>} section
+     */
+    @Deprecated @Parameter(name = "meaningfulPkTables", property = "meaningfulPkTables")
+    private final String oldMeaningfulPkTables = ""; // TODO remove in 4.0.BETA
+
+    /**
+     * @deprecated use {@code <dataSource>} tag to set connection properties
+     */
+    @Deprecated @Parameter(name = "driver", property = "driver")
+    private final String oldDriver = "";             // TODO remove in 4.0.BETA
+
+    /**
+     * @deprecated moved to {@code <dbimport>} section
+     */
+    @Deprecated @Parameter(name = "defaultPackage", property = "defaultPackage")
+    private final String oldDefaultPackage = "";     // TODO remove in 4.0.BETA
+
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -84,7 +109,7 @@ public class DbImporterMojo extends AbstractMojo {
                 new DbSyncModule(), new ToolsModule(logger), new DbImportModule());
 
         DbImportConfigurationValidator validator = new DbImportConfigurationValidator(
-                reverseEngineering, config, injector);
+                dbImportConfig, config, injector);
         try {
             validator.validate();
         } catch (Exception ex) {
@@ -111,23 +136,23 @@ public class DbImporterMojo extends AbstractMojo {
 
         DbImportConfiguration config = new DbImportConfiguration();
         config.setAdapter(adapter);
-        config.setDefaultPackage(reverseEngineering.getDefaultPackage());
+        config.setDefaultPackage(dbImportConfig.getDefaultPackage());
         config.setDriver(dataSource.getDriver());
-        config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering).build());
-        config.setForceDataMapCatalog(reverseEngineering.isForceDataMapCatalog());
-        config.setForceDataMapSchema(reverseEngineering.isForceDataMapSchema());
+        config.setFiltersConfig(new FiltersConfigBuilder(dbImportConfig).build());
+        config.setForceDataMapCatalog(dbImportConfig.isForceDataMapCatalog());
+        config.setForceDataMapSchema(dbImportConfig.isForceDataMapSchema());
         config.setLogger(logger);
-        config.setMeaningfulPkTables(reverseEngineering.getMeaningfulPkTables());
-        config.setNamingStrategy(reverseEngineering.getNamingStrategy());
+        config.setMeaningfulPkTables(dbImportConfig.getMeaningfulPkTables());
+        config.setNamingStrategy(dbImportConfig.getNamingStrategy());
         config.setPassword(dataSource.getPassword());
-        config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
-        config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
-        config.setStripFromTableNames(reverseEngineering.getStripFromTableNames());
-        config.setTableTypes(reverseEngineering.getTableTypes());
+        config.setSkipRelationshipsLoading(dbImportConfig.getSkipRelationshipsLoading());
+        config.setSkipPrimaryKeyLoading(dbImportConfig.getSkipPrimaryKeyLoading());
+        config.setStripFromTableNames(dbImportConfig.getStripFromTableNames());
+        config.setTableTypes(dbImportConfig.getTableTypes());
         config.setTargetDataMap(map);
         config.setUrl(dataSource.getUrl());
         config.setUsername(dataSource.getUsername());
-        config.setUsePrimitives(reverseEngineering.isUsePrimitives());
+        config.setUsePrimitives(dbImportConfig.isUsePrimitives());
 
         return config;
     }
@@ -136,136 +161,50 @@ public class DbImporterMojo extends AbstractMojo {
         return map;
     }
 
+    /**
+     * Used only in tests, Maven will inject value directly into the "map" field
+     */
     public void setMap(File map) {
         this.map = map;
     }
 
     /**
-     * This setter is used by Maven
+     * This setter is used by Maven when defined {@code <dbimport>} tag
      */
-    public void setDbimport(ReverseEngineering reverseEngineering) {
-        this.reverseEngineering = reverseEngineering;
+    public void setDbimport(ReverseEngineering dbImportConfig) {
+        this.dbImportConfig = dbImportConfig;
     }
 
     /**
-     * This setter is used by Maven
+     * This setter is used by Maven {@code <dbImport>} tag
      */
-    public void setDbImport(ReverseEngineering reverseEngineering) {
-        this.reverseEngineering = reverseEngineering;
+    public void setDbImport(ReverseEngineering dbImportConfig) {
+        this.dbImportConfig = dbImportConfig;
     }
 
     public ReverseEngineering getReverseEngineering() {
-        return reverseEngineering;
+        return dbImportConfig;
     }
 
-    // ⬇⬇⬇ All following setters should be removed in 4.0.BETA ⬇⬇⬇ //
-
-    /**
-     * Setter to catch old styled configuration
-     * @deprecated to be removed in 4.0.BETA
-     */
+    // TODO ⬇⬇⬇ All following setters should be removed in 4.0.BETA ⬇⬇⬇
     @Deprecated
     public void setUrl(String url) {
         throw new UnsupportedOperationException("Connection properties were replaced with <dataSource> tag since 4.0.M5.\n\tFor additional information see http://cayenne.apache.org/docs/4.0/cayenne-guide/including-cayenne-in-project.html#maven-projects");
     }
 
-    /**
-     * Setter to catch old styled configuration
-     * @deprecated to be removed in 4.0.BETA
-     */
-    @Deprecated
-    public void setUser(String user) {
-        throw new UnsupportedOperationException("Connection properties were replaced with <dataSource> tag since 4.0.M5.\n\tFor additional information see http://cayenne.apache.org/docs/4.0/cayenne-guide/including-cayenne-in-project.html#maven-projects");
-    }
-
-    /**
-     * Setter to catch old styled configuration
-     * @deprecated to be removed in 4.0.BETA
-     */
-    @Deprecated
-    public void setPassword(String password) {
-        throw new UnsupportedOperationException("Connection properties were replaced with <dataSource> tag since 4.0.M5.\n\tFor additional information see http://cayenne.apache.org/docs/4.0/cayenne-guide/including-cayenne-in-project.html#maven-projects");
-    }
-
-    /**
-     * Setter to catch old styled configuration
-     * @deprecated to be removed in 4.0.BETA
-     */
     @Deprecated
     public void setDriver(String driver) {
         throw new UnsupportedOperationException("Connection properties were replaced with <dataSource> tag since 4.0.M5.\n\tFor additional information see http://cayenne.apache.org/docs/4.0/cayenne-guide/including-cayenne-in-project.html#maven-projects");
     }
 
-    /**
-     * Setter to catch old styled configuration
-     * @deprecated to be removed in 4.0.BETA
-     */
-    @Deprecated
-    public void setForceDataMapCatalog(boolean forceDataMapCatalog) {
-        throw new UnsupportedOperationException("forceDataMapCatalog property has been moved to <dbimport> tag since 4.0.M5.\n\tFor additional information see http://cayenne.apache.org/docs/4.0/cayenne-guide/including-cayenne-in-project.html#maven-projects");
-    }
-
-    /**
-     * Setter to catch old styled configuration
-     * @deprecated to be removed in 4.0.BETA
-     */
-    @Deprecated
-    public void setForceDataMapSchema(boolean forceDataMapSchema) {
-        throw new UnsupportedOperationException("forceDataMapSchema property has been moved to <dbimport> tag since 4.0.M5.\n\tFor additional information see http://cayenne.apache.org/docs/4.0/cayenne-guide/including-cayenne-in-project.html#maven-projects");
-    }
-
-    /**
-     * Setter to catch old styled configuration
-     * @deprecated to be removed in 4.0.BETA
-     */
     @Deprecated
     public void setMeaningfulPkTables(String meaningfulPkTables) {
         throw new UnsupportedOperationException("meaningfulPkTables property has been moved to <dbimport> tag since 4.0.M5.\n\tFor additional information see http://cayenne.apache.org/docs/4.0/cayenne-guide/including-cayenne-in-project.html#maven-projects");
     }
 
-    /**
-     * Setter to catch old styled configuration
-     * @deprecated to be removed in 4.0.BETA
-     */
-    @Deprecated
-    public void setNamingStrategy(String namingStrategy) {
-        throw new UnsupportedOperationException("namingStrategy property has been moved to <dbimport> tag since 4.0.M5.\n\tFor additional information see http://cayenne.apache.org/docs/4.0/cayenne-guide/including-cayenne-in-project.html#maven-projects");
-    }
-
-    /**
-     * Setter to catch old styled configuration
-     * @deprecated to be removed in 4.0.BETA
-     */
     @Deprecated
     public void setDefaultPackage(String defaultPackage) {
         throw new UnsupportedOperationException("defaultPackage property has been deprecated since 4.0.M5.\n\tFor additional information see http://cayenne.apache.org/docs/4.0/cayenne-guide/including-cayenne-in-project.html#maven-projects");
-    }
-
-    /**
-     * Setter to catch old styled configuration
-     * @deprecated to be removed in 4.0.BETA
-     */
-    @Deprecated
-    public void setStripFromTableNames(String stripFromTableNames) {
-        throw new UnsupportedOperationException("stripFromTableNames property has been deprecated since 4.0.M5.\n\tFor additional information see http://cayenne.apache.org/docs/4.0/cayenne-guide/including-cayenne-in-project.html#maven-projects");
-    }
-
-    /**
-     * Setter to catch old styled configuration
-     * @deprecated to be removed in 4.0.BETA
-     */
-    @Deprecated
-    public void setUsePrimitives(boolean usePrimitives) {
-        throw new UnsupportedOperationException("usePrimitives property has been deprecated since 4.0.M5.\n\tFor additional information see http://cayenne.apache.org/docs/4.0/cayenne-guide/including-cayenne-in-project.html#maven-projects");
-    }
-
-    /**
-     * Setter to catch old styled configuration
-     * @deprecated to be removed in 4.0.BETA
-     */
-    @Deprecated
-    public void setReverseEngineering(ReverseEngineering reverseEngineering) {
-        throw new UnsupportedOperationException("<reverseEngineering> tag has been replaced with <dbimport> since 4.0.M5.\n\tFor additional information see http://cayenne.apache.org/docs/4.0/cayenne-guide/including-cayenne-in-project.html#maven-projects");
     }
 }
 
