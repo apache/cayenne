@@ -25,7 +25,7 @@ import java.util.LinkedList;
 /**
  * @since 4.0
  */
-public class ReverseEngineering extends FilterContainer implements Serializable {
+public class ReverseEngineering extends SchemaContainer implements Serializable {
 
     private Boolean skipRelationshipsLoading;
 
@@ -106,11 +106,9 @@ public class ReverseEngineering extends FilterContainer implements Serializable 
      * <li> "SYNONYM"
      * </ul>
      */
-    private Collection<String> tableTypes = new LinkedList<>();
+    private final Collection<String> tableTypes = new LinkedList<>();
 
-    private Collection<Catalog> catalogs = new LinkedList<>();
-
-    private Collection<Schema> schemas = new LinkedList<>();
+    private final Collection<Catalog> catalogCollection = new LinkedList<>();
 
     public ReverseEngineering() {
     }
@@ -132,19 +130,7 @@ public class ReverseEngineering extends FilterContainer implements Serializable 
     }
 
     public Collection<Catalog> getCatalogs() {
-        return catalogs;
-    }
-
-    public void setCatalogs(Collection<Catalog> catalogs) {
-        this.catalogs = catalogs;
-    }
-
-    public Collection<Schema> getSchemas() {
-        return schemas;
-    }
-
-    public void setSchemas(Collection<Schema> schemas) {
-        this.schemas = schemas;
+        return catalogCollection;
     }
 
     public String[] getTableTypes() {
@@ -157,7 +143,7 @@ public class ReverseEngineering extends FilterContainer implements Serializable 
      * "LOCAL TEMPORARY", "ALIAS", "SYNONYM"., etc.
      */
     public void setTableTypes(Collection<String> tableTypes) {
-        this.tableTypes = tableTypes;
+        this.tableTypes.addAll(tableTypes);
     }
 
     /*
@@ -169,12 +155,8 @@ public class ReverseEngineering extends FilterContainer implements Serializable 
         this.tableTypes.add(type);
     }
 
-    public void addSchema(Schema schema) {
-        this.schemas.add(schema);
-    }
-
     public void addCatalog(Catalog catalog) {
-        this.catalogs.add(catalog);
+        this.catalogCollection.add(catalog);
     }
 
     @Override
@@ -182,15 +164,9 @@ public class ReverseEngineering extends FilterContainer implements Serializable 
         StringBuilder res = new StringBuilder();
         res.append("ReverseEngineering: ").append("\n");
 
-        if (!isBlank(catalogs)) {
-            for (Catalog catalog : catalogs) {
+        if (!isBlank(catalogCollection)) {
+            for (Catalog catalog : catalogCollection) {
                 catalog.toString(res, "  ");
-            }
-        }
-
-        if (!isBlank(schemas)) {
-            for (Schema schema : schemas) {
-                schema.toString(res, "  ");
             }
         }
 

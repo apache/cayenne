@@ -33,9 +33,8 @@ import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.junit.Test;
 
-import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.*;
+import static org.apache.cayenne.dbimport.ReverseEngineeringUtils.*;
 import static org.mockito.Mockito.mock;
 
 public class DbImporterOldMojoConfigurationTest extends AbstractMojoTestCase {

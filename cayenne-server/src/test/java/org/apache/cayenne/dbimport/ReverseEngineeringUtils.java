@@ -1,35 +1,30 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- *    or more contributor license agreements.  See the NOTICE file
- *    distributed with this work for additional information
- *    regarding copyright ownership.  The ASF licenses this file
- *    to you under the Apache License, Version 2.0 (the
- *    "License"); you may not use this file except in compliance
- *    with the License.  You may obtain a copy of the License at
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing,
- *    software distributed under the License is distributed on an
- *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *    KIND, either express or implied.  See the License for the
- *    specific language governing permissions and limitations
- *    under the License.
- */
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
 package org.apache.cayenne.dbimport;
 
-
-import org.apache.cayenne.resource.URLResource;
-import org.junit.Test;
-
-import java.net.MalformedURLException;
 import java.util.Iterator;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class DefaultReverseEngineeringLoaderTest {
+public class ReverseEngineeringUtils {
 
     public static void assertCatalog(ReverseEngineering engineering) {
         Iterator<Catalog> catalogs = engineering.getCatalogs().iterator();
@@ -175,65 +170,4 @@ public class DefaultReverseEngineeringLoaderTest {
     public static void assertTableTypes(ReverseEngineering engineering) {
         assertArrayEquals(new String[]{"type1", "type2", "type3"}, engineering.getTableTypes());
     }
-
-    @Test
-    public void testLoadCatalog() throws Exception {
-        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("reverseEngineering-catalog.xml").getURL().openStream());
-
-        assertCatalog(engineering);
-    }
-
-    @Test
-    public void testLoadSchema() throws Exception {
-        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("reverseEngineering-schema.xml").getURL().openStream());
-
-        assertSchema(engineering);
-    }
-
-    @Test
-    public void testLoadCatalogAndSchema() throws Exception {
-        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("reverseEngineering-catalog-and-schema.xml").getURL().openStream());
-
-        assertCatalogAndSchema(engineering);
-    }
-
-    @Test
-    public void testLoadFlat() throws Exception {
-        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("reverseEngineering-flat.xml").getURL().openStream());
-
-        assertFlat(engineering);
-    }
-
-    @Test
-    public void testSkipRelationships() throws Exception {
-        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("reverseEngineering-skipRelationshipsLoading.xml").getURL().openStream());
-
-        assertSkipRelationshipsLoading(engineering);
-    }
-
-    @Test
-    public void testSkipPrimaryKeyLoading() throws Exception {
-        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("reverseEngineering-skipPrimaryKeyLoading.xml").getURL().openStream());
-
-        assertSkipPrimaryKeyLoading(engineering);
-    }
-
-    @Test
-    public void testTableTypes() throws Exception {
-        ReverseEngineering engineering = new DefaultReverseEngineeringLoader()
-                .load(getResource("reverseEngineering-tableTypes.xml").getURL().openStream());
-
-        assertTableTypes(engineering);
-    }
-
-    protected URLResource getResource(String file) throws MalformedURLException {
-        return new URLResource(getClass().getResource(file));
-    }
-
 }

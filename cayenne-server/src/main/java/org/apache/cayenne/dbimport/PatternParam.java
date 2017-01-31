@@ -40,6 +40,10 @@ public class PatternParam {
         this.pattern = pattern;
     }
 
+    public void setName(String name) {
+        setPattern(name);
+    }
+
     /**
      * Used by Maven plugin
      */

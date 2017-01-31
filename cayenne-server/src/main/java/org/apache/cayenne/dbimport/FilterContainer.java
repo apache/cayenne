@@ -24,99 +24,124 @@ import java.util.LinkedList;
 /**
  * @since 4.0.
  */
-public abstract class FilterContainer {
+abstract class FilterContainer {
 
-    private Collection<IncludeTable> includeTables = new LinkedList<>();
+    private String name;
 
-    private Collection<ExcludeTable> excludeTables = new LinkedList<>();
+    private final Collection<IncludeTable> includeTableCollection = new LinkedList<>();
 
-    private Collection<IncludeColumn> includeColumns = new LinkedList<>();
+    private final Collection<ExcludeTable> excludeTableCollection = new LinkedList<>();
 
-    private Collection<ExcludeColumn> excludeColumns = new LinkedList<>();
+    private final Collection<IncludeColumn> includeColumnCollection = new LinkedList<>();
 
-    private Collection<IncludeProcedure> includeProcedures = new LinkedList<>();
+    private final Collection<ExcludeColumn> excludeColumnCollection = new LinkedList<>();
 
-    private Collection<ExcludeProcedure> excludeProcedures = new LinkedList<>();
+    private final Collection<IncludeProcedure> includeProcedureCollection = new LinkedList<>();
+
+    private final Collection<ExcludeProcedure> excludeProcedureCollection = new LinkedList<>();
 
     public Collection<IncludeTable> getIncludeTables() {
-        return includeTables;
-    }
-
-    public void setIncludeTables(Collection<IncludeTable> includeTables) {
-        this.includeTables = includeTables;
+        return includeTableCollection;
     }
 
     public Collection<ExcludeTable> getExcludeTables() {
-        return excludeTables;
-    }
-
-    public void setExcludeTables(Collection<ExcludeTable> excludeTables) {
-        this.excludeTables = excludeTables;
+        return excludeTableCollection;
     }
 
     public Collection<IncludeColumn> getIncludeColumns() {
-        return includeColumns;
-    }
-
-    public void setIncludeColumns(Collection<IncludeColumn> includeColumns) {
-        this.includeColumns = includeColumns;
+        return includeColumnCollection;
     }
 
     public Collection<ExcludeColumn> getExcludeColumns() {
-        return excludeColumns;
-    }
-
-    public void setExcludeColumns(Collection<ExcludeColumn> excludeColumns) {
-        this.excludeColumns = excludeColumns;
+        return excludeColumnCollection;
     }
 
     public Collection<IncludeProcedure> getIncludeProcedures() {
-        return includeProcedures;
-    }
-
-    public void setIncludeProcedures(Collection<IncludeProcedure> includeProcedures) {
-        this.includeProcedures = includeProcedures;
+        return includeProcedureCollection;
     }
 
     public Collection<ExcludeProcedure> getExcludeProcedures() {
-        return excludeProcedures;
-    }
-
-    public void setExcludeProcedures(Collection<ExcludeProcedure> excludeProcedures) {
-        this.excludeProcedures = excludeProcedures;
+        return excludeProcedureCollection;
     }
 
     public void addIncludeColumn(IncludeColumn includeColumn) {
-        this.includeColumns.add(includeColumn);
+        this.includeColumnCollection.add(includeColumn);
     }
 
     public void addExcludeColumn(ExcludeColumn excludeColumn) {
-        this.excludeColumns.add(excludeColumn);
+        this.excludeColumnCollection.add(excludeColumn);
     }
 
     public void addIncludeTable(IncludeTable includeTable) {
-        this.includeTables.add(includeTable);
+        this.includeTableCollection.add(includeTable);
     }
 
     public void addExcludeTable(ExcludeTable excludeTable) {
-        this.excludeTables.add(excludeTable);
+        this.excludeTableCollection.add(excludeTable);
     }
 
     public void addIncludeProcedure(IncludeProcedure includeProcedure) {
-        this.includeProcedures.add(includeProcedure);
+        this.includeProcedureCollection.add(includeProcedure);
     }
 
     public void addExcludeProcedure(ExcludeProcedure excludeProcedure) {
-        this.excludeProcedures.add(excludeProcedure);
+        this.excludeProcedureCollection.add(excludeProcedure);
+    }
+
+    public void clearIncludeTables() {
+        includeTableCollection.clear();
+    }
+
+    public void clearExcludeTables() {
+        excludeTableCollection.clear();
+    }
+
+    public void clearIncludeProcedures() {
+        includeProcedureCollection.clear();
+    }
+
+    public void clearExcludeProcedures() {
+        excludeProcedureCollection.clear();
+    }
+
+    public void clearIncludeColumns() {
+        includeColumnCollection.clear();
+    }
+
+    public void clearExcludeColumns() {
+        excludeColumnCollection.clear();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void set(String name) {
+        setName(name);
+    }
+
+    public void addConfiguredName(AntNestedElement name) {
+        setName(name.getName());
+    }
+
+    public void addText(String name) {
+        if (name.trim().isEmpty()) {
+            return;
+        }
+        setName(name);
     }
 
     public boolean isEmptyContainer() {
-        return includeColumns.isEmpty()    && excludeColumns.isEmpty()
-            && includeTables.isEmpty()     && excludeTables.isEmpty()
-            && includeProcedures.isEmpty() && excludeProcedures.isEmpty();
+        return includeColumnCollection.isEmpty()    && excludeColumnCollection.isEmpty()
+            && includeTableCollection.isEmpty()     && excludeTableCollection.isEmpty()
+            && includeProcedureCollection.isEmpty() && excludeProcedureCollection.isEmpty();
     }
 
-    public static boolean isBlank(Collection<?> collection) {
+    static boolean isBlank(Collection<?> collection) {
         return collection == null || collection.isEmpty();
     }
 
@@ -126,12 +151,12 @@ public abstract class FilterContainer {
     }
 
     public StringBuilder toString(StringBuilder res, String prefix) {
-        appendCollection(res, prefix, includeTables);
-        appendCollection(res, prefix, excludeTables);
-        appendCollection(res, prefix, includeColumns);
-        appendCollection(res, prefix, excludeColumns);
-        appendCollection(res, prefix, includeProcedures);
-        appendCollection(res, prefix, excludeProcedures);
+        appendCollection(res, prefix, includeTableCollection);
+        appendCollection(res, prefix, excludeTableCollection);
+        appendCollection(res, prefix, includeColumnCollection);
+        appendCollection(res, prefix, excludeColumnCollection);
+        appendCollection(res, prefix, includeProcedureCollection);
+        appendCollection(res, prefix, excludeProcedureCollection);
 
         return res;
     }

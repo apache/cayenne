@@ -26,9 +26,9 @@ import java.util.LinkedList;
  */
 public class IncludeTable extends PatternParam {
 
-    private Collection<IncludeColumn> includeColumns = new LinkedList<>();
+    private final Collection<IncludeColumn> includeColumns = new LinkedList<>();
 
-    private Collection<ExcludeColumn> excludeColumns = new LinkedList<>();
+    private final Collection<ExcludeColumn> excludeColumns = new LinkedList<>();
 
     public IncludeTable() {
     }
@@ -42,7 +42,7 @@ public class IncludeTable extends PatternParam {
     }
 
     public void setIncludeColumns(Collection<IncludeColumn> includeColumns) {
-        this.includeColumns = includeColumns;
+        this.includeColumns.addAll(includeColumns);
     }
 
     public Collection<ExcludeColumn> getExcludeColumns() {
@@ -50,7 +50,7 @@ public class IncludeTable extends PatternParam {
     }
 
     public void setExcludeColumns(Collection<ExcludeColumn> excludeColumns) {
-        this.excludeColumns = excludeColumns;
+        this.excludeColumns.addAll(excludeColumns);
     }
 
     public void addIncludeColumn(IncludeColumn includeColumn) {

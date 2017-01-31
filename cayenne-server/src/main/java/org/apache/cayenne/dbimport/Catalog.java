@@ -18,93 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.dbimport;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 /**
  * @since 4.0.
  */
-public class Catalog extends FilterContainer {
-
-    private String name;
-
-    private Collection<Schema> schemas = new LinkedList<>();
+public class Catalog extends SchemaContainer {
 
     public Catalog() {
     }
 
     public Catalog(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Collection<Schema> getSchemas() {
-        return schemas;
-    }
-
-    public void setSchemas(Collection<Schema> schemas) {
-        this.schemas = schemas;
-    }
-
-    public void addSchema(Schema schema) {
-        this.schemas.add(schema);
-    }
-
-    public void set(String name) {
         setName(name);
-    }
-
-    public void addConfiguredName(AntNestedElement name) {
-        setName(name.getName());
-    }
-
-    public void addText(String name) {
-        if (name.trim().isEmpty()) {
-            return;
-        }
-
-        setName(name);
-    }
-
-    public Catalog schema(Schema name) {
-        addSchema(name);
-        return this;
     }
 
     @Override
-    public boolean isEmptyContainer() {
-        if (!super.isEmptyContainer()) {
-            return false;
-        }
-
-        if (schemas.isEmpty()) {
-            return true;
-        }
-
-        for (Schema schema : schemas) {
-            if (!schema.isEmptyContainer()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public StringBuilder toString(StringBuilder res, String prefix) {
-        res.append(prefix).append("Catalog: ").append(name).append("\n");
-
-        if (!isBlank(schemas)) {
-            for (Schema schema : schemas) {
-                schema.toString(res, prefix + "  ");
-            }
-        }
-
+        res.append(prefix).append("Catalog: ").append(getName()).append("\n");
         return super.toString(res, prefix + "  ");
     }
 }

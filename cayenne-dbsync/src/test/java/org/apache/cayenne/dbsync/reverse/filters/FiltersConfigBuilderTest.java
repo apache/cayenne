@@ -180,14 +180,14 @@ public class FiltersConfigBuilderTest {
                 "      ExcludeColumn: c_x2\n" +
                 "      IncludeProcedure: p1\n" +
                 "      ExcludeProcedure: p2\n" +
-                "    IncludeTable: t3\n" +
-                "      IncludeColumn: c31\n" +
-                "      ExcludeColumn: c32\n" +
-                "    ExcludeTable: t4\n" +
-                "    IncludeColumn: c_xx1\n" +
-                "    ExcludeColumn: c_xx2\n" +
-                "    IncludeProcedure: p3\n" +
-                "    ExcludeProcedure: p4\n" +
+                "      IncludeTable: t3\n" +
+                "        IncludeColumn: c31\n" +
+                "        ExcludeColumn: c32\n" +
+                "      ExcludeTable: t4\n" +
+                "      IncludeColumn: c_xx1\n" +
+                "      ExcludeColumn: c_xx2\n" +
+                "      IncludeProcedure: p3\n" +
+                "      ExcludeProcedure: p4\n" +
                 "  Schema: sch_02\n" +
                 "    IncludeTable: t5\n" +
                 "      IncludeColumn: c51\n" +
@@ -197,14 +197,14 @@ public class FiltersConfigBuilderTest {
                 "    ExcludeColumn: c2_x2\n" +
                 "    IncludeProcedure: p5\n" +
                 "    ExcludeProcedure: p6\n" +
-                "  IncludeTable: t7\n" +
-                "    IncludeColumn: c71\n" +
-                "    ExcludeColumn: c72\n" +
-                "  ExcludeTable: t8\n" +
-                "  IncludeColumn: c_xxx1\n" +
-                "  ExcludeColumn: c_xxx2\n" +
-                "  IncludeProcedure: p7\n" +
-                "  ExcludeProcedure: p8\n", engineering.toString());
+                "    IncludeTable: t7\n" +
+                "      IncludeColumn: c71\n" +
+                "      ExcludeColumn: c72\n" +
+                "    ExcludeTable: t8\n" +
+                "    IncludeColumn: c_xxx1\n" +
+                "    ExcludeColumn: c_xxx2\n" +
+                "    IncludeProcedure: p7\n" +
+                "    ExcludeProcedure: p8\n", engineering.toString());
 
 
         builder.compact();
@@ -269,124 +269,4 @@ public class FiltersConfigBuilderTest {
         incTable01.addExcludeColumn(new ExcludeColumn(excCol));
         return incTable01;
     }
-
-    /*@Test
-    public void testEmptyDbEntitiesFilters() throws Exception {
-        ReverseEngineering engineering = new ReverseEngineering();
-        FiltersConfig executions = new FiltersConfigBuilder(engineering).build();
-
-        assertEquals("If nothing was configured we have to import everything. Filter %/%/% true/true/true",
-                new FiltersConfig(eFilters(path(), TRUE, TRUE, NULL)),
-                executions);
-    }
-
-    @Test
-    public void testOnlyOneCatalogDbEntitiesFilters() throws Exception {
-        ReverseEngineering engineering = new ReverseEngineering();
-        engineering.addCatalog(new Catalog("catalog_01"));
-        FiltersConfig executions = new FiltersConfigBuilder(engineering).build();
-
-
-        assertEquals(new FiltersConfig(eFilters(path("catalog_01", null), TRUE, TRUE, NULL)),
-                executions);
-    }
-
-    @Test
-    public void testCatalogDbEntitiesFilters() throws Exception {
-        ReverseEngineering engineering = new ReverseEngineering();
-        engineering.addCatalog(new Catalog("catalog_01"));
-        engineering.addCatalog(new Catalog("catalog_02").schema(new Schema("schema_01")));
-        engineering.addCatalog(new Catalog("catalog_02").schema(new Schema("schema_02")));
-        engineering.addCatalog(new Catalog("catalog_02").schema(new Schema("schema_03")));
-        engineering.addCatalog(new Catalog("catalog_03").schema(new Schema("schema_01")));
-        engineering.addCatalog(new Catalog("catalog_03").schema(new Schema("schema_01")));
-        engineering.addCatalog(new Catalog("catalog_03").schema(new Schema("schema_01")));
-        engineering.addCatalog(new Catalog("catalog_03").schema(new Schema("schema_01")));
-        FiltersConfig executions = new FiltersConfigBuilder(engineering).build();
-
-
-        assertEquals(new FiltersConfig(
-                        eFilters(path("catalog_01", null), TRUE, TRUE, NULL),
-                        eFilters(path("catalog_02", "schema_01"), TRUE, TRUE, NULL),
-                        eFilters(path("catalog_02", "schema_02"), TRUE, TRUE, NULL),
-                        eFilters(path("catalog_02", "schema_03"), TRUE, TRUE, NULL),
-                        eFilters(path("catalog_03", "schema_01"), TRUE, TRUE, NULL)
-                ),
-                executions);
-    }
-
-    @Test
-    public void testSchemaDbEntitiesFilters() throws Exception {
-        ReverseEngineering engineering = new ReverseEngineering();
-        engineering.addSchema(new Schema("schema_01"));
-        engineering.addSchema(new Schema("schema_02"));
-        engineering.addSchema(new Schema("schema_03"));
-        FiltersConfig executions = new FiltersConfigBuilder(engineering).build();
-
-
-        assertEquals(new FiltersConfig(
-                        eFilters(path(null, "schema_01"), TRUE, TRUE, NULL),
-                        eFilters(path(null, "schema_02"), TRUE, TRUE, NULL),
-                        eFilters(path(null, "schema_03"), TRUE, TRUE, NULL)
-                ),
-                executions);
-    }
-
-    @Test
-    public void testFiltersDbEntitiesFilters() throws Exception {
-        ReverseEngineering engineering = new ReverseEngineering();
-        engineering.addIncludeTable(new IncludeTable("IncludeTable"));
-        engineering.addIncludeColumn(new IncludeColumn("IncludeColumn"));
-        engineering.addIncludeProcedure(new IncludeProcedure("IncludeProcedure"));
-        engineering.addExcludeTable(new ExcludeTable("ExcludeTable"));
-        engineering.addExcludeColumn(new ExcludeColumn("ExcludeColumn"));
-        engineering.addExcludeProcedure(new ExcludeProcedure("ExcludeProcedure"));
-
-        FiltersConfig executions = new FiltersConfigBuilder(engineering).build();
-
-        assertEquals(new FiltersConfig(
-                        eFilters(path(),
-                            list(include("IncludeTable"), exclude("ExcludeTable")),
-                            list(include("IncludeColumn"), exclude("ExcludeColumn")),
-                            list(include("IncludeProcedure"), exclude("ExcludeProcedure"))),
-                        eFilters(path(null, null, "IncludeTable"), NULL, TRUE, NULL)
-                ),
-                executions);
-    }
-
-    @Test
-    public void testComplexConfiguration() throws Exception {
-        IncludeTable table = new IncludeTable("table");
-        table.addIncludeColumn(new IncludeColumn("column"));
-
-        Schema schema = new Schema("schema");
-        schema.addIncludeTable(table);
-
-        Catalog catalog = new Catalog("catalog");
-        catalog.addSchema(schema);
-
-        ReverseEngineering engineering = new ReverseEngineering();
-        engineering.addCatalog(catalog);
-
-        FiltersConfig executions = new FiltersConfigBuilder(engineering).build();
-
-        assertEquals(new FiltersConfig(
-                        eFilters(path("catalog", "schema"), include("table"), NULL, NULL),
-                        eFilters(path("catalog", "schema", "table"), NULL, include("column"), NULL)
-                        ),
-                executions);
-    }
-
-    @Test
-    public void testAddNull() throws Exception {
-        FiltersConfigBuilder builder = new FiltersConfigBuilder(new ReverseEngineering());
-        DbPath path = new DbPath();
-        builder.add(new EntityFilters(path, NULL, NULL, NULL));
-        builder.add(new EntityFilters(path, NULL, NULL, NULL));
-        builder.add(new EntityFilters(path, NULL, NULL, NULL));
-        builder.add(new EntityFilters(path, NULL, NULL, NULL));
-
-        EntityFilters filter = builder.build().filter(path);
-        assertFalse(filter.isEmpty());
-    }*/
 }

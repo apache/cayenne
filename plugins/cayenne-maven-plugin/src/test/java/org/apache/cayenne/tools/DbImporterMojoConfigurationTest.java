@@ -34,13 +34,7 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertCatalog;
-import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertCatalogAndSchema;
-import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertFlat;
-import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertSchemaContent;
-import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertSkipPrimaryKeyLoading;
-import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertSkipRelationshipsLoading;
-import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertTableTypes;
+import static org.apache.cayenne.dbimport.ReverseEngineeringUtils.*;
 import static org.mockito.Mockito.mock;
 
 public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {

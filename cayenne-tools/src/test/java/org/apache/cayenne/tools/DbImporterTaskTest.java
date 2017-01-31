@@ -44,12 +44,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertCatalog;
-import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertCatalogAndSchema;
-import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertFlat;
-import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertSchema;
-import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertSkipRelationshipsLoading;
-import static org.apache.cayenne.dbimport.DefaultReverseEngineeringLoaderTest.assertTableTypes;
+import static org.apache.cayenne.dbimport.ReverseEngineeringUtils.*;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

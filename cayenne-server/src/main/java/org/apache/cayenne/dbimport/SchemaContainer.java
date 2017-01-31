@@ -16,23 +16,52 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.dbimport;
 
-/**
- * @since 4.0.
- */
-public class Schema extends FilterContainer {
+import java.util.Collection;
+import java.util.LinkedList;
 
-    public Schema() {
+/**
+ * @since 4.0
+ */
+abstract class SchemaContainer extends FilterContainer {
+
+    private final Collection<Schema> schemaCollection = new LinkedList<>();
+
+    public Collection<Schema> getSchemas() {
+        return schemaCollection;
     }
 
-    public Schema(String name) {
-        setName(name);
+    public void addSchema(Schema schema) {
+        this.schemaCollection.add(schema);
     }
 
     @Override
+    public boolean isEmptyContainer() {
+        if (!super.isEmptyContainer()) {
+            return false;
+        }
+
+        if (schemaCollection.isEmpty()) {
+            return true;
+        }
+
+        for (Schema schema : schemaCollection) {
+            if (!schema.isEmptyContainer()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public StringBuilder toString(StringBuilder res, String prefix) {
-        res.append(prefix).append("Schema: ").append(getName()).append("\n");
+        if (!isBlank(schemaCollection)) {
+            for (Schema schema : schemaCollection) {
+                schema.toString(res, prefix);
+            }
+        }
+
         return super.toString(res, prefix + "  ");
     }
 }
