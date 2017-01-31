@@ -22,7 +22,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>maven-cayenne-plugin</module>
+		<module>cayenne-maven-plugin</module>
 		<module>maven-cayenne-modeler-plugin</module>
 	</modules>
 
