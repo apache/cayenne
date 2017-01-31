@@ -27,6 +27,9 @@ import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -36,33 +39,29 @@ import java.io.FilenameFilter;
  * adapter to DefaultClassGenerator class.
  * 
  * @since 3.0
- *
- * @phase generate-sources
- * @goal cgen
  */
+@Mojo(name = "cgen", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class CayenneGeneratorMojo extends AbstractMojo {
 
     public static final File[] NO_FILES = new File[0];
+
     /**
 	 * Path to additional DataMap XML files to use for class generation.
-	 *
-	 * @parameter additionalMaps="additionalMaps"
 	 */
+    @Parameter
 	private File additionalMaps;
 
 	/**
 	 * Whether we are generating classes for the client tier in a Remote Object
 	 * Persistence application. Default is <code>false</code>.
-	 *
-	 * @parameter client="client" default-value="false"
 	 */
+	@Parameter(defaultValue = "false")
 	private boolean client;
 
 	/**
 	 * Destination directory for Java classes (ignoring their package names).
-	 *
-	 * @parameter destDir="destDir" default-value="${project.build.sourceDirectory}"
 	 */
+	@Parameter(defaultValue = "${project.build.sourceDirectory}")
 	private File destDir;
 
 	/**
@@ -71,68 +70,58 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * build. Standard encodings supported by Java on all platforms are
 	 * US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, UTF-16. See Sun Java
 	 * Docs for java.nio.charset.Charset for more information.
-	 *
-	 * @parameter encoding="encoding"
 	 */
+	@Parameter
 	private String encoding;
 
 	/**
 	 * Entities (expressed as a perl5 regex) to exclude from template
 	 * generation. (Default is to include all entities in the DataMap).
-	 *
-	 * @parameter excludeEntities="excludeEntities"
 	 */
+	@Parameter
 	private String excludeEntities;
 
 	/**
 	 * Entities (expressed as a perl5 regex) to include in template generation.
 	 * (Default is to include all entities in the DataMap).
-	 *
-	 * @parameter includeEntities="includeEntities"
 	 */
+	@Parameter
 	private String includeEntities;
 
 	/**
 	 * If set to <code>true</code>, will generate subclass/superclass pairs,
 	 * with all generated code included in superclass (default is
 	 * <code>true</code>).
-	 *
-	 * @parameter makePairs="makePairs" default-value="true"
 	 */
+	@Parameter(defaultValue = "true")
 	private boolean makePairs;
 
 	/**
 	 * DataMap XML file to use as a base for class generation.
-	 *
-	 * @parameter map="map"
-	 * @required
 	 */
+	@Parameter(required = true)
 	private File map;
 
 	/**
 	 * Specifies generator iteration target. &quot;entity&quot; performs one
 	 * iteration for each selected entity. &quot;datamap&quot; performs one
 	 * iteration per datamap (This is always one iteration since cgen currently
-	 * supports specifying one-and-only-one datamap). (Default is
-	 * &quot;entity&quot;)
-	 *
-	 * @parameter mode="mode" default-value="entity"
+	 * supports specifying one-and-only-one datamap). (Default is &quot;entity&quot;)
 	 */
+	@Parameter(defaultValue = "entity")
 	private String mode;
 
 	/**
 	 * Name of file for generated output. (Default is &quot;*.java&quot;)
-	 *
-	 * @parameter outputPattern="outputPattern" default-value="*.java"
 	 */
+	@Parameter(defaultValue = "*.java")
 	private String outputPattern;
 
 	/**
 	 * If set to <code>true</code>, will overwrite older versions of generated
 	 * classes. Ignored unless makepairs is set to <code>false</code>.
-	 *
-	 * @parameter overwrite="overwrite" default-value="false"
 	 */
+	@Parameter(defaultValue = "false")
 	private boolean overwrite;
 
 	/**
@@ -142,43 +131,38 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * having superclass in a different package would only make sense when
 	 * <code>usepkgpath</code> is set to <code>true</code>. Otherwise classes
 	 * from different packages will end up in the same directory.
-	 *
-	 * @parameter superPkg="superPkg"
 	 */
+	@Parameter
 	private String superPkg;
 
 	/**
 	 * Location of Velocity template file for Entity superclass generation.
 	 * Ignored unless <code>makepairs</code> set to <code>true</code>. If
 	 * omitted, default template is used.
-	 *
-	 * @parameter superTemplate="superTemplate"
 	 */
+	@Parameter
 	private String superTemplate;
 
 	/**
 	 * Location of Velocity template file for Entity class generation. If
 	 * omitted, default template is used.
-	 *
-	 * @parameter template="template"
 	 */
+	@Parameter
 	private String template;
 
 	/**
 	 * Location of Velocity template file for Embeddable superclass generation.
 	 * Ignored unless <code>makepairs</code> set to <code>true</code>. If
 	 * omitted, default template is used.
-	 *
-	 * @parameter embeddableSuperTemplate="embeddableSuperTemplate"
 	 */
+	@Parameter
 	private String embeddableSuperTemplate;
 
 	/**
 	 * Location of Velocity template file for Embeddable class generation. If
 	 * omitted, default template is used.
-	 *
-	 * @parameter embeddableTemplate="embeddableTemplate"
 	 */
+	@Parameter
 	private String embeddableTemplate;
 
 	/**
@@ -186,17 +170,15 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * in "destDir" corresponding to the class package structure, if set to
 	 * <code>false</code>, classes will be generated in &quot;destDir&quot;
 	 * ignoring their package.
-	 *
-	 * @parameter usePkgPath="usePkgPath" default-value="true"
 	 */
+	@Parameter(defaultValue = "true")
 	private boolean usePkgPath;
 
     /**
      * If set to <code>true</code>, will generate String Property names.
      * Default is <code>false</code>.
-     *
-     * @parameter createPropertyNames="createPropertyNames" default-value="false"
      */
+    @Parameter(defaultValue = "false")
     private boolean createPropertyNames;
 
 	public void execute() throws MojoExecutionException, MojoFailureException {

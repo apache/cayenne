@@ -23,6 +23,7 @@
 
 	<modules>
 		<module>cayenne-maven-plugin</module>
+		<module>maven-cayenne-plugin</module>
 		<module>maven-cayenne-modeler-plugin</module>
 	</modules>
 
@@ -99,6 +100,7 @@
 				<artifactId>maven-plugin-plugin</artifactId>
 				<configuration>
 					<goalPrefix>signature</goalPrefix>
+					<skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
 				</configuration>
 				<executions>
 					<execution>

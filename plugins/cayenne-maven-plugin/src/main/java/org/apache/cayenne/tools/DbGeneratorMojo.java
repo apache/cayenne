@@ -36,6 +36,9 @@ import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.xml.sax.InputSource;
 
 import java.io.File;
@@ -46,97 +49,81 @@ import java.sql.Driver;
  * adapter to DefaultClassGenerator class.
  * 
  * @since 3.0
- * 
- * @phase pre-integration-test
- * @goal cdbgen
  */
+@Mojo(name = "cdbgen", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST)
 public class DbGeneratorMojo extends AbstractMojo {
 
     /**
      * DataMap XML file to use as a schema descriptor.
-     * 
-     * @parameter map="map"
-     * @required
      */
+    @Parameter(required = true)
     private File map;
 
     /**
      * Java class implementing org.apache.cayenne.dba.DbAdapter. While this
      * attribute is optional (a generic JdbcAdapter is used if not set), it is
      * highly recommended to specify correct target adapter.
-     * 
-     * @parameter adapter="adapter"
      */
+    @Parameter
     private String adapter;
 
     /**
      * A class of JDBC driver to use for the target database.
-     * 
-     * @parameter driver="driver"
-     * @required
      */
+    @Parameter(required = true)
     private String driver;
 
     /**
      * JDBC connection URL of a target database.
-     * 
-     * @parameter url="url"
-     * @required
      */
+    @Parameter(required = true)
     private String url;
 
     /**
      * Database user name.
-     * 
-     * @parameter username="username"
      */
+    @Parameter
     private String username;
 
     /**
      * Database user password.
-     * 
-     * @parameter password="password"
      */
+    @Parameter
     private String password;
 
     /**
      * Defines whether cdbgen should drop the tables before attempting to create
      * new ones. Default is <code>false</code>.
-     * 
-     * @parameter dropTables="dropTables" default-value="false"
      */
+    @Parameter(defaultValue = "false")
     private boolean dropTables;
 
     /**
      * Defines whether cdbgen should drop Cayenne primary key support objects.
      * Default is <code>false</code>.
-     * 
-     * @parameter dropPK="dropPK" default-value="false"
      */
+    @Parameter(defaultValue = "false")
     private boolean dropPK;
 
     /**
      * Defines whether cdbgen should create new tables. Default is
      * <code>true</code>.
-     * 
-     * @parameter createTables="createTables" default-value="true"
      */
+    @Parameter(defaultValue = "true")
     private boolean createTables;
 
     /**
      * Defines whether cdbgen should create Cayenne-specific auto PK objects.
      * Default is <code>true</code>.
-     * 
-     * @parameter createPK="createPK" default-value="true"
      */
+    @Parameter(defaultValue = "true")
     private boolean createPK;
 
     /**
      * Defines whether cdbgen should create foreign key copnstraints. Default is
      * <code>true</code>.
-     * 
-     * @parameter createFK="createFK" default-value="true"
      */
+    @Parameter(defaultValue = "true")
     private boolean createFK;
 
     public void execute() throws MojoExecutionException, MojoFailureException {

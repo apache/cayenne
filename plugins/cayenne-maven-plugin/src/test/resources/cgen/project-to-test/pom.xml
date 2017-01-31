@@ -35,7 +35,7 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-cayenne-plugin</artifactId>
+				<artifactId>cayenne-maven-plugin</artifactId>
 				<configuration>
 					<map>src/test/resources/cgen/testDomainMap.map.xml</map>
 					<destDir>target/cayenneGeneratedClasses</destDir>

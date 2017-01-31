@@ -18,9 +18,20 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>maven-cayenne-plugin</artifactId>
+	<artifactId>cayenne-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
-	<name>maven-cayenne-plugin: Cayenne Maven Plugin</name>
+	<name>cayenne-maven-plugin: Cayenne Maven Plugin</name>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-plugin-plugin</artifactId>
+				<configuration>
+					<goalPrefix>cayenne</goalPrefix>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 	<dependencies>
 
