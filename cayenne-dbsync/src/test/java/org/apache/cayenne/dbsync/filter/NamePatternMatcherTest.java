@@ -21,25 +21,9 @@ package org.apache.cayenne.dbsync.filter;
 
 import org.junit.Test;
 
-import static org.apache.cayenne.dbsync.filter.NamePatternMatcher.replaceWildcardInStringWithString;
 import static org.junit.Assert.assertEquals;
 
 public class NamePatternMatcherTest {
-
-    /**
-     * Test pattern expansion.
-     */
-    @Test
-    public void testReplaceWildcardInStringWithString() throws Exception {
-        assertEquals(null, replaceWildcardInStringWithString("*", null, "Entity"));
-        assertEquals("*.java", replaceWildcardInStringWithString(null, "*.java", "Entity"));
-        assertEquals("Entity.java", replaceWildcardInStringWithString("*", "*.java", "Entity"));
-        assertEquals("java.Entity", replaceWildcardInStringWithString("*", "java.*", "Entity"));
-        assertEquals("Entity.Entity", replaceWildcardInStringWithString("*", "*.*", "Entity"));
-        assertEquals("EntityEntity", replaceWildcardInStringWithString("*", "**", "Entity"));
-        assertEquals("EditEntityReport.vm", replaceWildcardInStringWithString("*", "Edit*Report.vm", "Entity"));
-        assertEquals("Entity", replaceWildcardInStringWithString("*", "*", "Entity"));
-    }
 
     /**
      * Test tokenizing

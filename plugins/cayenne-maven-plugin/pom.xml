@@ -77,26 +77,14 @@
 
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-project</artifactId>
+			<artifactId>cayenne-cgen</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-server</artifactId>
+			<artifactId>cayenne-dbsync</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-tools</artifactId>
-			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>foundrylogic.vpp</groupId>
-					<artifactId>vpp</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<!-- Test deps -->
@@ -134,14 +122,6 @@
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-core</artifactId>
 			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-server</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-			<type>test-jar</type>
 		</dependency>
 
 		<dependency>

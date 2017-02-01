@@ -27,9 +27,9 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>cayenne-tools</artifactId>
+	<artifactId>cayenne-ant</artifactId>
 	<packaging>jar</packaging>
-	<name>cayenne-tools: Cayenne Tools</name>
+	<name>cayenne-ant: Cayenne Ant Tasks</name>
 	<dependencies>
         <!-- Compile Dependencies -->
         <dependency>
@@ -54,13 +54,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-server</artifactId>
-			<version>${project.version}</version>
-            <scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-project</artifactId>
+			<artifactId>cayenne-cgen</artifactId>
 			<version>${project.version}</version>
             <scope>compile</scope>
 		</dependency>
@@ -81,13 +75,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cayenne</groupId>
-            <artifactId>cayenne-server</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-            <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.cayenne</groupId>

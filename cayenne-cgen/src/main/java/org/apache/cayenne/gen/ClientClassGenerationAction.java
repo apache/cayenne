@@ -16,6 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.gen;
 
 import java.util.Collection;
@@ -45,9 +46,9 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
             case ENTITY_SUPERCLASS:
                 return ClientClassGenerationAction.SUPERCLASS_TEMPLATE;
             case EMBEDDABLE_SUBCLASS:
-                return ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE;
+                return EMBEDDABLE_SUBCLASS_TEMPLATE;
             case EMBEDDABLE_SUPERCLASS:
-                return ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE;
+                return EMBEDDABLE_SUPERCLASS_TEMPLATE;
             
             case DATAMAP_SUPERCLASS:
                 return ClientClassGenerationAction.DMAP_SUPERCLASS_TEMPLATE;

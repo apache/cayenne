@@ -81,7 +81,8 @@
 				<include>org.apache.cayenne:cayenne-project</include>
 				<include>org.apache.cayenne:cayenne-server</include>
 				<include>org.apache.cayenne:cayenne-dbsync</include>
-				<include>org.apache.cayenne:cayenne-tools</include>
+				<include>org.apache.cayenne:cayenne-cgen</include>
+				<include>org.apache.cayenne:cayenne-ant</include>
 				<include>org.apache.cayenne:cayenne-dbcp2</include>
 				<include>org.apache.cayenne:cayenne-java8</include>
 			</includes>

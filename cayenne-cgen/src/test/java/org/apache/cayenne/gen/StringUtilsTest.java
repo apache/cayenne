@@ -107,4 +107,18 @@ public class StringUtilsTest {
         assertEquals("List<Integer", stringUtils.stripGeneric("List<Integer"));
     }
 
+    /**
+     * Test pattern expansion.
+     */
+    @Test
+    public void testReplaceWildcardInStringWithString() throws Exception {
+        assertEquals(null, stringUtils.replaceWildcardInStringWithString("*", null, "Entity"));
+        assertEquals("*.java", stringUtils.replaceWildcardInStringWithString(null, "*.java", "Entity"));
+        assertEquals("Entity.java", stringUtils.replaceWildcardInStringWithString("*", "*.java", "Entity"));
+        assertEquals("java.Entity", stringUtils.replaceWildcardInStringWithString("*", "java.*", "Entity"));
+        assertEquals("Entity.Entity", stringUtils.replaceWildcardInStringWithString("*", "*.*", "Entity"));
+        assertEquals("EntityEntity", stringUtils.replaceWildcardInStringWithString("*", "**", "Entity"));
+        assertEquals("EditEntityReport.vm", stringUtils.replaceWildcardInStringWithString("*", "Edit*Report.vm", "Entity"));
+        assertEquals("Entity", stringUtils.replaceWildcardInStringWithString("*", "*", "Entity"));
+    }
 }

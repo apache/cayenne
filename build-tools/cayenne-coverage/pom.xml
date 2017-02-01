@@ -57,7 +57,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.cayenne</groupId>
-            <artifactId>cayenne-tools</artifactId>
+            <artifactId>cayenne-ant</artifactId>
             <version>${cayenne.version}</version>
         </dependency>
     </dependencies>

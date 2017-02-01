@@ -22,7 +22,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>cayenne-parent</artifactId>
 	<groupId>org.apache.cayenne</groupId>
-	<name>cayenne-parent: Top-level parent of Cayenne mdoules</name>
+	<name>cayenne-parent: Top-level parent of Cayenne modules</name>
 
 	<version>4.0.M5-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -53,8 +53,9 @@
 		<module>cayenne-di</module>
 		<module>cayenne-server</module>
 		<module>cayenne-client</module>
+		<module>cayenne-cgen</module>
 		<module>cayenne-dbsync</module>
-		<module>cayenne-tools</module>
+		<module>cayenne-ant</module>
 		<module>cayenne-project</module>
 		<module>cayenne-lifecycle</module>
 		<module>cayenne-crypto</module>
@@ -65,7 +66,7 @@
 		<module>plugins</module>
 		<module>tutorials</module>
 		<module>docs</module>
-	</modules>
+    </modules>
 	<issueManagement>
 		<system>jira</system>
 		<url>https://issues.apache.org/jira/browse/CAY</url>

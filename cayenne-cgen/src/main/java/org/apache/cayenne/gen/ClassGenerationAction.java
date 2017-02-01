@@ -16,10 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
@@ -393,7 +393,7 @@ public class ClassGenerationAction {
 		String packageName = (String) context.get(Artifact.SUPER_PACKAGE_KEY);
 		String className = (String) context.get(Artifact.SUPER_CLASS_KEY);
 
-		String filename = NamePatternMatcher.replaceWildcardInStringWithString(WILDCARD, outputPattern, className);
+		String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, outputPattern, className);
 		File dest = new File(mkpath(destDir, packageName), filename);
 
 		// Ignore if the destination is newer than the map
@@ -423,7 +423,7 @@ public class ClassGenerationAction {
 		String packageName = (String) context.get(Artifact.SUB_PACKAGE_KEY);
 		String className = (String) context.get(Artifact.SUB_CLASS_KEY);
 
-		String filename = NamePatternMatcher.replaceWildcardInStringWithString(WILDCARD, outputPattern, className);
+		String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, outputPattern, className);
 		File dest = new File(mkpath(destDir, packageName), filename);
 
 		if (dest.exists()) {

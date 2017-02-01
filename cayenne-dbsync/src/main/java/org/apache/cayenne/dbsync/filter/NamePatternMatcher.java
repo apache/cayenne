@@ -203,31 +203,4 @@ public class NamePatternMatcher implements NameFilter {
         return true;
     }
 
-    public static String replaceWildcardInStringWithString(
-            String wildcard,
-            String pattern,
-            String replacement) {
-
-        if (pattern == null || wildcard == null) {
-            return pattern;
-        }
-
-        StringBuilder buffer = new StringBuilder();
-        int lastPos = 0;
-        int wildCardPos = pattern.indexOf(wildcard);
-        while (wildCardPos != -1) {
-            if (lastPos != wildCardPos) {
-                buffer.append(pattern.substring(lastPos, wildCardPos));
-            }
-            buffer.append(replacement);
-            lastPos += wildCardPos + wildcard.length();
-            wildCardPos = pattern.indexOf(wildcard, lastPos);
-        }
-
-        if (lastPos < pattern.length()) {
-            buffer.append(pattern.substring(lastPos));
-        }
-
-        return buffer.toString();
-    }
 }
