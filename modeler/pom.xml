@@ -45,7 +45,7 @@
 
 	<build>
 		<plugins>
-			<!-- This ensures LICESNE and NOTICE inclusion in all jars -->
+			<!-- This ensures LICENSE and NOTICE inclusion in all jars -->
             <plugin>
                 <artifactId>maven-remote-resources-plugin</artifactId>
                 <executions>
