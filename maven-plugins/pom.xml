@@ -17,8 +17,8 @@
 		<version>4.0.M5-SNAPSHOT</version>
 	</parent>
 	<groupId>org.apache.cayenne.plugins</groupId>
-	<artifactId>cayenne-plugins-parent</artifactId>
-	<name>cayenne-plugins-parent: Cayenne Maven Plugins parent</name>
+	<artifactId>cayenne-maven-plugins-parent</artifactId>
+	<name>cayenne-maven-plugins-parent: Maven Plugins parent</name>
 	<packaging>pom</packaging>
 
 	<modules>
