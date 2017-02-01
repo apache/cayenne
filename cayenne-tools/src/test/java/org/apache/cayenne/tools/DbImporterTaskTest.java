@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.test.jdbc.SQLReader;
 import org.apache.cayenne.test.resource.ResourceUtil;
-import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.UnknownElement;
@@ -44,7 +44,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import static org.apache.cayenne.dbimport.ReverseEngineeringUtils.*;
+import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils.*;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

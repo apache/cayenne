@@ -28,7 +28,7 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.tools.configuration.ToolsModule;
+import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.tools.ant.BuildException;

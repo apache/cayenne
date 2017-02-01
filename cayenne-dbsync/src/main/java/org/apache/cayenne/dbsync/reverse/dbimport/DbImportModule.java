@@ -17,28 +17,30 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.db.load;
+package org.apache.cayenne.dbsync.reverse.dbimport;
 
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.map.MapLoader;
+import org.apache.cayenne.project.FileProjectSaver;
 import org.apache.cayenne.project.ProjectSaver;
-import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
 
-class ModelerSyncModule implements Module {
+/**
+ * A DI module that bootstraps {@link DbImportAction}.
+ * Should be used in conjunction with {@link org.apache.cayenne.dbsync.reverse.configuration.ToolsModule}
+ * and {@link org.apache.cayenne.dbsync.DbSyncModule}.
+ *
+ * @since 4.0
+ */
+public class DbImportModule implements Module {
 
-    private DbLoaderContext dbLoaderContext;
-
-    ModelerSyncModule(DbLoaderContext dbLoaderHelper) {
-        this.dbLoaderContext = dbLoaderHelper;
-    }
-
-    @Override
     public void configure(Binder binder) {
-        binder.bind(ProjectController.class).toInstance(dbLoaderContext.getProjectController());
-        binder.bind(ProjectSaver.class).to(DbImportProjectSaver.class);
-        binder.bind(DbImportAction.class).to(ModelerDbImportAction.class);
-        binder.bind(DataMap.class).toInstance(dbLoaderContext.getDataMap());
+        binder.bind(DbImportAction.class).to(DefaultDbImportAction.class);
+        binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
+        binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+        binder.bind(MapLoader.class).to(MapLoader.class);
     }
+
 }

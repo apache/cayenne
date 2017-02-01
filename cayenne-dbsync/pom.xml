@@ -36,12 +36,18 @@
 			<artifactId>cayenne-server</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-project</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
         <dependency>
             <groupId>net.java.dev.inflector</groupId>
             <artifactId>inflector</artifactId>
             <scope>compile</scope>
         </dependency>
-
+		<!-- Test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

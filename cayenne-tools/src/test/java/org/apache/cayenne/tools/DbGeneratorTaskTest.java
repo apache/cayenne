@@ -22,9 +22,9 @@ package org.apache.cayenne.tools;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
+import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.tools.configuration.ToolsModule;
 import org.apache.commons.logging.Log;
 import org.junit.Test;
 

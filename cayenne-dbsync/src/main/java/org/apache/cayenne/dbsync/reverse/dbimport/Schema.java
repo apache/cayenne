@@ -17,28 +17,23 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.db.load;
+package org.apache.cayenne.dbsync.reverse.dbimport;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.project.ProjectSaver;
-import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
+/**
+ * @since 4.0.
+ */
+public class Schema extends FilterContainer {
 
-class ModelerSyncModule implements Module {
+    public Schema() {
+    }
 
-    private DbLoaderContext dbLoaderContext;
-
-    ModelerSyncModule(DbLoaderContext dbLoaderHelper) {
-        this.dbLoaderContext = dbLoaderHelper;
+    public Schema(String name) {
+        setName(name);
     }
 
     @Override
-    public void configure(Binder binder) {
-        binder.bind(ProjectController.class).toInstance(dbLoaderContext.getProjectController());
-        binder.bind(ProjectSaver.class).to(DbImportProjectSaver.class);
-        binder.bind(DbImportAction.class).to(ModelerDbImportAction.class);
-        binder.bind(DataMap.class).toInstance(dbLoaderContext.getDataMap());
+    public StringBuilder toString(StringBuilder res, String prefix) {
+        res.append(prefix).append("Schema: ").append(getName()).append("\n");
+        return super.toString(res, prefix + "  ");
     }
 }

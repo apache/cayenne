@@ -21,7 +21,6 @@ package org.apache.cayenne.dbsync.reverse.filters;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import org.apache.cayenne.dbimport.ExcludeTable;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.dbimport.Catalog;
-import org.apache.cayenne.dbimport.Schema;
+import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
+import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.IncludeTableFilter;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
-import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import static org.apache.cayenne.dbimport.ReverseEngineeringUtils.*;
+import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils.*;
 import static org.mockito.Mockito.mock;
 
 public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {

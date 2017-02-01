@@ -25,8 +25,8 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.project.ProjectSaver;
-import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
-import org.apache.cayenne.tools.dbimport.DefaultDbImportAction;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
+import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
 import org.apache.commons.logging.Log;
 
 import java.io.IOException;

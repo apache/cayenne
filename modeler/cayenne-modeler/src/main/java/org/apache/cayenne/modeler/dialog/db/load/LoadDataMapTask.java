@@ -26,9 +26,9 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.util.LongRunningTask;
 import org.apache.cayenne.modeler.util.ProjectUtil;
-import org.apache.cayenne.tools.configuration.ToolsModule;
-import org.apache.cayenne.tools.dbimport.DbImportAction;
-import org.apache.cayenne.tools.dbimport.DbImportModule;
+import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

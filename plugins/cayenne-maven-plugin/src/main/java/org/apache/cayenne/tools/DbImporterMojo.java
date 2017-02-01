@@ -18,15 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.DbSyncModule;
+import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfigurationValidator;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportModule;
+import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.tools.configuration.ToolsModule;
-import org.apache.cayenne.tools.dbimport.DbImportAction;
-import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
-import org.apache.cayenne.tools.dbimport.DbImportModule;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.AbstractMojo;

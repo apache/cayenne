@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.dbimport.Catalog;
-import org.apache.cayenne.dbimport.IncludeTable;
-import org.apache.cayenne.dbimport.Schema;
+import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
+import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.test.jdbc.SQLReader;
 import org.apache.cayenne.test.resource.ResourceUtil;
-import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;

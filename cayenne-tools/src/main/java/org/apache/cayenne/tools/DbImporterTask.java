@@ -19,24 +19,25 @@
 package org.apache.cayenne.tools;
 
 import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.dbimport.Catalog;
-import org.apache.cayenne.dbimport.ExcludeColumn;
-import org.apache.cayenne.dbimport.ExcludeProcedure;
-import org.apache.cayenne.dbimport.ExcludeTable;
-import org.apache.cayenne.dbimport.IncludeColumn;
-import org.apache.cayenne.dbimport.IncludeProcedure;
-import org.apache.cayenne.dbimport.IncludeTable;
-import org.apache.cayenne.dbimport.ReverseEngineering;
-import org.apache.cayenne.dbimport.Schema;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
+import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfigurationValidator;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportModule;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
+import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.tools.configuration.ToolsModule;
-import org.apache.cayenne.tools.dbimport.DbImportAction;
-import org.apache.cayenne.tools.dbimport.DbImportConfiguration;
-import org.apache.cayenne.tools.dbimport.DbImportModule;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.logging.Log;
 import org.apache.tools.ant.BuildException;
@@ -114,11 +115,8 @@ public class DbImporterTask extends Task {
         config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
         config.setTableTypes(reverseEngineering.getTableTypes());
 
-        Injector injector = DIBootstrap.createInjector(new DbSyncModule(),
-                new ToolsModule(logger), new DbImportModule());
-
-        DbImportConfigurationValidator validator = new DbImportConfigurationValidator(
-                reverseEngineering, config, injector);
+        Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(logger), new DbImportModule());
+        DbImportConfigurationValidator validator = new DbImportConfigurationValidator(reverseEngineering, config, injector);
         try {
             validator.validate();
         } catch (Exception ex) {

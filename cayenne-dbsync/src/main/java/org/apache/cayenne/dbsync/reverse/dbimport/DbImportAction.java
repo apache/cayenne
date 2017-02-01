@@ -16,29 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.dbsync.reverse.dbimport;
 
-package org.apache.cayenne.modeler.dialog.db.load;
-
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.project.ProjectSaver;
-import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
-
-class ModelerSyncModule implements Module {
-
-    private DbLoaderContext dbLoaderContext;
-
-    ModelerSyncModule(DbLoaderContext dbLoaderHelper) {
-        this.dbLoaderContext = dbLoaderHelper;
-    }
-
-    @Override
-    public void configure(Binder binder) {
-        binder.bind(ProjectController.class).toInstance(dbLoaderContext.getProjectController());
-        binder.bind(ProjectSaver.class).to(DbImportProjectSaver.class);
-        binder.bind(DbImportAction.class).to(ModelerDbImportAction.class);
-        binder.bind(DataMap.class).toInstance(dbLoaderContext.getDataMap());
-    }
+/**
+ * An API of a strategy that can load DB schema and merge it to a new or an existing DataMap.
+ *
+ * @since 4.0
+ */
+public interface DbImportAction {
+	
+    void execute(DbImportConfiguration config) throws Exception;
+	
 }

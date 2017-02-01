@@ -17,28 +17,27 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.db.load;
+package org.apache.cayenne.dbsync.reverse.dbimport;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.project.ProjectSaver;
-import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
+/**
+ * Additional class to handle <name> element under <catalog> and <schema>
+ *      required for ant configuration
+ *
+ * @since 4.0.
+ */
+public class AntNestedElement {
 
-class ModelerSyncModule implements Module {
+    private String name;
 
-    private DbLoaderContext dbLoaderContext;
-
-    ModelerSyncModule(DbLoaderContext dbLoaderHelper) {
-        this.dbLoaderContext = dbLoaderHelper;
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public void configure(Binder binder) {
-        binder.bind(ProjectController.class).toInstance(dbLoaderContext.getProjectController());
-        binder.bind(ProjectSaver.class).to(DbImportProjectSaver.class);
-        binder.bind(DbImportAction.class).to(ModelerDbImportAction.class);
-        binder.bind(DataMap.class).toInstance(dbLoaderContext.getDataMap());
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void addText(String str) {
+        name = str;
     }
 }

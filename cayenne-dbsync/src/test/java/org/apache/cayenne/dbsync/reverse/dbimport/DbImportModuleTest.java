@@ -17,28 +17,25 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.db.load;
+package org.apache.cayenne.dbsync.reverse.dbimport;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.project.ProjectSaver;
-import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
+import org.apache.cayenne.dbsync.DbSyncModule;
+import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
+import org.apache.commons.logging.Log;
+import org.junit.Test;
 
-class ModelerSyncModule implements Module {
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
-    private DbLoaderContext dbLoaderContext;
+public class DbImportModuleTest {
 
-    ModelerSyncModule(DbLoaderContext dbLoaderHelper) {
-        this.dbLoaderContext = dbLoaderHelper;
-    }
+    @Test
+    public void testModuleContents() {
 
-    @Override
-    public void configure(Binder binder) {
-        binder.bind(ProjectController.class).toInstance(dbLoaderContext.getProjectController());
-        binder.bind(ProjectSaver.class).to(DbImportProjectSaver.class);
-        binder.bind(DbImportAction.class).to(ModelerDbImportAction.class);
-        binder.bind(DataMap.class).toInstance(dbLoaderContext.getDataMap());
+        Log log = mock(Log.class);
+        Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
+        assertTrue(i.getInstance(DbImportAction.class) instanceof DbImportAction);
     }
 }
