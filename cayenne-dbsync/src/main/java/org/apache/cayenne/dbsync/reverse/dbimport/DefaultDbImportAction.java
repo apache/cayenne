@@ -137,7 +137,6 @@ public class DefaultDbImportAction implements DbImportAction {
         DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
         DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
         DbAdapter adapter = adapterFactory.createAdapter(dataNodeDescriptor, dataSource);
-        ObjectNameGenerator objectNameGenerator = config.createNameGenerator();
 
         DataMap sourceDataMap;
         try (Connection connection = dataSource.getConnection()) {
@@ -162,20 +161,16 @@ public class DefaultDbImportAction implements DbImportAction {
         MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
 
         DbLoaderConfiguration loaderConfig = config.getDbLoaderConfig();
-        List<MergerToken> tokens = DataMapMerger.builder(mergerTokenFactory)
+        Collection<MergerToken> tokens = DataMapMerger.builder(mergerTokenFactory)
                 .filters(loaderConfig.getFiltersConfig())
                 .skipPKTokens(loaderConfig.isSkipPrimaryKeyLoading())
                 .skipRelationshipsTokens(loaderConfig.isSkipRelationshipsLoading())
                 .build()
                 .createMergeTokens(targetDataMap, sourceDataMap);
+        tokens = log(sort(reverse(mergerTokenFactory, tokens)));
 
         hasChanges |= syncDataMapProperties(targetDataMap, config);
-        hasChanges |= applyTokens(config.createMergeDelegate(),
-                targetDataMap,
-                log(sort(reverse(mergerTokenFactory, tokens))),
-                objectNameGenerator,
-                config.createMeaningfulPKFilter(),
-                config.isUsePrimitives());
+        hasChanges |= applyTokens(targetDataMap, tokens, config);
         hasChanges |= syncProcedures(targetDataMap, sourceDataMap, loaderConfig.getFiltersConfig());
 
         if (hasChanges) {
@@ -183,11 +178,7 @@ public class DefaultDbImportAction implements DbImportAction {
         }
     }
 
-
-    protected void transformSourceBeforeMerge(DataMap sourceDataMap,
-                                              DataMap targetDataMap,
-                                              DbImportConfiguration configuration) {
-
+    protected void transformSourceBeforeMerge(DataMap sourceDataMap, DataMap targetDataMap, DbImportConfiguration configuration) {
         if (configuration.isForceDataMapCatalog()) {
             String catalog = targetDataMap.getDefaultCatalog();
             for (DbEntity e : sourceDataMap.getDbEntities()) {
@@ -201,11 +192,9 @@ public class DefaultDbImportAction implements DbImportAction {
                 e.setSchema(schema);
             }
         }
-
     }
 
     private boolean syncDataMapProperties(DataMap targetDataMap, DbImportConfiguration config) {
-
         String defaultPackage = config.getDefaultPackage();
         if (defaultPackage == null || defaultPackage.trim().length() == 0) {
             return false;
@@ -314,12 +303,7 @@ public class DefaultDbImportAction implements DbImportAction {
         return tokens;
     }
 
-    private boolean applyTokens(ModelMergeDelegate mergeDelegate,
-                                DataMap targetDataMap,
-                                Collection<MergerToken> tokens,
-                                ObjectNameGenerator nameGenerator,
-                                NameFilter meaningfulPKFilter,
-                                boolean usingPrimitives) {
+    private boolean applyTokens(DataMap targetDataMap, Collection<MergerToken> tokens, DbImportConfiguration config) {
 
         if (tokens.isEmpty()) {
             logger.info("");
@@ -328,8 +312,7 @@ public class DefaultDbImportAction implements DbImportAction {
         }
 
         final Collection<ObjEntity> loadedObjEntities = new LinkedList<>();
-
-        mergeDelegate = new ProxyModelMergeDelegate(mergeDelegate) {
+        ModelMergeDelegate mergeDelegate = new ProxyModelMergeDelegate(config.createMergeDelegate()) {
             @Override
             public void objEntityAdded(ObjEntity ent) {
                 loadedObjEntities.add(ent);
@@ -337,11 +320,12 @@ public class DefaultDbImportAction implements DbImportAction {
             }
         };
 
+        ObjectNameGenerator nameGenerator = config.createNameGenerator();
         MergerContext mergerContext = MergerContext.builder(targetDataMap)
                 .delegate(mergeDelegate)
                 .nameGenerator(nameGenerator)
-                .usingPrimitives(usingPrimitives)
-                .meaningfulPKFilter(meaningfulPKFilter)
+                .usingPrimitives(config.isUsePrimitives())
+                .meaningfulPKFilter(config.createMeaningfulPKFilter())
                 .build();
 
         for (MergerToken token : tokens) {
@@ -405,15 +389,11 @@ public class DefaultDbImportAction implements DbImportAction {
         projectSaver.save(project);
     }
 
-    protected DataMap load(DbImportConfiguration config,
-                           DbAdapter adapter,
-                           Connection connection) throws Exception {
+    protected DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
         return createDbLoader(adapter, connection, config).load();
     }
 
-    protected DbLoader createDbLoader(DbAdapter adapter,
-                                       Connection connection,
-                                       DbImportConfiguration config) {
+    protected DbLoader createDbLoader(DbAdapter adapter, Connection connection, DbImportConfiguration config) {
         return new DbLoader(adapter, connection,
                 config.getDbLoaderConfig(),
                 config.createLoaderDelegate(),

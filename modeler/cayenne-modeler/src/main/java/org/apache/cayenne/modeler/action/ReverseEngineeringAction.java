@@ -63,6 +63,9 @@ public class ReverseEngineeringAction extends DBWizardAction<DbLoaderOptionsDial
 
         final DbLoaderOptionsDialog loaderOptionsDialog = loaderOptionDialog(connectWizard);
         if(!context.buildConfig(connectWizard, loaderOptionsDialog)) {
+            try {
+                context.getConnection().close();
+            } catch (SQLException ignored) {}
             return;
         }
 
@@ -72,14 +75,12 @@ public class ReverseEngineeringAction extends DBWizardAction<DbLoaderOptionsDial
                 application.getUndoManager().discardAllEdits();
                 try {
                     context.getConnection().close();
-                } catch (SQLException ignored) {
-                }
+                } catch (SQLException ignored) {}
             }
         });
     }
 
-    private void runLoaderInThread(final DbLoaderContext context,
-                                   final Runnable callback) {
+    private void runLoaderInThread(final DbLoaderContext context, final Runnable callback) {
         Thread th = new Thread(new Runnable() {
             public void run() {
                 LoadDataMapTask task = new LoadDataMapTask(Application.getFrame(), "Reengineering DB", context);

@@ -104,22 +104,14 @@ public class TypesMappingIT extends ServerCase {
     public void testTypeInfoCompleteness() throws Exception {
         // check counts
         // since more then 1 database type can map to a single JDBC type
-        Connection conn = dataSourceFactory.getSharedDataSource().getConnection();
         int len = 0;
-        try {
+        try (Connection conn = dataSourceFactory.getSharedDataSource().getConnection()) {
             DatabaseMetaData md = conn.getMetaData();
-            ResultSet rs = md.getTypeInfo();
-            try {
+            try (ResultSet rs = md.getTypeInfo()) {
                 while (rs.next()) {
                     len++;
                 }
             }
-            finally {
-                rs.close();
-            }
-        }
-        finally {
-            conn.close();
         }
 
         int actualLen = 0;
@@ -135,15 +127,10 @@ public class TypesMappingIT extends ServerCase {
         assertTrue(len <= actualLen);
     }
 
-    TypesMapping createTypesMapping() throws Exception {
-        Connection conn = dataSourceFactory.getSharedDataSource().getConnection();
-
-        try {
+    private TypesMapping createTypesMapping() throws Exception {
+        try (Connection conn = dataSourceFactory.getSharedDataSource().getConnection()) {
             DatabaseMetaData md = conn.getMetaData();
             return new TypesMapping(md);
-        }
-        finally {
-            conn.close();
         }
     }
 }

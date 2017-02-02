@@ -41,8 +41,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
                                  @Inject DataSourceFactory dataSourceFactory,
                                  @Inject DbAdapterFactory adapterFactory,
                                  @Inject MapLoader mapLoader,
-                                 @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider
-                                 ) {
+                                 @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider) {
         super(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider);
     }
 

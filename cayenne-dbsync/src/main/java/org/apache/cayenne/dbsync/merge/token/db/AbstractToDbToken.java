@@ -55,9 +55,8 @@ public abstract class AbstractToDbToken extends AbstractMergerToken {
 		JdbcEventLogger logger = mergerContext.getDataNode().getJdbcEventLogger();
 		logger.log(sql);
 
-		try (Connection conn = mergerContext.getDataNode().getDataSource().getConnection();) {
-
-			try (Statement st = conn.createStatement();) {
+		try (Connection conn = mergerContext.getDataNode().getDataSource().getConnection()) {
+			try (Statement st = conn.createStatement()) {
 				st.execute(sql);
 			}
 		} catch (SQLException e) {
