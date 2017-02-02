@@ -29,9 +29,10 @@ class DataMapValidator extends ConfigurationNodeValidator {
     void validate(DataMap map, ValidationResult validationResult) {
         validateName(map, validationResult);
         validateNodeLinks(map, validationResult);
+        validateJavaPackage(map, validationResult);
     }
 
-    void validateNodeLinks(DataMap map, ValidationResult validationResult) {
+    private void validateNodeLinks(DataMap map, ValidationResult validationResult) {
         DataChannelDescriptor domain = map.getDataChannelDescriptor();
         if (domain == null) {
             return;
@@ -52,7 +53,7 @@ class DataMapValidator extends ConfigurationNodeValidator {
         }
     }
 
-    void validateName(DataMap map, ValidationResult validationResult) {
+    private void validateName(DataMap map, ValidationResult validationResult) {
         String name = map.getName();
 
         if (Util.isEmptyString(name)) {
@@ -75,6 +76,22 @@ class DataMapValidator extends ConfigurationNodeValidator {
                 addFailure(validationResult, map, "Duplicate DataMap name: %s", name);
                 return;
             }
+        }
+    }
+
+    private void validateJavaPackage(DataMap map, ValidationResult validationResult) {
+        String javaPackage = map.getDefaultPackage();
+
+        if(Util.isEmptyString(javaPackage)) {
+            addFailure(validationResult, map, "Java package is not set in DataMap '%s'", map.getName());
+            return;
+        }
+
+        NameValidationHelper helper = NameValidationHelper.getInstance();
+        String invalidChars = helper.invalidCharsInJavaClassName(javaPackage);
+        if(invalidChars != null) {
+            addFailure(validationResult, map, "DataMap '%s' Java package '%s' contains invalid characters: %s",
+                    map.getName(), javaPackage, invalidChars);
         }
     }
 }

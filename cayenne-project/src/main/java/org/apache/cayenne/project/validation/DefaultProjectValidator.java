@@ -97,9 +97,7 @@ public class DefaultProjectValidator implements ProjectValidator {
             validationResult = new ValidationResult();
         }
 
-        public ValidationResult visitDataChannelDescriptor(
-                DataChannelDescriptor channelDescriptor) {
-
+        public ValidationResult visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
             dataChannelValidator.validate(channelDescriptor, validationResult);
 
             for (DataNodeDescriptor node : channelDescriptor.getNodeDescriptors()) {
@@ -115,33 +113,23 @@ public class DefaultProjectValidator implements ProjectValidator {
 
         public ValidationResult visitDataMap(DataMap dataMap) {
             mapValidator.validate(dataMap, validationResult);
-            Iterator<Embeddable> itEmb = dataMap.getEmbeddables().iterator();
-            while (itEmb.hasNext()) {
-                Embeddable emb = itEmb.next();
+            for (Embeddable emb : dataMap.getEmbeddables()) {
                 visitEmbeddable(emb);
             }
 
-            Iterator<ObjEntity> itObjEnt = dataMap.getObjEntities().iterator();
-            while (itObjEnt.hasNext()) {
-                ObjEntity ent = itObjEnt.next();
+            for (ObjEntity ent : dataMap.getObjEntities()) {
                 visitObjEntity(ent);
             }
 
-            Iterator<DbEntity> itDbEnt = dataMap.getDbEntities().iterator();
-            while (itDbEnt.hasNext()) {
-                DbEntity ent = itDbEnt.next();
+            for (DbEntity ent : dataMap.getDbEntities()) {
                 visitDbEntity(ent);
             }
 
-            Iterator<Procedure> itProc = dataMap.getProcedures().iterator();
-            while (itProc.hasNext()) {
-                Procedure proc = itProc.next();
+            for (Procedure proc : dataMap.getProcedures()) {
                 visitProcedure(proc);
             }
 
-            Iterator<QueryDescriptor> itQuer = dataMap.getQueryDescriptors().iterator();
-            while (itQuer.hasNext()) {
-                QueryDescriptor q = itQuer.next();
+            for (QueryDescriptor q : dataMap.getQueryDescriptors()) {
                 visitQuery(q);
             }
 
@@ -161,15 +149,11 @@ public class DefaultProjectValidator implements ProjectValidator {
         public ValidationResult visitDbEntity(DbEntity entity) {
             dbEntityValidator.validate(entity, validationResult);
 
-            Iterator<DbAttribute> itAttr = entity.getAttributes().iterator();
-            while (itAttr.hasNext()) {
-                DbAttribute attr = itAttr.next();
+            for (DbAttribute attr : entity.getAttributes()) {
                 visitDbAttribute(attr);
             }
 
-            Iterator<DbRelationship> itRel = entity.getRelationships().iterator();
-            while (itRel.hasNext()) {
-                DbRelationship rel = itRel.next();
+            for (DbRelationship rel : entity.getRelationships()) {
                 visitDbRelationship(rel);
             }
             return validationResult;
@@ -182,9 +166,7 @@ public class DefaultProjectValidator implements ProjectValidator {
 
         public ValidationResult visitEmbeddable(Embeddable embeddable) {
             embeddableValidator.validate(embeddable, validationResult);
-            Iterator<EmbeddableAttribute> it = embeddable.getAttributes().iterator();
-            while (it.hasNext()) {
-                EmbeddableAttribute attr = it.next();
+            for (EmbeddableAttribute attr : embeddable.getAttributes()) {
                 visitEmbeddableAttribute(attr);
             }
             return validationResult;
@@ -203,15 +185,11 @@ public class DefaultProjectValidator implements ProjectValidator {
         public ValidationResult visitObjEntity(ObjEntity entity) {
             objEntityValidator.validate(entity, validationResult);
 
-            Iterator<ObjAttribute> itAttr = entity.getAttributes().iterator();
-            while (itAttr.hasNext()) {
-                ObjAttribute attr = itAttr.next();
+            for (ObjAttribute attr : entity.getAttributes()) {
                 visitObjAttribute(attr);
             }
 
-            Iterator<ObjRelationship> itRel = entity.getRelationships().iterator();
-            while (itRel.hasNext()) {
-                ObjRelationship rel = itRel.next();
+            for (ObjRelationship rel : entity.getRelationships()) {
                 visitObjRelationship(rel);
             }
             return validationResult;
@@ -229,17 +207,11 @@ public class DefaultProjectValidator implements ProjectValidator {
                 visitProcedureParameter(parameter);
             }
 
-            Iterator<ProcedureParameter> itPrOut = procedure
-                    .getCallOutParameters()
-                    .iterator();
-            while (itPrOut.hasNext()) {
-                ProcedureParameter procPar = itPrOut.next();
+            for (ProcedureParameter procPar : procedure.getCallOutParameters()) {
                 visitProcedureParameter(procPar);
             }
 
-            Iterator<ProcedureParameter> itPr = procedure.getCallParameters().iterator();
-            while (itPr.hasNext()) {
-                ProcedureParameter procPar = itPr.next();
+            for (ProcedureParameter procPar : procedure.getCallParameters()) {
                 visitProcedureParameter(procPar);
             }
 
@@ -252,7 +224,6 @@ public class DefaultProjectValidator implements ProjectValidator {
         }
 
         public ValidationResult visitQuery(QueryDescriptor query) {
-
             switch (query.getType()) {
                 case QueryDescriptor.SELECT_QUERY:
                     selectQueryValidator.validate((SelectQueryDescriptor) query, validationResult);
