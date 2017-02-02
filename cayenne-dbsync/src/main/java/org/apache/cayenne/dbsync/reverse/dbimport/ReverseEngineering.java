@@ -96,6 +96,11 @@ public class ReverseEngineering extends SchemaContainer implements Serializable 
     private boolean usePrimitives = true;
 
     /**
+     * Use old Java 7 date types
+     */
+    private boolean useJava7Types = false;
+
+    /**
      * Typical types are: <ul>
      * <li> "TABLE"
      * <li> "VIEW"
@@ -206,5 +211,9 @@ public class ReverseEngineering extends SchemaContainer implements Serializable 
 
     public boolean isUsePrimitives() {
         return usePrimitives;
+    }
+
+    public boolean isUseJava7Types() {
+        return useJava7Types;
     }
 }

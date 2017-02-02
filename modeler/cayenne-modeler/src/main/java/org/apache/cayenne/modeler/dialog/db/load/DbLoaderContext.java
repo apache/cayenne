@@ -145,6 +145,8 @@ public class DbLoaderContext {
         config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.build());
         config.setMeaningfulPkTables(dialog.getMeaningfulPk());
         config.setNamingStrategy(dialog.getNamingStrategy());
+        config.setUsePrimitives(dialog.isUsePrimitives());
+        config.setUseJava7Types(dialog.isUseJava7Typed());
         setConfig(config);
 
         prepareDataMap();

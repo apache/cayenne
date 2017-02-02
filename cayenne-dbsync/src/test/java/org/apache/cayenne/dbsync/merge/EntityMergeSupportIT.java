@@ -94,7 +94,8 @@ public class EntityMergeSupportIT extends MergeCase {
 				new DefaultObjectNameGenerator(NoStemStemmer.getInstance()),
 				NamePatternMatcher.EXCLUDE_ALL,
 				true,
-				true);
+				true,
+				false);
 		assertTrue(entityMergeSupport.synchronizeWithDbEntities(Arrays.asList(objEntity1, objEntity2)));
 		assertNotNull(objEntity1.getAttribute("name"));
 		assertNotNull(objEntity1.getRelationship("newTable2s"));

@@ -247,6 +247,16 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     }
 
     @Test
+    public void testJava7Types() throws Exception {
+        test("testJava7Types");
+    }
+
+    @Test
+    public void testJava8Types() throws Exception {
+        test("testJava8Types");
+    }
+
+    @Test
     public void testFilteringConfig() throws Exception {
         DbImporterMojo cdbImport = getCdbImport("config/pom-01.xml");
 

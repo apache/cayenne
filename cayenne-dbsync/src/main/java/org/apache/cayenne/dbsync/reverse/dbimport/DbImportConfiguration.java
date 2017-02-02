@@ -55,6 +55,7 @@ public class DbImportConfiguration {
     private String meaningfulPkTables;
     private String adapter;
     private boolean usePrimitives;
+    private boolean useJava7Types;
     private Log logger;
     private String namingStrategy;
     private String stripFromTableNames;
@@ -143,6 +144,14 @@ public class DbImportConfiguration {
 
     public void setUsePrimitives(boolean usePrimitives) {
         this.usePrimitives = usePrimitives;
+    }
+
+    public boolean isUseJava7Types() {
+        return useJava7Types;
+    }
+
+    public void setUseJava7Types(boolean useJava7Types) {
+        this.useJava7Types = useJava7Types;
     }
 
     public NameFilter createMeaningfulPKFilter() {

@@ -154,6 +154,7 @@ public class DbImporterMojo extends AbstractMojo {
         config.setUrl(dataSource.getUrl());
         config.setUsername(dataSource.getUsername());
         config.setUsePrimitives(dbImportConfig.isUsePrimitives());
+        config.setUseJava7Types(dbImportConfig.isUseJava7Types());
 
         return config;
     }

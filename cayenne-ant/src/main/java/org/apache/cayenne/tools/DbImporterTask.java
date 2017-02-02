@@ -54,6 +54,7 @@ public class DbImporterTask extends Task {
     public DbImporterTask() {
         this.config = new DbImportConfiguration();
         this.config.setUsePrimitives(true);
+        this.config.setUseJava7Types(false);
         this.config.setNamingStrategy(DefaultObjectNameGenerator.class.getName());
 
         // reverse engineering config is flattened into task...
@@ -213,6 +214,10 @@ public class DbImporterTask extends Task {
 
     public void setUsePrimitives(boolean flag) {
         config.setUsePrimitives(flag);
+    }
+
+    public void setUseJava7Types(boolean flag) {
+        config.setUseJava7Types(flag);
     }
 
     public void setForceDataMapCatalog(boolean flag) {

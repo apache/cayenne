@@ -38,13 +38,13 @@
     <obj-entity name="Child" className="Child" dbEntityName="CHILD">
         <obj-attribute name="col3" type="java.math.BigDecimal" db-attribute-path="COL3"/>
         <obj-attribute name="col4" type="java.lang.String" db-attribute-path="COL4"/>
-        <obj-attribute name="col5" type="java.util.Date" db-attribute-path="COL5"/>
+        <obj-attribute name="col5" type="java.time.LocalDate" db-attribute-path="COL5"/>
         <obj-attribute name="parentId" type="java.lang.String" db-attribute-path="PARENT_ID"/>
     </obj-entity>
     <obj-entity name="Parent" className="Parent" dbEntityName="PARENT">
         <obj-attribute name="col2" type="java.lang.String" db-attribute-path="COL2"/>
         <obj-attribute name="col3" type="java.math.BigDecimal" db-attribute-path="COL3"/>
         <obj-attribute name="col4" type="java.lang.String" db-attribute-path="COL4"/>
-        <obj-attribute name="col5" type="java.util.Date" db-attribute-path="COL5"/>
+        <obj-attribute name="col5" type="java.time.LocalDate" db-attribute-path="COL5"/>
     </obj-entity>
 </data-map>

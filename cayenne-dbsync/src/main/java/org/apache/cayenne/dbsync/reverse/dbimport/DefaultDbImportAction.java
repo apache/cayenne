@@ -325,6 +325,7 @@ public class DefaultDbImportAction implements DbImportAction {
                 .delegate(mergeDelegate)
                 .nameGenerator(nameGenerator)
                 .usingPrimitives(config.isUsePrimitives())
+                .usingJava7Types(config.isUseJava7Types())
                 .meaningfulPKFilter(config.createMeaningfulPKFilter())
                 .build();
 

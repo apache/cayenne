@@ -103,6 +103,7 @@ public class MergerContext {
 
         private MergerContext context;
         private boolean usingPrimitives;
+        private boolean usingJava7Types;
         private NameFilter meaningfulPKsFilter;
 
         private Builder(DataMap dataMap) {
@@ -134,7 +135,8 @@ public class MergerContext {
             context.entityMergeSupport = new EntityMergeSupport(context.nameGenerator,
                     meaningfulPKsFilter,
                     true,
-                    usingPrimitives);
+                    usingPrimitives,
+                    usingJava7Types);
 
             return context;
         }
@@ -151,6 +153,11 @@ public class MergerContext {
 
         public Builder usingPrimitives(boolean flag) {
             this.usingPrimitives = flag;
+            return this;
+        }
+
+        public Builder usingJava7Types(boolean flag) {
+            this.usingJava7Types = flag;
             return this;
         }
 

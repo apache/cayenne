@@ -70,7 +70,7 @@ public class EntitySyncController extends CayenneController {
         }
 
         // TODO: Modeler-controlled defaults for all the hardcoded boolean flags here.
-        EntityMergeSupport merger = new EntityMergeSupport(namingStrategy, NamePatternMatcher.EXCLUDE_ALL, true, true);
+        EntityMergeSupport merger = new EntityMergeSupport(namingStrategy, NamePatternMatcher.EXCLUDE_ALL, true, true, false);
 
         // see if we need to remove meaningful attributes...
         for (ObjEntity entity : entities) {
@@ -116,7 +116,7 @@ public class EntitySyncController extends CayenneController {
         view.setVisible(true);
 
         // TODO: Modeler-controlled defaults for all the hardcoded flags here.
-        return cancel[0] ? null : new EntityMergeSupport(namingStrategy, NamePatternMatcher.EXCLUDE_ALL, removeFKs[0], true);
+        return cancel[0] ? null : new EntityMergeSupport(namingStrategy, NamePatternMatcher.EXCLUDE_ALL, removeFKs[0], true, false);
     }
 
     @Override

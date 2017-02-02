@@ -27,6 +27,7 @@ import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 import java.util.Collection;
 import java.util.Vector;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 
@@ -41,6 +42,8 @@ public class DbLoaderOptionsDialog extends DbActionOptionsDialog {
     private JTextField procNamePatternField;
     private JComboBox<String> strategyCombo;
     protected String strategy;
+    private JCheckBox usePrimitives;
+    private JCheckBox useJava7Types;
 
     /**
      * Creates and initializes new ChooseSchemaDialog.
@@ -70,11 +73,22 @@ public class DbLoaderOptionsDialog extends DbActionOptionsDialog {
         strategyCombo = new JComboBox<>();
         strategyCombo.setEditable(true);
 
+        usePrimitives = new JCheckBox();
+        usePrimitives.setSelected(true);
+        usePrimitives.setToolTipText("<html>Use primitive types (e.g. int) or Object types (e.g. java.lang.Integer)</html>");
+
+        useJava7Types = new JCheckBox();
+        useJava7Types.setSelected(false);
+        useJava7Types.setToolTipText("<html>Use <b>java.util.Date</b> for all columns with <i>DATE/TIME/TIMESTAMP</i> types.<br>" +
+                "By default <b>java.time.*</b> types will be used.</html>");
+
         builder.append("Table Name Include Pattern:", tableIncludePatternField);
         builder.append("Table Name Exclude Pattern:", tableExcludePatternField);
         builder.append("Procedure Name Pattern:", procNamePatternField);
         builder.append("Naming Strategy:", strategyCombo);
         builder.append("Tables with Meaningful PK Pattern:", meaningfulPk);
+        builder.append("Use Java primitive types:", usePrimitives);
+        builder.append("Use old java.util.Date type:", useJava7Types);
     }
 
     protected void initFromModel(Collection<String> catalogs, Collection<String> schemas, String currentCatalog, String currentSchema) {
@@ -109,6 +123,14 @@ public class DbLoaderOptionsDialog extends DbActionOptionsDialog {
     String getProcedureNamePattern() {
         return "".equals(procNamePatternField.getText()) ? null : procNamePatternField
                 .getText();
+    }
+
+    boolean isUsePrimitives() {
+        return usePrimitives.isSelected();
+    }
+
+    boolean isUseJava7Typed() {
+        return useJava7Types.isSelected();
     }
 
     String getNamingStrategy() {
