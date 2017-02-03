@@ -117,7 +117,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 	}
 
 	protected JoinStack createJoinStack() {
-		return new JoinStack(getAdapter(), queryMetadata.getDataMap(), this);
+		return new JoinStack(getAdapter(), this);
 	}
 
 	@Override
@@ -735,6 +735,14 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		}
 
 		return null;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public boolean hasJoins() {
+		return joinStack != null && joinStack.size() > 0;
 	}
 
 	static final class ColumnTracker {

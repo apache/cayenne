@@ -74,11 +74,12 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 		SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class, ExpressionFactory.likeExp("artistName", "a%"));
 		q.addOrdering("dateOfBirth", SortOrder.ASCENDING);
 
-		String generatedSql = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver())
-				.getSql();
+		DefaultSelectTranslator defaultSelectTranslator = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver());
+		String generatedSql = defaultSelectTranslator.getSql();
 
 		// do some simple assertions to make sure all parts are in
 		assertNotNull(generatedSql);
+		assertFalse(defaultSelectTranslator.hasJoins());
 		assertTrue(generatedSql.startsWith("SELECT "));
 		assertTrue(generatedSql.indexOf(" FROM ") > 0);
 		assertTrue(generatedSql.indexOf(" WHERE ") > generatedSql.indexOf(" FROM "));
@@ -226,7 +227,6 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 			} else {
 				assertTrue(generatedSql.indexOf("ARTIST_NAME = ") > 0);
 			}
-
 		} finally {
 			entity.setQualifier(null);
 			middleEntity.setQualifier(null);
@@ -465,6 +465,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 
 		// assert we only have one join
 		assertEquals(2, transl.joinStack.size());
+		assertTrue(transl.hasJoins());
 	}
 
 	@Test
@@ -490,6 +491,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 
 		// assert we have one join
 		assertEquals(1, transl.joinStack.size());
+		assertTrue(transl.hasJoins());
 	}
 
 	@Test

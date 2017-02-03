@@ -42,4 +42,10 @@ public interface SelectTranslator {
 	ColumnDescriptor[] getResultColumns();
 
 	boolean isSuppressingDistinct();
+
+	/**
+	 * @since 4.0
+	 * @return do query has at least one join
+	 */
+	boolean hasJoins();
 }

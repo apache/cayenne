@@ -28,6 +28,7 @@ public class CayenneProjects {
     // setup?)
     public static final String ARRAY_TYPE_PROJECT = "cayenne-array-type.xml";
     public static final String BINARY_PK_PROJECT = "cayenne-binary-pk.xml";
+    public static final String CAY_2032 = "cayenne-cay-2032.xml";
     public static final String COMPOUND_PROJECT = "cayenne-compound.xml";
     public static final String DATE_TIME_PROJECT = "cayenne-date-time.xml";
     public static final String DELETE_RULES_PROJECT = "cayenne-delete-rules.xml";

@@ -118,7 +118,7 @@ public class PrefetchSelectQuery extends SelectQuery<Object> {
 
     /**
      * Removes an extra result path. Note that this method doesn't check for expression
-     * invariants, as it doesn't have a proper context to do so. E.g. for the purspose of
+     * invariants, as it doesn't have a proper context to do so. E.g. for the purpose of
      * this method "db:ARTIST_NAME" and "obj:artistName" are not the same, though both
      * will resolve to the same column name.
      */
@@ -136,7 +136,7 @@ public class PrefetchSelectQuery extends SelectQuery<Object> {
     public Collection<String> getResultPaths() {
         return resultPaths != null
                 ? Collections.unmodifiableCollection(resultPaths)
-                : Collections.EMPTY_SET;
+                : Collections.<String>emptySet();
     }
 
     /**
@@ -147,7 +147,7 @@ public class PrefetchSelectQuery extends SelectQuery<Object> {
      */
     Collection<String> nonNullResultPaths() {
         if (resultPaths == null) {
-            resultPaths = new HashSet<String>();
+            resultPaths = new HashSet<>();
         }
 
         return resultPaths;

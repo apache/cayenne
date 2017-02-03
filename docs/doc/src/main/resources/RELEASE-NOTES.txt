@@ -31,6 +31,7 @@ CAY-2212 cdbimport cleanup and configuration schema refactoring
 
 Bug Fixes:
 
+CAY-2032 SelectAction: DistinctResultIterator ignores flattened relationships
 CAY-2137 When generating SQL from EJBQL, use "AND" to separate multiple join conditions
 CAY-2174 Change FK attribute name cause ObjAttribute appear after Reverse Engineering
 CAY-2175 AliasName used in EJBQLQuery is not working if it contains mixed case

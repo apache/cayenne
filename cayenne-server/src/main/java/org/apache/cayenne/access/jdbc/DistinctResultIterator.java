@@ -45,7 +45,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
 
     protected ResultIterator<T> delegate;
     protected Set<Map<String, Object>> fetchedIds;
-    protected DataRow nextDataRow;
+    protected T nextDataRow;
     protected DbEntity defaultEntity;
     protected boolean compareFullRows;
 
@@ -53,6 +53,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
      * Creates new DistinctResultIterator wrapping another ResultIterator.
      * 
      * @param delegate
+     *            actual result iterator, that will be decorated by this DistinctResultIterator
      * @param defaultEntity
      *            an entity needed to build ObjectIds for distinct comparison.
      */
@@ -67,7 +68,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
 
         this.delegate = delegate;
         this.defaultEntity = defaultEntity;
-        this.fetchedIds = new HashSet<Map<String, Object>>();
+        this.fetchedIds = new HashSet<>();
         this.compareFullRows = compareFullRows;
 
         checkNextRow();
@@ -78,7 +79,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
      */
     @Override
     public Iterator<T> iterator() {
-        return new ResultIteratorIterator<T>(this);
+        return new ResultIteratorIterator<>(this);
     }
 
     /**
@@ -113,9 +114,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
             throw new NoSuchElementException("An attempt to read uninitialized row or past the end of the iterator.");
         }
 
-        // TODO: 
-        @SuppressWarnings("unchecked")
-        T row = (T) nextDataRow;
+        T row = nextDataRow;
         checkNextRow();
         return row;
     }
@@ -132,8 +131,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
         checkNextRow();
     }
 
-    void checkNextRow() {
-
+    private void checkNextRow() {
         if (this.compareFullRows) {
             checkNextUniqueRow();
         } else {
@@ -141,24 +139,22 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
         }
     }
 
-    void checkNextUniqueRow() {
-
+    private void checkNextUniqueRow() {
         nextDataRow = null;
         while (delegate.hasNextRow()) {
-            DataRow next = (DataRow) delegate.nextRow();
+            T next = delegate.nextRow();
 
-            if (fetchedIds.add(next)) {
+            if (fetchedIds.add((DataRow)next)) {
                 this.nextDataRow = next;
                 break;
             }
         }
     }
 
-    void checkNextRowWithUniqueId() {
-
+    private void checkNextRowWithUniqueId() {
         nextDataRow = null;
         while (delegate.hasNextRow()) {
-            DataRow next = (DataRow) delegate.nextRow();
+            T next = delegate.nextRow();
 
             // create id map...
             // TODO: this can be optimized by creating an array with id keys
@@ -166,7 +162,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
 
             Map<String, Object> id = new HashMap<>();
             for (final DbAttribute pk : defaultEntity.getPrimaryKeys()) {
-                id.put(pk.getName(), next.get(pk.getName()));
+                id.put(pk.getName(), ((DataRow)next).get(pk.getName()));
             }
 
             if (fetchedIds.add(id)) {

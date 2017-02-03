@@ -80,7 +80,7 @@ public class SchemaBuilder {
 			"table-primitives.map.xml", "generic.map.xml", "map-db1.map.xml", "map-db2.map.xml", "embeddable.map.xml",
 			"qualified.map.xml", "quoted-identifiers.map.xml", "inheritance-single-table1.map.xml",
 			"inheritance-vertical.map.xml", "oneway-rels.map.xml", "unsupported-distinct-types.map.xml",
-			"array-type.map.xml" };
+			"array-type.map.xml", "cay-2032.map.xml" };
 
 	// hardcoded dependent entities that should be excluded
 	// if LOBs are not supported

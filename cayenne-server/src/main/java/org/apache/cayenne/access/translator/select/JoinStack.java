@@ -55,7 +55,7 @@ public class JoinStack {
 	 */
 	private QualifierTranslator qualifierTranslator;
 
-	protected JoinStack(DbAdapter dbAdapter, DataMap dataMap, QueryAssembler assembler) {
+	protected JoinStack(DbAdapter dbAdapter, QueryAssembler assembler) {
 		this.rootNode = new JoinTreeNode(this);
 		this.rootNode.setTargetTableAlias(newAlias());
 
@@ -99,7 +99,7 @@ public class JoinStack {
 
 		DbRelationship relationship = node.getRelationship();
 
-		DbEntity targetEntity = (DbEntity) relationship.getTargetEntity();
+		DbEntity targetEntity = relationship.getTargetEntity();
 		String srcAlias = node.getSourceTableAlias();
 		String targetAlias = node.getTargetTableAlias();
 
@@ -134,7 +134,7 @@ public class JoinStack {
 			out.append(quotingStrategy.quotedIdentifier(targetEntity, targetAlias, join.getTargetName()));
 		}
 
-		/**
+		/*
 		 * Attaching root Db entity's qualifier
 		 */
 		Expression dbQualifier = targetEntity.getQualifier();
@@ -196,7 +196,7 @@ public class JoinStack {
 			while (node != null && node.getRelationship() != null) {
 				String relName = node.getRelationship().getName();
 
-				/**
+				/*
 				 * We must be in the same join as 'node', otherwise incorrect
 				 * join statement like JOIN t1 ... ON (t0.id=t1.id AND
 				 * t2.qualifier=0) could be generated

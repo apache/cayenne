@@ -187,11 +187,11 @@ public class SelectAction extends BaseSQLAction {
 		// wrap result iterator if distinct has to be suppressed
 
 		// a joint prefetch warrants full row compare
-
 		final boolean[] compareFullRows = new boolean[1];
-		final PrefetchTreeNode rootPrefetch = queryMetadata.getPrefetchTree();
+		compareFullRows[0] = translator.hasJoins();
 
-		if (rootPrefetch != null) {
+		final PrefetchTreeNode rootPrefetch = queryMetadata.getPrefetchTree();
+		if (!compareFullRows[0] && rootPrefetch != null) {
 			rootPrefetch.traverse(new PrefetchProcessor() {
 
 				@Override
@@ -233,7 +233,7 @@ public class SelectAction extends BaseSQLAction {
 			});
 		}
 
-		return new DistinctResultIterator<T>(iterator, queryMetadata.getDbEntity(), compareFullRows[0]);
+		return new DistinctResultIterator<>(iterator, queryMetadata.getDbEntity(), compareFullRows[0]);
 	}
 
 }

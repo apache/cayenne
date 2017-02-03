@@ -39,8 +39,8 @@ import org.apache.cayenne.map.DbRelationship;
  */
 class OpenBaseJoinStack extends JoinStack {
 
-	protected OpenBaseJoinStack(DbAdapter dbAdapter, DataMap dataMap, QueryAssembler assembler) {
-		super(dbAdapter, dataMap, assembler);
+	protected OpenBaseJoinStack(DbAdapter dbAdapter, QueryAssembler assembler) {
+		super(dbAdapter, assembler);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ class OpenBaseJoinStack extends JoinStack {
 			return;
 		}
 
-		DbEntity targetEntity = (DbEntity) relationship.getTargetEntity();
+		DbEntity targetEntity = relationship.getTargetEntity();
 		String targetAlias = node.getTargetTableAlias();
 
 		out.append(", ").append(targetEntity.getFullyQualifiedName()).append(' ').append(targetAlias);
