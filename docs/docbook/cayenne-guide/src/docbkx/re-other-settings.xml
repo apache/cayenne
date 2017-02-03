@@ -28,9 +28,9 @@
             You are able to skip relationships loading by the <code language="xml">&lt;skipRelationshipsLoading&gt;</code> element.
         </para>
         <programlisting language="xml">
-    &lt;reverseEngineering&gt;
+    &lt;dbimport&gt;
         &lt;skipRelationshipsLoading&gt;true&lt;/skipRelationshipsLoading&gt;
-    &lt;/reverseEngineering&gt;</programlisting>
+    &lt;/dbimport&gt;</programlisting>
     </section>
     <section xml:id="skip-pk-loading">
         <title>Skip Primary Keys Loading</title>
@@ -39,9 +39,9 @@
             and avoid their management in database, you’ll find useful to turn off primary keys synchronization at all.
         </para>
         <programlisting language="xml">
-    &lt;reverseEngineering&gt;
+    &lt;dbimport&gt;
         &lt;skipPrimaryKeyLoading&gt;true&lt;/skipPrimaryKeyLoading&gt;
-    &lt;/reverseEngineering&gt;</programlisting>
+    &lt;/dbimport&gt;</programlisting>
     </section>
     <section>
         <title>Table Types</title>
@@ -51,15 +51,15 @@
                 >&lt;tableType&gt;&lt;/tableType&gt;</code> element is used. Some examples:</para>
         <para> Import tables only (skip views and others and other
             types):<programlisting language="xml">
-    &lt;reverseEngineering&gt;
+    &lt;dbimport&gt;
         &lt;tableType&gt;TABLE&lt;/tableType&gt;
-    &lt;/reverseEngineering&gt;</programlisting>
+    &lt;/dbimport&gt;</programlisting>
         </para>
         <para> Tables and views (<emphasis>the default
             option</emphasis>):<programlisting language="xml">
-    &lt;reverseEngineering&gt;
+    &lt;dbimport&gt;
         &lt;tableType&gt;TABLE&lt;/tableType&gt;
         &lt;tableType&gt;VIEWS&lt;/tableType&gt;
-    &lt;/reverseEngineering&gt;</programlisting></para>
+    &lt;/dbimport&gt;</programlisting></para>
     </section>
 </chapter>

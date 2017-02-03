@@ -14,7 +14,9 @@
     the specific language governing permissions and limitations under the
     License.
 -->
-<article xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://docbook.org/ns/docbook http://docbook.org/xml/5.0/xsd/docbook.xsd">
 	<title>Guide to 4.0 Features</title>
 	<para>This guide highlights the new features and changes introduced in Apache Cayenne 4.0. For a full list of changes consult
 		RELEASE-NOTES.txt included in Cayenne download. For release-specific upgrade instructions check UPGRADE.txt.</para>
@@ -31,7 +33,7 @@
 			<para>Cayenne 3.1 introduced dependency injection and ServerRuntime. 4.0 provides a very convenient utility to create a custom runtime
 				with various extensions. This reduces the code needed to integrate Cayenne in your environment to just a few lines and no
 				boilerplate.
-				E.g.:<programlisting>ServerRuntime runtime = new ServerRuntimeBuilder("myproject")
+				E.g.:<programlisting language="java">ServerRuntime runtime = new ServerRuntimeBuilder("myproject")
         .addConfigs("cayenne-project1.xml", "cayenne-project2.xml")
         .addModule(binder -> binder.bind(JdbcEventLogger.class).toInstance(myLogger))
         .dataSource(myDataSource)
@@ -48,7 +50,7 @@
 				decorators. True to the "smallest-footprint" DI philosophy, decorator approach is
 				very simple and does not require proxies or class enhancement. Just implement the
 				decorated interface and provide a constructor that takes a delegate instance being
-				decorated:<programlisting>public class MyInterfaceDecorator implements MyInterface {
+				decorated:<programlisting language="java">public class MyInterfaceDecorator implements MyInterface {
 
     private MyInterface delegate;
 
@@ -80,7 +82,7 @@ Module module = new Module() {
 			<section>
 				<title>ObjectSelect</title>
 				<para>A "chainable" analog of SelectQuery.
-					<programlisting>Artist a = ObjectSelect
+					<programlisting language="java">Artist a = ObjectSelect
      .query(Artist.class)
      .where(Artist.ARTIST_NAME.eq("Picasso"))
      .selectOne(context);</programlisting></para>
@@ -88,7 +90,7 @@ Module module = new Module() {
 			<section>
 				<title>SQLSelect</title>
 				<para>A "chainable" analog of SQLTemplate used specifically to run selecting raw
-					SQL:<programlisting>List&lt;Long> ids = SQLSelect
+					SQL:<programlisting language="java">List&lt;Long> ids = SQLSelect
      .scalarQuery(Long.class, "SELECT ARTIST_ID FROM ARTIST ORDER BY ARTIST_ID")
      .select(context);</programlisting></para>
 			</section>
@@ -96,7 +98,7 @@ Module module = new Module() {
 				<title>SelectById</title>
 				<para>There's really no good analog of SelectById in Cayenne prior to 4.0. Previously available ObjectIdQuery didn't support half of
 					the features of SelectById (e.g. caching consistent with other queries, prefetches, etc.)
-					:<programlisting>Artist a = SelectById
+					:<programlisting language="java">Artist a = SelectById
      .query(Artist.class, 3)
      .useLocalCache("g1")
      .selectOne(context)</programlisting></para>
@@ -108,7 +110,7 @@ Module module = new Module() {
 				<title>Callback-based Object Iterator</title>
 				<para>ObjectContext now features a simpler way to iterate over large result sets, based on callback interface that can be
 					implemented with a
-					lambda:<programlisting>SelectQuery&lt;Artist> q = new SelectQuery&lt;Artist>(Artist.class);
+					lambda:<programlisting language="java">SelectQuery&lt;Artist> q = new SelectQuery&lt;Artist>(Artist.class);
 
 context.iterate(q, (Artist a) -> {
     // do something with the object...
@@ -131,7 +133,7 @@ context.iterate(q, (Artist a) -> {
 			<para>Expressions and SQLTemplate traditionally supported binding of parameters by name as a map. Cayenne 4.0 introduces a very easy
 				form of positional bindings. It works with the same named template format, only parameters are bound by position, left-to-right.
 				Here we showing a more complex example with the same parameter name being used more than once in the
-				query:<programlisting>// two distinct names, 3 positional parameters.
+				query:<programlisting language="java">// two distinct names, 3 positional parameters.
 // "price" is set to 23, "maxPrice" - to 50
 Expression e = ExpressionFactory.exp(
      "price = $price or averagePrice = $price and maxPrice = $maxPrice", 23, 50);</programlisting>This
@@ -142,7 +144,7 @@ Expression e = ExpressionFactory.exp(
 			<title>Improved Transaction API</title>
 			<para>Transaction factory is now setup via DI (instead of being configured in the Modeler). There's a utility method on ServerRuntime
 				to perform multiple operations as one
-				transaction:<programlisting>runtime.performInTransaction(() -> {
+				transaction:<programlisting language="java">runtime.performInTransaction(() -> {
 	// ... do some changes
 	context.commitChanges();
 
@@ -159,7 +161,7 @@ Expression e = ExpressionFactory.exp(
 				regular DB storage. Encrypted values can be stored in (VAR)BINARY and (VAR)CHAR columns. Currently "cayenne-crypto" supports
 				AES/CBC/PKCS5Padding encryption (though other cyphers can be added). It also supports encrypted data compression. Here is an example
 				of building a crypto DI module that can be added to
-				ServerRuntime:<programlisting>Module cryptoExtensions = new CryptoModuleBuilder()
+				ServerRuntime:<programlisting language="java">Module cryptoExtensions = new CryptoModuleBuilder()
 	.keyStore("file:///mykeystore", "keystorepassword".toCharArray(), "keyalias")
 	.compress()
 	.build();</programlisting></para>
@@ -176,8 +178,8 @@ Expression e = ExpressionFactory.exp(
 			<title>Dropped Support for Mapping Listeners</title>
 			<para>Managing listeners in the DataMap XML model is counterproductive and confusing, so support for listeners was removed from both
 				the XML and the Modeler. If you previously had listeners mapped in the model, annotate their callback methods, and perform listener
-				registration in the code: <programlisting>runtime.getDataDomain().addListener(myListener);</programlisting>Entity callbacks on the
-				other hand are managed in the Modeler as before.</para>
+				registration in the code: <programlisting language="java">runtime.getDataDomain().addListener(myListener);</programlisting>
+				Entity callbacks on the other hand are managed in the Modeler as before.</para>
 		</section>
 	</section>
 	<section xml:id="build-tools">
@@ -189,7 +191,8 @@ Expression e = ExpressionFactory.exp(
 				merge algorithm will ensure that custom changes to the model are not overridden on subsequent runs of "cdbimport". Second, the
 				mechanism for specifing DB reverse-engineering parameters, such as name filtering, is made much more powerful with many new options.
 				E.g. we started supporting filters by catalogs and schemas, table name filters can be added per catalog/schema or at the top level,
-				etc. Also configuration can be "inlined" in a Maven pom.xml or specified as a separate file.</para>
+				etc.
+			</para>
 		</section>
 		<section>
 			<title>cgen</title>

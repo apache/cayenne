@@ -35,7 +35,7 @@
             The simplest example of reverse engineering is processing tables from one schema of catalog and there are several options to do this. 
             Basic syntax is described below:
         </para>
-        <programlisting language="xml">&lt;reverseEngineering&gt;
+        <programlisting language="xml">&lt;dbimport&gt;
     &lt;!-- Ant/Maven in case you only want to specify the schema to import --&gt;
     &lt;schema&gt;SCHEMA_NAME&lt;/schema&gt;
 
@@ -49,11 +49,11 @@
     &lt;schema name="SCHEMA_NAME"&gt;
         ...
     &lt;/schema&gt;
-&lt;/reverseEngineering&gt;        </programlisting>
+&lt;/dbimport&gt;        </programlisting>
         <para>
             The same options are available for catalogs:
         </para>
-        <programlisting language="xml"> &lt;reverseEngineering>
+        <programlisting language="xml"> &lt;dbimport>
     &lt;!-- Ant/Maven in case you only want to specify the catalog to import --&gt;
     &lt;catalog&gt;CATALOG_NAME&lt;/catalog&gt;
 
@@ -67,7 +67,7 @@
     &lt;catalog name="CATALOG_NAME"&gt;
         ...
     &lt;/catalog&gt;
-&lt;/reverseEngineering&gt;</programlisting>
+&lt;/dbimport&gt;</programlisting>
         <note>
             <para>Current version of reverse engineering doesn't support catalog filtering for Postgres database.</para>
         </note>
@@ -78,7 +78,7 @@
             Cayenne supports combination of different schemas and catalogs, and it filters data according to your requirements. 
             You could achieve this by the following example of reverse engineering configuration:
         </para>
-        <programlisting language="xml">&lt;reverseEngineering>
+        <programlisting language="xml">&lt;dbimport>
 
     &lt;catalog>
         &lt;name>shop_01&lt;/name>
@@ -99,7 +99,7 @@
         &lt;schema>schema-name-03&lt;/schema>
     &lt;/catalog>
 
-&lt;/reverseEngineering></programlisting>
+&lt;/dbimport></programlisting>
         <para>
             In the example above, Cayenne reverse engineering process contains three catalogs named as shop_01, shop_02 and shop_03, 
             each of wich has their own schemas. Cayenne will load all data only from the declared catalogs and schemas.
@@ -107,18 +107,18 @@
         <para>
             If you want to load everything from database, you could simply declare catalog specification alone.
         </para>
-        <programlisting language="xml">&lt;reverseEngineering>
+        <programlisting language="xml">&lt;dbimport>
 
     &lt;catalog>shop_01&lt;/catalog>
     &lt;catalog>shop_02&lt;/catalog>
     &lt;catalog>shop_03&lt;/catalog>
 
-&lt;/reverseEngineering></programlisting>
+&lt;/dbimport></programlisting>
         <para>
             If you want to do reverse engineering for specific schemas, just remove unwanted schemas from the catalog section. 
             For example, if you want to process schema-name-01 and schema-name-03 schemas only, then you should change reverse engineering section like this.
         </para>
-        <programlisting language="xml">&lt;reverseEngineering>
+        <programlisting language="xml">&lt;dbimport>
 
     &lt;catalog>
         &lt;name>shop_01&lt;/name>
@@ -137,7 +137,7 @@
         &lt;schema>schema-name-03&lt;/schema>
     &lt;/catalog>
 
-&lt;/reverseEngineering></programlisting>
+&lt;/dbimport></programlisting>
     </section>
     <section xml:id="including-excluding-tables-columns-procedures">
         <title>Including and Excluding tables, columns and procedures</title>
@@ -216,7 +216,7 @@
             </orderedlist>
         </para>
         <para>
-            All filtering tags can be placed inside schema and catalog tags, but also inside <code>&lt;reverseEngineering&gt;</code> tag. It means that filtering rules
+            All filtering tags can be placed inside schema and catalog tags, but also inside <code>&lt;dbimport&gt;</code> tag. It means that filtering rules
             will be applied for all schemas and catalogs.
         </para>
     </section>
@@ -225,20 +225,20 @@
         <para>
             Initially, let’s make a small sample. Consider the following reverse engineering configuration.
         </para>
-        <programlisting language="xml">&lt;reverseEngineering>
+        <programlisting language="xml">&lt;dbimport>
     &lt;catalog>shop-01&lt;/catalog>
-&lt;/reverseEngineering>   </programlisting>
+&lt;/dbimport>   </programlisting>
         <para>
             In this case reverse engineering will not filter anything from the shop-01 catalog. If you really want to filter database columns, tables, 
             stored procedures and relationships, you could do it in the following way.
         </para>
-        <programlisting language="xml">&lt;reverseEngineering>
+        <programlisting language="xml">&lt;dbimport>
     &lt;catalog>shop-01&lt;/catalog>
     &lt;catalog>
         &lt;name>shop-02&lt;/name>
         &lt;includeTable>includeTable-01&lt;/includeTable>
     &lt;/catalog>
-&lt;/reverseEngineering></programlisting>
+&lt;/dbimport></programlisting>
         <para>
             Then Cayenne will do reverse engineering for both shop-01 and shop-02 catalogs. First catalog will not be processed for filtering,
             but the second catalog will be processed with “includeTable-01” filter. 
@@ -249,7 +249,7 @@
             They make your configuration more readable, understandable and straightforward. There is not complex.
             Let’s see how to use patterns in reverse engineering configuration with complete example.
         </para>
-        <programlisting language="xml">&lt;reverseEngineering>
+        <programlisting language="xml">&lt;dbimport>
 
     &lt;catalog>shop-01&lt;/catalog>
 
@@ -302,7 +302,7 @@
         &lt;/excludeProcedure>
 
     &lt;/catalog>
-&lt;/reverseEngineering></programlisting>
+&lt;/dbimport></programlisting>
         <para>The example above should provide you more idea about how to use filtering and patterns
             in Cayenne reverse engineering. You could notice that this example demonstrates you the
             "name" and "pattern" configurations. Yes, you could use these as separates xml element
@@ -349,7 +349,7 @@
         </para>
         <note>
             <para>
-                In Ant task configuration all filter tags located inside root tag <code>&lt;cdbimport></code> as there is no <code>&lt;reverseEngineering></code> tag.
+                In Ant task configuration all filter tags located inside root tag <code>&lt;cdbimport></code> as there is no <code>&lt;dbimport></code> tag.
             </para>
         </note>
     </section>

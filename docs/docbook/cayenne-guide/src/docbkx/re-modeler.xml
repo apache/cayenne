@@ -105,6 +105,17 @@
                         By default no meaningful PKs are created.
                     </para>
                 </listitem>
+                <listitem>
+                    <para><emphasis role="strong">Use Java primitive types</emphasis>:
+                        Use primitive types (e.g. <code>int</code>) or Object types (e.g. <code>java.lang.Integer</code>).
+                    </para>
+                </listitem>
+                <listitem>
+                    <para><emphasis role="strong">Use old java.util.Date type</emphasis>:
+                        Use <code>java.util.Date</code> for all columns with <code>DATE/TIME/TIMESTAMP</code> types.
+                        By default <code>java.time.*</code> types will be used.
+                    </para>
+                </listitem>
             </itemizedlist>
         </para>
     </section>

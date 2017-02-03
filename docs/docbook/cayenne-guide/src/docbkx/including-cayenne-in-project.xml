@@ -66,10 +66,10 @@
         <para>Additionally Cayenne provides a Maven plugin with a set of goals to perform various project
             tasks, such as synching generated Java classes with the mapping, described in the
             following subsection. The full plugin name is
-                <code>org.apache.cayenne.plugins:maven-cayenne-plugin</code>.</para>
+                <code>org.apache.cayenne.plugins:cayenne-maven-plugin</code>.</para>
         <section xml:id="mvn-cgen">
             <title>cgen</title>
-            <para><code>cgen</code> is a <code>maven-cayenne-plugin</code> goal that generates and maintains
+            <para><code>cgen</code> is a <code>cayenne-maven-plugin</code> goal that generates and maintains
                 source (.java) files of persistent objects based on a DataMap. By default, it is
                 bound to the generate-sources phase. If "makePairs" is set to "true" (which is the
                 recommended default), this task will generate a pair of classes
@@ -234,7 +234,7 @@
                 generated with default Maven source destination and superclass
                 package:<programlisting language="xml">&lt;plugin>
     &lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
-    &lt;artifactId>maven-cayenne-plugin&lt;/artifactId>
+    &lt;artifactId>cayenne-maven-plugin&lt;/artifactId>
     &lt;version><?eval ${project.version}?>&lt;/version>
 
     &lt;configuration>
@@ -252,7 +252,7 @@
 		</section>
 		<section xml:id="mvn-cdbgen">
 			<title>cdbgen</title>
-			<para><code>cdbgen</code> is a <code>maven-cayenne-plugin</code> goal that drops and/or generates
+			<para><code>cdbgen</code> is a <code>cayenne-maven-plugin</code> goal that drops and/or generates
 				tables in a database on Cayenne DataMap. By default, it is bound to the
 				pre-integration-test phase.
 				<table frame="void">
@@ -355,7 +355,7 @@
 			<para>Example - creating a DB schema on a local HSQLDB
 				database:<programlisting language="xml">&lt;plugin>
     &lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
-    &lt;artifactId>maven-cayenne-plugin&lt;/artifactId>
+    &lt;artifactId>cayenne-maven-plugin&lt;/artifactId>
     &lt;version><?eval ${project.version}?>&lt;/version>
     &lt;executions>
         &lt;execution>
@@ -375,20 +375,22 @@
 		</section>
 		<section xml:id="mvn-cdbimport">
 			<title>cdbimport</title>
-			<para><code>cdbimport</code> is a <code>maven-cayenne-plugin</code> goal that generates a DataMap
+			<para><code>cdbimport</code> is a <code>cayenne-maven-plugin</code> goal that generates a DataMap
 				based on an existing database schema. By default, it is bound to the
 				generate-sources phase. This allows you to generate your DataMap prior to building
 				your project, possibly followed by "cgen" execution to generate the classes.
-				CDBImport plugin described in details in chapter <link linkend="re-introduction">Reverse Engineering</link>
+				CDBImport plugin described in details in chapter <link linkend="re-introduction">"DB-First Flow"</link>
 				<table frame="void">
-					<caption>cdbimport required parameters</caption>
+					<caption>cdbimport parameters</caption>
 					<col width="14%"/>
 					<col width="7%"/>
-					<col width="79%"/>
+                    <col width="7%"/>
+					<col width="72%"/>
 					<thead>
 						<tr>
 							<th>Name</th>
 							<th>Type</th>
+                            <th>Required</th>
 							<th>Description</th>
 						</tr>
 					</thead>
@@ -397,6 +399,7 @@
 							<td><code>map</code>
 							</td>
 							<td>File</td>
+                            <td>Yes</td>
 							<td>DataMap XML file which is the destination of the schema import. Can
 								be an existing file. If this file does not exist, it is created when
 								cdbimport is executed. E.g.
@@ -407,24 +410,83 @@
 								such as default Java package, will be preserved (unless changed
 								explicitly in the plugin configuration).</td>
 						</tr>
-						<tr>
-							<td><code>driver</code></td>
-							<td>String</td>
-							<td>A class of JDBC driver to use for the target database.</td>
-						</tr>
-						<tr>
-							<td><code>url</code></td>
-							<td>String</td>
-							<td>JDBC URL of a target database.</td>
-						</tr>
+                        <tr>
+                            <td><code>adapter</code>
+                            </td>
+                            <td>String</td>
+                            <td>No</td>
+                            <td>A Java class name implementing org.apache.cayenne.dba.DbAdapter. This attribute is
+                                optional. If not specified, AutoAdapter is used, which will attempt
+                                to guess the DB type.</td>
+                        </tr>
+                        <tr>
+                            <td><code>dataSource</code>
+                            </td>
+                            <td>XML</td>
+                            <td>Yes</td>
+                            <td>An object that contains Data Source parameters</td>
+                        </tr>
+                        <tr>
+                            <td><code>dbimport</code>
+                            </td>
+                            <td>XML</td>
+                            <td>No</td>
+                            <td>An object that contains detailed reverse engineering rules about what DB objects should
+                                be processed. For full information about this parameter see <link
+                                        linkend="re-introduction">"DB-First Flow"</link> chapter.</td>
+                        </tr>
 					</tbody>
-				</table></para>
+				</table>
+            </para>
+            <para>
+                <table frame="void">
+                    <caption>&lt;dataSource> parameters</caption>
+                    <col width="14%"/>
+                    <col width="7%"/>
+                    <col width="7%"/>
+                    <col width="72%"/>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Required</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>driver</code></td>
+                            <td>String</td>
+                            <td>Yes</td>
+                            <td>A class of JDBC driver to use for the target database.</td>
+                        </tr>
+                        <tr>
+                            <td><code>url</code></td>
+                            <td>String</td>
+                            <td>Yes</td>
+                            <td>JDBC URL of a target database.</td>
+                        </tr>
+                        <tr>
+                            <td><code>username</code></td>
+                            <td>String</td>
+                            <td>No</td>
+                            <td>Database user name.</td>
+                        </tr>
+                        <tr>
+                            <td><code>password</code></td>
+                            <td>String</td>
+                            <td>No</td>
+                            <td>Database user password.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </para>
 			<para>
 				<table frame="void">
-					<caption>cdbimport optional parameters</caption>
-					<col width="24%"/>
+					<caption>&lt;dbimport> parameters</caption>
+					<col width="18%"/>
 					<col width="8%"/>
-					<col width="67%"/>
+					<col width="73%"/>
 					<thead>
 						<tr>
 							<th>Name</th>
@@ -433,14 +495,6 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td><code>adapter</code>
-							</td>
-							<td>String</td>
-							<td>A Java class name implementing org.apache.cayenne.dba.DbAdapter. This attribute is
-								optional. If not specified, AutoAdapter is used, which will attempt
-								to guess the DB type.</td>
-						</tr>
 						<tr>
 							<td><code>defaultPackage</code></td>
 							<td>String</td>
@@ -483,37 +537,20 @@
 								names. Default is <code>org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator</code>.
 							</td>
 						</tr>
-						<tr>
-							<td><code>password</code></td>
-							<td>String</td>
-							<td>Database user password.</td>
-						</tr>
-						<tr xml:id="cdbimport-rr-parameter">
-							<td><code>reverseEngineering</code></td>
-							<td>XML</td>
-							<td> An object that contains detailed reverse engineering rules about what DB objects should
-                                be processed. For full information about this parameter see <link
-                                    linkend="re-introduction">"DB-First Flow</link> chapter. Here is
-                                some simple example:
-                                <programlisting language="xml">&lt;reverseEngineering&gt;
-	&lt;skipRelationshipsLoading&gt;false&lt;/skipRelationshipsLoading&gt;
-	&lt;skipPrimaryKeyLoading&gt;false&lt;/skipPrimaryKeyLoading&gt;
-
-	&lt;catalog name="test_catalog"&gt;
-		&lt;schema name="test_schema"&gt;
-			&lt;includeTable>".*"&lt;/includeTable>
-			&lt;excludeTable>test_table&lt;/excludeTable>
-		&lt;/schema&gt;
-	&lt;/catalog&gt;
-
-	&lt;includeProcedure pattern=".*"/&gt;
-&lt;/reverseEngineering&gt;</programlisting>
-                            </td>
-						</tr>
-						<tr>
-							<td><code>stripFromTableNames</code></td>
-							<td>String</td>
-							<td>Regex that matches the part of the table name that needs to be stripped off when
+                        <tr>
+                            <td><code>skipPrimaryKeyLoading</code></td>
+                            <td>boolean</td>
+                            <td>Whether to load primary keys. Default "false".</td>
+                        </tr>
+                        <tr>
+                            <td><code>skipRelationshipsLoading</code></td>
+                            <td>boolean</td>
+                            <td>Whether to load relationships. Default "false".</td>
+                        </tr>
+                        <tr>
+                            <td><code>stripFromTableNames</code></td>
+                            <td>String</td>
+                            <td>Regex that matches the part of the table name that needs to be stripped off when
                                 generating ObjEntity name. Here are some examples: <programlisting language="xml"><![CDATA[<!-- Strip prefix -->
 <stripFromTableNames>^myt_</stripFromTableNames>
 
@@ -523,36 +560,60 @@
 <!-- Strip multiple occurrences in the middle -->
 <stripFromTableNames>_abc</stripFromTableNames>]]></programlisting>
                             </td>
-						</tr>
-						<tr>
-							<td><code>username</code></td>
-							<td>String</td>
-							<td>Database user name.</td>
-						</tr>
-						<tr>
-							<td><code>usePrimitives</code></td>
-							<td>boolean</td>
-							<td>Whether numeric and boolean data types should be mapped as Java primitives or Java
+                        </tr>
+                        <tr>
+                            <td><code>usePrimitives</code></td>
+                            <td>boolean</td>
+                            <td>Whether numeric and boolean data types should be mapped as Java primitives or Java
                                 classes. Default is "true", i.e. primitives will be used.</td>
+                        </tr>
+                        <tr>
+                            <td><code>useJava7Types</code></td>
+                            <td>boolean</td>
+                            <td>Whether <code>DATE</code>, <code>TIME</code> and <code>TIMESTAMP</code> data types should be mapped
+                                as <code>java.util.Date</code> or <code>java.time.*</code> classes.
+                                Default is "false", i.e. <code>java.time.*</code> will be used.</td>
+                        </tr>
+						<tr xml:id="cdbimport-rr-parameter">
+							<td>filters configuration</td>
+							<td>XML</td>
+							<td>Detailed reverse engineering rules about what DB objects should be processed.
+                                For full information about this parameter see <link linkend="re-introduction">"DB-First Flow"</link> chapter.
+                                Here is some simple example:
+                                <programlisting language="xml">&lt;dbimport&gt;
+	&lt;catalog name="test_catalog"&gt;
+		&lt;schema name="test_schema"&gt;
+			&lt;includeTable>.*&lt;/includeTable>
+			&lt;excludeTable>test_table&lt;/excludeTable>
+		&lt;/schema&gt;
+	&lt;/catalog&gt;
+
+	&lt;includeProcedure pattern=".*"/&gt;
+&lt;/dbimport&gt;</programlisting>
+                            </td>
 						</tr>
 					</tbody>
 				</table>
 			</para>
 			<para>Example - loading a DB schema from a local HSQLDB database (essentially a reverse operation
-				compared to the cdbgen example above)
+                compared to the <code>cdbgen</code> example above)
 				:<programlisting language="xml">&lt;plugin>
     &lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
-    &lt;artifactId>maven-cayenne-plugin&lt;/artifactId>
+    &lt;artifactId>cayenne-maven-plugin&lt;/artifactId>
     &lt;version><?eval ${project.version}?>&lt;/version>
 
     &lt;executions>
         &lt;execution>
             &lt;configuration>
                 &lt;map>${project.basedir}/src/main/resources/my.map.xml&lt;/map>
-                &lt;url>jdbc:mysql://127.0.0.1/mydb&lt;/url>
-                &lt;driver>com.mysql.jdbc.Driver&lt;/driver>                        
-                &lt;username>sa&lt;/username>
-                &lt;defaultPackage>com.example.cayenne&lt;/defaultPackage>
+                &lt;dataSource>
+                    &lt;url>jdbc:mysql://127.0.0.1/mydb&lt;/url>
+                    &lt;driver>com.mysql.jdbc.Driver&lt;/driver>
+                    &lt;username>sa&lt;/username>
+                &lt;/dataSource>
+                &lt;dbimport>
+                    &lt;defaultPackage>com.example.cayenne&lt;/defaultPackage>
+                &lt;/dbimport>
             &lt;/configuration>
             &lt;goals>
                 &lt;goal>cdbimport&lt;/goal>
@@ -572,7 +633,7 @@
         </section>
         <section xml:id="ant-cdbimport">
             <title>cdbimport</title>
-            <para>This is an Ant counterpart of "cdbimport" goal of maven-cayenne-plugin described
+            <para>This is an Ant counterpart of "cdbimport" goal of cayenne-maven-plugin described
                 above. It has exactly the same properties. Here is a usage
                 example:<programlisting language="xml"> &lt;cdbimport map="${context.dir}/WEB-INF/my.map.xml"
     driver="com.mysql.jdbc.Driver" 

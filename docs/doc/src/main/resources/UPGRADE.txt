@@ -6,6 +6,32 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 -------------------------------------------------------------------------------
 UPGRADING TO 4.0.M5
 
+* Per CAY-2212 cdbimport tool revisited once again, so configuration of Maven plugin should be changed.
+  - "maven-cayenne-plugin" is deprecated, please switch to "cayenne-maven-plugin"
+  - <reverseEngineering> tag replaced with <dbimport> tag
+  - new <dataSource> tag introduced that should enclose all connection properties:
+    1. <driver>
+    2. <url>
+    3. <user>
+    4. <password>
+
+  - top level properties moved to <dbimport>:
+    1. <defaultPackage>
+    2. <forceDataMapCatalog>
+    3. <forceDataMapSchema>
+    4. <meaningfulPkTables>
+    5. <namingStrategy>
+    6. <stripFromTableNames>
+    7. <usePrimitives>
+
+  - Java 8 java.time.* types are now used by default in cdbimport (and in "Reengineer Database Schema" tool in Modeler)
+  This can be controlled by <useJava7Types> property in <dbimport> (or checkbox in Modeler).
+
+  - For Ant users: cayenne-tools.jar split into two parts:
+    1. cayenne-ant.jar for Ant tasks
+    2. cayenne-cgen.jar for class generation functionality (required only for cgen task)
+
+
 * Per CAY-2166, Cayenne supports auto-loading of DI modules. There are a few changes worth mentioning:
   - Service override policies. In the previous 4.0 milestones custom modules would override "builder" modules
   (i.e. implicit modules that wrap around various customizations made in response to the builder method calls). It

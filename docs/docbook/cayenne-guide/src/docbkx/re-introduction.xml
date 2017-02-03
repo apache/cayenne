@@ -54,24 +54,26 @@
     </section>
 	<section xml:id="re-configuration-file">
 		<title>Introduction to "cdbimport"</title>
-		<para>Here is a simple Maven configuration of "cdbimport" (for details see <link linkend="mvn-cdbimport">maven-cayenne-plugin</link> documentation)</para>
+		<para>Here is a simple Maven configuration of "cdbimport" (for details see <link linkend="mvn-cdbimport">cayenne-maven-plugin</link> documentation)</para>
 		<para>
 			<programlisting language="xml">
 	&lt;plugin&gt;
 		&lt;groupId&gt;org.apache.cayenne.plugins&lt;/groupId&gt;
-		&lt;artifactId&gt;maven-cayenne-plugin&lt;/artifactId&gt;
+		&lt;artifactId&gt;cayenne-maven-plugin&lt;/artifactId&gt;
 		&lt;version&gt;<?eval ${project.version}?>&lt;/version&gt;
 
 		&lt;configuration&gt;
 			&lt;map>${project.basedir}/src/main/resources/datamap.map.xml&lt;/map>
-			&lt;url>&lt;!-- jdbc url -->&lt;/url&gt;
-			&lt;driver>&lt;!-- jdbc driver class --&gt;&lt;/driver&gt;
-			&lt;username>username&lt;/username>
-			&lt;password&gt;password&lt;/password&gt;
-			&lt;defaultPackage&gt;com.example.package&lt;/defaultPackage&gt;
-			&lt;reverseEngineering&gt;
+			&lt;dataSource>
+				&lt;url>&lt;!-- jdbc url -->&lt;/url&gt;
+				&lt;driver>&lt;!-- jdbc driver class --&gt;&lt;/driver&gt;
+				&lt;username>username&lt;/username>
+				&lt;password&gt;password&lt;/password&gt;
+			&lt;/dataSource>
+			&lt;dbimport&gt;
+				&lt;defaultPackage&gt;com.example.package&lt;/defaultPackage&gt;
 			    &lt;includeTable>.*&lt;/includeTable>
-			&lt;/reverseEngineering&gt;
+			&lt;/dbimport&gt;
 		&lt;/configuration&gt;
 		&lt;dependencies&gt;
 			&lt;!-- jdbc driver dependency --&gt;
