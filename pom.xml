@@ -672,7 +672,7 @@
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.apache.cayenne.plugins</groupId>
-										<artifactId>maven-cayenne-plugin</artifactId>
+										<artifactId>cayenne-maven-plugin</artifactId>
 										<versionRange>[1.0,)</versionRange>
 										<goals>
 											<goal>cgen</goal>

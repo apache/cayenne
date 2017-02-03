@@ -67,7 +67,7 @@
 			
 			<plugin>
 				<groupId>org.apache.cayenne.plugins</groupId>
-				<artifactId>maven-cayenne-plugin</artifactId>
+				<artifactId>cayenne-maven-plugin</artifactId>
 				<version>${project.version}</version>
 				<executions>
 				    <execution>

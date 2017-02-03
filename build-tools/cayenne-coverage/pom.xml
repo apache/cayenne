@@ -52,7 +52,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.cayenne.plugins</groupId>
-            <artifactId>maven-cayenne-plugin</artifactId>
+            <artifactId>cayenne-maven-plugin</artifactId>
             <version>${cayenne.version}</version>
         </dependency>
         <dependency>
