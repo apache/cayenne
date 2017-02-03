@@ -68,28 +68,13 @@ public class DbGeneratorMojo extends AbstractMojo {
     private String adapter;
 
     /**
-     * A class of JDBC driver to use for the target database.
+     * Connection properties.
+     *
+     * @see DbImportDataSourceConfig
+     * @since 4.0
      */
     @Parameter(required = true)
-    private String driver;
-
-    /**
-     * JDBC connection URL of a target database.
-     */
-    @Parameter(required = true)
-    private String url;
-
-    /**
-     * Database user name.
-     */
-    @Parameter
-    private String username;
-
-    /**
-     * Database user password.
-     */
-    @Parameter
-    private String password;
+    private DbImportDataSourceConfig dataSource = new DbImportDataSourceConfig();
 
     /**
      * Defines whether cdbgen should drop the tables before attempting to create
@@ -126,21 +111,29 @@ public class DbGeneratorMojo extends AbstractMojo {
     @Parameter(defaultValue = "true")
     private boolean createFK;
 
+    /**
+     * @deprecated use {@code <dataSource>} tag to set connection properties
+     */
+    @Deprecated @Parameter(name = "driver", property = "driver")
+    private final String oldDriver = "";             // TODO remove in 4.0.BETA
+
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         Log logger = new MavenLogger(this);
         Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(logger));
         AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
 
-        logger.info(String.format("connection settings - [driver: %s, url: %s, username: %s]", driver, url, username));
+        logger.info(String.format("connection settings - [driver: %s, url: %s, username: %s]",
+                dataSource.getDriver(), dataSource.getUrl(), dataSource.getUsername()));
 
         logger.info(String.format(
                 "generator options - [dropTables: %s, dropPK: %s, createTables: %s, createPK: %s, createFK: %s]",
                 dropTables, dropPK, createTables, createPK, createFK));
 
         try {
-            final DbAdapter adapterInst = (adapter == null) ? (DbAdapter) objectFactory.newInstance(DbAdapter.class,
-                    JdbcAdapter.class.getName()) : (DbAdapter) objectFactory.newInstance(DbAdapter.class, adapter);
+            final DbAdapter adapterInst = (adapter == null) ?
+                    objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()) :
+                    objectFactory.newInstance(DbAdapter.class, adapter);
 
             // Load the data map and run the db generator.
             DataMap dataMap = loadDataMap();
@@ -152,28 +145,30 @@ public class DbGeneratorMojo extends AbstractMojo {
             generator.setShouldDropTables(dropTables);
 
             // load driver taking custom CLASSPATH into account...
-            DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).newInstance(), url,
-                    username, password);
+            DriverDataSource driverDataSource = new DriverDataSource((Driver) Class.forName(dataSource.getDriver()).newInstance(),
+                    dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
 
-            generator.runGenerator(dataSource);
+            generator.runGenerator(driverDataSource);
         } catch (Exception ex) {
             Throwable th = Util.unwindException(ex);
-
             String message = "Error generating database";
-
             if (th.getLocalizedMessage() != null) {
                 message += ": " + th.getLocalizedMessage();
             }
-
             logger.error(message);
             throw new MojoExecutionException(message, th);
         }
     }
 
     /** Loads and returns DataMap based on <code>map</code> attribute. */
-    protected DataMap loadDataMap() throws Exception {
+    private DataMap loadDataMap() throws Exception {
         InputSource in = new InputSource(map.getCanonicalPath());
         return new MapLoader().loadDataMap(in);
     }
 
+    @Deprecated
+    public void setDriver(String driver) {
+        throw new UnsupportedOperationException("Connection properties were replaced with <dataSource> tag since 4.0.M5.\n" +
+                "\tFor additional information see http://cayenne.apache.org/docs/4.0/cayenne-guide/including-cayenne-in-project.html#maven-projects");
+    }
 }

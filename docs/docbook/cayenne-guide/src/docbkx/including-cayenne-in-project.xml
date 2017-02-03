@@ -28,7 +28,7 @@
                 </listitem>
                 <listitem>
                     <para>cayenne-client-<?eval ${project.version}?>.jar - a subset of cayenne-server.jar trimmed for use on
-                        the client in an ROP application.</para>
+                        the client in an <link linkend="introduction-to-rop">ROP application</link>.</para>
                 </listitem>
                 <listitem>
                     <para>Other cayenne-* jars - various Cayenne extensions.</para>
@@ -83,8 +83,8 @@
                 <table frame="void">
                     <caption>cgen required parameters</caption>
                     <col width="14%"/>
-                    <col width="6%"/>
-                    <col width="80%"/>
+                    <col width="7%"/>
+                    <col width="79%"/>
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -105,9 +105,9 @@
                 </table>
                 <table frame="void">
                     <caption>cgen optional parameters</caption>
-                    <col width="33%"/>
-                    <col width="8%"/>
-                    <col width="59%"/>
+                    <col width="14%"/>
+                    <col width="7%"/>
+                    <col width="79%"/>
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -258,8 +258,8 @@
 				<table frame="void">
 					<caption>cdbgen required parameters</caption>
 					<col width="14%"/>
-					<col width="8%"/>
-					<col width="78%"/>
+					<col width="7%"/>
+					<col width="79%"/>
 					<thead>
 						<tr>
 							<th>Name</th>
@@ -276,24 +276,64 @@
 								generation. E.g.
 									<code>${project.basedir}/src/main/resources/my.map.xml</code></td>
 						</tr>
-						<tr>
-							<td><code>driver</code></td>
-							<td>String</td>
-							<td>A class of JDBC driver to use for the target database.</td>
-						</tr>
-						<tr>
-							<td><code>url</code></td>
-							<td>String</td>
-							<td>JDBC connection URL of a target database.</td>
-						</tr>
+                        <tr>
+                            <td><code>dataSource</code>
+                            </td>
+                            <td>XML</td>
+                            <td>An object that contains Data Source parameters</td>
+                        </tr>
 					</tbody>
-				</table></para>
+				</table>
+            </para>
+            <para>
+                <table frame="void">
+                    <caption>&lt;dataSource> parameters</caption>
+                    <col width="14%"/>
+                    <col width="7%"/>
+                    <col width="7%"/>
+                    <col width="72%"/>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Required</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>driver</code></td>
+                            <td>String</td>
+                            <td>Yes</td>
+                            <td>A class of JDBC driver to use for the target database.</td>
+                        </tr>
+                        <tr>
+                            <td><code>url</code></td>
+                            <td>String</td>
+                            <td>Yes</td>
+                            <td>JDBC URL of a target database.</td>
+                        </tr>
+                        <tr>
+                            <td><code>username</code></td>
+                            <td>String</td>
+                            <td>No</td>
+                            <td>Database user name.</td>
+                        </tr>
+                        <tr>
+                            <td><code>password</code></td>
+                            <td>String</td>
+                            <td>No</td>
+                            <td>Database user password.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </para>
 			<para>
 				<table frame="void">
 					<caption>cdbgen optional parameters</caption>
-					<col width="18%"/>
-					<col width="8%"/>
-					<col width="74%"/>
+					<col width="14%"/>
+					<col width="7%"/>
+					<col width="79%"/>
 					<thead>
 						<tr>
 							<th>Name</th>
@@ -361,10 +401,12 @@
         &lt;execution>
             &lt;configuration>
                 &lt;map>${project.basedir}/src/main/resources/my.map.xml&lt;/map>
-                &lt;url>jdbc:hsqldb:hsql://localhost/testdb&lt;/url>
                 &lt;adapter>org.apache.cayenne.dba.hsqldb.HSQLDBAdapter&lt;/adapter>
-                &lt;driver>org.hsqldb.jdbcDriver&lt;/driver>
-                &lt;username>sa&lt;/username>
+                &lt;dataSource>
+                    &lt;url>jdbc:hsqldb:hsql://localhost/testdb&lt;/url>
+                    &lt;driver>org.hsqldb.jdbcDriver&lt;/driver>
+                    &lt;username>sa&lt;/username>
+                &lt;/dataSource>
             &lt;/configuration>
             &lt;goals>
                 &lt;goal>cdbgen&lt;/goal>
@@ -484,9 +526,9 @@
 			<para>
 				<table frame="void">
 					<caption>&lt;dbimport> parameters</caption>
-					<col width="18%"/>
-					<col width="8%"/>
-					<col width="73%"/>
+					<col width="14%"/>
+					<col width="7%"/>
+					<col width="79%"/>
 					<thead>
 						<tr>
 							<th>Name</th>
