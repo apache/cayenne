@@ -25,17 +25,17 @@ public interface Preference {
     /**
      * Key for preferences.
      */
-    public static final String CAYENNE_PREFERENCES_PATH = "org/apache/cayenne";
+    String CAYENNE_PREFERENCES_PATH = "org/apache/cayenne";
 
     /**
      * Preferences node name for the editor
      */
-    public static final String EDITOR = "editor";
+    String EDITOR = "editor";
 
     /**
      * Preferences node name for list of the last 12 opened project files.
      */
-    public static final String LAST_PROJ_FILES = "lastSeveralProjectFiles";
+    String LAST_PROJ_FILES = "lastSeveralProjectFiles";
 
     Preferences getRootPreference();
 

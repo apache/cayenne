@@ -66,8 +66,7 @@ public class ModelerPreferences implements PreferenceChangeListener {
      */
     public static Preferences getPreferences() {
         if (cayennePrefs == null) {
-            Preference decoratedPref = new UpgradeCayennePreference(
-                    new CayennePreference());
+            Preference decoratedPref = new UpgradeCayennePreference(new CayennePreference());
             cayennePrefs = decoratedPref.getCayennePreference();
             cayennePrefs.addPreferenceChangeListener(new ModelerPreferences());
         }
@@ -88,17 +87,15 @@ public class ModelerPreferences implements PreferenceChangeListener {
         String[] keys = null;
         try {
             keys = filesPrefs.keys();
-        }
-        
-        catch (BackingStoreException e) {
+        } catch (BackingStoreException e) {
             logObj.warn("Error reading preferences file.", e);
         }
+
         if (keys != null) {
             int len = keys.length;
-            
             ArrayList<Integer> keysInteger = new ArrayList<>();
             for (int i = 0; i < len; i++) {
-                keysInteger.add(new Integer(i));
+                keysInteger.add(i);
             }
             Collections.sort(keysInteger);
             

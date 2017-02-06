@@ -47,7 +47,7 @@ public class OpenProjectAction extends ProjectAction {
 
     private static Log logObj = LogFactory.getLog(OpenProjectAction.class);
 
-    protected ProjectOpener fileChooser;
+    private ProjectOpener fileChooser;
 
     public static String getActionName() {
         return "Open Project";
@@ -58,16 +58,17 @@ public class OpenProjectAction extends ProjectAction {
         this.fileChooser = new ProjectOpener();
     }
 
+    @Override
     public String getIconName() {
         return "icon-open.gif";
     }
 
+    @Override
     public KeyStroke getAcceleratorKey() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit
-                .getDefaultToolkit()
-                .getMenuShortcutKeyMask());
+        return KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
     }
 
+    @Override
     public void performAction(ActionEvent e) {
 
         // Save and close (if needed) currently open project.
@@ -79,8 +80,7 @@ public class OpenProjectAction extends ProjectAction {
         if (e.getSource() instanceof FileMenuItem) {
             FileMenuItem menu = (FileMenuItem) e.getSource();
             f = menu.getFile();
-        }
-        else if (e.getSource() instanceof File) {
+        } else if (e.getSource() instanceof File) {
             f = (File) e.getSource();
         }
 
@@ -88,8 +88,7 @@ public class OpenProjectAction extends ProjectAction {
             try {
                 // Get the project file name (always cayenne.xml)
                 f = fileChooser.openProjectFile(Application.getFrame());
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 logObj.warn("Error loading project file.", ex);
             }
         }
@@ -112,24 +111,19 @@ public class OpenProjectAction extends ProjectAction {
             if (!file.exists()) {
                 JOptionPane.showMessageDialog(
                         Application.getFrame(),
-                        "Can't open project - file \""
-                                + file.getPath()
-                                + "\" does not exist",
+                        "Can't open project - file \"" + file.getPath() + "\" does not exist",
                         "Can't Open Project",
                         JOptionPane.OK_OPTION);
                 return;
             }
 
-            CayenneModelerController controller = Application
-                    .getInstance()
-                    .getFrameController();
-            controller.addToLastProjListAction(file.getAbsolutePath());
+            CayenneModelerController controller = Application.getInstance().getFrameController();
+            controller.addToLastProjListAction(file);
 
-            URL url = file.toURL();
+            URL url = file.toURI().toURL();
             Resource rootSource = new URLResource(url);
 
-            ProjectUpgrader upgrader = getApplication().getInjector().getInstance(
-                    ProjectUpgrader.class);
+            ProjectUpgrader upgrader = getApplication().getInjector().getInstance(ProjectUpgrader.class);
             UpgradeHandler handler = upgrader.getUpgradeHandler(rootSource);
             UpgradeMetaData md = handler.getUpgradeMetaData();
 
@@ -141,8 +135,7 @@ public class OpenProjectAction extends ProjectAction {
                                 "Can't Open Project",
                                 JOptionPane.OK_OPTION);
                 closeProject(false);
-            }
-            else if (UpgradeType.INTERMEDIATE_UPGRADE_NEEDED == md.getUpgradeType()) {
+            } else if (UpgradeType.INTERMEDIATE_UPGRADE_NEEDED == md.getUpgradeType()) {
                 JOptionPane
                         .showMessageDialog(Application.getFrame(),
                         // TODO: andrus 05/02/2010 - this message shows intermediate
@@ -156,9 +149,8 @@ public class OpenProjectAction extends ProjectAction {
                                 "Can't Upgrade Project",
                                 JOptionPane.OK_OPTION);
                 closeProject(false);
-            }
-            else if (UpgradeType.UPGRADE_NEEDED == md.getUpgradeType()) {
-                if (processUpgrades(md)) {
+            } else if (UpgradeType.UPGRADE_NEEDED == md.getUpgradeType()) {
+                if (processUpgrades()) {
                     // perform upgrade
                     logObj.info("Will upgrade project " + url.getPath());
                     Resource upgraded = handler.performUpgrade();
@@ -168,55 +160,37 @@ public class OpenProjectAction extends ProjectAction {
                         getProjectController().getFileChangeTracker().pauseWatching();
                         getProjectController().getFileChangeTracker().reconfigure();
 
-                        // if project file name changed
-                        // need upgrade all
-                        if (!file.getAbsolutePath().equals(
-                                project.getConfigurationResource().getURL().getPath())) {
-                            controller.changePathInLastProjListAction(file
-                                    .getAbsolutePath(), project
-                                    .getConfigurationResource()
-                                    .getURL()
-                                    .getPath());
+                        // need to update project file name if it has changed
+                        if (!file.getAbsolutePath().equals(project.getConfigurationResource().getURL().getPath())) {
+                            File projectFile = new File(project.getConfigurationResource().getURL().toURI());
+                            controller.changePathInLastProjListAction(file, projectFile);
                         }
-                    }
-                    else {
+                    } else {
                         closeProject(false);
                     }
                 }
-            }
-            else {
+            } else {
                 openProjectResourse(rootSource, controller);
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             logObj.warn("Error loading project file.", ex);
             ErrorDebugDialog.guiWarning(ex, "Error loading project");
         }
     }
 
-    private Project openProjectResourse(
-            Resource resource,
-            CayenneModelerController controller) {
-        Project project = getApplication()
-                .getInjector()
-                .getInstance(ProjectLoader.class)
-                .loadProject(resource);
-
+    private Project openProjectResourse(Resource resource, CayenneModelerController controller) {
+        Project project = getApplication().getInjector().getInstance(ProjectLoader.class).loadProject(resource);
         controller.projectOpenedAction(project);
-
         return project;
     }
 
-    protected boolean processUpgrades(UpgradeMetaData md) {
+    private boolean processUpgrades() {
         // need an upgrade
         int returnCode = JOptionPane.showConfirmDialog(
                 Application.getFrame(),
                 "Project needs an upgrade to a newer version. Upgrade?",
                 "Upgrade Needed",
                 JOptionPane.YES_NO_OPTION);
-        if (returnCode == JOptionPane.NO_OPTION) {
-            return false;
-        }
-        return true;
+        return returnCode != JOptionPane.NO_OPTION;
     }
 }

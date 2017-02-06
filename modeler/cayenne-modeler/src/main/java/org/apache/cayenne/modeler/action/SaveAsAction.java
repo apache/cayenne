@@ -23,7 +23,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.net.URL;
 import java.util.prefs.Preferences;
 
 import javax.swing.JOptionPane;
@@ -32,7 +31,6 @@ import javax.swing.KeyStroke;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.validator.ValidationDisplayHandler;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.event.ProjectOnSaveEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -49,7 +47,7 @@ import org.apache.cayenne.validation.ValidationResult;
  */
 public class SaveAsAction extends CayenneAction {
 
-    protected ProjectOpener fileChooser;
+    private ProjectOpener fileChooser;
 
     public static String getActionName() {
         return "Save As...";
@@ -64,6 +62,7 @@ public class SaveAsAction extends CayenneAction {
         this.fileChooser = new ProjectOpener();
     }
 
+    @Override
     public KeyStroke getAcceleratorKey() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
                 | ActionEvent.SHIFT_MASK);
@@ -94,9 +93,7 @@ public class SaveAsAction extends CayenneAction {
 
         getProjectController().getFileChangeTracker().pauseWatching();
 
-        URL url = projectDir.toURL();
-
-        URLResource res = new URLResource(url);
+        URLResource res = new URLResource(projectDir.toURI().toURL());
 
         ProjectSaver saver = getApplication().getInjector().getInstance(ProjectSaver.class);
 
@@ -138,13 +135,11 @@ public class SaveAsAction extends CayenneAction {
 
         RenamedPreferences.removeNewPreferences();
 
-        getApplication().getFrameController().addToLastProjListAction(p.getConfigurationResource().getURL().getPath());
-
+        File file = new File(p.getConfigurationResource().getURL().toURI());
+        getApplication().getFrameController().addToLastProjListAction(file);
         Application.getFrame().fireRecentFileListChanged();
 
-        /**
-         * Reset the watcher now
-         */
+        // Reset the watcher now
         getProjectController().getFileChangeTracker().reconfigure();
 
         return true;
@@ -154,11 +149,12 @@ public class SaveAsAction extends CayenneAction {
      * This method is synchronized to prevent problems on double-clicking
      * "save".
      */
+    @Override
     public void performAction(ActionEvent e) {
-        performAction(ValidationDisplayHandler.WARNING);
+        performAction();
     }
 
-    public void performAction(int warningLevel) {
+    public void performAction() {
 
         ProjectValidator projectValidator = getApplication().getInjector().getInstance(ProjectValidator.class);
         ValidationResult validationResult = projectValidator.validate(getCurrentProject().getRootNode());
@@ -185,6 +181,7 @@ public class SaveAsAction extends CayenneAction {
      * Returns <code>true</code> if path contains a Project object and the
      * project is modified.
      */
+    @Override
     public boolean enableForPath(ConfigurationNode object) {
         if (object == null) {
             return false;

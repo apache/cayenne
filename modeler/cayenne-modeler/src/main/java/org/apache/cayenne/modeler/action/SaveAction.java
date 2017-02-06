@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.io.File;
 
 import javax.swing.KeyStroke;
 
@@ -42,12 +43,12 @@ public class SaveAction extends SaveAsAction {
         super(getActionName(), application);
     }
 
+    @Override
     public KeyStroke getAcceleratorKey() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit
-                .getDefaultToolkit()
-                .getMenuShortcutKeyMask());
+        return KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
     }
 
+    @Override
     public String getIconName() {
         return "icon-save.gif";
     }
@@ -55,45 +56,36 @@ public class SaveAction extends SaveAsAction {
     @Override
     protected boolean saveAll() throws Exception {
         Project p = getCurrentProject();
-
         if (p == null || p.getConfigurationResource() == null) {
             return super.saveAll();
         }
-        else {
 
-            String oldPath = p.getConfigurationResource().getURL().getPath();
+        String oldPath = p.getConfigurationResource().getURL().getPath();
+        File oldProjectFile = new File(p.getConfigurationResource().getURL().toURI());
 
-            getProjectController().getFileChangeTracker().pauseWatching();
+        getProjectController().getFileChangeTracker().pauseWatching();
+        ProjectSaver saver = getApplication().getInjector().getInstance(ProjectSaver.class);
+        saver.save(p);
 
-            ProjectSaver saver = getApplication().getInjector().getInstance(
-                    ProjectSaver.class);
-            saver.save(p);
+        RenamedPreferences.removeOldPreferences();
 
+        // if change DataChanelDescriptor name - as result change name of xml file
+        // we will need change preferences path
+        String[] path = oldPath.split("/");
+        String[] newPath = p.getConfigurationResource().getURL().getPath().split("/");
+
+        if (!path[path.length - 1].equals(newPath[newPath.length - 1])) {
+            String newName = newPath[newPath.length - 1].replace(".xml", "");
+            RenamedPreferences.copyPreferences(newName, getProjectController().getPreferenceForProject());
             RenamedPreferences.removeOldPreferences();
-
-            // if change DataChanelDescriptor name - as result change name of xml file
-            // we will need change preferences path
-            String[] path = oldPath.split("/");
-            String[] newPath = p.getConfigurationResource().getURL().getPath().split("/");
-
-            if (!path[path.length - 1].equals(newPath[newPath.length - 1])) {
-                String newName = newPath[newPath.length - 1].replace(".xml", "");
-                RenamedPreferences.copyPreferences(
-                        newName,
-                        getProjectController().getPreferenceForProject());
-                RenamedPreferences.removeOldPreferences();
-            }
-
-            getApplication().getFrameController().changePathInLastProjListAction(
-                    oldPath,
-                    p.getConfigurationResource().getURL().getPath());
-            Application.getFrame().fireRecentFileListChanged();
-
-            /**
-             * Reset the watcher now
-             */
-            getProjectController().getFileChangeTracker().reconfigure();
         }
+
+        File newProjectFile = new File(p.getConfigurationResource().getURL().toURI());
+        getApplication().getFrameController().changePathInLastProjListAction(oldProjectFile, newProjectFile);
+        Application.getFrame().fireRecentFileListChanged();
+
+        // Reset the watcher now
+        getProjectController().getFileChangeTracker().reconfigure();
 
         return true;
     }
