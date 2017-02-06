@@ -263,29 +263,28 @@ public class CayenneModelerController extends CayenneController {
 	/** Adds path to the list of last opened projects in preferences. */
     public void addToLastProjListAction(File file) {
 
-        String path = file.getAbsolutePath();
-        Preferences frefLastProjFiles = ModelerPreferences.getLastProjFilesPref();
-        List<String> arr = ModelerPreferences.getLastProjFiles();
+        Preferences prefLastProjFiles = ModelerPreferences.getLastProjFilesPref();
+        List<File> arr = ModelerPreferences.getLastProjFiles();
         // Add proj path to the preferences
         // Prevent duplicate entries.
-        if (arr.contains(path)) {
-            arr.remove(path);
+        if (arr.contains(file)) {
+            arr.remove(file);
         }
 
-        arr.add(0, path);
+        arr.add(0, file);
         while (arr.size() > ModelerPreferences.LAST_PROJ_FILES_SIZE) {
             arr.remove(arr.size() - 1);
         }
 
         try {
-            frefLastProjFiles.clear();
+            prefLastProjFiles.clear();
         } catch (BackingStoreException ignored) {
             // ignore exception
         }
-        int size = arr.size();
 
+        int size = arr.size();
         for (int i = 0; i < size; i++) {
-            frefLastProjFiles.put(String.valueOf(i), arr.get(i));
+            prefLastProjFiles.put(String.valueOf(i), arr.get(i).getAbsolutePath());
         }
     }
 
@@ -328,21 +327,12 @@ public class CayenneModelerController extends CayenneController {
 
     public void changePathInLastProjListAction(File oldFile, File newFile) {
         Preferences frefLastProjFiles = ModelerPreferences.getLastProjFilesPref();
-        List<String> arr = ModelerPreferences.getLastProjFiles();
+        List<File> arr = ModelerPreferences.getLastProjFiles();
+
         // Add proj path to the preferences
-        // Prevent duplicate entries.
-        String oldPath = oldFile.getAbsolutePath();
-        String newPath = newFile.getAbsolutePath();
-
-        if (arr.contains(oldPath)) {
-            arr.remove(oldPath);
-        }
-
-        if (arr.contains(newPath)) {
-            arr.remove(newPath);
-        }
-
-        arr.add(0, newPath);
+        arr.remove(oldFile);
+        arr.remove(newFile);
+        arr.add(0, newFile);
         while (arr.size() > ModelerPreferences.LAST_PROJ_FILES_SIZE) {
             arr.remove(arr.size() - 1);
         }
@@ -355,12 +345,11 @@ public class CayenneModelerController extends CayenneController {
 
         int size = arr.size();
         for (int i = 0; i < size; i++) {
-            frefLastProjFiles.put(String.valueOf(i), arr.get(i));
+            frefLastProjFiles.put(String.valueOf(i), arr.get(i).getAbsolutePath());
         }
 
-        getLastDirectory().setDirectory(new File(newPath));
+        getLastDirectory().setDirectory(newFile);
         frame.fireRecentFileListChanged();
     }
-
 	
 }

@@ -25,8 +25,8 @@ import org.apache.cayenne.pref.UpgradeCayennePreference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.PreferenceChangeEvent;
@@ -81,29 +81,28 @@ public class ModelerPreferences implements PreferenceChangeListener {
         return getEditorPreferences().node(CayennePreference.LAST_PROJ_FILES);
     }
 
-    public static List<String> getLastProjFiles() {
+    public static List<File> getLastProjFiles() {
         Preferences filesPrefs = getLastProjFilesPref();
-        ArrayList<String> arrayLastProjFiles = new ArrayList<>();
-        String[] keys = null;
+        String[] keys;
         try {
             keys = filesPrefs.keys();
         } catch (BackingStoreException e) {
             logObj.warn("Error reading preferences file.", e);
+            return new ArrayList<>();
         }
 
-        if (keys != null) {
-            int len = keys.length;
-            ArrayList<Integer> keysInteger = new ArrayList<>();
-            for (int i = 0; i < len; i++) {
-                keysInteger.add(i);
-            }
-            Collections.sort(keysInteger);
-            
-            for (int i = 0; i < len; i++) {
-                arrayLastProjFiles.add(filesPrefs.get(keysInteger.get(i).toString(), ""));
+        int len = keys.length;
+        List<File> lastProjectsFiles = new ArrayList<>(len);
+        for (int i = 0; i < len; i++) {
+            String fileName = filesPrefs.get(Integer.toString(i), "");
+            if(!fileName.isEmpty()) {
+                File file = new File(fileName);
+                if(!lastProjectsFiles.contains(file)) {
+                    lastProjectsFiles.add(file);
+                }
             }
         }
-        return arrayLastProjFiles;
+        return lastProjectsFiles;
     }
 
     public void preferenceChange(PreferenceChangeEvent evt) {

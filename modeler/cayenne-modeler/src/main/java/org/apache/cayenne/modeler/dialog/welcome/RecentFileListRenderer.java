@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.SwingConstants;
@@ -37,7 +38,7 @@ import javax.swing.event.MouseInputListener;
 class RecentFileListRenderer extends DefaultListCellRenderer implements MouseInputListener {
 
     interface OnFileClickListener {
-        void onFileSelect(String fileName);
+        void onFileSelect(File file);
     }
 
     /**
@@ -78,7 +79,7 @@ class RecentFileListRenderer extends DefaultListCellRenderer implements MouseInp
         if (rolloverRow == index) {
             setOpaque(true);
             setBackground(ROLLOVER_BACKGROUND);
-            setToolTipText(getFullText());
+            setToolTipText(getSelectedFile().getAbsolutePath());
         } else {
             setOpaque(false);
         }
@@ -104,7 +105,7 @@ class RecentFileListRenderer extends DefaultListCellRenderer implements MouseInp
     public void mousePressed(MouseEvent e) {
     }
 
-    private String getFullText() {
+    private File getSelectedFile() {
         if(rolloverRow == -1) {
             return null;
         }
@@ -115,7 +116,7 @@ class RecentFileListRenderer extends DefaultListCellRenderer implements MouseInp
         if (!SwingUtilities.isLeftMouseButton(e) || rolloverRow == -1) {
             return;
         }
-        listener.onFileSelect(getFullText());
+        listener.onFileSelect(getSelectedFile());
         rolloverRow = -1; // clear selection
     }
 

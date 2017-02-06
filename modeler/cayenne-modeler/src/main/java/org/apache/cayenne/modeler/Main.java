@@ -117,18 +117,12 @@ public class Main {
 
     protected File initialProjectFromPreferences() {
 
-        Preferences autoLoadLastProject = Application.getInstance().getPreferencesNode(
-                GeneralPreferences.class,
-                "");
-
+        Preferences autoLoadLastProject = Application.getInstance().getPreferencesNode(GeneralPreferences.class, "");
         if ((autoLoadLastProject != null)
-                && autoLoadLastProject.getBoolean(
-                        GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE,
-                        false)) {
-
-            List<String> lastFiles = ModelerPreferences.getLastProjFiles();
+                && autoLoadLastProject.getBoolean(GeneralPreferences.AUTO_LOAD_PROJECT_PREFERENCE, false)) {
+            List<File> lastFiles = ModelerPreferences.getLastProjFiles();
             if (!lastFiles.isEmpty()) {
-                return new File(lastFiles.get(0));
+                return lastFiles.get(0);
             }
         }
 

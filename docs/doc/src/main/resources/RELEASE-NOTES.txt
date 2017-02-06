@@ -36,6 +36,7 @@ CAY-2137 When generating SQL from EJBQL, use "AND" to separate multiple join con
 CAY-2174 Change FK attribute name cause ObjAttribute appear after Reverse Engineering
 CAY-2175 AliasName used in EJBQLQuery is not working if it contains mixed case
 CAY-2183 Newly created DbRelationship is unexpectedly renamed by the Modeler
+CAY-2199 Modeler on Windows: The same project is displayed twice in "Recent Projects"
 
 ----------------------------------
 Release: 4.0.M4

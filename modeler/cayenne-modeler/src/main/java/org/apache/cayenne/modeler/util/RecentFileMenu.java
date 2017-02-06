@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.util;
 
 import java.awt.Component;
+import java.io.File;
 import java.util.List;
 
 import javax.swing.Action;
@@ -59,7 +60,7 @@ public class RecentFileMenu extends JMenu implements RecentFileListListener {
      */
     public void rebuildFromPreferences() {
 
-        List<String> arr = ModelerPreferences.getLastProjFiles();
+        List<File> arr = ModelerPreferences.getLastProjFiles();
         while (arr.size() > ModelerPreferences.LAST_PROJ_FILES_SIZE) {
             arr.remove(arr.size() - 1);
         }
@@ -70,14 +71,12 @@ public class RecentFileMenu extends JMenu implements RecentFileListListener {
         int prefSize = arr.size();
 
         for (int i = 0; i < prefSize; i++) {
-            String name = (String) arr.get(i);
-
+            String name = arr.get(i).getAbsolutePath();
             if (i < curSize) {
                 // update existing one
                 FileMenuItem item = (FileMenuItem) comps[i];
                 item.setText(name);
-            }
-            else {
+            } else {
                 // add a new one
                 FileMenuItem item = new FileMenuItem(name);
                 item.setAction(findAction());

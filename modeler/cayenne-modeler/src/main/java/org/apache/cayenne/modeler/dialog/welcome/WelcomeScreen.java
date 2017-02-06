@@ -137,8 +137,7 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
     }
 
     @Override
-    public void onFileSelect(String fileName) {
-        File file = new File(fileName);
+    public void onFileSelect(File file) {
         ActionEvent event = new ActionEvent(file, 0, null);
         // Fire an action with the file as source
         Application.getInstance()
@@ -170,7 +169,7 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
 
     @Override
     public void recentFileListChanged() {
-        List<String> arr = ModelerPreferences.getLastProjFiles();
+        List<File> arr = ModelerPreferences.getLastProjFiles();
         recentProjectsList.setModel(new RecentFileListModel(arr));
     }
 }
