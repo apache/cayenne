@@ -35,7 +35,7 @@ import java.util.List;
 
 class RelationshipDisplayEventType extends EntityDisplayEventType {
 
-    public RelationshipDisplayEventType(ProjectController controller) {
+    RelationshipDisplayEventType(ProjectController controller) {
         super(controller);
     }
 
@@ -89,19 +89,18 @@ class RelationshipDisplayEventType extends EntityDisplayEventType {
         }
     }
 
-    protected Relationship[] getLastEntityRelationships(Entity entity) {
-        List<Relationship> relationshipList = new ArrayList<Relationship>();
-        Relationship[] relationships = new Relationship[0];
+    private Relationship[] getLastEntityRelationships(Entity entity) {
+        List<Relationship> relationshipList = new ArrayList<>();
 
-        String rels = (entity instanceof ObjEntity)
-                ? preferences.getObjRels()
-                : preferences.getDbRels();
-
+        String rels = (entity instanceof ObjEntity) ? preferences.getObjRels() : preferences.getDbRels();
         for (String objRelName : rels.split(",")) {
-            relationshipList.add(entity.getRelationship(objRelName));
+            Relationship rel = entity.getRelationship(objRelName);
+            if(rel != null) {
+                relationshipList.add(rel);
+            }
         }
 
-        return relationshipList.toArray(relationships);
+        return relationshipList.toArray(new Relationship[0]);
     }
 
 }

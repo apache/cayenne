@@ -67,6 +67,9 @@ public abstract class DisplayEventType {
 
         StringBuilder sb = new StringBuilder();
         for (CayenneMapEntry entry : array) {
+            if(entry == null) {
+                continue;
+            }
             sb.append(entry.getName()).append(",");
         }
 

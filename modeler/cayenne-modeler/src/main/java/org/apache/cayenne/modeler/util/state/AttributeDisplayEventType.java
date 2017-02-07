@@ -35,7 +35,7 @@ import java.util.List;
 
 class AttributeDisplayEventType extends EntityDisplayEventType {
 
-    public AttributeDisplayEventType(ProjectController controller) {
+    AttributeDisplayEventType(ProjectController controller) {
         super(controller);
     }
 
@@ -90,18 +90,17 @@ class AttributeDisplayEventType extends EntityDisplayEventType {
     }
 
     protected Attribute[] getLastEntityAttributes(Entity entity) {
-        List<Attribute> attributeList = new ArrayList<Attribute>();
-        Attribute[] attributes = new Attribute[0];
+        List<Attribute> attributeList = new ArrayList<>();
 
-        String attrs = (entity instanceof ObjEntity)
-                ? preferences.getObjAttrs()
-                : preferences.getDbAttrs();
-
+        String attrs = (entity instanceof ObjEntity) ? preferences.getObjAttrs() : preferences.getDbAttrs();
         for (String attrName : attrs.split(",")) {
-            attributeList.add(entity.getAttribute(attrName));
+            Attribute attr = entity.getAttribute(attrName);
+            if(attr != null) {
+                attributeList.add(attr);
+            }
         }
 
-        return attributeList.toArray(attributes);
+        return attributeList.toArray(new Attribute[0]);
     }
 
 }

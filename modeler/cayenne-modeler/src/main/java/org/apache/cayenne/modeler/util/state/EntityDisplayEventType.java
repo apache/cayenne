@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 
 class EntityDisplayEventType extends DisplayEventType {
 
-    public EntityDisplayEventType(ProjectController controller) {
+    EntityDisplayEventType(ProjectController controller) {
         super(controller);
     }
 
@@ -76,7 +76,7 @@ class EntityDisplayEventType extends DisplayEventType {
         }
     }
 
-    protected Entity getLastEntity(DataMap dataMap) {
+    Entity getLastEntity(DataMap dataMap) {
         return !preferences.getObjEntity().isEmpty()
                 ? dataMap.getObjEntity(preferences.getObjEntity())
                 : dataMap.getDbEntity(preferences.getDbEntity());
