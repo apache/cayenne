@@ -47,9 +47,9 @@ abstract class Evaluator {
     private static final Evaluator PERSISTENT_EVALUATOR;
     private static final Evaluator BIG_DECIMAL_EVALUATOR;
     private static final Evaluator NUMBER_EVALUATOR;
-    private static final Evaluator COMPAREABLE_EVALUATOR;
+    private static final Evaluator COMPARABLE_EVALUATOR;
 	
-    static double EPSILON = 0.0000001;
+    private static final double EPSILON = 0.0000001;
 
     /**
      * A decorator of an evaluator that presumes non-null 'lhs' argument and
@@ -64,22 +64,20 @@ abstract class Evaluator {
 
         @Override
         Integer compare(Object lhs, Object rhs) {
-
             if (rhs == null) {
-                return 1;
-            } else {
-                return delegate.compare(lhs, rhs);
+                return null;
             }
+            return delegate.compare(lhs, rhs);
         }
 
         @Override
         boolean eq(Object lhs, Object rhs) {
-            return rhs == null ? false : delegate.eq(lhs, rhs);
+            return rhs != null && delegate.eq(lhs, rhs);
         }
     }
 
     static {
-        evaluators = new ConcurrentHashMap<Class<?>, Evaluator>();
+        evaluators = new ConcurrentHashMap<>();
 
         NULL_LHS_EVALUATOR = new Evaluator() {
             @Override
@@ -159,12 +157,9 @@ abstract class Evaluator {
 
             @Override
             boolean eq(Object lhs, Object rhs) {
-
-                // BigDecimals must be compared using compareTo (
-                // see CAY-280 and BigDecimal.equals JavaDoc)
-
+                // BigDecimals must be compared using compareTo (see CAY-280 and BigDecimal.equals JavaDoc)
                 Integer c = compare(lhs, rhs);
-                return c != null && c == 0;
+                return c == 0;
             }
         });
 
@@ -178,19 +173,14 @@ abstract class Evaluator {
 
             @Override
             boolean eq(Object lhs, Object rhs) {
-                return equalNumbers((Number)lhs, (Number)rhs);
+                return equalNumbers((Number)lhs, rhs);
             }
             
             private final List WHOLE_NUMBER_CLASSES = Arrays.asList(Byte.class, Short.class, Integer.class, AtomicInteger.class, Long.class, AtomicLong.class, BigInteger.class);
-            private final List FLOATING_POINT_CLASSES = Arrays.asList(Float.class, Double.class);
 
             /**
              * Returns the widest primitive wrapper class given the two operands, used in preparation for 
              * comparing two boxed numbers of different types, like java.lang.Short and java.lang.Integer.
-             * 
-             * @param lhs
-             * @param rhs
-             * @return
              */
             Class<?> widestNumberType(Number lhs, Number rhs) {
             	if (lhs.getClass().equals(rhs.getClass())) return lhs.getClass();
@@ -201,15 +191,8 @@ abstract class Evaluator {
             	Class<?> widestClass;
             	if (lhsIndex != -1 && rhsIndex != -1) {
             		widestClass = (Class<?>) WHOLE_NUMBER_CLASSES.get(Math.max(lhsIndex, rhsIndex));
-            		
-            	} else if (lhsIndex == -1 && rhsIndex == -1) {
-            		widestClass = Double.class; // must be one float and one double;
-            		
-            	} else if (lhsIndex != -1 || rhsIndex != -1){ // must be whole number and a float or double
-            		widestClass = Double.class;
-            		
             	} else {
-            		widestClass = null;
+            		widestClass = Double.class;
             	}
             	
             	return widestClass;
@@ -217,9 +200,6 @@ abstract class Evaluator {
             
             /**
              * Enables equality tests for two boxed numbers of different types, like java.lang.Short and java.lang.Integer.
-             * @param lhs
-             * @param _rhs
-             * @return
              */
             boolean equalNumbers(Number lhs, Object _rhs) {
             	if (!Number.class.isAssignableFrom(_rhs.getClass())) {
@@ -252,9 +232,6 @@ abstract class Evaluator {
             
             /**
              * Enables comparison of two boxed numbers of different types, like java.lang.Short and java.lang.Integer.
-             * @param lhs
-             * @param _rhs
-             * @return
              */
             Integer compareNumbers(Number lhs, Object _rhs) {
             	if (!Number.class.isAssignableFrom(_rhs.getClass())) {
@@ -299,7 +276,7 @@ abstract class Evaluator {
             }
         });
         
-        COMPAREABLE_EVALUATOR = new NonNullLhsEvaluator(new Evaluator() {
+        COMPARABLE_EVALUATOR = new NonNullLhsEvaluator(new Evaluator() {
 
             @SuppressWarnings({ "unchecked", "rawtypes" })
             @Override
@@ -314,7 +291,7 @@ abstract class Evaluator {
         });
     }
 
-    static <T> Evaluator evaluator(Object lhs) {
+    static Evaluator evaluator(Object lhs) {
 
         if (lhs == null) {
             return NULL_LHS_EVALUATOR;
@@ -354,7 +331,7 @@ abstract class Evaluator {
         }
         
         if (Comparable.class.isAssignableFrom(lhsType)) {
-            return COMPAREABLE_EVALUATOR;
+            return COMPARABLE_EVALUATOR;
         }
 
         // nothing we recognize... return default

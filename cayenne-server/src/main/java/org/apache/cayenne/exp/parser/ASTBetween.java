@@ -53,7 +53,7 @@ public class ASTBetween extends ConditionNode {
 	}
 
 	@Override
-	protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+	protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
 		Object o1 = evaluatedChildren[1];
 		Object o2 = evaluatedChildren[2];
 		Evaluator e = Evaluator.evaluator(o);

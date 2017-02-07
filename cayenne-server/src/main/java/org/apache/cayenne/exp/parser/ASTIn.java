@@ -54,21 +54,22 @@ public class ASTIn extends ConditionNode {
 	}
 
 	@Override
-	protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
-        // TODO: what if there's a NULL inside IN list?
-        // e.g. ASTEqual evals as "NULL == NULL"
+	protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
 		if (o == null || evaluatedChildren[1] == null) {
-			return false;
+			// Even if there is NULL value in list we should return false,
+			// as check against NULL can be done only with IS NULL operator
+			// and moreover not all DB accept syntax like 'value IN (NULL)'
+			return Boolean.FALSE;
 		}
 
 		Object[] objects = (Object[]) evaluatedChildren[1];
 		for (Object object : objects) {
 			if (object != null && Evaluator.evaluator(o).eq(o, object)) {
-				return true;
+				return Boolean.TRUE;
 			}
 		}
 
-		return false;
+		return Boolean.FALSE;
 	}
 
 	/**

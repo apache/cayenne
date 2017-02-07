@@ -52,8 +52,8 @@ public class ASTTrue extends ConditionNode {
     }
 
     @Override
-    protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
-        return true;
+    protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+        return Boolean.TRUE;
     }
 
     @Override

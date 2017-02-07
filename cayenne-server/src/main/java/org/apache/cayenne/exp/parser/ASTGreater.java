@@ -52,10 +52,13 @@ public class ASTGreater extends ConditionNode {
 	}
 
 	@Override
-	protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+	protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
 		Object o2 = evaluatedChildren[1];
 		Integer c = Evaluator.evaluator(o).compare(o, o2);
-		return c != null && c > 0 ? Boolean.TRUE : Boolean.FALSE;
+		if(c == null) {
+			return null;
+		}
+		return c > 0 ? Boolean.TRUE : Boolean.FALSE;
 	}
 
 	/**

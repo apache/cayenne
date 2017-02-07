@@ -507,7 +507,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	@SuppressWarnings("unchecked")
 	public <T> List<T> filterObjects(Collection<T> objects) {
 		if (objects == null || objects.size() == 0) {
-			return new LinkedList<T>(); // returning Collections.emptyList() could cause random client exceptions if they try to mutate the resulting list
+			return new LinkedList<>(); // returning Collections.emptyList() could cause random client exceptions if they try to mutate the resulting list
 		}
 
 		return (List<T>) filter(objects, new LinkedList<T>());

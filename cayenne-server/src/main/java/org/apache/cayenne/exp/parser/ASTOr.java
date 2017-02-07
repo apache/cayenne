@@ -68,13 +68,20 @@ public class ASTOr extends AggregateConditionNode {
 			return Boolean.FALSE;
 		}
 
+		// https://en.wikipedia.org/wiki/Three-valued_logic
+		boolean unknown = false;
+		boolean result = false;
 		for (int i = 0; i < len; i++) {
-			if (ConversionUtil.toBoolean(evaluateChild(i, o))) {
-				return Boolean.TRUE;
+			Object value = evaluateChild(i, o);
+			if (value == null) {
+				unknown = true;
+			} else if (ConversionUtil.toBoolean(value)) {
+				result = true;
+				break;
 			}
 		}
 
-		return Boolean.FALSE;
+		return result ? Boolean.TRUE : (unknown ? null : Boolean.FALSE);
 	}
 
 	/**

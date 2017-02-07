@@ -74,13 +74,20 @@ public class ASTAnd extends AggregateConditionNode implements ValueInjector {
 			return Boolean.FALSE;
 		}
 
+		// https://en.wikipedia.org/wiki/Three-valued_logic
+		boolean unknown = false;
+		boolean result = true;
 		for (int i = 0; i < len; i++) {
-			if (!ConversionUtil.toBoolean(evaluateChild(i, o))) {
-				return Boolean.FALSE;
+			Object value = evaluateChild(i, o);
+			if (value == null) {
+				unknown = true;
+			} else if (!ConversionUtil.toBoolean(value)) {
+				result = false;
+				break;
 			}
 		}
 
-		return Boolean.TRUE;
+		return result ? (unknown ? null : Boolean.TRUE) : Boolean.FALSE;
 	}
 
 	/**

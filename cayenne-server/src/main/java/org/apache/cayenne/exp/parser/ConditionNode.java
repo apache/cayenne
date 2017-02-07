@@ -74,7 +74,7 @@ public abstract class ConditionNode extends SimpleNode {
         }
         if (firstChild instanceof Collection) {
             for(Object c : (Collection)firstChild) {
-                if(evaluateSubNode(c, evaluatedChildren)) {
+                if(evaluateSubNode(c, evaluatedChildren) == Boolean.TRUE) {
                     return Boolean.TRUE;
                 }
             }
@@ -86,5 +86,5 @@ public abstract class ConditionNode extends SimpleNode {
 
     abstract protected int getRequiredChildrenCount();
 
-    abstract protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception;
+    abstract protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception;
 }

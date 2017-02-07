@@ -55,7 +55,12 @@ public class ASTNot extends AggregateConditionNode {
 			return Boolean.FALSE;
 		}
 
-		return ConversionUtil.toBoolean(evaluateChild(0, o)) ? Boolean.FALSE : Boolean.TRUE;
+		Object o1 = evaluateChild(0, o);
+		if (o1 == null) {
+			return null;
+		}
+
+		return ConversionUtil.toBoolean(o1) ? Boolean.FALSE : Boolean.TRUE;
 	}
 
 	/**

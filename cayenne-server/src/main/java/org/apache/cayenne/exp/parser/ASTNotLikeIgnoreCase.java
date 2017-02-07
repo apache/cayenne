@@ -58,7 +58,7 @@ public class ASTNotLikeIgnoreCase extends IgnoreCaseNode {
 	}
 
 	@Override
-	protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+	protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
 		String s1 = ConversionUtil.toString(o);
 		if (s1 == null) {
 			return Boolean.FALSE;

@@ -64,9 +64,9 @@ public class ASTEqual extends ConditionNode implements ValueInjector {
 	}
 
 	@Override
-	protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+	protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
 		Object o2 = evaluatedChildren[1];
-		return evaluateImpl(o, o2);
+		return evaluateImpl(o, o2) ? Boolean.TRUE : Boolean.FALSE;
 	}
 
 	/**

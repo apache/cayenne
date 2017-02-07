@@ -51,9 +51,9 @@ public class ASTNotEqual extends ConditionNode {
     }
 
     @Override
-    protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+    protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
         Object o2 = evaluatedChildren[1];
-        return !ASTEqual.evaluateImpl(o, o2);
+        return ASTEqual.evaluateImpl(o, o2) ? Boolean.FALSE : Boolean.TRUE;
     }
 
     /**

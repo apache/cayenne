@@ -49,19 +49,19 @@ public class ASTNotIn extends ConditionNode {
     }
 
     @Override
-    protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+    protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
         if (o == null || evaluatedChildren[1] == null) {
-            return false;
+            return Boolean.FALSE;
         }
 
         Object[] objects = (Object[]) evaluatedChildren[1];
         for (Object object : objects) {
             if (object != null && Evaluator.evaluator(o).eq(o, object)) {
-                return false;
+                return Boolean.FALSE;
             }
         }
 
-        return true;
+        return Boolean.TRUE;
     }
 
     /**

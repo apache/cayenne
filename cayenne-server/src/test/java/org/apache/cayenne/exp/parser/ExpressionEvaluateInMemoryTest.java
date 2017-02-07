@@ -18,11 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Test;
 
 // TODO: split it between AST* unit tests (partially done already)
@@ -68,4 +72,63 @@ public class ExpressionEvaluateInMemoryTest {
 		assertEquals(Boolean.FALSE, new ASTFalse().evaluate(null));
 	}
 
+	@Test
+    public void testEvaluateNullCompare() throws Exception {
+        Expression expression = new ASTGreater(new ASTObjPath("artistName"), "A");
+        assertFalse(expression.match(new Artist()));
+        assertFalse(expression.notExp().match(new Artist()));
+    }
+
+    @Test
+    public void testEvaluateCompareNull() throws Exception {
+        Artist a1 = new Artist();
+        a1.setArtistName("Name");
+        Expression expression = new ASTGreater(new ASTObjPath("artistName"), null);
+        assertFalse(expression.match(a1));
+        assertFalse(expression.notExp().match(a1));
+        a1.setSomeOtherObjectProperty(new BigDecimal(1));
+        expression = ExpressionFactory.exp("someOtherObjectProperty > null");
+        assertFalse(expression.match(a1));
+    }
+
+    @Test
+    public void testEvaluateEqualsNull() throws Exception {
+        Artist a1 = new Artist();
+        Expression isNull = Artist.ARTIST_NAME.isNull();
+        assertTrue(isNull.match(a1));
+        assertFalse(isNull.notExp().match(a1));
+    }
+
+    @Test
+    public void testEvaluateNotEqualsNullColumn() throws Exception {
+        Expression notEquals = ExpressionFactory.exp("artistName <> someOtherProperty");
+        assertFalse(notEquals.match(new Artist()));
+        assertTrue(notEquals.notExp().match(new Artist()));
+    }
+
+    @Test
+    public void testNullAnd() {
+        Expression nullExp = ExpressionFactory.exp("null > 0");
+
+        ASTAnd nullAndTrue = new ASTAnd(new Object[] {nullExp, new ASTTrue()});
+        assertFalse(nullAndTrue.match(null));
+        assertFalse(nullAndTrue.notExp().match(null));
+
+        ASTAnd nullAndFalse = new ASTAnd(new Object[] {nullExp, new ASTFalse()});
+        assertFalse(nullAndFalse.match(null));
+        assertTrue(nullAndFalse.notExp().match(null));
+    }
+
+    @Test
+    public void testNullOr() {
+        Expression nullExp = ExpressionFactory.exp("null > 0");
+
+        ASTOr nullOrTrue = new ASTOr(new Object[] {nullExp, new ASTTrue()});
+        assertTrue(nullOrTrue.match(null));
+        assertFalse(nullOrTrue.notExp().match(null));
+
+        ASTOr nullOrFalse = new ASTOr(new Object[] {nullExp, new ASTFalse()});
+        assertFalse(nullOrFalse.match(null));
+        assertFalse(nullOrFalse.notExp().match(null));
+    }
 }
