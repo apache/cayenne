@@ -50,15 +50,15 @@ public class ASTNotLike extends PatternMatchNode {
         jjtAddChild(new ASTScalar(value), 1);
         connectChildren();
     }
-    
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len != 2) {
-            return Boolean.FALSE;
-        }
 
-        String s1 = ConversionUtil.toString(evaluateChild(0, o));
+    @Override
+    protected int getRequiredChildrenCount() {
+        return 2;
+    }
+
+    @Override
+    protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+        String s1 = ConversionUtil.toString(o);
         if (s1 == null) {
             return Boolean.FALSE;
         }

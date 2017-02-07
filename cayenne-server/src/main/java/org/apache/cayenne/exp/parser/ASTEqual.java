@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.exp.parser;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ValueInjector;
@@ -59,16 +59,14 @@ public class ASTEqual extends ConditionNode implements ValueInjector {
 	}
 
 	@Override
-	protected Object evaluateNode(Object o) throws Exception {
-		int len = jjtGetNumChildren();
-		if (len != 2) {
-			return Boolean.FALSE;
-		}
+	protected int getRequiredChildrenCount() {
+		return 2;
+	}
 
-		Object o1 = evaluateChild(0, o);
-		Object o2 = evaluateChild(1, o);
-
-		return evaluateImpl(o1, o2);
+	@Override
+	protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+		Object o2 = evaluatedChildren[1];
+		return evaluateImpl(o, o2);
 	}
 
 	/**
@@ -83,20 +81,9 @@ public class ASTEqual extends ConditionNode implements ValueInjector {
 		if (o1 == null && o2 == null) {
 			return true;
 		} else if (o1 != null) {
-
-			// Per CAY-419 we perform 'in' comparison if one object is a list,
-			// and other is not
-
-			if (o1 instanceof List && !(o2 instanceof List)) {
-				for (Object element : ((List<?>) o1)) {
-					if (element != null && Evaluator.evaluator(element).eq(element, o2)) {
-						return true;
-					}
-				}
-				return false;
-			}
-			if (o2 instanceof List && !(o1 instanceof List)) {
-				for (Object element : ((List<?>) o2)) {
+			// Per CAY-419 we perform 'in' comparison if one object is a list, and other is not
+			if (o2 instanceof Collection) {
+				for (Object element : ((Collection<?>) o2)) {
 					if (element != null && Evaluator.evaluator(element).eq(element, o1)) {
 						return true;
 					}

@@ -56,8 +56,9 @@ public class ExpressionFactoryIT extends ServerCase {
 	public void testCollectionMatch() {
 		Artist artist = context.newObject(Artist.class);
 		artist.setArtistName("artist");
-		Painting p1 = context.newObject(Painting.class), p2 = context.newObject(Painting.class), p3 = context
-				.newObject(Painting.class);
+		Painting p1 = context.newObject(Painting.class),
+				p2 = context.newObject(Painting.class),
+				p3 = context.newObject(Painting.class);
 		p1.setPaintingTitle("p1");
 		p2.setPaintingTitle("p2");
 		p3.setPaintingTitle("p3");
@@ -68,12 +69,12 @@ public class ExpressionFactoryIT extends ServerCase {
 
 		assertTrue(ExpressionFactory.matchExp("paintingArray", p1).match(artist));
 		assertFalse(ExpressionFactory.matchExp("paintingArray", p3).match(artist));
-		assertFalse(ExpressionFactory.noMatchExp("paintingArray", p1).match(artist));
+		assertTrue(ExpressionFactory.noMatchExp("paintingArray", p1).match(artist)); // changed to align with SQL
 		assertTrue(ExpressionFactory.noMatchExp("paintingArray", p3).match(artist));
 
 		assertTrue(ExpressionFactory.matchExp("paintingArray.paintingTitle", "p1").match(artist));
 		assertFalse(ExpressionFactory.matchExp("paintingArray.paintingTitle", "p3").match(artist));
-		assertFalse(ExpressionFactory.noMatchExp("paintingArray.paintingTitle", "p1").match(artist));
+		assertTrue(ExpressionFactory.noMatchExp("paintingArray.paintingTitle", "p1").match(artist)); // changed to align with SQL
 		assertTrue(ExpressionFactory.noMatchExp("paintingArray.paintingTitle", "p3").match(artist));
 
 		assertTrue(ExpressionFactory.inExp("paintingTitle", "p1").match(p1));

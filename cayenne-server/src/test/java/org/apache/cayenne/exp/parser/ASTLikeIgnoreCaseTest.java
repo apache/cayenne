@@ -18,12 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.junit.Test;
 
 public class ASTLikeIgnoreCaseTest {
@@ -53,5 +56,38 @@ public class ASTLikeIgnoreCaseTest {
 		match2.setArtistName("ABcD");
 		assertTrue("Failed: " + like, like.match(match2));
 		assertFalse("Failed: " + notLike, notLike.match(match2));
+	}
+
+	@Test
+	public void testEvaluateWithCollection() {
+		Expression like = new ASTLikeIgnoreCase(new ASTObjPath("paintingArray.paintingTitle"), "aBcD");
+		Expression notLike = new ASTNotLikeIgnoreCase(new ASTObjPath("paintingArray.paintingTitle"), "aBcD");
+
+		Artist noMatch1 = new Artist();
+		noMatch1.writePropertyDirectly("paintingArray",
+				Arrays.asList(createPainting("xyz"), createPainting("abc")));
+
+		assertFalse("Failed: " + like, like.match(noMatch1));
+		assertTrue("Failed: " + like, notLike.match(noMatch1));
+
+		Artist match1 = new Artist();
+		match1.writePropertyDirectly("paintingArray",
+				Arrays.asList(createPainting("AbCd"), createPainting("abcd")));
+
+		assertTrue("Failed: " + like, like.match(match1));
+		assertFalse("Failed: " + like, notLike.match(match1));
+
+		Artist match2 = new Artist();
+		match2.writePropertyDirectly("paintingArray",
+				Arrays.asList(createPainting("Xzy"), createPainting("abcd")));
+
+		assertTrue("Failed: " + like, like.match(match2));
+		assertTrue("Failed: " + like, notLike.match(match2));
+	}
+
+	private Painting createPainting(String name) {
+		Painting p = new Painting();
+		p.setPaintingTitle(name);
+		return p;
 	}
 }

@@ -47,16 +47,14 @@ public class ASTGreater extends ConditionNode {
 	}
 
 	@Override
-	protected Object evaluateNode(Object o) throws Exception {
-		int len = jjtGetNumChildren();
-		if (len != 2) {
-			return Boolean.FALSE;
-		}
+	protected int getRequiredChildrenCount() {
+		return 2;
+	}
 
-		Object o1 = evaluateChild(0, o);
-		Object o2 = evaluateChild(1, o);
-		Integer c = Evaluator.evaluator(o1).compare(o1, o2);
-
+	@Override
+	protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+		Object o2 = evaluatedChildren[1];
+		Integer c = Evaluator.evaluator(o).compare(o, o2);
 		return c != null && c > 0 ? Boolean.TRUE : Boolean.FALSE;
 	}
 

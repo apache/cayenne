@@ -46,15 +46,14 @@ public class ASTNotEqual extends ConditionNode {
     }
 
     @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len != 2) {
-            return Boolean.FALSE;
-        }
+    protected int getRequiredChildrenCount() {
+        return 2;
+    }
 
-        Object o1 = evaluateChild(0, o);
-        Object o2 = evaluateChild(1, o);
-        return !ASTEqual.evaluateImpl(o1, o2);
+    @Override
+    protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+        Object o2 = evaluatedChildren[1];
+        return !ASTEqual.evaluateImpl(o, o2);
     }
 
     /**

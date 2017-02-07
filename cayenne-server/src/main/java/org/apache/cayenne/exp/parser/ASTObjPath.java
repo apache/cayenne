@@ -95,7 +95,7 @@ public class ASTObjPath extends ASTPath {
 	}
 
 	void injectValue(Object source, Object value) {
-		if (getPath().indexOf(ObjEntity.PATH_SEPARATOR) == -1) {
+		if (!getPath().contains(ObjEntity.PATH_SEPARATOR)) {
 			try {
 				if (source instanceof DataObject) {
 					((DataObject) source).writeProperty(getPath(), value);

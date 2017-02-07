@@ -20,6 +20,9 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.util.Collection;
+import java.util.Map;
+
 import org.apache.cayenne.exp.ExpressionException;
 
 /**
@@ -46,4 +49,42 @@ public abstract class ConditionNode extends SimpleNode {
 
         super.jjtSetParent(n);
     }
+
+    @Override
+    protected Object evaluateNode(Object o) throws Exception {
+        int len = jjtGetNumChildren();
+        int requiredLen = getRequiredChildrenCount();
+        if (len != requiredLen) {
+            return Boolean.FALSE;
+        }
+
+        if(requiredLen == 0) {
+            return evaluateSubNode(null, null);
+        }
+
+        Object[] evaluatedChildren = new Object[requiredLen];
+        for(int i=0; i<requiredLen; i++) {
+            evaluatedChildren[i] = evaluateChild(i, o);
+        }
+
+        Object firstChild = evaluatedChildren[0];
+        // don't care here for keys
+        if(firstChild instanceof Map) {
+            firstChild = ((Map) firstChild).values();
+        }
+        if (firstChild instanceof Collection) {
+            for(Object c : (Collection)firstChild) {
+                if(evaluateSubNode(c, evaluatedChildren)) {
+                    return Boolean.TRUE;
+                }
+            }
+            return Boolean.FALSE;
+        } else {
+            return evaluateSubNode(firstChild, evaluatedChildren);
+        }
+    }
+
+    abstract protected int getRequiredChildrenCount();
+
+    abstract protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception;
 }

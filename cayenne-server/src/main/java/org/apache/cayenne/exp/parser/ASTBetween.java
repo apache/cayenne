@@ -48,23 +48,22 @@ public class ASTBetween extends ConditionNode {
 	}
 
 	@Override
-	protected Object evaluateNode(Object o) throws Exception {
-		int len = jjtGetNumChildren();
-		if (len != 3) {
-			return Boolean.FALSE;
-		}
+	protected int getRequiredChildrenCount() {
+		return 3;
+	}
 
-		Object o1 = evaluateChild(0, o);
-		Object o2 = evaluateChild(1, o);
-		Object o3 = evaluateChild(2, o);
-		Evaluator e = Evaluator.evaluator(o1);
+	@Override
+	protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+		Object o1 = evaluatedChildren[1];
+		Object o2 = evaluatedChildren[2];
+		Evaluator e = Evaluator.evaluator(o);
 
-		Integer c1 = e.compare(o1, o2);
+		Integer c1 = e.compare(o, o1);
 		if (c1 == null) {
 			return Boolean.FALSE;
 		}
 
-		Integer c2 = e.compare(o1, o3);
+		Integer c2 = e.compare(o, o2);
 		if (c2 == null) {
 			return Boolean.FALSE;
 		}

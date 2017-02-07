@@ -103,7 +103,7 @@ public class ASTDbPath extends ASTPath {
 	private Map<?, ?> toMap_AttchedObject_MultiStepPath(ObjectContext context, Persistent persistent) {
 		Iterator<CayenneMapEntry> pathComponents = Cayenne.getObjEntity(persistent).getDbEntity()
 				.resolvePathComponents(this);
-		LinkedList<DbRelationship> reversedPathComponents = new LinkedList<DbRelationship>();
+		LinkedList<DbRelationship> reversedPathComponents = new LinkedList<>();
 
 		while (pathComponents.hasNext()) {
 			CayenneMapEntry component = pathComponents.next();

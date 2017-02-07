@@ -91,7 +91,6 @@ public class ASTNot extends AggregateConditionNode {
 
 	@Override
 	protected String getExpressionOperator(int index) {
-		throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
-				+ "'");
+		throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id] + "'");
 	}
 }

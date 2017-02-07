@@ -35,11 +35,10 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.util.Util;
 
 /**
- * Superclass of AST* expressions that implements Node interface defined by
- * JavaCC framework.
+ * Superclass of AST* expressions that implements Node interface defined by JavaCC framework.
  * <p>
- * Some parts of the parser are based on OGNL parser, copyright (c) 2002, Drew
- * Davidson and Luke Blanshard.
+ * Some parts of the parser are based on OGNL parser,
+ * copyright (c) 2002, Drew Davidson and Luke Blanshard.
  * </p>
  * 
  * @since 1.1
@@ -84,9 +83,7 @@ public abstract class SimpleNode extends Expression implements Node {
 		if (null != parameterAccumulator) {
 			parameterAccumulator.add(scalar);
 			out.append('?');
-			out.append(Integer.toString(parameterAccumulator.size())); // parameters
-																		// start
-																		// at 1
+			out.append(Integer.toString(parameterAccumulator.size())); // parameters start at 1
 			return;
 		}
 
@@ -105,7 +102,7 @@ public abstract class SimpleNode extends Expression implements Node {
 		if (scalar instanceof Enum<?>) {
 			Enum<?> e = (Enum<?>) scalar;
 			out.append("enum:");
-			out.append(e.getClass().getName() + "." + e.name());
+			out.append(e.getClass().getName()).append(".").append(e.name());
 			return;
 		}
 
@@ -131,8 +128,7 @@ public abstract class SimpleNode extends Expression implements Node {
 			out.append(quoteChar);
 		}
 
-		// encode only ObjectId for Persistent, ensure that the order of keys is
-		// predictable....
+		// encode only ObjectId for Persistent, ensure that the order of keys is predictable....
 
 		// TODO: should we use UUID here?
 		if (scalar instanceof Persistent) {
@@ -142,7 +138,7 @@ public abstract class SimpleNode extends Expression implements Node {
 		} else if (scalar instanceof Enum<?>) {
 			Enum<?> e = (Enum<?>) scalar;
 			out.append("enum:");
-			out.append(e.getClass().getName() + "." + e.name());
+			out.append(e.getClass().getName()).append(".").append(e.name());
 		} else {
 			appendAsEscapedString(out, String.valueOf(scalar));
 		}
@@ -153,8 +149,7 @@ public abstract class SimpleNode extends Expression implements Node {
 	}
 
 	/**
-	 * Utility method that prints a string to the provided Appendable, escaping
-	 * special characters.
+	 * Utility method that prints a string to the provided Appendable, escaping special characters.
 	 */
 	protected static void appendAsEscapedString(Appendable out, String source) throws IOException {
 		int len = source.length();
@@ -209,8 +204,7 @@ public abstract class SimpleNode extends Expression implements Node {
 	protected abstract String getExpressionOperator(int index);
 
 	/**
-	 * Returns operator for ebjql statements, which can differ for Cayenne
-	 * expression operator
+	 * Returns operator for EJBQL statements, which can differ for Cayenne expression operator
 	 */
 	protected String getEJBQLExpressionOperator(int index) {
 		return getExpressionOperator(index);
@@ -317,10 +311,8 @@ public abstract class SimpleNode extends Expression implements Node {
 	public Object getOperand(int index) {
 		Node child = jjtGetChild(index);
 
-		// unwrap ASTScalar nodes - this is likely a temporary thing to keep it
-		// compatible
-		// with QualifierTranslator. In the future we might want to keep scalar
-		// nodes
+		// unwrap ASTScalar nodes - this is likely a temporary thing to keep it compatible
+		// with QualifierTranslator. In the future we might want to keep scalar nodes
 		// for the purpose of expression evaluation.
 		return unwrapChild(child);
 	}
@@ -399,9 +391,8 @@ public abstract class SimpleNode extends Expression implements Node {
 	protected void connectChildren() {
 		if (children != null) {
 			for (Node child : children) {
-				// although nulls are expected to be wrapped in scalar, still
-				// doing a
-				// check here to make it more robust
+				// although nulls are expected to be wrapped in scalar,
+				// still doing a check here to make it more robust
 				if (child != null) {
 					child.jjtSetParent(this);
 				}
@@ -426,8 +417,8 @@ public abstract class SimpleNode extends Expression implements Node {
 			return evaluateNode(o);
 		} catch (Throwable th) {
 			String string = this.toString();
-			throw new ExpressionException("Error evaluating expression '" + string + "'", string,
-					Util.unwindException(th));
+			throw new ExpressionException("Error evaluating expression '%s'",
+					string, Util.unwindException(th), string);
 		}
 	}
 

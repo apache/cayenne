@@ -47,14 +47,18 @@ public class ASTTrue extends ConditionNode {
     }
 
     @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        return Boolean.TRUE;
+    protected int getRequiredChildrenCount() {
+        return 0;
+    }
+
+    @Override
+    protected boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+        return true;
     }
 
     @Override
     protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
-                + "'");
+        throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id] + "'");
     }
 
     @Override
