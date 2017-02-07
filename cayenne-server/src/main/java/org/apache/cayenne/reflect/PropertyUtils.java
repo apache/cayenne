@@ -176,19 +176,19 @@ public class PropertyUtils {
 
 			String className = type.getName();
 			if ("byte".equals(className)) {
-				return Byte.valueOf((byte) 0);
+				return (byte) 0;
 			} else if ("int".equals(className)) {
-				return Integer.valueOf(0);
+				return 0;
 			} else if ("long".equals(className)) {
-				return Long.valueOf(0);
+				return 0L;
 			} else if ("short".equals(className)) {
-				return Short.valueOf((short) 0);
+				return (short) 0;
 			} else if ("char".equals(className)) {
-				return Character.valueOf((char) 0);
+				return (char) 0;
 			} else if ("double".equals(className)) {
-				return new Double(0.0d);
+				return 0.0d;
 			} else if ("float".equals(className)) {
-				return new Float(0.0f);
+				return 0.0f;
 			} else if ("boolean".equals(className)) {
 				return Boolean.FALSE;
 			}
@@ -205,11 +205,16 @@ public class PropertyUtils {
 
 		private static final long serialVersionUID = 2056090443413498626L;
 
-		private String segmentName;
-		private Accessor nextAccessor;
+		private final String segmentName;
+		private final Accessor nextAccessor;
 
 		public PathAccessor(String segmentName, Accessor nextAccessor) {
-			this.segmentName = segmentName;
+			// trim outer join component
+			if(segmentName.endsWith(Entity.OUTER_JOIN_INDICATOR)) {
+				this.segmentName = segmentName.substring(0, segmentName.length() - 1);
+			} else {
+				this.segmentName = segmentName;
+			}
 			this.nextAccessor = nextAccessor;
 		}
 

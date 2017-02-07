@@ -115,11 +115,11 @@ public class PropertyUtilsTest {
 
 		assertSame(o1.getByteArrayField(), PropertyUtils.getProperty(o1, "byteArrayField"));
 		assertSame(o1.getIntegerField(), PropertyUtils.getProperty(o1, "integerField"));
-		assertEquals(new Integer(o1.getIntField()), PropertyUtils.getProperty(o1, "intField"));
+		assertEquals(o1.getIntField(), PropertyUtils.getProperty(o1, "intField"));
 		assertSame(o1.getNumberField(), PropertyUtils.getProperty(o1, "numberField"));
 		assertSame(o1.getObjectField(), PropertyUtils.getProperty(o1, "objectField"));
 		assertSame(o1.getStringField(), PropertyUtils.getProperty(o1, "stringField"));
-		assertEquals(Boolean.valueOf(o1.isBooleanField()), PropertyUtils.getProperty(o1, "booleanField"));
+		assertEquals(o1.isBooleanField(), PropertyUtils.getProperty(o1, "booleanField"));
 	}
 
 	@Test
@@ -128,10 +128,22 @@ public class PropertyUtilsTest {
 		assertNull(PropertyUtils.getProperty(o1, "related.integerField"));
 
 		TstJavaBean o1related = new TstJavaBean();
-		o1related.setIntegerField(Integer.valueOf(44));
+		o1related.setIntegerField(44);
 		o1.setRelated(o1related);
 
-		assertEquals(Integer.valueOf(44), PropertyUtils.getProperty(o1, "related.integerField"));
+		assertEquals(44, PropertyUtils.getProperty(o1, "related.integerField"));
+	}
+
+	@Test
+	public void testGetProperty_NestedOuter() {
+		TstJavaBean o1 = createBean();
+		assertNull(PropertyUtils.getProperty(o1, "related+.integerField"));
+
+		TstJavaBean o1related = new TstJavaBean();
+		o1related.setIntegerField(42);
+		o1.setRelated(o1related);
+
+		assertEquals(42, PropertyUtils.getProperty(o1, "related+.integerField"));
 	}
 
 	@Test
@@ -141,11 +153,11 @@ public class PropertyUtilsTest {
 
 		PropertyUtils.setProperty(o2, "byteArrayField", o1.getByteArrayField());
 		PropertyUtils.setProperty(o2, "integerField", o1.getIntegerField());
-		PropertyUtils.setProperty(o2, "intField", new Integer(o1.getIntField()));
+		PropertyUtils.setProperty(o2, "intField", o1.getIntField());
 		PropertyUtils.setProperty(o2, "numberField", o1.getNumberField());
 		PropertyUtils.setProperty(o2, "objectField", o1.getObjectField());
 		PropertyUtils.setProperty(o2, "stringField", o1.getStringField());
-		PropertyUtils.setProperty(o2, "booleanField", Boolean.valueOf(o1.isBooleanField()));
+		PropertyUtils.setProperty(o2, "booleanField", o1.isBooleanField());
 	}
 
 	@Test
@@ -165,7 +177,7 @@ public class PropertyUtilsTest {
 	public void testSetProperty_Nested() {
 		TstJavaBean o1 = createBean();
 		TstJavaBean o1related = new TstJavaBean();
-		o1related.setIntegerField(Integer.valueOf(44));
+		o1related.setIntegerField(44);
 		o1.setRelated(o1related);
 
 		PropertyUtils.setProperty(o1, "related.integerField", 55);
@@ -260,7 +272,7 @@ public class PropertyUtilsTest {
 
 		// arbitrary string/object to field
 		PropertyUtils.setProperty(o1, "stringBuilderField", "abc");
-		assertEquals(new StringBuilder("abc").toString(), o1.getStringBuilderField().toString());
+		assertEquals("abc", o1.getStringBuilderField().toString());
 	}
 
 	@Test
@@ -353,10 +365,10 @@ public class PropertyUtilsTest {
 		assertEquals(445, o1.getNumber());
 	}
 
-	protected TstJavaBean createBean() {
+	private TstJavaBean createBean() {
 		TstJavaBean o1 = new TstJavaBean();
 		o1.setByteArrayField(new byte[] { 1, 2, 3 });
-		o1.setIntegerField(new Integer(33));
+		o1.setIntegerField(33);
 		o1.setIntField(-44);
 		o1.setNumberField(new BigDecimal("11111"));
 		o1.setObjectField(new Object());
@@ -366,11 +378,11 @@ public class PropertyUtilsTest {
 		return o1;
 	}
 
-	protected Map<String, Object> createMap() {
+	private Map<String, Object> createMap() {
 		Map<String, Object> o1 = new HashMap<>();
 		o1.put("byteArrayField", new byte[] { 1, 2, 3 });
-		o1.put("integerField", new Integer(33));
-		o1.put("intField", new Integer(-44));
+		o1.put("integerField", 33);
+		o1.put("intField", -44);
 		o1.put("numberField", new BigDecimal("11111"));
 		o1.put("objectField", new Object());
 		o1.put("stringField", "aaaaa");

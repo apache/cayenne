@@ -196,6 +196,23 @@ public class OrderingTest {
         assertEquals("three", ordered.get(2).getName());
     }
 
+    /**
+     * CAY-1551
+     */
+    @Test
+    public void testOrderList_OuterRelated() {
+        List<B1> unordered = asList(
+                new B1().setName("three").setB2(new B2().setName("Z")),
+                new B1().setName("one").setB2(new B2().setName("A")),
+                new B1().setName("two").setB2(new B2().setName("M"))
+        );
+
+        List<B1> ordered = new Ordering("b2+.name", SortOrder.ASCENDING).orderedList(unordered);
+        assertEquals("one", ordered.get(0).getName());
+        assertEquals("two", ordered.get(1).getName());
+        assertEquals("three", ordered.get(2).getName());
+    }
+
     @Test
     public void testOrderList_Static() {
         List<TstBean> list = new ArrayList<>(6);

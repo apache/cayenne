@@ -69,10 +69,10 @@ public class ASTObjPathTest {
 
 		TstBean b1 = new TstBean();
 		b1.setProperty2(1);
-		assertEquals(new Integer(1), node.evaluate(b1));
+		assertEquals(1, node.evaluate(b1));
 
 		TstBean b2 = new TstBean();
 		b2.setProperty2(-3);
-		assertEquals(new Integer(-3), node.evaluate(b2));
+		assertEquals(-3, node.evaluate(b2));
 	}
 }

@@ -46,4 +46,14 @@ public class ASTObjPathIT extends ServerCase {
 		assertTrue(target instanceof ObjAttribute);
 	}
 
+	@Test
+	public void testEvaluate_ObjEntity_Outer() {
+		ASTObjPath node = new ASTObjPath("paintingArray+.paintingTitle");
+
+		ObjEntity ae = context.getEntityResolver().getObjEntity(Artist.class);
+
+		Object target = node.evaluate(ae);
+		assertTrue(target instanceof ObjAttribute);
+	}
+
 }
