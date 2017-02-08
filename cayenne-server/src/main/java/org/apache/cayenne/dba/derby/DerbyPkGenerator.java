@@ -19,66 +19,44 @@
 
 package org.apache.cayenne.dba.derby;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.Collections;
-
-import org.apache.cayenne.CayenneException;
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.JdbcPkGenerator;
-import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.dba.oracle.OraclePkGenerator;
 import org.apache.cayenne.map.DbEntity;
 
 /**
- * Default PK generator for Derby that uses updateable ResultSet to get the next
- * id from the lookup table.
+ * PK generator for Derby that uses sequences.
  * 
- * @since 1.2
+ * @since 4.0 (old one used AUTO_PK_SUPPORT table)
  */
-public class DerbyPkGenerator extends JdbcPkGenerator {
+public class DerbyPkGenerator extends OraclePkGenerator {
 
 	DerbyPkGenerator(JdbcAdapter adapter) {
 		super(adapter);
 	}
 
-	static final String SELECT_QUERY = "SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = ? FOR UPDATE";
-
-	/**
-	 * @since 3.0
-	 */
 	@Override
-	protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+	protected String sequenceName(DbEntity entity) {
+		return super.sequenceName(entity).toUpperCase();
+	}
 
-		JdbcEventLogger logger = adapter.getJdbcEventLogger();
-		if (logger.isLoggable()) {
-			logger.logQuery(SELECT_QUERY, Collections.singletonList(entity.getName()));
-		}
+	@Override
+	protected String selectNextValQuery(String pkGeneratingSequenceName) {
+		return "VALUES (NEXT VALUE FOR " + pkGeneratingSequenceName + ")";
+	}
 
-		try (Connection c = node.getDataSource().getConnection()) {
-			try (PreparedStatement select =
-						 c.prepareStatement(SELECT_QUERY, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE)) {
-				select.setString(1, entity.getName());
-				try (ResultSet rs = select.executeQuery()) {
-					if (!rs.next()) {
-						throw new CayenneException("PK lookup failed for table: " + entity.getName());
-					}
+	@Override
+	protected String selectAllSequencesQuery() {
+		return "SELECT SEQUENCENAME FROM SYS.SYSSEQUENCES";
+	}
 
-					long nextId = rs.getLong(1);
+	@Override
+	protected String dropSequenceString(DbEntity entity) {
+		return "DROP SEQUENCE " + sequenceName(entity) + " RESTRICT";
+	}
 
-					rs.updateLong(1, nextId + pkCacheSize);
-					rs.updateRow();
-
-					if (rs.next()) {
-						throw new CayenneException("More than one PK record for table: " + entity.getName());
-					}
-
-					c.commit();
-
-					return nextId;
-				}
-			}
-		}
+	@Override
+	protected String createSequenceString(DbEntity entity) {
+		return "CREATE SEQUENCE " + sequenceName(entity) + " AS BIGINT START WITH " + pkStartValue +
+				" INCREMENT BY " + getPkCacheSize() + " NO MAXVALUE NO CYCLE";
 	}
 }
