@@ -43,7 +43,7 @@ public class DerbyPkGenerator extends JdbcPkGenerator {
 		super(adapter);
 	}
 
-	static final String SELECT_QUERY = "SELECT NEXT_ID FROM AUTO_PK_SUPPORT" + " WHERE TABLE_NAME = ? FOR UPDATE";
+	static final String SELECT_QUERY = "SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = ? FOR UPDATE";
 
 	/**
 	 * @since 3.0
@@ -56,13 +56,11 @@ public class DerbyPkGenerator extends JdbcPkGenerator {
 			logger.logQuery(SELECT_QUERY, Collections.singletonList(entity.getName()));
 		}
 
-		try (Connection c = node.getDataSource().getConnection();) {
-
-			try (PreparedStatement select = c.prepareStatement(SELECT_QUERY, ResultSet.TYPE_FORWARD_ONLY,
-					ResultSet.CONCUR_UPDATABLE);) {
+		try (Connection c = node.getDataSource().getConnection()) {
+			try (PreparedStatement select =
+						 c.prepareStatement(SELECT_QUERY, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE)) {
 				select.setString(1, entity.getName());
-
-				try (ResultSet rs = select.executeQuery();) {
+				try (ResultSet rs = select.executeQuery()) {
 					if (!rs.next()) {
 						throw new CayenneException("PK lookup failed for table: " + entity.getName());
 					}

@@ -116,11 +116,8 @@ public class JdbcPkGenerator implements PkGenerator {
 	}
 
 	protected String pkTableCreateString() {
-		StringBuilder buf = new StringBuilder();
-		buf.append("CREATE TABLE AUTO_PK_SUPPORT (").append("  TABLE_NAME CHAR(100) NOT NULL,")
-				.append("  NEXT_ID BIGINT NOT NULL,").append("  PRIMARY KEY(TABLE_NAME)").append(")");
-
-		return buf.toString();
+		return "CREATE TABLE AUTO_PK_SUPPORT " +
+				"(TABLE_NAME CHAR(100) NOT NULL, NEXT_ID BIGINT NOT NULL, PRIMARY KEY(TABLE_NAME))";
 	}
 
 	protected String pkDeleteString(List<DbEntity> dbEntities) {
@@ -139,23 +136,15 @@ public class JdbcPkGenerator implements PkGenerator {
 	}
 
 	protected String pkCreateString(String entName) {
-		StringBuilder buf = new StringBuilder();
-		buf.append("INSERT INTO AUTO_PK_SUPPORT").append(" (TABLE_NAME, NEXT_ID)").append(" VALUES ('").append(entName)
-				.append("', ").append(pkStartValue).append(")");
-		return buf.toString();
+		return "INSERT INTO AUTO_PK_SUPPORT (TABLE_NAME, NEXT_ID) VALUES ('" + entName + "', " + pkStartValue + ")";
 	}
 
 	protected String pkSelectString(String entName) {
-		StringBuilder buf = new StringBuilder();
-		buf.append("SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = '").append(entName).append('\'');
-		return buf.toString();
+		return "SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = '" + entName + '\'';
 	}
 
 	protected String pkUpdateString(String entName) {
-		StringBuilder buf = new StringBuilder();
-		buf.append("UPDATE AUTO_PK_SUPPORT").append(" SET NEXT_ID = NEXT_ID + ").append(pkCacheSize)
-				.append(" WHERE TABLE_NAME = '").append(entName).append('\'');
-		return buf.toString();
+		return "UPDATE AUTO_PK_SUPPORT SET NEXT_ID = NEXT_ID + " + pkCacheSize + " WHERE TABLE_NAME = '" + entName + '\'';
 	}
 
 	protected String dropAutoPkString() {
@@ -167,10 +156,9 @@ public class JdbcPkGenerator implements PkGenerator {
 	 */
 	protected boolean autoPkTableExists(DataNode node) throws SQLException {
 
-		try (Connection con = node.getDataSource().getConnection();) {
+		try (Connection con = node.getDataSource().getConnection()) {
 			DatabaseMetaData md = con.getMetaData();
-
-			try (ResultSet tables = md.getTables(null, null, "AUTO_PK_SUPPORT", null);) {
+			try (ResultSet tables = md.getTables(null, null, "AUTO_PK_SUPPORT", null)) {
 				return tables.next();
 			}
 		}
@@ -186,8 +174,8 @@ public class JdbcPkGenerator implements PkGenerator {
 	public int runUpdate(DataNode node, String sql) throws SQLException {
 		adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
 
-		try (Connection con = node.getDataSource().getConnection();) {
-			try (Statement upd = con.createStatement();) {
+		try (Connection con = node.getDataSource().getConnection()) {
+			try (Statement upd = con.createStatement()) {
 				return upd.executeUpdate(sql);
 			}
 		}
@@ -205,7 +193,7 @@ public class JdbcPkGenerator implements PkGenerator {
 	 */
 	public Object generatePk(DataNode node, DbAttribute pk) throws Exception {
 
-		DbEntity entity = (DbEntity) pk.getEntity();
+		DbEntity entity = pk.getEntity();
 
 		switch (pk.getType()) {
 		case Types.BINARY:
@@ -215,10 +203,11 @@ public class JdbcPkGenerator implements PkGenerator {
 
 		DbKeyGenerator pkGenerator = entity.getPrimaryKeyGenerator();
 		long cacheSize;
-		if (pkGenerator != null && pkGenerator.getKeyCacheSize() != null)
-			cacheSize = pkGenerator.getKeyCacheSize().intValue();
-		else
+		if (pkGenerator != null && pkGenerator.getKeyCacheSize() != null) {
+			cacheSize = pkGenerator.getKeyCacheSize();
+		} else {
 			cacheSize = pkCacheSize;
+		}
 
 		Long value;
 
@@ -230,7 +219,7 @@ public class JdbcPkGenerator implements PkGenerator {
 
 			if (pks == null) {
 				// created exhausted LongPkRange
-				pks = new ConcurrentLinkedQueue<Long>();
+				pks = new ConcurrentLinkedQueue<>();
 				Queue<Long> previousPks = pkCache.putIfAbsent(entity.getName(), pks);
 				if (previousPks != null) {
 					pks = previousPks;
@@ -249,8 +238,7 @@ public class JdbcPkGenerator implements PkGenerator {
 		if (pk.getType() == Types.BIGINT) {
 			return value;
 		} else {
-			// leaving it up to the user to ensure that PK does not exceed max
-			// int...
+			// leaving it up to the user to ensure that PK does not exceed max int...
 			return value.intValue();
 		}
 	}
@@ -268,7 +256,7 @@ public class JdbcPkGenerator implements PkGenerator {
 	 * @since 3.0
 	 */
 	protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
-		String select = "SELECT #result('NEXT_ID' 'long' 'NEXT_ID') " + "FROM AUTO_PK_SUPPORT "
+		String select = "SELECT #result('NEXT_ID' 'long' 'NEXT_ID') FROM AUTO_PK_SUPPORT "
 				+ "WHERE TABLE_NAME = '" + entity.getName() + '\'';
 
 		// run queries via DataNode to utilize its transactional behavior
@@ -324,7 +312,7 @@ public class JdbcPkGenerator implements PkGenerator {
 	final class PkRetrieveProcessor implements OperationObserver {
 
 		Number id;
-		String entityName;
+		final String entityName;
 
 		PkRetrieveProcessor(String entityName) {
 			this.entityName = entityName;
@@ -343,7 +331,6 @@ public class JdbcPkGenerator implements PkGenerator {
 		}
 
 		public void nextRows(Query query, List<?> dataRows) {
-
 			// process selected object, issue an update query
 			if (dataRows == null || dataRows.size() == 0) {
 				throw new CayenneRuntimeException("Error generating PK : entity not supported: " + entityName);
@@ -375,12 +362,10 @@ public class JdbcPkGenerator implements PkGenerator {
 		}
 
 		public void nextQueryException(Query query, Exception ex) {
-
 			throw new CayenneRuntimeException("Error generating PK for entity '" + entityName + "'.", ex);
 		}
 
 		public void nextGlobalException(Exception ex) {
-
 			throw new CayenneRuntimeException("Error generating PK for entity: " + entityName, ex);
 		}
 	}

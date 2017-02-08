@@ -33,7 +33,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -61,71 +60,70 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 	private static final String _SEQUENCE_PREFIX = "pk_";
 
 	@Override
-	public void createAutoPk(DataNode node, List dbEntities) throws Exception {
-		List sequences = getExistingSequences(node);
-
+	public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+		List<String> sequences = getExistingSequences(node);
 		// create needed sequences
-		Iterator it = dbEntities.iterator();
-		while (it.hasNext()) {
-			DbEntity ent = (DbEntity) it.next();
-			if (!sequences.contains(sequenceName(ent))) {
-				runUpdate(node, createSequenceString(ent));
+		for (DbEntity dbEntity : dbEntities) {
+			if (!sequences.contains(sequenceName(dbEntity))) {
+				runUpdate(node, createSequenceString(dbEntity));
 			}
 		}
 	}
 
+	/**
+	 * Creates a list of CREATE SEQUENCE statements for the list of DbEntities.
+	 */
 	@Override
-	public List createAutoPkStatements(List dbEntities) {
-		List<String> list = new ArrayList<>();
-		Iterator it = dbEntities.iterator();
-		while (it.hasNext()) {
-			DbEntity ent = (DbEntity) it.next();
-			list.add(createSequenceString(ent));
+	public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
+		List<String> list = new ArrayList<>(dbEntities.size());
+		for (DbEntity dbEntity : dbEntities) {
+			list.add(createSequenceString(dbEntity));
 		}
 
 		return list;
 	}
 
+	/**
+	 * Drops PK sequences for all specified DbEntities.
+	 */
 	@Override
-	public void dropAutoPk(DataNode node, List dbEntities) throws Exception {
-		List sequences = getExistingSequences(node);
+	public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+		List<String> sequences = getExistingSequences(node);
 
 		// drop obsolete sequences
-		Iterator it = dbEntities.iterator();
-		while (it.hasNext()) {
-			DbEntity ent = (DbEntity) it.next();
+		for (DbEntity dbEntity : dbEntities) {
 			String name;
-			if (ent.getDataMap().isQuotingSQLIdentifiers()) {
+			if (dbEntity.getDataMap().isQuotingSQLIdentifiers()) {
 				DbEntity tempEnt = new DbEntity();
 				DataMap dm = new DataMap();
 				dm.setQuotingSQLIdentifiers(false);
 				tempEnt.setDataMap(dm);
-				tempEnt.setName(ent.getName());
+				tempEnt.setName(dbEntity.getName());
 				name = stripSchemaName(sequenceName(tempEnt));
 			} else {
-				name = stripSchemaName(sequenceName(ent));
+				name = stripSchemaName(sequenceName(dbEntity));
 			}
 			if (sequences.contains(name)) {
-				runUpdate(node, dropSequenceString(ent));
+				runUpdate(node, dropSequenceString(dbEntity));
 			}
 		}
 	}
 
+	/**
+	 * Creates a list of DROP SEQUENCE statements for the list of DbEntities.
+	 */
 	@Override
-	public List dropAutoPkStatements(List dbEntities) {
-		List<String> list = new ArrayList<>();
-		Iterator it = dbEntities.iterator();
-		while (it.hasNext()) {
-			DbEntity ent = (DbEntity) it.next();
-			list.add(dropSequenceString(ent));
+	public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
+		List<String> list = new ArrayList<>(dbEntities.size());
+		for (DbEntity dbEntity : dbEntities) {
+			list.add(dropSequenceString(dbEntity));
 		}
 
 		return list;
 	}
 
 	protected String createSequenceString(DbEntity ent) {
-		return "CREATE SEQUENCE " + sequenceName(ent) + " START WITH " + pkStartValue + " INCREMENT BY "
-				+ pkCacheSize(ent);
+		return "CREATE SEQUENCE " + sequenceName(ent) + " START WITH " + pkStartValue + " INCREMENT BY " + pkCacheSize(ent);
 	}
 
 	/**
@@ -133,8 +131,15 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 	 * automatic primary key generation process for a specific DbEntity.
 	 */
 	protected String dropSequenceString(DbEntity ent) {
-
 		return "DROP SEQUENCE " + sequenceName(ent);
+	}
+
+	protected String selectNextValQuery(String pkGeneratingSequenceName) {
+		return "SELECT " + pkGeneratingSequenceName + ".nextval FROM DUAL";
+	}
+
+	protected String selectAllSequencesQuery() {
+		return "SELECT LOWER(SEQUENCE_NAME) FROM ALL_SEQUENCES";
 	}
 
 	/**
@@ -159,14 +164,12 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 			pkGeneratingSequenceName = sequenceName(entity);
 		}
 
-		try (Connection con = node.getDataSource().getConnection();) {
-
-			try (Statement st = con.createStatement();) {
-				String sql = "SELECT " + pkGeneratingSequenceName + ".nextval FROM DUAL";
+		try (Connection con = node.getDataSource().getConnection()) {
+			try (Statement st = con.createStatement()) {
+				String sql = selectNextValQuery(pkGeneratingSequenceName);
 				adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
 
-				try (ResultSet rs = st.executeQuery(sql);) {
-					// Object pk = null;
+				try (ResultSet rs = st.executeQuery(sql)) {
 					if (!rs.next()) {
 						throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName());
 					}
@@ -183,13 +186,15 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 				&& keyGenerator.getGeneratorName() != null) {
 
 			Integer size = keyGenerator.getKeyCacheSize();
-			return (size != null && size.intValue() >= 1) ? size.intValue() : super.getPkCacheSize();
+			return (size != null && size >= 1) ? size : super.getPkCacheSize();
 		} else {
 			return super.getPkCacheSize();
 		}
 	}
 
-	/** Returns expected primary key sequence name for a DbEntity. */
+	/**
+	 * Returns expected primary key sequence name for a DbEntity.
+	 */
 	protected String sequenceName(DbEntity entity) {
 
 		// use custom generator if possible
@@ -199,15 +204,16 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
 			return keyGenerator.getGeneratorName().toLowerCase();
 		} else {
-			String entName = entity.getName();
-			String seqName = _SEQUENCE_PREFIX + entName.toLowerCase();
-
-			return adapter.getQuotingStrategy().quotedIdentifier(entity, entity.getCatalog(), entity.getSchema(),
-					seqName);
+			String seqName = getSequencePrefix() + entity.getName().toLowerCase();
+			return adapter.getQuotingStrategy().quotedIdentifier(entity, entity.getCatalog(), entity.getSchema(), seqName);
 		}
 	}
 
-	protected String stripSchemaName(String sequenceName) {
+	protected String getSequencePrefix() {
+		return _SEQUENCE_PREFIX;
+	}
+
+	private String stripSchemaName(String sequenceName) {
 		int ind = sequenceName.indexOf('.');
 		return ind >= 0 ? sequenceName.substring(ind + 1) : sequenceName;
 	}
@@ -216,20 +222,21 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 	 * Fetches a list of existing sequences that might match Cayenne generated
 	 * ones.
 	 */
-	protected List getExistingSequences(DataNode node) throws SQLException {
+	protected List<String> getExistingSequences(DataNode node) throws SQLException {
 
 		// check existing sequences
-
-		try (Connection con = node.getDataSource().getConnection();) {
-
-			try (Statement sel = con.createStatement();) {
-				String sql = "SELECT LOWER(SEQUENCE_NAME) FROM ALL_SEQUENCES";
+		try (Connection con = node.getDataSource().getConnection()) {
+			try (Statement sel = con.createStatement()) {
+				String sql = selectAllSequencesQuery();
 				adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
 
-				try (ResultSet rs = sel.executeQuery(sql);) {
+				try (ResultSet rs = sel.executeQuery(sql)) {
 					List<String> sequenceList = new ArrayList<>();
 					while (rs.next()) {
-						sequenceList.add(rs.getString(1));
+						String name = rs.getString(1);
+						if (name != null) {
+							sequenceList.add(name.trim());
+						}
 					}
 					return sequenceList;
 				}

@@ -24,7 +24,6 @@ import org.apache.cayenne.log.JdbcEventLogger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Iterator;
 
 /**
  * Represents a Cayenne-managed local Transaction.
@@ -74,40 +73,36 @@ public class CayenneTransaction extends BaseTransaction {
     protected void processCommit() {
         status = BaseTransaction.STATUS_COMMITTING;
 
-        if (connections != null && connections.size() > 0) {
-            Throwable deferredException = null;
-            Iterator<?> it = connections.values().iterator();
-            while (it.hasNext()) {
-                Connection connection = (Connection) it.next();
-                try {
+        if (connections == null || connections.isEmpty()) {
+            return;
+        }
 
-                    if (deferredException == null) {
-                        connection.commit();
-                    } else {
-                        // we must do a partial rollback if only to cleanup
-                        // uncommitted
-                        // connections.
-                        connection.rollback();
-                    }
-
-                } catch (Throwable th) {
-                    // there is no such thing as "partial" rollback in real
-                    // transactions, so we can't set any meaningful status.
-                    // status = ?;
-                    setRollbackOnly();
-
-                    // stores last exception
-                    // TODO: chain exceptions...
-                    deferredException = th;
+        Throwable deferredException = null;
+        for (Connection connection : connections.values()) {
+            try {
+                if (deferredException == null) {
+                    connection.commit();
+                } else {
+                    // we must do a partial rollback if only to cleanup uncommitted connections.
+                    connection.rollback();
                 }
-            }
+            } catch (Throwable th) {
+                // there is no such thing as "partial" rollback in real
+                // transactions, so we can't set any meaningful status.
+                // status = ?;
+                setRollbackOnly();
 
-            if (deferredException != null) {
-                logger.logRollbackTransaction("transaction rolledback.");
-                throw new CayenneRuntimeException(deferredException);
-            } else {
-                logger.logCommitTransaction("transaction committed.");
+                // stores last exception
+                // TODO: chain exceptions...
+                deferredException = th;
             }
+        }
+
+        if (deferredException != null) {
+            logger.logRollbackTransaction("transaction rolledback.");
+            throw new CayenneRuntimeException(deferredException);
+        } else {
+            logger.logCommitTransaction("transaction committed.");
         }
     }
 
@@ -115,27 +110,25 @@ public class CayenneTransaction extends BaseTransaction {
     protected void processRollback() {
         status = BaseTransaction.STATUS_ROLLING_BACK;
 
-        if (connections != null && connections.size() > 0) {
-            Throwable deferredException = null;
+        if (connections == null || connections.isEmpty()) {
+            return;
+        }
 
-            Iterator<?> it = connections.values().iterator();
-            while (it.hasNext()) {
-                Connection connection = (Connection) it.next();
-
-                try {
-                    // continue with rollback even if an exception was thrown
-                    // before
-                    connection.rollback();
-                } catch (Throwable th) {
-                    // stores last exception
-                    // TODO: chain exceptions...
-                    deferredException = th;
-                }
+        Throwable deferredException = null;
+        for (Connection connection : connections.values()) {
+            try {
+                // continue with rollback even if an exception was thrown
+                // before
+                connection.rollback();
+            } catch (Throwable th) {
+                // stores last exception
+                // TODO: chain exceptions...
+                deferredException = th;
             }
+        }
 
-            if (deferredException != null) {
-                throw new CayenneRuntimeException(deferredException);
-            }
+        if (deferredException != null) {
+            throw new CayenneRuntimeException(deferredException);
         }
     }
 }

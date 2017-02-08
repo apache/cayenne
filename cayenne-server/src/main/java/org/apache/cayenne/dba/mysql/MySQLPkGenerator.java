@@ -38,11 +38,6 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 		super(adapter);
 	}
 
-	@Override
-	protected String dropAutoPkString() {
-		return "DROP TABLE IF EXISTS AUTO_PK_SUPPORT";
-	}
-
 	/**
 	 * Overrides superclass's implementation to perform locking of the primary
 	 * key lookup table.
@@ -58,50 +53,39 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 
 		// chained SQL exception
 		SQLException exception = null;
-		long pk = -1l;
+		long pk = -1L;
 
-		try (Connection con = node.getDataSource().getConnection();) {
+		try (Connection con = node.getDataSource().getConnection()) {
 
 			if (con.getAutoCommit()) {
 				con.setAutoCommit(false);
 			}
 
-			Statement st = con.createStatement();
-
-			try {
-				pk = getLongPrimaryKey(st, entity.getName());
-				con.commit();
-			} catch (SQLException pkEx) {
-
+			try(Statement st = con.createStatement()) {
 				try {
-					con.rollback();
-				} catch (SQLException e) {
-
-				}
-
-				exception = processSQLException(pkEx, exception);
-			} finally {
-				// UNLOCK!
-				// THIS MUST BE EXECUTED NO MATTER WHAT, OR WE WILL LOCK THE
-				// PRIMARY KEY
-				// TABLE!!
-				try {
-					String unlockString = "UNLOCK TABLES";
-					adapter.getJdbcEventLogger().logQuery(unlockString, Collections.EMPTY_LIST);
-					st.execute(unlockString);
-				} catch (SQLException unlockEx) {
-					exception = processSQLException(unlockEx, exception);
-				} finally {
-					// close statement
+					pk = getLongPrimaryKey(st, entity.getName());
+					con.commit();
+				} catch (SQLException pkEx) {
 					try {
-						st.close();
-					} catch (SQLException stClosingEx) {
-						// ignoring...
+						con.rollback();
+					} catch (SQLException ignored) {
+					}
+
+					exception = processSQLException(pkEx, null);
+				} finally {
+					// UNLOCK!
+					// THIS MUST BE EXECUTED NO MATTER WHAT, OR WE WILL LOCK THE PRIMARY KEY TABLE!!
+					try {
+						String unlockString = "UNLOCK TABLES";
+						adapter.getJdbcEventLogger().logQuery(unlockString, Collections.EMPTY_LIST);
+						st.execute(unlockString);
+					} catch (SQLException unlockEx) {
+						exception = processSQLException(unlockEx, exception);
 					}
 				}
 			}
 		} catch (SQLException otherEx) {
-			exception = processSQLException(otherEx, exception);
+			exception = processSQLException(otherEx, null);
 		}
 
 		// check errors
@@ -127,12 +111,14 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 	}
 
 	@Override
-	protected String pkTableCreateString() {
-		StringBuilder buf = new StringBuilder();
-		buf.append("CREATE TABLE IF NOT EXISTS AUTO_PK_SUPPORT (").append("  TABLE_NAME CHAR(100) NOT NULL,")
-				.append("  NEXT_ID BIGINT NOT NULL, UNIQUE (TABLE_NAME)").append(")");
+	protected String dropAutoPkString() {
+		return "DROP TABLE IF EXISTS AUTO_PK_SUPPORT";
+	}
 
-		return buf.toString();
+	@Override
+	protected String pkTableCreateString() {
+		return "CREATE TABLE IF NOT EXISTS AUTO_PK_SUPPORT " +
+				"(TABLE_NAME CHAR(100) NOT NULL, NEXT_ID BIGINT NOT NULL, UNIQUE (TABLE_NAME))";
 	}
 
 	/**
@@ -145,26 +131,17 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 		statement.execute(lockString);
 
 		// select
-
 		String selectString = super.pkSelectString(entityName);
 		adapter.getJdbcEventLogger().logQuery(selectString, Collections.EMPTY_LIST);
-		ResultSet rs = statement.executeQuery(selectString);
-		long pk = -1;
-		try {
+		long pk;
+		try(ResultSet rs = statement.executeQuery(selectString)) {
 			if (!rs.next()) {
 				throw new SQLException("No rows for '" + entityName + "'");
 			}
 
 			pk = rs.getLong(1);
-
 			if (rs.next()) {
 				throw new SQLException("More than one row for '" + entityName + "'");
-			}
-		} finally {
-			try {
-				rs.close();
-			} catch (Exception ex) {
-				// ignoring...
 			}
 		}
 

@@ -46,7 +46,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 
 	@Override
 	protected String pkTableCreateString() {
-		return "CREATE TABLE AUTO_PK_SUPPORT (  TABLE_NAME CHAR(100) NOT NULL, NEXT_ID DECIMAL(19,0) NOT NULL, PRIMARY KEY(TABLE_NAME))";
+		return "CREATE TABLE AUTO_PK_SUPPORT (TABLE_NAME CHAR(100) NOT NULL, NEXT_ID DECIMAL(19,0) NOT NULL, PRIMARY KEY(TABLE_NAME))";
 	}
 
 	/**
@@ -149,47 +149,34 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 	@Override
 	protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
 		// handle CAY-588 - get connection that is separate from the connection
-		// in the
-		// current transaction.
+		// in the current transaction.
 
 		// TODO (andrus, 7/6/2006) Note that this will still work in a pool with
-		// a single
-		// connection, as PK generator is invoked early in the transaction,
-		// before the
-		// connection is grabbed for commit... So maybe promote this to other
-		// adapters in
-		// 3.0?
+		// a single connection, as PK generator is invoked early in the transaction,
+		// before the connection is grabbed for commit...
+		// So maybe promote this to other adapters in 3.0?
 
 		Transaction transaction = BaseTransaction.getThreadTransaction();
 		BaseTransaction.bindThreadTransaction(null);
 
-		try {
+		try (Connection connection = node.getDataSource().getConnection()) {
+			try (CallableStatement statement = connection.prepareCall("{call auto_pk_for_table(?, ?)}")) {
+				statement.setString(1, entity.getName());
+				statement.setInt(2, super.getPkCacheSize());
 
-			try (Connection connection = node.getDataSource().getConnection();) {
-
-				try (CallableStatement statement = connection.prepareCall("{call auto_pk_for_table(?, ?)}");) {
-					statement.setString(1, entity.getName());
-					statement.setInt(2, super.getPkCacheSize());
-
-					// can't use "executeQuery"
-					// per
-					// http://jtds.sourceforge.net/faq.html#expectingResultSet
-					statement.execute();
-					if (statement.getMoreResults()) {
-
-						try (ResultSet rs = statement.getResultSet();) {
-							if (rs.next()) {
-								return rs.getLong(1);
-							} else {
-								throw new CayenneRuntimeException("Error generating pk for DbEntity "
-										+ entity.getName());
-							}
+				// can't use "executeQuery" per http://jtds.sourceforge.net/faq.html#expectingResultSet
+				statement.execute();
+				if (statement.getMoreResults()) {
+					try (ResultSet rs = statement.getResultSet()) {
+						if (rs.next()) {
+							return rs.getLong(1);
+						} else {
+							throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName());
 						}
-
-					} else {
-						throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName()
-								+ ", no result set from stored procedure.");
 					}
+				} else {
+					throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName()
+							+ ", no result set from stored procedure.");
 				}
 			}
 		} finally {
@@ -198,11 +185,8 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 	}
 
 	private String safePkTableDrop() {
-		StringBuilder buf = new StringBuilder();
-		buf.append("if exists (SELECT * FROM sysobjects WHERE name = 'AUTO_PK_SUPPORT')").append(" BEGIN ")
-				.append(" DROP TABLE AUTO_PK_SUPPORT").append(" END");
-
-		return buf.toString();
+		return "if exists (SELECT * FROM sysobjects WHERE name = 'AUTO_PK_SUPPORT') BEGIN " +
+				" DROP TABLE AUTO_PK_SUPPORT END";
 	}
 
 	private String unsafePkProcCreate() {
