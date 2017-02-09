@@ -18,41 +18,46 @@
     version="5.0" xml:id="including-cayenne-in-project">
     <title>Including Cayenne in a Project</title>
     <section xml:id="jar-files-and-depdendencies">
-        <title>Jar Files and Dependencies</title>
-        <para>Cayenne distribution contains the following core runtime jars in the distribution
-                <code>lib</code> directory: <itemizedlist>
+        <title>Jar Files</title>
+        <para>This is an overview of Cayenne jars that is agnostic of the build tool used. The
+            following are the important libraries:</para>
+        <para>
+            <itemizedlist>
                 <listitem>
-                    <para><emphasis role="italic">cayenne-server-<?eval ${project.version}?>.jar</emphasis> - contains full
-                        Cayenne runtime (DI, adapters, DB access classes, etc.). Most applications
-                        will use only this file.</para>
+                    <para><emphasis role="italic"
+                            >cayenne-di-<?eval ${project.version}?>.jar</emphasis> -  Cayenne
+                        dependency injection (DI) container library. All applications will require
+                        this file.</para>
                 </listitem>
                 <listitem>
-                    <para>cayenne-client-<?eval ${project.version}?>.jar - a subset of cayenne-server.jar trimmed for use on
-                        the client in an <link linkend="introduction-to-rop">ROP application</link>.</para>
+                    <para><emphasis role="italic"
+                            >cayenne-server-<?eval ${project.version}?>.jar</emphasis> - contains
+                        main Cayenne runtime (adapters, DB access classes, etc.). Most applications
+                        will require this file.</para>
                 </listitem>
                 <listitem>
-                    <para>Other cayenne-* jars - various Cayenne extensions.</para>
-                </listitem>
-            </itemizedlist></para>
-        <para>When using <code>cayenne-server-<?eval ${project.version}?>.jar</code> you'll need a few third party jars (all
-            included in <code>lib/third-party</code> directory of the distribution): <itemizedlist>
-                <listitem>
-                    <para><link xlink:href="http://velocity.apache.org/">Apache Velocity
-                            Template Engine</link>, version 1.6.x (and all its dependencies bundled
-                        with velocity-dep)</para>
+                    <para><emphasis>cayenne-client-<?eval ${project.version}?>.jar</emphasis> - a
+                        client-side runtime for <link linkend="introduction-to-rop">ROP
+                            applications</link>.</para>
                 </listitem>
                 <listitem>
-                    <para><link xlink:href="http://commons.apache.org/collections/">Apache Commons
-                            Collections</link>, version 3.2.1</para>
+                    <para>Other cayenne-* jars - various Cayenne tools extensions.</para>
                 </listitem>
-                <listitem>
-                    <para><link xlink:href="http://commons.apache.org/logging/">Apache
-                            Commons Logging</link>, version 1.1</para>
-                </listitem>
-            </itemizedlist></para>
-        <para>Cayenne integrates with various caching, clustering and other frameworks. These
-            optional integrations will require other third-party jars that the users will need to
-            obtain on their own.</para>
+            </itemizedlist>
+        </para>
+    </section>
+    <section>
+        <title>Dependencies</title>
+        <para>With modern build tools like Maven and Gradle, you should not worry about tracking
+            dependencies. If you have one of those, you can skip this section and go straight to the
+            Maven section below. However if your environment requires manual dependency resolution
+            (like Ant), the distribution provides all of Cayenne jars plus a minimal set of
+            third-party dependencies to get you started in a default configuration. Check
+                <code>lib</code> and <code>lib/third-party</code> folders for those.</para>
+        <para>Dependencies for non-standard configurations will need to be figured out by the users
+            on their own. Check <code>pom.xml</code> files of the corresponding Cayenne modules in
+            one of the searchable Maven archives out there to get an idea of those dependencies
+            (e.g. <link xlink:href="http://search.maven.org">http://search.maven.org</link>).</para>
     </section>
     <section xml:id="maven-projects">
         <title>Maven Projects</title>
@@ -667,6 +672,26 @@
     </section>
     <section xml:id="ant-projects">
         <title>Ant Projects</title>
+        <para>Ant tasks are the same as Maven plugin goals described above, namely "cgen", "cdbgen",
+            "cdbimport". Configuration parameters are also similar (except Maven can guess many
+            defaults that Ant can't). To include Ant tasks in the project, use the following
+            Antlib:<programlisting language="xml">&lt;typedef resource="org/apache/cayenne/tools/antlib.xml"> 
+   &lt;classpath>
+   		&lt;fileset dir="lib" >
+			&lt;include name="cayenne-ant-*.jar" />
+			&lt;include name="cayenne-cgen-*.jar" />
+			&lt;include name="cayenne-dbsync-*.jar" />
+			&lt;include name="cayenne-di-*.jar" />
+			&lt;include name="cayenne-project-*.jar" />
+			&lt;include name="cayenne-server-*.jar" />
+			&lt;include name="commons-collections-*.jar" />
+			&lt;include name="commons-lang-*.jar" />
+			&lt;include name="commons-logging-*.jar" />
+			&lt;include name="velocity-*.jar" />
+			&lt;include name="vpp-2.2.1.jar" />
+		&lt;/fileset>
+   &lt;/classpath> 
+&lt;/typedef></programlisting></para>
         <section xml:id="ant-cgen">
             <title>cgen</title>
         </section>
@@ -682,14 +707,6 @@
     url="jdbc:mysql://127.0.0.1/mydb" 
     username="sa"
     defaultPackage="com.example.cayenne"/> </programlisting>
-			</para>
-		</section>
-		<section xml:id="ant-cdataport">
-			<title>cdataport</title>
-			<para>
-				<note>
-					<para>'cdataport' is deprecated in 4.0 and will be removed in the future versions.</para>
-				</note>
 			</para>
 		</section>
 	</section>
