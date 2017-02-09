@@ -75,6 +75,7 @@ CAY-2133 ObjectNameGenerator refactoring - unifying relationship name generation
 CAY-2135 cdbimport: reset DbEntity catalogs / schemas to DataMap defaults
 CAY-2136 Allow Ordering.orderedList(…) methods to accept a Collection rather than only a List
 CAY-2160 Modeler: new welcome screen
+CAY-2222 MySQLAdapter should not create indexes on FK columns
 
 Bug Fixes:
 

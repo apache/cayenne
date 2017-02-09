@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.dba.mysql;
 
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
+
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Detects MySQL database from JDBC metadata.
@@ -51,7 +51,6 @@ public class MySQLSniffer implements DbAdapterDetector {
 
 		// if InnoDB is used as a default engine, allow PK
 
-		boolean supportFK = false;
 		String adapterStorageEngine = MySQLAdapter.DEFAULT_STORAGE_ENGINE;
 
 		try (Statement statement = md.getConnection().createStatement();) {
@@ -67,14 +66,12 @@ public class MySQLSniffer implements DbAdapterDetector {
 					String storageEngine = rs.getString(2);
 					if (storageEngine != null) {
 						adapterStorageEngine = storageEngine;
-						supportFK = storageEngine.toUpperCase().equals("INNODB");
 					}
 				}
 			}
 		}
 
 		MySQLAdapter adapter = objectFactory.newInstance(MySQLAdapter.class, MySQLAdapter.class.getName());
-		adapter.setSupportsFkConstraints(supportFK);
 		adapter.setStorageEngine(adapterStorageEngine);
 		return adapter;
 	}

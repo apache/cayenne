@@ -42,7 +42,6 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
@@ -87,7 +86,6 @@ public class MySQLAdapter extends JdbcAdapter {
 	static final String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END = "`";
 
 	protected String storageEngine;
-	protected boolean supportsFkConstraints;
 
 	public MySQLAdapter(@Inject RuntimeProperties runtimeProperties,
 			@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
@@ -100,13 +98,8 @@ public class MySQLAdapter extends JdbcAdapter {
 		this.storageEngine = DEFAULT_STORAGE_ENGINE;
 
 		setSupportsBatchUpdates(true);
-		setSupportsFkConstraints(true);
 		setSupportsUniqueConstraints(true);
 		setSupportsGeneratedKeys(true);
-	}
-
-	void setSupportsFkConstraints(boolean flag) {
-		this.supportsFkConstraints = flag;
 	}
 
 	@Override
@@ -290,43 +283,19 @@ public class MySQLAdapter extends JdbcAdapter {
 		Iterator<DbAttribute> pkit = pkList.iterator();
 		if (pkit.hasNext()) {
 
-			sqlBuffer.append(", PRIMARY KEY (");
-			boolean firstPk = true;
-			while (pkit.hasNext()) {
-				if (firstPk)
-					firstPk = false;
-				else
-					sqlBuffer.append(", ");
+            sqlBuffer.append(", PRIMARY KEY (");
+            boolean firstPk = true;
+            while (pkit.hasNext()) {
+                if (firstPk)
+                    firstPk = false;
+                else
+                    sqlBuffer.append(", ");
 
-				DbAttribute at = pkit.next();
-				sqlBuffer.append(quotingStrategy.quotedName(at));
-			}
-			sqlBuffer.append(')');
-		}
-
-		// if FK constraints are supported, we must add indices to all FKs
-		// Note that according to MySQL docs, FK indexes are created
-		// automatically when
-		// constraint is defined, starting at MySQL 4.1.2
-		if (supportsFkConstraints) {
-			for (DbRelationship r : entity.getRelationships()) {
-				if (r.getJoins().size() > 0 && r.isToPK() && !r.isToDependentPK()) {
-
-					sqlBuffer.append(", KEY (");
-
-					Iterator<DbAttribute> columns = r.getSourceAttributes().iterator();
-					DbAttribute column = columns.next();
-					sqlBuffer.append(quotingStrategy.quotedName(column));
-
-					while (columns.hasNext()) {
-						column = columns.next();
-						sqlBuffer.append(", ").append(quotingStrategy.quotedName(column));
-					}
-
-					sqlBuffer.append(")");
-				}
-			}
-		}
+                DbAttribute at = pkit.next();
+                sqlBuffer.append(quotingStrategy.quotedName(at));
+            }
+            sqlBuffer.append(')');
+        }
 	}
 
 	/**
