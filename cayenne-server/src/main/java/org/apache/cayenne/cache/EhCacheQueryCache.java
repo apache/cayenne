@@ -120,19 +120,13 @@ public class EhCacheQueryCache implements QueryCache {
 
             // if not succeeded in reading again putting
             // object to the cache ourselves
-            Object object = factory.createObject();
-            if (!(object instanceof List)) {
-                if (object == null) {
-                    throw new CayenneRuntimeException("Null object created: " + metadata.getCacheKey());
-                } else {
-                    throw new CayenneRuntimeException("Invalid query result, expected List, got "
-                            + object.getClass().getName());
-                }
+            List object = factory.createObject();
+            if (object == null) {
+                throw new CayenneRuntimeException("Null object created: " + metadata.getCacheKey());
             }
 
             cache.put(new Element(key, object));
-
-            return (List) object;
+            return object;
 
         } finally {
             cache.releaseWriteLockOnKey(key);

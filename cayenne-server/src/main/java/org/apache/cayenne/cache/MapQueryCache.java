@@ -43,6 +43,7 @@ public class MapQueryCache implements QueryCache, Serializable {
         this(DEFAULT_CACHE_SIZE);
     }
 
+    @SuppressWarnings("unchecked")
     public MapQueryCache(int maxSize) {
         this.map = new LRUMap(maxSize);
     }
@@ -72,21 +73,12 @@ public class MapQueryCache implements QueryCache, Serializable {
     public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
         List result = get(metadata);
         if (result == null) {
-            Object newObject = factory.createObject();
-
-            if (!(newObject instanceof List)) {
-                if (newObject == null) {
-                    throw new CayenneRuntimeException("Null on cache rebuilding: "
-                            + metadata.getCacheKey());
-                }
-                else {
-                    throw new CayenneRuntimeException(
-                            "Invalid query result, expected List, got "
-                                    + newObject.getClass().getName());
-                }
+            List newObject = factory.createObject();
+            if (newObject == null) {
+                throw new CayenneRuntimeException("Null on cache rebuilding: " + metadata.getCacheKey());
             }
 
-            result = (List) newObject;
+            result = newObject;
             put(metadata, result);
         }
 

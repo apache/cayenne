@@ -21,6 +21,7 @@ package org.apache.cayenne;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.EntityResolver;
@@ -61,7 +62,7 @@ class CayenneContextQueryAction extends ObjectContextQueryAction {
     protected QueryCacheEntryFactory getCacheObjectFactory() {
         return new QueryCacheEntryFactory() {
 
-            public Object createObject() {
+            public List createObject() {
                 if (interceptPaginatedQuery() != DONE) {
                     runQuery();
                 }

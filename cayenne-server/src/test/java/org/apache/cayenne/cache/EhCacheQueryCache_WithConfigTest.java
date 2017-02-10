@@ -55,7 +55,7 @@ public class EhCacheQueryCache_WithConfigTest {
 
         EhCacheQueryCache cache = new EhCacheQueryCache(cacheManager);
 
-        Object[] lists = new Object[] { new ArrayList<Object>(), new ArrayList<Object>(), new ArrayList<Object>() };
+        ArrayList[] lists = new ArrayList[] { new ArrayList<>(), new ArrayList<>(), new ArrayList<>() };
         QueryCacheEntryFactory factory = mock(QueryCacheEntryFactory.class);
         when(factory.createObject()).thenReturn(lists[0], lists[1], lists[2]);
 

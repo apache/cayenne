@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
+import java.util.List;
+
 /**
  * A factory that is used by the cache to rebuild expired entries.
  * 
@@ -29,5 +31,5 @@ public interface QueryCacheEntryFactory {
      * Provides a fresh value of the cache entry. Normally this operation would perform a
      * database query. This operation must not return null.
      */
-    Object createObject();
+    List createObject();
 }

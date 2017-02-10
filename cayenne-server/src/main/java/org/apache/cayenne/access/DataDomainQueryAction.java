@@ -404,7 +404,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         } else {
             // on cache-refresh request, fetch without blocking and fill the
             // cache
-            queryCache.put(metadata, (List) factory.createObject());
+            queryCache.put(metadata, factory.createObject());
         }
 
         return DONE;
@@ -414,7 +414,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         return new QueryCacheEntryFactory() {
 
             @Override
-            public Object createObject() {
+            public List createObject() {
                 runQueryInTransaction();
 
                 List list = response.firstList();

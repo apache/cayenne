@@ -348,10 +348,9 @@ public abstract class ObjectContextQueryAction {
             if (response == null) {
                 response = new ListResponse(cachedResults);
             }
-        }
-        else {
+        } else {
             // on cache-refresh request, fetch without blocking and fill the cache
-            queryCache.put(metadata, (List) factory.createObject());
+            queryCache.put(metadata, factory.createObject());
         }
 
         return DONE;
@@ -370,7 +369,7 @@ public abstract class ObjectContextQueryAction {
     protected QueryCacheEntryFactory getCacheObjectFactory() {
         return new QueryCacheEntryFactory() {
 
-            public Object createObject() {
+            public List createObject() {
                 executePostCache();
                 return response.firstList();
             }
