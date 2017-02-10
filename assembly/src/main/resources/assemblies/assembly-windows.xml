@@ -85,6 +85,7 @@
 				<include>org.apache.cayenne:cayenne-ant</include>
 				<include>org.apache.cayenne:cayenne-dbcp2</include>
 				<include>org.apache.cayenne:cayenne-java8</include>
+				<include>org.apache.cayenne:cayenne-jcache</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>

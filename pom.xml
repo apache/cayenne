@@ -61,6 +61,7 @@
 		<module>cayenne-crypto</module>
 		<module>cayenne-joda</module>
 		<module>cayenne-dbcp2</module>
+		<module>cayenne-jcache</module>
 		<module>itests</module>
 		<module>modeler</module>
 		<module>maven-plugins</module>

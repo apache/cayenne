@@ -97,6 +97,12 @@
          </dependency>
 
 		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-jcache</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.apache.cayenne.modeler</groupId>
 			<artifactId>cayenne-modeler</artifactId>
 			<version>${project.version}</version>
