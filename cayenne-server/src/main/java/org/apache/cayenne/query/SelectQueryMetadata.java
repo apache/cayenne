@@ -72,12 +72,27 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		// fetch offset and limit
 
 		StringBuilder key = new StringBuilder();
+		if(query.getName() != null) {
+			key.append(query.getName()).append('/');
+		}
 
 		ObjEntity entity = getObjEntity();
 		if (entity != null) {
 			key.append(entity.getName());
 		} else if (dbEntity != null) {
 			key.append("db:").append(dbEntity.getName());
+		}
+
+		if(query.getColumns() != null && !query.getColumns().isEmpty()) {
+			key.append("/");
+			for(Property<?> property : query.getColumns()) {
+				key.append("c:");
+				try {
+					property.getExpression().appendAsString(key);
+				} catch (IOException e) {
+					throw new CayenneRuntimeException("Unexpected IO Exception appending to StringBuilder", e);
+				}
+			}
 		}
 
 		if (query.getQualifier() != null) {

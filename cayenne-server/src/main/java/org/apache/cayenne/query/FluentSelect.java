@@ -92,6 +92,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Indi
             throw new CayenneRuntimeException("Undefined root entity of the query");
         }
 
+        replacement.setName(name);
         replacement.setQualifier(where);
         replacement.addOrderings(orderings);
         replacement.setPrefetchTree(prefetches);

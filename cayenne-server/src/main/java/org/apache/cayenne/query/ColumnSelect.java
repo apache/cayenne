@@ -72,6 +72,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
      */
     protected ColumnSelect(ObjectSelect<T> select) {
         super();
+        this.name = select.name;
         this.entityType = select.entityType;
         this.entityName = select.entityName;
         this.dbEntityName = select.dbEntityName;
