@@ -16,71 +16,98 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.lifecycle.cache;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.DataChannelFilterChain;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.annotation.PrePersist;
 import org.apache.cayenne.annotation.PreRemove;
 import org.apache.cayenne.annotation.PreUpdate;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.Query;
 
 /**
- * A {@link DataChannelFilter} that invalidates cache groups defined for mapped entities
- * via {@link CacheGroups} annotations.
- * 
+ * <p>
+ * A {@link DataChannelFilter} that invalidates cache groups.
+ * Use custom rules for invalidation provided via DI.
+ * </p>
+ * <p>
+ * Default rule is based on entities' {@link CacheGroups} annotation.
+ * </p>
+ * <p>
+ *     To add default filter: <pre>
+ *         ServerRuntime.builder("cayenne-project.xml")
+ *              .addModule(CacheInvalidationModuleBuilder.builder().build());
+ *     </pre>
+ * </p>
+ *
  * @since 3.1
+ * @see InvalidationHandler
+ * @see CacheInvalidationModuleBuilder
  */
 public class CacheInvalidationFilter implements DataChannelFilter {
 
-    private final ThreadLocal<Set<String>> groups = new ThreadLocal<Set<String>>();
+    @Inject
+    private Provider<QueryCache> cacheProvider;
+
+    @Inject(CacheInvalidationModuleBuilder.INVALIDATION_HANDLERS_LIST)
+    private List<InvalidationHandler> handlers;
+
+    private final Map<Class<? extends Persistent>, InvalidationFunction> mappedHandlers;
+
+    private final InvalidationFunction skipHandler;
+
+    private final ThreadLocal<Set<String>> groups;
+
+    public CacheInvalidationFilter() {
+        mappedHandlers = new ConcurrentHashMap<>();
+        skipHandler = new InvalidationFunction() {
+            @Override
+            public Collection<String> apply(Persistent p) {
+                return Collections.emptyList();
+            }
+        };
+        groups = new ThreadLocal<>();
+    }
 
     public void init(DataChannel channel) {
         // noop
     }
 
-    public QueryResponse onQuery(
-            ObjectContext originatingContext,
-            Query query,
-            DataChannelFilterChain filterChain) {
+    public QueryResponse onQuery(ObjectContext originatingContext, Query query, DataChannelFilterChain filterChain) {
         return filterChain.onQuery(originatingContext, query);
     }
 
-    public GraphDiff onSync(
-            ObjectContext originatingContext,
-            GraphDiff changes,
-            int syncType,
-            DataChannelFilterChain filterChain) {
-
+    public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes,
+                            int syncType, DataChannelFilterChain filterChain) {
         try {
             GraphDiff result = filterChain.onSync(originatingContext, changes, syncType);
-
             // no exceptions, flush...
-
             Collection<String> groupSet = groups.get();
             if (groupSet != null && !groupSet.isEmpty()) {
-
-                // TODO: replace this with QueryCache injection once CAY-1445 is done
-                QueryCache cache = ((DataContext) originatingContext).getQueryCache();
-
+                QueryCache cache = cacheProvider.get();
                 for (String group : groupSet) {
                     cache.removeGroup(group);
                 }
             }
-
             return result;
-        }
-        finally {
+        } finally {
             groups.set(null);
         }
     }
@@ -88,31 +115,40 @@ public class CacheInvalidationFilter implements DataChannelFilter {
     /**
      * A callback method that records cache group to flush at the end of the commit.
      */
-    @PrePersist(entityAnnotations = CacheGroups.class)
-    @PreRemove(entityAnnotations = CacheGroups.class)
-    @PreUpdate(entityAnnotations = CacheGroups.class)
+    @PrePersist
+    @PreRemove
+    @PreUpdate
     protected void preCommit(Object object) {
+        // TODO: for some reason we can't use Persistent as the argument type... (is it fixed in Cayenne 4.0.M4?)
+        Persistent p = (Persistent) object;
 
-        Set<String> groupSet = groups.get();
-        if (groupSet == null) {
-            groupSet = new HashSet<String>();
-            groups.set(groupSet);
+        InvalidationFunction invalidationFunction = mappedHandlers.get(p.getClass());
+        if(invalidationFunction == null) {
+            invalidationFunction = skipHandler;
+            for (InvalidationHandler handler : handlers) {
+                InvalidationFunction function = handler.canHandle(p.getClass());
+                if (function != null) {
+                    invalidationFunction = function;
+                    break;
+                }
+            }
+            mappedHandlers.put(p.getClass(), invalidationFunction);
         }
 
-        addCacheGroups(groupSet, object);
+        Collection<String> objectGroups = invalidationFunction.apply(p);
+        if (!objectGroups.isEmpty()) {
+            getOrCreateTxGroups().addAll(objectGroups);
+        }
     }
 
-    /**
-     * A method that builds a list of cache groups for a given object and adds them to the
-     * invalidation group set. This implementation adds all groups defined via
-     * {@link CacheGroups} annotation for a given class. Subclasses may override this
-     * method to provide more fine-grained filtering of cache groups to invalidate, based
-     * on the state of the object.
-     */
-    protected void addCacheGroups(Set<String> groupSet, Object object) {
-        CacheGroups a = object.getClass().getAnnotation(CacheGroups.class);
-        for (String group : a.value()) {
-            groupSet.add(group);
+
+    protected Set<String> getOrCreateTxGroups() {
+        Set<String> txGroups = groups.get();
+        if (txGroups == null) {
+            txGroups = new HashSet<>();
+            groups.set(txGroups);
         }
+
+        return txGroups;
     }
 }
