@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.dba.frontbase;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.QueryResult;
@@ -32,6 +27,11 @@ import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @since 1.2
@@ -43,7 +43,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
     }
 
     /**
-     * Retruns zero as PK caching is not supported by FrontBaseAdapter.
+     * Returns zero as PK caching is not supported by FrontBaseAdapter.
      */
     @Override
     public int getPkCacheSize() {
