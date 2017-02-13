@@ -26,9 +26,9 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>maven-cayenne-modeler-plugin</artifactId>
+	<artifactId>cayenne-modeler-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
-	<name>maven-cayenne-modeler-plugin: Cayenne Modeler Maven Plugin</name>
+	<name>cayenne-modeler-maven-plugin: Cayenne Modeler Maven Plugin</name>
 
 	<dependencies>
 		<dependency>

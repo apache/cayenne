@@ -6,6 +6,8 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 -------------------------------------------------------------------------------
 UPGRADING TO 4.0.M5
 
+* Per CAY-1980 "maven-cayenne-modeler-plugin" renamed to "cayenne-modeler-maven-plugin"
+
 * Per CAY-2225 CacheInvalidationFilter has been changed to support custom invalidation rules,
   in addition to the rule based on @CacheGroups annotation.
   If you have used it previously, you should change its binding to runtime from direct binding in
