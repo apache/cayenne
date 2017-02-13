@@ -6,6 +6,11 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 -------------------------------------------------------------------------------
 UPGRADING TO 4.0.M5
 
+* Per CAY-2225 CacheInvalidationFilter has been changed to support custom invalidation rules,
+  in addition to the rule based on @CacheGroups annotation.
+  If you have used it previously, you should change its binding to runtime from direct binding in
+  a custom module to a module built by CacheInvalidationModuleBuilder.
+
 * Per CAY-2212 cdbimport tool revisited once again, so configuration of Maven plugin should be changed.
   - "maven-cayenne-plugin" is deprecated, please switch to "cayenne-maven-plugin"
   - <reverseEngineering> tag replaced with <dbimport> tag
