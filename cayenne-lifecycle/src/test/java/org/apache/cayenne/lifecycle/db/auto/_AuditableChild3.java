@@ -16,9 +16,9 @@ public abstract class _AuditableChild3 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> CHAR_PROPERTY1 = new Property<String>("charProperty1");
-    public static final Property<String> CHAR_PROPERTY2 = new Property<String>("charProperty2");
-    public static final Property<Auditable2> PARENT = new Property<Auditable2>("parent");
+    public static final Property<String> CHAR_PROPERTY1 = Property.create("charProperty1", String.class);
+    public static final Property<String> CHAR_PROPERTY2 = Property.create("charProperty2", String.class);
+    public static final Property<Auditable2> PARENT = Property.create("parent", Auditable2.class);
 
     public void setCharProperty1(String charProperty1) {
         writeProperty("charProperty1", charProperty1);

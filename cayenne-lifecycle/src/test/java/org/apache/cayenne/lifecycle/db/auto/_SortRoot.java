@@ -18,7 +18,7 @@ public abstract class _SortRoot extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<List<SortDep>> DEPS = new Property<List<SortDep>>("deps");
+    public static final Property<List<SortDep>> DEPS = Property.create("deps", List.class);
 
     public void addToDeps(SortDep obj) {
         addToManyTarget("deps", obj, true);

@@ -18,7 +18,7 @@ public abstract class _E4 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<List<E3>> E3S = new Property<List<E3>>("e3s");
+    public static final Property<List<E3>> E3S = Property.create("e3s", List.class);
 
     public void addToE3s(E3 obj) {
         addToManyTarget("e3s", obj, true);

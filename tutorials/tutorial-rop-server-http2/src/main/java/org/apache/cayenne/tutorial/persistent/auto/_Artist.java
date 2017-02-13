@@ -19,9 +19,9 @@ public abstract class _Artist extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<LocalDate> DATE_OF_BIRTH = new Property<LocalDate>("dateOfBirth");
-    public static final Property<String> NAME = new Property<String>("name");
-    public static final Property<List<Painting>> PAINTINGS = new Property<List<Painting>>("paintings");
+    public static final Property<LocalDate> DATE_OF_BIRTH = Property.create("dateOfBirth", LocalDate.class);
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<Painting>> PAINTINGS = Property.create("paintings", List.class);
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         writeProperty("dateOfBirth", dateOfBirth);

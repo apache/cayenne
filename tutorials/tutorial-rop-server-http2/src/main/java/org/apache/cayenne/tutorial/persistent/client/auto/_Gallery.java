@@ -14,8 +14,8 @@ import org.apache.cayenne.util.PersistentObjectList;
  */
 public abstract class _Gallery extends PersistentObject {
 
-    public static final Property<String> NAME = new Property<String>("name");
-    public static final Property<List<Painting>> PAINTINGS = new Property<List<Painting>>("paintings");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<Painting>> PAINTINGS = Property.create("paintings", List.class);
 
     protected String name;
     protected List<Painting> paintings;

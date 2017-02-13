@@ -15,7 +15,7 @@ public abstract class _AuditLog extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> LOG = new Property<String>("log");
+    public static final Property<String> LOG = Property.create("log", String.class);
 
     public void setLog(String log) {
         writeProperty("log", log);

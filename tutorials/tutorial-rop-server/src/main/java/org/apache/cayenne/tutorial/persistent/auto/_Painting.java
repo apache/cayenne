@@ -13,18 +13,13 @@ import org.apache.cayenne.tutorial.persistent.Gallery;
  */
 public abstract class _Painting extends CayenneDataObject {
 
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-    @Deprecated
-    public static final String ARTIST_PROPERTY = "artist";
-    @Deprecated
-    public static final String GALLERY_PROPERTY = "gallery";
+    private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = new Property<String>("name");
-    public static final Property<Artist> ARTIST = new Property<Artist>("artist");
-    public static final Property<Gallery> GALLERY = new Property<Gallery>("gallery");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<Artist> ARTIST = Property.create("artist", Artist.class);
+    public static final Property<Gallery> GALLERY = Property.create("gallery", Gallery.class);
 
     public void setName(String name) {
         writeProperty("name", name);

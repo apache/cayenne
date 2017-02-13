@@ -15,7 +15,7 @@ public abstract class _UuidRoot1 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> UUID = new Property<String>("uuid");
+    public static final Property<String> UUID = Property.create("uuid", String.class);
 
     public void setUuid(String uuid) {
         writeProperty("uuid", uuid);

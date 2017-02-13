@@ -16,7 +16,7 @@ public abstract class _SortDep extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<SortRoot> ROOT = new Property<SortRoot>("root");
+    public static final Property<SortRoot> ROOT = Property.create("root", SortRoot.class);
 
     public void setRoot(SortRoot root) {
         setToOneTarget("root", root, true);

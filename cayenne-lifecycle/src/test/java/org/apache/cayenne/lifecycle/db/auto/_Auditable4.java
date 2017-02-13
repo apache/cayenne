@@ -16,9 +16,9 @@ public abstract class _Auditable4 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> CHAR_PROPERTY1 = new Property<String>("charProperty1");
-    public static final Property<String> CHAR_PROPERTY2 = new Property<String>("charProperty2");
-    public static final Property<Auditable3> AUDITABLE3 = new Property<Auditable3>("auditable3");
+    public static final Property<String> CHAR_PROPERTY1 = Property.create("charProperty1", String.class);
+    public static final Property<String> CHAR_PROPERTY2 = Property.create("charProperty2", String.class);
+    public static final Property<Auditable3> AUDITABLE3 = Property.create("auditable3", Auditable3.class);
 
     public void setCharProperty1(String charProperty1) {
         writeProperty("charProperty1", charProperty1);

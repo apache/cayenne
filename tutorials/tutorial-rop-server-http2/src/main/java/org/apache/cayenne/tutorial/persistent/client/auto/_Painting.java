@@ -14,9 +14,9 @@ import org.apache.cayenne.util.PersistentObjectHolder;
  */
 public abstract class _Painting extends PersistentObject {
 
-    public static final Property<String> NAME = new Property<String>("name");
-    public static final Property<Artist> ARTIST = new Property<Artist>("artist");
-    public static final Property<Gallery> GALLERY = new Property<Gallery>("gallery");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<Artist> ARTIST = Property.create("artist", Artist.class);
+    public static final Property<Gallery> GALLERY = Property.create("gallery", Gallery.class);
 
     protected String name;
     protected ValueHolder artist;
