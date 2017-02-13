@@ -206,7 +206,7 @@ public class JdbcPkGenerator implements PkGenerator {
 		if (pkGenerator != null && pkGenerator.getKeyCacheSize() != null) {
 			cacheSize = pkGenerator.getKeyCacheSize();
 		} else {
-			cacheSize = pkCacheSize;
+			cacheSize = getPkCacheSize();
 		}
 
 		Long value;

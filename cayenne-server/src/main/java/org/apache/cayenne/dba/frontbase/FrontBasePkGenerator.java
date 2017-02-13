@@ -45,7 +45,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
 	}
 
 	/**
-	 * Retruns zero as PK caching is not supported by FrontBaseAdapter.
+	 * Returns zero as PK caching is not supported by FrontBaseAdapter.
 	 */
 	@Override
 	public int getPkCacheSize() {

@@ -113,6 +113,7 @@ CAY-2150 UI bug: PK generation custom sequence is getting reset
 CAY-2151 Migrate Database Schema: issue when no db is specified
 CAY-2153 Modeler Exception in save action after reverse engineering some complex DB schema
 CAY-2154 Migrate db: queries order
+CAY-2226 PK generation for Frontbase: PK cache size must be ignored
 
 ----------------------------------
 Release: 4.0.M3
