@@ -18,7 +18,7 @@ public abstract class _DirectToSubEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<List<SubEntity>> SUB_ENTITIES = new Property<>("subEntities");
+    public static final Property<List<SubEntity>> SUB_ENTITIES = Property.create("subEntities", List.class);
 
     public void addToSubEntities(SubEntity obj) {
         addToManyTarget("subEntities", obj, true);

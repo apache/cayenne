@@ -15,10 +15,10 @@ public abstract class _ReturnTypesMap2 extends CayenneDataObject {
 
     public static final String AAAID_PK_COLUMN = "AAAID";
 
-    public static final Property<byte[]> BINARY_COLUMN = new Property<>("binaryColumn");
-    public static final Property<byte[]> BLOB_COLUMN = new Property<>("blobColumn");
-    public static final Property<byte[]> LONGVARBINARY_COLUMN = new Property<>("longvarbinaryColumn");
-    public static final Property<byte[]> VARBINARY_COLUMN = new Property<>("varbinaryColumn");
+    public static final Property<byte[]> BINARY_COLUMN = Property.create("binaryColumn", byte[].class);
+    public static final Property<byte[]> BLOB_COLUMN = Property.create("blobColumn", byte[].class);
+    public static final Property<byte[]> LONGVARBINARY_COLUMN = Property.create("longvarbinaryColumn", byte[].class);
+    public static final Property<byte[]> VARBINARY_COLUMN = Property.create("varbinaryColumn", byte[].class);
 
     public void setBinaryColumn(byte[] binaryColumn) {
         writeProperty("binaryColumn", binaryColumn);

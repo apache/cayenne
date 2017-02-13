@@ -15,7 +15,7 @@ public abstract class _BooleanTestEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Boolean> BOOLEAN_COLUMN = new Property<>("booleanColumn");
+    public static final Property<Boolean> BOOLEAN_COLUMN = Property.create("booleanColumn", Boolean.class);
 
     public void setBooleanColumn(Boolean booleanColumn) {
         writeProperty("booleanColumn", booleanColumn);

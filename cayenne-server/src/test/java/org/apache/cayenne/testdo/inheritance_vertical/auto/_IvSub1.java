@@ -15,7 +15,7 @@ public abstract class _IvSub1 extends IvRoot {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> SUB1NAME = new Property<>("sub1Name");
+    public static final Property<String> SUB1NAME = Property.create("sub1Name", String.class);
 
     public void setSub1Name(String sub1Name) {
         writeProperty("sub1Name", sub1Name);

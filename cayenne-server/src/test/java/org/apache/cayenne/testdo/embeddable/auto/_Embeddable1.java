@@ -11,8 +11,8 @@ import org.apache.cayenne.exp.Property;
  */
 public abstract class _Embeddable1 extends Object {
 
-    public static final Property<String> EMBEDDED10 = new Property<>("embedded10");
-    public static final Property<String> EMBEDDED20 = new Property<>("embedded20");
+    public static final Property<String> EMBEDDED10 = Property.create("embedded10", String.class);
+    public static final Property<String> EMBEDDED20 = Property.create("embedded20", String.class);
 
     // special properties injected by Cayenne
     private Persistent owner;

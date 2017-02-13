@@ -16,9 +16,9 @@ public abstract class _GroupProperties extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "id";
 
-    public static final Property<String> DESCRIPTION = new Property<>("description");
-    public static final Property<Long> ID = new Property<>("id");
-    public static final Property<Group> GROUP = new Property<>("group");
+    public static final Property<String> DESCRIPTION = Property.create("description", String.class);
+    public static final Property<Long> ID = Property.create("id", Long.class);
+    public static final Property<Group> GROUP = Property.create("group", Group.class);
 
     public void setDescription(String description) {
         writeProperty("description", description);

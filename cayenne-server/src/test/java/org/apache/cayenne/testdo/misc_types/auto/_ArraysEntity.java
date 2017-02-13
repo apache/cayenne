@@ -15,10 +15,10 @@ public abstract class _ArraysEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<byte[]> BYTE_ARRAY = new Property<>("byteArray");
-    public static final Property<Byte[]> BYTE_WRAPPER_ARRAY = new Property<>("byteWrapperArray");
-    public static final Property<char[]> CHAR_ARRAY = new Property<>("charArray");
-    public static final Property<Character[]> CHAR_WRAPPER_ARRAY = new Property<>("charWrapperArray");
+    public static final Property<byte[]> BYTE_ARRAY = Property.create("byteArray", byte[].class);
+    public static final Property<Byte[]> BYTE_WRAPPER_ARRAY = Property.create("byteWrapperArray", Byte[].class);
+    public static final Property<char[]> CHAR_ARRAY = Property.create("charArray", char[].class);
+    public static final Property<Character[]> CHAR_WRAPPER_ARRAY = Property.create("charWrapperArray", Character[].class);
 
     public void setByteArray(byte[] byteArray) {
         writeProperty("byteArray", byteArray);

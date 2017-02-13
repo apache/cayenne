@@ -16,8 +16,8 @@ public abstract class _DeleteDeny extends CayenneDataObject {
 
     public static final String DELETE_DENY_ID_PK_COLUMN = "DELETE_DENY_ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<DeleteRule> DENY = new Property<>("deny");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<DeleteRule> DENY = Property.create("deny", DeleteRule.class);
 
     public void setName(String name) {
         writeProperty("name", name);

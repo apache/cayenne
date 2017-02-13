@@ -17,7 +17,7 @@ public abstract class _BigDecimalEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<BigDecimal> BIG_DECIMAL_FIELD = new Property<>("bigDecimalField");
+    public static final Property<BigDecimal> BIG_DECIMAL_FIELD = Property.create("bigDecimalField", BigDecimal.class);
 
     public void setBigDecimalField(BigDecimal bigDecimalField) {
         writeProperty("bigDecimalField", bigDecimalField);

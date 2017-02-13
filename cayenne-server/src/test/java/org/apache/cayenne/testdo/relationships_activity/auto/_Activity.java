@@ -19,9 +19,9 @@ public abstract class _Activity extends CayenneDataObject {
 
     public static final String ACTIVITY_ID_PK_COLUMN = "ACTIVITY_ID";
 
-    public static final Property<Date> APPOINTMENT_DATE = new Property<>("appointmentDate");
-    public static final Property<Integer> APPOINTMENT_NO = new Property<>("appointmentNo");
-    public static final Property<Map<String, ActivityResult>> RESULTS = new Property<>("results");
+    public static final Property<Date> APPOINTMENT_DATE = Property.create("appointmentDate", Date.class);
+    public static final Property<Integer> APPOINTMENT_NO = Property.create("appointmentNo", Integer.class);
+    public static final Property<Map<String, ActivityResult>> RESULTS = Property.create("results", Map.class);
 
     public void setAppointmentDate(Date appointmentDate) {
         writeProperty("appointmentDate", appointmentDate);

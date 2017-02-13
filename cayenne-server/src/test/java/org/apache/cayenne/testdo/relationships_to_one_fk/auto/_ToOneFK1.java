@@ -16,7 +16,7 @@ public abstract class _ToOneFK1 extends CayenneDataObject {
 
     public static final String TO_ONE_FK1_PK_PK_COLUMN = "TO_ONE_FK1_PK";
 
-    public static final Property<ToOneFK2> TO_PK = new Property<>("toPK");
+    public static final Property<ToOneFK2> TO_PK = Property.create("toPK", ToOneFK2.class);
 
     public void setToPK(ToOneFK2 toPK) {
         setToOneTarget("toPK", toPK, true);

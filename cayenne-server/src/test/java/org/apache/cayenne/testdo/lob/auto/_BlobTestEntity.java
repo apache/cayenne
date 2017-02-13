@@ -15,7 +15,7 @@ public abstract class _BlobTestEntity extends CayenneDataObject {
 
     public static final String BLOB_TEST_ID_PK_COLUMN = "BLOB_TEST_ID";
 
-    public static final Property<byte[]> BLOB_COL = new Property<>("blobCol");
+    public static final Property<byte[]> BLOB_COL = Property.create("blobCol", byte[].class);
 
     public void setBlobCol(byte[] blobCol) {
         writeProperty("blobCol", blobCol);

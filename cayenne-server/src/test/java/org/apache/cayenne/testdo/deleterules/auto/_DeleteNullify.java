@@ -16,8 +16,8 @@ public abstract class _DeleteNullify extends CayenneDataObject {
 
     public static final String DELETE_NULLIFY_ID_PK_COLUMN = "DELETE_NULLIFY_ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<DeleteRule> NULLIFY = new Property<>("nullify");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<DeleteRule> NULLIFY = Property.create("nullify", DeleteRule.class);
 
     public void setName(String name) {
         writeProperty("name", name);

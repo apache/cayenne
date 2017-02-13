@@ -18,8 +18,8 @@ public abstract class _Customer extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> LONGVARCHAR_COL = new Property<>("longvarcharCol");
-    public static final Property<List<Product>> ORDER = new Property<>("order");
+    public static final Property<String> LONGVARCHAR_COL = Property.create("longvarcharCol", String.class);
+    public static final Property<List<Product>> ORDER = Property.create("order", List.class);
 
     public void setLongvarcharCol(String longvarcharCol) {
         writeProperty("longvarcharCol", longvarcharCol);

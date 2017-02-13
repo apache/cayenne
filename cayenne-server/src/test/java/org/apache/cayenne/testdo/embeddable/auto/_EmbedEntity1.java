@@ -16,9 +16,9 @@ public abstract class _EmbedEntity1 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Embeddable1> EMBEDDED1 = new Property<>("embedded1");
-    public static final Property<Embeddable1> EMBEDDED2 = new Property<>("embedded2");
-    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<Embeddable1> EMBEDDED1 = Property.create("embedded1", Embeddable1.class);
+    public static final Property<Embeddable1> EMBEDDED2 = Property.create("embedded2", Embeddable1.class);
+    public static final Property<String> NAME = Property.create("name", String.class);
 
     public void setEmbedded1(Embeddable1 embedded1) {
         writeProperty("embedded1", embedded1);

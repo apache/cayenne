@@ -18,9 +18,9 @@ public abstract class _ToManyFkRoot extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Integer> DEP_ID = new Property<>("depId");
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<List<ToManyFkDep>> DEPS = new Property<>("deps");
+    public static final Property<Integer> DEP_ID = Property.create("depId", Integer.class);
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<ToManyFkDep>> DEPS = Property.create("deps", List.class);
 
     public void setDepId(Integer depId) {
         writeProperty("depId", depId);

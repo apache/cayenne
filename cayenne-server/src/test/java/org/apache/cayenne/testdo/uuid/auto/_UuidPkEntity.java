@@ -17,7 +17,7 @@ public abstract class _UuidPkEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<UUID> ID = new Property<>("id");
+    public static final Property<UUID> ID = Property.create("id", UUID.class);
 
     public void setId(UUID id) {
         writeProperty("id", id);

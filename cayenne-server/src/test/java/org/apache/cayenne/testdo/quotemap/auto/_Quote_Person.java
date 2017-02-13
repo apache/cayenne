@@ -18,12 +18,12 @@ public abstract class _Quote_Person extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "id";
 
-    public static final Property<Date> D_ATE = new Property<>("dAte");
-    public static final Property<String> F_ULL_NAME = new Property<>("fULL_name");
-    public static final Property<String> GROUP = new Property<>("group");
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<Integer> SALARY = new Property<>("salary");
-    public static final Property<QuoteAdress> ADDRESS_REL = new Property<>("address_Rel");
+    public static final Property<Date> D_ATE = Property.create("dAte", Date.class);
+    public static final Property<String> F_ULL_NAME = Property.create("fULL_name", String.class);
+    public static final Property<String> GROUP = Property.create("group", String.class);
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<Integer> SALARY = Property.create("salary", Integer.class);
+    public static final Property<QuoteAdress> ADDRESS_REL = Property.create("address_Rel", QuoteAdress.class);
 
     public void setDAte(Date dAte) {
         writeProperty("dAte", dAte);

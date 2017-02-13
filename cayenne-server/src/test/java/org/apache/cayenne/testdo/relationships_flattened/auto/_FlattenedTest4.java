@@ -16,8 +16,8 @@ public abstract class _FlattenedTest4 extends CayenneDataObject {
 
     public static final String FT4_ID_PK_COLUMN = "FT4_ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<FlattenedTest3> TO_FT3 = new Property<>("toFT3");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<FlattenedTest3> TO_FT3 = Property.create("toFT3", FlattenedTest3.class);
 
     public void setName(String name) {
         writeProperty("name", name);

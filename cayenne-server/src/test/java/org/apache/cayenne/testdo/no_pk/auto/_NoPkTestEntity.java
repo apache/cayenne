@@ -14,7 +14,7 @@ public abstract class _NoPkTestEntity extends CayenneDataObject {
     private static final long serialVersionUID = 1L; 
 
 
-    public static final Property<Integer> ATTRIBUTE1 = new Property<>("attribute1");
+    public static final Property<Integer> ATTRIBUTE1 = Property.create("attribute1", Integer.class);
 
     public void setAttribute1(Integer attribute1) {
         writeProperty("attribute1", attribute1);

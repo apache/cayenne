@@ -16,8 +16,8 @@ public abstract class _DeleteCascade extends CayenneDataObject {
 
     public static final String DELETE_CASCADE_ID_PK_COLUMN = "DELETE_CASCADE_ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<DeleteRule> CASCADE = new Property<>("cascade");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<DeleteRule> CASCADE = Property.create("cascade", DeleteRule.class);
 
     public void setName(String name) {
         writeProperty("name", name);

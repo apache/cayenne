@@ -19,9 +19,9 @@ public abstract class _Gallery extends CayenneDataObject {
 
     public static final String GALLERY_ID_PK_COLUMN = "GALLERY_ID";
 
-    public static final Property<String> GALLERY_NAME = new Property<>("galleryName");
-    public static final Property<List<Exhibit>> EXHIBIT_ARRAY = new Property<>("exhibitArray");
-    public static final Property<List<Painting>> PAINTING_ARRAY = new Property<>("paintingArray");
+    public static final Property<String> GALLERY_NAME = Property.create("galleryName", String.class);
+    public static final Property<List<Exhibit>> EXHIBIT_ARRAY = Property.create("exhibitArray", List.class);
+    public static final Property<List<Painting>> PAINTING_ARRAY = Property.create("paintingArray", List.class);
 
     public void setGalleryName(String galleryName) {
         writeProperty("galleryName", galleryName);

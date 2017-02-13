@@ -16,7 +16,7 @@ public abstract class _LocalDateTimeTestEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<LocalDateTime> TIMESTAMP = new Property<LocalDateTime>("timestamp");
+    public static final Property<LocalDateTime> TIMESTAMP = Property.create("timestamp", LocalDateTime.class);
 
     public void setTimestamp(LocalDateTime timestamp) {
         writeProperty("timestamp", timestamp);

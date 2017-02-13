@@ -16,8 +16,8 @@ public abstract class _LockingHelper extends CayenneDataObject {
 
     public static final String LOCKING_HELPER_ID_PK_COLUMN = "LOCKING_HELPER_ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<RelLockingTestEntity> TO_REL_LOCKING_TEST = new Property<>("toRelLockingTest");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<RelLockingTestEntity> TO_REL_LOCKING_TEST = Property.create("toRelLockingTest", RelLockingTestEntity.class);
 
     public void setName(String name) {
         writeProperty("name", name);

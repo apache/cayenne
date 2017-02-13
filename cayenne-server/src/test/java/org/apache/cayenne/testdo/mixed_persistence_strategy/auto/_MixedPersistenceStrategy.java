@@ -18,9 +18,9 @@ public abstract class _MixedPersistenceStrategy extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> DESCRIPTION = new Property<>("description");
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<List<MixedPersistenceStrategy2>> DETAILS = new Property<>("details");
+    public static final Property<String> DESCRIPTION = Property.create("description", String.class);
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<MixedPersistenceStrategy2>> DETAILS = Property.create("details", List.class);
 
     public void setDescription(String description) {
         writeProperty("description", description);

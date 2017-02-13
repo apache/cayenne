@@ -18,8 +18,8 @@ public abstract class _Master extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<List<Child>> CHILDREN = new Property<>("children");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<Child>> CHILDREN = Property.create("children", List.class);
 
     public void setName(String name) {
         writeProperty("name", name);

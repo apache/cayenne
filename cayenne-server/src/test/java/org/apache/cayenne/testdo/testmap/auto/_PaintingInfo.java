@@ -16,9 +16,9 @@ public abstract class _PaintingInfo extends CayenneDataObject {
 
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 
-    public static final Property<byte[]> IMAGE_BLOB = new Property<>("imageBlob");
-    public static final Property<String> TEXT_REVIEW = new Property<>("textReview");
-    public static final Property<Painting> PAINTING = new Property<>("painting");
+    public static final Property<byte[]> IMAGE_BLOB = Property.create("imageBlob", byte[].class);
+    public static final Property<String> TEXT_REVIEW = Property.create("textReview", String.class);
+    public static final Property<Painting> PAINTING = Property.create("painting", Painting.class);
 
     public void setImageBlob(byte[] imageBlob) {
         writeProperty("imageBlob", imageBlob);

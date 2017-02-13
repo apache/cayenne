@@ -18,7 +18,7 @@ public abstract class _OnewayTable3 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<List<OnewayTable4>> TO_MANY_ONE_WAY_DB = new Property<>("toManyOneWayDb");
+    public static final Property<List<OnewayTable4>> TO_MANY_ONE_WAY_DB = Property.create("toManyOneWayDb", List.class);
 
     public void addToToManyOneWayDb(OnewayTable4 obj) {
         addToManyTarget("toManyOneWayDb", obj, true);

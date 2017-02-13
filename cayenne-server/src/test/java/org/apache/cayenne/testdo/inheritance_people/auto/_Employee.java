@@ -19,9 +19,9 @@ public abstract class _Employee extends AbstractPerson {
 
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
-    public static final Property<Float> SALARY = new Property<>("salary");
-    public static final Property<List<Address>> ADDRESSES = new Property<>("addresses");
-    public static final Property<Department> TO_DEPARTMENT = new Property<>("toDepartment");
+    public static final Property<Float> SALARY = Property.create("salary", Float.class);
+    public static final Property<List<Address>> ADDRESSES = Property.create("addresses", List.class);
+    public static final Property<Department> TO_DEPARTMENT = Property.create("toDepartment", Department.class);
 
     public void setSalary(Float salary) {
         writeProperty("salary", salary);

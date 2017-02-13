@@ -13,8 +13,8 @@ import org.apache.cayenne.util.PersistentObjectHolder;
  */
 public abstract class _ClientMtTable2 extends PersistentObject {
 
-    public static final Property<String> GLOBAL_ATTRIBUTE = new Property<String>("globalAttribute");
-    public static final Property<ClientMtTable1> TABLE1 = new Property<ClientMtTable1>("table1");
+    public static final Property<String> GLOBAL_ATTRIBUTE = Property.create("globalAttribute", String.class);
+    public static final Property<org.apache.cayenne.rop.protostuff.persistent.MtTable1> TABLE1 = Property.create("table1", org.apache.cayenne.rop.protostuff.persistent.MtTable1.class);
 
     protected String globalAttribute;
     protected ValueHolder table1;

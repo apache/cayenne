@@ -18,9 +18,9 @@ public abstract class _Reflexive extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<List<Reflexive>> CHILDREN = new Property<>("children");
-    public static final Property<Reflexive> TO_PARENT = new Property<>("toParent");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<Reflexive>> CHILDREN = Property.create("children", List.class);
+    public static final Property<Reflexive> TO_PARENT = Property.create("toParent", Reflexive.class);
 
     public void setName(String name) {
         writeProperty("name", name);

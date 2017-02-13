@@ -16,8 +16,8 @@ public abstract class _BinaryPKTest2 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> DETAIL_NAME = new Property<>("detailName");
-    public static final Property<BinaryPKTest1> TO_BINARY_PKMASTER = new Property<>("toBinaryPKMaster");
+    public static final Property<String> DETAIL_NAME = Property.create("detailName", String.class);
+    public static final Property<BinaryPKTest1> TO_BINARY_PKMASTER = Property.create("toBinaryPKMaster", BinaryPKTest1.class);
 
     public void setDetailName(String detailName) {
         writeProperty("detailName", detailName);

@@ -16,8 +16,8 @@ public abstract class _MapToManyTarget extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<MapToMany> MAP_TO_MANY = new Property<>("mapToMany");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<MapToMany> MAP_TO_MANY = Property.create("mapToMany", MapToMany.class);
 
     public void setName(String name) {
         writeProperty("name", name);

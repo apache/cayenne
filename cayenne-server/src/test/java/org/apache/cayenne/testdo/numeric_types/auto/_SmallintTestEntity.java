@@ -15,7 +15,7 @@ public abstract class _SmallintTestEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Short> SMALLINT_COL = new Property<>("smallintCol");
+    public static final Property<Short> SMALLINT_COL = Property.create("smallintCol", Short.class);
 
     public void setSmallintCol(Short smallintCol) {
         writeProperty("smallintCol", smallintCol);

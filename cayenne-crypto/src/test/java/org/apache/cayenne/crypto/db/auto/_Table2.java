@@ -15,8 +15,8 @@ public abstract class _Table2 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<byte[]> CRYPTO_BYTES = new Property<>("cryptoBytes");
-    public static final Property<byte[]> PLAIN_BYTES = new Property<>("plainBytes");
+    public static final Property<byte[]> CRYPTO_BYTES = Property.create("cryptoBytes", byte[].class);
+    public static final Property<byte[]> PLAIN_BYTES = Property.create("plainBytes", byte[].class);
 
     public void setCryptoBytes(byte[] cryptoBytes) {
         writeProperty("cryptoBytes", cryptoBytes);

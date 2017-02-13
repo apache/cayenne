@@ -20,10 +20,10 @@ public abstract class _Exhibit extends CayenneDataObject {
 
     public static final String EXHIBIT_ID_PK_COLUMN = "EXHIBIT_ID";
 
-    public static final Property<Date> CLOSING_DATE = new Property<>("closingDate");
-    public static final Property<Date> OPENING_DATE = new Property<>("openingDate");
-    public static final Property<List<ArtistExhibit>> ARTIST_EXHIBIT_ARRAY = new Property<>("artistExhibitArray");
-    public static final Property<Gallery> TO_GALLERY = new Property<>("toGallery");
+    public static final Property<Date> CLOSING_DATE = Property.create("closingDate", Date.class);
+    public static final Property<Date> OPENING_DATE = Property.create("openingDate", Date.class);
+    public static final Property<List<ArtistExhibit>> ARTIST_EXHIBIT_ARRAY = Property.create("artistExhibitArray", List.class);
+    public static final Property<Gallery> TO_GALLERY = Property.create("toGallery", Gallery.class);
 
     public void setClosingDate(Date closingDate) {
         writeProperty("closingDate", closingDate);

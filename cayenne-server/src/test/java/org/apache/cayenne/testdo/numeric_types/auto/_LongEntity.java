@@ -15,7 +15,7 @@ public abstract class _LongEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Long> LONG_FIELD = new Property<>("longField");
+    public static final Property<Long> LONG_FIELD = Property.create("longField", Long.class);
 
     public void setLongField(Long longField) {
         writeProperty("longField", longField);

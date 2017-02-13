@@ -17,9 +17,9 @@ public abstract class _DateTestEntity extends CayenneDataObject {
 
     public static final String DATE_TEST_ID_PK_COLUMN = "DATE_TEST_ID";
 
-    public static final Property<Date> DATE_COLUMN = new Property<>("dateColumn");
-    public static final Property<Date> TIME_COLUMN = new Property<>("timeColumn");
-    public static final Property<Date> TIMESTAMP_COLUMN = new Property<>("timestampColumn");
+    public static final Property<Date> DATE_COLUMN = Property.create("dateColumn", Date.class);
+    public static final Property<Date> TIME_COLUMN = Property.create("timeColumn", Date.class);
+    public static final Property<Date> TIMESTAMP_COLUMN = Property.create("timestampColumn", Date.class);
 
     public void setDateColumn(Date dateColumn) {
         writeProperty("dateColumn", dateColumn);

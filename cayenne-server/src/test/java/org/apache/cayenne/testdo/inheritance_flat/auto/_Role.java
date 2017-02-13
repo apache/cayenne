@@ -18,10 +18,10 @@ public abstract class _Role extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "id";
 
-    public static final Property<Long> ID = new Property<>("id");
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<Integer> TYPE = new Property<>("type");
-    public static final Property<List<Group>> ROLE_GROUPS = new Property<>("roleGroups");
+    public static final Property<Long> ID = Property.create("id", Long.class);
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<Integer> TYPE = Property.create("type", Integer.class);
+    public static final Property<List<Group>> ROLE_GROUPS = Property.create("roleGroups", List.class);
 
     public void setId(long id) {
         writeProperty("id", id);

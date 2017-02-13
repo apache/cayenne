@@ -18,9 +18,9 @@ public abstract class _MeaningfulPKTest1 extends CayenneDataObject {
 
     public static final String PK_ATTRIBUTE_PK_COLUMN = "PK_ATTRIBUTE";
 
-    public static final Property<String> DESCR = new Property<>("descr");
-    public static final Property<Integer> PK_ATTRIBUTE = new Property<>("pkAttribute");
-    public static final Property<List<MeaningfulPKDep>> MEANINGFUL_PKDEP_ARRAY = new Property<>("meaningfulPKDepArray");
+    public static final Property<String> DESCR = Property.create("descr", String.class);
+    public static final Property<Integer> PK_ATTRIBUTE = Property.create("pkAttribute", Integer.class);
+    public static final Property<List<MeaningfulPKDep>> MEANINGFUL_PKDEP_ARRAY = Property.create("meaningfulPKDepArray", List.class);
 
     public void setDescr(String descr) {
         writeProperty("descr", descr);

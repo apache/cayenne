@@ -16,7 +16,7 @@ public abstract class _LocalDateTestEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<LocalDate> DATE = new Property<LocalDate>("date");
+    public static final Property<LocalDate> DATE = Property.create("date", LocalDate.class);
 
     public void setDate(LocalDate date) {
         writeProperty("date", date);

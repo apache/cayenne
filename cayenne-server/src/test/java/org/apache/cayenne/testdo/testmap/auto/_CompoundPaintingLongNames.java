@@ -21,16 +21,16 @@ public abstract class _CompoundPaintingLongNames extends CayenneDataObject {
 
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 
-    public static final Property<String> ARTIST_LONG_NAME = new Property<>("artistLongName");
-    public static final Property<BigDecimal> ESTIMATED_PRICE = new Property<>("estimatedPrice");
-    public static final Property<String> GALLERY_LONG_NAME = new Property<>("galleryLongName");
-    public static final Property<String> PAINTING_DESCRIPTION = new Property<>("paintingDescription");
-    public static final Property<String> PAINTING_TITLE = new Property<>("paintingTitle");
-    public static final Property<String> TEXT_LONG_REVIEW = new Property<>("textLongReview");
-    public static final Property<Artist> TO_ARTIST = new Property<>("toArtist");
-    public static final Property<ROArtist> TO_ARTIST1 = new Property<>("toArtist1");
-    public static final Property<Gallery> TO_GALLERY = new Property<>("toGallery");
-    public static final Property<PaintingInfo> TO_PAINTING_INFO = new Property<>("toPaintingInfo");
+    public static final Property<String> ARTIST_LONG_NAME = Property.create("artistLongName", String.class);
+    public static final Property<BigDecimal> ESTIMATED_PRICE = Property.create("estimatedPrice", BigDecimal.class);
+    public static final Property<String> GALLERY_LONG_NAME = Property.create("galleryLongName", String.class);
+    public static final Property<String> PAINTING_DESCRIPTION = Property.create("paintingDescription", String.class);
+    public static final Property<String> PAINTING_TITLE = Property.create("paintingTitle", String.class);
+    public static final Property<String> TEXT_LONG_REVIEW = Property.create("textLongReview", String.class);
+    public static final Property<Artist> TO_ARTIST = Property.create("toArtist", Artist.class);
+    public static final Property<ROArtist> TO_ARTIST1 = Property.create("toArtist1", ROArtist.class);
+    public static final Property<Gallery> TO_GALLERY = Property.create("toGallery", Gallery.class);
+    public static final Property<PaintingInfo> TO_PAINTING_INFO = Property.create("toPaintingInfo", PaintingInfo.class);
 
     public void setArtistLongName(String artistLongName) {
         writeProperty("artistLongName", artistLongName);

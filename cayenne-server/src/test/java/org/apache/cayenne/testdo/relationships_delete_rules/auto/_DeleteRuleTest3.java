@@ -16,7 +16,7 @@ public abstract class _DeleteRuleTest3 extends CayenneDataObject {
 
     public static final String DELETE_RULE_TEST_3_ID_PK_COLUMN = "DELETE_RULE_TEST_3_ID";
 
-    public static final Property<DeleteRuleTest2> TO_DELETE_RULE_TEST2 = new Property<>("toDeleteRuleTest2");
+    public static final Property<DeleteRuleTest2> TO_DELETE_RULE_TEST2 = Property.create("toDeleteRuleTest2", DeleteRuleTest2.class);
 
     public void setToDeleteRuleTest2(DeleteRuleTest2 toDeleteRuleTest2) {
         setToOneTarget("toDeleteRuleTest2", toDeleteRuleTest2, true);

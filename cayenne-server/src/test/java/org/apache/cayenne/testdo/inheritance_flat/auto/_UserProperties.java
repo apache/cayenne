@@ -16,9 +16,9 @@ public abstract class _UserProperties extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "id";
 
-    public static final Property<Long> ID = new Property<>("id");
-    public static final Property<String> NICKNAME = new Property<>("nickname");
-    public static final Property<User> USER = new Property<>("user");
+    public static final Property<Long> ID = Property.create("id", Long.class);
+    public static final Property<String> NICKNAME = Property.create("nickname", String.class);
+    public static final Property<User> USER = Property.create("user", User.class);
 
     public void setId(Long id) {
         writeProperty("id", id);

@@ -16,9 +16,9 @@ public abstract class _Qualified2 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Boolean> DELETED = new Property<>("deleted");
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<Qualified1> QUALIFIED1 = new Property<>("qualified1");
+    public static final Property<Boolean> DELETED = Property.create("deleted", Boolean.class);
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<Qualified1> QUALIFIED1 = Property.create("qualified1", Qualified1.class);
 
     public void setDeleted(Boolean deleted) {
         writeProperty("deleted", deleted);

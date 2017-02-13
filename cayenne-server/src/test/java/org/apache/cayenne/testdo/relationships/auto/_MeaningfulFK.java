@@ -16,8 +16,8 @@ public abstract class _MeaningfulFK extends CayenneDataObject {
 
     public static final String MEANIGNFUL_FK_ID_PK_COLUMN = "MEANIGNFUL_FK_ID";
 
-    public static final Property<Integer> RELATIONSHIP_HELPER_ID = new Property<>("relationshipHelperID");
-    public static final Property<RelationshipHelper> TO_RELATIONSHIP_HELPER = new Property<>("toRelationshipHelper");
+    public static final Property<Integer> RELATIONSHIP_HELPER_ID = Property.create("relationshipHelperID", Integer.class);
+    public static final Property<RelationshipHelper> TO_RELATIONSHIP_HELPER = Property.create("toRelationshipHelper", RelationshipHelper.class);
 
     public void setRelationshipHelperID(Integer relationshipHelperID) {
         writeProperty("relationshipHelperID", relationshipHelperID);

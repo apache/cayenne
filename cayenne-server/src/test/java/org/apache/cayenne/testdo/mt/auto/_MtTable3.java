@@ -18,10 +18,10 @@ public abstract class _MtTable3 extends CayenneDataObject {
 
     public static final String TABLE3_ID_PK_COLUMN = "TABLE3_ID";
 
-    public static final Property<byte[]> BINARY_COLUMN = new Property<>("binaryColumn");
-    public static final Property<String> CHAR_COLUMN = new Property<>("charColumn");
-    public static final Property<Integer> INT_COLUMN = new Property<>("intColumn");
-    public static final Property<List<MtTable2>> TABLE2ARRAY = new Property<>("table2Array");
+    public static final Property<byte[]> BINARY_COLUMN = Property.create("binaryColumn", byte[].class);
+    public static final Property<String> CHAR_COLUMN = Property.create("charColumn", String.class);
+    public static final Property<Integer> INT_COLUMN = Property.create("intColumn", Integer.class);
+    public static final Property<List<MtTable2>> TABLE2ARRAY = Property.create("table2Array", List.class);
 
     public void setBinaryColumn(byte[] binaryColumn) {
         writeProperty("binaryColumn", binaryColumn);

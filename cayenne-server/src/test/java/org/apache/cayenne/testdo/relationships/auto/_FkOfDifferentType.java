@@ -16,7 +16,7 @@ public abstract class _FkOfDifferentType extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<RelationshipHelper> RELATIONSHIP_HELPER = new Property<>("relationshipHelper");
+    public static final Property<RelationshipHelper> RELATIONSHIP_HELPER = Property.create("relationshipHelper", RelationshipHelper.class);
 
     public void setRelationshipHelper(RelationshipHelper relationshipHelper) {
         setToOneTarget("relationshipHelper", relationshipHelper, true);

@@ -18,8 +18,8 @@ public abstract class _ClientCompany extends CayenneDataObject {
 
     public static final String CLIENT_COMPANY_ID_PK_COLUMN = "CLIENT_COMPANY_ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<List<CustomerRepresentative>> REPRESENTATIVES = new Property<>("representatives");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<CustomerRepresentative>> REPRESENTATIVES = Property.create("representatives", List.class);
 
     public void setName(String name) {
         writeProperty("name", name);

@@ -17,8 +17,8 @@ public abstract class _ArtistCallback extends CayenneDataObject {
 
     public static final String ARTIST_ID_PK_COLUMN = "ARTIST_ID";
 
-    public static final Property<String> ARTIST_NAME = new Property<>("artistName");
-    public static final Property<Date> DATE_OF_BIRTH = new Property<>("dateOfBirth");
+    public static final Property<String> ARTIST_NAME = Property.create("artistName", String.class);
+    public static final Property<Date> DATE_OF_BIRTH = Property.create("dateOfBirth", Date.class);
 
     public void setArtistName(String artistName) {
         writeProperty("artistName", artistName);

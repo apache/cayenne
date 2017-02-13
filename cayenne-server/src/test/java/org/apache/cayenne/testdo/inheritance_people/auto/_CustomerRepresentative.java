@@ -16,8 +16,8 @@ public abstract class _CustomerRepresentative extends AbstractPerson {
 
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
-    public static final Property<String> CLIENT_CONTACT_TYPE = new Property<>("clientContactType");
-    public static final Property<ClientCompany> TO_CLIENT_COMPANY = new Property<>("toClientCompany");
+    public static final Property<String> CLIENT_CONTACT_TYPE = Property.create("clientContactType", String.class);
+    public static final Property<ClientCompany> TO_CLIENT_COMPANY = Property.create("toClientCompany", ClientCompany.class);
 
     public void setClientContactType(String clientContactType) {
         writeProperty("clientContactType", clientContactType);

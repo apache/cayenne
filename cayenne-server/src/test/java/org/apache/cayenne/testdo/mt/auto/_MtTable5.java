@@ -18,7 +18,7 @@ public abstract class _MtTable5 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<List<MtTable4>> TABLE4S = new Property<>("table4s");
+    public static final Property<List<MtTable4>> TABLE4S = Property.create("table4s", List.class);
 
     public void addToTable4s(MtTable4 obj) {
         addToManyTarget("table4s", obj, true);

@@ -15,7 +15,7 @@ public abstract class _BitTestEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Boolean> BIT_COLUMN = new Property<>("bitColumn");
+    public static final Property<Boolean> BIT_COLUMN = Property.create("bitColumn", Boolean.class);
 
     public void setBitColumn(Boolean bitColumn) {
         writeProperty("bitColumn", bitColumn);

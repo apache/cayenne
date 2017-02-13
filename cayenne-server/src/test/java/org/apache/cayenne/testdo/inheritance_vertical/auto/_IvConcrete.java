@@ -18,9 +18,9 @@ public abstract class _IvConcrete extends IvAbstract {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<List<IvConcrete>> CHILDREN = new Property<>("children");
-    public static final Property<IvConcrete> PARENT = new Property<>("parent");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<IvConcrete>> CHILDREN = Property.create("children", List.class);
+    public static final Property<IvConcrete> PARENT = Property.create("parent", IvConcrete.class);
 
     public void setName(String name) {
         writeProperty("name", name);

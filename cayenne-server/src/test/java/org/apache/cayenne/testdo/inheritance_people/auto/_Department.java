@@ -19,9 +19,9 @@ public abstract class _Department extends CayenneDataObject {
 
     public static final String DEPARTMENT_ID_PK_COLUMN = "DEPARTMENT_ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<List<Employee>> EMPLOYEES = new Property<>("employees");
-    public static final Property<Manager> TO_MANAGER = new Property<>("toManager");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<Employee>> EMPLOYEES = Property.create("employees", List.class);
+    public static final Property<Manager> TO_MANAGER = Property.create("toManager", Manager.class);
 
     public void setName(String name) {
         writeProperty("name", name);

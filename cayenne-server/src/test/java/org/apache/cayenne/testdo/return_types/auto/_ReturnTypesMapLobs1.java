@@ -15,8 +15,8 @@ public abstract class _ReturnTypesMapLobs1 extends CayenneDataObject {
 
     public static final String AAAID_PK_COLUMN = "AAAID";
 
-    public static final Property<String> CLOB_COLUMN = new Property<>("clobColumn");
-    public static final Property<String> NCLOB_COLUMN = new Property<>("nclobColumn");
+    public static final Property<String> CLOB_COLUMN = Property.create("clobColumn", String.class);
+    public static final Property<String> NCLOB_COLUMN = Property.create("nclobColumn", String.class);
 
     public void setClobColumn(String clobColumn) {
         writeProperty("clobColumn", clobColumn);

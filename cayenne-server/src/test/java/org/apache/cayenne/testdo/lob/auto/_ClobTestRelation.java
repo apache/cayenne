@@ -16,9 +16,9 @@ public abstract class _ClobTestRelation extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Integer> ID = new Property<>("id");
-    public static final Property<Integer> VALUE = new Property<>("value");
-    public static final Property<ClobTestEntity> CLOB_ID = new Property<>("clobId");
+    public static final Property<Integer> ID = Property.create("id", Integer.class);
+    public static final Property<Integer> VALUE = Property.create("value", Integer.class);
+    public static final Property<ClobTestEntity> CLOB_ID = Property.create("clobId", ClobTestEntity.class);
 
     public void setId(Integer id) {
         writeProperty("id", id);

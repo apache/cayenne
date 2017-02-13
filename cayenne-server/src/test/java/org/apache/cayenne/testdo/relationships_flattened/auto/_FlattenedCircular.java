@@ -18,8 +18,8 @@ public abstract class _FlattenedCircular extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<List<FlattenedCircular>> SIDE1S = new Property<>("side1s");
-    public static final Property<List<FlattenedCircular>> SIDE2S = new Property<>("side2s");
+    public static final Property<List<FlattenedCircular>> SIDE1S = Property.create("side1s", List.class);
+    public static final Property<List<FlattenedCircular>> SIDE2S = Property.create("side2s", List.class);
 
     public void addToSide1s(FlattenedCircular obj) {
         addToManyTarget("side1s", obj, true);

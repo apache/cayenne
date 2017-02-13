@@ -16,8 +16,8 @@ public abstract class _CompoundFkTestEntity extends CayenneDataObject {
 
     public static final String PKEY_PK_COLUMN = "PKEY";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<CompoundPkTestEntity> TO_COMPOUND_PK = new Property<>("toCompoundPk");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<CompoundPkTestEntity> TO_COMPOUND_PK = Property.create("toCompoundPk", CompoundPkTestEntity.class);
 
     public void setName(String name) {
         writeProperty("name", name);

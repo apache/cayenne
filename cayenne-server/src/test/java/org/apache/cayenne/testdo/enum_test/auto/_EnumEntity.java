@@ -16,7 +16,7 @@ public abstract class _EnumEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Enum1> ENUM_ATTRIBUTE = new Property<>("enumAttribute");
+    public static final Property<Enum1> ENUM_ATTRIBUTE = Property.create("enumAttribute", Enum1.class);
 
     public void setEnumAttribute(Enum1 enumAttribute) {
         writeProperty("enumAttribute", enumAttribute);

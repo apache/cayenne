@@ -20,10 +20,10 @@ public abstract class _Bag extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<List<Ball>> BALLS = new Property<>("balls");
-    public static final Property<List<Box>> BOXES = new Property<>("boxes");
-    public static final Property<List<Thing>> THINGS = new Property<>("things");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<Ball>> BALLS = Property.create("balls", List.class);
+    public static final Property<List<Box>> BOXES = Property.create("boxes", List.class);
+    public static final Property<List<Thing>> THINGS = Property.create("things", List.class);
 
     public void setName(String name) {
         writeProperty("name", name);

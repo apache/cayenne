@@ -15,8 +15,8 @@ public abstract class _SimpleLockingTestEntity extends CayenneDataObject {
 
     public static final String LOCKING_TEST_ID_PK_COLUMN = "LOCKING_TEST_ID";
 
-    public static final Property<String> DESCRIPTION = new Property<>("description");
-    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<String> DESCRIPTION = Property.create("description", String.class);
+    public static final Property<String> NAME = Property.create("name", String.class);
 
     public void setDescription(String description) {
         writeProperty("description", description);

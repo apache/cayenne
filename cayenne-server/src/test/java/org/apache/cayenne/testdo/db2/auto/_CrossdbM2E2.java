@@ -17,9 +17,9 @@ public abstract class _CrossdbM2E2 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<CrossdbM1E1> TO_M1E1 = new Property<>("toM1E1");
-    public static final Property<CrossdbM2E1> TO_M2E1 = new Property<>("toM2E1");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<CrossdbM1E1> TO_M1E1 = Property.create("toM1E1", CrossdbM1E1.class);
+    public static final Property<CrossdbM2E1> TO_M2E1 = Property.create("toM2E1", CrossdbM2E1.class);
 
     public void setName(String name) {
         writeProperty("name", name);

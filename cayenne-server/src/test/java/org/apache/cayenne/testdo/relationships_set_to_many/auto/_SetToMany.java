@@ -18,7 +18,7 @@ public abstract class _SetToMany extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Set<SetToManyTarget>> TARGETS = new Property<>("targets");
+    public static final Property<Set<SetToManyTarget>> TARGETS = Property.create("targets", Set.class);
 
     public void addToTargets(SetToManyTarget obj) {
         addToManyTarget("targets", obj, true);

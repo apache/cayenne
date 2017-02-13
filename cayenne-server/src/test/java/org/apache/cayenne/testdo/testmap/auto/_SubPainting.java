@@ -15,7 +15,7 @@ public abstract class _SubPainting extends CayenneDataObject {
 
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 
-    public static final Property<String> PAINTING_TITLE = new Property<>("paintingTitle");
+    public static final Property<String> PAINTING_TITLE = Property.create("paintingTitle", String.class);
 
     public void setPaintingTitle(String paintingTitle) {
         writeProperty("paintingTitle", paintingTitle);

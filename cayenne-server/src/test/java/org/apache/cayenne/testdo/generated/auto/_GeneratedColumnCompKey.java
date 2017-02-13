@@ -18,8 +18,8 @@ public abstract class _GeneratedColumnCompKey extends CayenneDataObject {
     public static final String GENERATED_COLUMN_PK_COLUMN = "GENERATED_COLUMN";
     public static final String PROPAGATED_PK_PK_COLUMN = "PROPAGATED_PK";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<GeneratedColumnCompMaster> TO_MASTER = new Property<>("toMaster");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<GeneratedColumnCompMaster> TO_MASTER = Property.create("toMaster", GeneratedColumnCompMaster.class);
 
     public void setName(String name) {
         writeProperty("name", name);

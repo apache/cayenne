@@ -21,11 +21,11 @@ public abstract class _Box extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<Bag> BAG = new Property<>("bag");
-    public static final Property<List<Ball>> BALLS = new Property<>("balls");
-    public static final Property<BoxInfo> BOX_INFO = new Property<>("boxInfo");
-    public static final Property<List<Thing>> THINGS = new Property<>("things");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<Bag> BAG = Property.create("bag", Bag.class);
+    public static final Property<List<Ball>> BALLS = Property.create("balls", List.class);
+    public static final Property<BoxInfo> BOX_INFO = Property.create("boxInfo", BoxInfo.class);
+    public static final Property<List<Thing>> THINGS = Property.create("things", List.class);
 
     public void setName(String name) {
         writeProperty("name", name);

@@ -16,8 +16,8 @@ public abstract class _BoxInfo extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> COLOR = new Property<>("color");
-    public static final Property<Box> BOX = new Property<>("box");
+    public static final Property<String> COLOR = Property.create("color", String.class);
+    public static final Property<Box> BOX = Property.create("box", Box.class);
 
     public void setColor(String color) {
         writeProperty("color", color);

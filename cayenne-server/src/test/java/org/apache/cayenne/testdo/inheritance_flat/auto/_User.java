@@ -16,7 +16,7 @@ public abstract class _User extends Role {
 
     public static final String ID_PK_COLUMN = "id";
 
-    public static final Property<UserProperties> USER_PROPERTIES = new Property<>("userProperties");
+    public static final Property<UserProperties> USER_PROPERTIES = Property.create("userProperties", UserProperties.class);
 
     public void setUserProperties(UserProperties userProperties) {
         setToOneTarget("userProperties", userProperties, true);

@@ -16,9 +16,9 @@ public abstract class _QuoteAdress extends CayenneDataObject {
 
     public static final String ADDRESS_ID_PK_COLUMN = "ADDRESS ID";
 
-    public static final Property<String> CITY = new Property<>("city");
-    public static final Property<String> GROUP = new Property<>("group");
-    public static final Property<Quote_Person> PERSON_REL = new Property<>("person_Rel");
+    public static final Property<String> CITY = Property.create("city", String.class);
+    public static final Property<String> GROUP = Property.create("group", String.class);
+    public static final Property<Quote_Person> PERSON_REL = Property.create("person_Rel", Quote_Person.class);
 
     public void setCity(String city) {
         writeProperty("city", city);

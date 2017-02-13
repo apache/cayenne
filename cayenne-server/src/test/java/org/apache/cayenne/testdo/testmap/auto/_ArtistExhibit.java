@@ -18,8 +18,8 @@ public abstract class _ArtistExhibit extends CayenneDataObject {
     public static final String ARTIST_ID_PK_COLUMN = "ARTIST_ID";
     public static final String EXHIBIT_ID_PK_COLUMN = "EXHIBIT_ID";
 
-    public static final Property<Artist> TO_ARTIST = new Property<>("toArtist");
-    public static final Property<Exhibit> TO_EXHIBIT = new Property<>("toExhibit");
+    public static final Property<Artist> TO_ARTIST = Property.create("toArtist", Artist.class);
+    public static final Property<Exhibit> TO_EXHIBIT = Property.create("toExhibit", Exhibit.class);
 
     public void setToArtist(Artist toArtist) {
         setToOneTarget("toArtist", toArtist, true);

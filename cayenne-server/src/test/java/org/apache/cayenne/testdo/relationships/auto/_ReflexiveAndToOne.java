@@ -19,10 +19,10 @@ public abstract class _ReflexiveAndToOne extends CayenneDataObject {
 
     public static final String REFLEXIVE_AND_TO_ONE_ID_PK_COLUMN = "REFLEXIVE_AND_TO_ONE_ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<List<ReflexiveAndToOne>> CHILDREN = new Property<>("children");
-    public static final Property<RelationshipHelper> TO_HELPER = new Property<>("toHelper");
-    public static final Property<ReflexiveAndToOne> TO_PARENT = new Property<>("toParent");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<ReflexiveAndToOne>> CHILDREN = Property.create("children", List.class);
+    public static final Property<RelationshipHelper> TO_HELPER = Property.create("toHelper", RelationshipHelper.class);
+    public static final Property<ReflexiveAndToOne> TO_PARENT = Property.create("toParent", ReflexiveAndToOne.class);
 
     public void setName(String name) {
         writeProperty("name", name);

@@ -16,8 +16,8 @@ public abstract class _ClobDetail extends CayenneDataObject {
 
     public static final String CLOB_DETAIL_ID_PK_COLUMN = "CLOB_DETAIL_ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<ClobMaster> MASTER = new Property<>("master");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<ClobMaster> MASTER = Property.create("master", ClobMaster.class);
 
     public void setName(String name) {
         writeProperty("name", name);

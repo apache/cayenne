@@ -20,10 +20,10 @@ public abstract class _RelationshipHelper extends CayenneDataObject {
 
     public static final String RELATIONSHIP_HELPER_ID_PK_COLUMN = "RELATIONSHIP_HELPER_ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<List<FkOfDifferentType>> FKS_OF_DIFFERENT_TYPE = new Property<>("fksOfDifferentType");
-    public static final Property<List<MeaningfulFK>> MEANIGFUL_FKS = new Property<>("meanigfulFKs");
-    public static final Property<List<ReflexiveAndToOne>> REFLEXIVE_AND_TO_ONE_ARRAY = new Property<>("reflexiveAndToOneArray");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<FkOfDifferentType>> FKS_OF_DIFFERENT_TYPE = Property.create("fksOfDifferentType", List.class);
+    public static final Property<List<MeaningfulFK>> MEANIGFUL_FKS = Property.create("meanigfulFKs", List.class);
+    public static final Property<List<ReflexiveAndToOne>> REFLEXIVE_AND_TO_ONE_ARRAY = Property.create("reflexiveAndToOneArray", List.class);
 
     public void setName(String name) {
         writeProperty("name", name);

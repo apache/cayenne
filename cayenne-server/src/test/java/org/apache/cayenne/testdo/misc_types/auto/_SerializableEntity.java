@@ -16,7 +16,7 @@ public abstract class _SerializableEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<MockSerializable> SERIALIZABLE_FIELD = new Property<>("serializableField");
+    public static final Property<MockSerializable> SERIALIZABLE_FIELD = Property.create("serializableField", MockSerializable.class);
 
     public void setSerializableField(MockSerializable serializableField) {
         writeProperty("serializableField", serializableField);

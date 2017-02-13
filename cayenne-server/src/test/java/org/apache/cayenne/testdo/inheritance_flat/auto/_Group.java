@@ -19,8 +19,8 @@ public abstract class _Group extends User {
 
     public static final String ID_PK_COLUMN = "id";
 
-    public static final Property<List<Role>> GROUP_MEMBERS = new Property<>("groupMembers");
-    public static final Property<GroupProperties> GROUP_PROPERTIES = new Property<>("groupProperties");
+    public static final Property<List<Role>> GROUP_MEMBERS = Property.create("groupMembers", List.class);
+    public static final Property<GroupProperties> GROUP_PROPERTIES = Property.create("groupProperties", GroupProperties.class);
 
     public void addToGroupMembers(Role obj) {
         addToManyTarget("groupMembers", obj, true);

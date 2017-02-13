@@ -18,7 +18,7 @@ public abstract class _DeleteRuleFlatA extends CayenneDataObject {
 
     public static final String FLATA_ID_PK_COLUMN = "FLATA_ID";
 
-    public static final Property<List<DeleteRuleFlatB>> FLAT_B = new Property<>("flatB");
+    public static final Property<List<DeleteRuleFlatB>> FLAT_B = Property.create("flatB", List.class);
 
     public void addToFlatB(DeleteRuleFlatB obj) {
         addToManyTarget("flatB", obj, true);

@@ -18,7 +18,7 @@ public abstract class _IdMapToMany extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Map<Object, IdMapToManyTarget>> TARGETS = new Property<>("targets");
+    public static final Property<Map<Object, IdMapToManyTarget>> TARGETS = Property.create("targets", Map.class);
 
     public void addToTargets(IdMapToManyTarget obj) {
         addToManyTarget("targets", obj, true);

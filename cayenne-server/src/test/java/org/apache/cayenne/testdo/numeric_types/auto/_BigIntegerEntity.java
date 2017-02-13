@@ -17,7 +17,7 @@ public abstract class _BigIntegerEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<BigInteger> BIG_INTEGER_FIELD = new Property<>("bigIntegerField");
+    public static final Property<BigInteger> BIG_INTEGER_FIELD = Property.create("bigIntegerField", BigInteger.class);
 
     public void setBigIntegerField(BigInteger bigIntegerField) {
         writeProperty("bigIntegerField", bigIntegerField);

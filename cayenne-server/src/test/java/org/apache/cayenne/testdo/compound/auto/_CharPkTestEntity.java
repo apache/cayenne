@@ -18,9 +18,9 @@ public abstract class _CharPkTestEntity extends CayenneDataObject {
 
     public static final String PK_COL_PK_COLUMN = "PK_COL";
 
-    public static final Property<String> OTHER_COL = new Property<>("otherCol");
-    public static final Property<String> PK_COL = new Property<>("pkCol");
-    public static final Property<List<CharFkTestEntity>> CHAR_FKS = new Property<>("charFKs");
+    public static final Property<String> OTHER_COL = Property.create("otherCol", String.class);
+    public static final Property<String> PK_COL = Property.create("pkCol", String.class);
+    public static final Property<List<CharFkTestEntity>> CHAR_FKS = Property.create("charFKs", List.class);
 
     public void setOtherCol(String otherCol) {
         writeProperty("otherCol", otherCol);

@@ -19,9 +19,9 @@ public abstract class _ROArtist extends CayenneDataObject {
 
     public static final String ARTIST_ID_PK_COLUMN = "ARTIST_ID";
 
-    public static final Property<String> ARTIST_NAME = new Property<>("artistName");
-    public static final Property<Date> DATE_OF_BIRTH = new Property<>("dateOfBirth");
-    public static final Property<List<Painting>> PAINTING_ARRAY = new Property<>("paintingArray");
+    public static final Property<String> ARTIST_NAME = Property.create("artistName", String.class);
+    public static final Property<Date> DATE_OF_BIRTH = Property.create("dateOfBirth", Date.class);
+    public static final Property<List<Painting>> PAINTING_ARRAY = Property.create("paintingArray", List.class);
 
     public String getArtistName() {
         return (String)readProperty("artistName");

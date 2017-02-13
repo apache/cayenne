@@ -20,14 +20,14 @@ public abstract class _CompoundPainting extends CayenneDataObject {
 
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 
-    public static final Property<String> ARTIST_NAME = new Property<>("artistName");
-    public static final Property<BigDecimal> ESTIMATED_PRICE = new Property<>("estimatedPrice");
-    public static final Property<String> GALLERY_NAME = new Property<>("galleryName");
-    public static final Property<String> PAINTING_TITLE = new Property<>("paintingTitle");
-    public static final Property<String> TEXT_REVIEW = new Property<>("textReview");
-    public static final Property<Artist> TO_ARTIST = new Property<>("toArtist");
-    public static final Property<Gallery> TO_GALLERY = new Property<>("toGallery");
-    public static final Property<PaintingInfo> TO_PAINTING_INFO = new Property<>("toPaintingInfo");
+    public static final Property<String> ARTIST_NAME = Property.create("artistName", String.class);
+    public static final Property<BigDecimal> ESTIMATED_PRICE = Property.create("estimatedPrice", BigDecimal.class);
+    public static final Property<String> GALLERY_NAME = Property.create("galleryName", String.class);
+    public static final Property<String> PAINTING_TITLE = Property.create("paintingTitle", String.class);
+    public static final Property<String> TEXT_REVIEW = Property.create("textReview", String.class);
+    public static final Property<Artist> TO_ARTIST = Property.create("toArtist", Artist.class);
+    public static final Property<Gallery> TO_GALLERY = Property.create("toGallery", Gallery.class);
+    public static final Property<PaintingInfo> TO_PAINTING_INFO = Property.create("toPaintingInfo", PaintingInfo.class);
 
     public void setArtistName(String artistName) {
         writeProperty("artistName", artistName);

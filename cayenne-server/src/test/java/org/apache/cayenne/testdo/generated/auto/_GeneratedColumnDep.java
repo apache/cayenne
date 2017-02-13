@@ -16,8 +16,8 @@ public abstract class _GeneratedColumnDep extends CayenneDataObject {
 
     public static final String GENERATED_COLUMN_FK_PK_COLUMN = "GENERATED_COLUMN_FK";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<GeneratedColumnTestEntity> TO_MASTER = new Property<>("toMaster");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<GeneratedColumnTestEntity> TO_MASTER = Property.create("toMaster", GeneratedColumnTestEntity.class);
 
     public void setName(String name) {
         writeProperty("name", name);

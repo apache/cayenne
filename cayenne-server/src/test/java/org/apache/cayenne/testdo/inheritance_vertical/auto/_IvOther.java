@@ -18,8 +18,8 @@ public abstract class _IvOther extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<List<IvImpl>> IMPLS = new Property<>("impls");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<IvImpl>> IMPLS = Property.create("impls", List.class);
 
     public void setName(String name) {
         writeProperty("name", name);

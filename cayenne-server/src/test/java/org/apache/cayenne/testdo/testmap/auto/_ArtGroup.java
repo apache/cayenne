@@ -19,10 +19,10 @@ public abstract class _ArtGroup extends CayenneDataObject {
 
     public static final String GROUP_ID_PK_COLUMN = "GROUP_ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<List<Artist>> ARTIST_ARRAY = new Property<>("artistArray");
-    public static final Property<List<ArtGroup>> CHILD_GROUPS_ARRAY = new Property<>("childGroupsArray");
-    public static final Property<ArtGroup> TO_PARENT_GROUP = new Property<>("toParentGroup");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<Artist>> ARTIST_ARRAY = Property.create("artistArray", List.class);
+    public static final Property<List<ArtGroup>> CHILD_GROUPS_ARRAY = Property.create("childGroupsArray", List.class);
+    public static final Property<ArtGroup> TO_PARENT_GROUP = Property.create("toParentGroup", ArtGroup.class);
 
     public void setName(String name) {
         writeProperty("name", name);

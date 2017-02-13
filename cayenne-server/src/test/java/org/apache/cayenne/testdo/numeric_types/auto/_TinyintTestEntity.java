@@ -15,7 +15,7 @@ public abstract class _TinyintTestEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Byte> TINYINT_COL = new Property<>("tinyintCol");
+    public static final Property<Byte> TINYINT_COL = Property.create("tinyintCol", Byte.class);
 
     public void setTinyintCol(Byte tinyintCol) {
         writeProperty("tinyintCol", tinyintCol);

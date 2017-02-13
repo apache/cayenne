@@ -15,7 +15,7 @@ public abstract class _GeneratedColumnTest2 extends CayenneDataObject {
 
     public static final String GENERATED_COLUMN_PK_COLUMN = "GENERATED_COLUMN";
 
-    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<String> NAME = Property.create("name", String.class);
 
     public void setName(String name) {
         writeProperty("name", name);

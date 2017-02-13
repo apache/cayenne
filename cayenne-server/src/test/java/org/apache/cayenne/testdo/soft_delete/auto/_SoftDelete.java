@@ -15,8 +15,8 @@ public abstract class _SoftDelete extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Boolean> DELETED = new Property<>("deleted");
-    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<Boolean> DELETED = Property.create("deleted", Boolean.class);
+    public static final Property<String> NAME = Property.create("name", String.class);
 
     public void setDeleted(Boolean deleted) {
         writeProperty("deleted", deleted);

@@ -16,8 +16,8 @@ public abstract class _OnewayTable2 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Integer> ID = new Property<>("id");
-    public static final Property<OnewayTable1> TO_ONE_ONE_WAY_DB = new Property<>("toOneOneWayDb");
+    public static final Property<Integer> ID = Property.create("id", Integer.class);
+    public static final Property<OnewayTable1> TO_ONE_ONE_WAY_DB = Property.create("toOneOneWayDb", OnewayTable1.class);
 
     public void setId(Integer id) {
         writeProperty("id", id);

@@ -17,10 +17,10 @@ public abstract class _Ball extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Integer> THING_VOLUME = new Property<>("thingVolume");
-    public static final Property<Integer> THING_WEIGHT = new Property<>("thingWeight");
-    public static final Property<Box> BOX = new Property<>("box");
-    public static final Property<Thing> THING = new Property<>("thing");
+    public static final Property<Integer> THING_VOLUME = Property.create("thingVolume", Integer.class);
+    public static final Property<Integer> THING_WEIGHT = Property.create("thingWeight", Integer.class);
+    public static final Property<Box> BOX = Property.create("box", Box.class);
+    public static final Property<Thing> THING = Property.create("thing", Thing.class);
 
     public void setThingVolume(Integer thingVolume) {
         writeProperty("thingVolume", thingVolume);

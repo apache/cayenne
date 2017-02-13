@@ -15,7 +15,7 @@ public abstract class _CharacterEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Character> CHARACTER_FIELD = new Property<>("characterField");
+    public static final Property<Character> CHARACTER_FIELD = Property.create("characterField", Character.class);
 
     public void setCharacterField(Character characterField) {
         writeProperty("characterField", characterField);

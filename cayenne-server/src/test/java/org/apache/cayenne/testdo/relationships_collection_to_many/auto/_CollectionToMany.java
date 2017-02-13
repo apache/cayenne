@@ -18,7 +18,7 @@ public abstract class _CollectionToMany extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Collection<CollectionToManyTarget>> TARGETS = new Property<>("targets");
+    public static final Property<Collection<CollectionToManyTarget>> TARGETS = Property.create("targets", Collection.class);
 
     public void addToTargets(CollectionToManyTarget obj) {
         addToManyTarget("targets", obj, true);

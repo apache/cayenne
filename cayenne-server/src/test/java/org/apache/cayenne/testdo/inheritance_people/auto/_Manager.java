@@ -18,7 +18,7 @@ public abstract class _Manager extends Employee {
 
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
-    public static final Property<List<Department>> MANAGED_DEPARTMENTS = new Property<>("managedDepartments");
+    public static final Property<List<Department>> MANAGED_DEPARTMENTS = Property.create("managedDepartments", List.class);
 
     public void addToManagedDepartments(Department obj) {
         addToManyTarget("managedDepartments", obj, true);

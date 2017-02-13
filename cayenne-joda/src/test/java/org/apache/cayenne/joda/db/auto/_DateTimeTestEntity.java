@@ -16,7 +16,7 @@ public abstract class _DateTimeTestEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<DateTime> TIMESTAMP = new Property<DateTime>("timestamp");
+    public static final Property<DateTime> TIMESTAMP = Property.create("timestamp", DateTime.class);
 
     public void setTimestamp(DateTime timestamp) {
         writeProperty("timestamp", timestamp);

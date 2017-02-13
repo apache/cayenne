@@ -16,7 +16,7 @@ public abstract class _TooneDep extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<TooneMaster> TO_MASTER = new Property<>("toMaster");
+    public static final Property<TooneMaster> TO_MASTER = Property.create("toMaster", TooneMaster.class);
 
     public void setToMaster(TooneMaster toMaster) {
         setToOneTarget("toMaster", toMaster, true);

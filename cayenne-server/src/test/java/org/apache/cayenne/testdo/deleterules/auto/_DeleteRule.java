@@ -20,10 +20,10 @@ public abstract class _DeleteRule extends CayenneDataObject {
 
     public static final String DELETE_RULE_ID_PK_COLUMN = "DELETE_RULE_ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<List<DeleteCascade>> FROM_CASCADE = new Property<>("fromCascade");
-    public static final Property<List<DeleteDeny>> FROM_DENY = new Property<>("fromDeny");
-    public static final Property<List<DeleteNullify>> FROM_NULLIFY = new Property<>("fromNullify");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<DeleteCascade>> FROM_CASCADE = Property.create("fromCascade", List.class);
+    public static final Property<List<DeleteDeny>> FROM_DENY = Property.create("fromDeny", List.class);
+    public static final Property<List<DeleteNullify>> FROM_NULLIFY = Property.create("fromNullify", List.class);
 
     public void setName(String name) {
         writeProperty("name", name);

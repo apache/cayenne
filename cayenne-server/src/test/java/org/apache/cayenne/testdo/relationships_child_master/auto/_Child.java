@@ -16,7 +16,7 @@ public abstract class _Child extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Master> MASTER = new Property<>("master");
+    public static final Property<Master> MASTER = Property.create("master", Master.class);
 
     public void setMaster(Master master) {
         setToOneTarget("master", master, true);

@@ -15,8 +15,8 @@ public abstract class _MeaningfulGeneratedColumnTestEntity extends CayenneDataOb
 
     public static final String GENERATED_COLUMN_PK_COLUMN = "GENERATED_COLUMN";
 
-    public static final Property<Integer> GENERATED_COLUMN = new Property<>("generatedColumn");
-    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<Integer> GENERATED_COLUMN = Property.create("generatedColumn", Integer.class);
+    public static final Property<String> NAME = Property.create("name", String.class);
 
     public void setGeneratedColumn(Integer generatedColumn) {
         writeProperty("generatedColumn", generatedColumn);

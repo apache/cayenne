@@ -15,8 +15,8 @@ public abstract class _IvBase extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<String> TYPE = new Property<>("type");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<String> TYPE = Property.create("type", String.class);
 
     public void setName(String name) {
         writeProperty("name", name);

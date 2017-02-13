@@ -15,8 +15,8 @@ public abstract class _DecimalPKTest1 extends CayenneDataObject {
 
     public static final String DECIMAL_PK_PK_COLUMN = "DECIMAL_PK";
 
-    public static final Property<Double> DECIMAL_PK = new Property<>("decimalPK");
-    public static final Property<String> NAME = new Property<>("name");
+    public static final Property<Double> DECIMAL_PK = Property.create("decimalPK", Double.class);
+    public static final Property<String> NAME = Property.create("name", String.class);
 
     public void setDecimalPK(Double decimalPK) {
         writeProperty("decimalPK", decimalPK);

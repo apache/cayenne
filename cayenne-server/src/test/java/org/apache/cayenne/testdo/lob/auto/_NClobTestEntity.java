@@ -15,7 +15,7 @@ public abstract class _NClobTestEntity extends CayenneDataObject {
 
     public static final String NCLOB_TEST_ID_PK_COLUMN = "NCLOB_TEST_ID";
 
-    public static final Property<String> NCLOB_COL = new Property<>("nclobCol");
+    public static final Property<String> NCLOB_COL = Property.create("nclobCol", String.class);
 
     public void setNclobCol(String nclobCol) {
         writeProperty("nclobCol", nclobCol);

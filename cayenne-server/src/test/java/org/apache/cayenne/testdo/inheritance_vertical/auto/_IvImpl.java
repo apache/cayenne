@@ -16,8 +16,8 @@ public abstract class _IvImpl extends IvBase {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> ATTR1 = new Property<>("attr1");
-    public static final Property<IvOther> OTHER = new Property<>("other");
+    public static final Property<String> ATTR1 = Property.create("attr1", String.class);
+    public static final Property<IvOther> OTHER = Property.create("other", IvOther.class);
 
     public void setAttr1(String attr1) {
         writeProperty("attr1", attr1);

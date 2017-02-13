@@ -19,10 +19,10 @@ public abstract class _Product extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> LONGVARCHAR_COL = new Property<>("longvarcharCol");
-    public static final Property<List<Product>> BASE = new Property<>("base");
-    public static final Property<List<Product>> CONTAINED = new Property<>("contained");
-    public static final Property<List<Customer>> ORDER_BY = new Property<>("orderBy");
+    public static final Property<String> LONGVARCHAR_COL = Property.create("longvarcharCol", String.class);
+    public static final Property<List<Product>> BASE = Property.create("base", List.class);
+    public static final Property<List<Product>> CONTAINED = Property.create("contained", List.class);
+    public static final Property<List<Customer>> ORDER_BY = Property.create("orderBy", List.class);
 
     public void setLongvarcharCol(String longvarcharCol) {
         writeProperty("longvarcharCol", longvarcharCol);

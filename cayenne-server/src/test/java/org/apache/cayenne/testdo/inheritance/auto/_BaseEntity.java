@@ -17,9 +17,9 @@ public abstract class _BaseEntity extends CayenneDataObject {
 
     public static final String BASE_ENTITY_ID_PK_COLUMN = "BASE_ENTITY_ID";
 
-    public static final Property<String> ENTITY_TYPE = new Property<>("entityType");
-    public static final Property<DirectToSubEntity> TO_DIRECT_TO_SUB_ENTITY = new Property<>("toDirectToSubEntity");
-    public static final Property<RelatedEntity> TO_RELATED_ENTITY = new Property<>("toRelatedEntity");
+    public static final Property<String> ENTITY_TYPE = Property.create("entityType", String.class);
+    public static final Property<DirectToSubEntity> TO_DIRECT_TO_SUB_ENTITY = Property.create("toDirectToSubEntity", DirectToSubEntity.class);
+    public static final Property<RelatedEntity> TO_RELATED_ENTITY = Property.create("toRelatedEntity", RelatedEntity.class);
 
     public void setEntityType(String entityType) {
         writeProperty("entityType", entityType);

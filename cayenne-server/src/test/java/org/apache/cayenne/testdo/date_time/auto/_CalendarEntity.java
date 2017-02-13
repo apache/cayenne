@@ -17,7 +17,7 @@ public abstract class _CalendarEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Calendar> CALENDAR_FIELD = new Property<>("calendarField");
+    public static final Property<Calendar> CALENDAR_FIELD = Property.create("calendarField", Calendar.class);
 
     public void setCalendarField(Calendar calendarField) {
         writeProperty("calendarField", calendarField);

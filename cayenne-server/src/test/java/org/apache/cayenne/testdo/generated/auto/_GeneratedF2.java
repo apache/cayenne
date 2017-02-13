@@ -18,7 +18,7 @@ public abstract class _GeneratedF2 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<List<GeneratedF1>> F1 = new Property<>("f1");
+    public static final Property<List<GeneratedF1>> F1 = Property.create("f1", List.class);
 
     public void addToF1(GeneratedF1 obj) {
         addToManyTarget("f1", obj, true);

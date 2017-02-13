@@ -19,8 +19,8 @@ public abstract class _RelatedEntity extends CayenneDataObject {
 
     public static final String RELATED_ENTITY_ID_PK_COLUMN = "RELATED_ENTITY_ID";
 
-    public static final Property<List<BaseEntity>> BASE_ENTITIES = new Property<>("baseEntities");
-    public static final Property<List<SubEntity>> SUB_ENTITIES = new Property<>("subEntities");
+    public static final Property<List<BaseEntity>> BASE_ENTITIES = Property.create("baseEntities", List.class);
+    public static final Property<List<SubEntity>> SUB_ENTITIES = Property.create("subEntities", List.class);
 
     public void addToBaseEntities(BaseEntity obj) {
         addToManyTarget("baseEntities", obj, true);

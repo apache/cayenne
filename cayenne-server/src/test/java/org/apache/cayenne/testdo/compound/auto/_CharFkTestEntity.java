@@ -16,8 +16,8 @@ public abstract class _CharFkTestEntity extends CayenneDataObject {
 
     public static final String PK_PK_COLUMN = "PK";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<CharPkTestEntity> TO_CHAR_PK = new Property<>("toCharPK");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<CharPkTestEntity> TO_CHAR_PK = Property.create("toCharPK", CharPkTestEntity.class);
 
     public void setName(String name) {
         writeProperty("name", name);

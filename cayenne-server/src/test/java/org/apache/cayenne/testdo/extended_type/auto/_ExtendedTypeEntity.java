@@ -16,7 +16,7 @@ public abstract class _ExtendedTypeEntity extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<StringET1> NAME = new Property<>("name");
+    public static final Property<StringET1> NAME = Property.create("name", StringET1.class);
 
     public void setName(StringET1 name) {
         writeProperty("name", name);

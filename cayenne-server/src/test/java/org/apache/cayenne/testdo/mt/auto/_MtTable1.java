@@ -18,9 +18,9 @@ public abstract class _MtTable1 extends CayenneDataObject {
 
     public static final String TABLE1_ID_PK_COLUMN = "TABLE1_ID";
 
-    public static final Property<String> GLOBAL_ATTRIBUTE1 = new Property<>("globalAttribute1");
-    public static final Property<String> SERVER_ATTRIBUTE1 = new Property<>("serverAttribute1");
-    public static final Property<List<MtTable2>> TABLE2ARRAY = new Property<>("table2Array");
+    public static final Property<String> GLOBAL_ATTRIBUTE1 = Property.create("globalAttribute1", String.class);
+    public static final Property<String> SERVER_ATTRIBUTE1 = Property.create("serverAttribute1", String.class);
+    public static final Property<List<MtTable2>> TABLE2ARRAY = Property.create("table2Array", List.class);
 
     public void setGlobalAttribute1(String globalAttribute1) {
         writeProperty("globalAttribute1", globalAttribute1);

@@ -18,9 +18,9 @@ public abstract class _AbstractPerson extends CayenneDataObject {
 
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
-    public static final Property<String> NAME = new Property<>("name");
-    public static final Property<String> PERSON_TYPE = new Property<>("personType");
-    public static final Property<List<PersonNotes>> NOTES = new Property<>("notes");
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<String> PERSON_TYPE = Property.create("personType", String.class);
+    public static final Property<List<PersonNotes>> NOTES = Property.create("notes", List.class);
 
     public void setName(String name) {
         writeProperty("name", name);

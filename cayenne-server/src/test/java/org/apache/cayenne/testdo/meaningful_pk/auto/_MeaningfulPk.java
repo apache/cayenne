@@ -15,7 +15,7 @@ public abstract class _MeaningfulPk extends CayenneDataObject {
 
     public static final String PK_PK_COLUMN = "PK";
 
-    public static final Property<String> PK = new Property<>("pk");
+    public static final Property<String> PK = Property.create("pk", String.class);
 
     public void setPk(String pk) {
         writeProperty("pk", pk);

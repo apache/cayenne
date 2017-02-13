@@ -16,8 +16,8 @@ public abstract class _Address extends CayenneDataObject {
 
     public static final String ADDRESS_ID_PK_COLUMN = "ADDRESS_ID";
 
-    public static final Property<String> CITY = new Property<>("city");
-    public static final Property<Employee> TO_EMPLOYEE = new Property<>("toEmployee");
+    public static final Property<String> CITY = Property.create("city", String.class);
+    public static final Property<Employee> TO_EMPLOYEE = Property.create("toEmployee", Employee.class);
 
     public void setCity(String city) {
         writeProperty("city", city);
