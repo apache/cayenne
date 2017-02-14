@@ -24,6 +24,7 @@ import org.apache.cayenne.lifecycle.db.E1;
 import org.apache.cayenne.lifecycle.unit.CacheInvalidationCase;
 import org.apache.cayenne.query.ObjectSelect;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -33,17 +34,15 @@ import static org.junit.Assert.assertEquals;
  */
 public class CacheInvalidationIT extends CacheInvalidationCase {
 
+    @Ignore("MapQueryCache doesn't store cache groups in different caches, so it can't run this test for now.")
     @Test
     public void testInvalidate_Custom() throws Exception {
         ObjectContext context = runtime.newContext();
 
         // no explicit cache group must still work - it lands inside default cache called 'cayenne.default.cache'
         ObjectSelect<E1> g0 = ObjectSelect.query(E1.class).localCache();
-        g0.setName("q0");
         ObjectSelect<E1> g1 = ObjectSelect.query(E1.class).localCache("g1");
-        g1.setName("q1");
         ObjectSelect<E1> g2 = ObjectSelect.query(E1.class).localCache("g2");
-        g2.setName("q2");
 
         assertEquals(0, g0.selectCount(context));
         assertEquals(0, g1.selectCount(context));

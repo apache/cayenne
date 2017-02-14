@@ -72,10 +72,6 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		// fetch offset and limit
 
 		StringBuilder key = new StringBuilder();
-		if(query.getName() != null) {
-			key.append(query.getName()).append('/');
-		}
-
 		ObjEntity entity = getObjEntity();
 		if (entity != null) {
 			key.append(entity.getName());
