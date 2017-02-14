@@ -92,7 +92,7 @@ public class FileProjectSaverTest extends Project2Case {
         Project project = new Project(new ConfigurationTree<DataChannelDescriptor>(
                 rootNode));
 
-        saver.saveAs(project, new URLResource(testFolder.toURL()));
+        saver.saveAs(project, new URLResource(testFolder.toURI().toURL()));
 
         File target = new File(testFolder, "cayenne-test.xml");
         assertTrue(target.isFile());

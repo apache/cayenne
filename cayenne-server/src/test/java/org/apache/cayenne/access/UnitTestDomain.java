@@ -22,7 +22,7 @@ package org.apache.cayenne.access;
 import java.util.Collection;
 import java.util.Map;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.AssertionFailedError;
 
 import org.apache.cayenne.ObjectContext;
@@ -38,6 +38,7 @@ public class UnitTestDomain extends DataDomain {
         super(name);
     }
 
+    @SuppressWarnings("deprecation")
     public UnitTestDomain(String name, Map properties) {
         super(name, properties);
     }

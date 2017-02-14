@@ -93,16 +93,16 @@ public class DataContextSharedCacheIT extends ServerCase {
                 "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) "
                         + "WHERE ARTIST_NAME = #bind($oldName)");
 
-        Map map = new HashMap(3);
+        Map<String, Object> map = new HashMap<>(3);
         map.put("newName", newName);
         map.put("oldName", originalName);
-        query.setParameters(map);
+        query.setParams(map);
         context.performNonSelectingQuery(query);
 
         // fetch updated artist into the new context, and see if the original
         // one gets updated
         Expression qual = ExpressionFactory.matchExp("artistName", newName);
-        List artists = context1.performQuery(new SelectQuery(Artist.class, qual));
+        List artists = context1.performQuery(new SelectQuery<>(Artist.class, qual));
         assertEquals(1, artists.size());
         Artist altArtist = (Artist) artists.get(0);
 
@@ -176,8 +176,6 @@ public class DataContextSharedCacheIT extends ServerCase {
      * Test case to prove that changes made to an object in one ObjectStore and committed
      * to the database will be correctly merged in the peer ObjectStore using the same
      * DataRowCache. E.g. modified objects will be merged so that no new changes are lost.
-     * 
-     * @throws Exception
      */
     @Test
     public void testSnapshotChangePropagationToModifiedObjects() throws Exception {
@@ -266,8 +264,6 @@ public class DataContextSharedCacheIT extends ServerCase {
      * Test case to prove that deleting an object in one ObjectStore and committed to the
      * database will be reflected in the peer ObjectStore using the same DataRowCache. By
      * default HOLLOW objects will be changed to TRANSIENT.
-     * 
-     * @throws Exception
      */
     @Test
     public void testSnapshotDeletePropagationToHollow() throws Exception {
@@ -355,8 +351,6 @@ public class DataContextSharedCacheIT extends ServerCase {
      * Test case to prove that deleting an object in one ObjectStore and committing to the
      * database will be reflected in the peer ObjectStore using the same DataRowCache. By
      * default DELETED objects will be changed to TRANSIENT.
-     * 
-     * @throws Exception
      */
     @Test
     public void testSnapshotDeletePropagationToDeleted() throws Exception {
@@ -468,8 +462,6 @@ public class DataContextSharedCacheIT extends ServerCase {
      * Test case to prove that inserting an object in one ObjectStore and committing to
      * the database will be reflected in the peer ObjectStore using the same DataRowCache.
      * This would mean refreshing to-many collections.
-     * 
-     * @throws Exception
      */
     @Test
     public void testSnapshotInsertPropagationToManyRefresh() throws Exception {
@@ -540,15 +532,15 @@ public class DataContextSharedCacheIT extends ServerCase {
                 .createSQLTemplate(
                         Artist.class,
                         "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE ARTIST_NAME = #bind($oldName)");
-        Map map = new HashMap(3);
+        Map<String, Object> map = new HashMap<>(3);
         map.put("newName", newName);
         map.put("oldName", originalName);
-        update.setParameters(map);
+        update.setParams(map);
         context.performNonSelectingQuery(update);
 
         // fetch updated artist without refreshing
         Expression qual = ExpressionFactory.matchExp("artistName", newName);
-        SelectQuery query = new SelectQuery(Artist.class, qual);
+        SelectQuery query = new SelectQuery<>(Artist.class, qual);
         List artists = context.performQuery(query);
         assertEquals(1, artists.size());
         artist = (Artist) artists.get(0);
@@ -701,10 +693,10 @@ public class DataContextSharedCacheIT extends ServerCase {
         String template = "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE ARTIST_NAME = #bind($oldName)";
         SQLTemplate update = new SQLTemplate(Artist.class, template);
 
-        Map map = new HashMap(3);
+        Map<String, Object> map = new HashMap<>(3);
         map.put("newName", backendName);
         map.put("oldName", originalName);
-        update.setParameters(map);
+        update.setParams(map);
         context.performNonSelectingQuery(update);
 
         context.commitChanges();

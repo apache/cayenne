@@ -38,7 +38,9 @@ public class Main {
     public static void main(String[] args) {
 
         // starting Cayenne
-        ServerRuntime cayenneRuntime = new ServerRuntime("cayenne-project.xml");
+        ServerRuntime cayenneRuntime = ServerRuntime.builder()
+                .addConfig("cayenne-project.xml")
+                .build();
 
         // getting a hold of ObjectContext
         ObjectContext context = cayenneRuntime.newContext();

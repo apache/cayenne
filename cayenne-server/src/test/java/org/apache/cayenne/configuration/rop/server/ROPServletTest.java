@@ -122,8 +122,8 @@ public class ROPServletTest {
 		Object[] marray = modules.toArray();
 
 		assertTrue(marray[0] instanceof ServerModule);
-		// [1] is an inner class
-		assertTrue(marray[2] instanceof ROPServerModule);
+		// [2] is an inner class
+		assertTrue(marray[1] instanceof ROPServerModule);
 	}
 
 	@Test
@@ -151,9 +151,9 @@ public class ROPServletTest {
 
 		assertTrue(marray[0] instanceof ServerModule);
 		// [1] is an inner class
-		assertTrue(marray[2] instanceof ROPServerModule);
-		assertTrue(marray[3] instanceof MockModule1);
-		assertTrue(marray[4] instanceof MockModule2);
+		assertTrue(marray[1] instanceof ROPServerModule);
+		assertTrue(marray[2] instanceof MockModule1);
+		assertTrue(marray[3] instanceof MockModule2);
 
 		RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
 		assertTrue(handler instanceof MockRequestHandler);
@@ -178,7 +178,7 @@ public class ROPServletTest {
 
 		Object[] marray = modules.toArray();
 
-		assertTrue(marray[3] instanceof ROPHessianServlet_ConfigModule);
+		assertTrue(marray[2] instanceof ROPHessianServlet_ConfigModule);
 
 		// TODO: mock servlet request to check that the right service instance
 		// is invoked

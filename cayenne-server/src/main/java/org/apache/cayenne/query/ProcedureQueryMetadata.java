@@ -52,7 +52,7 @@ class ProcedureQueryMetadata extends BaseQueryMetadata {
 
             if (root != null) {
                 if (root instanceof String) {
-                    this.procedure = resolver.lookupProcedure((String) root);
+                    this.procedure = resolver.getProcedure((String) root);
                 }
                 else if (root instanceof Procedure) {
                     this.procedure = (Procedure) root;

@@ -45,20 +45,18 @@ public class DefaultObjectMapRetainStrategy implements ObjectMapRetainStrategy {
         this.runtimeProperties = runtimeProperties;
     }
 
+    @SuppressWarnings("unchecked")
     public Map<Object, Persistent> createObjectMap() {
         String strategy = runtimeProperties
                 .get(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY);
 
         if (strategy == null || WEAK_RETAIN_STRATEGY.equals(strategy)) {
             return new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.WEAK);
-        }
-        else if (SOFT_RETAIN_STRATEGY.equals(strategy)) {
+        } else if (SOFT_RETAIN_STRATEGY.equals(strategy)) {
             return new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.SOFT);
-        }
-        else if (HARD_RETAIN_STRATEGY.equals(strategy)) {
+        } else if (HARD_RETAIN_STRATEGY.equals(strategy)) {
             return new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.HARD);
-        }
-        else {
+        } else {
             throw new CayenneRuntimeException("Unsupported retain strategy " + strategy);
         }
     }

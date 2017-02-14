@@ -127,7 +127,7 @@ public class EntityInheritanceTree {
     }
 
     public Collection<EntityInheritanceTree> getChildren() {
-        return (subentities != null) ? subentities : Collections.EMPTY_LIST;
+        return (subentities != null) ? subentities : Collections.<EntityInheritanceTree>emptyList();
     }
 
     public ObjEntity getEntity() {

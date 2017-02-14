@@ -280,9 +280,9 @@ abstract class DataDomainSyncBucket {
 
         // must do a slow map scan to ensure the object is not mapped under a different
         // key...
-        Iterator<?> it = map.entrySet().iterator();
+        Iterator<Map.Entry<Object, Object>> it = map.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<Object, Object> e = (Map.Entry<Object, Object>) it.next();
+            Map.Entry<Object, Object> e = it.next();
             if (e.getValue() == target) {
                 it.remove();
                 break;

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.client;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.AssertionFailedError;
 
 import org.apache.cayenne.DataChannel;

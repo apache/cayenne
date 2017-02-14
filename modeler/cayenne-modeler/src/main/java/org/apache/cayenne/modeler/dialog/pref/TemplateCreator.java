@@ -44,7 +44,7 @@ public class TemplateCreator extends CayenneController {
 
     protected TemplateCreatorView view;
     protected boolean canceled;
-    protected Set existingNames;
+    protected Set<String> existingNames;
     protected CayennePreferenceEditor editor;
     protected Preferences preferences;
 
@@ -55,7 +55,7 @@ public class TemplateCreator extends CayenneController {
                 JDialog.class,
                 parent.getView());
         this.view = new TemplateCreatorView(parentDialog);
-        this.existingNames = new HashSet();
+        this.existingNames = new HashSet<>();
         PreferenceEditor editor = parent.getEditor();
         if (editor instanceof CayennePreferenceEditor) {
             this.editor = (CayennePreferenceEditor) editor;

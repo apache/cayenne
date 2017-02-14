@@ -41,6 +41,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ServerRuntimeBuilderIT extends ServerCase {
 

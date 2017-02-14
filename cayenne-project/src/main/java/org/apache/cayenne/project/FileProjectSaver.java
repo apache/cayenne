@@ -226,7 +226,7 @@ public class FileProjectSaver implements ProjectSaver {
 
 			unit.targetTempFile = null;
 			try {
-				unit.node.acceptVisitor(new ConfigurationSourceSetter(new URLResource(targetFile.toURL())));
+				unit.node.acceptVisitor(new ConfigurationSourceSetter(new URLResource(targetFile.toURI().toURL())));
 			} catch (MalformedURLException e) {
 				throw new CayenneRuntimeException("Malformed URL for file '%s'", e, targetFile.getAbsolutePath());
 			}

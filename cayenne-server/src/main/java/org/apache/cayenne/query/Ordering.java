@@ -60,6 +60,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 * Ordering with lower index is more significant than any other Ordering
 	 * with higher index. List being ordered is modified in place.
 	 */
+	@SuppressWarnings("unchecked")
 	public static void orderList(List<?> objects, List<? extends Ordering> orderings) {
 		Collections.sort(objects, ComparatorUtils.chainedComparator(orderings));
 	}

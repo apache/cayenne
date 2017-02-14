@@ -53,6 +53,7 @@ import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLTemplateActionIT extends ServerCase {
 

@@ -27,6 +27,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("deprecation")
 public class NamedQueryTest {
 
     @Test
@@ -49,7 +50,7 @@ public class NamedQueryTest {
         NamedQuery o = new NamedQuery("abc");
         Object clone = Util.cloneViaSerialization(o);
 
-        assertTrue(clone instanceof NamedQuery);
+        assertTrue(clone != null);
         NamedQuery c1 = (NamedQuery) clone;
 
         assertNotSame(o, c1);

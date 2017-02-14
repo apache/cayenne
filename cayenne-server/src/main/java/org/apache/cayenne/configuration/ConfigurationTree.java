@@ -48,6 +48,6 @@ public class ConfigurationTree<T extends ConfigurationNode> {
     }
 
     public Collection<ValidationFailure> getLoadFailures() {
-        return loadFailures != null ? loadFailures : Collections.EMPTY_LIST;
+        return loadFailures != null ? loadFailures : Collections.<ValidationFailure>emptyList();
     }
 }

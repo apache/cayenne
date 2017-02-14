@@ -178,7 +178,7 @@ public class DataContextPrefetchIT extends ServerCase {
 		params.put("name1", "artist2");
 		params.put("name2", "artist3");
 		Expression e = ExpressionFactory.exp("artistName = $name1 or artistName = $name2");
-		SelectQuery<Artist> q = new SelectQuery("Artist", e.expWithParameters(params));
+		SelectQuery<Artist> q = new SelectQuery<>("Artist", e.params(params));
 		q.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
 
 		final List<Artist> artists = context.select(q);
@@ -554,7 +554,7 @@ public class DataContextPrefetchIT extends ServerCase {
 		tArtistGroup.insert(101, 1);
 
 		// OUTER join part intentionally doesn't match anything
-		Expression exp = new Property<String>("groupArray+.name").eq("XX").orExp(Artist.ARTIST_NAME.eq("artist2"));
+		Expression exp = Property.create("groupArray+.name", String.class).eq("XX").orExp(Artist.ARTIST_NAME.eq("artist2"));
 
 		SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class, exp);
 		q.addPrefetch(Artist.PAINTING_ARRAY.disjoint());

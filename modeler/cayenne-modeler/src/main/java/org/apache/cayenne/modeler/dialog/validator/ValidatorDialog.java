@@ -90,7 +90,7 @@ public class ValidatorDialog extends CayenneDialog {
     protected ValidatorDialog(CayenneModelerFrame editor) {
         super(editor, "Validation Problems", false);
 
-        this.validationObjects = Collections.EMPTY_LIST;
+        this.validationObjects = Collections.emptyList();
 
         initView();
         initController();

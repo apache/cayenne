@@ -120,9 +120,10 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
      * 
      * @since 1.1
      */
+    @SuppressWarnings("unchecked")
     public Collection<DbAttribute> getTargetAttributes() {
         if (joins.size() == 0) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         return CollectionUtils.collect(joins, JoinTransformers.targetExtractor);
@@ -133,9 +134,10 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
      * 
      * @since 1.1
      */
+    @SuppressWarnings("unchecked")
     public Collection<DbAttribute> getSourceAttributes() {
         if (joins.size() == 0) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         return CollectionUtils.collect(joins, JoinTransformers.sourceExtractor);
@@ -383,7 +385,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
             Object val = srcSnapshot.get(join.getSourceName());
             if (val == null) {
                 foundNulls++;
-                idMap = Collections.EMPTY_MAP;
+                idMap = Collections.emptyMap();
             } else {
                 idMap = Collections.singletonMap(join.getTargetName(), val);
             }

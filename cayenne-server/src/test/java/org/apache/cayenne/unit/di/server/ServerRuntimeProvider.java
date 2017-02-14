@@ -51,6 +51,7 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
         this.unitDbAdapter = unitDbAdapter;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public ServerRuntime get() throws ConfigurationException {
 

@@ -308,12 +308,12 @@ public class DefaultInjectorInjectionTest {
                 binder.bind(MockInterface1.class).to(
                         MockImplementation1_ListConfiguration.class);
 
-                Collection firstList = new ArrayList<>();
+                Collection<Object> firstList = new ArrayList<>();
                 firstList.add("1value");
                 firstList.add("2value");
                 firstList.add("3value");
 
-                Collection secondList = new ArrayList<>();
+                Collection<Object> secondList = new ArrayList<>();
                 secondList.add("6value");
                 secondList.add("7value");
                 secondList.add("8value");

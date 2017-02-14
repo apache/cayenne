@@ -86,7 +86,7 @@ public class DataContextSQLTemplateCompoundIT extends ServerCase {
                 + " WHERE #bindObjectEqual($a [ 't0.F_KEY1', 't0.F_KEY2' ] [ 'KEY1', 'KEY2' ] ) ORDER BY PKEY";
         SQLTemplate query = new SQLTemplate(CompoundFkTestEntity.class, template);
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-        query.setParameters(Collections.singletonMap("a", a));
+        query.setParams(Collections.singletonMap("a", a));
 
         List<CompoundFkTestEntity> objects = context.performQuery(query);
         assertEquals(1, objects.size());
@@ -112,7 +112,7 @@ public class DataContextSQLTemplateCompoundIT extends ServerCase {
                 + " WHERE #bindObjectNotEqual($a [ 't0.F_KEY1', 't0.F_KEY2' ] [ 'KEY1', 'KEY2' ] ) ORDER BY PKEY";
         SQLTemplate query = new SQLTemplate(CompoundFkTestEntity.class, template);
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-        query.setParameters(Collections.singletonMap("a", a));
+        query.setParams(Collections.singletonMap("a", a));
 
         List<CompoundFkTestEntity> objects = context.performQuery(query);
         assertEquals(1, objects.size());

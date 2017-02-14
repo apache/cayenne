@@ -99,7 +99,7 @@ public class FilesystemResourceLocator implements ResourceLocator {
             File resourceFile = new File(root, name);
             if (resourceFile.exists()) {
                 try {
-                    resources.add(new URLResource(resourceFile.toURL()));
+                    resources.add(new URLResource(resourceFile.toURI().toURL()));
                 }
                 catch (MalformedURLException e) {
                     throw new CayenneRuntimeException(

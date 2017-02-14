@@ -128,7 +128,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     Collection<GraphDiff> getLifecycleEventInducedChanges() {
         return lifecycleEventInducedChanges != null
                 ? lifecycleEventInducedChanges
-                : Collections.EMPTY_LIST;
+                : Collections.<GraphDiff>emptyList();
     }
 
     void registerLifecycleEventInducedChange(GraphDiff diff) {

@@ -28,6 +28,7 @@ import static org.junit.Assert.assertTrue;
 
 public class NamedQueryTest {
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testSerializabilityWithHessian() throws Exception {
         NamedQuery o = new NamedQuery("abc");

@@ -139,10 +139,9 @@ public abstract class ObjectContextQueryAction {
                         // TODO: Andrus 1/31/2006 - IncrementalFaultList is not properly
                         // transferred between contexts....
 
-                        List childObjects = new ArrayList(objects.size());
-                        Iterator it = objects.iterator();
-                        while (it.hasNext()) {
-                            Persistent object = (Persistent) it.next();
+                        List<Object> childObjects = new ArrayList<>(objects.size());
+                        for (Object object1 : objects) {
+                            Persistent object = (Persistent) object1;
                             childObjects.add(merger.merge(object));
                         }
 

@@ -13,7 +13,7 @@ public abstract class _ClientMtTable1Subclass1 extends ClientMtTable1 {
     @Deprecated
     public static final String SUBCLASS1ATTRIBUTE1_PROPERTY = "subclass1Attribute1";
 
-    public static final Property<String> SUBCLASS1ATTRIBUTE1 = new Property<String>("subclass1Attribute1");
+    public static final Property<String> SUBCLASS1ATTRIBUTE1 = Property.create("subclass1Attribute1", String.class);
 
     protected String subclass1Attribute1;
 

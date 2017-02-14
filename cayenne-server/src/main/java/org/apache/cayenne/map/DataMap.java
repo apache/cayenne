@@ -1394,7 +1394,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
     }
 
     public Map<String, ObjEntity> getSubclassesForObjEntity(ObjEntity superEntity) {
-        Map<String, ObjEntity> subObjectEntities = new HashMap(5);
+        Map<String, ObjEntity> subObjectEntities = new HashMap<>(5);
         for (ObjEntity objectEntity : objEntityMap.values()) {
             if (superEntity.getName().equals(objectEntity.getSuperEntityName())) {
                 subObjectEntities.put(objectEntity.getName(), objectEntity);

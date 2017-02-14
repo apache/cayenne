@@ -174,13 +174,13 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
      * Returns a DbAttribute mapped by this ObjAttribute.
      */
     public DbAttribute getDbAttribute() {
-        Iterator<CayenneMapEntry> pathIterator = getDbPathIterator((ObjEntity) getEntity());
+        Iterator<CayenneMapEntry> pathIterator = getDbPathIterator(getEntity());
         CayenneMapEntry o = null;
         while (pathIterator.hasNext()) {
             o = pathIterator.next();
         }
         if (o == null) {
-            return getParentDbAttribute((ObjEntity) getEntity());
+            return getParentDbAttribute(getEntity());
         }
         return (DbAttribute) o;
     }
@@ -210,7 +210,7 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
      * @since 3.0
      */
     public boolean isInherited() {
-        ObjEntity owningEntity = (ObjEntity) getEntity();
+        ObjEntity owningEntity = getEntity();
         if (owningEntity == null) {
             return false;
         }
@@ -225,9 +225,10 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
     }
 
     public Iterator<CayenneMapEntry> getDbPathIterator() {
-        return getDbPathIterator((ObjEntity) getEntity());
+        return getDbPathIterator(getEntity());
     }
 
+    @SuppressWarnings("unchecked")
     public Iterator<CayenneMapEntry> getDbPathIterator(ObjEntity entity) {
         if (dbAttributePath == null) {
             return IteratorUtils.EMPTY_ITERATOR;

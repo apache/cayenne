@@ -249,6 +249,7 @@ public class CayenneContext extends BaseContext {
         }
 
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
+        @SuppressWarnings("unchecked")
         T object = (T) descriptor.createObject();
         descriptor.injectValueHolders(object);
         registerNewObject((Persistent) object, entity.getName(), descriptor);

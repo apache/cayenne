@@ -102,7 +102,7 @@ class PathComponentIterator implements Iterator<PathComponent<Attribute, Relatio
             Iterator<PathComponent<Attribute, Relationship>> subpathIt = new PathComponentIterator(
                     currentEntity,
                     aliasedPath,
-                    Collections.EMPTY_MAP);
+                    Collections.<String, String>emptyMap());
 
             Collection<PathComponent<Attribute, Relationship>> parsedSubpath = new ArrayList<>(4);
 

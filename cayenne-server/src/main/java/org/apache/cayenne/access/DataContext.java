@@ -1210,7 +1210,7 @@ public class DataContext extends BaseContext {
 
     /**
      * @since 4.0
-     * @deprecated since 4.0 avoid using thsi directly. Transaction management
+     * @deprecated since 4.0 avoid using this directly. Transaction management
      *             at this level will be eventually removed
      */
     @Deprecated

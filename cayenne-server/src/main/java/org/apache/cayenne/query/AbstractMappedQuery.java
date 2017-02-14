@@ -43,8 +43,7 @@ public abstract class AbstractMappedQuery extends IndirectQuery {
         if (this.params == null) {
             this.params = new HashMap<>(parameters);
         } else {
-            Map bareMap = parameters;
-            this.params.putAll(bareMap);
+            this.params.putAll(parameters);
         }
 
         this.replacementQuery = null;

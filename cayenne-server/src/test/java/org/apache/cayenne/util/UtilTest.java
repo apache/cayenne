@@ -66,11 +66,12 @@ public class UtilTest {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	public void testGetJavaClass() throws Exception {
 		assertEquals(byte.class.getName(), Util.getJavaClass("byte").getName());
 		assertEquals(byte[].class.getName(), Util.getJavaClass("byte[]").getName());
 		assertEquals(String[].class.getName(), Util.getJavaClass("java.lang.String[]").getName());
-		assertEquals(new UtilTest[0].getClass().getName(), Util.getJavaClass(getClass().getName() + "[]").getName());
+		assertEquals(UtilTest[].class.getName(), Util.getJavaClass(getClass().getName() + "[]").getName());
 	}
 
 	@Test

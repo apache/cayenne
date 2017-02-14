@@ -40,6 +40,7 @@ import org.apache.commons.collections.map.ReferenceMap;
 public class EventSubject implements Serializable {
 
     // a Map that will allow the values to be GC'ed
+    @SuppressWarnings("unchecked")
     private static Map<String, EventSubject> _registeredSubjects = new ReferenceMap(
             ReferenceMap.HARD,
             ReferenceMap.WEAK);

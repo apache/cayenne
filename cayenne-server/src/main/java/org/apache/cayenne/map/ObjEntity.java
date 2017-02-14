@@ -35,7 +35,6 @@ import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.collections.Transformer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,14 +58,14 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
 
     // do not import CayenneDataObject as it introduces unneeded client
     // dependency
-    static final String CAYENNE_DATA_OBJECT_CLASS = "org.apache.cayenne.CayenneDataObject";
+    private static final String CAYENNE_DATA_OBJECT_CLASS = "org.apache.cayenne.CayenneDataObject";
     /**
      * A collection of default "generic" entity classes excluded from class
      * generation.
      * 
      * @since 1.2
      */
-    protected static final Collection<String> DEFAULT_GENERIC_CLASSES = Arrays.asList(CAYENNE_DATA_OBJECT_CLASS);
+    protected static final Collection<String> DEFAULT_GENERIC_CLASSES = Collections.singletonList(CAYENNE_DATA_OBJECT_CLASS);
 
     protected String superClassName;
     protected String className;
@@ -262,7 +261,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
                 continue;
             }
 
-            ObjEntity targetEntity = (ObjEntity) relationship.getTargetEntity();
+            ObjEntity targetEntity = relationship.getTargetEntity();
             // note that 'isClientAllowed' also checks parent DataMap client
             // policy
             // that can be handy in case of cross-map relationships
@@ -743,10 +742,10 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     @Override
     public SortedMap<String, ObjAttribute> getAttributeMap() {
         if (superEntityName == null) {
-            return (SortedMap<String, ObjAttribute>) super.getAttributeMap();
+            return getAttributeMapInternal();
         }
 
-        SortedMap<String, ObjAttribute> attributeMap = new TreeMap<String, ObjAttribute>();
+        SortedMap<String, ObjAttribute> attributeMap = new TreeMap<>();
         appendAttributes(attributeMap);
         return attributeMap;
     }
@@ -755,11 +754,11 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * Recursively appends all attributes in the entity inheritance hierarchy.
      */
     final void appendAttributes(Map<String, ObjAttribute> map) {
-        map.putAll((Map<String, ObjAttribute>) super.getAttributeMap());
+        map.putAll(getAttributeMapInternal());
 
         ObjEntity superEntity = getSuperEntity();
         if (superEntity != null) {
-            SortedMap<String, ObjAttribute> attributeMap = new TreeMap<String, ObjAttribute>();
+            SortedMap<String, ObjAttribute> attributeMap = new TreeMap<>();
             superEntity.appendAttributes(attributeMap);
             for (String attributeName : attributeMap.keySet()) {
 
@@ -773,6 +772,11 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
                 map.put(attributeName, attribute);
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    final SortedMap<String, ObjAttribute> getAttributeMapInternal() {
+        return (SortedMap<String, ObjAttribute>) super.getAttributeMap();
     }
 
     /**
@@ -795,10 +799,6 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      */
     @Override
     public Collection<ObjAttribute> getAttributes() {
-        if (superEntityName == null) {
-            return (Collection<ObjAttribute>) super.getAttributes();
-        }
-
         return getAttributeMap().values();
     }
 
@@ -808,6 +808,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * 
      * @since 1.1
      */
+    @SuppressWarnings("unchecked")
     public Collection<ObjAttribute> getDeclaredAttributes() {
         return (Collection<ObjAttribute>) super.getAttributes();
     }
@@ -834,10 +835,10 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     @Override
     public SortedMap<String, ObjRelationship> getRelationshipMap() {
         if (superEntityName == null) {
-            return (SortedMap<String, ObjRelationship>) super.getRelationshipMap();
+            return getRelationshipMapInternal();
         }
 
-        SortedMap<String, ObjRelationship> relationshipMap = new TreeMap<String, ObjRelationship>();
+        SortedMap<String, ObjRelationship> relationshipMap = new TreeMap<>();
         appendRelationships(relationshipMap);
         return relationshipMap;
     }
@@ -847,7 +848,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * hierarchy.
      */
     final void appendRelationships(Map<String, ObjRelationship> map) {
-        map.putAll((Map<String, ObjRelationship>) super.getRelationshipMap());
+        map.putAll(getRelationshipMapInternal());
 
         ObjEntity superEntity = getSuperEntity();
         if (superEntity != null) {
@@ -857,11 +858,12 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
 
     @Override
     public Collection<ObjRelationship> getRelationships() {
-        if (superEntityName == null) {
-            return (Collection<ObjRelationship>) super.getRelationships();
-        }
-
         return getRelationshipMap().values();
+    }
+
+    @SuppressWarnings("unchecked")
+    final SortedMap<String, ObjRelationship> getRelationshipMapInternal() {
+        return (SortedMap<String, ObjRelationship>) super.getRelationshipMap();
     }
 
     /**
@@ -870,6 +872,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * 
      * @since 1.1
      */
+    @SuppressWarnings("unchecked")
     public Collection<ObjRelationship> getDeclaredRelationships() {
         return (Collection<ObjRelationship>) super.getRelationships();
     }
@@ -1117,7 +1120,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * @since 4.0
      */
     public Set<String> getCallbackMethods() {
-        Set<String> res = new LinkedHashSet<String>();
+        Set<String> res = new LinkedHashSet<>();
         for (CallbackDescriptor descriptor : getCallbackMap().getCallbacks()) {
             res.addAll(descriptor.getCallbackMethods());
         }

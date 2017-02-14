@@ -156,15 +156,13 @@ public class PersistentObjectMap extends RelationshipFault implements Map, Value
     /**
      * Converts a collection into a map indexed by map key.
      */
-    protected Map indexCollection(Collection collection) {
+    protected Map indexCollection(Collection<Object> collection) {
         // map objects by property
-        Map map = new HashMap((int) (collection.size() * 1.33d) + 1);
+        Map<Object, Object> map = new HashMap<>((int) (collection.size() * 1.33d) + 1);
 
         if (collection.size() > 0) {
 
-            Iterator it = collection.iterator();
-            while (it.hasNext()) {
-                Object next = it.next();
+            for (Object next : collection) {
                 Object key = mapKeyAccessor.getValue(next);
                 Object previous = map.put(key, next);
                 if (previous != null && previous != next) {

@@ -74,7 +74,7 @@ public class EJBQLQuery implements Query, XMLSerializable {
 
         // must init defaults even if properties are empty
         if (properties == null) {
-            properties = Collections.EMPTY_MAP;
+            properties = Collections.emptyMap();
         }
         metadata.initWithProperties(properties);
     }
@@ -192,12 +192,12 @@ public class EJBQLQuery implements Query, XMLSerializable {
     public Map<String, Object> getNamedParameters() {
         return namedParameters != null
                 ? Collections.unmodifiableMap(namedParameters)
-                : Collections.EMPTY_MAP;
+                : Collections.<String, Object>emptyMap();
     }
 
     public Map<Integer, Object> getPositionalParameters() {
         return positionalParameters != null ? Collections
-                .unmodifiableMap(positionalParameters) : Collections.EMPTY_MAP;
+                .unmodifiableMap(positionalParameters) : Collections.<Integer, Object>emptyMap();
     }
 
     /**

@@ -157,9 +157,9 @@ public class ClientChannel implements DataChannel {
         }
     }
 
-    private void convertSingleObjects(List objects, DeepMergeOperation merger) {
+    private void convertSingleObjects(List<Object> objects, DeepMergeOperation merger) {
 
-        ListIterator it = objects.listIterator();
+        ListIterator<Object> it = objects.listIterator();
         while (it.hasNext()) {
             Object next = it.next();
             it.set(convertObject( merger, (Persistent) next));
@@ -256,9 +256,7 @@ public class ClientChannel implements DataChannel {
         if (entityResolver == null) {
             synchronized (this) {
                 if (entityResolver == null) {
-                    entityResolver = (EntityResolver) send(
-                            new BootstrapMessage(),
-                            EntityResolver.class);
+                    entityResolver = send(new BootstrapMessage(), EntityResolver.class);
                 }
             }
         }
@@ -299,7 +297,7 @@ public class ClientChannel implements DataChannel {
      * @throws org.apache.cayenne.CayenneRuntimeException if an underlying connector
      *             exception occurred, or a result is not of expected type.
      */
-    protected <T extends Object> T send(ClientMessage message, Class<T> resultClass) {
+    protected <T> T send(ClientMessage message, Class<T> resultClass) {
         Object result = connection.sendMessage(message);
 
         if (result != null && !resultClass.isInstance(result)) {

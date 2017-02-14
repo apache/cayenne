@@ -82,7 +82,7 @@ public class DataChannelProjectSaverTest extends Project2Case {
 
         File outFile = setupTestDirectory("testSave");
 
-        saver.saveAs(project, new URLResource(outFile.toURL()));
+        saver.saveAs(project, new URLResource(outFile.toURI().toURL()));
 
         File rootFile = new File(outFile, "cayenne-PROJECT2.xml");
         assertTrue(rootFile.exists());
@@ -138,7 +138,7 @@ public class DataChannelProjectSaverTest extends Project2Case {
         assertEquals(0, outFile.list().length);
 
         try {
-            saver.saveAs(project, new URLResource(outFile.toURL()));
+            saver.saveAs(project, new URLResource(outFile.toURI().toURL()));
             fail("No exception was thrown..");
         }
         catch (CayenneRuntimeException e) {

@@ -125,11 +125,11 @@ public class OptimisticLockingIT extends ServerCase {
     public void testSuccessSimpleLockingOnDelete() throws Exception {
         createSimpleLockingDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                SimpleLockingTestEntity.class));
+        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
+                SimpleLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        SimpleLockingTestEntity object = (SimpleLockingTestEntity) allObjects.get(0);
+        SimpleLockingTestEntity object = allObjects.get(0);
 
         // change description and save... no optimistic lock failure expected
         object.setDescription("first update");
@@ -143,11 +143,11 @@ public class OptimisticLockingIT extends ServerCase {
     public void testSuccessSimpleLockingOnDeleteFollowedByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                SimpleLockingTestEntity.class));
+        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
+                SimpleLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        SimpleLockingTestEntity object = (SimpleLockingTestEntity) allObjects.get(0);
+        SimpleLockingTestEntity object = allObjects.get(0);
 
         // change description and save... no optimistic lock failure expected
         object.setDescription("first update");
@@ -163,11 +163,11 @@ public class OptimisticLockingIT extends ServerCase {
             throws Exception {
         createSimpleLockingDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                SimpleLockingTestEntity.class));
+        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
+                SimpleLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        SimpleLockingTestEntity object = (SimpleLockingTestEntity) allObjects.get(0);
+        SimpleLockingTestEntity object = allObjects.get(0);
 
         // change description and save... no optimistic lock failure expected
         object.setDescription("first update");
@@ -182,11 +182,11 @@ public class OptimisticLockingIT extends ServerCase {
     public void testSuccessSimpleLockingOnDeletePrecededByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                SimpleLockingTestEntity.class));
+        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
+                SimpleLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        SimpleLockingTestEntity object = (SimpleLockingTestEntity) allObjects.get(0);
+        SimpleLockingTestEntity object = allObjects.get(0);
 
         // change description and save... no optimistic lock failure expected
         object.setDescription("first update");
@@ -202,11 +202,11 @@ public class OptimisticLockingIT extends ServerCase {
             throws Exception {
         createSimpleLockingDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                SimpleLockingTestEntity.class));
+        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
+                SimpleLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        SimpleLockingTestEntity object = (SimpleLockingTestEntity) allObjects.get(0);
+        SimpleLockingTestEntity object = allObjects.get(0);
 
         // change description and save... no optimistic lock failure expected
         object.setDescription("first update");
@@ -221,11 +221,11 @@ public class OptimisticLockingIT extends ServerCase {
     public void testFailSimpleLockingOnDelete() throws Exception {
         createSimpleLockingDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                SimpleLockingTestEntity.class));
+        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
+                SimpleLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        SimpleLockingTestEntity object = (SimpleLockingTestEntity) allObjects.get(0);
+        SimpleLockingTestEntity object = allObjects.get(0);
 
         // change description and save... no optimistic lock failure expected
         object.setDescription("second update");
@@ -249,11 +249,11 @@ public class OptimisticLockingIT extends ServerCase {
     public void testSuccessSimpleLockingOnUpdate() throws Exception {
         createSimpleLockingDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                SimpleLockingTestEntity.class));
+        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
+                SimpleLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        SimpleLockingTestEntity object = (SimpleLockingTestEntity) allObjects.get(0);
+        SimpleLockingTestEntity object = allObjects.get(0);
 
         // change description and save... no optimistic lock failure expected
         object.setDescription("first update");
@@ -268,11 +268,11 @@ public class OptimisticLockingIT extends ServerCase {
     public void testSuccessSimpleLockingOnUpdateFollowedByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                SimpleLockingTestEntity.class));
+        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
+                SimpleLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        SimpleLockingTestEntity object = (SimpleLockingTestEntity) allObjects.get(0);
+        SimpleLockingTestEntity object = allObjects.get(0);
 
         // change description and save... no optimistic lock failure expected
         object.setDescription("first update");
@@ -288,11 +288,11 @@ public class OptimisticLockingIT extends ServerCase {
     public void testSuccessSimpleLockingOnUpdatePrecededByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                SimpleLockingTestEntity.class));
+        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
+                SimpleLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        SimpleLockingTestEntity object = (SimpleLockingTestEntity) allObjects.get(0);
+        SimpleLockingTestEntity object = allObjects.get(0);
 
         // change description and save... no optimistic lock failure expected
         object.setDescription("first update");
@@ -309,11 +309,11 @@ public class OptimisticLockingIT extends ServerCase {
             throws Exception {
         createSimpleLockingDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                SimpleLockingTestEntity.class));
+        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
+                SimpleLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        SimpleLockingTestEntity object = (SimpleLockingTestEntity) allObjects.get(0);
+        SimpleLockingTestEntity object = allObjects.get(0);
 
         // change description and save... no optimistic lock failure expected
         object.setDescription("first update");
@@ -330,11 +330,11 @@ public class OptimisticLockingIT extends ServerCase {
             throws Exception {
         createSimpleLockingDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                SimpleLockingTestEntity.class));
+        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
+                SimpleLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        SimpleLockingTestEntity object = (SimpleLockingTestEntity) allObjects.get(0);
+        SimpleLockingTestEntity object = allObjects.get(0);
 
         // change description and save... no optimistic lock failure expected
         object.setDescription("first update");
@@ -350,11 +350,11 @@ public class OptimisticLockingIT extends ServerCase {
     public void testFailSimpleLocking() throws Exception {
         createSimpleLockingDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                SimpleLockingTestEntity.class));
+        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
+                SimpleLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        SimpleLockingTestEntity object = (SimpleLockingTestEntity) allObjects.get(0);
+        SimpleLockingTestEntity object = allObjects.get(0);
 
         // change description and save... no optimistic lock failure expected
         object.setDescription("first update");
@@ -379,11 +379,11 @@ public class OptimisticLockingIT extends ServerCase {
     public void testFailLockingOnNull() throws Exception {
         createLockingOnNullDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                SimpleLockingTestEntity.class));
+        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
+                SimpleLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        SimpleLockingTestEntity object = (SimpleLockingTestEntity) allObjects.get(0);
+        SimpleLockingTestEntity object = allObjects.get(0);
 
         // change description and save... no optimistic lock failure expected...
         object.setDescription("first update");
@@ -409,7 +409,7 @@ public class OptimisticLockingIT extends ServerCase {
     public void testSuccessLockingOnMixed() throws Exception {
         createLockingOnMixedDataSet();
 
-        SelectQuery query = new SelectQuery(SimpleLockingTestEntity.class);
+        SelectQuery<SimpleLockingTestEntity> query = new SelectQuery<>(SimpleLockingTestEntity.class);
         query.addOrdering(new Ordering("db:LOCKING_TEST_ID", SortOrder.ASCENDING));
 
         List<?> allObjects = context.performQuery(query);
@@ -434,11 +434,11 @@ public class OptimisticLockingIT extends ServerCase {
     public void testFailLockingOnToOne() throws Exception {
         createLockingOnToOneDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                RelLockingTestEntity.class));
+        List<RelLockingTestEntity> allObjects = new SelectQuery<>(
+                RelLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        RelLockingTestEntity object = (RelLockingTestEntity) allObjects.get(0);
+        RelLockingTestEntity object = allObjects.get(0);
 
         // change name and save... no optimistic lock failure expected
         object.setName("first update");
@@ -469,11 +469,11 @@ public class OptimisticLockingIT extends ServerCase {
     public void testFailRetrieveRow() throws Exception {
         createSimpleLockingDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                SimpleLockingTestEntity.class));
+        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
+                SimpleLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        SimpleLockingTestEntity object = (SimpleLockingTestEntity) allObjects.get(0);
+        SimpleLockingTestEntity object = allObjects.get(0);
         object.setDescription("first update");
 
         // change row underneath, change description and save... optimistic lock failure
@@ -495,11 +495,11 @@ public class OptimisticLockingIT extends ServerCase {
     public void testFailRetrieveDeletedRow() throws Exception {
         createSimpleLockingDataSet();
 
-        List<?> allObjects = context.performQuery(new SelectQuery(
-                SimpleLockingTestEntity.class));
+        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
+                SimpleLockingTestEntity.class).select(context);
         assertEquals(1, allObjects.size());
 
-        SimpleLockingTestEntity object = (SimpleLockingTestEntity) allObjects.get(0);
+        SimpleLockingTestEntity object = allObjects.get(0);
 
         object.setDescription("first update");
 

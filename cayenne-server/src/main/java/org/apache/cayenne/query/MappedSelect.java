@@ -126,11 +126,13 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public MappedSelect<T> params(Map<String, ?> parameters) {
         return (MappedSelect<T>) super.params(parameters);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public MappedSelect<T> param(String name, Object value) {
         return (MappedSelect<T>) super.param(name, value);

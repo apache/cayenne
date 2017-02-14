@@ -146,21 +146,21 @@ public class DataDomain implements QueryEngine, DataChannel {
 	 * @deprecated since 4.0 unused
 	 */
 	@Deprecated
-	public DataDomain(String name, Map properties) {
+	public DataDomain(String name, Map<String, String> properties) {
 		init(name);
 		initWithProperties(properties);
 	}
 
 	private void init(String name) {
 
-		this.filters = new CopyOnWriteArrayList<DataChannelFilter>();
+		this.filters = new CopyOnWriteArrayList<>();
 		this.nodesByDataMapName = new ConcurrentHashMap<>();
 		this.nodes = new ConcurrentHashMap<>();
 
 		// properties are read-only, so no need for concurrent map, or any
 		// specific map
 		// for that matter
-		this.properties = Collections.EMPTY_MAP;
+		this.properties = Collections.emptyMap();
 
 		setName(name);
 	}
@@ -196,7 +196,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 	 * @since 1.1
 	 */
 	protected void resetProperties() {
-		properties = Collections.EMPTY_MAP;
+		properties = Collections.emptyMap();
 
 		sharedCacheEnabled = SHARED_CACHE_ENABLED_DEFAULT;
 		validatingObjectsOnCommit = VALIDATING_OBJECTS_ON_COMMIT_DEFAULT;
@@ -212,7 +212,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 	public void initWithProperties(Map<String, String> properties) {
 
 		// clone properties to ensure that it is read-only internally
-		properties = properties != null ? new HashMap<>(properties) : Collections.EMPTY_MAP;
+		properties = properties != null ? new HashMap<>(properties) : Collections.<String, String>emptyMap();
 
 		String sharedCacheEnabled = properties.get(SHARED_CACHE_ENABLED_PROPERTY);
 		String validatingObjectsOnCommit = properties.get(VALIDATING_OBJECTS_ON_COMMIT_PROPERTY);

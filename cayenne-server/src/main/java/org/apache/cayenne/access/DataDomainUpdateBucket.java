@@ -138,12 +138,10 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
      * Creates a list of DbAttributes that are updated in a snapshot
      */
     private List updatedAttributes(DbEntity entity, Map updatedSnapshot) {
-        List attributes = new ArrayList(updatedSnapshot.size());
+        List<Object> attributes = new ArrayList<>(updatedSnapshot.size());
         Map entityAttributes = entity.getAttributeMap();
 
-        Iterator it = updatedSnapshot.keySet().iterator();
-        while (it.hasNext()) {
-            Object name = it.next();
+        for (Object name : updatedSnapshot.keySet()) {
             attributes.add(entityAttributes.get(name));
         }
 

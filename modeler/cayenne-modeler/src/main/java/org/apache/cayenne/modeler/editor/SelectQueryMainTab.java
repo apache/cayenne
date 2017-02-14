@@ -32,6 +32,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
 
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.exp.Expression;
@@ -39,6 +40,7 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.Application;
@@ -68,7 +70,7 @@ public class SelectQueryMainTab extends JPanel {
     protected ProjectController mediator;
 
     protected TextAdapter name;
-    protected JComboBox queryRoot;
+    protected JComboBox<ObjEntity> queryRoot;
     protected TextAdapter qualifier;
     protected JCheckBox distinct;
     protected ObjectQueryPropertiesPanel properties;
@@ -183,13 +185,13 @@ public class SelectQueryMainTab extends JPanel {
         // making it impossible to reference other DataMaps.
 
         DataMap map = mediator.getCurrentDataMap();
-        Object[] roots = map.getObjEntities().toArray();
+        ObjEntity[] roots = map.getObjEntities().toArray(new ObjEntity[0]);
 
         if (roots.length > 1) {
             Arrays.sort(roots, Comparators.getDataMapChildrenComparator());
         }
 
-        DefaultComboBoxModel model = new DefaultComboBoxModel(roots);
+        DefaultComboBoxModel<ObjEntity> model = new DefaultComboBoxModel<>(roots);
         model.setSelectedItem(query.getRoot());
         queryRoot.setModel(model);
 
@@ -241,7 +243,7 @@ public class SelectQueryMainTab extends JPanel {
             if (!Util.nullSafeEquals(oldQualifier, text)) {
                 Expression exp = (Expression) convertor.stringAsValue(text);
                 
-                /**
+                /*
                  * Advanced checking. See CAY-888 #1
                  */
                 if (query.getRoot() instanceof Entity) {
@@ -311,7 +313,7 @@ public class SelectQueryMainTab extends JPanel {
     static void checkExpression(Entity root, Expression ex) throws ValidationException {
         try {
             if (ex instanceof ASTPath) {
-                /**
+                /*
                  * Try to iterate through path, if some attributes are not present,
                  * exception will be raised
                  */
@@ -351,7 +353,7 @@ public class SelectQueryMainTab extends JPanel {
                     query.setRoot(root);
                     
                     if (needChangeName) { //not changed by user
-                        /**
+                        /*
                          * Doing auto name change, following CAY-888 #2
                          */
                         String newPrefix = root.getName() + "Query";
@@ -377,8 +379,7 @@ public class SelectQueryMainTab extends JPanel {
             QueryDescriptor query = getQuery();
             if (query != null) {
                 needChangeName = hasDefaultName(query);
-            }
-            else {
+            } else {
                 needChangeName = false;
             }
         }

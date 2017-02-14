@@ -57,9 +57,9 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
     }
 
     LifecycleCallbackRegistry callbackRegistry;
-    Collection updated;
-    Collection persisted;
-    Collection removed;
+    Collection<Object> updated;
+    Collection<Object> persisted;
+    Collection<Object> removed;
     private Map<Object, Op> seenIds;
     private GraphManager graphManager;
 

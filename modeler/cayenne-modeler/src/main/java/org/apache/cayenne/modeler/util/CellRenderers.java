@@ -133,21 +133,21 @@ public final class CellRenderers {
     /**
      * Returns a ListCellRenderer to display Cayenne project tree nodes without icons.
      */
-    public static ListCellRenderer listRenderer() {
+    public static ListCellRenderer<Object> listRenderer() {
         return new ListRenderer(false);
     }
 
     /**
      * Returns a ListCellRenderer to display Cayenne project tree nodes with icons.
      */
-    public static ListCellRenderer listRendererWithIcons() {
+    public static ListCellRenderer<Object> listRendererWithIcons() {
         return new ListRenderer(true);
     }
 
     /**
      * Returns a ListCellRenderer to display Cayenne project tree nodes with icons.
      */
-    public static ListCellRenderer entityListRendererWithIcons(MappingNamespace namespace) {
+    public static ListCellRenderer<Object> entityListRendererWithIcons(MappingNamespace namespace) {
         return new EntityRenderer(namespace);
     }
     

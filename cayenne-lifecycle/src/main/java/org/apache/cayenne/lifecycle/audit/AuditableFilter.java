@@ -189,7 +189,7 @@ public class AuditableFilter implements DataChannelFilter {
 
         String propertyPath = annotation.value();
 
-        if (propertyPath == null || propertyPath.equals("")) {
+        if (propertyPath.equals("")) {
             propertyPath = objectIdRelationshipName(annotation.objectIdRelationship());
         }
 
@@ -208,14 +208,14 @@ public class AuditableFilter implements DataChannelFilter {
         return "cay:related:" + uuidPropertyName;
     }
 
-    protected boolean isAuditableUpdate(Object object, boolean child) {
+    protected boolean isAuditableUpdate(Persistent object, boolean child) {
         AuditableEntityDescriptor descriptor = getEntityDescriptor(object, child);
-        return descriptor.auditableChange((Persistent) object);
+        return descriptor.auditableChange(object);
     }
 
-    private AuditableEntityDescriptor getEntityDescriptor(Object object, boolean child) {
+    private AuditableEntityDescriptor getEntityDescriptor(Persistent object, boolean child) {
 
-        ObjEntity entity = entityResolver.lookupObjEntity(object);
+        ObjEntity entity = entityResolver.getObjEntity(object);
 
         AuditableEntityDescriptor descriptor = entityDescriptors.get(entity.getName());
         if (descriptor == null) {

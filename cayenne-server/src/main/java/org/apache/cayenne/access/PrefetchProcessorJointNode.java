@@ -78,7 +78,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
             capacity = capacity / 2;
         }
 
-        objects = new ArrayList(capacity);
+        objects = new ArrayList<>(capacity);
         resolved = new HashMap<>(capacity);
         resolvedRows = new ArrayList<>(capacity);
         buildRowMapping();

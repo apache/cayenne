@@ -59,6 +59,7 @@ public class GenericQueryResult<T> implements QueryResult<T> {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<T> firstList() {
         for (QueryResultItem item : resultItems) {

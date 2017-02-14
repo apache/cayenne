@@ -23,7 +23,7 @@ import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.log.NullLogSystem;
+import org.apache.velocity.runtime.log.NullLogChute;
 import org.junit.Before;
 
 import java.io.StringWriter;
@@ -38,7 +38,7 @@ public class ClassGenerationCase {
         Properties props = new Properties();
 
         // null logger that will prevent velocity.log from being generated
-        props.put(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, NullLogSystem.class.getName());
+        props.put(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, NullLogChute.class.getName());
         props.put("resource.loader", "cayenne");
         props.put("cayenne.resource.loader.class", ClassGeneratorResourceLoader.class.getName());
         props.put("cayenne.resource.loader.cache", "false");

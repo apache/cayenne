@@ -131,7 +131,7 @@ public class DataMapUtils {
 	 * @return List of parameter names.
 	 */
 	private Set parseQualifier(String qualifierString) {
-		Set result = new ListOrderedSet();
+		Set<String> result = (Set<String>)new ListOrderedSet();
 		Pattern pattern = Pattern.compile("\\$[\\w]+");
 		Matcher matcher = pattern.matcher(qualifierString);
 		while (matcher.find()) {
@@ -168,7 +168,7 @@ public class DataMapUtils {
 		if (expression != null) {
 			Map<String, String> types = new HashMap<>();
 			String typeName = "";
-			List<String> names = new LinkedList<String>();
+			List<String> names = new LinkedList<>();
 
 			for (int i = 0; i < expression.getOperandCount(); i++) {
 				Object operand = expression.getOperand(i);
@@ -186,7 +186,7 @@ public class DataMapUtils {
 					} else {
 						ObjRelationship relationship = component.getRelationship();
 						if (relationship != null) {
-							typeName = ((ObjEntity) relationship.getTargetEntity()).getClassName();
+							typeName = relationship.getTargetEntity().getClassName();
 						} else {
 							typeName = "Object";
 						}
@@ -214,6 +214,6 @@ public class DataMapUtils {
 
 			return types;
 		}
-		return Collections.EMPTY_MAP;
+		return Collections.emptyMap();
 	}
 }

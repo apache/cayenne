@@ -275,7 +275,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 			return mapArcProperties;
 		}
 
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 
 	/**

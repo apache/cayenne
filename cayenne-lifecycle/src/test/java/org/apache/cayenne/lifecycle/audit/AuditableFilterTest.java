@@ -57,6 +57,8 @@ public class AuditableFilterTest {
 
         ObjEntity objectEntity = new ObjEntity("CayenneDataObject");
         when(resolver.lookupObjEntity(any(Object.class))).thenReturn(objectEntity);
+        when(resolver.getObjEntity(any(Persistent.class))).thenReturn(objectEntity);
+        when(resolver.getObjEntity(any(Class.class))).thenReturn(objectEntity);
 
         DataChannel channel = mock(DataChannel.class);
         when(channel.getEntityResolver()).thenReturn(resolver);

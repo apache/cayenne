@@ -111,8 +111,8 @@ public class CayenneFilterTest {
 		Object[] marray = modules.toArray();
 
 		assertTrue(marray[0] instanceof ServerModule);
-		// [1] is an inner class
-		assertTrue(marray[2] instanceof WebModule);
+		// [2] is an inner class
+		assertTrue(marray[1] instanceof WebModule);
 
 		RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
 		assertTrue(handler instanceof SessionContextRequestHandler);
@@ -140,10 +140,10 @@ public class CayenneFilterTest {
 
 		Object[] marray = modules.toArray();
 		assertTrue(marray[0] instanceof ServerModule);
-		// [1] is an inner class
-		assertTrue(marray[2] instanceof WebModule);
-		assertTrue(marray[3] instanceof MockModule1);
-		assertTrue(marray[4] instanceof MockModule2);
+		// [4] is an inner class
+		assertTrue(marray[1] instanceof WebModule);
+		assertTrue(marray[2] instanceof MockModule1);
+		assertTrue(marray[3] instanceof MockModule2);
 
 		RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
 		assertTrue(handler instanceof MockRequestHandler);

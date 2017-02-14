@@ -44,7 +44,7 @@ public class WeightedAshwoodEntitySorter extends AshwoodEntitySorter {
     public WeightedAshwoodEntitySorter() {
         this.weightedDbEntityComparator = new WeightedDbEntityComparator();
         this.weightedObjEntityComparator = new WeightedObjEntityComparator();
-        this.entityWeights = Collections.EMPTY_MAP;
+        this.entityWeights = Collections.emptyMap();
     }
 
     @Override
@@ -65,6 +65,7 @@ public class WeightedAshwoodEntitySorter extends AshwoodEntitySorter {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected Comparator<DbEntity> getDbEntityComparator(boolean dependantFirst) {
         Comparator<DbEntity> c = weightedDbEntityComparator;
@@ -74,6 +75,7 @@ public class WeightedAshwoodEntitySorter extends AshwoodEntitySorter {
         return c;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected Comparator<ObjEntity> getObjEntityComparator(boolean dependantFirst) {
         Comparator<ObjEntity> c = weightedObjEntityComparator;
@@ -85,7 +87,7 @@ public class WeightedAshwoodEntitySorter extends AshwoodEntitySorter {
 
     private int getWeight(DbEntity e) {
         Integer w = entityWeights.get(e);
-        return w != null ? w.intValue() : 1;
+        return w != null ? w : 1;
     }
 
     private final class WeightedDbEntityComparator implements Comparator<DbEntity> {

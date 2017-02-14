@@ -179,36 +179,40 @@ public class DataDomainIT extends ServerCase {
         assertNotNull(domain.getEntityResolver());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testInitDataDomainWithSharedCache() throws Exception {
-        Map<Object, Object> properties = new HashMap<Object, Object>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(DataDomain.SHARED_CACHE_ENABLED_PROPERTY, Boolean.TRUE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertTrue(domain.isSharedCacheEnabled());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testInitDataDomainWithDedicatedCache() throws Exception {
-        Map<Object, Object> properties = new HashMap<Object, Object>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(DataDomain.SHARED_CACHE_ENABLED_PROPERTY, Boolean.FALSE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertFalse(domain.isSharedCacheEnabled());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testInitDataDomainValidation() throws Exception {
-        Map<Object, Object> properties = new HashMap<Object, Object>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.TRUE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
         assertTrue(domain.isValidatingObjectsOnCommit());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testInitDataDomainNoValidation() throws Exception {
-        Map<Object, Object> properties = new HashMap<Object, Object>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, Boolean.FALSE.toString());
 
         DataDomain domain = new DataDomain("d1", properties);
@@ -268,12 +272,12 @@ public class DataDomainIT extends ServerCase {
 
         @PostAdd({ Gallery.class, Painting.class })
         void postAddEntities(Persistent object) {
-            callbackBuffer.append("e:" + object.getObjectId().getEntityName() + ";");
+            callbackBuffer.append("e:").append(object.getObjectId().getEntityName()).append(";");
         }
 
         @PostAdd(entityAnnotations = Tag1.class)
         void postAddAnnotated(Persistent object) {
-            callbackBuffer.append("a:" + object.getObjectId().getEntityName() + ";");
+            callbackBuffer.append("a:").append(object.getObjectId().getEntityName()).append(";");
         }
 
         String getAndReset() {

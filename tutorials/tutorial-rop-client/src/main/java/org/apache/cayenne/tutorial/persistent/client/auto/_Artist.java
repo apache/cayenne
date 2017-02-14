@@ -15,16 +15,9 @@ import org.apache.cayenne.util.PersistentObjectList;
  */
 public abstract class _Artist extends PersistentObject {
 
-    @Deprecated
-    public static final String DATE_OF_BIRTH_PROPERTY = "dateOfBirth";
-    @Deprecated
-    public static final String NAME_PROPERTY = "name";
-    @Deprecated
-    public static final String PAINTINGS_PROPERTY = "paintings";
-
-    public static final Property<Date> DATE_OF_BIRTH = new Property<Date>("dateOfBirth");
-    public static final Property<String> NAME = new Property<String>("name");
-    public static final Property<List<Painting>> PAINTINGS = new Property<List<Painting>>("paintings");
+    public static final Property<Date> DATE_OF_BIRTH = Property.create("dateOfBirth", Date.class);
+    public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<Painting>> PAINTINGS = Property.create("paintings", List.class);
 
     protected Date dateOfBirth;
     protected String name;

@@ -314,7 +314,7 @@ public class JointPrefetchIT extends ServerCase {
                 Artist.class,
                 "insert into ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
                         + "values (33001, 'a1', #bind($date 'DATE'))");
-        artistSQL.setParameters(Collections.singletonMap(
+        artistSQL.setParams(Collections.singletonMap(
                 "date",
                 new Date(System.currentTimeMillis())));
         SQLTemplate paintingSQL = new SQLTemplate(

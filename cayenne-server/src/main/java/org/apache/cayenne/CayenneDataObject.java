@@ -579,7 +579,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 	 */
 	protected void validateForSave(ValidationResult validationResult) {
 
-		ObjEntity objEntity = getObjectContext().getEntityResolver().lookupObjEntity(this);
+		ObjEntity objEntity = getObjectContext().getEntityResolver().getObjEntity(this);
 		if (objEntity == null) {
 			throw new CayenneRuntimeException("No ObjEntity mapping found for DataObject " + getClass().getName());
 		}

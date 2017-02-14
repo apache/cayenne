@@ -186,7 +186,9 @@ final class CayenneContextGraphManager extends GraphMap {
             Object source,
             Object target) throws PropertyException {
 
+        @SuppressWarnings("unchecked")
         Map<Object, Object> map = (Map<Object, Object>) property.readProperty(source);
+
         Object newKey = property.getMapKey(target);
         Object currentValue = map.get(newKey);
 

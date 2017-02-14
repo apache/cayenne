@@ -53,10 +53,10 @@ class ObjectContextStateLog implements GraphChangeHandler {
      * Updates dirty objects state and clears dirty ids map.
      */
     void graphCommitted() {
-        /**
+        /*
          * Array for deleted ids, to avoid concurrent modification
          */
-        List deletedIds = new Vector();
+        List<Object> deletedIds = new Vector<>();
         
         for (Object id : dirtyIds) {
             Object node = graphManager.getNode(id);
@@ -75,7 +75,7 @@ class ObjectContextStateLog implements GraphChangeHandler {
             }
         }
         
-        /**
+        /*
          * Now unregister all deleted objects
          */
         for (Object id : deletedIds) {

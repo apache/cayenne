@@ -176,14 +176,14 @@ public class ObjectId implements Serializable {
 	 */
 	public Map<String, Object> getIdSnapshot() {
 		if (isTemporary()) {
-			return (replacementIdMap == null) ? Collections.EMPTY_MAP : Collections.unmodifiableMap(replacementIdMap);
+			return (replacementIdMap == null) ? Collections.<String, Object>emptyMap() : Collections.unmodifiableMap(replacementIdMap);
 		}
 
 		if (singleKey != null) {
 			return Collections.singletonMap(singleKey, singleValue);
 		}
 
-		return objectIdKeys != null ? Collections.unmodifiableMap(objectIdKeys) : Collections.EMPTY_MAP;
+		return objectIdKeys != null ? Collections.unmodifiableMap(objectIdKeys) : Collections.<String, Object>emptyMap();
 	}
 
 	@Override
@@ -219,7 +219,7 @@ public class ObjectId implements Serializable {
 		}
 
 		for (Map.Entry<String, ?> entry : objectIdKeys.entrySet()) {
-			Object entryKey = entry.getKey();
+			String entryKey = entry.getKey();
 			Object entryValue = entry.getValue();
 
 			if (entryValue == null) {
@@ -281,7 +281,7 @@ public class ObjectId implements Serializable {
 				// handle multiple keys - must sort the keys to use with
 				// HashCodeBuilder
 
-				Object[] keys = objectIdKeys.keySet().toArray();
+				String[] keys = objectIdKeys.keySet().toArray(new String[0]);
 				Arrays.sort(keys);
 
 				for (int i = 0; i < len; i++) {
@@ -374,7 +374,7 @@ public class ObjectId implements Serializable {
 
 			List<String> keys = new ArrayList<>(objectIdKeys.keySet());
 			Collections.sort(keys);
-			for (Object key : keys) {
+			for (String key : keys) {
 				buffer.append(", ");
 				buffer.append(String.valueOf(key)).append("=").append(objectIdKeys.get(key));
 			}

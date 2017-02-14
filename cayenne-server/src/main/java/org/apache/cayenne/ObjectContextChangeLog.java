@@ -145,7 +145,7 @@ class ObjectContextChangeLog {
      */
     private List<GraphDiff> immutableList(int fromIndex, int toIndex) {
         if (toIndex - fromIndex == 0) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         // Assuming that internal diffs list can only grow and can never be trimmed,

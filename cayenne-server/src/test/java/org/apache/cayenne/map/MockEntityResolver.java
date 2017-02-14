@@ -33,6 +33,7 @@ public class MockEntityResolver extends EntityResolver {
     }
 
     @Override
+    @Deprecated
     public synchronized ObjEntity lookupObjEntity(Class aClass) {
         return mockObjEntity;
     }

@@ -223,7 +223,7 @@ public class ProjectUpgrader_V7Test extends Project2Case {
 		Injector injector = DIBootstrap.createInjector(testModule);
 		injector.injectMembers(upgrader);
 
-		Resource source = new URLResource(targetsBefore.get(0).toURL());
+		Resource source = new URLResource(targetsBefore.get(0).toURI().toURL());
 		UpgradeHandler handler = upgrader.getUpgradeHandler(source);
 
 		Resource upgraded = handler.performUpgrade();
@@ -377,7 +377,7 @@ public class ProjectUpgrader_V7Test extends Project2Case {
 		ProjectUpgrader_V7 upgrader = new ProjectUpgrader_V7();
 		injector.injectMembers(upgrader);
 
-		Resource source = new URLResource(files.get(0).toURL());
+		Resource source = new URLResource(files.get(0).toURI().toURL());
 		assertNotNull(source);
 		UpgradeHandler handler = upgrader.getUpgradeHandler(source);
 		assertNotNull(handler);
@@ -452,7 +452,7 @@ public class ProjectUpgrader_V7Test extends Project2Case {
 		ProjectUpgrader_V7 upgrader = new ProjectUpgrader_V7();
 		injector.injectMembers(upgrader);
 
-		Resource resource = new URLResource(file.get(0).toURL());
+		Resource resource = new URLResource(file.get(0).toURI().toURL());
 		assertNotNull(resource);
 		UpgradeHandler handler = upgrader.getUpgradeHandler(resource);
 		assertNotNull(handler);

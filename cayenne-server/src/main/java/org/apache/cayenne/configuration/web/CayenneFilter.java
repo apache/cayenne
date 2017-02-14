@@ -71,16 +71,17 @@ public class CayenneFilter implements Filter {
         String configurationLocation = configAdapter.getConfigurationLocation();
         Collection<Module> modules = configAdapter.createModules(new WebModule());
         modules.addAll(getAdditionalModules());
-        
-        ServerRuntime runtime = new ServerRuntime(
-                configurationLocation,
-                modules.toArray(new Module[modules.size()]));
+
+        ServerRuntime runtime = ServerRuntime.builder()
+                .addConfig(configurationLocation)
+                .addModules(modules).build();
 
         WebUtil.setCayenneRuntime(config.getServletContext(), runtime);
     }
 
     /**
-     * Subclasses may override this to specify additional modules that should be included when creating the CayenneRuntime (in addition to those specified in the web.xml file).
+     * Subclasses may override this to specify additional modules that should be included when creating the CayenneRuntime
+     * (in addition to those specified in the web.xml file).
      * 
      * @since 4.0
      */

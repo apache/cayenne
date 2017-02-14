@@ -50,6 +50,7 @@ public class ServerRuntime extends CayenneRuntime {
      * @return a builder of ServerRuntime.
      * @since 4.0
      */
+    @SuppressWarnings("deprecation")
     public static ServerRuntimeBuilder builder() {
         return new ServerRuntimeBuilder();
     }
@@ -60,6 +61,7 @@ public class ServerRuntime extends CayenneRuntime {
      * @param name optional symbolic name of the created runtime.
      * @return a named builder of ServerRuntime.
      */
+    @SuppressWarnings("deprecation")
     public static ServerRuntimeBuilder builder(String name) {
         return new ServerRuntimeBuilder(name);
     }

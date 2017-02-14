@@ -166,7 +166,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
      * @since 1.2
      */
     public List<ColumnDescriptor[]> getResultDescriptors() {
-        return resultDescriptors != null ? resultDescriptors : Collections.EMPTY_LIST;
+        return resultDescriptors != null ? resultDescriptors : Collections.<ColumnDescriptor[]>emptyList();
     }
 
     /**
@@ -214,7 +214,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
 
         // must init defaults even if properties are empty
         if (properties == null) {
-            properties = Collections.EMPTY_MAP;
+            properties = Collections.emptyMap();
         }
         Object columnNamesCapitalization = properties
                 .get(COLUMN_NAME_CAPITALIZATION_PROPERTY);

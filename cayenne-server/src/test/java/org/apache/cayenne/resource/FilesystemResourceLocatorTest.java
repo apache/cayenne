@@ -85,7 +85,7 @@ public class FilesystemResourceLocatorTest {
 		Collection<Resource> resources2 = locator.findResources("x.txt");
 		assertNotNull(resources2);
 		assertEquals(1, resources2.size());
-		assertEquals(f1.toURL(), resources2.iterator().next().getURL());
+		assertEquals(f1.toURI().toURL(), resources2.iterator().next().getURL());
 
 		File f2 = new File(root2, "x.txt");
 		touch(f2);
@@ -95,8 +95,8 @@ public class FilesystemResourceLocatorTest {
 		assertEquals(2, resources3.size());
 
 		Resource[] resources3a = resources3.toArray(new Resource[2]);
-		assertEquals(f1.toURL(), resources3a[0].getURL());
-		assertEquals(f2.toURL(), resources3a[1].getURL());
+		assertEquals(f1.toURI().toURL(), resources3a[0].getURL());
+		assertEquals(f2.toURI().toURL(), resources3a[1].getURL());
 	}
 
 	private void touch(File f) throws Exception {

@@ -32,6 +32,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
+@SuppressWarnings("deprecation")
 public class ServerRuntimeBuilderTest {
 
 	private ServerRuntime runtime;

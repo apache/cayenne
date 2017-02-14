@@ -164,7 +164,7 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
         createTwoArtistsWithExhibitsDataSet();
 
         Expression e = ExpressionFactory.exp("galleryName = $name");
-        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.expWithParameters(Collections
+        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.params(Collections
                 .singletonMap("name", "gallery2")));
         q.addPrefetch("exhibitArray");
         q.addPrefetch("exhibitArray.artistExhibitArray");
@@ -200,7 +200,7 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
         createTwoArtistsWithExhibitsDataSet();
 
         Expression e = ExpressionFactory.exp("galleryName = $name");
-        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.expWithParameters(Collections
+        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.params(Collections
                 .singletonMap("name", "gallery2")));
         q.addPrefetch("exhibitArray").setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
@@ -237,7 +237,7 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
         createTwoArtistsWithExhibitsDataSet();
 
         Expression e = ExpressionFactory.exp("galleryName = $name");
-        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.expWithParameters(Collections
+        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.params(Collections
                 .singletonMap("name", "gallery2")));
 
         // reverse the order of prefetches compared to the previous test

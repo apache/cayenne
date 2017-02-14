@@ -204,6 +204,7 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
      * Returns a Collection of all attributes that either belong to this
      * DbEntity or inherited.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<DbAttribute> getAttributes() {
         return (Collection<DbAttribute>) super.getAttributes();
@@ -275,11 +276,13 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
     /**
      * Returns a Collection of relationships from this entity or inherited.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<DbRelationship> getRelationships() {
         return (Collection<DbRelationship>) super.getRelationships();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public SortedMap<String, DbRelationship> getRelationshipMap() {
         return (SortedMap<String, DbRelationship>) super.getRelationshipMap();

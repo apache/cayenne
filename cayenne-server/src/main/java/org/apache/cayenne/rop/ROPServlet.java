@@ -59,8 +59,10 @@ public class ROPServlet extends HttpServlet {
         Collection<Module> modules = configAdapter.createModules(new ROPServerModule(
                 eventBridgeParameters));
 
-        ServerRuntime runtime = new ServerRuntime(configurationLocation, modules
-                .toArray(new Module[modules.size()]));
+        ServerRuntime runtime = ServerRuntime.builder()
+                .addConfig(configurationLocation)
+                .addModules(modules)
+                .build();
 
         this.remoteService = runtime.getInjector().getInstance(RemoteService.class);
         this.serializationService = runtime.getInjector().getInstance(ROPSerializationService.class);

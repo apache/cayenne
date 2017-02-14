@@ -80,11 +80,10 @@ class DataDomainFlattenedBucket {
         }
 
         DataNode node = parent.getDomain().lookupDataNode(flattenedEntity.getDataMap());
-        List flattenedSnapshots = flattenedDeleteInfo.buildJoinSnapshotsForDelete(node);
+        List<Map<String, Object>> flattenedSnapshots = flattenedDeleteInfo.buildJoinSnapshotsForDelete(node);
         if (!flattenedSnapshots.isEmpty()) {
-            Iterator snapsIt = flattenedSnapshots.iterator();
-            while (snapsIt.hasNext()) {
-                relationDeleteQuery.add((Map) snapsIt.next());
+            for (Map<String, Object> flattenedSnapshot : flattenedSnapshots) {
+                relationDeleteQuery.add(flattenedSnapshot);
             }
         }
     }

@@ -112,7 +112,7 @@ public class EJBQLTranslationContext {
         SQLTemplate query = new SQLTemplate(compiledExpression
                 .getRootDescriptor()
                 .getObjectClass(), sql);
-        query.setParameters(boundParameters);
+        query.setParams(boundParameters);
         return query;
     }
     

@@ -284,7 +284,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
 		String template = "SELECT * FROM PAINTING " + "WHERE #bindObjectEqual($a) ORDER BY PAINTING_ID";
 		SQLTemplate query = new SQLTemplate(Painting.class, template);
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParameters(Collections.singletonMap("a", a));
+		query.setParams(Collections.singletonMap("a", a));
 
 		List<?> objects = context.performQuery(query);
 		assertEquals(1, objects.size());
@@ -302,7 +302,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
 		String template = "SELECT * FROM PAINTING " + "WHERE #bindObjectNotEqual($a) ORDER BY PAINTING_ID";
 		SQLTemplate query = new SQLTemplate(Painting.class, template);
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParameters(Collections.singletonMap("a", a));
+		query.setParams(Collections.singletonMap("a", a));
 
 		List<?> objects = context.performQuery(query);
 
@@ -325,7 +325,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
 				+ " WHERE #bindObjectEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
 		SQLTemplate query = new SQLTemplate(Painting.class, template);
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParameters(Collections.singletonMap("a", a));
+		query.setParams(Collections.singletonMap("a", a));
 
 		List<?> objects = context.performQuery(query);
 		assertEquals(1, objects.size());
@@ -344,7 +344,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
 				+ " WHERE #bindObjectEqual($a 't0.ARTIST_ID' 'ARTIST_ID' ) ORDER BY PAINTING_ID";
 		SQLTemplate query = new SQLTemplate(Painting.class, template);
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParameters(Collections.singletonMap("a", a));
+		query.setParams(Collections.singletonMap("a", a));
 
 		List<?> objects = context.performQuery(query);
 		assertEquals(1, objects.size());
@@ -361,7 +361,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
 				+ " WHERE #bindObjectEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
 		SQLTemplate query = new SQLTemplate(Painting.class, template);
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParameters(Collections.singletonMap("a", null));
+		query.setParams(Collections.singletonMap("a", null));
 
 		List<?> objects = context.performQuery(query);
 		assertEquals(1, objects.size());
@@ -380,7 +380,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
 				+ " WHERE #bindObjectNotEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
 		SQLTemplate query = new SQLTemplate(Painting.class, template);
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParameters(Collections.singletonMap("a", a));
+		query.setParams(Collections.singletonMap("a", a));
 
 		List<?> objects = context.performQuery(query);
 		// null comparison is unpredictable across DB's ... some would return
@@ -400,7 +400,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
 				+ " WHERE #bindObjectNotEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
 		SQLTemplate query = new SQLTemplate(Painting.class, template);
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParameters(Collections.singletonMap("a", null));
+		query.setParams(Collections.singletonMap("a", null));
 
 		List<Painting> objects = context.performQuery(query);
 		assertEquals(2, objects.size());
@@ -419,7 +419,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
 		String template = "SELECT * FROM PAINTING t0" + " WHERE t0.ARTIST_ID #bindEqual($id) ORDER BY PAINTING_ID";
 		SQLTemplate query = new SQLTemplate(Painting.class, template);
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParameters(Collections.singletonMap("id", null));
+		query.setParams(Collections.singletonMap("id", null));
 
 		List<Painting> objects = context.performQuery(query);
 		assertEquals(1, objects.size());

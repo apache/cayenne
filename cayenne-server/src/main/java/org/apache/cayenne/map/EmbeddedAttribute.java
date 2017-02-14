@@ -174,7 +174,7 @@ public class EmbeddedAttribute extends ObjAttribute {
     public Collection<ObjAttribute> getAttributes() {
         Embeddable e = getEmbeddable();
         if (e == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         Collection<EmbeddableAttribute> embeddableAttributes = e.getAttributes();
