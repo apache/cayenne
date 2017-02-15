@@ -36,6 +36,8 @@ class SelectQueryValidator extends BaseQueryValidator {
 
         validateName(query, validationResult);
 
+        validateCacheGroup(query, validationResult);
+
         // Resolve root to Entity for further validation
         Entity root = validateRoot(query, validationResult);
 
@@ -48,8 +50,7 @@ class SelectQueryValidator extends BaseQueryValidator {
             }
 
             if (query.getPrefetches() != null) {
-                for (String prefetchPath : query
-                        .getPrefetches()) {
+                for (String prefetchPath : query.getPrefetches()) {
                     validatePrefetch(root, prefetchPath, validationResult);
                 }
             }

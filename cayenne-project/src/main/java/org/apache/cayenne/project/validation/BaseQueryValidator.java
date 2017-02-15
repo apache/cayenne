@@ -21,6 +21,7 @@ package org.apache.cayenne.project.validation;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -29,6 +30,14 @@ import org.apache.cayenne.validation.ValidationResult;
  * Base validation for all query types
  */
 class BaseQueryValidator extends ConfigurationNodeValidator {
+
+    void validateCacheGroup(QueryDescriptor query, ValidationResult validationResult) {
+        String cacheGroup = query.getProperty(QueryMetadata.CACHE_GROUPS_PROPERTY);
+        if(cacheGroup != null && cacheGroup.contains(",")) {
+            addFailure(validationResult, query, "Invalid cache group \"%s\", " +
+                    "multiple groups are deprecated", cacheGroup);
+        }
+    }
 
     void validateName(QueryDescriptor query, ValidationResult validationResult) {
         final String name = query.getName();

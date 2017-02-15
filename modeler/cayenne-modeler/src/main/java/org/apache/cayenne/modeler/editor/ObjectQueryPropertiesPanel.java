@@ -58,12 +58,10 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
                 "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p");
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
-
         builder.addSeparator("", cc.xywh(1, 1, 4, 1));
-
         builder.addLabel("Result Caching:", cc.xy(1, 3));
         builder.add(cacheStrategy, cc.xywh(3, 3, 2, 1));
-        cacheGroupsLabel = builder.addLabel("Cache Groups:", cc.xy(1, 7));
+        cacheGroupsLabel = builder.addLabel("Cache Group:", cc.xy(1, 7));
         builder.add(cacheGroups.getComponent(), cc.xywh(3, 7, 2, 1));
         builder.addLabel("Fetch Data Rows:", cc.xy(1, 9));
         builder.add(dataRows, cc.xy(3, 9));

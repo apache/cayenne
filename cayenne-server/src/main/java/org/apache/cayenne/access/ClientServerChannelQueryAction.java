@@ -83,7 +83,7 @@ class ClientServerChannelQueryAction {
             if (cachedList == null) {
 
                 // attempt to refetch... respawn the action...
-                Query originatingQuery = serverMetadata.getOrginatingQuery();
+                Query originatingQuery = serverMetadata.getOriginatingQuery();
                 if (originatingQuery != null) {
                     ClientServerChannelQueryAction subaction = new ClientServerChannelQueryAction(
                             channel,

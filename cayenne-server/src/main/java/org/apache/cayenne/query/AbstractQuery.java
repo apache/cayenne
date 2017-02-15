@@ -30,7 +30,7 @@ import org.apache.cayenne.util.ToStringBuilder;
 /**
  * A common superclass of Cayenne queries.
  */
-public abstract class AbstractQuery implements Query {
+public abstract class AbstractQuery extends CacheableQuery {
 
     /**
      * The root object this query. May be an entity name, Java class, ObjEntity or
@@ -59,6 +59,7 @@ public abstract class AbstractQuery implements Query {
      * 
      * @since 1.1
      */
+    @Deprecated
     public String getName() {
         return name;
     }

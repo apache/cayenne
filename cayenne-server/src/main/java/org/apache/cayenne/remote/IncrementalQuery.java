@@ -53,7 +53,7 @@ class IncrementalQuery implements Query {
         // overriding caching settings in the metadata will only affect
         // ClientServerChannel behavior
         return new QueryMetadataProxy(metadata) {
-            public Query getOrginatingQuery() {
+            public Query getOriginatingQuery() {
                 return null;
             }
 

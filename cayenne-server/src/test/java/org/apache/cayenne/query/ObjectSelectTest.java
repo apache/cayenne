@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -374,11 +373,11 @@ public class ObjectSelectTest {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
 		assertNull(q.getCacheStrategy());
-		assertNull(q.getCacheGroups());
+		assertNull(q.getCacheGroup());
 
-		q.cacheGroups(Arrays.asList("a", "b"));
+		q.cacheGroup("a");
 		assertNull(q.getCacheStrategy());
-		assertArrayEquals(new String[] { "a", "b" }, q.getCacheGroups());
+		assertEquals("a", q.getCacheGroup());
 	}
 
 	@Test
@@ -386,15 +385,15 @@ public class ObjectSelectTest {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
 		assertNull(q.getCacheStrategy());
-		assertNull(q.getCacheGroups());
+		assertNull(q.getCacheGroup());
 
-		q.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, "a", "b");
+		q.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, "b");
 		assertSame(QueryCacheStrategy.LOCAL_CACHE, q.getCacheStrategy());
-		assertArrayEquals(new String[] { "a", "b" }, q.getCacheGroups());
+		assertEquals("b", q.getCacheGroup());
 
 		q.cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroups());
+		assertNull(q.getCacheGroup());
 	}
 
 	@Test
@@ -402,15 +401,15 @@ public class ObjectSelectTest {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
 		assertNull(q.getCacheStrategy());
-		assertNull(q.getCacheGroups());
+		assertNull(q.getCacheGroup());
 
-		q.localCache("a", "b");
+		q.localCache("a");
 		assertSame(QueryCacheStrategy.LOCAL_CACHE, q.getCacheStrategy());
-		assertArrayEquals(new String[] { "a", "b" }, q.getCacheGroups());
+		assertEquals("a", q.getCacheGroup());
 
 		q.localCache();
 		assertSame(QueryCacheStrategy.LOCAL_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroups());
+		assertNull(q.getCacheGroup());
 	}
 
 	@Test
@@ -418,15 +417,15 @@ public class ObjectSelectTest {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
 		assertNull(q.getCacheStrategy());
-		assertNull(q.getCacheGroups());
+		assertNull(q.getCacheGroup());
 
-		q.sharedCache("a", "b");
+		q.sharedCache("b");
 		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
-		assertArrayEquals(new String[] { "a", "b" }, q.getCacheGroups());
+		assertEquals("b", q.getCacheGroup());
 
 		q.sharedCache();
 		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroups());
+		assertNull(q.getCacheGroup());
 	}
 
 }

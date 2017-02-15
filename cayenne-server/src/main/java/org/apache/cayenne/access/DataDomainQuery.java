@@ -63,10 +63,19 @@ class DataDomainQuery implements Query, QueryMetadata {
         return false;
     }
 
+    @Deprecated
     public Query getOrginatingQuery() {
         return null;
     }
 
+    /**
+     * @since 4.0
+     */
+    public Query getOriginatingQuery() {
+        return null;
+    }
+
+    @Deprecated
     public String getName() {
         return null;
     }
@@ -74,7 +83,15 @@ class DataDomainQuery implements Query, QueryMetadata {
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
     }
 
+    @Deprecated
     public String[] getCacheGroups() {
+        return null;
+    }
+
+    /**
+     * @since 4.0
+     */
+    public String getCacheGroup() {
         return null;
     }
 

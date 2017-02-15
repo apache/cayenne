@@ -92,7 +92,7 @@ public class MapQueryCache implements QueryCache, Serializable {
 
             CacheEntry entry = new CacheEntry();
             entry.list = results;
-            entry.cacheGroups = metadata.getCacheGroups();
+            entry.cacheGroup = metadata.getCacheGroup();
 
             synchronized (this) {
                 map.put(key, entry);
@@ -114,13 +114,10 @@ public class MapQueryCache implements QueryCache, Serializable {
                 Iterator<CacheEntry> it = map.values().iterator();
                 while (it.hasNext()) {
                     CacheEntry entry = it.next();
-                    if (entry.cacheGroups != null) {
-                        for (int i = 0; i < entry.cacheGroups.length; i++) {
-
-                            if (groupKey.equals(entry.cacheGroups[i])) {
-                                it.remove();
-                                break;
-                            }
+                    if (entry.cacheGroup != null) {
+                        if (groupKey.equals(entry.cacheGroup)) {
+                            it.remove();
+                            break;
                         }
                     }
                 }
@@ -140,6 +137,6 @@ public class MapQueryCache implements QueryCache, Serializable {
 
     final static class CacheEntry implements Serializable {
         List<?> list;
-        String[] cacheGroups;
+        String cacheGroup;
     }
 }

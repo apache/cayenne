@@ -72,6 +72,7 @@ public abstract class BatchQuery implements Query {
     }
 
     @Override
+    @Deprecated
     public String getName() {
         return name;
     }

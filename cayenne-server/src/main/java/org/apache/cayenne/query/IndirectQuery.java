@@ -67,6 +67,7 @@ public abstract class IndirectQuery implements Query {
 	}
 
 	@Override
+	@Deprecated
 	public String getName() {
 		return name;
 	}

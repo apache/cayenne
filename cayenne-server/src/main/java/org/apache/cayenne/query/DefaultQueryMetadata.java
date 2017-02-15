@@ -75,8 +75,17 @@ class DefaultQueryMetadata implements QueryMetadata {
 
     /**
      * @since 3.0
+     * @deprecated use {@link DefaultQueryMetadata#getOriginatingQuery()}
      */
+    @Deprecated
     public Query getOrginatingQuery() {
+        return null;
+    }
+
+    /**
+     * @since 4.0
+     */
+    public Query getOriginatingQuery() {
         return null;
     }
 
@@ -107,7 +116,19 @@ class DefaultQueryMetadata implements QueryMetadata {
         return null;
     }
 
+    /**
+     * @deprecated since 4.0, use {@link DefaultQueryMetadata#getCacheGroup()}
+     */
+    @Deprecated
     public String[] getCacheGroups() {
+        return null;
+    }
+
+    /**
+     * @since 4.0
+     */
+    @Override
+    public String getCacheGroup() {
         return null;
     }
 

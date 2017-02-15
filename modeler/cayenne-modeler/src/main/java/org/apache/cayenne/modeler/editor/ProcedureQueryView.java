@@ -287,8 +287,7 @@ public class ProcedureQueryView extends JPanel {
             super.initFromModel(query);
 
             if (query != null && QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
-                DefaultComboBoxModel labelCaseModel = new DefaultComboBoxModel(
-                        LABEL_CAPITALIZATION);
+                DefaultComboBoxModel labelCaseModel = new DefaultComboBoxModel(LABEL_CAPITALIZATION);
 
                 String columnNameCapitalization = query.getProperty(SQLTemplate.COLUMN_NAME_CAPITALIZATION_PROPERTY);
 

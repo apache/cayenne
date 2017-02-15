@@ -36,4 +36,9 @@ public class MockAbstractQuery extends AbstractQuery {
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         return null;
     }
+
+    @Override
+    protected BaseQueryMetadata getBaseMetaData() {
+        return null;
+    }
 }

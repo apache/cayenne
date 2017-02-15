@@ -84,12 +84,10 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
-
         builder.addSeparator("Select Properties", cc.xywh(1, 1, 7, 1));
-
         builder.addLabel("Result Caching:", cc.xy(1, 3));
         builder.add(cacheStrategy, cc.xywh(3, 3, 5, 1));
-        cacheGroupsLabel = builder.addLabel("Cache Groups:", cc.xy(1, 7));
+        cacheGroupsLabel = builder.addLabel("Cache Group:", cc.xy(1, 7));
         builder.add(cacheGroups.getComponent(), cc.xywh(3, 7, 5, 1));
         builder.addLabel("Fetch Data Objects:", cc.xy(1, 9));
         builder.add(dataObjects, cc.xy(3, 9));

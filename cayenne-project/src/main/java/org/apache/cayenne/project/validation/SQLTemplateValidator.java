@@ -32,6 +32,7 @@ class SQLTemplateValidator extends BaseQueryValidator {
         validateName(query, validationResult);
         validateRoot(query, validationResult);
         validateDefaultSQL(query, validationResult);
+        validateCacheGroup(query, validationResult);
     }
 
     void validateDefaultSQL(SQLTemplateDescriptor query, ValidationResult validationResult) {

@@ -55,7 +55,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Indi
     protected int pageSize;
     protected int statementFetchSize;
     protected QueryCacheStrategy cacheStrategy;
-    protected String[] cacheGroups;
+    protected String cacheGroup;
 
     protected FluentSelect() {
     }
@@ -97,7 +97,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Indi
         replacement.addOrderings(orderings);
         replacement.setPrefetchTree(prefetches);
         replacement.setCacheStrategy(cacheStrategy);
-        replacement.setCacheGroups(cacheGroups);
+        replacement.setCacheGroup(cacheGroup);
         replacement.setFetchLimit(limit);
         replacement.setFetchOffset(offset);
         replacement.setPageSize(pageSize);
@@ -411,30 +411,30 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Indi
         return (S)this;
     }
 
-    public S cacheStrategy(QueryCacheStrategy strategy, String... cacheGroups) {
+    @SuppressWarnings("unchecked")
+    public S cacheStrategy(QueryCacheStrategy strategy) {
         if (this.cacheStrategy != strategy) {
             this.cacheStrategy = strategy;
             this.replacementQuery = null;
         }
 
-        return cacheGroups(cacheGroups);
-    }
+        if(this.cacheGroup != null) {
+            this.cacheGroup = null;
+            this.replacementQuery = null;
+        }
 
-    @SuppressWarnings("unchecked")
-    public S cacheGroups(String... cacheGroups) {
-        this.cacheGroups = cacheGroups != null && cacheGroups.length > 0 ? cacheGroups : null;
-        this.replacementQuery = null;
         return (S)this;
     }
 
-    public S cacheGroups(Collection<String> cacheGroups) {
+    public S cacheStrategy(QueryCacheStrategy strategy, String cacheGroup) {
+        return cacheStrategy(strategy).cacheGroup(cacheGroup);
+    }
 
-        if (cacheGroups == null) {
-            return cacheGroups((String) null);
-        }
-
-        String[] array = new String[cacheGroups.size()];
-        return cacheGroups(cacheGroups.toArray(array));
+    @SuppressWarnings("unchecked")
+    public S cacheGroup(String cacheGroup) {
+        this.cacheGroup = cacheGroup;
+        this.replacementQuery = null;
+        return (S)this;
     }
 
     /**
@@ -442,11 +442,23 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Indi
      * running the query. This is a short-hand notation for:
      * <p>
      * <pre>
-     * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroups);
+     * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroup);
      * </pre>
      */
-    public S localCache(String... cacheGroups) {
-        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroups);
+    public S localCache(String cacheGroup) {
+        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroup);
+    }
+
+    /**
+     * Instructs Cayenne to look for query results in the "local" cache when
+     * running the query. This is a short-hand notation for:
+     * <p>
+     * <pre>
+     * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+     * </pre>
+     */
+    public S localCache() {
+        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
     }
 
     /**
@@ -454,15 +466,27 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Indi
      * running the query. This is a short-hand notation for:
      * <p>
      * <pre>
-     * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroups);
+     * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroup);
      * </pre>
      */
-    public S sharedCache(String... cacheGroups) {
-        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroups);
+    public S sharedCache(String cacheGroup) {
+        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroup);
     }
 
-    public String[] getCacheGroups() {
-        return cacheGroups;
+    /**
+     * Instructs Cayenne to look for query results in the "shared" cache when
+     * running the query. This is a short-hand notation for:
+     * <p>
+     * <pre>
+     * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+     * </pre>
+     */
+    public S sharedCache() {
+        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+    }
+
+    public String getCacheGroup() {
+        return cacheGroup;
     }
 
     public QueryCacheStrategy getCacheStrategy() {

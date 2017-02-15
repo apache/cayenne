@@ -36,7 +36,7 @@ import java.util.Map;
  * 
  * @since 3.0
  */
-public class EJBQLQuery implements Query, XMLSerializable {
+public class EJBQLQuery extends CacheableQuery implements XMLSerializable {
 
     protected String name;
     protected DataMap dataMap;
@@ -92,52 +92,9 @@ public class EJBQLQuery implements Query, XMLSerializable {
         metadata.setFetchingDataRows(flag);
     }
 
-    public String[] getCacheGroups() {
-        return metadata.getCacheGroups();
-    }
-
-    public QueryCacheStrategy getCacheStrategy() {
-        return metadata.getCacheStrategy();
-    }
-
-    public void setCacheGroups(String... cacheGroups) {
-        this.metadata.setCacheGroups(cacheGroups);
-    }
-
-    public void setCacheStrategy(QueryCacheStrategy strategy) {
-        metadata.setCacheStrategy(strategy);
-    }
-    
-    /**
-     * Instructs Cayenne to look for query results in the "local" cache when
-     * running the query. This is a short-hand notation for:
-     * 
-     * <pre>
-     * query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-     * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
-     * </pre>
-     * 
-     * @since 4.0
-     */
-    public void useLocalCache(String... cacheGroups) {
-        setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        setCacheGroups(cacheGroups);
-    }
-
-    /**
-     * Instructs Cayenne to look for query results in the "shared" cache when
-     * running the query. This is a short-hand notation for:
-     * 
-     * <pre>
-     * query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-     * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
-     * </pre>
-     * 
-     * @since 4.0
-     */
-    public void useSharedCache(String... cacheGroups) {
-        setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-        setCacheGroups(cacheGroups);
+    @Override
+    protected BaseQueryMetadata getBaseMetaData() {
+        return metadata;
     }
 
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
@@ -176,6 +133,7 @@ public class EJBQLQuery implements Query, XMLSerializable {
         return expression;
     }
 
+    @Deprecated
     public String getName() {
         return name;
     }
@@ -196,8 +154,9 @@ public class EJBQLQuery implements Query, XMLSerializable {
     }
 
     public Map<Integer, Object> getPositionalParameters() {
-        return positionalParameters != null ? Collections
-                .unmodifiableMap(positionalParameters) : Collections.<Integer, Object>emptyMap();
+        return positionalParameters != null
+                ? Collections.unmodifiableMap(positionalParameters)
+                : Collections.<Integer, Object>emptyMap();
     }
 
     /**
@@ -221,24 +180,20 @@ public class EJBQLQuery implements Query, XMLSerializable {
     }
 
     /**
-     * Sets a positional query parameter value. Note that parameter indexes are starting
-     * from 1.
+     * Sets a positional query parameter value. Note that parameter indexes are starting from 1.
      */
     public void setParameter(int position, Object object) {
 
         if (position < 1) {
-            throw new IllegalArgumentException("Parameter position must be >= 1: "
-                    + position);
+            throw new IllegalArgumentException("Parameter position must be >= 1: " + position);
         }
 
-        // TODO: andrus, 6/12/2007 - validate against available query parameters - JPA
-        // spec requires it.
-
+        // TODO: andrus, 6/12/2007 - validate against available query parameters - JPA spec requires it.
         if (positionalParameters == null) {
             positionalParameters = new HashMap<>();
         }
 
-        positionalParameters.put(Integer.valueOf(position), object);
+        positionalParameters.put(position, object);
     }
 
     /**

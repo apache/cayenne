@@ -71,7 +71,7 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 		// overriding caching settings in the metadata will only affect
 		// ClientServerChannel behavior
 		return new QueryMetadataProxy(metadata) {
-			public Query getOrginatingQuery() {
+			public Query getOriginatingQuery() {
 				return null;
 			}
 
@@ -136,9 +136,21 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 		return query.equals(obj);
 	}
 
+	/**
+	 * @deprecated since 4.0, use {@link IncrementalSelectQuery#getCacheGroup()}
+	 */
 	@Override
+	@Deprecated
 	public String[] getCacheGroups() {
 		return query.getCacheGroups();
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public String getCacheGroup() {
+		return super.getCacheGroup();
 	}
 
 	@Override
@@ -226,9 +238,22 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 		query.route(router, resolver, substitutedQuery);
 	}
 
+	/**
+	 * @deprecated since 4.0 only first cache group will be used
+	 * 			   use {@link IncrementalSelectQuery#setCacheGroup(String)}
+	 */
 	@Override
-	public void setCacheGroups(String... cachGroups) {
-		query.setCacheGroups(cachGroups);
+	@Deprecated
+	public void setCacheGroups(String... cacheGroups) {
+		query.setCacheGroups(cacheGroups);
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public void setCacheGroup(String cacheGroup) {
+		query.setCacheGroup(cacheGroup);
 	}
 
 	@Override

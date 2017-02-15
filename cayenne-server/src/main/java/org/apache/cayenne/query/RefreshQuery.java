@@ -127,14 +127,9 @@ public class RefreshQuery implements Query {
 
                 QueryMetadataWrapper wrappedMd = new QueryMetadataWrapper(md);
                 if (QueryCacheStrategy.LOCAL_CACHE == md.getCacheStrategy()) {
-                    wrappedMd.override(
-                            QueryMetadata.CACHE_STRATEGY_PROPERTY,
-                            QueryCacheStrategy.LOCAL_CACHE_REFRESH);
-                }
-                else if (QueryCacheStrategy.SHARED_CACHE == md.getCacheStrategy()) {
-                    wrappedMd.override(
-                            QueryMetadata.CACHE_STRATEGY_PROPERTY,
-                            QueryCacheStrategy.SHARED_CACHE_REFRESH);
+                    wrappedMd.override(QueryMetadata.CACHE_STRATEGY_PROPERTY, QueryCacheStrategy.LOCAL_CACHE_REFRESH);
+                } else if (QueryCacheStrategy.SHARED_CACHE == md.getCacheStrategy()) {
+                    wrappedMd.override(QueryMetadata.CACHE_STRATEGY_PROPERTY, QueryCacheStrategy.SHARED_CACHE_REFRESH);
                 }
 
                 return wrappedMd;

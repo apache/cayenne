@@ -55,8 +55,9 @@ class QueryMetadataWrapper extends QueryMetadataProxy {
     }
 
     public String getCacheKey() {
-        return (overrideExists(CACHE_KEY_PROPERTY)) ? (String) overrides
-                .get(CACHE_KEY_PROPERTY) : super.getCacheKey();
+        return (overrideExists(CACHE_KEY_PROPERTY))
+                ? (String) overrides.get(CACHE_KEY_PROPERTY)
+                : super.getCacheKey();
     }
 
     /**
@@ -64,15 +65,34 @@ class QueryMetadataWrapper extends QueryMetadataProxy {
      */
     public QueryCacheStrategy getCacheStrategy() {
         return (overrideExists(QueryMetadata.CACHE_STRATEGY_PROPERTY))
-                ? (QueryCacheStrategy) overrides
-                        .get(QueryMetadata.CACHE_STRATEGY_PROPERTY)
+                ? (QueryCacheStrategy) overrides.get(QueryMetadata.CACHE_STRATEGY_PROPERTY)
                 : super.getCacheStrategy();
     }
 
+    /**
+     * @deprecated since 4.0, use {@link QueryMetadataWrapper#getCacheKey()}
+     */
+    @Deprecated
     public String[] getCacheGroups() {
         return (overrideExists(QueryMetadata.CACHE_GROUPS_PROPERTY))
                 ? (String[]) overrides.get(QueryMetadata.CACHE_GROUPS_PROPERTY)
                 : super.getCacheGroups();
+    }
+
+    /**
+     * @since 4.0
+     */
+    public String getCacheGroup() {
+        if(overrideExists(QueryMetadata.CACHE_GROUPS_PROPERTY)) {
+            String[] cacheGroups = (String[]) overrides.get(QueryMetadata.CACHE_GROUPS_PROPERTY);
+            if(cacheGroups == null || cacheGroups.length == 0) {
+                return null;
+            } else {
+                return cacheGroups[0];
+            }
+        }
+
+        return super.getCacheGroup();
     }
 
     public boolean isFetchingDataRows() {
@@ -81,7 +101,7 @@ class QueryMetadataWrapper extends QueryMetadataProxy {
         }
 
         Boolean b = (Boolean) overrides.get(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY);
-        return b != null && b.booleanValue();
+        return b != null && b;
     }
 
     public boolean isRefreshingObjects() {

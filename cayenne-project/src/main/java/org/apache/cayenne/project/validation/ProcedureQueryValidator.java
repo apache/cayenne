@@ -28,6 +28,7 @@ class ProcedureQueryValidator extends BaseQueryValidator {
     void validate(ProcedureQueryDescriptor query, ValidationResult validationResult) {
         validateName(query, validationResult);
         validateRoot(query, validationResult);
+        validateCacheGroup(query, validationResult);
     }
 
     void validateRoot(ProcedureQueryDescriptor query, ValidationResult validationResult) {

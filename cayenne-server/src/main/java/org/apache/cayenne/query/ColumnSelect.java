@@ -84,7 +84,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
         this.pageSize = select.pageSize;
         this.statementFetchSize = select.statementFetchSize;
         this.cacheStrategy = select.cacheStrategy;
-        this.cacheGroups = select.cacheGroups;
+        this.cacheGroup = select.cacheGroup;
     }
 
     @Override

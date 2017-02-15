@@ -699,66 +699,6 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	}
 
 	/**
-	 * @since 3.0
-	 */
-	public QueryCacheStrategy getCacheStrategy() {
-		return metaData.getCacheStrategy();
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public void setCacheStrategy(QueryCacheStrategy strategy) {
-		metaData.setCacheStrategy(strategy);
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public String[] getCacheGroups() {
-		return metaData.getCacheGroups();
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public void setCacheGroups(String... cacheGroups) {
-		this.metaData.setCacheGroups(cacheGroups);
-	}
-
-	/**
-	 * Instructs Cayenne to look for query results in the "local" cache when
-	 * running the query. This is a short-hand notation for:
-	 * 
-	 * <pre>
-	 * query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-	 * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
-	 * </pre>
-	 * 
-	 * @since 4.0
-	 */
-	public void useLocalCache(String... cacheGroups) {
-		setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-		setCacheGroups(cacheGroups);
-	}
-
-	/**
-	 * Instructs Cayenne to look for query results in the "shared" cache when
-	 * running the query. This is a short-hand notation for:
-	 * 
-	 * <pre>
-	 * query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-	 * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
-	 * </pre>
-	 * 
-	 * @since 4.0
-	 */
-	public void useSharedCache(String... cacheGroups) {
-		setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-		setCacheGroups(cacheGroups);
-	}
-
-	/**
 	 * Returns the fetchOffset.
 	 * 
 	 * @since 3.0
@@ -949,5 +889,10 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 */
 	public void orHavingQualifier(Expression e) {
 		havingQualifier = (havingQualifier != null) ? havingQualifier.orExp(e) : e;
+	}
+
+	@Override
+	protected BaseQueryMetadata getBaseMetaData() {
+		return metaData;
 	}
 }

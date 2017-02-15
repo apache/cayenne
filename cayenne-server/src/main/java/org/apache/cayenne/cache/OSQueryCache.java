@@ -319,9 +319,9 @@ public class OSQueryCache implements QueryCache {
         RefreshSpecification refresh = null;
 
         if (refreshSpecifications != null) {
-            String[] groups = metadata.getCacheGroups();
-            if (groups != null && groups.length > 0) {
-                refresh = refreshSpecifications.get(groups[0]);
+            String group = metadata.getCacheGroup();
+            if (group != null) {
+                refresh = refreshSpecifications.get(group);
             }
         }
 
@@ -332,7 +332,7 @@ public class OSQueryCache implements QueryCache {
     public void put(QueryMetadata metadata, List results) {
         String key = metadata.getCacheKey();
         if (key != null) {
-            osCache.putInCache(key, results, metadata.getCacheGroups());
+            osCache.putInCache(key, results, new String[]{metadata.getCacheGroup()});
         }
     }
 

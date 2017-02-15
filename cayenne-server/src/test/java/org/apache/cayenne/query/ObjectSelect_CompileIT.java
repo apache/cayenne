@@ -67,6 +67,7 @@ public class ObjectSelect_CompileIT extends ServerCase {
 
 		assertEquals(QueryCacheStrategy.NO_CACHE, selectQuery.getCacheStrategy());
 		assertNull(selectQuery.getCacheGroups());
+		assertNull(selectQuery.getCacheGroup());
 		assertEquals(0, selectQuery.getFetchLimit());
 		assertEquals(0, selectQuery.getFetchOffset());
 		assertEquals(0, selectQuery.getPageSize());
@@ -76,11 +77,10 @@ public class ObjectSelect_CompileIT extends ServerCase {
 	@Test
 	public void testCreateReplacementQuery_Full() {
 
-		// add all possible attributes to the query and make sure they got
-		// propagated
+		// add all possible attributes to the query and make sure they got propagated
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("me"))
 				.orderBy(Artist.DATE_OF_BIRTH.asc(), Artist.ARTIST_NAME.desc()).prefetch(Artist.PAINTING_ARRAY.joint())
-				.localCache("cg2", "cg1").limit(46).offset(9).pageSize(6).statementFetchSize(789);
+				.localCache("cg2").limit(46).offset(9).pageSize(6).statementFetchSize(789);
 
 		Query replacement = q.createReplacementQuery(resolver);
 		assertThat(replacement, instanceOf(SelectQuery.class));
@@ -102,7 +102,8 @@ public class ObjectSelect_CompileIT extends ServerCase {
 		assertEquals(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS, childPrefetch.getSemantics());
 
 		assertEquals(QueryCacheStrategy.LOCAL_CACHE, selectQuery.getCacheStrategy());
-		assertArrayEquals(new Object[] { "cg2", "cg1" }, selectQuery.getCacheGroups());
+		assertArrayEquals(new String[] { "cg2" }, selectQuery.getCacheGroups());
+		assertEquals("cg2", selectQuery.getCacheGroup());
 
 		assertEquals(46, selectQuery.getFetchLimit());
 		assertEquals(9, selectQuery.getFetchOffset());

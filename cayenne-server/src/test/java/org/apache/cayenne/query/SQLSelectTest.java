@@ -19,15 +19,8 @@
 package org.apache.cayenne.query;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
-
-import java.util.Arrays;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.map.EntityResolver;
@@ -35,32 +28,21 @@ import org.junit.Test;
 
 public class SQLSelectTest {
 
-	@Test
-	public void testCacheGroups_Collection() {
-		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
-
-		assertNull(q.getCacheStrategy());
-		assertNull(q.getCacheGroups());
-
-		q.cacheGroups(Arrays.asList("a", "b"));
-		assertNull(q.getCacheStrategy());
-		assertArrayEquals(new String[] { "a", "b" }, q.getCacheGroups());
-	}
 
 	@Test
 	public void testCacheStrategy() {
 		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
 
 		assertNull(q.getCacheStrategy());
-		assertNull(q.getCacheGroups());
+		assertNull(q.getCacheGroup());
 
-		q.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, "a", "b");
+		q.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, "a");
 		assertSame(QueryCacheStrategy.LOCAL_CACHE, q.getCacheStrategy());
-		assertArrayEquals(new String[] { "a", "b" }, q.getCacheGroups());
+		assertEquals("a", q.getCacheGroup());
 
 		q.cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroups());
+		assertNull(q.getCacheGroup());
 	}
 
 	@Test
@@ -68,15 +50,15 @@ public class SQLSelectTest {
 		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
 
 		assertNull(q.getCacheStrategy());
-		assertNull(q.getCacheGroups());
+		assertNull(q.getCacheGroup());
 
-		q.localCache("a", "b");
+		q.localCache("a");
 		assertSame(QueryCacheStrategy.LOCAL_CACHE, q.getCacheStrategy());
-		assertArrayEquals(new String[] { "a", "b" }, q.getCacheGroups());
+		assertEquals("a", q.getCacheGroup());
 
 		q.localCache();
 		assertSame(QueryCacheStrategy.LOCAL_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroups());
+		assertNull(q.getCacheGroup());
 	}
 
 	@Test
@@ -84,15 +66,15 @@ public class SQLSelectTest {
 		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
 
 		assertNull(q.getCacheStrategy());
-		assertNull(q.getCacheGroups());
+		assertNull(q.getCacheGroup());
 
-		q.sharedCache("a", "b");
+		q.sharedCache("a");
 		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
-		assertArrayEquals(new String[] { "a", "b" }, q.getCacheGroups());
+		assertEquals("a", q.getCacheGroup());
 
 		q.sharedCache();
 		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroups());
+		assertNull(q.getCacheGroup());
 	}
 
 	@Test

@@ -147,19 +147,9 @@ public class JCacheQueryCache implements QueryCache {
 
     protected String cacheName(QueryMetadata metadata) {
 
-        String[] cacheGroups = metadata.getCacheGroups();
-
-        if (cacheGroups != null && cacheGroups.length > 0) {
-
-            if (cacheGroups.length > 1) {
-                if (LOGGER.isWarnEnabled()) {
-                    List<String> ignored = Arrays.asList(cacheGroups).subList(1, cacheGroups.length);
-                    LOGGER.warn("multiple cache groups per key '" + metadata.getCacheKey() + "', using the first one: "
-                            + cacheGroups[0] + ". Ignoring others: " + ignored);
-                }
-            }
-
-            return cacheGroups[0];
+        String cacheGroup = metadata.getCacheGroup();
+        if (cacheGroup != null) {
+            return cacheGroup;
         }
 
         // no explicit cache groups

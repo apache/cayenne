@@ -160,7 +160,12 @@ public class StringIdQuery implements Query {
                 return false;
             }
 
+            @Deprecated
             public Query getOrginatingQuery() {
+                return null;
+            }
+
+            public Query getOriginatingQuery() {
                 return null;
             }
 
@@ -188,7 +193,12 @@ public class StringIdQuery implements Query {
                 return null;
             }
 
+            @Deprecated
             public String[] getCacheGroups() {
+                return null;
+            }
+
+            public String getCacheGroup() {
                 return null;
             }
 

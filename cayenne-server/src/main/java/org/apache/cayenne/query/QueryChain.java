@@ -84,7 +84,7 @@ public class QueryChain implements Query {
      * the chain and was removed.
      */
     public boolean removeQuery(Query query) {
-        return (chain != null) ? chain.remove(query) : false;
+        return (chain != null) && chain.remove(query);
     }
 
     public boolean isEmpty() {
@@ -138,8 +138,7 @@ public class QueryChain implements Query {
      * Returns default metadata.
      */
     public QueryMetadata getMetaData(EntityResolver resolver) {
-        QueryMetadataWrapper wrapper = new QueryMetadataWrapper(
-                DefaultQueryMetadata.defaultMetadata);
+        QueryMetadataWrapper wrapper = new QueryMetadataWrapper(DefaultQueryMetadata.defaultMetadata);
         wrapper.override(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY, Boolean.TRUE);
         return wrapper;
     }

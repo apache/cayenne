@@ -22,14 +22,15 @@ import org.apache.cayenne.project.validation.EJBQLStatementValidator.PositionExc
 import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.validation.ValidationResult;
 
-class EJBQLQueryValidator extends ConfigurationNodeValidator {
+class EJBQLQueryValidator extends BaseQueryValidator {
 
     void validate(EJBQLQueryDescriptor query, ValidationResult validationResult) {
-
         PositionException message = new EJBQLStatementValidator().validateEJBQL(query);
         if (message != null) {
-            addFailure(validationResult, query, "Error in EJBQL query '%s' syntax", query
-                    .getName());
+            addFailure(validationResult, query, "Error in EJBQL query '%s' syntax", query.getName());
         }
+
+        validateName(query, validationResult);
+        validateCacheGroup(query, validationResult);
     }
 }

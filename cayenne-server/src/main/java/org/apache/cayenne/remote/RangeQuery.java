@@ -72,7 +72,12 @@ class RangeQuery implements Query {
 
         return new QueryMetadataProxy(originatingMetadata) {
 
+            @Deprecated
             public Query getOrginatingQuery() {
+                return getOriginatingQuery();
+            }
+
+            public Query getOriginatingQuery() {
                 return originatingQuery;
             }
 
@@ -88,7 +93,12 @@ class RangeQuery implements Query {
                 return cacheKey;
             }
 
+            @Deprecated
             public String[] getCacheGroups() {
+                return null;
+            }
+
+            public String getCacheGroup() {
                 return null;
             }
 

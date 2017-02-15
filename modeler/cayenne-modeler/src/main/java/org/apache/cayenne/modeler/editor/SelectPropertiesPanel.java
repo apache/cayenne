@@ -55,23 +55,24 @@ public abstract class SelectPropertiesPanel extends JPanel {
 
     private static Log logObj = LogFactory.getLog(SelectPropertiesPanel.class);
 
-    private static final Integer ZERO = new Integer(0);
+    private static final Integer ZERO = 0;
 
     private static final String NO_CACHE_LABEL = "No Result Caching";
     private static final String LOCAL_CACHE_LABEL = "Local Cache (per ObjectContext)";
     private static final String SHARED_CACHE_LABEL = "Shared Cache";
 
     protected static final Object[] CACHE_POLICIES = new Object[] {
-            QueryCacheStrategy.NO_CACHE, QueryCacheStrategy.LOCAL_CACHE,
+            QueryCacheStrategy.NO_CACHE,
+            QueryCacheStrategy.LOCAL_CACHE,
             QueryCacheStrategy.SHARED_CACHE
     };
 
-    private static final Map<QueryCacheStrategy, String> cachePolicyLabels = new TreeMap<QueryCacheStrategy, String>();
+    private static final Map<QueryCacheStrategy, String> cachePolicyLabels = new TreeMap<>();
 
     static {
-        cachePolicyLabels.put(QueryCacheStrategy.NO_CACHE, NO_CACHE_LABEL);
-        cachePolicyLabels.put(QueryCacheStrategy.LOCAL_CACHE, LOCAL_CACHE_LABEL);
-        cachePolicyLabels.put(QueryCacheStrategy.SHARED_CACHE, SHARED_CACHE_LABEL);
+        cachePolicyLabels.put(QueryCacheStrategy.NO_CACHE,      NO_CACHE_LABEL);
+        cachePolicyLabels.put(QueryCacheStrategy.LOCAL_CACHE,   LOCAL_CACHE_LABEL);
+        cachePolicyLabels.put(QueryCacheStrategy.SHARED_CACHE,  SHARED_CACHE_LABEL);
     }
 
     protected TextAdapter fetchOffset;
@@ -91,21 +92,18 @@ public abstract class SelectPropertiesPanel extends JPanel {
 
     protected void initView() {
         fetchOffset = new TextAdapter(new JTextField(7)) {
-
             protected void updateModel(String text) {
                 setFetchOffset(text);
             }
         };
 
         fetchLimit = new TextAdapter(new JTextField(7)) {
-
             protected void updateModel(String text) {
                 setFetchLimit(text);
             }
         };
 
         pageSize = new TextAdapter(new JTextField(7)) {
-
             protected void updateModel(String text) {
                 setPageSize(text);
             }
@@ -114,7 +112,6 @@ public abstract class SelectPropertiesPanel extends JPanel {
         cacheStrategy = Application.getWidgetFactory().createUndoableComboBox();
         cacheStrategy.setRenderer(new CacheStrategyRenderer());
         cacheGroups = new TextAdapter(new JTextField()) {
-
             protected void updateModel(String text) {
                 setCacheGroups(text);
             }
@@ -123,14 +120,10 @@ public abstract class SelectPropertiesPanel extends JPanel {
 
     protected void initController() {
         cacheStrategy.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent event) {
-                QueryCacheStrategy strategy = (QueryCacheStrategy) cacheStrategy
-                        .getModel()
-                        .getSelectedItem();
+                QueryCacheStrategy strategy = (QueryCacheStrategy) cacheStrategy.getModel().getSelectedItem();
                 setQueryProperty(QueryMetadata.CACHE_STRATEGY_PROPERTY, strategy.name());
-                setCacheGroupsEnabled(strategy != null
-                        && strategy != QueryCacheStrategy.NO_CACHE);
+                setCacheGroupsEnabled(strategy != QueryCacheStrategy.NO_CACHE);
             }
         });
     }
@@ -153,8 +146,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
         cacheStrategy.setModel(cacheModel);
 
         cacheGroups.setText(query.getProperty(QueryMetadata.CACHE_GROUPS_PROPERTY));
-        setCacheGroupsEnabled(selectedStrategy != null
-                && selectedStrategy != QueryCacheStrategy.NO_CACHE);
+        setCacheGroupsEnabled(selectedStrategy != null && selectedStrategy != QueryCacheStrategy.NO_CACHE);
 
         String fetchOffsetStr = query.getProperty(QueryMetadata.FETCH_OFFSET_PROPERTY);
         String fetchLimitStr = query.getProperty(QueryMetadata.FETCH_LIMIT_PROPERTY);
@@ -165,68 +157,41 @@ public abstract class SelectPropertiesPanel extends JPanel {
         pageSize.setText(pageSizeStr != null ? pageSizeStr : ZERO.toString());
     }
 
-    protected String toCacheGroupsString(String[] groups) {
-
-        StringBuilder buffer = new StringBuilder();
-        if (groups != null && groups.length > 0) {
-
-            for (int i = 0; i < groups.length; i++) {
-                if (i > 0) {
-                    buffer.append(", ");
-                }
-
-                buffer.append(groups[i]);
-            }
-        }
-
-        return buffer.toString();
-    }
-
     void setFetchOffset(String string) {
-        string = (string == null) ? "" : string.trim();
-
+        string = string == null ? "" : string.trim();
         if (string.length() == 0) {
             setQueryProperty(QueryMetadata.FETCH_OFFSET_PROPERTY, ZERO.toString());
-        }
-        else {
+        } else {
             if (StringUtils.isNumeric(string)) {
                 setQueryProperty(QueryMetadata.FETCH_OFFSET_PROPERTY, string);
-            }
-            else {
-                throw new ValidationException("Fetch offset must be an integer: "
-                        + string);
+            } else {
+                throw new ValidationException("Fetch offset must be an integer: %s", string);
             }
         }
     }
 
     void setFetchLimit(String string) {
         string = (string == null) ? "" : string.trim();
-
         if (string.length() == 0) {
             setQueryProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, ZERO.toString());
-        }
-        else {
+        } else {
             if (StringUtils.isNumeric(string)) {
                 setQueryProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, string);
-            }
-            else {
-                throw new ValidationException("Fetch limit must be an integer: " + string);
+            } else {
+                throw new ValidationException("Fetch limit must be an integer: %s", string);
             }
         }
     }
 
     void setPageSize(String string) {
         string = (string == null) ? "" : string.trim();
-
         if (string.length() == 0) {
             setQueryProperty(QueryMetadata.PAGE_SIZE_PROPERTY, ZERO.toString());
-        }
-        else {
+        } else {
             if (StringUtils.isNumeric(string)) {
                 setQueryProperty(QueryMetadata.PAGE_SIZE_PROPERTY, string);
-            }
-            else {
-                throw new ValidationException("Page size must be an integer: " + string);
+            } else {
+                throw new ValidationException("Page size must be an integer: %s", string);
             }
         }
     }

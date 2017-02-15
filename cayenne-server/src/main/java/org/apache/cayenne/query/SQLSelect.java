@@ -48,8 +48,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * Creates a query that selects DataRows and uses default routing.
 	 */
 	public static SQLSelect<DataRow> dataRowQuery(String sql) {
-		SQLSelect<DataRow> query = new SQLSelect<DataRow>(sql);
-		return query;
+		return new SQLSelect<>(sql);
 	}
 
 	/**
@@ -57,7 +56,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * provided DataMap name.
 	 */
 	public static SQLSelect<DataRow> dataRowQuery(String dataMapName, String sql) {
-		SQLSelect<DataRow> query = new SQLSelect<DataRow>(sql);
+		SQLSelect<DataRow> query = new SQLSelect<>(sql);
 		query.dataMapName = dataMapName;
 		return query;
 	}
@@ -66,14 +65,14 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * Creates a query that selects DataObjects.
 	 */
 	public static <T> SQLSelect<T> query(Class<T> type, String sql) {
-		return new SQLSelect<T>(type, sql);
+		return new SQLSelect<>(type, sql);
 	}
 
 	/**
 	 * Creates a query that selects scalar values and uses default routing.
 	 */
 	public static <T> SQLSelect<T> scalarQuery(Class<T> type, String sql) {
-		SQLSelect<T> query = new SQLSelect<T>(sql);
+		SQLSelect<T> query = new SQLSelect<>(sql);
 		query.scalarType = type;
 		return query;
 	}
@@ -83,7 +82,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * provided DataMap name.
 	 */
 	public static <T> SQLSelect<T> scalarQuery(Class<T> type, String dataMapName, String sql) {
-		SQLSelect<T> query = new SQLSelect<T>(sql);
+		SQLSelect<T> query = new SQLSelect<>(sql);
 		query.dataMapName = dataMapName;
 		query.scalarType = type;
 		return query;
@@ -94,7 +93,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	protected String dataMapName;
 	protected StringBuilder sqlBuffer;
 	protected QueryCacheStrategy cacheStrategy;
-	protected String[] cacheGroups;
+	protected String cacheGroup;
 	protected Map<String, Object> params;
 	protected List<Object> positionalParams;
 	protected CapsStrategy columnNameCaps;
@@ -132,7 +131,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 
 	@Override
 	public void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
-		context.iterate((Select<T>) this, callback);
+		context.iterate(this, callback);
 	}
 
 	@Override
@@ -178,8 +177,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		if (this.params == null) {
 			this.params = new HashMap<>(parameters);
 		} else {
-			Map bareMap = parameters;
-			this.params.putAll(bareMap);
+			this.params.putAll(parameters);
 		}
 
 		this.replacementQuery = null;
@@ -253,7 +251,6 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 			if (map == null) {
 				throw new CayenneRuntimeException("Invalid dataMapName '%s'", dataMapName);
 			}
-
 			root = map;
 		} else {
 			// will route via default node. TODO: allow explicit node name?
@@ -264,7 +261,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		template.setFetchingDataRows(isFetchingDataRows());
 		template.setRoot(root);
 		template.setDefaultTemplate(getSql());
-		template.setCacheGroups(cacheGroups);
+		template.setCacheGroup(cacheGroup);
 		template.setCacheStrategy(cacheStrategy);
 
 		if (positionalParams != null) {
@@ -293,11 +290,23 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * running the query. This is a short-hand notation for:
 	 * 
 	 * <pre>
-	 * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroups);
+	 * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 	 * </pre>
 	 */
-	public SQLSelect<T> localCache(String... cacheGroups) {
-		return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroups);
+	public SQLSelect<T> localCache() {
+		return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+	}
+
+	/**
+	 * Instructs Cayenne to look for query results in the "local" cache when
+	 * running the query. This is a short-hand notation for:
+	 *
+	 * <pre>
+	 * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroup);
+	 * </pre>
+	 */
+	public SQLSelect<T> localCache(String cacheGroup) {
+		return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroup);
 	}
 
 	/**
@@ -305,44 +314,54 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * running the query. This is a short-hand notation for:
 	 * 
 	 * <pre>
-	 * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroups);
+	 * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 	 * </pre>
 	 */
-	public SQLSelect<T> sharedCache(String... cacheGroups) {
-		return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroups);
+	public SQLSelect<T> sharedCache() {
+		return cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+	}
+
+	/**
+	 * Instructs Cayenne to look for query results in the "shared" cache when
+	 * running the query. This is a short-hand notation for:
+	 *
+	 * <pre>
+	 * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroup);
+	 * </pre>
+	 */
+	public SQLSelect<T> sharedCache(String cacheGroup) {
+		return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroup);
 	}
 
 	public QueryCacheStrategy getCacheStrategy() {
 		return cacheStrategy;
 	}
 
-	public SQLSelect<T> cacheStrategy(QueryCacheStrategy strategy, String... cacheGroups) {
-		if (this.cacheStrategy != strategy) {
-			this.cacheStrategy = strategy;
-			this.replacementQuery = null;
+	public SQLSelect<T> cacheStrategy(QueryCacheStrategy strategy) {
+		if(cacheStrategy != strategy) {
+			cacheStrategy = strategy;
+			replacementQuery = null;
+		}
+		if(cacheGroup != null) {
+			cacheGroup = null;
+			replacementQuery = null;
 		}
 
-		return cacheGroups(cacheGroups);
-	}
-
-	public String[] getCacheGroups() {
-		return cacheGroups;
-	}
-
-	public SQLSelect<T> cacheGroups(String... cacheGroups) {
-		this.cacheGroups = cacheGroups != null && cacheGroups.length > 0 ? cacheGroups : null;
-		this.replacementQuery = null;
 		return this;
 	}
 
-	public SQLSelect<T> cacheGroups(Collection<String> cacheGroups) {
+	public SQLSelect<T> cacheStrategy(QueryCacheStrategy strategy, String cacheGroup) {
+		return cacheStrategy(strategy).cacheGroup(cacheGroup);
+	}
 
-		if (cacheGroups == null) {
-			return cacheGroups((String) null);
-		}
+	public String getCacheGroup() {
+		return cacheGroup;
+	}
 
-		String[] array = new String[cacheGroups.size()];
-		return cacheGroups(cacheGroups.toArray(array));
+	public SQLSelect<T> cacheGroup(String cacheGroup) {
+		this.cacheGroup = cacheGroup;
+		this.replacementQuery = null;
+		return this;
 	}
 
 	/**

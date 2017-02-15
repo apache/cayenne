@@ -100,7 +100,12 @@ class ObjectsFromDataRowsQuery implements Query, QueryMetadata {
         return null;
     }
 
+    @Deprecated
     public String[] getCacheGroups() {
+        return null;
+    }
+
+    public String getCacheGroup() {
         return null;
     }
 
@@ -124,7 +129,12 @@ class ObjectsFromDataRowsQuery implements Query, QueryMetadata {
         return 0;
     }
 
+    @Deprecated
     public Query getOrginatingQuery() {
+        return null;
+    }
+
+    public Query getOriginatingQuery() {
         return null;
     }
 
