@@ -6,6 +6,10 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 -------------------------------------------------------------------------------
 UPGRADING TO 4.0.M5
 
+* Per CAY-2228 Support for multiple cache groups has been removed from caching and query API
+  as none of the modern providers supports it. If you relied on this feature you should
+  implement it by yourself or change caching provider
+
 * Per CAY-1980 "maven-cayenne-modeler-plugin" renamed to "cayenne-modeler-maven-plugin"
 
 * Per CAY-2225 CacheInvalidationFilter has been changed to support custom invalidation rules,
