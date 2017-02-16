@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.parser;
 
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Test;
 
@@ -43,4 +45,13 @@ public class ASTLowerTest {
         assertEquals("abcdefg02x", res);
     }
 
+    @Test
+    public void parseTest() throws Exception {
+        String expString = "LOWER(xyz)";
+        Expression exp = ExpressionFactory.exp(expString);
+
+        assertTrue(exp instanceof ASTLower);
+        String toString = exp.toString();
+        assertEquals(expString, toString);
+    }
 }

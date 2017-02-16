@@ -63,4 +63,14 @@ public class ASTConcatTest {
         assertEquals("name test", res);
     }
 
+    @Test
+    public void parseTest() throws Exception {
+        String expString = "CONCAT(xyz , \" \" , abc)";
+        Expression exp = ExpressionFactory.exp(expString);
+
+        assertTrue(exp instanceof ASTConcat);
+        String toString = exp.toString();
+        assertEquals(expString, toString);
+    }
+
 }

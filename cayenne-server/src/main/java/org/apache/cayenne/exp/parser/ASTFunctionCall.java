@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.apache.cayenne.exp.Expression;
 
 /**
@@ -57,12 +60,9 @@ public abstract class ASTFunctionCall extends SimpleNode {
         return functionName;
     }
 
-    /**
-     * TODO what should this method return?
-     */
     @Override
     protected String getExpressionOperator(int index) {
-        return functionName;
+        return ",";
     }
 
     @Override
@@ -77,5 +77,26 @@ public abstract class ASTFunctionCall extends SimpleNode {
     @Override
     public int hashCode() {
         return 31 * super.hashCode() + functionName.hashCode();
+    }
+
+    @Override
+    public void appendAsString(Appendable out) throws IOException {
+        out.append(getFunctionName());
+        if(parent == null) {
+            // else call to super method will append parenthesis
+            out.append("(");
+        }
+        super.appendAsString(out);
+        if(parent == null) {
+            out.append(")");
+        }
+    }
+
+    @Override
+    public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+        out.append(getFunctionName());
+        out.append("(");
+        super.appendChildrenAsEJBQL(parameterAccumulator, out, rootId);
+        out.append(")");
     }
 }

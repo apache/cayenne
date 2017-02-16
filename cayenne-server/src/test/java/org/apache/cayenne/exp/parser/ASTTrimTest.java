@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.parser;
 
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Test;
 
@@ -40,6 +42,16 @@ public class ASTTrimTest {
         Object res = trim.evaluateNode(a);
         assertTrue(res instanceof String);
         assertEquals("testArtist", res);
+    }
+
+    @Test
+    public void parseTest() throws Exception {
+        String expString = "TRIM(xyz)";
+        Expression exp = ExpressionFactory.exp(expString);
+
+        assertTrue(exp instanceof ASTTrim);
+        String toString = exp.toString();
+        assertEquals(expString, toString);
     }
 
 }

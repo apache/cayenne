@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.parser;
 
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.testdo.table_primitives.TablePrimitives;
 import org.junit.Test;
 
@@ -40,6 +42,16 @@ public class ASTModTest {
         Object res = mod.evaluateNode(a);
         assertTrue(res instanceof Double);
         assertEquals(1.0, res);
+    }
+
+    @Test
+    public void parseTest() throws Exception {
+        String expString = "MOD(xyz , 3)";
+        Expression exp = ExpressionFactory.exp(expString);
+
+        assertTrue(exp instanceof ASTMod);
+        String toString = exp.toString();
+        assertEquals(expString, toString);
     }
 
 }

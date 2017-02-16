@@ -46,10 +46,13 @@ public class ASTAggregateTest {
 
     @Test
     public void testAvgParse() throws Exception {
-        Expression exp = ExpressionFactory.exp("AVG(artistName)");
+        String expressionString = "AVG(artistName)";
+        Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTAvg);
         assertEquals(1, exp.getOperandCount());
         assertTrue(exp.getOperand(0) instanceof ASTObjPath);
+
+        assertEquals(expressionString, exp.toString());
     }
 
     @Test
@@ -60,18 +63,24 @@ public class ASTAggregateTest {
 
     @Test
     public void testCountExpParse() throws Exception {
-        Expression exp = ExpressionFactory.exp("COUNT(artistName)");
+        String expressionString = "COUNT(artistName)";
+        Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTCount);
         assertEquals(1, exp.getOperandCount());
         assertTrue(exp.getOperand(0) instanceof ASTObjPath);
+
+        assertEquals(expressionString, exp.toString());
     }
 
     @Test
     public void testCountAsteriskParse() throws Exception {
-        Expression exp = ExpressionFactory.exp("COUNT(*)");
+        String expressionString = "COUNT(*)";
+        Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTCount);
         assertEquals(1, exp.getOperandCount());
         assertTrue(exp.getOperand(0) instanceof ASTAsterisk);
+
+        assertEquals(expressionString, exp.toString());
     }
 
     @Test
@@ -82,10 +91,13 @@ public class ASTAggregateTest {
 
     @Test
     public void testMinParse() throws Exception {
-        Expression exp = ExpressionFactory.exp("MIN(artistName)");
+        String expressionString = "MIN(artistName)";
+        Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTMin);
         assertEquals(1, exp.getOperandCount());
         assertTrue(exp.getOperand(0) instanceof ASTObjPath);
+
+        assertEquals(expressionString, exp.toString());
     }
 
     @Test
@@ -96,10 +108,13 @@ public class ASTAggregateTest {
 
     @Test
     public void testMaxParse() throws Exception {
-        Expression exp = ExpressionFactory.exp("MAX(artistName)");
+        String expressionString = "MAX(artistName)";
+        Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTMax);
         assertEquals(1, exp.getOperandCount());
         assertTrue(exp.getOperand(0) instanceof ASTObjPath);
+
+        assertEquals(expressionString, exp.toString());
     }
 
     @Test
@@ -110,10 +125,13 @@ public class ASTAggregateTest {
 
     @Test
     public void testSumParse() throws Exception {
-        Expression exp = ExpressionFactory.exp("SUM(artistName)");
+        String expressionString = "SUM(artistName)";
+        Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTSum);
         assertEquals(1, exp.getOperandCount());
         assertTrue(exp.getOperand(0) instanceof ASTObjPath);
+
+        assertEquals(expressionString, exp.toString());
     }
 
 }

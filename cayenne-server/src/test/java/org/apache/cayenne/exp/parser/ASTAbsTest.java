@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.parser;
 
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.testdo.table_primitives.TablePrimitives;
 import org.junit.Test;
 
@@ -42,4 +44,13 @@ public class ASTAbsTest {
         assertEquals(10.0, res);
     }
 
+    @Test
+    public void parseTest() throws Exception {
+        String expString = "ABS(xyz)";
+        Expression exp = ExpressionFactory.exp(expString);
+
+        assertTrue(exp instanceof ASTAbs);
+        String toString = exp.toString();
+        assertEquals(expString, toString);
+    }
 }

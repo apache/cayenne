@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.parser;
 
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.testdo.table_primitives.TablePrimitives;
 import org.junit.Test;
 
@@ -41,4 +43,13 @@ public class ASTSqrtTest {
         assertEquals(3.0, res);
     }
 
+    @Test
+    public void parseTest() throws Exception {
+        String expString = "SQRT(xyz)";
+        Expression exp = ExpressionFactory.exp(expString);
+
+        assertTrue(exp instanceof ASTSqrt);
+        String toString = exp.toString();
+        assertEquals(expString, toString);
+    }
 }
