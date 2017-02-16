@@ -73,7 +73,7 @@ public class DbGeneratorMojo extends AbstractMojo {
      * @see DbImportDataSourceConfig
      * @since 4.0
      */
-    @Parameter(required = true)
+    @Parameter
     private DbImportDataSourceConfig dataSource = new DbImportDataSourceConfig();
 
     /**
@@ -120,6 +120,10 @@ public class DbGeneratorMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         Log logger = new MavenLogger(this);
+
+        // check missing data source parameters
+        dataSource.validate();
+
         Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(logger));
         AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
 

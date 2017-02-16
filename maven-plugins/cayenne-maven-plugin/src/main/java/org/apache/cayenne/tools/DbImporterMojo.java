@@ -61,7 +61,7 @@ public class DbImporterMojo extends AbstractMojo {
      * @see DbImportDataSourceConfig
      * @since 4.0
      */
-    @Parameter(required = true)
+    @Parameter
     private DbImportDataSourceConfig dataSource = new DbImportDataSourceConfig();
 
     /**
@@ -104,6 +104,9 @@ public class DbImporterMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         Log logger = new MavenLogger(this);
+
+        // check missing data source parameters
+        dataSource.validate();
 
         DbImportConfiguration config = createConfig(logger);
         Injector injector = DIBootstrap.createInjector(

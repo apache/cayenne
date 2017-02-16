@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.tools;
 
+import org.apache.maven.plugin.MojoExecutionException;
+
 /**
  * @since 4.0
  */
@@ -43,6 +45,18 @@ public class DbImportDataSourceConfig {
      * Database user password.
      */
     private String password;
+
+    public void validate() throws MojoExecutionException {
+        if(driver == null && url == null && username == null && password == null) {
+            throw new MojoExecutionException("Missing <dataSource> configuration.");
+        }
+        if(driver == null) {
+            throw new MojoExecutionException("Missing <driver> parameter in <dataSource>.");
+        }
+        if(url == null) {
+            throw new MojoExecutionException("Missing <url> parameter in <dataSource>.");
+        }
+    }
 
     public String getDriver() {
         return driver;
