@@ -135,6 +135,7 @@ public class RefreshQuery implements Query {
                 return wrappedMd;
             }
 
+            @Deprecated
             public String getName() {
                 return query.getName();
             }
@@ -146,12 +147,14 @@ public class RefreshQuery implements Query {
                 query.route(router, resolver, this);
             }
 
+            @Deprecated
             public DataMap getDataMap() {
                 return query.getDataMap();
             }
         };
     }
 
+    @Deprecated
     public DataMap getDataMap() {
         return null;
     }

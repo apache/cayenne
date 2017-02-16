@@ -37,6 +37,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.editor.ObjCallbackMethod;
@@ -123,7 +124,7 @@ public class CopyAction extends CayenneAction {
         }
 
         if (object instanceof DataMap
-                || object instanceof Query
+                || object instanceof QueryDescriptor
                 || object instanceof DbEntity
                 || object instanceof ObjEntity
                 || object instanceof Embeddable

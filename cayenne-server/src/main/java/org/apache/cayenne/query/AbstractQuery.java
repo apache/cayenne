@@ -37,12 +37,16 @@ public abstract class AbstractQuery extends CacheableQuery {
      * DbEntity, depending on the specific query and how it was constructed.
      */
     protected Object root;
+
+    @Deprecated
     protected String name;
+    @Deprecated
     protected DataMap dataMap;
 
     /**
      * @since 3.1
      */
+    @Deprecated
     public DataMap getDataMap() {
         return dataMap;
     }
@@ -50,6 +54,7 @@ public abstract class AbstractQuery extends CacheableQuery {
     /**
      * @since 3.1
      */
+    @Deprecated
     public void setDataMap(DataMap dataMap) {
         this.dataMap = dataMap;
     }
@@ -69,6 +74,7 @@ public abstract class AbstractQuery extends CacheableQuery {
      * 
      * @since 1.1
      */
+    @Deprecated
     public void setName(String name) {
         this.name = name;
     }

@@ -577,43 +577,17 @@ public class RemoveAction extends CayenneAction {
      */
     @Override
     public boolean enableForPath(ConfigurationNode object) {
-        if (object == null) {
-            return false;
-        }
-
-        if (object instanceof DataChannelDescriptor) {
-            return true;
-        }
-        else if (object instanceof DataMap) {
-            return true;
-        }
-        else if (object instanceof DataNodeDescriptor) {
-            return true;
-        }
-        else if (object instanceof Entity) {
-            return true;
-        }
-        else if (object instanceof Attribute) {
-            return true;
-        }
-        else if (object instanceof Relationship) {
-            return true;
-        }
-        else if (object instanceof Procedure) {
-            return true;
-        }
-        else if (object instanceof ProcedureParameter) {
-            return true;
-        }
-        else if (object instanceof Embeddable) {
-            return true;
-        }
-        else if (object instanceof EmbeddableAttribute) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return (object instanceof DataChannelDescriptor)
+                || (object instanceof DataMap)
+                || (object instanceof DataNodeDescriptor)
+                || (object instanceof Entity)
+                || (object instanceof Attribute)
+                || (object instanceof Relationship)
+                || (object instanceof Procedure)
+                || (object instanceof ProcedureParameter)
+                || (object instanceof QueryDescriptor)
+                || (object instanceof Embeddable)
+                || (object instanceof EmbeddableAttribute);
     }
 
     /**
@@ -632,42 +606,23 @@ public class RemoveAction extends CayenneAction {
                 undo = new RemoveUndoableEdit(application, (DataMap) object);
                 removeDataMap((DataMap) object);
             }
-        }
-        else if (object instanceof DataNodeDescriptor) {
+        } else if (object instanceof DataNodeDescriptor) {
             undo = new RemoveUndoableEdit(application, (DataNodeDescriptor) object);
-
             removeDataNode((DataNodeDescriptor) object);
-        }
-        else if (object instanceof DbEntity) {
-            undo = new RemoveUndoableEdit(
-                    ((DbEntity) object).getDataMap(),
-                    (DbEntity) object);
-
+        } else if (object instanceof DbEntity) {
+            undo = new RemoveUndoableEdit(((DbEntity) object).getDataMap(), (DbEntity) object);
             removeDbEntity(((DbEntity) object).getDataMap(), (DbEntity) object);
-        }
-        else if (object instanceof ObjEntity) {
-            undo = new RemoveUndoableEdit(
-                    ((ObjEntity) object).getDataMap(),
-                    (ObjEntity) object);
-
+        } else if (object instanceof ObjEntity) {
+            undo = new RemoveUndoableEdit(((ObjEntity) object).getDataMap(), (ObjEntity) object);
             removeObjEntity(((ObjEntity) object).getDataMap(), (ObjEntity) object);
-        }
-        else if (object instanceof QueryDescriptor) {
-            undo = new RemoveUndoableEdit(((Query) object).getDataMap(), (QueryDescriptor) object);
-
-            removeQuery(((Query) object).getDataMap(), (QueryDescriptor) object);
-        }
-        else if (object instanceof Procedure) {
-            undo = new RemoveUndoableEdit(
-                    ((Procedure) object).getDataMap(),
-                    (Procedure) object);
-
+        } else if (object instanceof QueryDescriptor) {
+            undo = new RemoveUndoableEdit(((QueryDescriptor) object).getDataMap(), (QueryDescriptor) object);
+            removeQuery(((QueryDescriptor) object).getDataMap(), (QueryDescriptor) object);
+        } else if (object instanceof Procedure) {
+            undo = new RemoveUndoableEdit(((Procedure) object).getDataMap(), (Procedure) object);
             removeProcedure(((Procedure) object).getDataMap(), (Procedure) object);
-        }
-        else if (object instanceof Embeddable) {
-            undo = new RemoveUndoableEdit(
-                    ((Embeddable) object).getDataMap(),
-                    (Embeddable) object);
+        } else if (object instanceof Embeddable) {
+            undo = new RemoveUndoableEdit(((Embeddable) object).getDataMap(), (Embeddable) object);
             removeEmbeddable(((Embeddable) object).getDataMap(), (Embeddable) object);
         }
 

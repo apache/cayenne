@@ -159,6 +159,7 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 	}
 
 	@Override
+	@Deprecated
 	public String getName() {
 		return query.getName();
 	}
@@ -272,6 +273,7 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 	}
 
 	@Override
+	@Deprecated
 	public void setName(String name) {
 		query.setName(name);
 	}

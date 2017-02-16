@@ -68,7 +68,9 @@ public class StringIdQuery implements Query {
         return Arrays.asList(stringIds);
     }
 
+    @Deprecated
     protected String name;
+    @Deprecated
     protected DataMap dataMap;
     protected Collection<String> stringIds;
 
@@ -252,6 +254,7 @@ public class StringIdQuery implements Query {
                 "This query was supposed to be replace with a set of SelectQueries during the route phase");
     }
 
+    @Deprecated
     public String getName() {
         return name;
     }
@@ -260,10 +263,12 @@ public class StringIdQuery implements Query {
         this.name = name;
     }
 
+    @Deprecated
     public DataMap getDataMap() {
         return dataMap;
     }
 
+    @Deprecated
     public void setDataMap(DataMap dataMap) {
         this.dataMap = dataMap;
     }

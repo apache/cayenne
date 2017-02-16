@@ -33,6 +33,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.QueryDescriptor;
 
 public class DefaultConfigurationNodeParentGetter implements ConfigurationNodeParentGetter {
 
@@ -106,6 +107,11 @@ public class DefaultConfigurationNodeParentGetter implements ConfigurationNodePa
         @Override
         public ConfigurationNode visitProcedureParameter(ProcedureParameter parameter) {
             return (ConfigurationNode) parameter.getParent();
+        }
+
+        @Override
+        public ConfigurationNode visitQuery(QueryDescriptor query) {
+            return query.getDataMap();
         }
     }
 }

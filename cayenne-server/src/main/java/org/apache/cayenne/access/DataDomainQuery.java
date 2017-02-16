@@ -107,6 +107,7 @@ class DataDomainQuery implements Query, QueryMetadata {
         return null;
     }
 
+    @Deprecated
     public DataMap getDataMap() {
         return null;
     }

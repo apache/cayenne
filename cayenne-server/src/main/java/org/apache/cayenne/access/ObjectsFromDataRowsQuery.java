@@ -68,10 +68,12 @@ class ObjectsFromDataRowsQuery implements Query, QueryMetadata {
         return null;
     }
 
+    @Deprecated
     public String getName() {
         return null;
     }
 
+    @Deprecated
     public DataMap getDataMap() {
         return null;
     }

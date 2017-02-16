@@ -38,7 +38,9 @@ import java.util.Map;
  */
 public class EJBQLQuery extends CacheableQuery implements XMLSerializable {
 
+    @Deprecated
     protected String name;
+    @Deprecated
     protected DataMap dataMap;
     protected String ejbqlStatement;
     
@@ -58,6 +60,7 @@ public class EJBQLQuery extends CacheableQuery implements XMLSerializable {
     /**
      * @since 3.1
      */
+    @Deprecated
     public DataMap getDataMap() {
         return dataMap;
     }
@@ -66,6 +69,7 @@ public class EJBQLQuery extends CacheableQuery implements XMLSerializable {
     /**
      * @since 3.1
      */
+    @Deprecated
     public void setDataMap(DataMap dataMap) {
         this.dataMap = dataMap;
     }
@@ -138,6 +142,7 @@ public class EJBQLQuery extends CacheableQuery implements XMLSerializable {
         return name;
     }
 
+    @Deprecated
     public void setName(String name) {
         this.name = name;
     }

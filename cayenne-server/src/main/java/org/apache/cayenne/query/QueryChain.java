@@ -37,11 +37,14 @@ import java.util.Collection;
 public class QueryChain implements Query {
 
     protected Collection<Query> chain;
+
+    @Deprecated
     protected String name;
 
     /**
      * @since 3.1
      */
+    @Deprecated
     protected DataMap dataMap;
 
     /**
@@ -112,10 +115,12 @@ public class QueryChain implements Query {
                 + "and should've been split into separate queries during routing phase.");
     }
 
+    @Deprecated
     public String getName() {
         return name;
     }
 
+    @Deprecated
     public void setName(String name) {
         this.name = name;
     }
@@ -123,6 +128,7 @@ public class QueryChain implements Query {
     /**
      * @since 3.1
      */
+    @Deprecated
     public DataMap getDataMap() {
         return dataMap;
     }
@@ -130,6 +136,7 @@ public class QueryChain implements Query {
     /**
      * @since 3.1
      */
+    @Deprecated
     public void setDataMap(DataMap dataMap) {
         this.dataMap = dataMap;
     }

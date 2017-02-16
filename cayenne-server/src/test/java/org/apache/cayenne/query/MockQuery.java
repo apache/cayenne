@@ -19,14 +19,11 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
 public class MockQuery implements Query {
 
-    protected String name;
-    protected DataMap dataMap;
     protected boolean selecting;
     protected boolean routeCalled;
 
@@ -37,18 +34,9 @@ public class MockQuery implements Query {
     public MockQuery() {
     }
 
-    
+    @Deprecated
     public DataMap getDataMap() {
-        return dataMap;
-    }
-
-    
-    public void setDataMap(DataMap dataMap) {
-        this.dataMap = dataMap;
-    }
-
-    public MockQuery(String name) {
-        this.name = name;
+        return null;
     }
 
     public QueryMetadata getMetaData(EntityResolver resolver) {
@@ -63,12 +51,9 @@ public class MockQuery implements Query {
         return selecting;
     }
 
+    @Deprecated
     public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return null;
     }
 
     public SQLAction createSQLAction(SQLActionVisitor visitor) {

@@ -83,8 +83,7 @@ public class QueryDescriptor implements Serializable, ConfigurationNode, XMLSeri
             case PROCEDURE_QUERY:
                 return procedureQueryDescriptor();
             default:
-                QueryDescriptor descriptor = new QueryDescriptor(type);
-                return descriptor;
+                return new QueryDescriptor(type);
         }
     }
 

@@ -47,6 +47,7 @@ public abstract class IndirectQuery implements Query {
 	 * @since 3.1
 	 */
 	@Override
+	@Deprecated
 	public DataMap getDataMap() {
 		return dataMap;
 	}
@@ -54,6 +55,7 @@ public abstract class IndirectQuery implements Query {
 	/**
 	 * @since 3.1
 	 */
+	@Deprecated
 	public void setDataMap(DataMap dataMap) {
 		this.dataMap = dataMap;
 	}
@@ -72,6 +74,7 @@ public abstract class IndirectQuery implements Query {
 		return name;
 	}
 
+	@Deprecated
 	public void setName(String name) {
 		this.name = name;
 	}

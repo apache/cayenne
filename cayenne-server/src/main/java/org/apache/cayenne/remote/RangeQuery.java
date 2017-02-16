@@ -159,6 +159,7 @@ class RangeQuery implements Query {
         throw new UnsupportedOperationException();
     }
 
+    @Deprecated
     public String getName() {
         throw new UnsupportedOperationException();
     }
@@ -170,6 +171,7 @@ class RangeQuery implements Query {
     /**
      * @since 3.1
      */
+    @Deprecated
     public DataMap getDataMap() {
         throw new UnsupportedOperationException();
     }

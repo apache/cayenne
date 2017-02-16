@@ -70,10 +70,13 @@ public interface Query extends Serializable {
      * @since 1.1
      * @deprecated {@link QueryDescriptor#getName()} should be used instead
      */
+    @Deprecated
     String getName();
 
     /**
      * @since 3.1
+     * @deprecated since 4.0, {@link QueryDescriptor#getDataMap()} should be used instead
      */
+    @Deprecated
     DataMap getDataMap();
 }
