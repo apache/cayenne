@@ -36,8 +36,13 @@ public class ASTSqrt extends ASTFunctionCall {
     }
 
     @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        double n = ConversionUtil.toDouble(evaluateChild(0, o), 0.0);
+    protected int getRequiredChildrenCount() {
+        return 1;
+    }
+
+    @Override
+    protected Object evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+        double n = ConversionUtil.toDouble(o, 0.0);
         return Math.sqrt(n);
     }
 

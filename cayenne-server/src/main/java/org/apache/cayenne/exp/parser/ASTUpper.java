@@ -36,8 +36,13 @@ public class ASTUpper extends ASTFunctionCall {
     }
 
     @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        String s1 = ConversionUtil.toString(evaluateChild(0, o));
+    protected int getRequiredChildrenCount() {
+        return 1;
+    }
+
+    @Override
+    protected Object evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+        String s1 = ConversionUtil.toString(o);
         if (s1 == null) {
             return null;
         }

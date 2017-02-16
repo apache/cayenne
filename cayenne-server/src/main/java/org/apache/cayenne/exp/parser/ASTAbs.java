@@ -36,9 +36,14 @@ public class ASTAbs extends ASTFunctionCall {
     }
 
     @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        double n = ConversionUtil.toDouble(evaluateChild(0, o), 0.0);
+    protected Object evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+        double n = ConversionUtil.toDouble(o, 0.0);
         return Math.abs(n);
+    }
+
+    @Override
+    protected int getRequiredChildrenCount() {
+        return 1;
     }
 
     @Override

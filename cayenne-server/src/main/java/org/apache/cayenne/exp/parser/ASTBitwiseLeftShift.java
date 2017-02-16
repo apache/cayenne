@@ -18,18 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.exp.parser;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.util.ConversionUtil;
 
 /**
  * Bitwise left shift '&lt;&lt;' operation.
  * 
  * @since 4.0
  */
-public class ASTBitwiseLeftShift extends SimpleNode {
+public class ASTBitwiseLeftShift extends EvaluatedBitwiseNode {
 
 	private static final long serialVersionUID = -954784931828996446L;
 
@@ -42,13 +42,7 @@ public class ASTBitwiseLeftShift extends SimpleNode {
 	}
 
 	public ASTBitwiseLeftShift(Object[] nodes) {
-		super(ExpressionParserTreeConstants.JJTBITWISELEFTSHIFT);
-		int len = nodes.length;
-		for (int i = 0; i < len; i++) {
-			jjtAddChild(wrapChild(nodes[i]), i);
-		}
-
-		connectChildren();
+		this(Arrays.asList(nodes));
 	}
 
 	public ASTBitwiseLeftShift(Collection<Object> nodes) {
@@ -58,27 +52,13 @@ public class ASTBitwiseLeftShift extends SimpleNode {
 		for (int i = 0; i < len; i++) {
 			jjtAddChild(wrapChild(it.next()), i);
 		}
+
+		connectChildren();
 	}
 
 	@Override
-	protected Object evaluateNode(Object o) throws Exception {
-		int len = jjtGetNumChildren();
-		if (len == 0) {
-			return null;
-		}
-
-		Long result = null;
-		for (int i = 0; i < len; i++) {
-			Long value = ConversionUtil.toLong(evaluateChild(i, o), Long.MIN_VALUE);
-
-			if (value == Long.MIN_VALUE) {
-				return null;
-			}
-
-			result = (i == 0) ? value : result << value;
-		}
-
-		return result;
+	protected long op(long result, long arg) {
+		return result << arg;
 	}
 
 	@Override

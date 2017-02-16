@@ -20,16 +20,16 @@
 package org.apache.cayenne.exp.parser;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.util.ConversionUtil;
 
 /**
  * "Add" Expression.
  */
-public class ASTAdd extends SimpleNode {
+public class ASTAdd extends EvaluatedMathNode {
 
 	private static final long serialVersionUID = -8622963819149351988L;
 
@@ -42,13 +42,7 @@ public class ASTAdd extends SimpleNode {
 	}
 
 	public ASTAdd(Object[] nodes) {
-		super(ExpressionParserTreeConstants.JJTADD);
-		int len = nodes.length;
-		for (int i = 0; i < len; i++) {
-			jjtAddChild(wrapChild(nodes[i]), i);
-		}
-
-		connectChildren();
+		this(Arrays.asList(nodes));
 	}
 
 	public ASTAdd(Collection<?> nodes) {
@@ -58,29 +52,12 @@ public class ASTAdd extends SimpleNode {
 		for (int i = 0; i < len; i++) {
 			jjtAddChild(wrapChild(it.next()), i);
 		}
-
 		connectChildren();
 	}
 
 	@Override
-	protected Object evaluateNode(Object o) throws Exception {
-		int len = jjtGetNumChildren();
-		if (len == 0) {
-			return null;
-		}
-
-		BigDecimal result = null;
-		for (int i = 0; i < len; i++) {
-			BigDecimal value = ConversionUtil.toBigDecimal(evaluateChild(i, o));
-
-			if (value == null) {
-				return null;
-			}
-
-			result = (i == 0) ? value : result.add(value);
-		}
-
-		return result;
+	protected BigDecimal op(BigDecimal result, BigDecimal arg) {
+		return result.add(arg);
 	}
 
 	/**

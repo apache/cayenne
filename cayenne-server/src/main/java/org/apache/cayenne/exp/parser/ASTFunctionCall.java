@@ -27,7 +27,7 @@ import org.apache.cayenne.exp.Expression;
 /**
  * @since 4.0
  */
-public abstract class ASTFunctionCall extends SimpleNode {
+public abstract class ASTFunctionCall extends EvaluatedNode {
 
     private String functionName;
 

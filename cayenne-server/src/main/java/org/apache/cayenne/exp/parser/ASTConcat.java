@@ -36,10 +36,16 @@ public class ASTConcat extends ASTFunctionCall {
     }
 
     @Override
-    protected Object evaluateNode(Object o) throws Exception {
+    protected int getRequiredChildrenCount() {
+        return 1;
+    }
+
+    @Override
+    protected Object evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
         StringBuilder sb = new StringBuilder();
-        for(int i=0; i<getOperandCount(); i++) {
-            sb.append(ConversionUtil.toString(evaluateChild(i, o)));
+        sb.append(ConversionUtil.toString(o));
+        for(int i=1; i<evaluatedChildren.length; i++) {
+            sb.append(ConversionUtil.toString(evaluatedChildren[i]));
         }
         return sb.toString();
     }

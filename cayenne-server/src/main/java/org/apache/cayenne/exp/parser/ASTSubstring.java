@@ -27,7 +27,6 @@ import org.apache.cayenne.util.ConversionUtil;
  */
 public class ASTSubstring extends ASTFunctionCall {
 
-
     ASTSubstring(int id) {
         super(id, "SUBSTRING");
     }
@@ -37,25 +36,26 @@ public class ASTSubstring extends ASTFunctionCall {
     }
 
     @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len != 3) {
-            return null;
-        }
-
-        String s1 = ConversionUtil.toString(evaluateChild(0, o));
+    protected Object evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+        String s1 = ConversionUtil.toString(o);
         if (s1 == null) {
             return null;
         }
 
-        int offset = ConversionUtil.toInt(evaluateChild(1, o), 0);
-        int length = ConversionUtil.toInt(evaluateChild(2, o), 0);
+        int offset = ConversionUtil.toInt(evaluatedChildren[1], 0);
+        int length = ConversionUtil.toInt(evaluatedChildren[2], 0);
         if(length == 0) {
             return null;
         }
 
-        return s1.substring(offset, offset + length);
+        return s1.substring(offset - 1, offset - 1 + length); // - 1 to comply with SQL
     }
+
+    @Override
+    protected int getRequiredChildrenCount() {
+        return 3;
+    }
+
 
     @Override
     public Expression shallowCopy() {

@@ -19,44 +19,40 @@
 
 package org.apache.cayenne.exp.parser;
 
-import org.apache.cayenne.exp.Expression;
+import java.math.BigDecimal;
+
 import org.apache.cayenne.util.ConversionUtil;
 
 /**
  * @since 4.0
  */
-public class ASTMod extends ASTFunctionCall {
-
-    ASTMod(int id) {
-        super(id, "MOD");
-    }
-
-    public ASTMod(Expression expression, Expression divisor) {
-        super(ExpressionParserTreeConstants.JJTMOD, "MOD", expression, divisor);
-    }
-
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        double x = ConversionUtil.toDouble(evaluateChild(0, o), 0.0);
-        double y = ConversionUtil.toDouble(evaluateChild(1, o), 0.0);
-        if(y == 0.0) {
-            return 0.0;
-        }
-        return x % y;
+public abstract class EvaluatedMathNode extends EvaluatedNode {
+    protected EvaluatedMathNode(int i) {
+        super(i);
     }
 
     @Override
     protected int getRequiredChildrenCount() {
-        return 0;
+        return 1;
     }
 
     @Override
     protected Object evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
-        return null;
+        BigDecimal result = ConversionUtil.toBigDecimal(o);
+        if(result == null) {
+            return null;
+        }
+        for (int i = 1; i < evaluatedChildren.length; i++) {
+            BigDecimal value = ConversionUtil.toBigDecimal(evaluatedChildren[i]);
+            if (value == null) {
+                return null;
+            }
+            result = op(result, value);
+        }
+
+        return result;
     }
 
-    @Override
-    public Expression shallowCopy() {
-        return new ASTMod(id);
-    }
+    abstract protected BigDecimal op(BigDecimal result, BigDecimal arg);
+
 }

@@ -163,7 +163,7 @@ public class ASTFunctionCallStringIT extends ServerCase {
     @Test
     public void testASTSubstringParse() {
         Expression exp = ExpressionFactory.exp("SUBSTRING('123456789', 3, 2)");
-        assertEquals("45", exp.evaluate(new Object()));
+        assertEquals("34", exp.evaluate(new Object()));
     }
 
     @Test

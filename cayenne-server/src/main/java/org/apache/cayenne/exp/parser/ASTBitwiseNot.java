@@ -26,7 +26,7 @@ import org.apache.cayenne.util.ConversionUtil;
  * 
  * @since 3.1
  */
-public class ASTBitwiseNot extends SimpleNode {
+public class ASTBitwiseNot extends EvaluatedNode {
 	private static final long serialVersionUID = 1L;
 
 	ASTBitwiseNot(int id) {
@@ -44,21 +44,17 @@ public class ASTBitwiseNot extends SimpleNode {
 	}
 
 	@Override
-	protected Object evaluateNode(Object o) throws Exception {
-
-		int len = jjtGetNumChildren();
-		if (len != 1) {
-			return Boolean.FALSE;
-		}
-
-		long value = ConversionUtil.toLong(evaluateChild(0, o), Long.MIN_VALUE);
-
+	protected Object evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+		long value = ConversionUtil.toLong(o, Long.MIN_VALUE);
 		if (value == Long.MIN_VALUE) {
 			return null;
 		}
-
 		return ~value;
+	}
 
+	@Override
+	protected int getRequiredChildrenCount() {
+		return 1;
 	}
 
 	@Override

@@ -42,7 +42,12 @@ public class ASTCurrentDate extends ASTFunctionCall {
     }
 
     @Override
-    protected Object evaluateNode(Object o) throws Exception {
+    protected int getRequiredChildrenCount() {
+        return 0;
+    }
+
+    @Override
+    protected Object evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
         return new Date();
     }
 

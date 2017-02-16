@@ -20,18 +20,18 @@
 package org.apache.cayenne.exp.parser;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.util.ConversionUtil;
 
 /**
  * "Divide" expression.
  * 
  * @since 1.1
  */
-public class ASTDivide extends SimpleNode {
+public class ASTDivide extends EvaluatedMathNode {
 
 	private static final long serialVersionUID = -5086569683844539310L;
 
@@ -44,13 +44,7 @@ public class ASTDivide extends SimpleNode {
 	}
 
 	public ASTDivide(Object[] nodes) {
-		super(ExpressionParserTreeConstants.JJTDIVIDE);
-		int len = nodes.length;
-		for (int i = 0; i < len; i++) {
-			jjtAddChild(wrapChild(nodes[i]), i);
-		}
-
-		connectChildren();
+		this(Arrays.asList(nodes));
 	}
 
 	public ASTDivide(Collection<?> nodes) {
@@ -65,24 +59,8 @@ public class ASTDivide extends SimpleNode {
 	}
 
 	@Override
-	protected Object evaluateNode(Object o) throws Exception {
-		int len = jjtGetNumChildren();
-		if (len == 0) {
-			return null;
-		}
-
-		BigDecimal result = null;
-		for (int i = 0; i < len; i++) {
-			BigDecimal value = ConversionUtil.toBigDecimal(evaluateChild(i, o));
-
-			if (value == null) {
-				return null;
-			}
-
-			result = (i == 0) ? value : result.divide(value, BigDecimal.ROUND_HALF_EVEN);
-		}
-
-		return result;
+	protected BigDecimal op(BigDecimal result, BigDecimal arg) {
+		return result.divide(arg, BigDecimal.ROUND_HALF_EVEN);
 	}
 
 	/**

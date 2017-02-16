@@ -31,6 +31,7 @@ CAY-2212 cdbimport cleanup and configuration schema refactoring
 CAY-2223 JCacheQueryCache - a query cache provider to plug in JCache implementers
 CAY-2225 Extensible CacheInvalidationFilter logic
 CAY-2228 Deprecate multiple cache groups in caching and query API
+CAY-2231 Support for collections in new functional expressions and old math expressions
 CAY-2232 Proper conversion to String for new functional expressions
 CAY-2235 Deprecate Query.getDataMap() method
 

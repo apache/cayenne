@@ -40,21 +40,20 @@ public class ASTLocate extends ASTFunctionCall {
     }
 
     @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        int len = jjtGetNumChildren();
-        if (len < 2) {
-            return 0L;
-        }
-
-        String substr = ConversionUtil.toString(evaluateChild(0, o));
-        String str = ConversionUtil.toString(evaluateChild(1, o));
+    protected Object evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+        String substr = ConversionUtil.toString(o);
+        String str = ConversionUtil.toString(evaluatedChildren[1]);
         int offset = 0;
-        if(len > 2) {
-            offset = ConversionUtil.toInt(evaluateChild(2, o), 0);
+        if(evaluatedChildren.length > 2) {
+            offset = ConversionUtil.toInt(evaluatedChildren[2], 0);
         }
-
         // +1 to comply with SQL
         return str.indexOf(substr, offset) + 1;
+    }
+
+    @Override
+    protected int getRequiredChildrenCount() {
+        return 2;
     }
 
     @Override

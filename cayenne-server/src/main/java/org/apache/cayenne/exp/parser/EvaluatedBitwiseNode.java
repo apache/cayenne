@@ -19,44 +19,39 @@
 
 package org.apache.cayenne.exp.parser;
 
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.util.ConversionUtil;
 
 /**
  * @since 4.0
  */
-public class ASTMod extends ASTFunctionCall {
+public abstract class EvaluatedBitwiseNode extends EvaluatedNode {
 
-    ASTMod(int id) {
-        super(id, "MOD");
-    }
-
-    public ASTMod(Expression expression, Expression divisor) {
-        super(ExpressionParserTreeConstants.JJTMOD, "MOD", expression, divisor);
-    }
-
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        double x = ConversionUtil.toDouble(evaluateChild(0, o), 0.0);
-        double y = ConversionUtil.toDouble(evaluateChild(1, o), 0.0);
-        if(y == 0.0) {
-            return 0.0;
-        }
-        return x % y;
-    }
-
-    @Override
-    protected int getRequiredChildrenCount() {
-        return 0;
+    protected EvaluatedBitwiseNode(int i) {
+        super(i);
     }
 
     @Override
     protected Object evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
-        return null;
+        Long result = ConversionUtil.toLong(o, Long.MIN_VALUE);
+        if(result == Long.MIN_VALUE) {
+            return null;
+        }
+        for (int i = 1; i < evaluatedChildren.length; i++) {
+            Long value = ConversionUtil.toLong(evaluateChild(i, o), Long.MIN_VALUE);
+            if (value == Long.MIN_VALUE) {
+                return null;
+            }
+
+            result = op(result, value);
+        }
+
+        return result;
     }
 
     @Override
-    public Expression shallowCopy() {
-        return new ASTMod(id);
+    protected int getRequiredChildrenCount() {
+        return 1;
     }
+
+    protected abstract long op(long result, long arg);
 }

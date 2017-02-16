@@ -44,7 +44,7 @@ public class ASTSubstringTest {
 
         Object res = exp.evaluateNode(a);
         assertTrue(res instanceof String);
-        assertEquals("34567890", res);
+        assertEquals("23456789", res);
     }
 
     @Test
