@@ -115,7 +115,7 @@ public class ProjectUpgrader_V8Test extends Project2Case {
         Injector injector = DIBootstrap.createInjector(testModule);
         injector.injectMembers(upgrader);
 
-        Resource source = new URLResource(targetsBefore.get(0).toURI().toURL());
+        Resource source = new URLResource(targetsBefore.get(0).toURL());
         UpgradeHandler handler = upgrader.getUpgradeHandler(source);
 
         Resource upgraded = handler.performUpgrade();
