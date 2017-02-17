@@ -190,12 +190,16 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 		}
 	}
 
+	private static final ConcurrentMap<String, SimpleNode> templateCache = new ConcurrentHashMap<>();
+
 	private SimpleNode parse(String template) {
 
-		SimpleNode nodeTree = null;
+		SimpleNode nodeTree = templateCache.get(template);
+		if(nodeTree != null) return nodeTree;
 
 		try {
 			nodeTree = velocityRuntime.parse(new StringReader(template), template);
+			templateCache.putIfAbsent(template, nodeTree);
 		} catch (ParseException pex) {
 			throw new CayenneRuntimeException("Error parsing template '" + template + "' : " + pex.getMessage());
 		}
