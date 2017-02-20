@@ -29,10 +29,16 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.tx.BaseTransaction;
+import org.apache.cayenne.tx.Transaction;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  */
 public class MySQLPkGenerator extends JdbcPkGenerator {
+
+	private static final Log logger = LogFactory.getLog(MySQLPkGenerator.class);
 
 	MySQLPkGenerator(JdbcAdapter adapter) {
 		super(adapter);
@@ -54,6 +60,15 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 		// chained SQL exception
 		SQLException exception = null;
 		long pk = -1L;
+
+		// Start new transaction if needed, can any way lead to problems when
+		// using external transaction manager. We can only warn about it.
+		// See https://issues.apache.org/jira/browse/CAY-2186 for details.
+		Transaction transaction = BaseTransaction.getThreadTransaction();
+		if(transaction != null && transaction.isExternal()) {
+			logger.warn("Using MysqlPkGenerator with external transaction manager may lead to inconsistent state.");
+		}
+		BaseTransaction.bindThreadTransaction(null);
 
 		try (Connection con = node.getDataSource().getConnection()) {
 
@@ -86,6 +101,8 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 			}
 		} catch (SQLException otherEx) {
 			exception = processSQLException(otherEx, null);
+		} finally {
+			BaseTransaction.bindThreadTransaction(transaction);
 		}
 
 		// check errors
@@ -118,7 +135,8 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 	@Override
 	protected String pkTableCreateString() {
 		return "CREATE TABLE IF NOT EXISTS AUTO_PK_SUPPORT " +
-				"(TABLE_NAME CHAR(100) NOT NULL, NEXT_ID BIGINT NOT NULL, UNIQUE (TABLE_NAME))";
+				"(TABLE_NAME CHAR(100) NOT NULL, NEXT_ID BIGINT NOT NULL, UNIQUE (TABLE_NAME)) " +
+				"ENGINE=" + MySQLAdapter.DEFAULT_STORAGE_ENGINE;
 	}
 
 	/**

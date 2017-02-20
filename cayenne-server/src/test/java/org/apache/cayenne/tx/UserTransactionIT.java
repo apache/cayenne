@@ -108,6 +108,11 @@ public class UserTransactionIT extends ServerCase {
         public void addListener(TransactionListener listener) {
             delegate.addListener(listener);
         }
+
+        @Override
+        public boolean isExternal() {
+            return false;
+        }
     }
 
 }

@@ -131,4 +131,9 @@ public class CayenneTransaction extends BaseTransaction {
             throw new CayenneRuntimeException(deferredException);
         }
     }
+
+    @Override
+    public boolean isExternal() {
+        return false;
+    }
 }

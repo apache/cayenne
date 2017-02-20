@@ -18,8 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.tx.TransactionListener;
@@ -44,6 +46,9 @@ public class ServerRuntimeIT extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
+
+    @Inject
+    private ObjectContext context;
 
     @Test
     public void testPerformInTransaction_Local_Callback() {
@@ -92,5 +97,32 @@ public class ServerRuntimeIT extends ServerCase {
             verify(callback, times(0)).willAddConnection(any(Transaction.class), any(String.class), any(Connection.class));
             verify(callback, times(0)).willCommit(any(Transaction.class));
         }
+    }
+
+    @Test
+    public void testRollbackTransaction() {
+        assertEquals(0, ObjectSelect.query(Artist.class).selectCount(context));
+
+        try {
+            runtime.performInTransaction(new TransactionalOperation<Object>() {
+                @Override
+                public Object perform() {
+                    // Default PK batch size is 20
+                    for (int i = 0; i < 30; i++) {
+                        Artist artist = context.newObject(Artist.class);
+                        artist.setArtistName("test" + i);
+                        context.commitChanges();
+                    }
+
+                    // this should fail with validation error
+                    context.newObject(Artist.class);
+                    context.commitChanges();
+                    return null;
+                }
+            });
+        } catch (Exception ignored) {
+        }
+
+        assertEquals(0, ObjectSelect.query(Artist.class).selectCount(context));
     }
 }

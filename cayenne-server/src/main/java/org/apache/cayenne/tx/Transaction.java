@@ -63,4 +63,9 @@ public interface Transaction {
     Map<String, Connection> getConnections();
 
     void addListener(TransactionListener listener);
+
+    /**
+     * Is this transaction managed by external transaction manager
+     */
+    boolean isExternal();
 }

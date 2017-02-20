@@ -43,4 +43,9 @@ public class ExternalTransaction extends BaseTransaction {
     protected void processRollback() {
         logger.logRollbackTransaction("no rollback - transaction controlled externally.");
     }
+
+    @Override
+    public boolean isExternal() {
+        return true;
+    }
 }
