@@ -114,6 +114,7 @@ public class CreateObjEntityAction extends CayenneAction {
         // TODO: Modeler-controlled defaults for all the hardcoded boolean flags here.
         EntityMergeSupport merger = new EntityMergeSupport(new DefaultObjectNameGenerator(NoStemStemmer.getInstance()),
                 NamePatternMatcher.EXCLUDE_ALL, true, true, false);
+        merger.setNameGenerator(new DbEntitySyncAction.PreserveRelationshipNameGenerator());
         merger.addEntityMergeListener(DeleteRuleUpdater.getEntityMergeListener());
         merger.synchronizeWithDbEntity(entity);
 

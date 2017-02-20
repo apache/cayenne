@@ -74,7 +74,7 @@ public class EntityMergeSupport {
         SQL_TYPE_TO_JAVA8_TYPE.put(Types.TIMESTAMP, "java.time.LocalDateTime");
     }
 
-    private final ObjectNameGenerator nameGenerator;
+    private ObjectNameGenerator nameGenerator;
     private final List<EntityMergeListener> listeners;
     private final boolean removingMeaningfulFKs;
     private final NameFilter meaningfulPKsFilter;
@@ -499,5 +499,9 @@ public class EntityMergeSupport {
         for (EntityMergeListener listener : listeners) {
             listener.objRelationshipAdded(rel);
         }
+    }
+
+    public void setNameGenerator(ObjectNameGenerator nameGenerator) {
+        this.nameGenerator = nameGenerator;
     }
 }

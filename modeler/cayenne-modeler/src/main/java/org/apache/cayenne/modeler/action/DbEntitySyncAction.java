@@ -21,7 +21,9 @@ package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
+import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
@@ -56,10 +58,10 @@ public class DbEntitySyncAction extends CayenneAction {
 	 * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
 	 */
 	public void performAction(ActionEvent e) {
-		synchDbEntity();
+		syncDbEntity();
 	}
 
-	protected void synchDbEntity() {
+	protected void syncDbEntity() {
 		ProjectController mediator = getProjectController();
 
 		DbEntity dbEntity = mediator.getCurrentDbEntity();
@@ -71,12 +73,14 @@ public class DbEntitySyncAction extends CayenneAction {
 				return;
 			}
 
-			EntityMergeSupport merger = new EntitySyncController(Application.getInstance().getFrameController(),
-					dbEntity).createMerger();
+			EntityMergeSupport merger = new EntitySyncController(Application.getInstance().getFrameController(), dbEntity)
+					.createMerger();
 
 			if (merger == null) {
 				return;
 			}
+
+			merger.setNameGenerator(new PreserveRelationshipNameGenerator());
 
 			DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit((DataChannelDescriptor) mediator
 					.getProject().getRootNode(), mediator.getCurrentDataMap());
@@ -104,6 +108,24 @@ public class DbEntitySyncAction extends CayenneAction {
 			}
 
 			application.getUndoManager().addEdit(undoableEdit);
+		}
+	}
+
+	static class PreserveRelationshipNameGenerator extends DefaultObjectNameGenerator {
+
+		@Override
+		public String relationshipName(DbRelationship... relationshipChain) {
+			if(relationshipChain.length == 0) {
+				return super.relationshipName(relationshipChain);
+			}
+			DbRelationship last = relationshipChain[relationshipChain.length - 1];
+			// must be in sync with DefaultBaseNameVisitor.visitDbRelationship
+			if(last.getName().startsWith("untitledRel")) {
+				return super.relationshipName(relationshipChain);
+			}
+
+			// keep manually set relationship name
+			return last.getName();
 		}
 	}
 }

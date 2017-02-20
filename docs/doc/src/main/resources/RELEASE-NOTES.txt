@@ -45,6 +45,7 @@ CAY-2183 Newly created DbRelationship is unexpectedly renamed by the Modeler
 CAY-2199 Modeler on Windows: The same project is displayed twice in "Recent Projects"
 CAY-2221 In-memory expression evaluation gives different result than select query
 CAY-2236 Modeler Migrate DB Schema: unable to Reverse All Operations
+CAY-2238 Modeler: Preserve manually set DbRelationship name when syncing with ObjEntity
 
 ----------------------------------
 Release: 4.0.M4
