@@ -30,6 +30,10 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
+/**
+ * @deprecated since 4.0 please use JCacheQueryCache (provided by "cayenne-jcache" module)
+ */
+@Deprecated
 public class EhCacheQueryCache implements QueryCache {
 
     /**

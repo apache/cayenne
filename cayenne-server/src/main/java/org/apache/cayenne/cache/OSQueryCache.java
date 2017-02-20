@@ -65,7 +65,7 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
  * # expire entries every hour on the 10's minute
  * cayenne.default.cron = 10 * * * *
  *                        
- * # Same parameters can be overriden per query
+ * # Same parameters can be overridden per query
  * cayenne.group.xyz.refresh = 120
  * cayenne.group.xyz.cron = 10 1 * * *
  * </pre>
@@ -73,7 +73,9 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
  * Further extension of OSQueryCache is possible by using OSCache listener API.
  * 
  * @since 3.0
+ * @deprecated since 4.0 as OSCache project is abandoned
  */
+@Deprecated
 public class OSQueryCache implements QueryCache {
 
     public static final int DEFAULT_REFRESH_PERIOD = CacheEntry.INDEFINITE_EXPIRY;

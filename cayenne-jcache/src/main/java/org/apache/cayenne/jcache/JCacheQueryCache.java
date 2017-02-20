@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.jcache;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -106,7 +105,6 @@ public class JCacheQueryCache implements QueryCache {
      * Returns -1 to indicate that we can't calculate the size. JCache and EhCache can potentially have a complex topology
      * that can not be meaningfully described by a single int. Use other means (like provider-specific JMX) to monitor cache.
      *
-     * @deprecated since 4.0
      * @return -1
      */
     @Override

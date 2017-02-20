@@ -75,12 +75,18 @@ public interface QueryCache {
 
     /**
      * Clears all cache entries.
+     *
+     * @deprecated since 4.0. Please use implementation specific methods to perform cache management tasks.
      */
+    @Deprecated
     void clear();
 
     /**
      * Returns the number of entries currently in the cache, including expired but not
      * removed entries.
+     *
+     * @deprecated since 4.0. Please use implementation specific methods to perform cache management tasks.
      */
+    @Deprecated
     int size();
 }
