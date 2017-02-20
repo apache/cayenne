@@ -48,7 +48,11 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
                 attributes += dbJoin.getTargetName() + COMMA_SEPARATOR;
             }
 
-            attributes = "{" + attributes.substring(0, attributes.length() - COMMA_SEPARATOR_LENGTH) + "}";
+            if(attributes.isEmpty()) {
+                attributes = "{}";
+            } else {
+                attributes = "{" + attributes.substring(0, attributes.length() - COMMA_SEPARATOR_LENGTH) + "}";
+            }
         }
 
         return rel.getName() + " " + rel.getSourceEntity().getName() + "->" + rel.getTargetEntityName() + "." + attributes;
@@ -76,17 +80,6 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
 
     @Override
     public String getTokenValue() {
-        String attributes = "";
-        if (relationship.getJoins().size() == 1) {
-            attributes = relationship.getJoins().get(0).getTargetName();
-        } else {
-            for (DbJoin dbJoin : relationship.getJoins()) {
-                attributes += dbJoin.getTargetName() + COMMA_SEPARATOR;
-            }
-
-            attributes = "{" + attributes.substring(0, attributes.length() - COMMA_SEPARATOR_LENGTH) + "}";
-        }
-
-        return relationship.getName() + " " + relationship.getSourceEntity().getName() + "->" + relationship.getTargetEntityName() + "." + attributes;
+        return getTokenValue(relationship);
     }
 }
