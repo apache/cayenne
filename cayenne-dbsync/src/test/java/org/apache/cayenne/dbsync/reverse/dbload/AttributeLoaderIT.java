@@ -44,7 +44,11 @@ public class AttributeLoaderIT extends BaseLoaderIT {
         DbEntity artist = getDbEntity("ARTIST");
         DbAttribute a = getDbAttribute(artist, "ARTIST_ID");
         assertNotNull(a);
-        assertEquals(Types.BIGINT, a.getType());
+        if(accessStackAdapter.onlyGenericNumberType()) {
+            assertEquals(Types.INTEGER, a.getType());
+        } else {
+            assertEquals(Types.BIGINT, a.getType());
+        }
         assertTrue(a.isMandatory());
         assertFalse(a.isGenerated());
 
@@ -56,7 +60,11 @@ public class AttributeLoaderIT extends BaseLoaderIT {
 
         a = getDbAttribute(artist, "DATE_OF_BIRTH");
         assertNotNull(a);
-        assertEquals(Types.DATE, a.getType());
+        if(accessStackAdapter.onlyGenericDateType()) {
+            assertEquals(Types.TIMESTAMP, a.getType());
+        } else {
+            assertEquals(Types.DATE, a.getType());
+        }
         assertFalse(a.isMandatory());
 
         if(accessStackAdapter.supportsLobs()) {

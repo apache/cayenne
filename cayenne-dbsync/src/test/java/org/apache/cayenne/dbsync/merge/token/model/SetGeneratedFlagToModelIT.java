@@ -39,6 +39,11 @@ public class SetGeneratedFlagToModelIT extends MergeCase {
 
     @Test
     public void test() throws Exception {
+        if(!accessStackAdapter.supportsGeneratedKeysAdd()) {
+            // nothing to do here
+            return;
+        }
+
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
 
@@ -50,7 +55,6 @@ public class SetGeneratedFlagToModelIT extends MergeCase {
 
         List<MergerToken> tokens = createMergeTokens();
         assertEquals(1, tokens.size());
-
         MergerToken token = tokens.get(0);
         if (token.getDirection().isToDb()) {
             token = token.createReverse(mergerFactory());

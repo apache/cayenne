@@ -75,19 +75,19 @@ public class NestedDataContext_DeadlockIT extends ServerCase {
 			threads[i] = new UpdateThread("UpdateThread-" + i, runtime.newContext(parent), rnd);
 		}
 
-		for (int i = 0; i < threads.length; i++) {
-			threads[i].start();
+		for (Thread thread : threads) {
+			thread.start();
 		}
 
 		new ParallelTestContainer() {
 
 			@Override
 			protected void assertResult() throws Exception {
-				for (int i = 0; i < threads.length; i++) {
+				for (Thread thread : threads) {
 					// unfortunately here we'll have to leave some dead threads
 					// behind... Of course if there's no deadlock, there won't
 					// be a leak either
-					assertFalse("Deadlocked thread", threads[i].isAlive());
+					assertFalse("Deadlocked thread", thread.isAlive());
 				}
 			}
 		}.runTest(40000);

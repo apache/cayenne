@@ -75,7 +75,7 @@ public abstract class MergeCase extends DbSyncCase {
     @Inject
     private ServerRuntime runtime;
     @Inject
-    private UnitDbAdapter accessStackAdapter;
+    protected UnitDbAdapter accessStackAdapter;
     @Inject
     private ServerCaseDataSourceFactory dataSourceFactory;
 

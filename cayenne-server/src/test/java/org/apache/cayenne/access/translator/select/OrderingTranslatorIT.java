@@ -110,9 +110,9 @@ public class OrderingTranslatorIT extends ServerCase {
 	@Test
 	public void testAppendFunctionExpression2() throws Exception {
 		Ordering o1 = new Ordering(FunctionExpressionFactory.countExp(ExpressionFactory.pathExp("dateOfBirth")), SortOrder.ASCENDING_INSENSITIVE);
-		Ordering o2 = new Ordering(FunctionExpressionFactory.modExp("paintingArray.estimatedPrice", 3), SortOrder.DESCENDING);
+		Ordering o2 = new Ordering(FunctionExpressionFactory.sqrtExp("paintingArray.estimatedPrice"), SortOrder.DESCENDING);
 
-		doTestAppendPart("UPPER(COUNT(ta.DATE_OF_BIRTH)), MOD(ta.ESTIMATED_PRICE, ?) DESC", o1, o2);
+		doTestAppendPart("UPPER(COUNT(ta.DATE_OF_BIRTH)), SQRT(ta.ESTIMATED_PRICE) DESC", o1, o2);
 	}
 
 	@Test(expected = CayenneRuntimeException.class)
