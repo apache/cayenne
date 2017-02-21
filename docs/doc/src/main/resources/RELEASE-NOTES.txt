@@ -43,6 +43,7 @@ CAY-2174 Change FK attribute name cause ObjAttribute appear after Reverse Engine
 CAY-2175 AliasName used in EJBQLQuery is not working if it contains mixed case
 CAY-2183 Newly created DbRelationship is unexpectedly renamed by the Modeler
 CAY-2199 Modeler on Windows: The same project is displayed twice in "Recent Projects"
+CAY-2207 Modeler: "Java Type" and "DbAttribute Path" are not saved with using TAB to move forward
 CAY-2221 In-memory expression evaluation gives different result than select query
 CAY-2236 Modeler Migrate DB Schema: unable to Reverse All Operations
 CAY-2238 Modeler: Preserve manually set DbRelationship name when syncing with ObjEntity
