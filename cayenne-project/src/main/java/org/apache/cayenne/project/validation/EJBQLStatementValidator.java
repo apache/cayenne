@@ -51,28 +51,19 @@ public class EJBQLStatementValidator {
 
                         if (cause != null) {
                             try {
-                                Field tokenField = cause.getClass().getField(
-                                        "currentToken");
-
+                                Field tokenField = cause.getClass().getField("currentToken");
                                 Object token = tokenField.get(cause);
                                 Field nextTokenField = token.getClass().getField("next");
                                 Object nextToken = nextTokenField.get(token);
-                                Field beginColumnField = nextToken.getClass().getField(
-                                        "beginColumn");
-                                Field beginLineField = nextToken.getClass().getField(
-                                        "beginLine");
-                                Field endColumnField = nextToken.getClass().getField(
-                                        "endColumn");
-                                Field endLineField = nextToken.getClass().getField(
-                                        "endLine");
+                                Field beginColumnField = nextToken.getClass().getField("beginColumn");
+                                Field beginLineField = nextToken.getClass().getField("beginLine");
+                                Field endColumnField = nextToken.getClass().getField("endColumn");
+                                Field endLineField = nextToken.getClass().getField("endLine");
                                 Field imageField = nextToken.getClass().getField("image");
 
-                                message.setBeginColumn((Integer) beginColumnField
-                                        .get(nextToken));
-                                message.setBeginLine((Integer) beginLineField
-                                        .get(nextToken));
-                                message.setEndColumn((Integer) endColumnField
-                                        .get(nextToken));
+                                message.setBeginColumn((Integer) beginColumnField.get(nextToken));
+                                message.setBeginLine((Integer) beginLineField.get(nextToken));
+                                message.setEndColumn((Integer) endColumnField.get(nextToken));
                                 message.setEndLine((Integer) endLineField.get(nextToken));
                                 message.setImage((String) imageField.get(nextToken));
                                 message.setLength(message.getImage().length());

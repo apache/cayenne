@@ -47,6 +47,7 @@ public class TextPaneView extends PlainView {
 
     private static SyntaxStyle syntaxStyleComment;
     private static HashMap<Pattern, SyntaxStyle> patternValue;
+    private static TextPaneStyleMap style = new TextPaneStyleMap();
 
     static {
         patternSyntaxStyle = new HashMap<>();
@@ -54,66 +55,37 @@ public class TextPaneView extends PlainView {
     }
 
     public TextPaneView(Element elem, SyntaxConstant syntaxConstants) {
-
         super(elem);
         getDocument().putProperty(PlainDocument.tabSizeAttribute, 4);
-        TextPaneStyleMap style = new TextPaneStyleMap();
 
-        if (patternSyntaxStyle.size() == 0) {
-
-            String[] keywords = syntaxConstants.getKEYWORDS();
-            String[] keywords2 = syntaxConstants.getKEYWORDS2();
-            String[] operators = syntaxConstants.getOPERATORS();
-            String[] types = syntaxConstants.getTYPES();
-
-            for (int i = 0; i < keywords.length; i++) {
-                String patern = "(" + keywords[i] + ")";
-                patternSyntaxStyle.put(Pattern.compile(patern, Pattern.UNICODE_CASE
-                        | Pattern.CASE_INSENSITIVE), style.syntaxStyleMap
-                        .get(TextPaneStyleTypes.KEYWORDS));
-            }
-            for (int i = 0; i < keywords2.length; i++) {
-                String patern = "(" + keywords2[i] + ")";
-                patternSyntaxStyle.put(Pattern.compile(patern, Pattern.UNICODE_CASE
-                        | Pattern.CASE_INSENSITIVE), style.syntaxStyleMap
-                        .get(TextPaneStyleTypes.KEYWORDS2));
-            }
-            for (int i = 0; i < operators.length; i++) {
-                String patern = "(" + operators[i] + ")";
-                patternSyntaxStyle.put(Pattern.compile(patern, Pattern.UNICODE_CASE
-                        | Pattern.CASE_INSENSITIVE), style.syntaxStyleMap
-                        .get(TextPaneStyleTypes.KEYWORDS));
-            }
-            for (int i = 0; i < types.length; i++) {
-                String patern = "(" + types[i] + ")";
-                patternSyntaxStyle.put(Pattern.compile(patern, Pattern.UNICODE_CASE
-                        | Pattern.CASE_INSENSITIVE), style.syntaxStyleMap
-                        .get(TextPaneStyleTypes.TYPE));
-            }
+        if (patternSyntaxStyle.isEmpty()) {
+            addConstants(syntaxConstants.getKEYWORDS(), TextPaneStyleTypes.KEYWORDS);
+            addConstants(syntaxConstants.getKEYWORDS2(), TextPaneStyleTypes.KEYWORDS2);
+            addConstants(syntaxConstants.getOPERATORS(), TextPaneStyleTypes.KEYWORDS);
+            addConstants(syntaxConstants.getTYPES(), TextPaneStyleTypes.TYPE);
         }
 
-        if (patternValue.size() == 0) {
+        if (patternValue.isEmpty()) {
             patternValue.put(
-                    Pattern.compile(SQLSyntaxConstants.NUMBER_TEXT),
-                    style.syntaxStyleMap.get(TextPaneStyleTypes.NUMBER));
-            // patternValue.put(Pattern.compile(SQLSyntaxConstants.STRING_TEXT,
-            // Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE),
-            // style.sqlSyntaxStyleMap.get(SQLStyleTypes.STRING));
+                    Pattern.compile(SQLSyntaxConstants.NUMBER_TEXT), style.syntaxStyleMap.get(TextPaneStyleTypes.NUMBER));
         }
 
-        patternComment = Pattern.compile(
-                SQLSyntaxConstants.COMMENT_TEXT,
-                Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
-        patternCommentStart = Pattern.compile(
-                SQLSyntaxConstants.COMMENT_TEXT_START,
-                Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
-
+        patternComment = Pattern.compile(SQLSyntaxConstants.COMMENT_TEXT, Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
+        patternCommentStart = Pattern.compile(SQLSyntaxConstants.COMMENT_TEXT_START, Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
         syntaxStyleComment = style.syntaxStyleMap.get(TextPaneStyleTypes.COMMENT);
     }
 
+    private void addConstants(String[] constants, TextPaneStyleTypes type) {
+        for (String keyword : constants) {
+            String patern = "(" + keyword + ")";
+            patternSyntaxStyle.put(
+                    Pattern.compile(patern, Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE),
+                    style.syntaxStyleMap.get(type));
+        }
+    }
+
     @Override
-    protected int drawUnselectedText(Graphics graphics, int x, int y, int p0, int p1)
-            throws BadLocationException {
+    protected int drawUnselectedText(Graphics graphics, int x, int y, int p0, int p1) throws BadLocationException {
 
         boolean lineComment = false;
         Map<Integer, Integer> comment = new HashMap<>();
@@ -139,36 +111,30 @@ public class TextPaneView extends PlainView {
             }
         }
 
-        int j = 0;
         for (Map.Entry<Integer, Integer> entry : comment.entrySet()) {
             if (p0 >= entry.getKey() && p1 <= entry.getValue()) {
                 lineComment = true;
                 break;
-            }
-            else if (p0 <= entry.getKey() && p1 >= entry.getValue()) {
+            } else if (p0 <= entry.getKey() && p1 >= entry.getValue()) {
                 commentInLine.put(entry.getKey() - p0, entry.getValue() - p0);
-            }
-            else if (p0 <= entry.getKey()
+            } else if (p0 <= entry.getKey()
                     && p1 >= entry.getKey()
                     && p1 < entry.getValue()) {
                 commentInLine.put(entry.getKey() - p0, p1 - p0);
-            }
-            else if (p0 <= entry.getValue()
+            } else if (p0 <= entry.getValue()
                     && p1 >= entry.getValue()
                     && p0 > entry.getKey()) {
                 commentInLine.put(0, entry.getValue() - p0);
             }
-            j++;
         }
 
-        SortedMap<Integer, Integer> startMap = new TreeMap<Integer, Integer>();
-        SortedMap<Integer, SyntaxStyle> syntaxStyleMap = new TreeMap<Integer, SyntaxStyle>();
+        SortedMap<Integer, Integer> startMap = new TreeMap<>();
+        SortedMap<Integer, SyntaxStyle> syntaxStyleMap = new TreeMap<>();
 
         if (lineComment) {
             startMap.put(0, text.length());
             syntaxStyleMap.put(0, syntaxStyleComment);
-        }
-        else {
+        } else {
             for (Map.Entry<Integer, Integer> entryCommentInLine : commentInLine
                     .entrySet()) {
                 startMap.put(entryCommentInLine.getKey(), entryCommentInLine.getValue());
@@ -205,23 +171,20 @@ public class TextPaneView extends PlainView {
             }
 
             for (Map.Entry<Pattern, SyntaxStyle> entry : patternValue.entrySet()) {
-
                 Matcher matcher = entry.getKey().matcher(text);
-
                 while (matcher.find()) {
                     if ((text.length() == matcher.end()
                             || text.charAt(matcher.end()) == ' '
                             || text.charAt(matcher.end()) == ')'
-                            || text.charAt(matcher.end()) == '\t' || text.charAt(matcher
-                            .end()) == '\n')
+                            || text.charAt(matcher.end()) == '\t'
+                            || text.charAt(matcher.end()) == '\n')
                             && (matcher.start() == 0
                                     || text.charAt(matcher.start() - 1) == '\t'
                                     || text.charAt(matcher.start() - 1) == ' '
-                                    || text.charAt(matcher.start() - 1) == '=' || text
-                                    .charAt(matcher.start() - 1) == '(')) {
+                                    || text.charAt(matcher.start() - 1) == '='
+                                    || text.charAt(matcher.start() - 1) == '(')) {
                         boolean inComment = false;
-                        for (Map.Entry<Integer, Integer> entryCommentInLine : commentInLine
-                                .entrySet()) {
+                        for (Map.Entry<Integer, Integer> entryCommentInLine : commentInLine.entrySet()) {
                             if (matcher.start() >= entryCommentInLine.getKey()
                                     && matcher.end() <= entryCommentInLine.getValue()) {
                                 inComment = true;
@@ -238,7 +201,6 @@ public class TextPaneView extends PlainView {
         // TODO: check the map for overlapping parts
 
         int i = 0;
-
         // Colour the parts
         for (Map.Entry<Integer, Integer> entry : startMap.entrySet()) {
             int start = entry.getKey();

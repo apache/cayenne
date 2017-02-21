@@ -71,7 +71,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
             public void insertUpdate(DocumentEvent e) {
                 try {
-                    String text = scriptArea.getDocument().getText(e.getOffset(), 1).toString();
+                    String text = scriptArea.getDocument().getText(e.getOffset(), 1);
                     if (text.equals(" ") || text.equals("\n") || text.equals("\t")) {
                         getQuery().setEjbql(scriptArea.getText());
                         validateEJBQL();
@@ -118,7 +118,6 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
             }
 
             public void keyReleased(KeyEvent e) {
-
                 if ((pasteOrCut && e.getKeyCode() == KeyEvent.VK_CONTROL) || e.getKeyCode() == KeyEvent.VK_DELETE) {
                     scriptArea.removeHighlightText();
                     getQuery().setEjbql(scriptArea.getText());
@@ -171,12 +170,8 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
             return;
         }
 
-        String testTemp = null;
-        if (text != null) {
-            testTemp = text.trim();
-            if (testTemp.length() == 0) {
-                text = null;
-            }
+        if (text != null && text.trim().isEmpty()) {
+            text = null;
         }
 
         // Compare the value before modifying the query - text area
@@ -226,8 +221,8 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
     class EJBQLValidationThread extends Thread {
 
-        boolean running;
-        Object timer = new Object();
+        volatile boolean running;
+        final Object timer = new Object();
         int previousCaretPosition;
         int validateCaretPosition;
 
@@ -251,13 +246,13 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
                 synchronized (timer) {
                     try {
                         timer.wait(DELAY);
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException ignored) {
                     }
                 }
             }
         }
 
-        public void terminate() {
+        void terminate() {
             synchronized (timer) {
                 running = false;
                 timer.notify();

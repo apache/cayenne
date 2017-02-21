@@ -57,8 +57,6 @@ public class JCayenneTextPane extends JPanel {
     private int startYPositionToolTip;
     private int endYPositionToolTip;
 
-    public boolean repaint;
-
     public JScrollPane getScrollPane() {
         return scrollPane;
     }
@@ -87,14 +85,11 @@ public class JCayenneTextPane extends JPanel {
 
     public int getStartPositionInDocument() {
         return pane.viewToModel(scrollPane.getViewport().getViewPosition());
-        // starting pos
-        // in document
     }
 
     public int getEndPositionInDocument() {
-        return pane.viewToModel(new Point(scrollPane.getViewport().getViewPosition().x
-                + pane.getWidth(), scrollPane.getViewport().getViewPosition().y
-                + pane.getHeight()));
+        return pane.viewToModel(new Point(scrollPane.getViewport().getViewPosition().x + pane.getWidth(),
+                scrollPane.getViewport().getViewPosition().y + pane.getHeight()));
     }
 
     public void repaintPane() {
@@ -104,7 +99,7 @@ public class JCayenneTextPane extends JPanel {
     /**
      * Return an int containing the wrapped line index at the given position
      * 
-     * @param int pos
+     * @param pos int
      * @return int
      */
     public int getLineNumber(int pos) {
@@ -114,8 +109,7 @@ public class JCayenneTextPane extends JPanel {
         try {
             Rectangle caretCoords = pane.modelToView(pos);
             y = (int) caretCoords.getY();
-        }
-        catch (BadLocationException ex) {
+        } catch (BadLocationException ex) {
             logObj.warn("Error: ", ex);
         }
 
@@ -127,8 +121,8 @@ public class JCayenneTextPane extends JPanel {
     /**
      * Return an int position at the given line number and symbol position in this line
      * 
-     * @param int posInLine
-     * @param int line
+     * @param posInLine int
+     * @param line int
      * @return int
      * @throws BadLocationException
      */
@@ -152,15 +146,14 @@ public class JCayenneTextPane extends JPanel {
     public JCayenneTextPane(SyntaxConstant syntaxConstant) {
         super();
 
-        Dimension dimention = new Dimension(15, 15);
-        setMinimumSize(dimention);
-        setPreferredSize(dimention);
-        setMinimumSize(dimention);
+        Dimension dimension = new Dimension(15, 15);
+        setMinimumSize(dimension);
+        setPreferredSize(dimension);
+        setMinimumSize(dimension);
         setBackground(new Color(245, 238, 238));
         setBorder(null);
 
         pane = new JTextPaneScrollable(new EditorKit(syntaxConstant)) {
-
             public void paint(Graphics g) {
                 super.paint(g);
                 JCayenneTextPane.this.repaint();
@@ -172,23 +165,19 @@ public class JCayenneTextPane extends JPanel {
 
         scrollPane = new JScrollPane(pane);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(115, 115, 115)));
-        this.painter = new UnderlineHighlighterForText.UnderlineHighlightPainter(
-                Color.red);
+        this.painter = new UnderlineHighlighterForText.UnderlineHighlightPainter(Color.red);
 
         pane.getDocument().addDocumentListener(new DocumentListener() {
-
             public void insertUpdate(DocumentEvent evt) {
                 try {
-                    String text = pane.getText(evt.getOffset(), 1).toString();
+                    String text = pane.getText(evt.getOffset(), 1);
                     if (text.equals("/") || text.equals("*")) {
                         removeHighlightText();
                         pane.repaint();
-                    }
-                    if (text.equals(" ") || text.equals("\t") || text.equals("\n")) {
+                    } else if (text.equals(" ") || text.equals("\t") || text.equals("\n")) {
                         pane.repaint();
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     logObj.warn("Error: ", e);
                 }
             }
@@ -198,7 +187,6 @@ public class JCayenneTextPane extends JPanel {
 
             public void changedUpdate(DocumentEvent evt) {
             }
-
         });
 
     }
@@ -212,10 +200,10 @@ public class JCayenneTextPane extends JPanel {
     /**
      * set underlines text in JCayenneTextPane
      * 
-     * @param int line - starting line for underlined text
-     * @param int lastIndex - starting position in line for underlined text
-     * @param int size
-     * @param String message - text for toolTip, contains the text of the error
+     * @param line int - starting line for underlined text
+     * @param lastIndex int - starting position in line for underlined text
+     * @param size int
+     * @param message String - text for toolTip, contains the text of the error
      */
 
     public void setHighlightText(int line, int lastIndex, int size, String message) {
@@ -228,21 +216,17 @@ public class JCayenneTextPane extends JPanel {
                 highlighter.addHighlight(position, positionEnd, painter);
                 setToolTipPosition(line, message);
                 repaintPane();
-            }
-            catch (BadLocationException e) {
+            } catch (BadLocationException e) {
                 logObj.warn("Error: ", e);
             }
-        }
-        else {
+        } else {
             setToolTipPosition(0, "");
         }
     }
 
     public void removeHighlightText(Highlighter highlighter) {
-
         Highlighter.Highlight[] highlights = highlighter.getHighlights();
-        for (int i = 0; i < highlights.length; i++) {
-            Highlighter.Highlight h = highlights[i];
+        for (Highlighter.Highlight h : highlights) {
             if (h.getPainter() instanceof UnderlineHighlighterForText.UnderlineHighlightPainter) {
                 highlighter.removeHighlight(h);
             }
@@ -250,22 +234,15 @@ public class JCayenneTextPane extends JPanel {
     }
 
     public void setToolTipPosition(int line, String string) {
-
         if (line != 0) {
             int height = pane.getFontMetrics(pane.getFont()).getHeight();
             int start = (line - 1) * height;
             this.endYPositionToolTip = start;
             this.startYPositionToolTip = start + height;
             setTooltipTextError(string);
-            if (string != "") {
-                imageError = true;
-            }
-            else {
-                imageError = false;
-            }
+            imageError = !"".equals(string);
             setToolTipText("");
-        }
-        else {
+        } else {
             this.endYPositionToolTip = -1;
             this.startYPositionToolTip = -1;
             setTooltipTextError("");
@@ -289,8 +266,7 @@ public class JCayenneTextPane extends JPanel {
                     + "<body bgcolor='#FFEBCD' text='black'>"
                     + htmlText
                     + "</body>";
-        }
-        else {
+        } else {
             setCursor(Cursor.getDefaultCursor());
             return null;
         }
@@ -311,8 +287,7 @@ public class JCayenneTextPane extends JPanel {
         super.paint(g);
 
         int start = getStartPositionInDocument();
-        int end = getEndPositionInDocument();
-        // end pos in doc
+        int end = getEndPositionInDocument(); // end pos in doc
 
         // translate offsets to lines
         Document doc = pane.getDocument();
@@ -326,23 +301,20 @@ public class JCayenneTextPane extends JPanel {
         try {
             if (pane.modelToView(start) == null) {
                 starting_y = -1;
-            }
-            else {
+            } else {
                 starting_y = pane.modelToView(start).y
                         - scrollPane.getViewport().getViewPosition().y
                         + fontHeight
                         - fontDesc;
             }
-        }
-        catch (Exception e1) {
+        } catch (Exception e1) {
             logObj.warn("Error: ", e1);
         }
 
         for (int line = startline, y = starting_y; line <= endline; y += fontHeight, line++) {
             Color color = g.getColor();
 
-            if (line - 1 == doc.getDefaultRootElement().getElementIndex(
-                    pane.getCaretPosition())) {
+            if (line - 1 == doc.getDefaultRootElement().getElementIndex(pane.getCaretPosition())) {
                 g.setColor(new Color(224, 224, 255));
                 g.fillRect(0, y - fontHeight + 3, 30, fontHeight + 1);
             }
@@ -354,7 +326,6 @@ public class JCayenneTextPane extends JPanel {
 
             g.setColor(color);
         }
-
     }
 
     public Document getDocument() {
@@ -363,9 +334,7 @@ public class JCayenneTextPane extends JPanel {
 
     class JTextPaneScrollable extends JTextPane {
 
-        
-
-        public JTextPaneScrollable(EditorKit editorKit) {
+        JTextPaneScrollable(EditorKit editorKit) {
             // Set editor kit
             this.setEditorKitForContentType(editorKit.getContentType(), editorKit);
             this.setContentType(editorKit.getContentType());

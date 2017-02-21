@@ -23,21 +23,21 @@ import java.awt.Font;
 
 public interface SyntaxConstant {
 
-    public static Font DEFAULT_FONT = new Font("Courier", Font.PLAIN, 14);
-    public static Color DEFAULT_COLOR = Color.black;
-    public static String COMMENT_TEXT = "(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)";
-    public static final String COMMENT_TEXT_START = "/\\*.?";
-    public static String STRING_TEXT = "'[^']*'";
-    public static String NUMBER_TEXT = "\\d+";
+    Font DEFAULT_FONT = new Font("Courier", Font.PLAIN, 14);
+    Color DEFAULT_COLOR = Color.black;
+    String COMMENT_TEXT = "(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)";
+    String COMMENT_TEXT_START = "/\\*.?";
+    String STRING_TEXT = "'[^']*'";
+    String NUMBER_TEXT = "\\d+";
 
-    public String[] getKEYWORDS();
+    String[] getKEYWORDS();
 
-    public String[] getKEYWORDS2();
+    String[] getKEYWORDS2();
 
-    public String[] getTYPES();
+    String[] getTYPES();
 
-    public String[] getOPERATORS();
+    String[] getOPERATORS();
     
-    public String getContentType();
+    String getContentType();
 
 }
