@@ -59,16 +59,14 @@ public class CayenneTable extends JTable {
 
     @Override
     public void setModel(TableModel dataModel) {
-
         super.setModel(dataModel);
+
         if (!(dataModel instanceof DefaultTableModel)) {
             TableColumnModel model = getColumnModel();
 
             for (int i = 0; i < getColumnCount(); i++) {
                 model.getColumn(i).setHeaderRenderer(renderer);
-
             }
-
         }
     }
 
@@ -77,9 +75,7 @@ public class CayenneTable extends JTable {
         super.createDefaultEditors();
 
         JTextField textField = new JTextField(20);
-        final DefaultCellEditor textEditor = Application
-                .getWidgetFactory()
-                .createCellEditor(textField);
+        final DefaultCellEditor textEditor = Application.getWidgetFactory().createCellEditor(textField);
         textEditor.setClickCountToStart(1);
 
         setDefaultEditor(Object.class, textEditor);
@@ -161,8 +157,7 @@ public class CayenneTable extends JTable {
     }
 
     /**
-     * ListSelectionModel for Cayenne table. Has a method to set multiple rows selection
-     * at once.
+     * ListSelectionModel for Cayenne table. Has a method to set multiple rows selection at once.
      */
     class CayenneListSelectionModel extends DefaultListSelectionModel {
 
@@ -173,9 +168,7 @@ public class CayenneTable extends JTable {
          * ListSelectionEvent
          */
         public void setSelection(int[] rows) {
-            /**
-             * First check if we must do anything at all
-             */
+            // First check if we must do anything at all
             boolean selectionChanged = false;
             for (int row : rows) {
                 if (!isRowSelected(row)) {

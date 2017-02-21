@@ -127,9 +127,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 ObjAttributeTableModel.class,
                 "objEntity/attributeTable");
 
-        /**
-         * Create and install a popup
-         */
+        // Create and install a popup
         Icon ico = ModelerUtil.buildIcon("icon-info.gif");
         resolveMenu = new JMenuItem("Database Mapping", ico);
 
@@ -164,13 +162,10 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 // ... show dialog...
                 new ObjAttributeInfoDialog(mediator, row, model).startupAction();
 
-                /**
-                 * This is required for a table to be updated properly
-                 */
+                // This is required for a table to be updated properly
                 table.cancelEditing();
 
-                // need to refresh selected row... do this by unselecting/selecting the
-                // row
+                // need to refresh selected row... do this by unselecting/selecting the row
                 table.getSelectionModel().clearSelection();
                 table.select(row);
                 enabledResolve = false;
@@ -188,14 +183,10 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
     }
 
     public void initComboBoxes() {
-        List<String> embeddableNames = new ArrayList<String>();
-        List<String> typeNames = new ArrayList<String>();
+        List<String> embeddableNames = new ArrayList<>();
+        List<String> typeNames = new ArrayList<>();
 
-        Iterator it = ((DataChannelDescriptor) mediator.getProject().getRootNode())
-                .getDataMaps()
-                .iterator();
-        while (it.hasNext()) {
-            DataMap dataMap = (DataMap) it.next();
+        for (DataMap dataMap : ((DataChannelDescriptor) mediator.getProject().getRootNode()).getDataMaps()) {
             for (Embeddable emb : dataMap.getEmbeddables()) {
                 embeddableNames.add(emb.getClassName());
             }
@@ -205,15 +196,11 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         Collections.addAll(typeNames, registeredTypes);
         typeNames.addAll(embeddableNames);
 
-        TableColumn typeColumn = table.getColumnModel().getColumn(
-                ObjAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
+        TableColumn typeColumn = table.getColumnModel().getColumn(ObjAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
 
-        JComboBox javaTypesCombo = Application.getWidgetFactory().createComboBox(
-                typeNames.toArray(),
-                false);
+        JComboBox javaTypesCombo = Application.getWidgetFactory().createComboBox(typeNames.toArray(), false);
         AutoCompletion.enable(javaTypesCombo, false, true);
-        typeColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(
-                javaTypesCombo));
+        typeColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(javaTypesCombo));
     }
 
     /**
@@ -399,13 +386,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 int row,
                 int column) {
 
-            super.getTableCellRendererComponent(
-                    table,
-                    value,
-                    isSelected,
-                    hasFocus,
-                    row,
-                    column);
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
             ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
             column = table.getColumnModel().getColumn(column).getModelIndex();
@@ -415,8 +396,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 if (!model.isCellEditable(row, column)) {
                     setForeground(Color.GRAY);
                 } else {
-                    setForeground(isSelected && !hasFocus ? table
-                            .getSelectionForeground() : table.getForeground());
+                    setForeground(isSelected && !hasFocus ? table.getSelectionForeground() : table.getForeground());
                 }
 
                 if (attribute.isInherited()) {

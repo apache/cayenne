@@ -277,8 +277,8 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
 
     public void objRelationshipRemoved(RelationshipEvent e) {
         ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
-        int ind = model.getObjectList().indexOf(e.getRelationship());
-        model.removeRow(e.getRelationship());
+        int ind = model.getObjectList().indexOf((ObjRelationship)e.getRelationship());
+        model.removeRow((ObjRelationship) e.getRelationship());
         table.select(ind);
     }
 

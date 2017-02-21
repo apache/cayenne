@@ -85,8 +85,7 @@ public class SuggestionList extends BasicComboPopup {
     protected boolean matches(String item, String pattern) {
         if (strict) {
             return item.toLowerCase().startsWith(pattern.toLowerCase());
-        }
-        else {
+        } else {
             return item.toLowerCase().contains(pattern.toLowerCase());
         }
     }
@@ -99,9 +98,7 @@ public class SuggestionList extends BasicComboPopup {
      */
     @Override
     protected int getPopupHeightForRowCount(int maxRowCount) {
-        int h = super.getPopupHeightForRowCount(Math.min(maxRowCount, list.getModel().getSize()));
-
-        return h;
+        return super.getPopupHeightForRowCount(Math.min(maxRowCount, list.getModel().getSize()));
     }
 
     /**

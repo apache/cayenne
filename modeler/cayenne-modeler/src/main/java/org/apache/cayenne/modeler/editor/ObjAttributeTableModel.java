@@ -339,8 +339,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
     }
 
     private void setColumnLocking(ObjAttributeWrapper attribute, Object value) {
-        attribute.setUsedForLocking((value instanceof Boolean)
-                && ((Boolean) value).booleanValue());
+        attribute.setUsedForLocking((value instanceof Boolean) && (Boolean) value);
     }
 
     private void setDbAttribute(ObjAttributeWrapper attribute, Object value) {

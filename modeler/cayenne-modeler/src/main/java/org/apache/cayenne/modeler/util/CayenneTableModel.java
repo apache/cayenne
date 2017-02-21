@@ -41,7 +41,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Superclass of CayenneModeler table model classes.
- * 
  */
 public abstract class CayenneTableModel<T> extends AbstractTableModel {
 
@@ -54,15 +53,11 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
     /**
      * Constructor for CayenneTableModel.
      */
-    public CayenneTableModel(ProjectController mediator, Object eventSource,
-            java.util.List<T> objectList) {
-        
+    public CayenneTableModel(ProjectController mediator, Object eventSource, List<T> objectList) {
         super();
         this.eventSource = eventSource;
         this.mediator = mediator;
         this.objectList = objectList;
-
-        //orderList();
     }
 
     public void setValueAt(Object newVal, int row, int col) {
@@ -70,14 +65,12 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
             
             Object oldValue = getValueAt(row, col);
             if (!Util.nullSafeEquals(newVal, oldValue)) {
-                
                 setUpdatedValueAt(newVal, row, col);
                 
                 this.mediator.getApplication().getUndoManager().addEdit(
                         new CayenneTableModelUndoableEdit(this, oldValue, newVal, row, col));
             }
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             logObj.error("Error setting table model value", e);
             JOptionPane.showMessageDialog(
                     Application.getFrame(),
@@ -94,30 +87,9 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
     public abstract void setUpdatedValueAt(Object newVal, int row, int col);
 
     /**
-     * Orders internal object list. Key returned by <code>getOrderingKey</code> is used
-     * for comparison.
-     */
-    protected void orderList() {
-        String key = getOrderingKey();
-        if (key != null) {
-            Collections.sort(objectList, new PropertyComparator(
-                    getOrderingKey(),
-                    getElementsClass()));
-        }
-    }
-
-    /**
      * Returns Java class of the internal list elements.
      */
     public abstract Class<?> getElementsClass();
-
-    /**
-     * Returns the key by which to order elements in the object list. Default value is
-     * "name".
-     */
-    public String getOrderingKey() {
-        return "name";
-    }
 
     /**
      * Returns the number of objects on the list.
@@ -152,7 +124,7 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
         fireTableDataChanged();
     }
 
-    public void removeRow(Object row) {
+    public void removeRow(T row) {
         objectList.remove(row);
         fireTableDataChanged();
     }
@@ -160,7 +132,7 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
     /**
      * Moves a row up, jumping down if row is already at the top.
      */
-    public int moveRowUp(Object row) {
+    public int moveRowUp(T row) {
         int len = objectList.size();
         if (len < 2) {
             return -1;
@@ -183,7 +155,7 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
     /**
      * Moves a row down, jumping up if row is already at the bottom.
      */
-    public int moveRowDown(Object row) {
+    public int moveRowDown(T row) {
         int len = objectList.size();
         if (len < 2) {
             return -1;
@@ -220,21 +192,19 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
 		return true;
 	}
 
-    protected class PropertyComparator implements Comparator {
+    protected class PropertyComparator<C> implements Comparator<C> {
 
         Method getter;
 
         PropertyComparator(String propertyName, Class beanClass) {
             try {
                 getter = findGetter(beanClass, propertyName);
-            }
-            catch (IntrospectionException e) {
+            } catch (IntrospectionException e) {
                 throw new CayenneRuntimeException("Introspection error", e);
             }
         }
 
-        Method findGetter(Class beanClass, String propertyName)
-                throws IntrospectionException {
+        Method findGetter(Class beanClass, String propertyName) throws IntrospectionException {
             BeanInfo info = Introspector.getBeanInfo(beanClass);
             PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
 
@@ -247,25 +217,22 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
             throw new IntrospectionException("No getter found for " + propertyName);
         }
 
-        public int compare(Object o1, Object o2) {
+        @SuppressWarnings("unchecked")
+        public int compare(C o1, C o2) {
 
             if ((o1 == null && o2 == null) || o1 == o2) {
                 return 0;
-            }
-            else if (o1 == null && o2 != null) {
+            } else if (o1 == null) {
                 return -1;
-            }
-            else if (o1 != null && o2 == null) {
+            } else if (o2 == null) {
                 return 1;
             }
 
             try {
                 Comparable p1 = (Comparable) getter.invoke(o1);
                 Comparable p2 = (Comparable) getter.invoke(o2);
-                
                 return (p1 == null) ? -1 : (p2 == null)? 1 : p1.compareTo(p2);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 throw new CayenneRuntimeException("Error reading property.", ex);
             }
         }
@@ -276,9 +243,7 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
     public abstract boolean isColumnSortable(int sortCol);
     
     public void sortByElementProperty(String string, boolean isAscent) {
-        Collections.sort(objectList, new PropertyComparator(
-                string,
-                getElementsClass()));
+        Collections.sort(objectList, new PropertyComparator<>(string, getElementsClass()));
         if(!isAscent){
             Collections.reverse(objectList);
         }

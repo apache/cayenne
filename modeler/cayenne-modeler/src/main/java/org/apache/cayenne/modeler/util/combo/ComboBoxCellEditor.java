@@ -22,8 +22,6 @@ package org.apache.cayenne.modeler.util.combo;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.io.Serializable;
 import java.util.EventObject;
@@ -40,7 +38,7 @@ import javax.swing.table.TableCellEditor;
  *
  */
 public class ComboBoxCellEditor extends AbstractCellEditor 
-    implements ActionListener, TableCellEditor, FocusListener, Serializable {
+    implements ActionListener, TableCellEditor, Serializable {
     
     static final String IS_TABLE_CELL_EDITOR_PROPERTY = "JComboBox.isTableCellEditor";
     
@@ -57,7 +55,7 @@ public class ComboBoxCellEditor extends AbstractCellEditor
         //  otherwise the value may get lost (e.g. see CAY-1104)
         //  LATER: this turned out to be the wrong fix, so I commented 
         //  out the code in focusLost to fix CAY-1719 and fixed CAY-1104 differently.
-        this.comboBox.getEditor().getEditorComponent().addFocusListener(this);
+        // this.comboBox.getEditor().getEditorComponent().addFocusListener(this);
 
         // remove the editor's border - the cell itself already has one
         ((JComponent) comboBox.getEditor().getEditorComponent()).setBorder(null);
@@ -108,14 +106,5 @@ public class ComboBoxCellEditor extends AbstractCellEditor
         }
         
         return true;
-    }
-
-    public void focusGained(FocusEvent e) {
-    }
-
-    public void focusLost(FocusEvent e) {
-        if (e.getOppositeComponent() != null) {
-            //stopCellEditing(); // Commented out to fix CAY-1719
-        }
     }
 }

@@ -97,8 +97,7 @@ public class DefaultWidgetFactory implements WidgetFactory {
      */
     public TableCellEditor createCellEditor(JComboBox<?> combo) {
         combo.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
-        if (Boolean.TRUE.equals(combo
-                .getClientProperty(AutoCompletion.AUTOCOMPLETION_PROPERTY))) {
+        if (Boolean.TRUE.equals(combo.getClientProperty(AutoCompletion.AUTOCOMPLETION_PROPERTY))) {
             return new ComboBoxCellEditor(combo);
         }
 

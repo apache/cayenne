@@ -55,14 +55,10 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     protected AutoCompletion(final JComboBox comboBox, boolean strict, boolean allowsUserValues) {
         this.comboBox = comboBox;
         textEditor = ((JTextComponent)comboBox.getEditor().getEditorComponent());
-
         this.allowsUserValues = allowsUserValues;
-        
         suggestionList = new SuggestionList(comboBox, strict);
-        
-        /**
-         * Marking combobox as auto-completing
-         */
+
+        // Marking combobox as auto-completing
         comboBox.putClientProperty(AUTOCOMPLETION_PROPERTY, Boolean.TRUE);
     }
 
@@ -108,9 +104,7 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
     }
 
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE ||
-                e.getKeyCode() == KeyEvent.VK_ENTER) {
-
+        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_ENTER) {
             String text = textEditor.getText();
             if (comboBox.isShowing()) {
                 suggestionList.hide();
@@ -147,8 +141,7 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
 
         if (suggest) {
             processKeyPressedWhenSuggestionListIsVisible(e);
-        }
-        else {
+        } else {
             processKeyPressedWhenSuggestionListIsInvisible(e);
         }
 
@@ -156,7 +149,7 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
         suggestionListScrolling();
     }
 
-    private void   processKeyPressedWhenSuggestionListIsInvisible(KeyEvent e){
+    private void processKeyPressedWhenSuggestionListIsInvisible(KeyEvent e){
         int sel = comboBox.getSelectedIndex();
         int max = comboBox.getItemCount() - 1;
 
@@ -183,7 +176,6 @@ public class AutoCompletion implements FocusListener, KeyListener, Runnable {
                 next = max;
                 break;
             case KeyEvent.VK_ENTER:
-                return;
             case KeyEvent.VK_ESCAPE:
                 return;
             default:

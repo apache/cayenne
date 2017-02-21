@@ -34,7 +34,7 @@ import java.util.Comparator;
  * Table model to display ObjRelationships.
  * 
  */
-public class ObjRelationshipTableModel extends CayenneTableModel {
+public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship> {
 
     // Columns
     public static final int REL_NAME = 0;
@@ -47,18 +47,12 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
 
     private ObjEntity entity;
 
-    public ObjRelationshipTableModel(ObjEntity entity, ProjectController mediator,
-            Object eventSource) {
-        super(mediator, eventSource, new ArrayList(entity.getRelationships()));
+    public ObjRelationshipTableModel(ObjEntity entity, ProjectController mediator, Object eventSource) {
+        super(mediator, eventSource, new ArrayList<>(entity.getRelationships()));
         this.entity = entity;
 
         // order using local comparator
         Collections.sort(objectList, new RelationshipComparator());
-    }
-
-    @Override
-    protected void orderList() {
-        // NOOP
     }
 
     public ObjEntity getEntity() {
@@ -110,8 +104,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
     }
 
     public ObjRelationship getRelationship(int row) {
-        return (row >= 0 && row < objectList.size()) ? (ObjRelationship) objectList
-                .get(row) : null;
+        return (row >= 0 && row < objectList.size()) ?  objectList.get(row) : null;
     }
 
     public Object getValueAt(int row, int column) {
@@ -150,7 +143,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
                         .toLowerCase();
             }
 
-            semantics.append(", " + collection);
+            semantics.append(", ").append(collection);
         }
         return semantics.toString();
     }
@@ -169,9 +162,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
             ObjEntity target = (ObjEntity) value;
             relationship.setTargetEntityName(target);
 
-            /**
-             * Clear existing relationships, otherwise addDbRelationship() might fail
-             */
+            // Clear existing relationships, otherwise addDbRelationship() might fail
             relationship.clearDbRelationships();
 
             // now try to connect DbEntities if we can do it in one step
@@ -192,8 +183,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
             relationship.setDeleteRule(DeleteRule.deleteRuleForName((String) value));
             fireTableCellUpdated(row, column);
         } else if (column == REL_LOCKING) {
-            relationship.setUsedForLocking((value instanceof Boolean)
-                    && ((Boolean) value).booleanValue());
+            relationship.setUsedForLocking((value instanceof Boolean) && (Boolean) value);
             fireTableCellUpdated(row, column);
         } else if (column == REL_TARGET_PATH) {
             relationship.setDbRelationshipPath((String) value);
@@ -223,20 +213,13 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
 
     @Override
     public boolean isCellEditable(int row, int col) {
-        return !isInherited(row) && col != REL_SEMANTICS
-                && col != REL_TARGET;
+        return !isInherited(row) && col != REL_SEMANTICS && col != REL_TARGET;
     }
 
-    final class RelationshipComparator implements Comparator {
-
-        public int compare(Object o1, Object o2) {
-            ObjRelationship r1 = (ObjRelationship) o1;
-            ObjRelationship r2 = (ObjRelationship) o2;
-
-            int delta = getWeight(r1) - getWeight(r2);
-
-            return (delta != 0) ? delta : Util.nullSafeCompare(true, r1.getName(), r2
-                    .getName());
+    final class RelationshipComparator implements Comparator<ObjRelationship> {
+        public int compare(ObjRelationship o1, ObjRelationship o2) {
+            int delta = getWeight(o1) - getWeight(o2);
+            return (delta != 0) ? delta : Util.nullSafeCompare(true, o1.getName(), o2.getName());
         }
 
         private int getWeight(ObjRelationship r) {
@@ -278,18 +261,16 @@ public class ObjRelationshipTableModel extends CayenneTableModel {
 
         private int sortCol;
 
-        public ObjRelationshipTableComparator(int sortCol) {
+        ObjRelationshipTableComparator(int sortCol) {
             this.sortCol = sortCol;
         }
 
         public int compare(ObjRelationship o1, ObjRelationship o2) {
             if ((o1 == null && o2 == null) || o1 == o2) {
                 return 0;
-            }
-            else if (o1 == null && o2 != null) {
+            } else if (o1 == null) {
                 return -1;
-            }
-            else if (o1 != null && o2 == null) {
+            } else if (o2 == null) {
                 return 1;
             }
 

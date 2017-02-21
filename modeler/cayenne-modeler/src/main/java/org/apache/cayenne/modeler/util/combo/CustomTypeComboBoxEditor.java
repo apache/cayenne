@@ -84,8 +84,7 @@ public class CustomTypeComboBoxEditor extends BasicComboBoxEditor {
             // original type.
             if (newValue.equals(localOldValue.toString())) {
                 return localOldValue;
-            }
-            else {
+            } else {
                 // Must take the value from the editor and get the value and cast it to the new type.
                 Class cls = localOldValue.getClass();
                 try {
@@ -121,22 +120,21 @@ public class CustomTypeComboBoxEditor extends BasicComboBoxEditor {
      * 
      * @return value of classTo type, or null if conversion is impossible
      */
-    protected Object convert(String value, Class classTo) {
+    protected Object convert(String value, Class<?> classTo) {
         if (classTo == String.class) {
             return value;
         }
         
-        /**
+        /*
          * We still try to it in BasicComboBox's way, so that primary object
          * types (such as numbers) would still be supported 
          */
         try {
-            Method method = classTo.getMethod("valueOf", new Class[]{String.class});
+            Method method = classTo.getMethod("valueOf", String.class);
             return method.invoke(null, value);
-        }
-        catch (Exception ignored) {}
+        } catch (Exception ignored) {}
         
-        /**
+        /*
          * We could manually convert strings to dbentities, attrs and other, but
          * in this implementation we use reverse operation instead, and convert 
          * combobox model's items to String.
