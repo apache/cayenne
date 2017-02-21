@@ -65,7 +65,7 @@
             &lt;groupId&gt;org.apache.cayenne&lt;/groupId&gt;
             &lt;artifactId&gt;cayenne-server&lt;/artifactId&gt;
             &lt;!-- Here specify the version of Cayenne you are actually using --&gt;
-            &lt;version&gt;4.0.M4&lt;/version&gt;
+            &lt;version&gt;<?eval ${project.version}?>&lt;/version&gt;
         &lt;/dependency&gt;
     &lt;/dependencies&gt;
 &lt;/project&gt;</programlisting></para>
