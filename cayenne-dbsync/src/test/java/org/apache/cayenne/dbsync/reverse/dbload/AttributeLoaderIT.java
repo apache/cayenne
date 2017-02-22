@@ -61,7 +61,7 @@ public class AttributeLoaderIT extends BaseLoaderIT {
         a = getDbAttribute(artist, "DATE_OF_BIRTH");
         assertNotNull(a);
         if(accessStackAdapter.onlyGenericDateType()) {
-            assertEquals(Types.TIMESTAMP, a.getType());
+            assertTrue(Types.DATE == a.getType() || Types.TIMESTAMP == a.getType());
         } else {
             assertEquals(Types.DATE, a.getType());
         }
