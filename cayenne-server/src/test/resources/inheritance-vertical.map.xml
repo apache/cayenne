@@ -40,8 +40,10 @@
 	</db-entity>
 	<db-entity name="IV_IMPL">
 		<db-attribute name="ATTR1" type="VARCHAR" isMandatory="true" length="100"/>
+		<db-attribute name="ATTR2" type="VARCHAR" isMandatory="true" length="100"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="OTHER_ID" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="OTHER1_ID" type="INTEGER" isMandatory="true"/>
+        <db-attribute name="OTHER2_ID" type="INTEGER" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="IV_OTHER">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -101,6 +103,7 @@
 	<obj-entity name="IvImpl" superEntityName="IvBase" className="org.apache.cayenne.testdo.inheritance_vertical.IvImpl">
 		<qualifier><![CDATA[type = "I"]]></qualifier>
 		<obj-attribute name="attr1" type="java.lang.String" db-attribute-path="impl.ATTR1"/>
+		<obj-attribute name="attr2" type="java.lang.String" db-attribute-path="impl.ATTR2"/>
 	</obj-entity>
 	<obj-entity name="IvOther" className="org.apache.cayenne.testdo.inheritance_vertical.IvOther" dbEntityName="IV_OTHER">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
@@ -167,8 +170,11 @@
 	<db-relationship name="base" source="IV_IMPL" target="IV_BASE" toMany="false">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="other" source="IV_IMPL" target="IV_OTHER" toMany="false">
-		<db-attribute-pair source="OTHER_ID" target="ID"/>
+	<db-relationship name="other1" source="IV_IMPL" target="IV_OTHER" toMany="false">
+		<db-attribute-pair source="OTHER1_ID" target="ID"/>
+	</db-relationship>
+    <db-relationship name="other2" source="IV_IMPL" target="IV_OTHER" toMany="false">
+        <db-attribute-pair source="OTHER2_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="impls" source="IV_OTHER" target="IV_IMPL" toMany="true">
 		<db-attribute-pair source="ID" target="OTHER_ID"/>
@@ -206,7 +212,8 @@
 	<obj-relationship name="x" source="Iv2Sub1" target="Iv2X" deleteRule="Nullify" db-relationship-path="sub1.x"/>
 	<obj-relationship name="children" source="IvConcrete" target="IvConcrete" deleteRule="Deny" db-relationship-path="children"/>
 	<obj-relationship name="parent" source="IvConcrete" target="IvConcrete" deleteRule="Nullify" db-relationship-path="parent"/>
-	<obj-relationship name="other" source="IvImpl" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other"/>
+	<obj-relationship name="other1" source="IvImpl" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other1"/>
+	<obj-relationship name="other2" source="IvImpl" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other2"/>
 	<obj-relationship name="impls" source="IvOther" target="IvImpl" deleteRule="Deny" db-relationship-path="impls.base"/>
 	<obj-relationship name="ivRoot" source="IvSub3" target="IvRoot" deleteRule="Nullify" db-relationship-path="sub3.ivRoot1"/>
 	<!--obj-relationship name="ivSub3ToRoot" source="IvSub3" target="IvRoot" deleteRule="Nullify" db-relationship-path="sub3"/-->

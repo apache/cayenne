@@ -17,7 +17,9 @@ public abstract class _IvImpl extends IvBase {
     public static final String ID_PK_COLUMN = "ID";
 
     public static final Property<String> ATTR1 = Property.create("attr1", String.class);
-    public static final Property<IvOther> OTHER = Property.create("other", IvOther.class);
+    public static final Property<String> ATTR2 = Property.create("attr2", String.class);
+    public static final Property<IvOther> OTHER1 = Property.create("other1", IvOther.class);
+    public static final Property<IvOther> OTHER2 = Property.create("other2", IvOther.class);
 
     public void setAttr1(String attr1) {
         writeProperty("attr1", attr1);
@@ -26,12 +28,27 @@ public abstract class _IvImpl extends IvBase {
         return (String)readProperty("attr1");
     }
 
-    public void setOther(IvOther other) {
-        setToOneTarget("other", other, true);
+    public void setAttr2(String attr2) {
+        writeProperty("attr2", attr2);
+    }
+    public String getAttr2() {
+        return (String)readProperty("attr2");
     }
 
-    public IvOther getOther() {
-        return (IvOther)readProperty("other");
+    public void setOther1(IvOther other1) {
+        setToOneTarget("other1", other1, true);
+    }
+
+    public IvOther getOther1() {
+        return (IvOther)readProperty("other1");
+    }
+
+    public void setOther2(IvOther other2) {
+        setToOneTarget("other2", other2, true);
+    }
+
+    public IvOther getOther2() {
+        return (IvOther)readProperty("other2");
     }
 
 

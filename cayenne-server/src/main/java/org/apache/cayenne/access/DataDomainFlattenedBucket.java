@@ -92,8 +92,6 @@ class DataDomainFlattenedBucket {
      * responsible for adding the flattened Insert Queries. Its possible an insert query for the same DbEntity/ObjectId
      * already has been added from the insert bucket queries if that Object also has an attribute. So we want to merge
      * the data for each insert into a single insert.
-     *
-     * @param queries
      */
     void appendInserts(Collection<Query> queries) {
 
@@ -110,24 +108,29 @@ class DataDomainFlattenedBucket {
             List<FlattenedArcKey> flattenedArcKeys = entry.getValue();
 
             DataNode node = parent.getDomain().lookupDataNode(dbEntity.getDataMap());
-
-            // TODO: O(N) lookup
-            InsertBatchQuery existingQuery = findInsertBatchQuery(queries, dbEntity);
             InsertBatchQuery newQuery = new InsertBatchQuery(dbEntity, 50);
+            boolean newQueryAdded = false;
 
+            // Here can be options with multiple arcs:
+            //  1. they can go as different columns in a single row
+            //  2. they can go as different rows in one batch
+            //  3. mix of both
             for (FlattenedArcKey flattenedArcKey : flattenedArcKeys) {
                 Map<String, Object> snapshot = flattenedArcKey.buildJoinSnapshotForInsert(node);
+                ObjectId objectId = null;
 
+                // TODO: O(N) lookup
+                InsertBatchQuery existingQuery = findInsertBatchQuery(queries, dbEntity);
                 if (existingQuery != null) {
-
                     // TODO: O(N) lookup
                     BatchQueryRow existingRow = findRowForObjectId(existingQuery.getRows(), flattenedArcKey.id1.getSourceId());
                     // todo: do we need to worry about flattenedArcKey.id2 ?
 
                     if (existingRow != null) {
+                        objectId = existingRow.getObjectId();
                         List<DbAttribute> existingQueryDbAttributes = existingQuery.getDbAttributes();
 
-                        for(int i=0; i < existingQueryDbAttributes.size(); i++) {
+                        for (int i = 0; i < existingQueryDbAttributes.size(); i++) {
                             Object value = existingRow.getValue(i);
                             if (value != null) {
                                 snapshot.put(existingQueryDbAttributes.get(i).getName(), value);
@@ -136,14 +139,22 @@ class DataDomainFlattenedBucket {
                     }
                 }
 
-                newQuery.add(snapshot);
+                newQuery.add(snapshot, objectId);
+
+                if (existingQuery != null) {
+                    // replace inside arc loop, so next arc know about it
+                    queries.remove(existingQuery);
+                    queries.add(newQuery);
+                    newQueryAdded = true;
+                    // start clean query for the next arc
+                    newQuery = new InsertBatchQuery(dbEntity, 50);
+                }
             }
 
-            if (existingQuery != null) {
-                queries.remove(existingQuery);
+            if(!newQueryAdded) {
+                // if not replaced existing query already
+                queries.add(newQuery);
             }
-
-            queries.add(newQuery);
         }
     }
 

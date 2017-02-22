@@ -20,6 +20,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -27,6 +28,7 @@ import org.apache.cayenne.testdo.inheritance_vertical.*;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.validation.ValidationException;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -582,7 +584,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		context.commitChanges();
 	}
 
-	@Test
+	@Test(expected = ValidationException.class) // other2 is missing now
 	public void testInsertWithAttributeAndRelationship() {
 		IvOther other = context.newObject(IvOther.class);
 		other.setName("other");
@@ -590,9 +592,31 @@ public class VerticalInheritanceIT extends ServerCase {
 		IvImpl impl = context.newObject(IvImpl.class);
 		impl.setName("Impl 1");
 		impl.setAttr1("attr1");
-		impl.setOther(other);
+		impl.setOther1(other);
 
 		context.commitChanges();
+	}
+
+	@Test
+	public void testInsertWithMultipleAttributeAndMultipleRelationship() {
+		IvOther other1 = context.newObject(IvOther.class);
+		other1.setName("other1");
+
+		IvOther other2 = context.newObject(IvOther.class);
+		other2.setName("other2");
+
+		IvImpl impl = context.newObject(IvImpl.class);
+		impl.setName("Impl 1");
+		impl.setAttr1("attr1");
+		impl.setAttr2("attr2");
+		impl.setOther1(other1);
+		impl.setOther2(other2);
+
+		context.commitChanges();
+
+		IvImpl impl2 = ObjectSelect.query(IvImpl.class).selectFirst(context);
+		assertEquals(other1, impl2.getOther1());
+		assertEquals(other2, impl2.getOther2());
 	}
 
 }

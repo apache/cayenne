@@ -47,6 +47,7 @@ CAY-2207 Modeler: "Java Type" and "DbAttribute Path" are not saved with using TA
 CAY-2221 In-memory expression evaluation gives different result than select query
 CAY-2236 Modeler Migrate DB Schema: unable to Reverse All Operations
 CAY-2238 Modeler: Preserve manually set DbRelationship name when syncing with ObjEntity
+CAY-2242 Vertical Inheritance: Cannot Insert Record For Implementing Class with Attribute And Relationship
 
 ----------------------------------
 Release: 4.0.M4
