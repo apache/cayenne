@@ -189,8 +189,10 @@ binder.bind(Key.get(Service2.class, "i2")).to(Service2Impl.class);</programlisti
         // customizations go here...
     }
 }</programlisting><programlisting language="java">Module extensions = new MyExtensionsModule();
-ServerRuntime runtime = 
-    new ServerRuntime("com/example/cayenne-mydomain.xml", extensions);</programlisting>
+ServerRuntime runtime = ServerRuntime.builder()
+        .addConfig("com/example/cayenne-mydomain.xml")
+        .addModule(extensions)
+        .build();</programlisting>
         <section xml:id="changing-properties-of-existing-services">
             <title>Changing Properties of Existing Services</title>
             <para>Many built-in Cayenne services change their behavior based on a value of some
@@ -338,21 +340,25 @@ public class DoubleArrayType implements ExtendedType {
             <para>For Java7</para>
             <programlisting language="java">
 // add DoubleArrayType to list of user types
-ServerRuntime runtime = new ServerRuntime("cayenne-project.xml", new Module() {
-    @Override
-    public void configure(Binder binder) {
-        binder
-                .bindList(Constants.SERVER_USER_TYPES_LIST)
-                .add(new DoubleArrayType());
-    }
-});
+ServerRuntime runtime = ServerRuntime.builder()
+                .addConfig("cayenne-project.xml")
+                .addModule(new Module() {
+                    @Override
+                    public void configure(Binder binder) {
+                        binder
+                                .bindList(Constants.SERVER_USER_TYPES_LIST)
+                                .add(new DoubleArrayType());
+                    }
+                })
+                .build();
             </programlisting>
             <para>For Java8</para>
             <programlisting language="java">
 // add DoubleArrayType to list of user types
-ServerRuntime runtime = new ServerRuntime("cayenne-project.xml",
-    (Binder binder) -> binder.bindList(Constants.SERVER_USER_TYPES_LIST)
-                .add(new DoubleArrayType()));
+ServerRuntime runtime = ServerRuntime.builder()
+                .addConfig("cayenne-project.xml")
+                .addModule(binder -> binder.bindList(Constants.SERVER_USER_TYPES_LIST).add(new DoubleArrayType()))
+                .build();
             </programlisting>
             <para>More examples of implementation you can find in
                 <link xlink:href="https://github.com/apache/cayenne/tree/master/cayenne-java8">cayenne-java8 module</link> or
