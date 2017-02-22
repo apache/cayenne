@@ -290,4 +290,61 @@ public class ObjectSelect_RunIT extends ServerCase {
 		assertNotNull(a);
 		assertEquals("ng1 artist1", a);
 	}
+
+	@Test
+	public void test_ColumnSelect_IterationSingleColumn() throws Exception {
+		ColumnSelect<String> columnSelect = ObjectSelect.query(Artist.class).column(Artist.ARTIST_NAME);
+
+		final int[] count = new int[1];
+		columnSelect.iterate(context, new ResultIteratorCallback<String>() {
+			@Override
+			public void next(String object) {
+				count[0]++;
+				assertTrue(object.startsWith("artist"));
+			}
+		});
+
+		assertEquals(20, count[0]);
+	}
+
+	@Test
+	public void test_ColumnSelect_BatchIterationSingleColumn() throws Exception {
+		ColumnSelect<String> columnSelect = ObjectSelect.query(Artist.class).column(Artist.ARTIST_NAME);
+
+		try(ResultBatchIterator<String> it = columnSelect.batchIterator(context, 10)) {
+			List<String> next = it.next();
+			assertEquals(10, next.size());
+			assertTrue(next.get(0).startsWith("artist"));
+		}
+	}
+
+	@Test
+	public void test_ColumnSelect_IterationMultiColumns() throws Exception {
+		ColumnSelect<Object[]> columnSelect = ObjectSelect.query(Artist.class).columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
+
+		final int[] count = new int[1];
+		columnSelect.iterate(context, new ResultIteratorCallback<Object[]>() {
+			@Override
+			public void next(Object[] object) {
+				count[0]++;
+				assertTrue(object[0] instanceof String);
+				assertTrue(object[1] instanceof java.util.Date);
+			}
+		});
+
+		assertEquals(20, count[0]);
+	}
+
+	@Test
+	public void test_ColumnSelect_BatchIterationMultiColumns() throws Exception {
+		ColumnSelect<Object[]> columnSelect = ObjectSelect.query(Artist.class).columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
+
+		try(ResultBatchIterator<Object[]> it = columnSelect.batchIterator(context, 10)) {
+			List<Object[]> next = it.next();
+			assertEquals(10, next.size());
+			assertTrue(next.get(0)[0] instanceof String);
+			assertTrue(next.get(0)[1] instanceof java.util.Date);
+		}
+	}
+
 }

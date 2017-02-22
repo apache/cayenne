@@ -800,59 +800,35 @@ public class DataContext extends BaseContext {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> ResultIterator<T> iterator(Select<T> query) {
-        final ResultIterator<DataRow> rows = performIteratedQuery(query);
+    public <T> ResultIterator<T> iterator(final Select<T> query) {
+        final ResultIterator<?> rows = performIteratedQuery(query);
+        final QueryMetadata md = query.getMetaData(getEntityResolver());
 
-        QueryMetadata md = query.getMetaData(getEntityResolver());
-        if (md.isFetchingDataRows()) {
+        if (md.isFetchingDataRows() || isObjectArrayResult(md)) {
+            // no need to convert result
             return (ResultIterator<T>) rows;
         } else {
-
             // this is a bit optimized version of 'objectFromDataRow' with
             // resolver cached for reuse... still the rest is pretty suboptimal
-            ClassDescriptor descriptor = md.getClassDescriptor();
-            final ObjectResolver resolver = new ObjectResolver(this, descriptor, true);
-            return new ResultIterator<T>() {
+            final ObjectResolver resolver = new ObjectResolver(this, md.getClassDescriptor(), true);
+            return new DataRowResultIterator(rows, resolver);
+        }
+    }
 
-                @Override
-                public Iterator<T> iterator() {
-                    return new ResultIteratorIterator<T>(this);
-                }
+    /**
+     * This method repeats logic of DataDomainQueryAction.interceptObjectConversion() method.
+     * The difference is that iterator(or batchIterator) doesn't support "mixed" results.
+     */
+    private boolean isObjectArrayResult(QueryMetadata md) {
+        List<Object> resultMapping = md.getResultSetMapping();
+        if(resultMapping == null) {
+            return false;
+        }
 
-                @Override
-                public List<T> allRows() {
-                    List<T> list = new ArrayList<>();
-
-                    while (hasNextRow()) {
-                        list.add(nextRow());
-                    }
-
-                    return list;
-                }
-
-                @Override
-                public boolean hasNextRow() {
-                    return rows.hasNextRow();
-                }
-
-                @Override
-                public T nextRow() {
-                    DataRow row = rows.nextRow();
-                    List<T> objects = (List<T>) resolver
-                            .synchronizedObjectsFromDataRows(Collections.singletonList(row));
-                    return (T) objects.get(0);
-                }
-
-                @Override
-                public void skipRow() {
-                    rows.skipRow();
-                }
-
-                @Override
-                public void close() {
-                    rows.close();
-                }
-            };
+        if (md.isSingleResultSetMapping()) {
+            return !(resultMapping.get(0) instanceof EntityResultSegment);
+        } else {
+            return true;
         }
     }
 
@@ -1142,7 +1118,7 @@ public class DataContext extends BaseContext {
     }
 
     /**
-     * An internal version of {@link #localObject(Object)} that operates on
+     * An internal version of {@link #localObject(Persistent)} that operates on
      * ObjectId instead of Persistent, and wouldn't attempt to look up an object
      * in the parent channel.
      * 
@@ -1216,6 +1192,57 @@ public class DataContext extends BaseContext {
     @Deprecated
     public void setTransactionFactory(TransactionFactory transactionFactory) {
         this.transactionFactory = transactionFactory;
+    }
+
+    /**
+     * ResultIterator that can convert DataRow to Persistent object on the fly.
+     */
+    static class DataRowResultIterator<T> implements ResultIterator<T> {
+
+        final ResultIterator<?> rows;
+        ObjectResolver resolver;
+
+        DataRowResultIterator(ResultIterator<?> rows, ObjectResolver resolver) {
+            this.rows = rows;
+            this.resolver = resolver;
+        }
+
+        @Override
+        public Iterator<T> iterator() {
+            return new ResultIteratorIterator<>(this);
+        }
+
+        @Override
+        public List<T> allRows() {
+            List<T> list = new ArrayList<>();
+            while (hasNextRow()) {
+                list.add(nextRow());
+            }
+            return list;
+        }
+
+        @Override
+        public boolean hasNextRow() {
+            return rows.hasNextRow();
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public T nextRow() {
+            DataRow row = (DataRow) rows.nextRow();
+            List<T> objects = (List<T>) resolver.synchronizedObjectsFromDataRows(Collections.singletonList(row));
+            return objects.get(0);
+        }
+
+        @Override
+        public void skipRow() {
+            rows.skipRow();
+        }
+
+        @Override
+        public void close() {
+            rows.close();
+        }
     }
 
 }
