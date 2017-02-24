@@ -619,4 +619,31 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertEquals(other2, impl2.getOther2());
 	}
 
+	@Test
+	public void testInsertTwoObjectsWithMultipleAttributeAndMultipleRelationship() {
+		IvOther other1 = context.newObject(IvOther.class);
+		other1.setName("other1");
+
+		IvOther other2 = context.newObject(IvOther.class);
+		other2.setName("other2");
+
+		IvImpl impl1 = context.newObject(IvImpl.class);
+		impl1.setName("Impl 1");
+		impl1.setAttr1("attr1");
+		impl1.setAttr2("attr2");
+		impl1.setOther1(other1);
+		impl1.setOther2(other2);
+
+		IvImpl impl2 = context.newObject(IvImpl.class);
+		impl2.setName("Impl 2");
+		impl2.setAttr1("attr1");
+		impl2.setAttr2("attr2");
+		impl2.setOther1(other1);
+		impl2.setOther2(other2);
+
+		context.commitChanges();
+
+		assertEquals(2, ObjectSelect.query(IvImpl.class).selectCount(context));
+	}
+
 }
