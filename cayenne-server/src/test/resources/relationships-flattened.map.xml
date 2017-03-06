@@ -10,6 +10,11 @@
 		<db-attribute name="FT3_FK" type="INTEGER"/>
 		<db-attribute name="PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
+	<db-entity name="COMPLEX_JOIN2">
+		<db-attribute name="FT1_FK" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="FT5_FK" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<db-entity name="FLATTENED_CIRCULAR">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
@@ -36,6 +41,10 @@
 		<db-attribute name="FT4_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
 	</db-entity>
+	<db-entity name="FLATTENED_TEST_5">
+		<db-attribute name="FT5_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
 	<obj-entity name="FlattenedCircular" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedCircular" dbEntityName="FLATTENED_CIRCULAR">
 	</obj-entity>
 	<obj-entity name="FlattenedTest1" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1" dbEntityName="FLATTENED_TEST_1">
@@ -50,11 +59,20 @@
 	<obj-entity name="FlattenedTest4" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedTest4" dbEntityName="FLATTENED_TEST_4">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
+	<obj-entity name="FlattenedTest5" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedTest5" dbEntityName="FLATTENED_TEST_5">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
 	<db-relationship name="toFT1" source="COMPLEX_JOIN" target="FLATTENED_TEST_1" toMany="false">
 		<db-attribute-pair source="FT1_FK" target="FT1_ID"/>
 	</db-relationship>
 	<db-relationship name="toFT3" source="COMPLEX_JOIN" target="FLATTENED_TEST_3" toMany="false">
 		<db-attribute-pair source="FT3_FK" target="FT3_ID"/>
+	</db-relationship>
+	<db-relationship name="toFT1" source="COMPLEX_JOIN2" target="FLATTENED_TEST_1" toMany="false">
+		<db-attribute-pair source="FT1_FK" target="FT1_ID"/>
+	</db-relationship>
+	<db-relationship name="toFT5" source="COMPLEX_JOIN2" target="FLATTENED_TEST_5" toMany="false">
+		<db-attribute-pair source="FT5_FK" target="FT5_ID"/>
 	</db-relationship>
 	<db-relationship name="side1s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="ID" target="SIDE2_ID"/>
@@ -69,6 +87,9 @@
 		<db-attribute-pair source="SIDE2_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="complexJoins" source="FLATTENED_TEST_1" target="COMPLEX_JOIN" toMany="true">
+		<db-attribute-pair source="FT1_ID" target="FT1_FK"/>
+	</db-relationship>
+	<db-relationship name="complexJoins2" source="FLATTENED_TEST_1" target="COMPLEX_JOIN2" toMany="true">
 		<db-attribute-pair source="FT1_ID" target="FT1_FK"/>
 	</db-relationship>
 	<db-relationship name="ft2Array" source="FLATTENED_TEST_1" target="FLATTENED_TEST_2" toMany="true">
@@ -92,16 +113,21 @@
 	<db-relationship name="toFT3" source="FLATTENED_TEST_4" target="FLATTENED_TEST_3" toMany="false">
 		<db-attribute-pair source="FT3_ID" target="FT3_ID"/>
 	</db-relationship>
+	<db-relationship name="complexJoin2" source="FLATTENED_TEST_5" target="COMPLEX_JOIN2" toMany="false">
+		<db-attribute-pair source="FT5_ID" target="FT5_FK"/>
+	</db-relationship>
 	<obj-relationship name="side1s" source="FlattenedCircular" target="FlattenedCircular" db-relationship-path="side1s.side1"/>
 	<obj-relationship name="side2s" source="FlattenedCircular" target="FlattenedCircular" db-relationship-path="side2s.side2"/>
 	<obj-relationship name="ft2Array" source="FlattenedTest1" target="FlattenedTest2" db-relationship-path="ft2Array"/>
 	<obj-relationship name="ft3Array" source="FlattenedTest1" target="FlattenedTest3" db-relationship-path="ft2Array.ft3Array"/>
 	<obj-relationship name="ft3OverComplex" source="FlattenedTest1" target="FlattenedTest3" db-relationship-path="complexJoins.toFT3"/>
 	<obj-relationship name="ft4ArrayFor1" source="FlattenedTest1" target="FlattenedTest4" db-relationship-path="ft2Array.ft3Array.ft4Array"/>
+	<obj-relationship name="ft5Array" source="FlattenedTest1" target="FlattenedTest5" deleteRule="Deny" db-relationship-path="complexJoins2.toFT5"/>
 	<obj-relationship name="ft3Array" source="FlattenedTest2" target="FlattenedTest3" db-relationship-path="ft3Array"/>
 	<obj-relationship name="toFT1" source="FlattenedTest2" target="FlattenedTest1" db-relationship-path="toFT1"/>
 	<obj-relationship name="ft4Array" source="FlattenedTest3" target="FlattenedTest4" db-relationship-path="ft4Array"/>
 	<obj-relationship name="toFT1" source="FlattenedTest3" target="FlattenedTest1" db-relationship-path="toFT2.toFT1"/>
 	<obj-relationship name="toFT2" source="FlattenedTest3" target="FlattenedTest2" db-relationship-path="toFT2"/>
 	<obj-relationship name="toFT3" source="FlattenedTest4" target="FlattenedTest3" db-relationship-path="toFT3"/>
+	<obj-relationship name="toFT1" source="FlattenedTest5" target="FlattenedTest1" deleteRule="Nullify" db-relationship-path="complexJoin2.toFT1"/>
 </data-map>

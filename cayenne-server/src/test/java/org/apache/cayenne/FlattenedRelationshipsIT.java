@@ -23,6 +23,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -31,19 +32,18 @@ import org.apache.cayenne.testdo.relationships_flattened.FlattenedCircular;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest2;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
+import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest5;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.validation.ValidationResult;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Test case for objects with flattened relationships.
@@ -289,6 +289,45 @@ public class FlattenedRelationshipsIT extends ServerCase {
 
         List<FlattenedCircular> side1s = fc1.getSide1s();
         assertTrue(side1s.isEmpty());
+    }
+
+    /**
+     * Should be able to save/insert an object with flattened (complex) toOne relationship
+     * @throws Exception
+     */
+    @Test
+    public void testFlattenedComplexToOneRelationship() throws Exception {
+        FlattenedTest1 ft1 = context.newObject(FlattenedTest1.class);
+        ft1.setName("FT1");
+
+        FlattenedTest5 ft5 = context.newObject(FlattenedTest5.class);
+        ft5.setName("FT5");
+        ft5.setToFT1(ft1);
+
+        context.commitChanges();
+
+        FlattenedTest5 ft5Persisted = ObjectSelect.query(FlattenedTest5.class).selectFirst(context);
+        assertEquals(ft1, ft5Persisted.getToFT1());
+    }
+
+    /**
+     * Should be able to save/insert an object with null flattened (complex) toOne relationship
+     * @throws Exception
+     */
+    @Test
+    public void testNullFlattenedComplexToOneRelationship() throws Exception {
+        FlattenedTest5 ft5 = context.newObject(FlattenedTest5.class);
+        ft5.setName("FT5");
+
+        // should be valid for save
+        ValidationResult validationResult = new ValidationResult();
+        ft5.validateForSave(validationResult);
+
+        assertTrue(validationResult.toString(), validationResult.getFailures().isEmpty());
+
+        context.commitChanges();
+
+        assertEquals(1, ObjectSelect.query(FlattenedTest5.class).selectCount(context));
     }
 
 }
