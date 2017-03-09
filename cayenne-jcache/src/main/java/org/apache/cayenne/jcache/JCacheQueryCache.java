@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.jcache;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import javax.cache.Cache;
-import javax.cache.CacheException;
-import javax.cache.CacheManager;
-
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
@@ -34,6 +26,14 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.cache.Cache;
+import javax.cache.CacheException;
+import javax.cache.CacheManager;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * @since 4.0
@@ -43,10 +43,10 @@ public class JCacheQueryCache implements QueryCache {
     private static final Log LOGGER = LogFactory.getLog(JCacheQueryCache.class);
 
     @Inject
-    private CacheManager cacheManager;
+    protected CacheManager cacheManager;
 
     @Inject
-    private JCacheConfigurationFactory configurationFactory;
+    protected JCacheConfigurationFactory configurationFactory;
 
     private ConcurrentMap<String, Object> seenCacheNames = new ConcurrentHashMap<>();
 
