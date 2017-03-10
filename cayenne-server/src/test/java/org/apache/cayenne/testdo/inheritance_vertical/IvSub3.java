@@ -20,6 +20,7 @@
 package org.apache.cayenne.testdo.inheritance_vertical;
 
 import org.apache.cayenne.testdo.inheritance_vertical.auto._IvSub3;
+import org.apache.cayenne.validation.ValidationException;
 
 public class IvSub3 extends _IvSub3 {
 
@@ -27,5 +28,12 @@ public class IvSub3 extends _IvSub3 {
 
     public void setIvRoot(IvRoot ivRoot) {
         setToOneTarget("ivRoot", ivRoot, true);
+    }
+
+    @Override
+    protected void onPrePersist() {
+        if(getIvRoot() == null) {
+            throw new ValidationException("ivRoot is null");
+        }
     }
 }

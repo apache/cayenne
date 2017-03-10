@@ -663,11 +663,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 			// skip db relationships that we can't validate or that can't be invalid here
 			// can't handle paths longer than two db relationships
 			// see ObjRelationship.recalculateReadOnlyValue() for more info
-			if (dbRels.size() == 1 && relationship.isSourceIndependentFromTargetChange()) {
-				continue;
-			}
-
-			if (dbRels.size() > 1 && (!relationship.isToDependentEntity() || relationship.isReadOnly())) {
+			if (relationship.isSourceIndependentFromTargetChange()) {
 				continue;
 			}
 

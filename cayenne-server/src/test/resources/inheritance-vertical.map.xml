@@ -43,7 +43,7 @@
 		<db-attribute name="ATTR2" type="VARCHAR" isMandatory="true" length="100"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="OTHER1_ID" type="INTEGER" isMandatory="true"/>
-        <db-attribute name="OTHER2_ID" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="OTHER2_ID" type="INTEGER" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="IV_OTHER">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -69,7 +69,6 @@
 	</db-entity>
 	<db-entity name="IV_SUB3">
 		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<!--db-attribute name="SUB3_ATTR" type="INTEGER"/-->
 		<db-attribute name="IV_ROOT_ID" type="INTEGER" isMandatory="true"/>
 	</db-entity>
 	<obj-entity name="Iv1Root" className="org.apache.cayenne.testdo.inheritance_vertical.Iv1Root" dbEntityName="IV1_ROOT">
@@ -131,8 +130,7 @@
 	</obj-entity>
 	<obj-entity name="IvSub3" superEntityName="IvRoot" className="org.apache.cayenne.testdo.inheritance_vertical.IvSub3">
 		<qualifier><![CDATA[discriminator = "IvSub3"]]></qualifier>
-		<!--obj-attribute name="sub3Attr" type="int" db-attribute-path="sub3.SUB3_ATTR"/-->
-		<!--pre-persist method-name="onPrePersist"/-->
+		<pre-persist method-name="onPrePersist"/>
 	</obj-entity>
 	<db-relationship name="sub1" source="IV1_ROOT" target="IV1_SUB1" toDependentPK="true" toMany="false">
 		<db-attribute-pair source="ID" target="ID"/>
@@ -173,8 +171,8 @@
 	<db-relationship name="other1" source="IV_IMPL" target="IV_OTHER" toMany="false">
 		<db-attribute-pair source="OTHER1_ID" target="ID"/>
 	</db-relationship>
-    <db-relationship name="other2" source="IV_IMPL" target="IV_OTHER" toMany="false">
-        <db-attribute-pair source="OTHER2_ID" target="ID"/>
+	<db-relationship name="other2" source="IV_IMPL" target="IV_OTHER" toMany="false">
+		<db-attribute-pair source="OTHER2_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="impls" source="IV_OTHER" target="IV_IMPL" toMany="true">
 		<db-attribute-pair source="ID" target="OTHER_ID"/>
@@ -200,9 +198,6 @@
 	<db-relationship name="master" source="IV_SUB1_SUB1" target="IV_SUB1" toMany="false">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<!--db-relationship name="ivSub3s1" source="IV_SUB2" target="IV_SUB3" toMany="true">
-		<db-attribute-pair source="ID" target="IV_ROOT_ID"/>
-	</db-relationship-->
 	<db-relationship name="master" source="IV_SUB2" target="IV_ROOT" toMany="false">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
@@ -216,5 +211,4 @@
 	<obj-relationship name="other2" source="IvImpl" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other2"/>
 	<obj-relationship name="impls" source="IvOther" target="IvImpl" deleteRule="Deny" db-relationship-path="impls.base"/>
 	<obj-relationship name="ivRoot" source="IvSub3" target="IvRoot" deleteRule="Nullify" db-relationship-path="sub3.ivRoot1"/>
-	<!--obj-relationship name="ivSub3ToRoot" source="IvSub3" target="IvRoot" deleteRule="Nullify" db-relationship-path="sub3"/-->
 </data-map>

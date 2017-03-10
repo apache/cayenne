@@ -23,4 +23,6 @@ public abstract class _IvSub3 extends IvRoot {
     }
 
 
+    protected abstract void onPrePersist();
+
 }
