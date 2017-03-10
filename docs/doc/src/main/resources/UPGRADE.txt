@@ -4,7 +4,19 @@ Apache Cayenne Upgrade Information
 IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
+
+UPGRADING TO 4.0.M6
+
+* Per CAY-2256 Fix for CAY-2146 was reverted, as it appears that we can't reliably deduce whether
+  relationship is optional or not. So in case of mandatory relationships in vertical inheritance
+  you should perform manual validation before insert by using "prePersist" callback in your
+  object (you can create it in the Cayenne Modeler) or by overriding "validateForSave" method.
+
+
 UPGRADING TO 4.0.M5
+
+* Per CAY-2186 DerbyPkGenerator switched from AUTO_PK_TABLE to sequence-based PK generator
+  If you relied in anyway on AUTO_PK_TABLE usage in derby, you should change your code.
 
 * Per CAY-2228 Support for multiple cache groups has been removed from caching and query API
   as none of the modern providers supports it. If you relied on this feature you should
