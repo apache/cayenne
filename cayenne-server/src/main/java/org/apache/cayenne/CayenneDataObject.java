@@ -667,7 +667,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 				continue;
 			}
 
-			if (dbRels.size() > 1 && (relationship.isToMany() || relationship.isReadOnly())) {
+			if (dbRels.size() > 1 && (!relationship.isToDependentEntity() || relationship.isReadOnly())) {
 				continue;
 			}
 
