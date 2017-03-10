@@ -19,7 +19,7 @@
 package org.apache.cayenne.swing.components.textpane.syntax;
 
 
-public class SQLSyntaxConstants implements SyntaxConstant{
+public class SQLSyntaxConstants extends SyntaxConstant{
 
 	private static String[] KEYWORDS = {
 

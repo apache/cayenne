@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.swing.components.textpane.syntax;
 
-public class EJBQLSyntaxConstant implements SyntaxConstant{
+public class EJBQLSyntaxConstant extends SyntaxConstant{
 	private static String[] KEYWORDS = { "AS", "ABS", "ASC", "AVG", "BETWEEN",
 			"BOTH", "BIT_LENGTH", "CHARACTER_LENGTH", "CHAR_LENGTH", "COUNT",
 			"CONCAT", "CURRENT_TIME", "CURRENT_DATE", "CURRENT_TIMESTAMP",
