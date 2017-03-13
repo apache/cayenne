@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.event;
 
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectId;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -33,10 +35,10 @@ public class SnapshotEventTest {
     @Test
     public void testRootEvent() {
         Object source = new Object();
-        Collection<?> deleted = new ArrayList<Object>();
-        Collection<?> invalidated = new ArrayList<Object>();
-        Map<?, ?> modified = new HashMap<Object, Object>();
-        Collection<?> related = new ArrayList<Object>();
+        Collection<ObjectId> deleted = new ArrayList<>();
+        Collection<ObjectId> invalidated = new ArrayList<>();
+        Map<ObjectId, DataRow> modified = new HashMap<>();
+        Collection<ObjectId> related = new ArrayList<>();
 
         SnapshotEvent event = new SnapshotEvent(
                 source,

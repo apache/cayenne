@@ -209,7 +209,7 @@ class HierarchicalObjectResolver {
 
             PrefetchTreeNode jointSubtree = node.cloneJointSubtree();
 
-            List dataRows = new ArrayList();
+            List<DataRow> dataRows = new ArrayList<>();
             for (PrefetchSelectQuery query : queries) {
                 // need to pass the remaining tree to make joint prefetches work
                 if (jointSubtree.hasChildren()) {
@@ -223,7 +223,7 @@ class HierarchicalObjectResolver {
                     query.addResultPath("db:"
                             + relationship.getReverseDbRelationshipPath());
                 }
-                dataRows.addAll(context.performQuery(query));
+                dataRows.addAll((List<DataRow>)context.performQuery(query));
             }
             processorNode.setDataRows(dataRows);
 
@@ -280,16 +280,16 @@ class HierarchicalObjectResolver {
                     return false;
                 }
 
-                List parentObjects = parent.getObjects();
+                List<Persistent> parentObjects = parent.getObjects();
                 int size = parentRows.size();
 
                 for (int i = 0; i < size; i++) {
                     subprocessor.setCurrentFlatRow((DataRow) parentRows.get(i));
-                    parent.setLastResolved((Persistent) parentObjects.get(i));
+                    parent.setLastResolved(parentObjects.get(i));
                     processorNode.traverse(subprocessor);
                 }
 
-                List objects = processorNode.getObjects();
+                List<Persistent> objects = processorNode.getObjects();
 
                 cache.snapshotsUpdatedForObjects(
                         objects,

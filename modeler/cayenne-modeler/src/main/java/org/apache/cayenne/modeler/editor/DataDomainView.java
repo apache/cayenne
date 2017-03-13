@@ -52,6 +52,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
 
     protected TextAdapter name;
     protected JCheckBox objectValidation;
+    protected JCheckBox sharedCache;
 
     public DataDomainView(ProjectController projectController) {
         this.projectController = projectController;
@@ -74,6 +75,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         };
 
         this.objectValidation = new JCheckBox();
+        this.sharedCache = new JCheckBox();
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -91,6 +93,9 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         builder.addLabel("Object Validation:", cc.xy(1, 5));
         builder.add(objectValidation, cc.xy(3, 5));
 
+        builder.addLabel("Use Shared Cache:", cc.xy(1, 7));
+        builder.add(sharedCache, cc.xy(3, 7));
+
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }
@@ -107,6 +112,17 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
                         DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
                         value,
                         Boolean.toString(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_DEFAULT));
+            }
+        });
+
+        sharedCache.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                String value = sharedCache.isSelected() ? "true" : "false";
+                setDomainProperty(
+                        DataDomain.SHARED_CACHE_ENABLED_PROPERTY,
+                        value,
+                        Boolean.toString(DataDomain.SHARED_CACHE_ENABLED_DEFAULT));
             }
         });
 
@@ -180,6 +196,10 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         objectValidation.setSelected(getDomainBooleanProperty(
                 DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
                 Boolean.toString(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_DEFAULT)));
+
+        sharedCache.setSelected(getDomainBooleanProperty(
+                DataDomain.SHARED_CACHE_ENABLED_PROPERTY,
+                Boolean.toString(DataDomain.SHARED_CACHE_ENABLED_DEFAULT)));
     }
 
     void setDomainName(String newName) {

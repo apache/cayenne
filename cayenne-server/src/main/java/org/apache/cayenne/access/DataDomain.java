@@ -94,7 +94,6 @@ public class DataDomain implements QueryEngine, DataChannel {
 	/**
      * @since 4.0
      */
-    @Inject
     protected DataRowStoreFactory dataRowStoreFactory;
 
     /**
@@ -651,6 +650,20 @@ public class DataDomain implements QueryEngine, DataChannel {
 
 	public void setQueryCache(QueryCache queryCache) {
 		this.queryCache = queryCache;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	public DataRowStoreFactory getDataRowStoreFactory() {
+		return dataRowStoreFactory;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	public void setDataRowStoreFactory(DataRowStoreFactory dataRowStoreFactory) {
+		this.dataRowStoreFactory = dataRowStoreFactory;
 	}
 
 	/**

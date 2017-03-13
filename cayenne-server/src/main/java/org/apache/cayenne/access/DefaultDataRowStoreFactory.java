@@ -23,9 +23,9 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.event.NoopEventBridge;
 
 import java.util.Map;
 
@@ -36,30 +36,39 @@ import java.util.Map;
  */
 public class DefaultDataRowStoreFactory implements DataRowStoreFactory {
 
-    @Inject
-    protected Injector injector;
+    EventBridge eventBridge;
 
-    @Inject
-    protected EventManager eventManager;
+    EventManager eventManager;
 
-    @Inject(Constants.DATA_ROW_STORE_PROPERTIES_MAP)
     Map<String, String> properties;
+
+    boolean isNoopEventBridge;
+
+    public DefaultDataRowStoreFactory(@Inject EventBridge eventBridge,
+                                      @Inject EventManager eventManager,
+                                      @Inject(Constants.DATA_ROW_STORE_PROPERTIES_MAP) Map<String, String> properties) {
+        this.eventBridge = eventBridge;
+        this.eventManager = eventManager;
+        this.properties = properties;
+        isNoopEventBridge = eventBridge instanceof NoopEventBridge;
+    }
 
     @Override
     public DataRowStore createDataRowStore(String name) throws DIRuntimeException {
-        DataRowStore store = new DataRowStore(
-                name,
-                properties,
-                eventManager);
+        DataRowStore store = new DataRowStore(name, properties, eventManager);
+        setUpEventBridge(store);
+        return store;
+    }
 
+    private void setUpEventBridge(DataRowStore store) {
+        if(isNoopEventBridge) {
+            return;
+        }
         try {
-            store.setEventBridge(injector.getInstance(EventBridge.class));
+            store.setEventBridge(eventBridge);
             store.startListeners();
         } catch (Exception ex) {
             throw new CayenneRuntimeException("Error initializing DataRowStore.", ex);
         }
-
-        return store;
     }
-
 }

@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.event.CayenneEvent;
 
 /**
@@ -33,14 +35,14 @@ import org.apache.cayenne.event.CayenneEvent;
 public class SnapshotEvent extends CayenneEvent {
 
     protected long timestamp;
-    protected Collection deletedIds;
-    protected Collection invalidatedIds;
-    protected Map modifiedDiffs;
-    protected Collection indirectlyModifiedIds;
+    protected Collection<ObjectId> deletedIds;
+    protected Collection<ObjectId> invalidatedIds;
+    protected Map<ObjectId, DataRow> modifiedDiffs;
+    protected Collection<ObjectId> indirectlyModifiedIds;
 
-    public SnapshotEvent(Object source, Object postedBy, Map modifiedDiffs,
-            Collection deletedIds, Collection invalidatedIds,
-            Collection indirectlyModifiedIds) {
+    public SnapshotEvent(Object source, Object postedBy, Map<ObjectId, DataRow> modifiedDiffs,
+            Collection<ObjectId> deletedIds, Collection<ObjectId> invalidatedIds,
+            Collection<ObjectId> indirectlyModifiedIds) {
 
         super(source, postedBy, null);
 
@@ -55,22 +57,22 @@ public class SnapshotEvent extends CayenneEvent {
         return timestamp;
     }
 
-    public Map getModifiedDiffs() {
-        return (modifiedDiffs != null) ? modifiedDiffs : Collections.EMPTY_MAP;
+    public Map<ObjectId, DataRow> getModifiedDiffs() {
+        return (modifiedDiffs != null) ? modifiedDiffs : Collections.<ObjectId, DataRow>emptyMap();
     }
 
-    public Collection getDeletedIds() {
-        return (deletedIds != null) ? deletedIds : Collections.EMPTY_LIST;
+    public Collection<ObjectId> getDeletedIds() {
+        return (deletedIds != null) ? deletedIds : Collections.<ObjectId>emptyList();
     }
 
-    public Collection getInvalidatedIds() {
-        return (invalidatedIds != null) ? invalidatedIds : Collections.EMPTY_LIST;
+    public Collection<ObjectId> getInvalidatedIds() {
+        return (invalidatedIds != null) ? invalidatedIds : Collections.<ObjectId>emptyList();
     }
 
-    public Collection getIndirectlyModifiedIds() {
+    public Collection<ObjectId> getIndirectlyModifiedIds() {
         return (indirectlyModifiedIds != null)
                 ? indirectlyModifiedIds
-                : Collections.EMPTY_LIST;
+                : Collections.<ObjectId>emptyList();
     }
 
     @Override
@@ -78,22 +80,22 @@ public class SnapshotEvent extends CayenneEvent {
         StringBuilder buffer = new StringBuilder();
         buffer.append("[SnapshotEvent] source: ").append(getSource());
 
-        Map modified = getModifiedDiffs();
+        Map<ObjectId, DataRow> modified = getModifiedDiffs();
         if (!modified.isEmpty()) {
             buffer.append(", modified ").append(modified.size()).append(" id(s)");
         }
 
-        Collection deleted = getDeletedIds();
+        Collection<ObjectId> deleted = getDeletedIds();
         if (!deleted.isEmpty()) {
             buffer.append(", deleted ").append(deleted.size()).append(" id(s)");
         }
 
-        Collection invalidated = getInvalidatedIds();
+        Collection<ObjectId> invalidated = getInvalidatedIds();
         if (!invalidated.isEmpty()) {
             buffer.append(", invalidated ").append(invalidated.size()).append(" id(s)");
         }
 
-        Collection related = getIndirectlyModifiedIds();
+        Collection<ObjectId> related = getIndirectlyModifiedIds();
         if (!related.isEmpty()) {
             buffer.append(", indirectly modified ").append(related.size()).append(
                     " id(s)");

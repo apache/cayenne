@@ -39,7 +39,7 @@ public class JavaGroupsBridgeProvider implements Provider<EventBridge> {
 
     @Override
     public EventBridge get() throws DIRuntimeException {
-        EventSubject snapshotEventSubject = EventSubject.getSubject(DataRowStore.class, dataDomain.getName());;
+        EventSubject snapshotEventSubject = EventSubject.getSubject(DataRowStore.class, dataDomain.getName());
 
         return new JavaGroupsBridge(
                 Collections.singleton(snapshotEventSubject),

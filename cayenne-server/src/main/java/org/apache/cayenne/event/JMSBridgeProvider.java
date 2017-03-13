@@ -39,7 +39,7 @@ public class JMSBridgeProvider implements Provider<EventBridge> {
 
     @Override
     public EventBridge get() throws DIRuntimeException {
-        EventSubject snapshotEventSubject = EventSubject.getSubject(DataRowStore.class, dataDomain.getName());;
+        EventSubject snapshotEventSubject = EventSubject.getSubject(DataRowStore.class, dataDomain.getName());
 
         return new JMSBridge(
                 Collections.singleton(snapshotEventSubject),

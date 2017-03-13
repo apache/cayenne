@@ -19,32 +19,25 @@
 
 package org.apache.cayenne.event;
 
-import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStore;
-import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.di.DIRuntimeException;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
 
-import java.util.Collections;
-import java.util.Map;
-
-public class XMPPBridgeProvider implements Provider<EventBridge> {
-
-    @Inject
-    protected DataDomain dataDomain;
-
-    @Inject(Constants.XMPP_BRIDGE_PROPERTIES_MAP)
-    Map<String, String> properties;
-
-    @Override
-    public EventBridge get() throws DIRuntimeException {
-        EventSubject snapshotEventSubject = EventSubject.getSubject(DataRowStore.class.getClass(), dataDomain.getName());
-
-        return new XMPPBridge(
-                Collections.singleton(snapshotEventSubject),
-                EventBridge.convertToExternalSubject(snapshotEventSubject),
-                properties);
+/**
+ * @since 4.0
+ */
+public class NoopEventBridge extends EventBridge {
+    NoopEventBridge() {
+        super(EventSubject.getSubject(DataRowStore.class, "noop-subject"), "noop-subject");
     }
 
+    @Override
+    protected void startupExternal() throws Exception {
+    }
+
+    @Override
+    protected void shutdownExternal() throws Exception {
+    }
+
+    @Override
+    protected void sendExternalEvent(CayenneEvent localEvent) throws Exception {
+    }
 }

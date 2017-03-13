@@ -29,7 +29,7 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventBridge;
-import org.apache.cayenne.event.EventBridgeProvider;
+import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventBridge;
 import org.apache.cayenne.event.MockEventBridgeProvider;
@@ -76,7 +76,7 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
                 binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(EventBridge.class).toProvider(EventBridgeProvider.class);
+                binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
                 binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
                 binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP)
                         .put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, String.valueOf(CACHE_SIZE))

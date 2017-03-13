@@ -37,13 +37,13 @@ import org.apache.cayenne.util.ToStringBuilder;
  */
 class PrefetchProcessorNode extends PrefetchTreeNode {
 
-    List dataRows;
+    List<DataRow> dataRows;
     List<Persistent> objects;
 
     ArcProperty incoming;
     ObjectResolver resolver;
 
-    Map partitionByParent;
+    Map<Persistent, List<Persistent>> partitionByParent;
     boolean jointChildren;
 
     private Persistent lastResolved;
@@ -58,9 +58,8 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
      * all properties are initialized.
      */
     void afterInit() {
-
         if (isPartitionedByParent()) {
-            partitionByParent = new HashMap();
+            partitionByParent = new HashMap<>();
         }
     }
 
@@ -76,21 +75,18 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
             // away.... write directly to prevent changing persistence state.
             if (incoming instanceof ToOneProperty) {
                 incoming.writePropertyDirectly(parent, null, object);
-            }
-            else {
-
-                List peers = (List) partitionByParent.get(parent);
+            } else {
+                List<Persistent> peers = partitionByParent.get(parent);
 
                 // wrap in a list even if relationship is to-one... will unwrap at the end
                 // of the processing cycle.
                 if (peers == null) {
-                    peers = new ArrayList();
+                    peers = new ArrayList<>();
                     partitionByParent.put(parent, peers);
-                }
-                // checking for duplicates is needed in case of nested joint prefetches
-                // when there is more than one row with the same combination of adjacent
-                // parent and child...
-                else if (peers.contains(object)) {
+                } else if (peers.contains(object)) {
+                    // checking for duplicates is needed in case of nested joint prefetches
+                    // when there is more than one row with the same combination of adjacent
+                    // parent and child...
                     return;
                 }
 
@@ -108,17 +104,14 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
             // use different strategy
 
             PrefetchProcessorNode parent = (PrefetchProcessorNode) getParent();
-            boolean parentObjectsExist = parent.getObjects() != null
-                    && parent.getObjects().size() > 0;
+            boolean parentObjectsExist = parent.getObjects() != null && parent.getObjects().size() > 0;
             if (incoming.getRelationship().isToMany()) {
                 if (parentObjectsExist) {
                     connectToNodeParents(parent.getObjects());
-                }
-                else {
+                } else {
                     connectToFaultedParents();
                 }
-            }
-            else {
+            } else {
                 // optional to-one ... need to fill in unresolved relationships with
                 // null...
                 if (parentObjectsExist) {
@@ -128,49 +121,40 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
         }
     }
 
-    private void clearNullRelationships(List parentObjects) {
-        for (Object object : parentObjects) {
+    private void clearNullRelationships(List<Persistent> parentObjects) {
+        for (Persistent object : parentObjects) {
             if (incoming.readPropertyDirectly(object) instanceof Fault) {
                 incoming.writePropertyDirectly(object, null, null);
             }
         }
     }
 
-    private void connectToNodeParents(List parentObjects) {
-
-        for (Object parentObject : parentObjects) {
-            Persistent object = (Persistent) parentObject;
-            List related = (List) partitionByParent.get(object);
-            connect(object, related);
+    private void connectToNodeParents(List<Persistent> parentObjects) {
+        for (Persistent parentObject : parentObjects) {
+            connect(parentObject, partitionByParent.get(parentObject));
         }
     }
 
     private void connectToFaultedParents() {
-        for (Object o : partitionByParent.entrySet()) {
-            Map.Entry entry = (Map.Entry) o;
-
-            Persistent object = (Persistent) entry.getKey();
-            List related = (List) entry.getValue();
-            connect(object, related);
+        for (Map.Entry<Persistent, List<Persistent>> entry : partitionByParent.entrySet()) {
+            connect(entry.getKey(), entry.getValue());
         }
     }
 
-    private void connect(Persistent object, List related) {
+    private void connect(Persistent object, List<Persistent> related) {
         if (incoming.getRelationship().isToMany()) {
             ValueHolder toManyList = (ValueHolder) incoming.readProperty(object);
 
             // TODO, Andrus 11/15/2005 - if list is modified, shouldn't we attempt to
             // merge the changes instead of overwriting?
             toManyList.setValueDirectly(related != null ? related : new ArrayList(1));
-        }
-        else {
+        } else {
             // this should've been handled elsewhere
-            throw new CayenneRuntimeException(
-                    "To-one relationship wasn't handled properly: " + incoming.getName());
+            throw new CayenneRuntimeException("To-one relationship wasn't handled properly: %s", incoming.getName());
         }
     }
 
-    List getDataRows() {
+    List<DataRow> getDataRows() {
         return dataRows;
     }
 
@@ -194,7 +178,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
         this.incoming = incoming;
     }
 
-    void setDataRows(List dataRows) {
+    void setDataRows(List<DataRow> dataRows) {
         this.dataRows = dataRows;
     }
 

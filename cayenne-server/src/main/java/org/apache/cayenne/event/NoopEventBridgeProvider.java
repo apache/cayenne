@@ -19,42 +19,17 @@
 
 package org.apache.cayenne.event;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataRowStore;
 import org.apache.cayenne.di.DIRuntimeException;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 
-import java.util.Collections;
-
-public class EventBridgeProvider implements Provider<EventBridge> {
-
-    @Inject
-    protected DataDomain dataDomain;
+/**
+ * @since 4.0
+ */
+public class NoopEventBridgeProvider implements Provider<EventBridge> {
 
     @Override
     public EventBridge get() throws DIRuntimeException {
-        EventSubject snapshotEventSubject = EventSubject.getSubject(DataRowStore.class.getClass(), dataDomain.getName());
-
-        return new EventBridge(
-                Collections.singleton(snapshotEventSubject),
-                EventBridge.convertToExternalSubject(snapshotEventSubject)) {
-
-            @Override
-            protected void startupExternal() throws Exception {
-
-            }
-
-            @Override
-            protected void shutdownExternal() throws Exception {
-
-            }
-
-            @Override
-            protected void sendExternalEvent(CayenneEvent localEvent) throws Exception {
-
-            }
-        };
+        return new NoopEventBridge();
     }
 
 }

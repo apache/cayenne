@@ -43,6 +43,8 @@ import org.apache.cayenne.access.types.CalendarType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.DateType;
 import org.apache.cayenne.access.types.DoubleType;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.FloatType;
 import org.apache.cayenne.access.types.IntegerType;
 import org.apache.cayenne.access.types.LongType;
@@ -88,11 +90,12 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.ListBuilder;
+import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.event.DefaultEventManager;
-import org.apache.cayenne.event.EventBridgeProvider;
+import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
@@ -294,7 +297,10 @@ public class ServerModule implements Module {
 
         binder.bind(QueryCache.class).toProvider(MapQueryCacheProvider.class);
 
-        binder.bind(EventBridge.class).toProvider(EventBridgeProvider.class);binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
+        binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
+
+        binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
+
         binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP);
 
 		// a service to provide the main stack DataDomain
