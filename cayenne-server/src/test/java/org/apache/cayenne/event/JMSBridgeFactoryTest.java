@@ -27,46 +27,51 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class XMPPBridgeFactoryTest {
+public class JMSBridgeFactoryTest {
 
     protected Collection<EventSubject> subjects = Collections.singleton(new EventSubject("test"));
     protected String externalSubject = "subject";
 
     @Test
-    public void testCreateEventBridge() {
-        EventBridge bridge = new XMPPBridgeFactory().createEventBridge(
+    public void testCreateEventBridge() throws Exception {
+        EventBridge bridge = new JMSBridgeFactory().createEventBridge(
                 subjects,
                 externalSubject,
                 Collections.EMPTY_MAP);
 
-        assertTrue(bridge instanceof XMPPBridge);
+        assertNotNull(bridge);
+        assertTrue(bridge instanceof JMSBridge);
         assertEquals(subjects, bridge.getLocalSubjects());
         assertEquals(externalSubject, bridge.getExternalSubject());
     }
 
     @Test
-    public void testUseMapPropertiesSetter() throws Exception {
-        XMPPBridgeFactory bridgeFactory = new XMPPBridgeFactory();
+    public void testUseProperties() throws Exception {
+        JMSBridgeFactory bridgeFactory = new JMSBridgeFactory();
+
         Map<String, String> properties = new HashMap<String, String>();
+        properties.put(JMSBridge.TOPIC_CONNECTION_FACTORY_PROPERTY, JMSBridgeProviderTest.TOPIC_CONNECTION_FACTORY_TEST);
 
-        properties.put(XMPPBridge.XMPP_HOST_PROPERTY, XMPPBridgeProviderTest.HOST_TEST);
-        properties.put(XMPPBridge.XMPP_CHAT_SERVICE_PROPERTY, XMPPBridgeProviderTest.CHAT_SERVICE_TEST);
-        properties.put(XMPPBridge.XMPP_LOGIN_PROPERTY, XMPPBridgeProviderTest.LOGIN_TEST);
-        properties.put(XMPPBridge.XMPP_PASSWORD_PROPERTY, XMPPBridgeProviderTest.PASSWORD_TEST);
-        properties.put(XMPPBridge.XMPP_SECURE_CONNECTION_PROPERTY, String.valueOf(XMPPBridgeProviderTest.SECURE_CONNECTION_TEST));
-        properties.put(XMPPBridge.XMPP_PORT_PROPERTY, String.valueOf(XMPPBridgeProviderTest.PORT_TEST));
-
-        XMPPBridge bridge = (XMPPBridge) bridgeFactory.createEventBridge(subjects,
+        JMSBridge bridge = (JMSBridge) bridgeFactory.createEventBridge(
+                subjects,
                 externalSubject,
                 properties);
 
-        assertEquals(bridge.getXmppHost(), XMPPBridgeProviderTest.HOST_TEST);
-        assertEquals(bridge.getChatService(), XMPPBridgeProviderTest.CHAT_SERVICE_TEST);
-        assertEquals(bridge.getLoginId(), XMPPBridgeProviderTest.LOGIN_TEST);
-        assertEquals(bridge.getPassword(), XMPPBridgeProviderTest.PASSWORD_TEST);
-        assertEquals(bridge.getXmppPort(), XMPPBridgeProviderTest.PORT_TEST);
-        assertEquals(bridge.isSecureConnection(), XMPPBridgeProviderTest.SECURE_CONNECTION_TEST);
+        assertEquals(bridge.getTopicConnectionFactoryName(), JMSBridgeProviderTest.TOPIC_CONNECTION_FACTORY_TEST);
     }
+
+    @Test
+    public void testUseDefaultProperties() throws Exception {
+        JMSBridgeFactory bridgeFactory = new JMSBridgeFactory();
+        JMSBridge bridge = (JMSBridge) bridgeFactory.createEventBridge(
+                subjects,
+                externalSubject,
+                Collections.EMPTY_MAP);
+
+        assertEquals(bridge.getTopicConnectionFactoryName(), JMSBridge.TOPIC_CONNECTION_FACTORY_DEFAULT);
+    }
+
 }

@@ -19,41 +19,20 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.event.MockEventManager;
-
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * A "lightweight" DataRowStore.
+ * A factory for creating {@link DataRowStore}
+ *
+ * @since 4.0
  */
-public class MockDataRowStore extends DataRowStore {
-
-    private static final Map TEST_DEFAULTS = new HashMap();
-
-    static {
-        TEST_DEFAULTS.put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, new Integer(10));
-    }
-
-    public MockDataRowStore() {
-        super("mock DataRowStore", TEST_DEFAULTS, new MockEventManager());
-    }
+public interface DataRowStoreFactory {
 
     /**
-     * A backdoor to add test snapshots.
+     * Create new {@link DataRowStore} object.
+     *
+     * @since 4.0
+     * @param name DataRowStore name. Used to identify this DataRowStore in events, etc.
+     *             Can't be null.
      */
-    public void putSnapshot(ObjectId id, DataRow snapshot) {
-        snapshots.put(id, snapshot);
-    }
-
-    public void putSnapshot(ObjectId id, Map snapshot) {
-        snapshots.put(id, new DataRow(snapshot));
-    }
-
-    public void putEmptySnapshot(ObjectId id) {
-        snapshots.put(id, new DataRow(2));
-    }
+    DataRowStore createDataRowStore(String name);
 
 }

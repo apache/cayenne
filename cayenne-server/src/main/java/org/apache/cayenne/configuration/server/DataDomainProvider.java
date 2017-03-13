@@ -23,6 +23,7 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.DataRowStoreFactory;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ConfigurationTree;
@@ -113,6 +114,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 		dataDomain.setQueryCache(new NestedQueryCache(queryCache));
 		dataDomain.setEntitySorter(injector.getInstance(EntitySorter.class));
 		dataDomain.setEventManager(injector.getInstance(EventManager.class));
+		dataDomain.setDataRowStoreFactory(injector.getInstance(DataRowStoreFactory.class));
 
 		dataDomain.initWithProperties(descriptor.getProperties());
 

@@ -264,4 +264,36 @@ public interface Constants {
     @Deprecated
     public static final String ROP_CONTEXT_LIFECYCLE_EVENTS_PROPERTY = "cayenne.rop.context_lifecycle_events";
 
+    /**
+     * A DI container key for the Map&lt;String, String&gt; storing
+     * {@link org.apache.cayenne.access.DataRowStore} properties
+     *
+     * @since 4.0
+     */
+    public static final String DATA_ROW_STORE_PROPERTIES_MAP = "cayenne.server.data_row_store";
+
+    /**
+     * A DI container key for the Map&lt;String, String&gt; storing
+     * {@link org.apache.cayenne.event.JMSBridge} properties
+     *
+     * @since 4.0
+     */
+    public static final String JMS_BRIDGE_PROPERTIES_MAP = "cayenne.server.jms_bridge";
+
+    /**
+     * A DI container key for the Map&lt;String, String&gt; storing
+     * {@link org.apache.cayenne.event.JavaGroupsBridge} properties
+     *
+     * @since 4.0
+     */
+    public static final String JAVA_GROUPS_BRIDGE_PROPERTIES_MAP = "cayenne.server.java_group_bridge";
+
+    /**
+     * A DI container key for the Map&lt;String, String&gt; storing
+     * {@link org.apache.cayenne.event.XMPPBridge} properties
+     *
+     * @since 4.0
+     */
+    public static final String XMPP_BRIDGE_PROPERTIES_MAP = "cayenne.server.xmpp_bridge";
+
 }

@@ -17,43 +17,27 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access;
+package org.apache.cayenne.event;
 
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.event.MockEventManager;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.cayenne.access.DataRowStore;
 
 /**
- * A "lightweight" DataRowStore.
+ * @since 4.0
  */
-public class MockDataRowStore extends DataRowStore {
-
-    private static final Map TEST_DEFAULTS = new HashMap();
-
-    static {
-        TEST_DEFAULTS.put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, new Integer(10));
+public class NoopEventBridge extends EventBridge {
+    NoopEventBridge() {
+        super(EventSubject.getSubject(DataRowStore.class, "noop-subject"), "noop-subject");
     }
 
-    public MockDataRowStore() {
-        super("mock DataRowStore", TEST_DEFAULTS, new MockEventManager());
+    @Override
+    protected void startupExternal() throws Exception {
     }
 
-    /**
-     * A backdoor to add test snapshots.
-     */
-    public void putSnapshot(ObjectId id, DataRow snapshot) {
-        snapshots.put(id, snapshot);
+    @Override
+    protected void shutdownExternal() throws Exception {
     }
 
-    public void putSnapshot(ObjectId id, Map snapshot) {
-        snapshots.put(id, new DataRow(snapshot));
+    @Override
+    protected void sendExternalEvent(CayenneEvent localEvent) throws Exception {
     }
-
-    public void putEmptySnapshot(ObjectId id) {
-        snapshots.put(id, new DataRow(2));
-    }
-
 }

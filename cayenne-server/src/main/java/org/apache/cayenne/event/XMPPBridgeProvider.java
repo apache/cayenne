@@ -19,28 +19,32 @@
 
 package org.apache.cayenne.event;
 
-import org.junit.Test;
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.DataRowStore;
+import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.di.DIRuntimeException;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
-import static org.junit.Assert.*;
+public class XMPPBridgeProvider implements Provider<EventBridge> {
 
-/**
- */
-public class JGroupsBridgeFactoryTest {
+    @Inject
+    protected DataDomain dataDomain;
 
-    @Test
-    public void testCreateEventBridge() throws Exception {
-        Collection subjects = Collections.singleton(new EventSubject("test"));
-        EventBridge bridge = new JavaGroupsBridgeFactory().createEventBridge(
-                subjects,
-                "abcd",
-                Collections.EMPTY_MAP);
+    @Inject(Constants.XMPP_BRIDGE_PROPERTIES_MAP)
+    Map<String, String> properties;
 
-        assertNotNull(bridge);
-        assertTrue(bridge instanceof JavaGroupsBridge);
-        assertEquals(subjects, bridge.getLocalSubjects());
-        assertEquals("abcd", bridge.getExternalSubject());
+    @Override
+    public EventBridge get() throws DIRuntimeException {
+        EventSubject snapshotEventSubject = EventSubject.getSubject(DataRowStore.class.getClass(), dataDomain.getName());
+
+        return new XMPPBridge(
+                Collections.singleton(snapshotEventSubject),
+                EventBridge.convertToExternalSubject(snapshotEventSubject),
+                properties);
     }
+
 }

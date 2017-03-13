@@ -19,24 +19,14 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Map;
-import java.util.prefs.Preferences;
-
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataRowStore;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DomainEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.datadomain.CacheSyncConfigController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.DomainDisplayListener;
 import org.apache.cayenne.modeler.util.TextAdapter;
@@ -44,9 +34,14 @@ import org.apache.cayenne.pref.RenamedPreferences;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Map;
+import java.util.prefs.Preferences;
 
 /**
  * Panel for editing DataDomain.
@@ -56,11 +51,8 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
     protected ProjectController projectController;
 
     protected TextAdapter name;
-    protected TextAdapter cacheSize;
     protected JCheckBox objectValidation;
     protected JCheckBox sharedCache;
-    protected JCheckBox remoteUpdates;
-    protected JButton configRemoteUpdates;
 
     public DataDomainView(ProjectController projectController) {
         this.projectController = projectController;
@@ -82,18 +74,8 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
             }
         };
 
-        this.cacheSize = new TextAdapter(new JTextField(10)) {
-
-            protected void updateModel(String text) {
-                setCacheSize(text);
-            }
-        };
-
         this.objectValidation = new JCheckBox();
         this.sharedCache = new JCheckBox();
-        this.remoteUpdates = new JCheckBox();
-        this.configRemoteUpdates = new JButton("Configure...");
-        configRemoteUpdates.setEnabled(false);
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -111,17 +93,8 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         builder.addLabel("Object Validation:", cc.xy(1, 5));
         builder.add(objectValidation, cc.xy(3, 5));
 
-        builder.addSeparator("Cache Configuration", cc.xywh(1, 7, 7, 1));
-
-        builder.addLabel("Size of Object Cache:", cc.xy(1, 9));
-        builder.add(cacheSize.getComponent(), cc.xy(3, 9));
-
-        builder.addLabel("Use Shared Cache:", cc.xy(1, 11));
-        builder.add(sharedCache, cc.xy(3, 11));
-
-        builder.addLabel("Remote Change Notifications:", cc.xy(1, 13));
-        builder.add(remoteUpdates, cc.xy(3, 13));
-        builder.add(configRemoteUpdates, cc.xy(7, 13));
+        builder.addLabel("Use Shared Cache:", cc.xy(1, 7));
+        builder.add(sharedCache, cc.xy(3, 7));
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);
@@ -150,47 +123,9 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
                         DataDomain.SHARED_CACHE_ENABLED_PROPERTY,
                         value,
                         Boolean.toString(DataDomain.SHARED_CACHE_ENABLED_DEFAULT));
-
-                // turning off shared cache should result in disabling remote events
-
-                remoteUpdates.setEnabled(sharedCache.isSelected());
-
-                if (!sharedCache.isSelected()) {
-                    // uncheck remote updates...
-                    remoteUpdates.setSelected(false);
-
-                    setDomainProperty(
-                            DataRowStore.REMOTE_NOTIFICATION_PROPERTY,
-                            "false",
-                            Boolean.toString(DataRowStore.REMOTE_NOTIFICATION_DEFAULT));
-                }
-
-                // depending on final remote updates status change button status
-                configRemoteUpdates.setEnabled(remoteUpdates.isSelected());
             }
         });
 
-        remoteUpdates.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                String value = remoteUpdates.isSelected() ? "true" : "false";
-
-                // update config button state
-                configRemoteUpdates.setEnabled(remoteUpdates.isSelected());
-
-                setDomainProperty(
-                        DataRowStore.REMOTE_NOTIFICATION_PROPERTY,
-                        value,
-                        Boolean.toString(DataRowStore.REMOTE_NOTIFICATION_DEFAULT));
-            }
-        });
-
-        configRemoteUpdates.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                new CacheSyncConfigController(projectController).startup();
-            }
-        });
     }
 
     /**
@@ -258,10 +193,6 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         // extract values from the new domain object
         name.setText(domain.getName());
 
-        cacheSize.setText(getDomainProperty(
-                DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY,
-                Integer.toString(DataRowStore.SNAPSHOT_CACHE_SIZE_DEFAULT)));
-
         objectValidation.setSelected(getDomainBooleanProperty(
                 DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
                 Boolean.toString(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_DEFAULT)));
@@ -269,13 +200,6 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         sharedCache.setSelected(getDomainBooleanProperty(
                 DataDomain.SHARED_CACHE_ENABLED_PROPERTY,
                 Boolean.toString(DataDomain.SHARED_CACHE_ENABLED_DEFAULT)));
-
-        remoteUpdates.setSelected(getDomainBooleanProperty(
-                DataRowStore.REMOTE_NOTIFICATION_PROPERTY,
-                Boolean.toString(DataRowStore.REMOTE_NOTIFICATION_DEFAULT)));
-        remoteUpdates.setEnabled(sharedCache.isSelected());
-        configRemoteUpdates.setEnabled(remoteUpdates.isEnabled()
-                && remoteUpdates.isSelected());
     }
 
     void setDomainName(String newName) {
@@ -303,19 +227,5 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
 
         RenamedPreferences.copyPreferences(newName, prefs);
         projectController.fireDomainEvent(e);
-    }
-
-    void setCacheSize(String text) {
-        if (text.length() > 0) {
-            try {
-                Integer.parseInt(text);
-            }
-            catch (NumberFormatException ex) {
-                throw new ValidationException("Cache size must be an integer: " + text);
-            }
-        }
-
-        setDomainProperty(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, text, Integer
-                .toString(DataRowStore.SNAPSHOT_CACHE_SIZE_DEFAULT));
     }
 }

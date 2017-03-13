@@ -19,14 +19,15 @@
 
 package org.apache.cayenne.event;
 
-import java.io.Serializable;
-import java.util.Collection;
-
 import org.jgroups.Channel;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
 import org.jgroups.MessageListener;
 import org.jgroups.blocks.PullPushAdapter;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Implementation of EventBridge that passes and receives events via JavaGroups
@@ -35,6 +36,17 @@ import org.jgroups.blocks.PullPushAdapter;
  * @since 1.1
  */
 public class JavaGroupsBridge extends EventBridge implements MessageListener {
+
+    public static final String MCAST_ADDRESS_DEFAULT = "228.0.0.5";
+    public static final String MCAST_PORT_DEFAULT = "22222";
+
+    public static final String MCAST_ADDRESS_PROPERTY = "cayenne.JavaGroupsBridge.mcast.address";
+    public static final String MCAST_PORT_PROPERTY = "cayenne.JavaGroupsBridge.mcast.port";
+
+    /**
+     * Defines a property for JavaGroups XML configuration file.
+     */
+    public static final String JGROUPS_CONFIG_URL_PROPERTY = "javagroupsbridge.config.url";
 
     // TODO: Meaning of "state" in JGroups is not yet clear to me
     protected byte[] state;
@@ -57,6 +69,21 @@ public class JavaGroupsBridge extends EventBridge implements MessageListener {
      */
     public JavaGroupsBridge(Collection<EventSubject> localSubjects, String externalSubject) {
         super(localSubjects, externalSubject);
+    }
+
+    /**
+     * @since 4.0
+     */
+    public JavaGroupsBridge(Collection<EventSubject> localSubjects, String externalSubject, Map<String, String> properties) {
+        super(localSubjects, externalSubject);
+
+        // configure properties
+        String multicastAddress = properties.get(MCAST_ADDRESS_PROPERTY);
+        String multicastPort = properties.get(MCAST_PORT_PROPERTY);
+
+        this.configURL = properties.get(JGROUPS_CONFIG_URL_PROPERTY);
+        this.multicastAddress = (multicastAddress != null) ? multicastAddress : MCAST_ADDRESS_DEFAULT;
+        this.multicastPort = (multicastPort != null) ? multicastPort : MCAST_PORT_DEFAULT;
     }
 
     public String getConfigURL() {
