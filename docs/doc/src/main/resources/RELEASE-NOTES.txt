@@ -20,6 +20,7 @@ Bug Fixes:
 
 CAY-2240 Modeler: issue with cursor rendering for EJBQL query
 CAY-2256 Cannot Save/Insert an Object With null Flattened (complex) toOne Relationship (see also CAY-2146)
+CAY-2265 ServerRuntime.builder() fails to set default runtime name when a the project file doesn't follow recognized pattern
 
 ----------------------------------
 Release: 4.0.M5

@@ -27,6 +27,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.di.Inject;
@@ -143,5 +144,17 @@ public class ServerRuntimeBuilderIT extends ServerCase {
 		localRuntime = new ServerRuntimeBuilder("myd").addConfigs(CayenneProjects.TESTMAP_PROJECT,
 				CayenneProjects.EMBEDDABLE_PROJECT).build();
 		assertEquals("myd", localRuntime.getDataDomain().getName());
+	}
+
+	/**
+	 * Test case for CAY-2265
+	 */
+	@Test
+	public void test_UnnamedDomain_CustomNameProjectFile() {
+		localRuntime = new ServerRuntimeBuilder().addConfigs(CayenneProjects.CUSTOM_NAME_PROJECT).build();
+		assertEquals("cayenne", localRuntime.getDataDomain().getName());
+
+		ObjectContext context = localRuntime.newContext();
+		assertNotNull(context);
 	}
 }

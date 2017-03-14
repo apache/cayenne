@@ -26,6 +26,7 @@ import org.apache.cayenne.resource.Resource;
  */
 public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
 
+	private static final String DEFAULT_NAME = "cayenne";
 	private static final String CAYENNE_PREFIX = "cayenne-";
 	private static final String CAYENNE_SUFFIX = ".xml";
 
@@ -74,7 +75,8 @@ public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
 
 		if (DataChannelDescriptor.class.isAssignableFrom(type)) {
 			if (!path.startsWith(CAYENNE_PREFIX) || !path.endsWith(CAYENNE_SUFFIX)) {
-				return null;
+				// DataChannelDescriptor should always have name
+				return DEFAULT_NAME;
 			}
 
 			return path.substring(CAYENNE_PREFIX.length(), path.length() - CAYENNE_SUFFIX.length());
