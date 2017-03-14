@@ -25,15 +25,18 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JOptionPane;
-
+	
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
 import org.apache.cayenne.modeler.dialog.db.DbActionOptionsDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public abstract class DBWizardAction<T extends DbActionOptionsDialog> extends CayenneAction {
-
+	private static Log LOGGER = LogFactory.getLog(DBWizardAction.class);
+	
     public DBWizardAction(String name, Application application) {
         super(name, application);
     }
@@ -56,7 +59,7 @@ public abstract class DBWizardAction<T extends DbActionOptionsDialog> extends Ca
         List<String> catalogs;
         List<String> schemas;
         String currentCatalog;
-        String currentSchema;
+        String currentSchema = null;
         try(Connection connection = connectWizard.getDataSource().getConnection()) {
             catalogs = getCatalogs(connectWizard, connection);
             schemas = getSchemas(connection);
@@ -64,7 +67,12 @@ public abstract class DBWizardAction<T extends DbActionOptionsDialog> extends Ca
                 return null;
             }
             currentCatalog = connection.getCatalog();
-            currentSchema = connection.getSchema();
+			
+			try {
+	            currentSchema = connection.getSchema();
+			} catch (Throwable th) {
+                LOGGER.warn("Error getting schema.", th);
+			}
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(
                     Application.getFrame(),
