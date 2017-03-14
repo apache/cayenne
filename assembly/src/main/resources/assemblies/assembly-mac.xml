@@ -90,6 +90,9 @@
 				<include>org.apache.cayenne:cayenne-dbcp2</include>
 				<include>org.apache.cayenne:cayenne-java8</include>
 				<include>org.apache.cayenne:cayenne-jcache</include>
+				<include>org.apache.cayenne:cayenne-jgroups</include>
+				<include>org.apache.cayenne:cayenne-jms</include>
+				<include>org.apache.cayenne:cayenne-xmpp</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>

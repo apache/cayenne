@@ -19,32 +19,36 @@
 
 package org.apache.cayenne.event;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataRowStore;
-import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.di.DIRuntimeException;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
+import org.junit.Test;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
-public class JMSBridgeProvider implements Provider<EventBridge> {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-    @Inject
-    protected DataDomain dataDomain;
+/**
+ */
+public class XMPPBridgeTest {
 
-    @Inject(Constants.JMS_BRIDGE_PROPERTIES_MAP)
-    Map<String, String> properties;
+    @Test
+    public void testEventSerialization() throws Exception {
+        Map<String, String> info = new HashMap<>();
+        info.put("a", "b");
+        CayenneEvent e = new CayenneEvent(this, this, info);
 
-    @Override
-    public EventBridge get() throws DIRuntimeException {
-        EventSubject snapshotEventSubject = EventSubject.getSubject(DataRowStore.class, dataDomain.getName());
+        String string = XMPPBridge.serializeToString(e);
+        assertNotNull(string);
 
-        return new JMSBridge(
-                Collections.singleton(snapshotEventSubject),
-                EventBridge.convertToExternalSubject(snapshotEventSubject),
-                properties);
+        Object copy = XMPPBridge.deserializeFromString(string);
+        assertNotNull(copy);
+        assertTrue(copy instanceof CayenneEvent);
+
+        CayenneEvent e2 = (CayenneEvent) copy;
+        assertEquals(info, e2.getInfo());
+        assertNull(e2.getPostedBy());
+        assertNull(e2.getSource());
     }
-
 }

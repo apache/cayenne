@@ -29,19 +29,19 @@ import org.apache.cayenne.di.Provider;
 import java.util.Collections;
 import java.util.Map;
 
-public class JavaGroupsBridgeProvider implements Provider<EventBridge> {
+public class XMPPBridgeProvider implements Provider<EventBridge> {
 
     @Inject
     protected DataDomain dataDomain;
 
-    @Inject(Constants.JAVA_GROUPS_BRIDGE_PROPERTIES_MAP)
+    @Inject(XMPPModule.XMPP_BRIDGE_PROPERTIES_MAP)
     Map<String, String> properties;
 
     @Override
     public EventBridge get() throws DIRuntimeException {
-        EventSubject snapshotEventSubject = EventSubject.getSubject(DataRowStore.class, dataDomain.getName());
+        EventSubject snapshotEventSubject = EventSubject.getSubject(DataRowStore.class.getClass(), dataDomain.getName());
 
-        return new JavaGroupsBridge(
+        return new XMPPBridge(
                 Collections.singleton(snapshotEventSubject),
                 EventBridge.convertToExternalSubject(snapshotEventSubject),
                 properties);

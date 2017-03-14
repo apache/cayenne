@@ -39,7 +39,7 @@ public class XMPPBridgeFactoryTest {
         EventBridge bridge = new XMPPBridgeFactory().createEventBridge(
                 subjects,
                 externalSubject,
-                Collections.EMPTY_MAP);
+                Collections.<String, String>emptyMap());
 
         assertTrue(bridge instanceof XMPPBridge);
         assertEquals(subjects, bridge.getLocalSubjects());
@@ -49,7 +49,7 @@ public class XMPPBridgeFactoryTest {
     @Test
     public void testUseMapPropertiesSetter() throws Exception {
         XMPPBridgeFactory bridgeFactory = new XMPPBridgeFactory();
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
 
         properties.put(XMPPBridge.XMPP_HOST_PROPERTY, XMPPBridgeProviderTest.HOST_TEST);
         properties.put(XMPPBridge.XMPP_CHAT_SERVICE_PROPERTY, XMPPBridgeProviderTest.CHAT_SERVICE_TEST);

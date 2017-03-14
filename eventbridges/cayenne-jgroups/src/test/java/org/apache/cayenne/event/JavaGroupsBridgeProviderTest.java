@@ -49,21 +49,7 @@ public class JavaGroupsBridgeProviderTest {
 
     @Test
     public void testGetJavaGroupsBridge() throws Exception {
-        Module module = new Module() {
-            public void configure(Binder binder) {
-                binder.bindMap(Constants.PROPERTIES_MAP);
-                binder.bind(DataDomain.class).toInstance(DOMAIN);
-                binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
-                binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
-                binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
-                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(EventBridge.class).toProvider(JavaGroupsBridgeProvider.class);
-                binder.bindMap(Constants.JAVA_GROUPS_BRIDGE_PROPERTIES_MAP);
-            }
-        };
-
-        Injector injector = DIBootstrap.createInjector(module);
+        Injector injector = DIBootstrap.createInjector(new DefaultBindings(), new JGroupsModule());
         EventBridge bridge = injector.getInstance(EventBridge.class);
 
         assertNotNull(bridge);
@@ -74,22 +60,13 @@ public class JavaGroupsBridgeProviderTest {
     public void testUseProperties() throws Exception {
         Module module = new Module() {
             public void configure(Binder binder) {
-                binder.bindMap(Constants.PROPERTIES_MAP);
-                binder.bind(DataDomain.class).toInstance(DOMAIN);
-                binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
-                binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
-                binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
-                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(EventBridge.class).toProvider(JavaGroupsBridgeProvider.class);
-                binder.bindMap(Constants.JAVA_GROUPS_BRIDGE_PROPERTIES_MAP)
-                        .put(JavaGroupsBridge.MCAST_ADDRESS_PROPERTY, MCAST_ADDRESS_TEST)
-                        .put(JavaGroupsBridge.MCAST_PORT_PROPERTY, MCAST_PORT_TEST)
-                        .put(JavaGroupsBridge.JGROUPS_CONFIG_URL_PROPERTY, CONFIG_URL_TEST);
+                JGroupsModule.contributeMulticastAddress(binder, MCAST_ADDRESS_TEST);
+                JGroupsModule.contributeMulticastPort(binder, Integer.parseInt(MCAST_PORT_TEST));
+                JGroupsModule.contributeConfigUrl(binder, CONFIG_URL_TEST);
             }
         };
 
-        Injector injector = DIBootstrap.createInjector(module);
+        Injector injector = DIBootstrap.createInjector(new DefaultBindings(), new JGroupsModule(), module);
         JavaGroupsBridge bridge = (JavaGroupsBridge) injector.getInstance(EventBridge.class);
 
         assertEquals(MCAST_ADDRESS_TEST, bridge.getMulticastAddress());
@@ -99,25 +76,24 @@ public class JavaGroupsBridgeProviderTest {
 
     @Test
     public void testUseDefaultProperties() throws Exception {
-        Module module = new Module() {
-            public void configure(Binder binder) {
-                binder.bindMap(Constants.PROPERTIES_MAP);
-                binder.bind(DataDomain.class).toInstance(DOMAIN);
-                binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
-                binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
-                binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
-                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(EventBridge.class).toProvider(JavaGroupsBridgeProvider.class);
-                binder.bindMap(Constants.JAVA_GROUPS_BRIDGE_PROPERTIES_MAP);
-            }
-        };
-
-        Injector injector = DIBootstrap.createInjector(module);
+        Injector injector = DIBootstrap.createInjector(new DefaultBindings(), new JGroupsModule());
         JavaGroupsBridge bridge = (JavaGroupsBridge) injector.getInstance(EventBridge.class);
 
-        assertEquals(bridge.getMulticastAddress(), JavaGroupsBridge.MCAST_ADDRESS_DEFAULT);
-        assertEquals(bridge.getMulticastPort(), JavaGroupsBridge.MCAST_PORT_DEFAULT);
-        assertEquals(bridge.getConfigURL(), null);
+        assertEquals(JavaGroupsBridge.MCAST_ADDRESS_DEFAULT, bridge.getMulticastAddress());
+        assertEquals(JavaGroupsBridge.MCAST_PORT_DEFAULT, bridge.getMulticastPort());
+        assertEquals(null, bridge.getConfigURL());
+    }
+
+    class DefaultBindings implements Module {
+        @Override
+        public void configure(Binder binder) {
+            binder.bindMap(Constants.PROPERTIES_MAP);
+            binder.bind(DataDomain.class).toInstance(DOMAIN);
+            binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
+            binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
+            binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
+            binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+            binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+        }
     }
 }

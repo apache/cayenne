@@ -52,21 +52,7 @@ public class XMPPBridgeProviderTest {
 
     @Test
     public void testGetXMPPBridge() throws Exception {
-        Module module = new Module() {
-            public void configure(Binder binder) {
-                binder.bindMap(Constants.PROPERTIES_MAP);
-                binder.bind(DataDomain.class).toInstance(DOMAIN);
-                binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
-                binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
-                binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
-                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(EventBridge.class).toProvider(XMPPBridgeProvider.class);
-                binder.bindMap(Constants.XMPP_BRIDGE_PROPERTIES_MAP);
-            }
-        };
-
-        Injector injector = DIBootstrap.createInjector(module);
+        Injector injector = DIBootstrap.createInjector(new DefaultBindings(), new XMPPModule());
         EventBridge bridge = injector.getInstance(EventBridge.class);
 
         assertNotNull(bridge);
@@ -77,25 +63,15 @@ public class XMPPBridgeProviderTest {
     public void testUseProperties() throws Exception {
         Module module = new Module() {
             public void configure(Binder binder) {
-                binder.bindMap(Constants.PROPERTIES_MAP);
-                binder.bind(DataDomain.class).toInstance(DOMAIN);
-                binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
-                binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
-                binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
-                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(EventBridge.class).toProvider(XMPPBridgeProvider.class);
-                binder.bindMap(Constants.XMPP_BRIDGE_PROPERTIES_MAP)
-                        .put(XMPPBridge.XMPP_HOST_PROPERTY, HOST_TEST)
-                        .put(XMPPBridge.XMPP_CHAT_SERVICE_PROPERTY, CHAT_SERVICE_TEST)
-                        .put(XMPPBridge.XMPP_LOGIN_PROPERTY, LOGIN_TEST)
-                        .put(XMPPBridge.XMPP_PASSWORD_PROPERTY, PASSWORD_TEST)
-                        .put(XMPPBridge.XMPP_SECURE_CONNECTION_PROPERTY, String.valueOf(SECURE_CONNECTION_TEST))
-                        .put(XMPPBridge.XMPP_PORT_PROPERTY, String.valueOf(PORT_TEST));
+                XMPPModule.contributeSecureConnection(binder, SECURE_CONNECTION_TEST);
+                XMPPModule.contributeHost(binder, HOST_TEST);
+                XMPPModule.contributePort(binder, PORT_TEST);
+                XMPPModule.contributeLogin(binder, LOGIN_TEST, PASSWORD_TEST);
+                XMPPModule.contributeChatService(binder, CHAT_SERVICE_TEST);
             }
         };
 
-        Injector injector = DIBootstrap.createInjector(module);
+        Injector injector = DIBootstrap.createInjector(new DefaultBindings(), new XMPPModule(), module);
         XMPPBridge bridge = (XMPPBridge) injector.getInstance(EventBridge.class);
 
         assertEquals(HOST_TEST, bridge.getXmppHost());
@@ -106,25 +82,26 @@ public class XMPPBridgeProviderTest {
         assertEquals(PORT_TEST, bridge.getXmppPort());
     }
 
+    @Test
     public void testUseDefaultProperties() throws Exception {
-        Module module = new Module() {
-            public void configure(Binder binder) {
-                binder.bindMap(Constants.PROPERTIES_MAP);
-                binder.bind(DataDomain.class).toInstance(DOMAIN);
-                binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
-                binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
-                binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
-                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(EventBridge.class).toProvider(XMPPBridgeProvider.class);
-                binder.bindMap(Constants.XMPP_BRIDGE_PROPERTIES_MAP);
-            }
-        };
-
-        Injector injector = DIBootstrap.createInjector(module);
+        Injector injector = DIBootstrap.createInjector(new DefaultBindings(), new XMPPModule());
         XMPPBridge bridge = (XMPPBridge) injector.getInstance(EventBridge.class);
 
-        assertEquals(bridge.getChatService(), XMPPBridge.DEFAULT_CHAT_SERVICE);
-        assertEquals(bridge.getXmppPort(), XMPPBridge.DEFAULT_XMPP_PORT);
+        assertEquals(XMPPBridge.DEFAULT_CHAT_SERVICE, bridge.getChatService());
+        assertEquals(0, bridge.getXmppPort());
+        assertEquals(false, bridge.isSecureConnection());
+    }
+
+    class DefaultBindings implements Module {
+        @Override
+        public void configure(Binder binder) {
+            binder.bindMap(Constants.PROPERTIES_MAP);
+            binder.bind(DataDomain.class).toInstance(DOMAIN);
+            binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
+            binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
+            binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
+            binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+            binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+        }
     }
 }

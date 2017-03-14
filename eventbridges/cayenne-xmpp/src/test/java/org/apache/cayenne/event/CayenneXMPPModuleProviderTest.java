@@ -19,36 +19,17 @@
 
 package org.apache.cayenne.event;
 
+import org.apache.cayenne.unit.util.ModuleProviderChecker;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 /**
+ * @since 4.0
  */
-public class XMPPBridgeTest {
+public class CayenneXMPPModuleProviderTest {
 
     @Test
-    public void testEventSerialization() throws Exception {
-        Map info = new HashMap();
-        info.put("a", "b");
-        CayenneEvent e = new CayenneEvent(this, this, info);
-
-        String string = XMPPBridge.serializeToString(e);
-        assertNotNull(string);
-
-        Object copy = XMPPBridge.deserializeFromString(string);
-        assertNotNull(copy);
-        assertTrue(copy instanceof CayenneEvent);
-
-        CayenneEvent e2 = (CayenneEvent) copy;
-        assertEquals(info, e2.getInfo());
-        assertNull(e2.getPostedBy());
-        assertNull(e2.getSource());
+    public void testAutoLoadable() {
+        ModuleProviderChecker.testProviderPresent(XMPPModuleProvider.class);
     }
+
 }

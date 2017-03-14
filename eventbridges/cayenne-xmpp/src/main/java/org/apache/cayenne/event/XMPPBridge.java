@@ -116,7 +116,6 @@ public class XMPPBridge extends EventBridge {
         secureConnection = "true".equalsIgnoreCase(secureConnectionString);
 
         String portString = properties.get(XMPP_PORT_PROPERTY);
-        int port = -1;
         if (portString != null) {
 
             try {

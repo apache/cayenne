@@ -42,7 +42,7 @@ public class JavaGroupsBridgeFactoryTest {
         EventBridge bridge = new JavaGroupsBridgeFactory().createEventBridge(
                 subjects,
                 externalSubject,
-                Collections.EMPTY_MAP);
+                Collections.<String, String>emptyMap());
 
         assertNotNull(bridge);
         assertTrue(bridge instanceof JavaGroupsBridge);
@@ -54,7 +54,7 @@ public class JavaGroupsBridgeFactoryTest {
     public void testUseProperties() throws Exception {
         JavaGroupsBridgeFactory bridgeFactory = new JavaGroupsBridgeFactory();
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(JavaGroupsBridge.MCAST_ADDRESS_PROPERTY, JavaGroupsBridgeProviderTest.MCAST_ADDRESS_TEST);
         properties.put(JavaGroupsBridge.MCAST_PORT_PROPERTY, JavaGroupsBridgeProviderTest.MCAST_PORT_TEST);
         properties.put(JavaGroupsBridge.JGROUPS_CONFIG_URL_PROPERTY, JavaGroupsBridgeProviderTest.CONFIG_URL_TEST);
@@ -75,7 +75,7 @@ public class JavaGroupsBridgeFactoryTest {
         JavaGroupsBridge bridge = (JavaGroupsBridge) bridgeFactory.createEventBridge(
                 subjects,
                 externalSubject,
-                Collections.EMPTY_MAP);
+                Collections.<String, String>emptyMap());
 
         assertEquals(bridge.getMulticastAddress(), JavaGroupsBridge.MCAST_ADDRESS_DEFAULT);
         assertEquals(bridge.getMulticastPort(), JavaGroupsBridge.MCAST_PORT_DEFAULT);

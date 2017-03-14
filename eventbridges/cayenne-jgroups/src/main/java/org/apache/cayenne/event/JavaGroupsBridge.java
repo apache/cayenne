@@ -38,7 +38,8 @@ import java.util.Map;
 public class JavaGroupsBridge extends EventBridge implements MessageListener {
 
     public static final String MCAST_ADDRESS_DEFAULT = "228.0.0.5";
-    public static final String MCAST_PORT_DEFAULT = "22222";
+    public static final int MCAST_PORT_DEFAULT_INT = 22222;
+    public static final String MCAST_PORT_DEFAULT = Integer.toString(MCAST_PORT_DEFAULT_INT);
 
     public static final String MCAST_ADDRESS_PROPERTY = "cayenne.JavaGroupsBridge.mcast.address";
     public static final String MCAST_PORT_PROPERTY = "cayenne.JavaGroupsBridge.mcast.port";

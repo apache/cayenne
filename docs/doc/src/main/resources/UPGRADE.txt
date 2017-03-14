@@ -7,6 +7,34 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 
 UPGRADING TO 4.0.M6
 
+* Per CAY-1873 and CAY-2266 Cache and remote notification configuration was moved
+  from Modeler into runtime DI settings. To set custom cache size and expiration time,
+  you should use custom module like this:
+        Module module = binder -> {
+            binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP)
+                .put(DataRowStore.SNAPSHOT_EXPIRATION_PROPERTY, "10800")
+                .put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, "20000");
+        };
+
+  If you have used remote notifications, you should include one of the following modules into your project:
+        - cayenne-jgroups
+        - cayenne-jms
+        - cayenne-xmpp
+  For maven users this can be easily done by adding dependency to pom.xml:
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-jgroups</artifactId>
+            <version>4.0.M6</version>
+        </dependency>
+
+  Module will be autoloaded and remote notifications enabled, so only thing you need is to provide configuration.
+  Custom DI module should be used for that, e.g. for JGroups:
+        Module module = binder -> {
+            JGroupsModule.contributeMulticastAddress(binder, MCAST_ADDRESS);
+            JGroupsModule.contributeMulticastPort(binder, MCAST_PORT));
+        };
+
+
 * Per CAY-2256 Fix for CAY-2146 was reverted, as it appears that we can't reliably deduce whether
   relationship is optional or not. So in case of mandatory relationships in vertical inheritance
   you should perform manual validation before insert by using "prePersist" callback in your

@@ -114,6 +114,24 @@
 			<version>${project.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-jgroups</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-jms</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-xmpp</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
