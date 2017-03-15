@@ -43,9 +43,9 @@ public class ExitAction extends ProjectAction {
         exit();
     }
 
-    public void exit() {
+    public boolean exit() {
         if (!checkSaveOnClose()) {
-            return;
+            return false;
         }
 
         // stop logging before JVM shutdown to prevent hanging
@@ -55,6 +55,7 @@ public class ExitAction extends ProjectAction {
 
         // goodbye
         System.exit(0);
+        return true;
     }
 
     /**

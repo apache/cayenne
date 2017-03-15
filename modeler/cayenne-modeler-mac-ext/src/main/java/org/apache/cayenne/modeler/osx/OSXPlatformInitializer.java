@@ -36,9 +36,12 @@ import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 
+import com.apple.eawt.AboutHandler;
+import com.apple.eawt.AppEvent;
 import com.apple.eawt.Application;
-import com.apple.eawt.ApplicationAdapter;
-import com.apple.eawt.ApplicationEvent;
+import com.apple.eawt.PreferencesHandler;
+import com.apple.eawt.QuitHandler;
+import com.apple.eawt.QuitResponse;
 
 @SuppressWarnings("deprecation")
 public class OSXPlatformInitializer implements PlatformInitializer {
@@ -52,18 +55,34 @@ public class OSXPlatformInitializer implements PlatformInitializer {
         // launcher can only be executed on Mac
 
         // configure special Mac menu handlers though...
+        Application app = Application.getApplication();
+        app.setAboutHandler(new AboutHandler() {
+            @Override
+            public void handleAbout(AppEvent.AboutEvent aboutEvent) {
+                actionManager.getAction(AboutAction.class).showAboutDialog();
+            }
+        });
 
-        Application.getApplication().addAboutMenuItem();
-        Application.getApplication().addPreferencesMenuItem();
-        Application.getApplication().setEnabledAboutMenu(true);
-        Application.getApplication().setEnabledPreferencesMenu(true);
+        app.setPreferencesHandler(new PreferencesHandler() {
+            @Override
+            public void handlePreferences(AppEvent.PreferencesEvent preferencesEvent) {
+                actionManager.getAction(ConfigurePreferencesAction.class).showPreferencesDialog();
+            }
+        });
 
-        Application.getApplication().addApplicationListener(new MacEventsAdapter());
+        app.setQuitHandler(new QuitHandler() {
+            @Override
+            public void handleQuitRequestWith(AppEvent.QuitEvent quitEvent, QuitResponse quitResponse) {
+                if(!actionManager.getAction(ExitAction.class).exit()) {
+                    quitResponse.cancelQuit();
+                }
+            }
+        });
     }
 
     public void setupMenus(JFrame frame) {
 
-        Set<Action> removeActions = new HashSet<Action>();
+        Set<Action> removeActions = new HashSet<>();
         removeActions.add(actionManager.getAction(ExitAction.class));
         removeActions.add(actionManager.getAction(AboutAction.class));
         removeActions.add(actionManager.getAction(ConfigurePreferencesAction.class));
@@ -92,30 +111,6 @@ public class OSXPlatformInitializer implements PlatformInitializer {
                         }
                     }
                 }
-            }
-        }
-    }
-
-    class MacEventsAdapter extends ApplicationAdapter {
-
-        public void handleAbout(ApplicationEvent e) {
-            if (!e.isHandled()) {
-                actionManager.getAction(AboutAction.class).showAboutDialog();
-                e.setHandled(true);
-            }
-        }
-
-        public void handlePreferences(ApplicationEvent e) {
-            actionManager
-                    .getAction(ConfigurePreferencesAction.class)
-                    .showPreferencesDialog();
-            e.setHandled(true);
-        }
-
-        public void handleQuit(ApplicationEvent e) {
-            if (!e.isHandled()) {
-                e.setHandled(true);
-                actionManager.getAction(ExitAction.class).exit();
             }
         }
     }
