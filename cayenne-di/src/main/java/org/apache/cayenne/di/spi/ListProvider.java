@@ -32,12 +32,12 @@ import java.util.Map;
 /**
  * @since 3.1
  */
-class ListProvider implements Provider<List<?>> {
+class ListProvider<T> implements Provider<List<T>> {
 
-    private Map<Key<?>, Provider<?>> providers;
-    private DIGraph<Key<?>> graph;
-    private Key<?> lastKey;
-    private Collection<Key<?>> lastKeys;
+    private Map<Key<? extends T>, Provider<? extends T>> providers;
+    private DIGraph<Key<? extends T>> graph;
+    private Key<? extends T> lastKey;
+    private Collection<Key<? extends T>> lastKeys;
 
     public ListProvider() {
         this.providers = new HashMap<>();
@@ -46,13 +46,13 @@ class ListProvider implements Provider<List<?>> {
     }
 
     @Override
-    public List<?> get() throws DIRuntimeException {
-        List<Key<?>> insertOrder = graph.topSort();
+    public List<T> get() throws DIRuntimeException {
+        List<Key<? extends T>> insertOrder = graph.topSort();
 
         if (insertOrder.size() != providers.size()) {
-            List<Key<?>> emptyKeys = new ArrayList<>();
+            List<Key<? extends T>> emptyKeys = new ArrayList<>();
 
-            for (Key<?> key : insertOrder) {
+            for (Key<? extends T> key : insertOrder) {
                 if (!providers.containsKey(key)) {
                     emptyKeys.add(key);
                 }
@@ -61,30 +61,30 @@ class ListProvider implements Provider<List<?>> {
             throw new DIRuntimeException("DI list has no providers for keys: %s", emptyKeys);
         }
 
-        List<Object> list = new ArrayList<>(insertOrder.size());
-        for (Key<?> key : insertOrder) {
+        List<T> list = new ArrayList<>(insertOrder.size());
+        for (Key<? extends T> key : insertOrder) {
             list.add(providers.get(key).get());
         }
 
         return list;
     }
 
-    void add(Key<?> key, Provider<?> provider) {
+    void add(Key<? extends T> key, Provider<? extends T> provider) {
         providers.put(key, provider);
         graph.add(key);
         lastKey = key;
         lastKeys.clear();
     }
 
-    void addAll(Map<Key<?>, Provider<?>> keyProviderMap) {
+    void addAll(Map<Key<? extends T>, Provider<? extends T>> keyProviderMap) {
         providers.putAll(keyProviderMap);
         graph.addAll(keyProviderMap.keySet());
         lastKeys = keyProviderMap.keySet();
     }
 
-    void after(Key<?> after) {
+    void after(Key<? extends T> after) {
         if (!lastKeys.isEmpty()) {
-            for (Key<?> key : lastKeys) {
+            for (Key<? extends T> key : lastKeys) {
                 graph.add(key, after);
             }
 
@@ -94,9 +94,9 @@ class ListProvider implements Provider<List<?>> {
         graph.add(lastKey, after);
     }
 
-    void before(Key<?> before) {
+    void before(Key<? extends T> before) {
         if (!lastKeys.isEmpty()) {
-            for (Key<?> key: lastKeys) {
+            for (Key<? extends T> key: lastKeys) {
                 graph.add(before, key);
             }
 

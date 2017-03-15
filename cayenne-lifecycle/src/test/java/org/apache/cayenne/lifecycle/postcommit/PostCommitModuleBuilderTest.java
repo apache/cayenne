@@ -40,7 +40,7 @@ public class PostCommitModuleBuilderTest {
 		Module m = PostCommitModuleBuilder.builder().listener(listener).build();
 
 		Injector i = DIBootstrap.createInjector(m);
-		List<?> listeners = i.getInstance(Key.get(List.class, PostCommitFilter.POST_COMMIT_LISTENERS_LIST));
+		List<PostCommitListener> listeners = i.getInstance(Key.getListOf(PostCommitListener.class, PostCommitFilter.POST_COMMIT_LISTENERS_LIST));
 		assertEquals(1, listeners.size());
 		assertTrue(listeners.contains(listener));
 	}
@@ -51,7 +51,7 @@ public class PostCommitModuleBuilderTest {
 		Module m = PostCommitModuleBuilder.builder().listener(L.class).build();
 
 		Injector i = DIBootstrap.createInjector(m);
-		List<?> listeners = i.getInstance(Key.get(List.class, PostCommitFilter.POST_COMMIT_LISTENERS_LIST));
+		List<PostCommitListener> listeners = i.getInstance(Key.getListOf(PostCommitListener.class, PostCommitFilter.POST_COMMIT_LISTENERS_LIST));
 		assertEquals(1, listeners.size());
 		assertTrue(listeners.get(0) instanceof L);
 	}

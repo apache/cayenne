@@ -84,8 +84,8 @@ public class ServerRuntimeTest {
     public void testDefaultConstructor_SingleLocation() {
         ServerRuntime runtime = new ServerRuntime("xxxx");
 
-        List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+        List<String> locations = runtime.getInjector().getInstance(
+                Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
         assertEquals(Arrays.asList("xxxx"), locations);
 
@@ -100,8 +100,8 @@ public class ServerRuntimeTest {
     public void testDefaultConstructor_MultipleLocations() {
         ServerRuntime runtime = new ServerRuntime(new String[]{"xxxx", "yyyy"});
 
-        List<?> locations = runtime.getInjector().getInstance(
-                Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+        List<String> locations = runtime.getInjector().getInstance(
+                Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
         assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
 

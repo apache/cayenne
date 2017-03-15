@@ -49,7 +49,7 @@ public class JGroupsModule implements Module {
     }
 
     private static MapBuilder<String> contributeProperties(Binder binder) {
-        return binder.bindMap(JAVA_GROUPS_BRIDGE_PROPERTIES_MAP);
+        return binder.bindMap(String.class, JAVA_GROUPS_BRIDGE_PROPERTIES_MAP);
     }
 
     @Override

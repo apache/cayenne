@@ -41,7 +41,7 @@ public class JMSModule implements Module {
     }
 
     private static MapBuilder<String> contributeProperties(Binder binder) {
-        return binder.bindMap(JMS_BRIDGE_PROPERTIES_MAP);
+        return binder.bindMap(String.class, JMS_BRIDGE_PROPERTIES_MAP);
     }
 
     @Override

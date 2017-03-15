@@ -124,7 +124,7 @@ public class ServerCaseModule implements Module {
         // unit test injector. ServerRuntime injector contents are customized
         // inside ServerRuntimeProvider.
 
-        binder.bindMap(UnitDbAdapterProvider.TEST_ADAPTERS_MAP).put(
+        binder.bindMap(String.class, UnitDbAdapterProvider.TEST_ADAPTERS_MAP).put(
                 FirebirdAdapter.class.getName(),
                 FirebirdUnitDbAdapter.class.getName()).put(
                 OracleAdapter.class.getName(),

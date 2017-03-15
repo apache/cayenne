@@ -16,34 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.di;
+
+package org.apache.cayenne.di.mock;
+
+import java.util.List;
+
+import org.apache.cayenne.di.Inject;
 
 /**
- * A binding builder for list configurations.
- * 
- * @param <T> A type of list values.
- * @since 3.1
+ * @since 4.0
  */
-public interface ListBuilder<T> extends UnorderedListBuilder<T> {
+public class MockImplementation2_ListConfiguration implements MockInterface2 {
 
-    /**
-     * @since 4.0
-     */
-    UnorderedListBuilder<T> after(Class<? extends T> type);
+    private List<Object> configuration;
 
-    /**
-     * @since 4.0
-     */
-    UnorderedListBuilder<T> after(Key<? extends T> key);
+    public MockImplementation2_ListConfiguration(@Inject("xyz") List<Object> configuration) {
+        this.configuration = configuration;
+    }
 
-    /**
-     * @since 4.0
-     */
-    UnorderedListBuilder<T> before(Class<? extends T> type);
+    @Override
+    public String getAlteredName() {
+        return getName();
+    }
 
-    /**
-     * @since 4.0
-     */
-    UnorderedListBuilder<T> before(Key<? extends T> key);
+    public String getName() {
 
+        StringBuilder buffer = new StringBuilder();
+
+        for (Object value : configuration) {
+            buffer.append(";").append(value);
+        }
+
+        return buffer.toString();
+    }
 }

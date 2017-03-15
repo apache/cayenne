@@ -58,7 +58,7 @@ public class XMPPModule implements Module {
     }
 
     private static MapBuilder<String> contributeProperties(Binder binder) {
-        return binder.bindMap(XMPP_BRIDGE_PROPERTIES_MAP);
+        return binder.bindMap(String.class, XMPP_BRIDGE_PROPERTIES_MAP);
     }
 
     @Override

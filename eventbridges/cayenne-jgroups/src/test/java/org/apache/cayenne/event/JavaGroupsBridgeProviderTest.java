@@ -87,7 +87,7 @@ public class JavaGroupsBridgeProviderTest {
     class DefaultBindings implements Module {
         @Override
         public void configure(Binder binder) {
-            binder.bindMap(Constants.PROPERTIES_MAP);
+            binder.bindMap(String.class, Constants.PROPERTIES_MAP);
             binder.bind(DataDomain.class).toInstance(DOMAIN);
             binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
             binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);

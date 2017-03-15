@@ -58,8 +58,8 @@ public class CayenneFilterTest {
 		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
 		assertNotNull(runtime);
 
-		List<?> locations = runtime.getInjector().getInstance(
-				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		List<String> locations = runtime.getInjector().getInstance(
+				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
 		assertEquals(Arrays.asList("abc.xml"), locations);
 	}
@@ -79,8 +79,8 @@ public class CayenneFilterTest {
 
 		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
 		assertNotNull(runtime);
-		List<?> locations = runtime.getInjector().getInstance(
-				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		List<String> locations = runtime.getInjector().getInstance(
+				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
 		assertEquals(Arrays.asList("xyz"), locations);
 	}
@@ -101,8 +101,8 @@ public class CayenneFilterTest {
 
 		CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
 		assertNotNull(runtime);
-		List<?> locations = runtime.getInjector().getInstance(
-				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		List<String> locations = runtime.getInjector().getInstance(
+				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
 		assertEquals(Arrays.asList("cayenne-abc.xml"), locations);
 		Collection<Module> modules = runtime.getModules();

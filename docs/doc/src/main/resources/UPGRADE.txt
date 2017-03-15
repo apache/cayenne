@@ -7,6 +7,13 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 
 UPGRADING TO 4.0.M6
 
+* Per CAY-2258 Injection of List and Map are made type-safe, if you are using following methods:
+        - bindMap(String bindingName)
+        - bindList(String bindingName)
+  you should change them to corresponding type-safe versions:
+        - bindMap(Class<T> valueType, String bindingName)
+        - bindList(Class<T> valueType, String bindingName)
+
 * Per CAY-1873 and CAY-2266 Cache and remote notification configuration was moved from Modeler into
   runtime DI settings. To set custom cache size, you should use custom module like this:
         Module module = binder -> {

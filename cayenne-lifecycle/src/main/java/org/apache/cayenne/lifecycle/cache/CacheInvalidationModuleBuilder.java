@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
@@ -44,7 +45,7 @@ public class CacheInvalidationModuleBuilder {
     }
 
     private static ListBuilder<InvalidationHandler> contributeInvalidationHandler(Binder binder) {
-        return binder.bindList(INVALIDATION_HANDLERS_LIST);
+        return binder.bindList(InvalidationHandler.class, INVALIDATION_HANDLERS_LIST);
     }
 
     CacheInvalidationModuleBuilder() {
@@ -76,7 +77,7 @@ public class CacheInvalidationModuleBuilder {
                 }
 
                 // want the filter to be INSIDE transaction
-                binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST)
+                ServerModule.contributeDomainFilters(binder)
                         .add(CacheInvalidationFilter.class).before(TransactionFilter.class);
             }
         };

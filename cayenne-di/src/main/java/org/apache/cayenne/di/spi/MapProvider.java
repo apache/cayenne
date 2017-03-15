@@ -28,26 +28,26 @@ import org.apache.cayenne.di.Provider;
 /**
  * @since 3.1
  */
-class MapProvider implements Provider<Map<String, ?>> {
+class MapProvider<T> implements Provider<Map<String, T>> {
 
-	private Map<String, Provider<?>> providers;
+	private Map<String, Provider<? extends T>> providers;
 
 	public MapProvider() {
 		this.providers = new HashMap<>();
 	}
 
 	@Override
-	public Map<String, ?> get() throws DIRuntimeException {
-		Map<String, Object> map = new HashMap<>();
+	public Map<String, T> get() throws DIRuntimeException {
+		Map<String, T> map = new HashMap<>();
 
-		for (Entry<String, Provider<?>> entry : providers.entrySet()) {
+		for (Entry<String, Provider<? extends T>> entry : providers.entrySet()) {
 			map.put(entry.getKey(), entry.getValue().get());
 		}
 
 		return map;
 	}
 
-	void put(String key, Provider<?> provider) {
+	void put(String key, Provider<? extends T> provider) {
 		providers.put(key, provider);
 	}
 }

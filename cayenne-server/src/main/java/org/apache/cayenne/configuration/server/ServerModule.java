@@ -156,7 +156,7 @@ public class ServerModule implements Module {
      * @since 4.0
      */
     public static ListBuilder<String> contributeProjectLocations(Binder binder) {
-        return binder.bindList(Constants.SERVER_PROJECT_LOCATIONS_LIST);
+        return binder.bindList(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST);
     }
 
     /**
@@ -168,7 +168,7 @@ public class ServerModule implements Module {
      * @since 4.0
      */
     public static ListBuilder<DataChannelFilter> contributeDomainFilters(Binder binder) {
-        return binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST);
+        return binder.bindList(DataChannelFilter.class, Constants.SERVER_DOMAIN_FILTERS_LIST);
     }
 
     /**
@@ -180,7 +180,7 @@ public class ServerModule implements Module {
      * @since 4.0
      */
     public static ListBuilder<DbAdapterDetector> contributeAdapterDetectors(Binder binder) {
-        return binder.bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST);
+        return binder.bindList(DbAdapterDetector.class, Constants.SERVER_ADAPTER_DETECTORS_LIST);
     }
 
     /**
@@ -192,7 +192,7 @@ public class ServerModule implements Module {
      * @since 4.0
      */
     public static MapBuilder<String> contributeProperties(Binder binder) {
-        return binder.bindMap(Constants.PROPERTIES_MAP);
+        return binder.bindMap(String.class, Constants.PROPERTIES_MAP);
     }
 
     /**
@@ -204,7 +204,7 @@ public class ServerModule implements Module {
      * @since 4.0
      */
     public static ListBuilder<ExtendedTypeFactory> contributeTypeFactories(Binder binder) {
-        return binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
+        return binder.bindList(ExtendedTypeFactory.class, Constants.SERVER_TYPE_FACTORIES_LIST);
     }
 
     /**
@@ -217,7 +217,7 @@ public class ServerModule implements Module {
      * @since 4.0
      */
     public static ListBuilder<ExtendedType> contributeDefaultTypes(Binder binder) {
-        return binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
+        return binder.bindList(ExtendedType.class, Constants.SERVER_DEFAULT_TYPES_LIST);
     }
 
     /**
@@ -230,7 +230,7 @@ public class ServerModule implements Module {
      * @since 4.0
      */
     public static ListBuilder<ExtendedType> contributeUserTypes(Binder binder) {
-        return binder.bindList(Constants.SERVER_USER_TYPES_LIST);
+        return binder.bindList(ExtendedType.class, Constants.SERVER_USER_TYPES_LIST);
     }
 
     /**

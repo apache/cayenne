@@ -54,8 +54,8 @@ public class ServerRuntimeBuilderTest {
 		// this is meaningless (no DataSource), but should work...
 		runtime = new ServerRuntimeBuilder().build();
 
-		List<?> locations = runtime.getInjector().getInstance(
-				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		List<String> locations = runtime.getInjector().getInstance(
+				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
 		assertEquals(Arrays.asList(), locations);
 
@@ -69,8 +69,8 @@ public class ServerRuntimeBuilderTest {
 
 		runtime = new ServerRuntimeBuilder().addConfig("xxxx").build();
 
-		List<?> locations = runtime.getInjector().getInstance(
-				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		List<String> locations = runtime.getInjector().getInstance(
+				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
 		assertEquals(Arrays.asList("xxxx"), locations);
 
@@ -85,8 +85,8 @@ public class ServerRuntimeBuilderTest {
 
 		runtime = new ServerRuntimeBuilder().addConfigs("xxxx", "yyyy").build();
 
-		List<?> locations = runtime.getInjector().getInstance(
-				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		List<String> locations = runtime.getInjector().getInstance(
+				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
 		assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
 

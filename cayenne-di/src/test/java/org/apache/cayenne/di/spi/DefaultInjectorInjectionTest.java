@@ -20,34 +20,19 @@ package org.apache.cayenne.di.spi;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Key;
+import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.mock.MockImplementation1;
-import org.apache.cayenne.di.mock.MockImplementation1Alt;
-import org.apache.cayenne.di.mock.MockImplementation1Alt2;
-import org.apache.cayenne.di.mock.MockImplementation1_ListConfiguration;
-import org.apache.cayenne.di.mock.MockImplementation1_MapConfiguration;
-import org.apache.cayenne.di.mock.MockImplementation1_WithInjector;
-import org.apache.cayenne.di.mock.MockImplementation2;
-import org.apache.cayenne.di.mock.MockImplementation2Sub1;
-import org.apache.cayenne.di.mock.MockImplementation2_ConstructorProvider;
-import org.apache.cayenne.di.mock.MockImplementation2_Named;
-import org.apache.cayenne.di.mock.MockImplementation3;
-import org.apache.cayenne.di.mock.MockImplementation4;
-import org.apache.cayenne.di.mock.MockImplementation4Alt;
-import org.apache.cayenne.di.mock.MockImplementation4Alt2;
-import org.apache.cayenne.di.mock.MockImplementation5;
-import org.apache.cayenne.di.mock.MockInterface1;
-import org.apache.cayenne.di.mock.MockInterface2;
-import org.apache.cayenne.di.mock.MockInterface3;
-import org.apache.cayenne.di.mock.MockInterface4;
-import org.apache.cayenne.di.mock.MockInterface5;
+import org.apache.cayenne.di.mock.*;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class DefaultInjectorInjectionTest {
 
@@ -200,7 +185,7 @@ public class DefaultInjectorInjectionTest {
                         MockImplementation1_MapConfiguration.class);
 
                 // empty map must be still bound
-                binder.bindMap("xyz");
+                binder.bindMap(Object.class, "xyz");
             }
         };
 
@@ -219,7 +204,7 @@ public class DefaultInjectorInjectionTest {
                 binder.bind(MockInterface1.class).to(
                         MockImplementation1_MapConfiguration.class);
 
-                binder.bindMap("xyz").put("x", "xvalue").put("y", "yvalue").put(
+                binder.bindMap(Object.class,"xyz").put("x", "xvalue").put("y", "yvalue").put(
                         "x",
                         "xvalue1");
             }
@@ -241,10 +226,10 @@ public class DefaultInjectorInjectionTest {
                         MockImplementation1_MapConfiguration.class);
 
                 // bind 1
-                binder.bindMap("xyz").put("x", "xvalue").put("y", "yvalue");
+                binder.bindMap(Object.class,"xyz").put("x", "xvalue").put("y", "yvalue");
 
                 // second binding attempt to the same map...
-                binder.bindMap("xyz").put("z", "zvalue").put("x", "xvalue1");
+                binder.bindMap(Object.class,"xyz").put("z", "zvalue").put("x", "xvalue1");
             }
         };
 
@@ -263,7 +248,7 @@ public class DefaultInjectorInjectionTest {
                 binder.bind(MockInterface1.class).to(
                         MockImplementation1_ListConfiguration.class);
 
-                binder.bindList("xyz").add("xvalue").add("yvalue");
+                binder.bindList(Object.class, "xyz").add("xvalue").add("yvalue");
             }
         };
 
@@ -282,7 +267,7 @@ public class DefaultInjectorInjectionTest {
                 binder.bind(MockInterface1.class).to(
                         MockImplementation1_ListConfiguration.class);
 
-                binder.bindList("xyz")
+                binder.bindList(Object.class, "xyz")
                         .add("1value")
                         .add("2value")
                         .add(Key.get(Object.class, "5value"), "5value")
@@ -317,7 +302,7 @@ public class DefaultInjectorInjectionTest {
                 secondList.add("6value");
                 secondList.add("7value");
                 secondList.add("8value");
-                binder.bindList("xyz")
+                binder.bindList(Object.class, "xyz")
                         .add(Key.get(Object.class, "4value"), "4value")
                         .addAll(firstList)
                         .before(Key.get(Object.class, "4value"))
@@ -344,7 +329,7 @@ public class DefaultInjectorInjectionTest {
                 binder.bind(MockInterface1.class).to(
                         MockImplementation1_ListConfiguration.class);
 
-                binder.bindList("xyz").add(MockInterface5.class).add("yvalue");
+                binder.bindList(Object.class, "xyz").add(MockInterface5.class).add("yvalue");
             }
         };
 
@@ -365,7 +350,7 @@ public class DefaultInjectorInjectionTest {
 
                 binder.bind(MockInterface5.class).to(MockImplementation5.class);
 
-                binder.bindList("xyz")
+                binder.bindList(Object.class, "xyz")
                         .add("1value")
                         .add("5value")
                         .before(MockInterface5.class)
@@ -394,7 +379,7 @@ public class DefaultInjectorInjectionTest {
                 binder.bind(MockInterface1.class).to(
                         MockImplementation1_ListConfiguration.class);
 
-                binder.bindList("xyz").add(MockImplementation5.class).add("yvalue");
+                binder.bindList(Object.class, "xyz").add(MockImplementation5.class).add("yvalue");
             }
         };
 
@@ -412,7 +397,7 @@ public class DefaultInjectorInjectionTest {
             public void configure(Binder binder) {
                 binder.bind(MockInterface1.class).to(
                         MockImplementation1_ListConfiguration.class);
-                binder.bindList("xyz");
+                binder.bindList(Object.class,"xyz");
             }
         };
 
@@ -431,8 +416,8 @@ public class DefaultInjectorInjectionTest {
                 binder.bind(MockInterface1.class).to(
                         MockImplementation1_ListConfiguration.class);
 
-                binder.bindList("xyz").add("xvalue").add("yvalue");
-                binder.bindList("xyz").add("avalue");
+                binder.bindList(Object.class, "xyz").add("xvalue").add("yvalue");
+                binder.bindList(Object.class, "xyz").add("avalue");
             }
         };
 
@@ -441,6 +426,69 @@ public class DefaultInjectorInjectionTest {
         MockInterface1 service = injector.getInstance(MockInterface1.class);
         assertNotNull(service);
         assertEquals(";xvalue;yvalue;avalue", service.getName());
+    }
+
+    @Test
+    public void testTypedListInjection() {
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class)
+                        .to(MockImplementation1_ListConfigurationMock5.class);
+                binder.bind(MockInterface2.class)
+                        .to(MockImplementation2_ListConfiguration.class);
+
+                // Bind list for MockImplementation2_ListConfiguration
+                binder.bindList(Object.class,"xyz")
+                        .add("xvalue")
+                        .add("yvalue")
+                        .add(MockImplementation5.class);
+
+                // Bind list for MockImplementation1_ListConfigurationMock5
+                binder.bindList(MockInterface5.class)
+                        .add(MockImplementation5.class)
+                        .add(new MockInterface5() {
+                            @Override
+                            public String toString() {
+                                return "abc";
+                            }
+                        });
+
+                binder.bindList(Object.class)
+                        .add("avalue")
+                        .add("bvalue")
+                        .add(MockImplementation5.class);
+
+                // Add to list for MockImplementation1_ListConfigurationMock5
+                binder.bindList(MockInterface5.class)
+                        .add(new MockInterface5() {
+                            @Override
+                            public String toString() {
+                                return "cde";
+                            }
+                        });
+
+                // Create named list for MockInterface5
+                binder.bindList(MockInterface5.class, "another_binding")
+                        .add(new MockInterface5() {
+                            @Override
+                            public String toString() {
+                                return "fgh";
+                            }
+                        });
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface1 service = injector.getInstance(MockInterface1.class);
+        assertNotNull(service);
+        assertEquals(";xyz;abc;cde", service.getName());
+
+        MockInterface2 service2 = injector.getInstance(MockInterface2.class);
+        assertNotNull(service2);
+        assertTrue(service2 instanceof MockImplementation2_ListConfiguration);
+        assertEquals(";xvalue;yvalue;xyz", service2.getName());
     }
 
     @Test

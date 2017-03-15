@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.BindingBuilder;
 import org.apache.cayenne.di.DecoratorBuilder;
@@ -41,35 +38,67 @@ class DefaultBinder implements Binder {
 
 	@Override
 	public <T> BindingBuilder<T> bind(Class<T> interfaceType) {
-		return new DefaultBindingBuilder<T>(Key.get(interfaceType), injector);
+		return new DefaultBindingBuilder<>(Key.get(interfaceType), injector);
 	}
 
 	@Override
 	public <T> BindingBuilder<T> bind(Key<T> key) {
-		return new DefaultBindingBuilder<T>(key, injector);
+		return new DefaultBindingBuilder<>(key, injector);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
+	@Deprecated
 	public <T> ListBuilder<T> bindList(String bindingName) {
-		Class<?> listClass = List.class;
-		return new DefaultListBuilder<T>(Key.get((Class<List<?>>) listClass, bindingName), injector);
+		return (ListBuilder<T>)bindList(Object.class, bindingName);
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public <T> ListBuilder<T> bindList(Class<T> valueType) {
+		return bindList(valueType, null);
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public <T> ListBuilder<T> bindList(Class<T> valueType, String bindingName) {
+		return new DefaultListBuilder<>(Key.getListOf(valueType, bindingName), injector);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
+	@Deprecated
 	public <T> MapBuilder<T> bindMap(String bindingName) {
-		Class<?> mapClass = Map.class;
-		return new DefaultMapBuilder<T>(Key.get((Class<Map<String, ?>>) mapClass, bindingName), injector);
+		return (MapBuilder<T>)bindMap(Object.class, bindingName);
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public <T> MapBuilder<T> bindMap(Class<T> valueType) {
+		return bindMap(valueType, null);
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public <T> MapBuilder<T> bindMap(Class<T> valueType, String bindingName) {
+		return new DefaultMapBuilder<>(Key.getMapOf(String.class, valueType, bindingName), injector);
 	}
 
 	@Override
 	public <T> DecoratorBuilder<T> decorate(Class<T> interfaceType) {
-		return new DefaultDecoratorBuilder<T>(Key.get(interfaceType), injector);
+		return new DefaultDecoratorBuilder<>(Key.get(interfaceType), injector);
 	}
 
 	@Override
 	public <T> DecoratorBuilder<T> decorate(Key<T> key) {
-		return new DefaultDecoratorBuilder<T>(key, injector);
+		return new DefaultDecoratorBuilder<>(key, injector);
 	}
 }

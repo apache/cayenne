@@ -18,10 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 public class KeyTest {
@@ -58,6 +61,35 @@ public class KeyTest {
     }
 
     @Test
+    public void testListKeysEquals() {
+        Key<List<Integer>> key1 = Key.getListOf(Integer.class);
+        Key<List<String>> key2 = Key.getListOf(String.class);
+        Key<List<Integer>> key3 = Key.getListOf(Integer.class);
+        Key<List<String>> key4 = Key.getListOf(String.class);
+
+        assertNotEquals(key1, key2);
+        assertNotEquals(key3, key4);
+
+        assertEquals(key1, key3);
+        assertEquals(key1, key1);
+        assertEquals(key2, key4);
+        assertEquals(key4, key4);
+
+        // Name is suppressing generic type, to keep backward compatibility.
+        Key key5 = Key.getListOf(Object.class, "xyz");
+        Key key6 = Key.getListOf(Object.class, "abc");
+        assertNotEquals(key5, key6);
+
+        Key key7 = Key.getListOf(Integer.class, "xyz");
+        Key key8 = Key.getListOf(Integer.class, "abc");
+        assertNotEquals(key7, key8);
+        assertNotEquals(key5, key7);
+
+        Key key9 = Key.get(List.class, "xyz");
+        assertNotEquals(key7, key9);
+     }
+
+    @Test
     public void testHashCode() {
         Key<String> key1 = Key.get(String.class);
         Key<String> key2 = Key.get(String.class);
@@ -83,9 +115,13 @@ public class KeyTest {
 
     @Test
     public void testToString() {
-        assertEquals("<BindingKey: java.lang.String>", Key.get(String.class).toString());
-        assertEquals("<BindingKey: java.lang.String, 'xyz'>", Key
-                .get(String.class, "xyz")
-                .toString());
+        assertEquals("<BindingKey: java.lang.String>",
+                Key.get(String.class).toString());
+        assertEquals("<BindingKey: java.lang.String, 'xyz'>",
+                Key.get(String.class, "xyz").toString());
+        assertEquals("<BindingKey: java.util.List[java.lang.String]>",
+                Key.getListOf(String.class).toString());
+        assertEquals("<BindingKey: java.util.List[java.lang.String], 'xyz'>",
+                Key.getListOf(String.class, "xyz").toString());
     }
 }

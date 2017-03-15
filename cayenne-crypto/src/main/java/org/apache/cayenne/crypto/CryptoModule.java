@@ -78,25 +78,29 @@ public class CryptoModule implements Module {
     }
 
     public static MapBuilder<String> contributeProperties(Binder binder) {
-        return binder.bindMap(CryptoConstants.PROPERTIES_MAP);
+        return binder.bindMap(String.class, CryptoConstants.PROPERTIES_MAP);
     }
 
     public static MapBuilder<char[]> contributeCredentials(Binder binder) {
-        return binder.bindMap(CryptoConstants.CREDENTIALS_MAP);
+        return binder.bindMap(char[].class, CryptoConstants.CREDENTIALS_MAP);
     }
 
+    @SuppressWarnings("unchecked")
     public static MapBuilder<BytesConverter<?>> contributeDbToByteConverters(Binder binder) {
-        return binder.bindMap(DefaultValueTransformerFactory.DB_TO_BYTE_CONVERTERS_KEY);
+        MapBuilder mapBuilder = binder.bindMap(BytesConverter.class, DefaultValueTransformerFactory.DB_TO_BYTE_CONVERTERS_KEY);
+        return (MapBuilder<BytesConverter<?>>)mapBuilder;
     }
 
+    @SuppressWarnings("unchecked")
     public static MapBuilder<BytesConverter<?>> contributeObjectToByteConverters(Binder binder) {
-        return binder.bindMap(DefaultValueTransformerFactory.OBJECT_TO_BYTE_CONVERTERS_KEY);
+        MapBuilder mapBuilder = binder.bindMap(BytesConverter.class, DefaultValueTransformerFactory.OBJECT_TO_BYTE_CONVERTERS_KEY);
+        return (MapBuilder<BytesConverter<?>>)mapBuilder;
     }
 
     @Override
     public void configure(Binder binder) {
 
-        MapBuilder<String> props = contributeProperties(binder)
+        contributeProperties(binder)
                 .put(CryptoConstants.CIPHER_ALGORITHM, DEFAULT_CIPHER_ALGORITHM)
                 .put(CryptoConstants.CIPHER_MODE, DEFAULT_CIPHER_MODE)
                 .put(CryptoConstants.CIPHER_PADDING, DEFAULT_CIPHER_PADDING);

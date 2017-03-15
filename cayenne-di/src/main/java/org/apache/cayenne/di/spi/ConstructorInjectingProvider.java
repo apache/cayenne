@@ -160,8 +160,7 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
             return injector.getProvider(Key.get(objectClass, bindingName));
         } else {
 
-            Key<?> key = Key.get(parameter, bindingName);
-
+            Key<?> key = DIUtil.getKeyForTypeAndGenericType(parameter, genericType, bindingName);
             stack.push(key);
             try {
                 return injector.getInstance(key);

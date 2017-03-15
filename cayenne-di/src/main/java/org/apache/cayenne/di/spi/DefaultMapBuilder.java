@@ -29,9 +29,9 @@ import java.util.Map.Entry;
 class DefaultMapBuilder<T> implements MapBuilder<T> {
 
     private DefaultInjector injector;
-    private Key<Map<String, ?>> bindingKey;
+    private Key<Map<String, T>> bindingKey;
 
-    DefaultMapBuilder(Key<Map<String, ?>> bindingKey, DefaultInjector injector) {
+    DefaultMapBuilder(Key<Map<String, T>> bindingKey, DefaultInjector injector) {
         this.injector = injector;
         this.bindingKey = bindingKey;
 
@@ -44,8 +44,8 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
     public MapBuilder<T> put(String key, Class<? extends T> interfaceType)
             throws DIRuntimeException {
 
-        Key<?> bindingKey = Key.get(interfaceType);
-        Binding<?> binding = injector.getBinding(bindingKey);
+        Key<? extends T> bindingKey = Key.get(interfaceType);
+        Binding<? extends T> binding = injector.getBinding(bindingKey);
 
         if (binding == null) {
             return putWithBinding(key, interfaceType);
@@ -81,7 +81,7 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
     @Override
     public MapBuilder<T> putAll(Map<String, T> map) throws DIRuntimeException {
 
-        MapProvider provider = getMapProvider();
+        MapProvider<T> provider = getMapProvider();
 
         for (Entry<String, T> entry : map.entrySet()) {
 
@@ -93,16 +93,15 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
         return this;
     }
 
-    private MapProvider getMapProvider() {
-        MapProvider provider = null;
+    private MapProvider<T> getMapProvider() {
+        MapProvider<T> provider;
 
-        Binding<Map<String, ?>> binding = injector.getBinding(bindingKey);
+        Binding<Map<String, T>> binding = injector.getBinding(bindingKey);
         if (binding == null) {
-            provider = new MapProvider();
+            provider = new MapProvider<>();
             injector.putBinding(bindingKey, provider);
-        }
-        else {
-            provider = (MapProvider) binding.getOriginal();
+        } else {
+            provider = (MapProvider<T>) binding.getOriginal();
         }
 
         return provider;

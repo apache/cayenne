@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * An object that encapsulates a key used to store and lookup DI bindings. Key is made of
  * a binding type and an optional binding name.
@@ -26,15 +29,17 @@ package org.apache.cayenne.di;
  */
 public class Key<T> {
 
-    protected Class<T> type;
-    protected String typeName;
+    /**
+     * @since 4.0
+     */
+    protected TypeLiteral<T> typeLiteral;
     protected String bindingName;
 
     /**
      * Creates a key for a nameless binding of a given type.
      */
     public static <T> Key<T> get(Class<T> type) {
-        return new Key<T>(type, null);
+        return new Key<>(TypeLiteral.of(type), null);
     }
 
     /**
@@ -43,18 +48,43 @@ public class Key<T> {
      * binding key is created.
      */
     public static <T> Key<T> get(Class<T> type, String bindingName) {
-        return new Key<T>(type, bindingName);
+        return new Key<>(TypeLiteral.of(type), bindingName);
     }
 
-    protected Key(Class<T> type, String bindingName) {
+    /**
+     * @since 4.0
+     */
+    public static <T> Key<List<T>> getListOf(Class<T> type) {
+        return getListOf(type, null);
+    }
+
+    /**
+     * @since 4.0
+     */
+    public static <T> Key<List<T>> getListOf(Class<T> type, String bindingName) {
+        return new Key<>(TypeLiteral.listOf(type), bindingName);
+    }
+
+    /**
+     * @since 4.0
+     */
+    public static <K, V> Key<Map<K, V>> getMapOf(Class<K> keyType, Class<V> valueType) {
+        return getMapOf(keyType, valueType, null);
+    }
+
+    /**
+     * @since 4.0
+     */
+    public static <K, V> Key<Map<K, V>> getMapOf(Class<K> keyType, Class<V> valueType, String bindingName) {
+        return new Key<>(TypeLiteral.mapOf(keyType, valueType), bindingName);
+    }
+
+    protected Key(TypeLiteral<T> type, String bindingName) {
         if (type == null) {
             throw new NullPointerException("Null key type");
         }
 
-        this.type = type;
-
-        // will use type name in comparisons to ensure the key works across ClassLoaders.
-        this.typeName = type.getName();
+        this.typeLiteral = type;
 
         // empty non-null binding names are often passed from annotation defaults and are
         // treated as null
@@ -63,8 +93,9 @@ public class Key<T> {
                 : null;
     }
 
+    @SuppressWarnings("unchecked")
     public Class<T> getType() {
-        return type;
+        return (Class<T>)typeLiteral.getType();
     }
 
     /**
@@ -86,15 +117,14 @@ public class Key<T> {
             Key<?> key = (Key<?>) object;
 
             // type is guaranteed to be not null, so skip null checking...
-            if (!typeName.equals(key.typeName)) {
+            if (!typeLiteral.equals(key.typeLiteral)) {
                 return false;
             }
 
             // bindingName can be null, so take this into account
             if (bindingName != null) {
                 return bindingName.equals(key.bindingName);
-            }
-            else {
+            } else {
                 return key.bindingName == null;
             }
         }
@@ -105,7 +135,7 @@ public class Key<T> {
     @Override
     public int hashCode() {
 
-        int hashCode = 407 + 11 * typeName.hashCode();
+        int hashCode = 407 + 11 * typeLiteral.hashCode();
 
         if (bindingName != null) {
             hashCode += bindingName.hashCode();
@@ -118,7 +148,7 @@ public class Key<T> {
     public String toString() {
         StringBuilder buffer = new StringBuilder();
         buffer.append("<BindingKey: ");
-        buffer.append(typeName);
+        buffer.append(typeLiteral);
 
         if (bindingName != null) {
             buffer.append(", '").append(bindingName).append('\'');

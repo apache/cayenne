@@ -97,9 +97,7 @@ class FieldInjectingProvider<T> implements Provider<T> {
 
             return injector.getProvider(Key.get(objectClass, bindingName));
         } else {
-
-            Key<?> key = Key.get(fieldType, bindingName);
-
+            Key<?> key = DIUtil.getKeyForTypeAndGenericType(fieldType, field.getGenericType(), bindingName);
             stack.push(key);
             try {
                 return injector.getInstance(key);

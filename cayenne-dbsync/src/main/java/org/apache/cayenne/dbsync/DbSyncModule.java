@@ -63,7 +63,7 @@ public class DbSyncModule implements Module {
     public static final String MERGER_FACTORIES_MAP = "cayenne.dbsync.mergerfactories";
 
     public static MapBuilder<MergerTokenFactory> contributeMergerTokenFactories(Binder binder) {
-        return binder.bindMap(MERGER_FACTORIES_MAP);
+        return binder.bindMap(MergerTokenFactory.class, MERGER_FACTORIES_MAP);
     }
 
     @Override

@@ -38,9 +38,9 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
 
     protected static AtomicLong incrementer = new AtomicLong();
     protected DefaultInjector injector;
-    protected Key<List<?>> bindingKey;
+    protected Key<List<T>> bindingKey;
 
-    DefaultListBuilder(Key<List<?>> bindingKey, DefaultInjector injector) {
+    DefaultListBuilder(Key<List<T>> bindingKey, DefaultInjector injector) {
         this.injector = injector;
         this.bindingKey = bindingKey;
 
@@ -53,8 +53,8 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
     public ListBuilder<T> add(Class<? extends T> interfaceType)
             throws DIRuntimeException {
 
-        Key<?> key = Key.get(interfaceType);
-        Binding<?> binding = injector.getBinding(key);
+        Key<? extends T> key = Key.get(interfaceType);
+        Binding<? extends T> binding = injector.getBinding(key);
 
         if (binding == null) {
             return addWithBinding(interfaceType);
@@ -75,44 +75,45 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public ListBuilder<T> add(T object) throws DIRuntimeException {
 
-        Provider<T> provider0 = new InstanceProvider<T>(object);
-        Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
+        Provider<T> provider0 = new InstanceProvider<>(object);
+        Provider<T> provider1 = new FieldInjectingProvider<>(provider0, injector);
 
-        getListProvider().add(Key.get(object.getClass(), String.valueOf(incrementer.getAndIncrement())), provider1);
+        getListProvider().add(Key.get((Class<? extends T>)object.getClass(), String.valueOf(incrementer.getAndIncrement())), provider1);
         return this;
     }
 
     @Override
     public ListBuilder<T> add(Key<T> key, T object) throws DIRuntimeException {
 
-        Provider<T> provider0 = new InstanceProvider<T>(object);
-        Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
+        Provider<T> provider0 = new InstanceProvider<>(object);
+        Provider<T> provider1 = new FieldInjectingProvider<>(provider0, injector);
 
         getListProvider().add(key, provider1);
         return this;
     }
 
     @Override
-    public UnorderedListBuilder<T> after(Class<?> type) {
+    public UnorderedListBuilder<T> after(Class<? extends T> type) {
         return after(Key.get(type));
     }
 
     @Override
-    public UnorderedListBuilder<T> after(Key<?> key) {
+    public UnorderedListBuilder<T> after(Key<? extends T> key) {
         getListProvider().after(key);
         return this;
     }
 
     @Override
-    public UnorderedListBuilder<T> before(Class<?> type) {
+    public UnorderedListBuilder<T> before(Class<? extends T> type) {
         return before(Key.get(type));
     }
 
     @Override
-    public UnorderedListBuilder<T> before(Key<?> key) {
+    public UnorderedListBuilder<T> before(Key<? extends T> key) {
         getListProvider().before(key);
         return this;
     }
@@ -120,29 +121,30 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
     @Override
     public ListBuilder<T> addAll(Collection<T> objects) throws DIRuntimeException {
 
-        Map<Key<?>, Provider<?>> keyProviderMap = new LinkedHashMap<>();
+        Map<Key<? extends T>, Provider<? extends T>> keyProviderMap = new LinkedHashMap<>();
         for (T object : objects) {
-            Provider<T> provider0 = new InstanceProvider<T>(object);
-            Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
+            Provider<T> provider0 = new InstanceProvider<>(object);
+            Provider<T> provider1 = new FieldInjectingProvider<>(provider0, injector);
 
-            keyProviderMap.put(Key.get(object.getClass(), String.valueOf(incrementer.getAndIncrement())), provider1);
+            @SuppressWarnings("unchecked")
+            Class<? extends T> objectType = (Class<? extends T>)object.getClass();
+            keyProviderMap.put(Key.get(objectType, String.valueOf(incrementer.getAndIncrement())), provider1);
         }
 
         getListProvider().addAll(keyProviderMap);
         return this;
     }
 
-    private ListProvider getListProvider() {
+    private ListProvider<T> getListProvider() {
 
-        ListProvider provider = null;
+        ListProvider<T> provider;
 
-        Binding<List<?>> binding = injector.getBinding(bindingKey);
+        Binding<List<T>> binding = injector.getBinding(bindingKey);
         if (binding == null) {
-            provider = new ListProvider();
+            provider = new ListProvider<>();
             injector.putBinding(bindingKey, provider);
-        }
-        else {
-            provider = (ListProvider) binding.getOriginal();
+        } else {
+            provider = (ListProvider<T>) binding.getOriginal();
         }
 
         return provider;

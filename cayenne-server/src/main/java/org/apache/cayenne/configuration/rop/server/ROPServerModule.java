@@ -43,7 +43,7 @@ public class ROPServerModule implements Module {
      * @since 4.0
      */
     public static MapBuilder<String> contributeROPBridgeProperties(Binder binder) {
-        return binder.bindMap(Constants.SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP);
+        return binder.bindMap(String.class, Constants.SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP);
     }
 
     public ROPServerModule(Map<String, String> eventBridgeProperties) {

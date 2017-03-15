@@ -68,8 +68,8 @@ public class ROPServletTest {
 		runtime = WebUtil.getCayenneRuntime(context);
 		assertNotNull(runtime);
 
-		List<?> locations = runtime.getInjector().getInstance(
-				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		List<String> locations = runtime.getInjector().getInstance(
+				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 		assertEquals(Arrays.asList("cayenne-org.apache.cayenne.configuration.rop.server.test-config.xml"), locations);
 	}
 
@@ -89,8 +89,8 @@ public class ROPServletTest {
 
 		runtime = WebUtil.getCayenneRuntime(context);
 		assertNotNull(runtime);
-		List<?> locations = runtime.getInjector().getInstance(
-				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		List<String> locations = runtime.getInjector().getInstance(
+				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
 		assertEquals(Arrays.asList(location), locations);
 	}
@@ -112,8 +112,8 @@ public class ROPServletTest {
 		runtime = WebUtil.getCayenneRuntime(context);
 		assertNotNull(runtime);
 
-		List<?> locations = runtime.getInjector().getInstance(
-				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		List<String> locations = runtime.getInjector().getInstance(
+				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
 		assertEquals(Arrays.asList(name + ".xml"), locations);
 		

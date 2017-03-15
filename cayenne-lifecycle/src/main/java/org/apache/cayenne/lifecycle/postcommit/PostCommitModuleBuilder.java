@@ -117,8 +117,9 @@ public class PostCommitModuleBuilder {
 
 				binder.bind(PostCommitEntityFactory.class).to(entityFactoryType);
 
-				ListBuilder<PostCommitListener> listeners = binder.<PostCommitListener> bindList(
-						PostCommitFilter.POST_COMMIT_LISTENERS_LIST).addAll(listenerInstances);
+				ListBuilder<PostCommitListener> listeners = binder
+						.bindList(PostCommitListener.class, PostCommitFilter.POST_COMMIT_LISTENERS_LIST)
+						.addAll(listenerInstances);
 
 				// types have to be added one-by-one
 				for (Class type : listenerTypes) {
