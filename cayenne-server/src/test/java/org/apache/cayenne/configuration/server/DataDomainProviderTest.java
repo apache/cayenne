@@ -199,7 +199,6 @@ public class DataDomainProviderTest {
 
                 binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
                 binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
-                binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP);
 			}
 		};
 

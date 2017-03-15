@@ -26,11 +26,12 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.event.SnapshotEvent;
+import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
-import org.apache.commons.collections.ExtendedProperties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -53,8 +54,16 @@ public class DataRowStore implements Serializable {
 
     private static Log logger = LogFactory.getLog(DataRowStore.class);
 
-    // property keys
+    /**
+     * @deprecated since 4.0, never used actually
+     */
+    @Deprecated
     public static final String SNAPSHOT_EXPIRATION_PROPERTY = "cayenne.DataRowStore.snapshot.expiration";
+
+    /**
+     * @deprecated since 4.0, use {@link org.apache.cayenne.configuration.Constants#SNAPSHOT_CACHE_SIZE_PROPERTY}
+     */
+    @Deprecated
     public static final String SNAPSHOT_CACHE_SIZE_PROPERTY = "cayenne.DataRowStore.snapshot.size";
 
     /**
@@ -112,7 +121,7 @@ public class DataRowStore implements Serializable {
      *                     events.
      * @since 1.2
      */
-    public DataRowStore(String name, Map<String, String> properties, EventManager eventManager) {
+    public DataRowStore(String name, RuntimeProperties properties, EventManager eventManager) {
         if (name == null) {
             throw new IllegalArgumentException("DataRowStore name can't be null.");
         }
@@ -127,36 +136,18 @@ public class DataRowStore implements Serializable {
         return EventSubject.getSubject(this.getClass(), name);
     }
 
-    protected void initWithProperties(Map<String, String> properties) {
-        ExtendedProperties propertiesWrapper = new ExtendedProperties();
+    protected void initWithProperties(RuntimeProperties properties) {
 
-        if (properties != null) {
-            propertiesWrapper.putAll(properties);
-        }
-
-        long snapshotsExpiration = propertiesWrapper.getLong(
-                SNAPSHOT_EXPIRATION_PROPERTY,
-                SNAPSHOT_EXPIRATION_DEFAULT);
-
-        maxSize = propertiesWrapper.getInt(
-                SNAPSHOT_CACHE_SIZE_PROPERTY,
-                SNAPSHOT_CACHE_SIZE_DEFAULT);
+        // expiration time is never used actually
+        maxSize = properties.getInt(Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, SNAPSHOT_CACHE_SIZE_DEFAULT);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("DataRowStore property "
-                    + SNAPSHOT_EXPIRATION_PROPERTY
-                    + " = "
-                    + snapshotsExpiration);
-            logger.debug("DataRowStore property "
-                    + SNAPSHOT_CACHE_SIZE_PROPERTY
-                    + " = "
-                    + maxSize);
+            logger.debug("DataRowStore property " + Constants.SNAPSHOT_CACHE_SIZE_PROPERTY + " = " + maxSize);
         }
 
         this.snapshots = new ConcurrentLinkedHashMap.Builder<ObjectId, DataRow>()
                 .maximumWeightedCapacity(maxSize)
                 .build();
-
     }
 
     protected void setEventBridge(EventBridge eventBridge) {

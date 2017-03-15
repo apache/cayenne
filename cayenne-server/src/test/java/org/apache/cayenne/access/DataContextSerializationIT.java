@@ -24,6 +24,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -149,10 +150,10 @@ public class DataContextSerializationIT extends ServerCase {
         DataDomain domain = context.getParentDataDomain();
         DataRowStore snapshotCache = new DataRowStore(
                 domain.getName(),
-                domain.getProperties(),
+                new DefaultRuntimeProperties(domain.getProperties()),
                 domain.getEventManager());
 
-        Map<Object, Persistent> map = new HashMap<Object, Persistent>();
+        Map<Object, Persistent> map = new HashMap<>();
 
         DataContext localCacheContext = new DataContext(domain, new ObjectStore(
                 snapshotCache,

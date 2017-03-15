@@ -7,14 +7,12 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 
 UPGRADING TO 4.0.M6
 
-* Per CAY-1873 and CAY-2266 Cache and remote notification configuration was moved
-  from Modeler into runtime DI settings. To set custom cache size and expiration time,
-  you should use custom module like this:
+* Per CAY-1873 and CAY-2266 Cache and remote notification configuration was moved from Modeler into
+  runtime DI settings. To set custom cache size, you should use custom module like this:
         Module module = binder -> {
-            binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP)
-                .put(DataRowStore.SNAPSHOT_EXPIRATION_PROPERTY, "10800")
-                .put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, "20000");
+            ServerModule.setSnapshotCacheSize(binder, 20000);
         };
+  Or you can use cmd line arg: -Dcayenne.DataRowStore.snapshot.size=20000
 
   If you have used remote notifications, you should include one of the following modules into your project:
         - cayenne-jgroups

@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
@@ -64,12 +64,9 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
         final DataDomain DOMAIN = new DataDomain("test");
         final EventManager EVENT_MANAGER = new DefaultEventManager();
         final int CACHE_SIZE = 500;
-        final int EXPIRATION_PROPERTY = 60 * 60 * 24;
 
         Module testModule = new Module() {
-
             public void configure(Binder binder) {
-                binder.bindMap(Constants.PROPERTIES_MAP);
                 binder.bind(DataDomain.class).toInstance(DOMAIN);
                 binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
                 binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
@@ -78,9 +75,7 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
                 binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
                 binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
-                binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP)
-                        .put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, String.valueOf(CACHE_SIZE))
-                        .put(DataRowStore.SNAPSHOT_EXPIRATION_PROPERTY, String.valueOf(EXPIRATION_PROPERTY));
+                ServerModule.setSnapshotCacheSize(binder, CACHE_SIZE);
             }
         };
 
@@ -98,9 +93,7 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
         final EventManager EVENT_MANAGER = new DefaultEventManager();
 
         Module testModule = new Module() {
-
             public void configure(Binder binder) {
-                binder.bindMap(Constants.PROPERTIES_MAP);
                 binder.bind(DataDomain.class).toInstance(DOMAIN);
                 binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
                 binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
@@ -109,7 +102,7 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
                 binder.bind(EventBridge.class).toProvider(MockEventBridgeProvider.class);
                 binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
-                binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP);
+                ServerModule.contributeProperties(binder);
             }
         };
 

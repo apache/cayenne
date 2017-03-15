@@ -21,6 +21,8 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.event.MockEventManager;
 
 import java.util.HashMap;
@@ -31,14 +33,14 @@ import java.util.Map;
  */
 public class MockDataRowStore extends DataRowStore {
 
-    private static final Map TEST_DEFAULTS = new HashMap();
+    private static final Map<String, String> TEST_DEFAULTS = new HashMap<>();
 
     static {
-        TEST_DEFAULTS.put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, new Integer(10));
+        TEST_DEFAULTS.put(Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, Integer.toString(10));
     }
 
     public MockDataRowStore() {
-        super("mock DataRowStore", TEST_DEFAULTS, new MockEventManager());
+        super("mock DataRowStore", new DefaultRuntimeProperties(TEST_DEFAULTS), new MockEventManager());
     }
 
     /**
@@ -48,7 +50,7 @@ public class MockDataRowStore extends DataRowStore {
         snapshots.put(id, snapshot);
     }
 
-    public void putSnapshot(ObjectId id, Map snapshot) {
+    public void putSnapshot(ObjectId id, Map<String, ?> snapshot) {
         snapshots.put(id, new DataRow(snapshot));
     }
 

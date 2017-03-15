@@ -35,14 +35,14 @@ public interface Constants {
      *
      * @see org.apache.cayenne.configuration.server.ServerModule#contributeProperties(Binder).
      */
-    public static final String PROPERTIES_MAP = "cayenne.properties";
+    String PROPERTIES_MAP = "cayenne.properties";
 
     /**
      * A DI container key for the List&lt;DbAdapterDetector&gt; that contains
      * objects that can discover the type of current database and install the
      * correct DbAdapter in runtime.
      */
-    public static final String SERVER_ADAPTER_DETECTORS_LIST = "cayenne.server.adapter_detectors";
+    String SERVER_ADAPTER_DETECTORS_LIST = "cayenne.server.adapter_detectors";
 
     /**
      * A DI container key for the List&lt;DataChannelFilter&gt; storing
@@ -50,13 +50,13 @@ public interface Constants {
      *
      * @see org.apache.cayenne.configuration.server.ServerModule#contributeDomainFilters(Binder).
      */
-    public static final String SERVER_DOMAIN_FILTERS_LIST = "cayenne.server.domain_filters";
+    String SERVER_DOMAIN_FILTERS_LIST = "cayenne.server.domain_filters";
 
     /**
      * A DI container key for the List&lt;String&gt; storing locations of the
      * one of more project configuration files.
      */
-    public static final String SERVER_PROJECT_LOCATIONS_LIST = "cayenne.server.project_locations";
+    String SERVER_PROJECT_LOCATIONS_LIST = "cayenne.server.project_locations";
 
     /**
      * A DI container key for the List&lt;ExtendedType&gt; storing default
@@ -64,7 +64,7 @@ public interface Constants {
      *
      * @see org.apache.cayenne.configuration.server.ServerModule#contributeDefaultTypes(Binder).
      */
-    public static final String SERVER_DEFAULT_TYPES_LIST = "cayenne.server.default_types";
+    String SERVER_DEFAULT_TYPES_LIST = "cayenne.server.default_types";
 
     /**
      * A DI container key for the List&lt;ExtendedType&gt; storing a
@@ -72,7 +72,7 @@ public interface Constants {
      *
      * @see org.apache.cayenne.configuration.server.ServerModule#contributeUserTypes(Binder).
      */
-    public static final String SERVER_USER_TYPES_LIST = "cayenne.server.user_types";
+    String SERVER_USER_TYPES_LIST = "cayenne.server.user_types";
 
     /**
      * A DI container key for the List&lt;ExtendedTypeFactory&gt; storing
@@ -80,32 +80,32 @@ public interface Constants {
      *
      * @see org.apache.cayenne.configuration.server.ServerModule#contributeTypeFactories(Binder).
      */
-    public static final String SERVER_TYPE_FACTORIES_LIST = "cayenne.server.type_factories";
+    String SERVER_TYPE_FACTORIES_LIST = "cayenne.server.type_factories";
 
     /**
      * A server-side DI container key for binding {@link org.apache.cayenne.resource.ResourceLocator}
      */
-    public final static String SERVER_RESOURCE_LOCATOR = "cayenne.server.resource_locator";
+    String SERVER_RESOURCE_LOCATOR = "cayenne.server.resource_locator";
 
     /**
      * A server-side DI container key for the Map&lt;String, String&gt; storing
      * event bridge properties passed to the ROP client on bootstrap.
      */
-    public static final String SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP = "cayenne.server.rop_event_bridge_properties";
+    String SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP = "cayenne.server.rop_event_bridge_properties";
 
     // Runtime properties
 
-    public static final String JDBC_DRIVER_PROPERTY = "cayenne.jdbc.driver";
+    String JDBC_DRIVER_PROPERTY = "cayenne.jdbc.driver";
 
-    public static final String JDBC_URL_PROPERTY = "cayenne.jdbc.url";
+    String JDBC_URL_PROPERTY = "cayenne.jdbc.url";
 
-    public static final String JDBC_USERNAME_PROPERTY = "cayenne.jdbc.username";
+    String JDBC_USERNAME_PROPERTY = "cayenne.jdbc.username";
 
-    public static final String JDBC_PASSWORD_PROPERTY = "cayenne.jdbc.password";
+    String JDBC_PASSWORD_PROPERTY = "cayenne.jdbc.password";
 
-    public static final String JDBC_MIN_CONNECTIONS_PROPERTY = "cayenne.jdbc.min_connections";
+    String JDBC_MIN_CONNECTIONS_PROPERTY = "cayenne.jdbc.min_connections";
 
-    public static final String JDBC_MAX_CONNECTIONS_PROPERTY = "cayenne.jdbc.max_connections";
+    String JDBC_MAX_CONNECTIONS_PROPERTY = "cayenne.jdbc.max_connections";
 
     /**
      * Defines a maximum time in milliseconds that a connection request could
@@ -116,12 +116,12 @@ public interface Constants {
      *
      * @since 4.0
      */
-    public static final String JDBC_MAX_QUEUE_WAIT_TIME = "cayenne.jdbc.max_wait";
+    String JDBC_MAX_QUEUE_WAIT_TIME = "cayenne.jdbc.max_wait";
 
     /**
      * @since 4.0
      */
-    public static final String JDBC_VALIDATION_QUERY_PROPERTY = "cayenne.jdbc.validation_query";
+    String JDBC_VALIDATION_QUERY_PROPERTY = "cayenne.jdbc.validation_query";
 
     /**
      * An integer property defining the maximum number of entries in the query
@@ -129,7 +129,7 @@ public interface Constants {
      * MapQueryCache uses it, but the rest would use alternative configuration
      * methods.
      */
-    public static final String QUERY_CACHE_SIZE_PROPERTY = "cayenne.querycache.size";
+    String QUERY_CACHE_SIZE_PROPERTY = "cayenne.querycache.size";
 
     /**
      * An optional name of the runtime DataDomain. If not specified (which is
@@ -137,25 +137,25 @@ public interface Constants {
      *
      * @since 4.0
      */
-    public static final String SERVER_DOMAIN_NAME_PROPERTY = "cayenne.server.domain.name";
+    String SERVER_DOMAIN_NAME_PROPERTY = "cayenne.server.domain.name";
 
     /**
      * A boolean property defining whether cross-contexts synchronization is
      * enabled. Possible values are "true" or "false".
      */
-    public static final String SERVER_CONTEXTS_SYNC_PROPERTY = "cayenne.server.contexts_sync_strategy";
+    String SERVER_CONTEXTS_SYNC_PROPERTY = "cayenne.server.contexts_sync_strategy";
 
     /**
      * A String property that defines how ObjectContexts should retain cached
      * committed objects. Possible values are "weak", "soft", "hard".
      */
-    public static final String SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY = "cayenne.server.object_retain_strategy";
+    String SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY = "cayenne.server.object_retain_strategy";
 
     /**
      * A boolean property that defines whether runtime should use external
      * transactions. Possible values are "true" or "false".
      */
-    public static final String SERVER_EXTERNAL_TX_PROPERTY = "cayenne.server.external_tx";
+    String SERVER_EXTERNAL_TX_PROPERTY = "cayenne.server.external_tx";
 
     /**
      * The name of the {@link org.apache.cayenne.event.EventBridgeFactory} that
@@ -164,7 +164,7 @@ public interface Constants {
      * stored in {@link #SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP}, not
      * {@link #PROPERTIES_MAP}.
      */
-    public static final String SERVER_ROP_EVENT_BRIDGE_FACTORY_PROPERTY = "cayenne.server.rop_event_bridge_factory";
+    String SERVER_ROP_EVENT_BRIDGE_FACTORY_PROPERTY = "cayenne.server.rop_event_bridge_factory";
 
     /**
      * A property that defines a maximum number of ID qualifiers in where clause
@@ -173,7 +173,7 @@ public interface Constants {
      * DISJOINT_BY_ID prefetch processing. This is needed to avoid where clause
      * size limitations and memory usage efficiency.
      */
-    public static final String SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY = "cayenne.server.max_id_qualifier_size";
+    String SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY = "cayenne.server.max_id_qualifier_size";
 
     /**
      * Defines a maximum time in milliseconds that a connection request could
@@ -184,12 +184,12 @@ public interface Constants {
      *
      * @deprecated since 4.0 renamed to {@link #JDBC_MAX_QUEUE_WAIT_TIME}. Property name is preserved.
      */
-    public static final String SERVER_MAX_QUEUE_WAIT_TIME = JDBC_MAX_QUEUE_WAIT_TIME;
+    String SERVER_MAX_QUEUE_WAIT_TIME = JDBC_MAX_QUEUE_WAIT_TIME;
 
     /**
      * Defines if database uses case-insensitive collation
      */
-    public final static String CI_PROPERTY = "cayenne.runtime.db.collation.assume.ci";
+    String CI_PROPERTY = "cayenne.runtime.db.collation.assume.ci";
 
     /**
      * A integer property that enables logging for just long running queries
@@ -199,31 +199,38 @@ public interface Constants {
      *
      * @since 4.0
      */
-    public final static String QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY = "cayenne.server.query_execution_time_logging_threshold";
+    String QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY = "cayenne.server.query_execution_time_logging_threshold";
+
+    /**
+     * Snapshot cache max size
+     * @see org.apache.cayenne.configuration.server.ServerModule#setSnapshotCacheSize(Binder, int)
+     * @since 4.0
+     */
+    String SNAPSHOT_CACHE_SIZE_PROPERTY = "cayenne.DataRowStore.snapshot.size";
 
     /**
      * @deprecated  since 4.0 moved to cayenne-client org.apache.cayenne.configuration.rop.client.ClientConstants.
      */
     @Deprecated
-    public static final String ROP_SERVICE_URL_PROPERTY = "cayenne.rop.service_url";
+    String ROP_SERVICE_URL_PROPERTY = "cayenne.rop.service_url";
 
     /**
      * @deprecated  since 4.0 moved to cayenne-client org.apache.cayenne.configuration.rop.client.ClientConstants.
      */
     @Deprecated
-    public static final String ROP_SERVICE_USERNAME_PROPERTY = "cayenne.rop.service_username";
+    String ROP_SERVICE_USERNAME_PROPERTY = "cayenne.rop.service_username";
 
     /**
      * @deprecated  since 4.0 moved to cayenne-client org.apache.cayenne.configuration.rop.client.ClientConstants.
      */
     @Deprecated
-    public static final String ROP_SERVICE_PASSWORD_PROPERTY = "cayenne.rop.service_password";
+    String ROP_SERVICE_PASSWORD_PROPERTY = "cayenne.rop.service_password";
 
     /**
      * @deprecated  since 4.0 moved to cayenne-client org.apache.cayenne.configuration.rop.client.ClientConstants.
      */
     @Deprecated
-    public static final String ROP_SERVICE_REALM_PROPERTY = "cayenne.rop.service_realm";
+    String ROP_SERVICE_REALM_PROPERTY = "cayenne.rop.service_realm";
 
     /**
      * A boolean property that defines whether ALPN should be used.
@@ -232,44 +239,36 @@ public interface Constants {
      * @deprecated  since 4.0 moved to cayenne-client org.apache.cayenne.configuration.rop.client.ClientConstants.
      */
     @Deprecated
-    public static final String ROP_SERVICE_USE_ALPN_PROPERTY = "cayenne.rop.service_use_alpn";
+    String ROP_SERVICE_USE_ALPN_PROPERTY = "cayenne.rop.service_use_alpn";
 
     /**
      * @deprecated  since 4.0 moved to cayenne-client org.apache.cayenne.configuration.rop.client.ClientConstants.
      */
     @Deprecated
-    public static final String ROP_SERVICE_SHARED_SESSION_PROPERTY = "cayenne.rop.shared_session_name";
+    String ROP_SERVICE_SHARED_SESSION_PROPERTY = "cayenne.rop.shared_session_name";
 
     /**
      * @deprecated  since 4.0 moved to cayenne-client org.apache.cayenne.configuration.rop.client.ClientConstants.
      */
     @Deprecated
-    public static final String ROP_SERVICE_TIMEOUT_PROPERTY = "cayenne.rop.service_timeout";
+    String ROP_SERVICE_TIMEOUT_PROPERTY = "cayenne.rop.service_timeout";
 
     /**
      * @deprecated  since 4.0 moved to cayenne-client org.apache.cayenne.configuration.rop.client.ClientConstants.
      */
     @Deprecated
-    public static final String ROP_CHANNEL_EVENTS_PROPERTY = "cayenne.rop.channel_events";
+    String ROP_CHANNEL_EVENTS_PROPERTY = "cayenne.rop.channel_events";
 
     /**
      * @deprecated  since 4.0 moved to cayenne-client org.apache.cayenne.configuration.rop.client.ClientConstants.
      */
     @Deprecated
-    public static final String ROP_CONTEXT_CHANGE_EVENTS_PROPERTY = "cayenne.rop.context_change_events";
+    String ROP_CONTEXT_CHANGE_EVENTS_PROPERTY = "cayenne.rop.context_change_events";
 
     /**
      * @deprecated  since 4.0 moved to cayenne-client org.apache.cayenne.configuration.rop.client.ClientConstants.
      */
     @Deprecated
-    public static final String ROP_CONTEXT_LIFECYCLE_EVENTS_PROPERTY = "cayenne.rop.context_lifecycle_events";
-
-    /**
-     * A DI container key for the Map&lt;String, String&gt; storing
-     * {@link org.apache.cayenne.access.DataRowStore} properties
-     *
-     * @since 4.0
-     */
-    public static final String DATA_ROW_STORE_PROPERTIES_MAP = "cayenne.server.data_row_store";
+    String ROP_CONTEXT_LIFECYCLE_EVENTS_PROPERTY = "cayenne.rop.context_lifecycle_events";
 
 }

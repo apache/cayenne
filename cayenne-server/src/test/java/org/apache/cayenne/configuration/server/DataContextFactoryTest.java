@@ -26,7 +26,6 @@ import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
@@ -73,7 +72,7 @@ public class DataContextFactoryTest {
                 binder.bind(EventManager.class).toInstance(eventManager);
                 binder.bind(QueryCache.class).toInstance(new MapQueryCache(5));
                 binder.bind(RuntimeProperties.class).toInstance(
-                        new DefaultRuntimeProperties(Collections.EMPTY_MAP));
+                        new DefaultRuntimeProperties(Collections.<String, String>emptyMap()));
                 binder.bind(ObjectMapRetainStrategy.class).to(
                         DefaultObjectMapRetainStrategy.class);
                 binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
@@ -82,7 +81,6 @@ public class DataContextFactoryTest {
                 binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
                 binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
                 binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
-                binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP);
             }
         };
 
@@ -114,7 +112,7 @@ public class DataContextFactoryTest {
                 binder.bind(EventManager.class).toInstance(eventManager);
                 binder.bind(QueryCache.class).toInstance(new MapQueryCache(5));
                 binder.bind(RuntimeProperties.class).toInstance(
-                        new DefaultRuntimeProperties(Collections.EMPTY_MAP));
+                        new DefaultRuntimeProperties(Collections.<String, String>emptyMap()));
                 binder.bind(ObjectMapRetainStrategy.class).to(
                         DefaultObjectMapRetainStrategy.class);
                 binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
@@ -122,7 +120,6 @@ public class DataContextFactoryTest {
                 binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
                 binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
                 binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
-                binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP);
             }
         };
 

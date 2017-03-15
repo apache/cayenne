@@ -20,7 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventBridge;
@@ -40,13 +40,13 @@ public class DefaultDataRowStoreFactory implements DataRowStoreFactory {
 
     EventManager eventManager;
 
-    Map<String, String> properties;
+    RuntimeProperties properties;
 
     boolean isNoopEventBridge;
 
     public DefaultDataRowStoreFactory(@Inject EventBridge eventBridge,
                                       @Inject EventManager eventManager,
-                                      @Inject(Constants.DATA_ROW_STORE_PROPERTIES_MAP) Map<String, String> properties) {
+                                      @Inject RuntimeProperties properties) {
         this.eventBridge = eventBridge;
         this.eventManager = eventManager;
         this.properties = properties;

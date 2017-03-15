@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
@@ -67,7 +68,7 @@ public class DataContextSharedCacheEmpiricIT extends ServerCase {
         eventManager = new DefaultEventManager();
         DataRowStore cache = new DataRowStore(
                 "cacheTest",
-                Collections.EMPTY_MAP,
+                new DefaultRuntimeProperties(Collections.<String, String>emptyMap()),
                 eventManager);
 
         c1 = new DataContext(runtime.getDataDomain(), 
@@ -91,7 +92,7 @@ public class DataContextSharedCacheEmpiricIT extends ServerCase {
     @Test
     public void testSelectSelectCommitRefresh() throws Exception {
 
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
 
         // select both, a2 should go second...
         List<?> artists = c1.performQuery(query);
@@ -112,7 +113,7 @@ public class DataContextSharedCacheEmpiricIT extends ServerCase {
     @Test
     public void testSelectSelectCommitRefreshReverse() throws Exception {
 
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
 
         List<?> altArtists = c2.performQuery(query);
         final Artist a2 = (Artist) altArtists.get(0);
@@ -132,7 +133,7 @@ public class DataContextSharedCacheEmpiricIT extends ServerCase {
     @Test
     public void testSelectUpdateSelectCommitRefresh() throws Exception {
 
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
 
         List<?> artists = c1.performQuery(query);
         Artist a1 = (Artist) artists.get(0);

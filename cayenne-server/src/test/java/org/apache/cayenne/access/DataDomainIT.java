@@ -23,6 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.annotation.PostAdd;
+import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
@@ -227,8 +228,9 @@ public class DataDomainIT extends ServerCase {
 
         DefaultEventManager eventManager = new DefaultEventManager();
         try {
-            DataRowStore cache = new DataRowStore("Y", Collections.EMPTY_MAP, eventManager) {
-
+            DataRowStore cache = new DataRowStore("Y",
+                    new DefaultRuntimeProperties(Collections.<String, String>emptyMap()),
+                    eventManager) {
                 @Override
                 public void shutdown() {
                     cacheShutdown[0] = true;

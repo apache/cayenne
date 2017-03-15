@@ -137,6 +137,17 @@ public class ServerModule implements Module {
     }
 
     /**
+     * Sets max size of snapshot cache, in pre 4.0 version this was set in the Modeler.
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @param size max size of snapshot cache
+     * @since 4.0
+     */
+    public static void setSnapshotCacheSize(Binder binder, int size) {
+        contributeProperties(binder).put(Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, Integer.toString(size));
+    }
+
+    /**
      * Provides access to a DI collection builder for String locations that allows downstream modules to
      * "contribute" their own Cayenne project locations.
      *
@@ -300,8 +311,6 @@ public class ServerModule implements Module {
         binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
 
         binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
-
-        binder.bindMap(Constants.DATA_ROW_STORE_PROPERTIES_MAP);
 
 		// a service to provide the main stack DataDomain
 		binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
