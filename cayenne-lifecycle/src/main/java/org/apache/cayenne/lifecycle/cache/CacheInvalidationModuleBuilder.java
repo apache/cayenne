@@ -22,7 +22,6 @@ package org.apache.cayenne.lifecycle.cache;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
@@ -40,6 +39,8 @@ public class CacheInvalidationModuleBuilder {
 
     private Collection<InvalidationHandler> handlerInstances;
 
+    private boolean noCacheGroupsHandler;
+
     public static CacheInvalidationModuleBuilder builder() {
         return new CacheInvalidationModuleBuilder();
     }
@@ -51,6 +52,14 @@ public class CacheInvalidationModuleBuilder {
     CacheInvalidationModuleBuilder() {
         this.handlerTypes = new HashSet<>();
         this.handlerInstances = new HashSet<>();
+    }
+
+    /**
+     * Disable {@link CacheGroupsHandler} based on {@link CacheGroups} annotation.
+     */
+    public CacheInvalidationModuleBuilder noCacheGroupsHandler() {
+        noCacheGroupsHandler = true;
+        return this;
     }
 
     public CacheInvalidationModuleBuilder invalidationHandler(Class<? extends InvalidationHandler> handlerType) {
@@ -69,7 +78,9 @@ public class CacheInvalidationModuleBuilder {
             public void configure(Binder binder) {
                 ListBuilder<InvalidationHandler> handlers = contributeInvalidationHandler(binder);
 
-                handlers.add(CacheGroupsHandler.class);
+                if(!noCacheGroupsHandler) {
+                    handlers.add(CacheGroupsHandler.class);
+                }
                 handlers.addAll(handlerInstances);
 
                 for(Class<? extends InvalidationHandler> handlerType : handlerTypes) {

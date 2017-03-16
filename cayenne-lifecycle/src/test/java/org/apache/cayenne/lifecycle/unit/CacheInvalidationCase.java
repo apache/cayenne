@@ -25,7 +25,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.lifecycle.cache.CacheGroups;
 import org.apache.cayenne.lifecycle.cache.CacheInvalidationModuleBuilder;
 import org.apache.cayenne.lifecycle.cache.InvalidationFunction;
 import org.apache.cayenne.lifecycle.cache.InvalidationHandler;
@@ -53,6 +52,7 @@ public class CacheInvalidationCase {
 	protected ServerRuntimeBuilder configureCayenne() {
 		Module cacheInvalidationModule = CacheInvalidationModuleBuilder
 				.builder()
+                .noCacheGroupsHandler()
 				.invalidationHandler(G1InvalidationHandler.class)
 				.build();
 
