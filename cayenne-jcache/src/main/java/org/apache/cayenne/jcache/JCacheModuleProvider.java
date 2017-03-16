@@ -22,6 +22,7 @@ package org.apache.cayenne.jcache;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleProvider;
 
@@ -40,8 +41,10 @@ public class JCacheModuleProvider implements ModuleProvider {
         return JCacheModule.class;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<Class<? extends Module>> overrides() {
-        return Collections.emptyList();
+        Collection modules = Collections.singletonList(ServerModule.class);
+        return modules;
     }
 }

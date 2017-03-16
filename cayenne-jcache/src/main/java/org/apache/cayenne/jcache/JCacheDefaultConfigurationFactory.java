@@ -41,8 +41,7 @@ import javax.cache.expiry.Duration;
  */
 public class JCacheDefaultConfigurationFactory implements JCacheConfigurationFactory {
 
-    private final Configuration<String, List> configuration = new MutableConfiguration<String, List>()
-            .setTypes(String.class, List.class)
+    private final Configuration<Object, Object> configuration = new MutableConfiguration<>()
             .setStoreByValue(false)
             .setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(Duration.TEN_MINUTES));
 
@@ -50,7 +49,7 @@ public class JCacheDefaultConfigurationFactory implements JCacheConfigurationFac
      * @param cacheGroup is unused by default configuration factory
      * @return cache configuration
      */
-    public Configuration<String, List> create(String cacheGroup) {
+    public Configuration<Object, Object> create(String cacheGroup) {
         return configuration;
     }
 }

@@ -24,23 +24,20 @@ import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import javax.cache.Cache;
 import javax.cache.CacheException;
 import javax.cache.CacheManager;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * @since 4.0
  */
 public class JCacheQueryCache implements QueryCache {
-
-    private static final Log LOGGER = LogFactory.getLog(JCacheQueryCache.class);
 
     @Inject
     protected CacheManager cacheManager;
@@ -48,7 +45,7 @@ public class JCacheQueryCache implements QueryCache {
     @Inject
     protected JCacheConfigurationFactory configurationFactory;
 
-    private ConcurrentMap<String, Object> seenCacheNames = new ConcurrentHashMap<>();
+    private Set<String> seenCacheNames = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     @Override
     public List get(QueryMetadata metadata) {
@@ -96,17 +93,11 @@ public class JCacheQueryCache implements QueryCache {
 
     @Override
     public void clear() {
-        for(String name : seenCacheNames.keySet()) {
+        for (String name : seenCacheNames) {
             getCache(name).clear();
         }
     }
 
-    /**
-     * Returns -1 to indicate that we can't calculate the size. JCache and EhCache can potentially have a complex topology
-     * that can not be meaningfully described by a single int. Use other means (like provider-specific JMX) to monitor cache.
-     *
-     * @return -1
-     */
     @Override
     @Deprecated
     public int size() {
@@ -117,13 +108,14 @@ public class JCacheQueryCache implements QueryCache {
         return createIfAbsent(cacheName(metadata));
     }
 
+    @SuppressWarnings("unchecked")
     protected Cache<String, List> createIfAbsent(String cacheName) {
 
         Cache<String, List> cache = getCache(cacheName);
         if (cache == null) {
 
             try {
-                cache = cacheManager.createCache(cacheName, configurationFactory.create(cacheName));
+                cache = createCache(cacheName);
             } catch (CacheException e) {
                 // someone else just created this cache?
                 cache = getCache(cacheName);
@@ -133,14 +125,18 @@ public class JCacheQueryCache implements QueryCache {
                 }
             }
 
-            seenCacheNames.put(cacheName, 1);
+            seenCacheNames.add(cacheName);
         }
 
         return cache;
     }
 
+    protected Cache createCache(String cacheName) {
+        return cacheManager.createCache(cacheName, configurationFactory.create(cacheName));
+    }
+
     protected Cache<String, List> getCache(String name) {
-        return cacheManager.getCache(name, String.class, List.class);
+        return cacheManager.getCache(name);
     }
 
     protected String cacheName(QueryMetadata metadata) {
@@ -150,13 +146,10 @@ public class JCacheQueryCache implements QueryCache {
             return cacheGroup;
         }
 
-        // no explicit cache groups
+        // no explicit cache group
         return JCacheConstants.DEFAULT_CACHE_NAME;
     }
 
-    /**
-     * Shuts down CacheManager
-     */
     @BeforeScopeEnd
     public void shutdown() {
         cacheManager.close();

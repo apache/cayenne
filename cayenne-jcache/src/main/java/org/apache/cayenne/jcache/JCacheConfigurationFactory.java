@@ -30,6 +30,6 @@ import javax.cache.configuration.Configuration;
  */
 public interface JCacheConfigurationFactory {
 
-    Configuration<String, List> create(String cacheGroup);
+    Configuration<Object, Object> create(String cacheGroup);
 
 }
