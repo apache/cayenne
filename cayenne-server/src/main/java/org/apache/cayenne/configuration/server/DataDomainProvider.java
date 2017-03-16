@@ -70,6 +70,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
 	@Inject(Constants.SERVER_DOMAIN_FILTERS_LIST)
 	protected List<DataChannelFilter> filters;
 
+	@Inject(Constants.SERVER_DOMAIN_LISTENERS_LIST)
+	protected List<Object> listeners;
+
 	@Inject(Constants.SERVER_PROJECT_LOCATIONS_LIST)
 	protected List<String> locations;
 
@@ -151,6 +154,10 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
 		for (DataChannelFilter filter : filters) {
 			dataDomain.addFilter(filter);
+		}
+
+		for (Object listener : listeners) {
+			dataDomain.addListener(listener);
 		}
 
 		return dataDomain;

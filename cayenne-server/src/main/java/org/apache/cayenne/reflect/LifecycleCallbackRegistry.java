@@ -21,6 +21,7 @@ package org.apache.cayenne.reflect;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -160,8 +161,7 @@ public class LifecycleCallbackRegistry {
 	}
 
 	/**
-	 * @since 4.0 renamed to {@link #addCallback(LifecycleEvent, Class, String)}
-	 *        .
+	 * @since 4.0 renamed to {@link #addCallback(LifecycleEvent, Class, String)}.
 	 */
 	@Deprecated
 	public void addListener(LifecycleEvent type, Class<?> entityClass, String methodName) {
@@ -187,18 +187,14 @@ public class LifecycleCallbackRegistry {
 
 					if (reader != null) {
 
-						Set<Class<?>> types = new HashSet<Class<?>>();
+						Set<Class<?>> types = new HashSet<>();
 
 						Class<?>[] entities = reader.entities(a);
 						Class<? extends Annotation>[] entityAnnotations = reader.entityAnnotations(a);
 
-						for (Class<?> type : entities) {
-							// TODO: ignoring entity subclasses? whenever we add
-							// those,
-							// take
-							// into account "exlcudeSuperclassListeners" flag
-							types.add(type);
-						}
+						// TODO: ignoring entity subclasses?
+						// whenever we add those, take into account "exlcudeSuperclassListeners" flag
+						Collections.addAll(types, entities);
 
 						for (Class<? extends Annotation> type : entityAnnotations) {
 							types.addAll(getAnnotatedEntities(type));
@@ -400,7 +396,7 @@ public class LifecycleCallbackRegistry {
 		if (entities == null) {
 
 			// ensure no dupes
-			entities = new HashSet<Class<?>>();
+			entities = new HashSet<>();
 
 			for (ObjEntity entity : entityResolver.getObjEntities()) {
 				Class<?> entityType;
@@ -412,12 +408,10 @@ public class LifecycleCallbackRegistry {
 
 				// ensure that we don't register the same callback for multiple
 				// classes in the same hierarchy, so find the topmost type using
-				// a given
-				// annotation and register it once
+				// a given annotation and register it once
 
 				// TODO: This ignores "excludeSuperclassListeners" setting,
-				// which is
-				// not possible with annotations anyways
+				// which is not possible with annotations anyways
 
 				while (entityType != null && entityType.isAnnotationPresent(annotationType)) {
 

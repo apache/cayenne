@@ -20,6 +20,8 @@ package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DataRowStoreFactory;
@@ -34,6 +36,7 @@ import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslatorFactory;
 import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
+import org.apache.cayenne.annotation.PostLoad;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
@@ -80,6 +83,7 @@ import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntitySorter;
+import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -95,6 +99,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class DataDomainProviderTest {
 
@@ -131,11 +137,12 @@ public class DataDomainProviderTest {
 			@Override
 			public ConfigurationTree<DataChannelDescriptor> load(Resource configurationResource)
 					throws ConfigurationException {
-				return new ConfigurationTree<DataChannelDescriptor>(testDescriptor, null);
+				return new ConfigurationTree<>(testDescriptor, null);
 			}
 		};
 
 		final EventManager eventManager = new MockEventManager();
+		final TestListener mockListener = mock(TestListener.class);
 
 		Module testModule = new Module() {
 
@@ -153,6 +160,7 @@ public class DataDomainProviderTest {
 						.add(SybaseSniffer.class).add(DerbySniffer.class).add(SQLServerSniffer.class)
 						.add(OracleSniffer.class).add(PostgresSniffer.class).add(MySQLSniffer.class);
 				ServerModule.contributeDomainFilters(binder);
+				ServerModule.contributeDomainListeners(binder).add(mockListener);
 				ServerModule.contributeProjectLocations(binder).add(testConfigName);
 
 				// configure extended types
@@ -167,10 +175,8 @@ public class DataDomainProviderTest {
 				final ResourceLocator locator = new ClassLoaderResourceLocator(classLoaderManager) {
 
 					public Collection<Resource> findResources(String name) {
-						// ResourceLocator also used by JdbcAdapter to locate
-						// types.xml... if this is the request we are getting,
-						// just let
-						// it go through..
+						// ResourceLocator also used by JdbcAdapter to locate types.xml...
+						// if this is the request we are getting, just let it go through..
 						if (name.endsWith("types.xml")) {
 							return super.findResources(name);
 						}
@@ -248,5 +254,19 @@ public class DataDomainProviderTest {
 		assertEquals(SkipSchemaUpdateStrategy.class.getName(), node2.getSchemaUpdateStrategy().getClass().getName());
 
 		assertNotNull(node2.getAdapter());
+
+		// check that we have mock listener passed correctly
+		Persistent mockPersistent = mock(Persistent.class);
+		ObjectId mockObjectId = mock(ObjectId.class);
+		when(mockObjectId.getEntityName()).thenReturn("mock-entity-name");
+		when(mockPersistent.getObjectId()).thenReturn(mockObjectId);
+		domain.getEntityResolver().getCallbackRegistry().performCallbacks(LifecycleEvent.POST_LOAD, mockPersistent);
+		verify(mockListener).postLoadCallback(mockPersistent);
+	}
+
+	static class TestListener {
+		@PostLoad
+		public void postLoadCallback(Object object) {
+		}
 	}
 }

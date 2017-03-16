@@ -53,6 +53,13 @@ public interface Constants {
     String SERVER_DOMAIN_FILTERS_LIST = "cayenne.server.domain_filters";
 
     /**
+     * A DI container key for the List&lt;Object&gt; storing lifecycle events listeners.
+     *
+     * @see org.apache.cayenne.configuration.server.ServerModule#contributeDomainListeners(Binder).
+     */
+    String SERVER_DOMAIN_LISTENERS_LIST = "cayenne.server.domain_listeners";
+
+    /**
      * A DI container key for the List&lt;String&gt; storing locations of the
      * one of more project configuration files.
      */

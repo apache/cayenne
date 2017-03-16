@@ -172,6 +172,17 @@ public class ServerModule implements Module {
     }
 
     /**
+     * Provides access to a DI collection builder for lifecycle events listeners.
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return ListBuilder for listener Objects.
+     * @since 4.0
+     */
+    public static ListBuilder<Object> contributeDomainListeners(Binder binder) {
+        return binder.bindList(Object.class, Constants.SERVER_DOMAIN_LISTENERS_LIST);
+    }
+
+    /**
      * Provides access to a DI collection builder for {@link DbAdapterDetector}'s that allows downstream modules to
      * "contribute" their own adapter detectors.
      *
@@ -284,6 +295,9 @@ public class ServerModule implements Module {
 
         // configure a filter chain with only one TransactionFilter as default
         contributeDomainFilters(binder).add(TransactionFilter.class);
+
+        // init listener list
+        contributeDomainListeners(binder);
 
         // configure extended types
         contributeDefaultTypes(binder).add(new VoidType()).add(new BigDecimalType())
