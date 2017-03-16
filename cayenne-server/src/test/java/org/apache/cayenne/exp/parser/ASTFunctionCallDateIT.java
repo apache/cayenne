@@ -125,4 +125,28 @@ public class ASTFunctionCallDateIT extends ServerCase {
 
         assertNotEquals(res1, res2);
     }
+
+    @Test
+    public void testASTCurrentDateParse() {
+        Expression exp = ExpressionFactory.exp("dateColumn > currentDate()");
+        DateTestEntity res = ObjectSelect.query(DateTestEntity.class, exp).selectOne(context);
+        assertNotNull(res);
+    }
+
+    @Test
+    public void testASTCurrentTimeParse() {
+        Expression exp = ExpressionFactory.exp("timeColumn > currentTime()");
+        DateTestEntity res = ObjectSelect.query(DateTestEntity.class, exp).selectOne(context);
+        if(!unitDbAdapter.supportsTimeSqlType()) {
+            return;
+        }
+        assertNotNull(res);
+    }
+
+    @Test
+    public void testASTCurrentTimestampParse() {
+        Expression exp = ExpressionFactory.exp("timestampColumn > now()");
+        DateTestEntity res = ObjectSelect.query(DateTestEntity.class, exp).selectOne(context);
+        assertNotNull(res);
+    }
 }

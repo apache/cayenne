@@ -142,6 +142,8 @@ void conditionExpression() : {}
 		<NULL> #Scalar(0)
 	|
     	aggregateExpression()
+    |
+        dateTimeFunction()
 }
 
 void stringParameter() : {}
@@ -375,6 +377,26 @@ void sum() #Sum : { }
 	<SUM> "(" numericExpression() ")"
 }
 
+void dateTimeFunction() : { }
+{
+    currentDate() | currentTime() | currentTimestamp()
+}
+
+void currentDate() #CurrentDate : {}
+{
+    <CURRENT_DATE> "(" ")"
+}
+
+void currentTime() #CurrentTime : {}
+{
+    <CURRENT_TIME> "(" ")"
+}
+
+void currentTimestamp() #CurrentTimestamp : {}
+{
+    <CURRENT_TIMESTAMP> "(" ")"
+}
+
 
 TOKEN_MGR_DECLS:
 {
@@ -465,38 +487,38 @@ TOKEN : {
     |   <FALSE: "false" | "FALSE" >
 }
 
-TOKEN [ IGNORE_CASE ]: /* aggregates */
+TOKEN : /* aggregates */
 {
-	<AVG: "AVG" >
-	|	<MIN: "MIN" >
-	|	<MAX: "MAX" >
-	|	<SUM: "SUM" >
-	|	<COUNT: "COUNT" >
+	<AVG: "avg" >
+	|	<MIN: "min" >
+	|	<MAX: "max" >
+	|	<SUM: "sum" >
+	|	<COUNT: "count" >
 }
 
-TOKEN [ IGNORE_CASE ]: /* functions returning strings */
+TOKEN : /* functions returning strings */
 {
-	<CONCAT: "CONCAT" >
-	|	<SUBSTRING: "SUBSTRING" >
-	|	<TRIM: "TRIM" >
-	|	<LOWER: "LOWER" >
-	|	<UPPER: "UPPER" >
+	<CONCAT: "concat" >
+	|	<SUBSTRING: "substring" >
+	|	<TRIM: "trim" >
+	|	<LOWER: "lower" >
+	|	<UPPER: "upper" >
 }
 
-TOKEN [ IGNORE_CASE ]: /* functions returning numerics */
+TOKEN : /* functions returning numerics */
 {
-	<LENGTH: "LENGTH" >
-	|	<LOCATE: "LOCATE" >
-	|	<ABS: "ABS" >
-	|	<SQRT: "SQRT" >
-	|	<MOD: "MOD" >
+	<LENGTH: "length" >
+	|	<LOCATE: "locate" >
+	|	<ABS: "abs" >
+	|	<SQRT: "sqrt" >
+	|	<MOD: "mod" >
 }
 
-TOKEN [ IGNORE_CASE ]: /* functions returning datetime */
+TOKEN : /* functions returning datetime */
 {
-	<CURRENT_DATE: "CURRENT_DATE" >
-	|	<CURRENT_TIME: "CURRENT_TIME" >
-	|	<CURRENT_TIMESTAMP: "CURRENT_TIMESTAMP" >
+	<CURRENT_DATE: "currentDate" >
+	|	<CURRENT_TIME: "currentTime" >
+	|	<CURRENT_TIMESTAMP: "currentTimestamp" | "now" >
 }
 
 void namedParameter() :

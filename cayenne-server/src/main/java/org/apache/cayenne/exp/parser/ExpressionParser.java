@@ -181,6 +181,9 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case ABS:
     case SQRT:
     case MOD:
+    case CURRENT_DATE:
+    case CURRENT_TIME:
+    case CURRENT_TIMESTAMP:
     case 54:
     case 55:
     case 56:
@@ -245,6 +248,9 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case ABS:
     case SQRT:
     case MOD:
+    case CURRENT_DATE:
+    case CURRENT_TIME:
+    case CURRENT_TIMESTAMP:
     case 54:
     case 55:
     case 56:
@@ -459,25 +465,25 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
           break;
         case 13:
           jj_consume_token(13);
-                         ASTLike jjtn009 = new ASTLike(JJTLIKE);
-                         boolean jjtc009 = true;
-                         jjtree.openNodeScope(jjtn009);
+                   ASTLike jjtn009 = new ASTLike(JJTLIKE);
+                   boolean jjtc009 = true;
+                   jjtree.openNodeScope(jjtn009);
           try {
             scalarExpression();
           } catch (Throwable jjte009) {
-                         if (jjtc009) {
-                           jjtree.clearNodeScope(jjtn009);
-                           jjtc009 = false;
-                         } else {
-                           jjtree.popNode();
-                         }
-                         if (jjte009 instanceof RuntimeException) {
-                           {if (true) throw (RuntimeException)jjte009;}
-                         }
-                         if (jjte009 instanceof ParseException) {
-                           {if (true) throw (ParseException)jjte009;}
-                         }
-                         {if (true) throw (Error)jjte009;}
+                   if (jjtc009) {
+                     jjtree.clearNodeScope(jjtn009);
+                     jjtc009 = false;
+                   } else {
+                     jjtree.popNode();
+                   }
+                   if (jjte009 instanceof RuntimeException) {
+                     {if (true) throw (RuntimeException)jjte009;}
+                   }
+                   if (jjte009 instanceof ParseException) {
+                     {if (true) throw (ParseException)jjte009;}
+                   }
+                   {if (true) throw (Error)jjte009;}
           } finally {
                    if (jjtc009) {
                      jjtree.closeNodeScope(jjtn009,  2);
@@ -834,6 +840,11 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case COUNT:
       aggregateExpression();
       break;
+    case CURRENT_DATE:
+    case CURRENT_TIME:
+    case CURRENT_TIMESTAMP:
+      dateTimeFunction();
+      break;
     default:
       jj_la1[14] = jj_gen;
       jj_consume_token(-1);
@@ -933,6 +944,9 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case ABS:
     case SQRT:
     case MOD:
+    case CURRENT_DATE:
+    case CURRENT_TIME:
+    case CURRENT_TIMESTAMP:
     case 54:
     case 55:
     case 56:
@@ -2210,6 +2224,72 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     }
   }
 
+  final public void dateTimeFunction() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case CURRENT_DATE:
+      currentDate();
+      break;
+    case CURRENT_TIME:
+      currentTime();
+      break;
+    case CURRENT_TIMESTAMP:
+      currentTimestamp();
+      break;
+    default:
+      jj_la1[39] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  final public void currentDate() throws ParseException {
+                                   /*@bgen(jjtree) CurrentDate */
+  ASTCurrentDate jjtn000 = new ASTCurrentDate(JJTCURRENTDATE);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+    try {
+      jj_consume_token(CURRENT_DATE);
+      jj_consume_token(16);
+      jj_consume_token(17);
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+  }
+
+  final public void currentTime() throws ParseException {
+                                   /*@bgen(jjtree) CurrentTime */
+  ASTCurrentTime jjtn000 = new ASTCurrentTime(JJTCURRENTTIME);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+    try {
+      jj_consume_token(CURRENT_TIME);
+      jj_consume_token(16);
+      jj_consume_token(17);
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+  }
+
+  final public void currentTimestamp() throws ParseException {
+                                             /*@bgen(jjtree) CurrentTimestamp */
+  ASTCurrentTimestamp jjtn000 = new ASTCurrentTimestamp(JJTCURRENTTIMESTAMP);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+    try {
+      jj_consume_token(CURRENT_TIMESTAMP);
+      jj_consume_token(16);
+      jj_consume_token(17);
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+      }
+    }
+  }
+
   final public void namedParameter() throws ParseException {
         Token t;
     jj_consume_token(54);
@@ -2295,7 +2375,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       }
       break;
     default:
-      jj_la1[39] = jj_gen;
+      jj_la1[40] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2310,7 +2390,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[40];
+  final private int[] jj_la1 = new int[41];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -2320,13 +2400,13 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       jj_la1_init_2();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x2,0x4,0x18,0x16010018,0x60,0x180,0x10000,0x4fff8,0x4fff8,0x16010000,0x18,0x10000,0x4e000,0x80000,0x16010000,0x0,0x0,0x16010000,0x0,0x100000,0x200000,0x400000,0x1800000,0x1800000,0x6000000,0x6000000,0x8000000,0x8000000,0x16010000,0x2000000,0x6010000,0x10000,0x0,0x80000,0x80000,0x0,0x80000,0x0,0x0,0x0,};
+      jj_la1_0 = new int[] {0x2,0x4,0x18,0x16010018,0x60,0x180,0x10000,0x4fff8,0x4fff8,0x16010000,0x18,0x10000,0x4e000,0x80000,0x16010000,0x0,0x0,0x16010000,0x0,0x100000,0x200000,0x400000,0x1800000,0x1800000,0x6000000,0x6000000,0x8000000,0x8000000,0x16010000,0x2000000,0x6010000,0x10000,0x0,0x80000,0x80000,0x0,0x80000,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0xbc7fffe,0x0,0x0,0x400000,0x0,0x0,0xbc7fffe,0x0,0x400000,0x0,0x0,0xbc7fff2,0xb803e00,0x3e00,0xbc7fffe,0x40000c,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4000000,0x4000000,0xbc7c000,0x0,0xbc7c000,0xbc7c000,0x3e00,0x0,0x0,0x7c000,0x0,0x1f0,0xf800000,0xb800000,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0xbfffffe,0x0,0x0,0x400000,0x0,0x0,0xbfffffe,0x0,0x400000,0x0,0x0,0xbfffff2,0xb803e00,0x3e00,0xbfffffe,0x40000c,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4000000,0x4000000,0xbc7c000,0x0,0xbc7c000,0xbc7c000,0x3e00,0x0,0x0,0x7c000,0x0,0x1f0,0xf800000,0x380000,0xb800000,};
    }
    private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x0,0x0,0x0,0x1c8,0x0,0x0,0x0,0x0,0x0,0x1c8,0x0,0x0,0x0,0x0,0x1c8,0x48,0x48,0x1c8,0x1c8,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x180,0x0,0x180,0x180,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_2 = new int[] {0x0,0x0,0x0,0x1c8,0x0,0x0,0x0,0x0,0x0,0x1c8,0x0,0x0,0x0,0x0,0x1c8,0x48,0x48,0x1c8,0x1c8,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x180,0x0,0x180,0x180,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
 
   /** Constructor with InputStream. */
@@ -2340,7 +2420,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 40; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 41; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -2355,7 +2435,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 40; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 41; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -2365,7 +2445,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 40; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 41; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -2376,7 +2456,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 40; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 41; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -2385,7 +2465,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 40; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 41; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -2395,7 +2475,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 40; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 41; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -2451,7 +2531,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 40; i++) {
+    for (int i = 0; i < 41; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {

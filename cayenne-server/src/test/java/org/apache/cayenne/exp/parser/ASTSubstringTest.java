@@ -49,7 +49,7 @@ public class ASTSubstringTest {
 
     @Test
     public void parseTest() throws Exception {
-        String expString = "SUBSTRING(xyz , 2 , 3)";
+        String expString = "substring(xyz , 2 , 3)";
         Expression exp = ExpressionFactory.exp(expString);
 
         assertTrue(exp instanceof ASTSubstring);

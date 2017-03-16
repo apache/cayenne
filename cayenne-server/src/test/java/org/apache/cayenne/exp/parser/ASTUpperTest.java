@@ -47,7 +47,7 @@ public class ASTUpperTest {
 
     @Test
     public void parseTest() throws Exception {
-        String expString = "UPPER(xyz)";
+        String expString = "upper(xyz)";
         Expression exp = ExpressionFactory.exp(expString);
 
         assertTrue(exp instanceof ASTUpper);

@@ -46,7 +46,7 @@ public class ASTAbsTest {
 
     @Test
     public void parseTest() throws Exception {
-        String expString = "ABS(xyz)";
+        String expString = "abs(xyz)";
         Expression exp = ExpressionFactory.exp(expString);
 
         assertTrue(exp instanceof ASTAbs);

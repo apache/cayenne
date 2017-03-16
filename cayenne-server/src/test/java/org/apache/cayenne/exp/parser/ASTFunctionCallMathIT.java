@@ -86,25 +86,25 @@ public class ASTFunctionCallMathIT extends ServerCase {
 
     @Test
     public void testASTAbsParse() {
-        Expression exp = ExpressionFactory.exp("ABS(-3)");
+        Expression exp = ExpressionFactory.exp("abs(-3)");
         assertEquals(3.0, exp.evaluate(new Object()));
     }
 
     @Test
     public void testASTSqrtParse() {
-        Expression exp = ExpressionFactory.exp("SQRT(16)");
+        Expression exp = ExpressionFactory.exp("sqrt(16)");
         assertEquals(4.0, exp.evaluate(new Object()));
     }
 
     @Test
     public void testASTModParse() {
-        Expression exp = ExpressionFactory.exp("MOD(11,2)");
+        Expression exp = ExpressionFactory.exp("mod(11,2)");
         assertEquals(1.0, exp.evaluate(new Object()));
     }
 
     @Test
     public void testComplexParse() {
-        Expression exp = ExpressionFactory.exp("10 - MOD(SQRT(ABS(-9)), 2)");
+        Expression exp = ExpressionFactory.exp("10 - mod(sqrt(abs(-9)), 2)");
         assertEquals(BigDecimal.valueOf(9L), exp.evaluate(new Object()));
     }
 }

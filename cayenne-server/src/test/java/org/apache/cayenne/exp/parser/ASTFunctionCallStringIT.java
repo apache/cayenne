@@ -156,43 +156,43 @@ public class ASTFunctionCallStringIT extends ServerCase {
 
     @Test
     public void testASTConcatParse() {
-        Expression exp = ExpressionFactory.exp("CONCAT('abc', 'def')");
+        Expression exp = ExpressionFactory.exp("concat('abc', 'def')");
         assertEquals("abcdef", exp.evaluate(new Object()));
     }
 
     @Test
     public void testASTSubstringParse() {
-        Expression exp = ExpressionFactory.exp("SUBSTRING('123456789', 3, 2)");
+        Expression exp = ExpressionFactory.exp("substring('123456789', 3, 2)");
         assertEquals("34", exp.evaluate(new Object()));
     }
 
     @Test
     public void testASTTrimParse() {
-        Expression exp = ExpressionFactory.exp("TRIM(' abc ')");
+        Expression exp = ExpressionFactory.exp("trim(' abc ')");
         assertEquals("abc", exp.evaluate(new Object()));
     }
 
     @Test
     public void testASTLowerParse() {
-        Expression exp = ExpressionFactory.exp("LOWER('AbC')");
+        Expression exp = ExpressionFactory.exp("lower('AbC')");
         assertEquals("abc", exp.evaluate(new Object()));
     }
 
     @Test
     public void testASTUpperParse() {
-        Expression exp = ExpressionFactory.exp("UPPER('aBc')");
+        Expression exp = ExpressionFactory.exp("upper('aBc')");
         assertEquals("ABC", exp.evaluate(new Object()));
     }
 
     @Test
     public void testASTLocateParse() {
-        Expression exp = ExpressionFactory.exp("LOCATE('Bc', 'aBc')");
+        Expression exp = ExpressionFactory.exp("locate('Bc', 'aBc')");
         assertEquals(2, exp.evaluate(new Object()));
     }
 
     @Test
     public void testComplexParse() {
-        Expression exp = ExpressionFactory.exp("LOCATE(UPPER('Bc'), UPPER('aBc')) = LENGTH(SUBSTRING(TRIM(LOWER(CONCAT('   abc', 'def   '))), 3, 2))");
+        Expression exp = ExpressionFactory.exp("locate(upper('Bc'), upper('aBc')) = length(substring(trim(lower(concat('   abc', 'def   '))), 3, 2))");
         assertEquals(true, exp.evaluate(new Object()));
     }
 }

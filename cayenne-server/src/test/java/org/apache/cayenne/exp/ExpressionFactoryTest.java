@@ -475,7 +475,7 @@ public class ExpressionFactoryTest {
 
 	@Test
 	public void testFuncExp() {
-		Expression e = ExpressionFactory.exp("TRIM(abc.xyz)");
+		Expression e = ExpressionFactory.exp("trim(abc.xyz)");
 		assertEquals(ASTTrim.class, e.getClass());
 	}
 

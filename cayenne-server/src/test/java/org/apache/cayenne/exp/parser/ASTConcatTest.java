@@ -51,7 +51,7 @@ public class ASTConcatTest {
 
     @Test
     public void testParseConcat() throws Exception {
-        Expression exp = ExpressionFactory.exp("CONCAT(artistName, ' ', 'test')");
+        Expression exp = ExpressionFactory.exp("concat(artistName, ' ', 'test')");
         assertEquals(ASTConcat.class, exp.getClass());
         assertEquals(3, exp.getOperandCount());
 
@@ -65,7 +65,7 @@ public class ASTConcatTest {
 
     @Test
     public void parseTest() throws Exception {
-        String expString = "CONCAT(xyz , \" \" , abc)";
+        String expString = "concat(xyz , \" \" , abc)";
         Expression exp = ExpressionFactory.exp(expString);
 
         assertTrue(exp instanceof ASTConcat);

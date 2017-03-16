@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.io.IOException;
 import java.util.Date;
 
 import org.apache.cayenne.exp.Expression;
@@ -29,7 +30,7 @@ import org.apache.cayenne.exp.Expression;
 public class ASTCurrentTimestamp extends ASTFunctionCall {
 
     public ASTCurrentTimestamp() {
-        this(0);
+        this(ExpressionParserTreeConstants.JJTCURRENTTIMESTAMP);
     }
 
     ASTCurrentTimestamp(int id) {
@@ -49,6 +50,11 @@ public class ASTCurrentTimestamp extends ASTFunctionCall {
     @Override
     protected Object evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
         return new Date();
+    }
+
+    @Override
+    protected void appendFunctionNameAsString(Appendable out) throws IOException {
+        out.append("currentTimestamp");
     }
 
     @Override

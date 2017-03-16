@@ -46,7 +46,7 @@ public class ASTModTest {
 
     @Test
     public void parseTest() throws Exception {
-        String expString = "MOD(xyz , 3)";
+        String expString = "mod(xyz , 3)";
         Expression exp = ExpressionFactory.exp(expString);
 
         assertTrue(exp instanceof ASTMod);

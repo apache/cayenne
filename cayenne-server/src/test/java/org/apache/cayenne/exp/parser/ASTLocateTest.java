@@ -54,7 +54,7 @@ public class ASTLocateTest {
 
     @Test
     public void parseTest() throws Exception {
-        String expString = "LOCATE(\"xyz\" , abc , 4)";
+        String expString = "locate(\"xyz\" , abc , 4)";
         Expression exp = ExpressionFactory.exp(expString);
 
         assertTrue(exp instanceof ASTLocate);

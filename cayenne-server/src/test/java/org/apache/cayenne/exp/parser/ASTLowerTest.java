@@ -47,7 +47,7 @@ public class ASTLowerTest {
 
     @Test
     public void parseTest() throws Exception {
-        String expString = "LOWER(xyz)";
+        String expString = "lower(xyz)";
         Expression exp = ExpressionFactory.exp(expString);
 
         assertTrue(exp instanceof ASTLower);

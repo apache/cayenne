@@ -71,9 +71,12 @@ public interface ExpressionParserTreeConstants
   public int JJTMAX = 46;
   public int JJTMIN = 47;
   public int JJTSUM = 48;
-  public int JJTNAMEDPARAMETER = 49;
-  public int JJTOBJPATH = 50;
-  public int JJTDBPATH = 51;
+  public int JJTCURRENTDATE = 49;
+  public int JJTCURRENTTIME = 50;
+  public int JJTCURRENTTIMESTAMP = 51;
+  public int JJTNAMEDPARAMETER = 52;
+  public int JJTOBJPATH = 53;
+  public int JJTDBPATH = 54;
 
 
   public String[] jjtNodeName = {
@@ -126,9 +129,12 @@ public interface ExpressionParserTreeConstants
     "Max",
     "Min",
     "Sum",
+    "CurrentDate",
+    "CurrentTime",
+    "CurrentTimestamp",
     "NamedParameter",
     "ObjPath",
     "DbPath",
   };
 }
-/* JavaCC - OriginalChecksum=0fe59a033c5f411d1c7cc0cc441fabf6 (do not edit this line) */
+/* JavaCC - OriginalChecksum=7571de31b81c878cf4b5f52ebb555fb1 (do not edit this line) */

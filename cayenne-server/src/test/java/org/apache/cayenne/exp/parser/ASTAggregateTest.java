@@ -46,7 +46,7 @@ public class ASTAggregateTest {
 
     @Test
     public void testAvgParse() throws Exception {
-        String expressionString = "AVG(artistName)";
+        String expressionString = "avg(artistName)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTAvg);
         assertEquals(1, exp.getOperandCount());
@@ -63,7 +63,7 @@ public class ASTAggregateTest {
 
     @Test
     public void testCountExpParse() throws Exception {
-        String expressionString = "COUNT(artistName)";
+        String expressionString = "count(artistName)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTCount);
         assertEquals(1, exp.getOperandCount());
@@ -74,7 +74,7 @@ public class ASTAggregateTest {
 
     @Test
     public void testCountAsteriskParse() throws Exception {
-        String expressionString = "COUNT(*)";
+        String expressionString = "count(*)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTCount);
         assertEquals(1, exp.getOperandCount());
@@ -91,7 +91,7 @@ public class ASTAggregateTest {
 
     @Test
     public void testMinParse() throws Exception {
-        String expressionString = "MIN(artistName)";
+        String expressionString = "min(artistName)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTMin);
         assertEquals(1, exp.getOperandCount());
@@ -108,7 +108,7 @@ public class ASTAggregateTest {
 
     @Test
     public void testMaxParse() throws Exception {
-        String expressionString = "MAX(artistName)";
+        String expressionString = "max(artistName)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTMax);
         assertEquals(1, exp.getOperandCount());
@@ -125,7 +125,7 @@ public class ASTAggregateTest {
 
     @Test
     public void testSumParse() throws Exception {
-        String expressionString = "SUM(artistName)";
+        String expressionString = "sum(artistName)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTSum);
         assertEquals(1, exp.getOperandCount());

@@ -46,7 +46,7 @@ public class ASTTrimTest {
 
     @Test
     public void parseTest() throws Exception {
-        String expString = "TRIM(xyz)";
+        String expString = "trim(xyz)";
         Expression exp = ExpressionFactory.exp(expString);
 
         assertTrue(exp instanceof ASTTrim);

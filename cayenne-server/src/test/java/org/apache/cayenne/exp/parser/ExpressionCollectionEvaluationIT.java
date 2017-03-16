@@ -74,32 +74,32 @@ public class ExpressionCollectionEvaluationIT extends ServerCase {
 
     @Test
     public void testSubstringWithCollection() {
-        testExpression("SUBSTRING(paintingArray.paintingTitle, 1, 1)", String.class);
+        testExpression("substring(paintingArray.paintingTitle, 1, 1)", String.class);
     }
 
     @Test
     public void testTrimWithCollection() {
-        testExpression("TRIM(paintingArray.paintingTitle)", String.class);
+        testExpression("trim(paintingArray.paintingTitle)", String.class);
     }
 
     @Test
     public void testUpperWithCollection() {
-        testExpression("UPPER(paintingArray.paintingTitle)", String.class);
+        testExpression("upper(paintingArray.paintingTitle)", String.class);
     }
 
     @Test
     public void testLowerWithCollection() {
-        testExpression("LOWER(paintingArray.paintingTitle)", String.class);
+        testExpression("lower(paintingArray.paintingTitle)", String.class);
     }
 
     @Test
     public void testLengthWithCollection() {
-        testExpression("LENGTH(paintingArray.paintingTitle)", Integer.class);
+        testExpression("length(paintingArray.paintingTitle)", Integer.class);
     }
 
     @Test
     public void testConcatWithCollection() {
-        testExpression("CONCAT(paintingArray.paintingTitle, ' ', 'xyz')", String.class);
+        testExpression("concat(paintingArray.paintingTitle, ' ', 'xyz')", String.class);
     }
 
     @Test

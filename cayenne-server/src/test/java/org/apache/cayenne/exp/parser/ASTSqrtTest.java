@@ -45,7 +45,7 @@ public class ASTSqrtTest {
 
     @Test
     public void parseTest() throws Exception {
-        String expString = "SQRT(xyz)";
+        String expString = "sqrt(xyz)";
         Expression exp = ExpressionFactory.exp(expString);
 
         assertTrue(exp instanceof ASTSqrt);

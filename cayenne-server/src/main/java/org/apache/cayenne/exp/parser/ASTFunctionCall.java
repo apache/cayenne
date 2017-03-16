@@ -79,9 +79,13 @@ public abstract class ASTFunctionCall extends EvaluatedNode {
         return 31 * super.hashCode() + functionName.hashCode();
     }
 
+    protected void appendFunctionNameAsString(Appendable out) throws IOException {
+        out.append(getFunctionName().toLowerCase());
+    }
+
     @Override
     public void appendAsString(Appendable out) throws IOException {
-        out.append(getFunctionName());
+        appendFunctionNameAsString(out);
         if(parent == null) {
             // else call to super method will append parenthesis
             out.append("(");
