@@ -97,7 +97,7 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         sqlite.setAdapterClassName(SQLiteAdapter.class.getName());
         sqlite.setUserName("sa");
         sqlite.setPassword("");
-        sqlite.setDataSourceUrl("jdbc:sqlite:file:memdb?mode=memory&cache=shared");
+        sqlite.setDataSourceUrl("jdbc:sqlite:file:memdb?mode=memory&cache=shared&date_class=text");
         sqlite.setJdbcDriver("org.sqlite.JDBC");
         sqlite.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
         sqlite.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);

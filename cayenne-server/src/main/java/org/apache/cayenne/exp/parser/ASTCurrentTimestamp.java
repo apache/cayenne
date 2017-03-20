@@ -53,11 +53,6 @@ public class ASTCurrentTimestamp extends ASTFunctionCall {
     }
 
     @Override
-    protected void appendFunctionNameAsString(Appendable out) throws IOException {
-        out.append("currentTimestamp");
-    }
-
-    @Override
     public Expression shallowCopy() {
         return new ASTCurrentTimestamp(id);
     }

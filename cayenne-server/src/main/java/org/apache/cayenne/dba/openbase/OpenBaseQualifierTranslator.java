@@ -25,6 +25,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.map.DbAttribute;
 
@@ -157,6 +158,20 @@ public class OpenBaseQualifierTranslator extends QualifierTranslator {
 		if (matchingObject) {
 			objectMatchTranslator.setOperation(out.toString());
 			objectMatchTranslator.setExpression(node);
+		}
+	}
+
+	@Override
+	protected void appendExtractFunction(ASTExtract functionExpression) {
+		switch (functionExpression.getPart()) {
+			case DAY_OF_WEEK:
+			case DAY_OF_MONTH:
+			case DAY_OF_YEAR:
+				// openbase variants are without '_'
+				out.append(functionExpression.getPart().name().replace("_", ""));
+				break;
+			default:
+				appendFunction(functionExpression);
 		}
 	}
 }

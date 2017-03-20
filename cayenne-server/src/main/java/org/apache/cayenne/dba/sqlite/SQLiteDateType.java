@@ -39,48 +39,27 @@ import org.apache.cayenne.access.types.UtilDateType;
 // handling fun.
 class SQLiteDateType extends UtilDateType {
 
-    private DateFormat timestampFormat;
-    private DateFormat dateFormat;
-    private DateFormat timeFormat;
+    private final DateFormat timestampFormat;
+    private final DateFormat dateFormat;
+    private final DateFormat timeFormat;
 
     public SQLiteDateType() {
-        timestampFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+        timestampFormat = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss.SSS");
         dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         timeFormat = new SimpleDateFormat("kk:mm:ss");
     }
 
     @Override
     public Date materializeObject(ResultSet rs, int index, int type) throws Exception {
-
-        String string = rs.getString(index);
-
-        if (string == null) {
-            return null;
-        }
-
-        long ts = getLongTimestamp(string);
-        if (ts >= 0) {
-            return new Date(ts);
-        }
-
-        switch (type) {
-            case Types.TIMESTAMP:
-                return getTimestamp(string);
-            case Types.DATE:
-                return getDate(string);
-            case Types.TIME:
-                return rs.getTime(index);
-            default:
-                return getTimestamp(string);
-        }
+        return parseDate(rs.getString(index), type);
     }
 
     @Override
-    public Date materializeObject(CallableStatement rs, int index, int type)
-            throws Exception {
+    public Date materializeObject(CallableStatement rs, int index, int type) throws Exception {
+        return parseDate(rs.getString(index), type);
+    }
 
-        String string = rs.getString(index);
-
+    protected Date parseDate(String string, int type) throws SQLException {
         if (string == null) {
             return null;
         }
@@ -91,12 +70,10 @@ class SQLiteDateType extends UtilDateType {
         }
 
         switch (type) {
-            case Types.TIMESTAMP:
-                return getTimestamp(string);
-            case Types.DATE:
-                return getDate(string);
             case Types.TIME:
                 return getTime(string);
+            case Types.DATE:
+            case Types.TIMESTAMP:
             default:
                 return getTimestamp(string);
         }
@@ -107,17 +84,9 @@ class SQLiteDateType extends UtilDateType {
             synchronized (timestampFormat) {
                 return timestampFormat.parse(string);
             }
-        }
-        catch (ParseException e) {
+        } catch (ParseException e) {
             // also try date format...
-            try {
-                synchronized (dateFormat) {
-                    return dateFormat.parse(string);
-                }
-            }
-            catch (ParseException e1) {
-                throw new SQLException("Unparsable timestamp string: " + string);
-            }
+            return getDate(string);
         }
     }
 
@@ -126,9 +95,8 @@ class SQLiteDateType extends UtilDateType {
             synchronized (dateFormat) {
                 return dateFormat.parse(string);
             }
-        }
-        catch (ParseException e) {
-            throw new SQLException("Unparsable date string: " + string);
+        } catch (ParseException e) {
+            throw new SQLException("Unparsable date/time string: " + string);
         }
     }
 
@@ -137,17 +105,15 @@ class SQLiteDateType extends UtilDateType {
             synchronized (timeFormat) {
                 return timeFormat.parse(string);
             }
-        }
-        catch (ParseException e) {
-            throw new SQLException("Unparsable time string: " + string);
+        } catch (ParseException e) {
+            return getTimestamp(string);
         }
     }
 
     protected long getLongTimestamp(String string) {
         try {
             return Long.parseLong(string);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return -1;
         }
     }

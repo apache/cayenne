@@ -24,6 +24,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 
 class MySQLQualifierTranslator extends QualifierTranslator {
@@ -86,6 +87,20 @@ class MySQLQualifierTranslator extends QualifierTranslator {
             catch (IOException ioex) {
                 throw new CayenneRuntimeException("Error appending content", ioex);
             }
+        }
+    }
+
+    @Override
+    protected void appendExtractFunction(ASTExtract functionExpression) {
+        switch (functionExpression.getPart()) {
+            case DAY_OF_WEEK:
+            case DAY_OF_MONTH:
+            case DAY_OF_YEAR:
+                // mysql variants are without '_'
+                out.append(functionExpression.getPart().name().replace("_", ""));
+                break;
+            default:
+                appendFunction(functionExpression);
         }
     }
 }

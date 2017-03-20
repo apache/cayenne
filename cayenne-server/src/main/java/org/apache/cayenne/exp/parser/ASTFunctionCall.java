@@ -80,7 +80,7 @@ public abstract class ASTFunctionCall extends EvaluatedNode {
     }
 
     protected void appendFunctionNameAsString(Appendable out) throws IOException {
-        out.append(getFunctionName().toLowerCase());
+        out.append(nameToCamelCase(getFunctionName()));
     }
 
     @Override
@@ -102,5 +102,27 @@ public abstract class ASTFunctionCall extends EvaluatedNode {
         out.append("(");
         super.appendChildrenAsEJBQL(parameterAccumulator, out, rootId);
         out.append(")");
+    }
+
+    /**
+     *
+     * @param functionName in UPPER_UNDERSCORE convention
+     * @return functionName in camelCase convention
+     */
+    protected static String nameToCamelCase(String functionName) {
+        String[] parts = functionName.split("_");
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for(String part : parts) {
+            if(first) {
+                sb.append(part.toLowerCase());
+                first = false;
+            } else {
+                char[] chars = part.toLowerCase().toCharArray();
+                chars[0] = Character.toTitleCase(chars[0]);
+                sb.append(chars);
+            }
+        }
+        return sb.toString();
     }
 }

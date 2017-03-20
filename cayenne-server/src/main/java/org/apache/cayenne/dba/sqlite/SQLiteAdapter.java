@@ -79,8 +79,8 @@ public class SQLiteAdapter extends JdbcAdapter {
         map.registerType(new SQLiteBigDecimalType());
         map.registerType(new SQLiteFloatType());
         map.registerType(new SQLiteByteArrayType());
-        map.registerType(new SQLiteCalendarType(GregorianCalendar.class));
-        map.registerType(new SQLiteCalendarType(Calendar.class));
+        map.registerType(new SQLiteCalendarType<>(GregorianCalendar.class));
+        map.registerType(new SQLiteCalendarType<>(Calendar.class));
     }
 
     /**

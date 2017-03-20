@@ -25,6 +25,7 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
@@ -396,6 +397,10 @@ public class UnitDbAdapter {
      * SELECT (intColumn < 10) AS bool FROM table
      */
     public boolean supportsSelectBooleanExpression() {
+        return true;
+    }
+
+    public boolean supportsExtractPart(ASTExtract.DateTimePart part) {
         return true;
     }
 }

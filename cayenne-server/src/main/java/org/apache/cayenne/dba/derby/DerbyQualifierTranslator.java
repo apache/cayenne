@@ -21,10 +21,12 @@ package org.apache.cayenne.dba.derby;
 import java.io.IOException;
 import java.sql.Types;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTEqual;
+import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.ASTNotEqual;
 import org.apache.cayenne.exp.parser.SimpleNode;
@@ -118,6 +120,21 @@ public class DerbyQualifierTranslator extends TrimmingQualifierTranslator {
 			out.delete(out.length() - 4, out.length());
 		} else {
 			super.clearLastFunctionArgDivider(functionExpression);
+		}
+	}
+
+	@Override
+	protected void appendExtractFunction(ASTExtract functionExpression) {
+		switch (functionExpression.getPart()) {
+			case DAY_OF_MONTH:
+				out.append("DAY");
+				break;
+			case DAY_OF_WEEK:
+			case DAY_OF_YEAR:
+			case WEEK:
+				throw new CayenneRuntimeException("Function " + functionExpression.getPartCamelCaseName() + "() is unsupported in Derby.");
+			default:
+				super.appendExtractFunction(functionExpression);
 		}
 	}
 }

@@ -28,6 +28,7 @@ import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTEqual;
+import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.ASTNotEqual;
 import org.apache.cayenne.exp.parser.SimpleNode;
@@ -149,6 +150,25 @@ public class DB2QualifierTranslator extends TrimmingQualifierTranslator {
 			out.delete(out.length() - " || ".length(), out.length());
 		} else {
 			super.clearLastFunctionArgDivider(functionExpression);
+		}
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	protected void appendExtractFunction(ASTExtract functionExpression) {
+		switch (functionExpression.getPart()) {
+			case DAY_OF_MONTH:
+				out.append("DAY");
+				break;
+			case DAY_OF_WEEK:
+			case DAY_OF_YEAR:
+				// db2 variants are without '_'
+				out.append(functionExpression.getPart().name().replace("_", ""));
+				break;
+			default:
+				appendFunction(functionExpression);
 		}
 	}
 }

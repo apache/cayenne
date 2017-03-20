@@ -23,6 +23,7 @@ import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.dba.oracle.OracleQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
 
 import java.io.IOException;
@@ -141,5 +142,40 @@ public class FirebirdQualifierTranslator extends QualifierTranslator {
 			default:
 				super.clearLastFunctionArgDivider(functionExpression);
 		}
+		if(functionExpression instanceof ASTExtract) {
+			out.append(")");
+		}
+	}
+
+	@Override
+	protected boolean parenthesisNeeded(Expression node, Expression parentNode) {
+		if (node.getType() == Expression.FUNCTION_CALL) {
+			if (node instanceof ASTExtract) {
+				return false;
+			}
+		}
+
+		return super.parenthesisNeeded(node, parentNode);
+	}
+
+
+	@Override
+	protected void appendExtractFunction(ASTExtract functionExpression) {
+		out.append("EXTRACT(");
+		switch (functionExpression.getPart()) {
+			case DAY_OF_MONTH:
+				out.append("DAY");
+				break;
+			case DAY_OF_WEEK:
+				out.append("WEEKDAY");
+				break;
+			case DAY_OF_YEAR:
+				out.append("YEARDAY");
+				break;
+			default:
+				out.append(functionExpression.getPartCamelCaseName());
+		}
+
+		out.append(" FROM ");
 	}
 }

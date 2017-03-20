@@ -30,6 +30,7 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
@@ -413,7 +414,11 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 		boolean parenthesisNeeded = parenthesisNeeded(node, parentNode);
 
 		if(node.getType() == Expression.FUNCTION_CALL) {
-			appendFunction((ASTFunctionCall)node);
+			if(node instanceof ASTExtract) {
+				appendExtractFunction((ASTExtract) node);
+			} else {
+				appendFunction((ASTFunctionCall) node);
+			}
 			if(parenthesisNeeded) {
 				out.append("(");
 			}
@@ -620,6 +625,14 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 	 */
 	protected void appendFunction(ASTFunctionCall functionExpression) {
 		out.append(functionExpression.getFunctionName());
+	}
+
+	/**
+	 * Special case for extract date/time parts functions as they have many variants
+	 * @since 4.0
+	 */
+	protected void appendExtractFunction(ASTExtract functionExpression) {
+		appendFunction(functionExpression);
 	}
 
 	/**

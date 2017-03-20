@@ -21,6 +21,8 @@ package org.apache.cayenne.dba.sybase;
 
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
 
 /**
@@ -74,5 +76,39 @@ public class SybaseQualifierTranslator extends QualifierTranslator {
             default:
                 super.clearLastFunctionArgDivider(functionExpression);
         }
+
+        if(functionExpression instanceof ASTExtract) {
+            out.append(")");
+        }
+    }
+
+    @Override
+    protected boolean parenthesisNeeded(Expression node, Expression parentNode) {
+        if (node.getType() == Expression.FUNCTION_CALL) {
+            if (node instanceof ASTExtract) {
+                return false;
+            }
+        }
+
+        return super.parenthesisNeeded(node, parentNode);
+    }
+
+    @Override
+    protected void appendExtractFunction(ASTExtract functionExpression) {
+        out.append("datepart(");
+        switch (functionExpression.getPart()) {
+            case DAY_OF_MONTH:
+                out.append("day");
+                break;
+            case DAY_OF_WEEK:
+                out.append("weekday");
+                break;
+            case DAY_OF_YEAR:
+                out.append("dayofyear");
+                break;
+            default:
+                out.append(functionExpression.getPart().name().toLowerCase());
+        }
+        out.append(" , ");
     }
 }

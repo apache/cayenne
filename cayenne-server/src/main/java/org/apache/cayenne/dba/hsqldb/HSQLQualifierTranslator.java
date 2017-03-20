@@ -24,6 +24,7 @@ import java.io.IOException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
+import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 
@@ -67,6 +68,20 @@ public class HSQLQualifierTranslator extends TrimmingQualifierTranslator {
             out.append("LOCALTIME");
         } else {
             super.appendFunction(functionExpression);
+        }
+    }
+
+    @Override
+    protected void appendExtractFunction(ASTExtract functionExpression) {
+        switch (functionExpression.getPart()) {
+            case DAY_OF_WEEK:
+            case DAY_OF_MONTH:
+            case DAY_OF_YEAR:
+                // hsqldb variants are without '_'
+                out.append(functionExpression.getPart().name().replace("_", ""));
+                break;
+            default:
+                appendFunction(functionExpression);
         }
     }
 }

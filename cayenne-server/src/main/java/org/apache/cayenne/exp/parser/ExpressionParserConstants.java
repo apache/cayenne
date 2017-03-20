@@ -73,35 +73,55 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int CURRENT_TIMESTAMP = 53;
   /** RegularExpression Id. */
-  int ASTERISK = 58;
+  int YEAR = 54;
   /** RegularExpression Id. */
-  int PROPERTY_PATH = 59;
+  int MONTH = 55;
   /** RegularExpression Id. */
-  int IDENTIFIER = 60;
+  int WEEK = 56;
   /** RegularExpression Id. */
-  int LETTER = 61;
+  int DAY_OF_YEAR = 57;
   /** RegularExpression Id. */
-  int DIGIT = 62;
+  int DAY = 58;
   /** RegularExpression Id. */
-  int ESC = 65;
+  int DAY_OF_MONTH = 59;
   /** RegularExpression Id. */
-  int SINGLE_QUOTED_STRING = 67;
+  int DAY_OF_WEEK = 60;
   /** RegularExpression Id. */
-  int STRING_ESC = 68;
+  int HOUR = 61;
   /** RegularExpression Id. */
-  int DOUBLE_QUOTED_STRING = 70;
+  int MINUTE = 62;
   /** RegularExpression Id. */
-  int INT_LITERAL = 71;
+  int SECOND = 63;
   /** RegularExpression Id. */
-  int FLOAT_LITERAL = 72;
+  int ASTERISK = 68;
   /** RegularExpression Id. */
-  int DEC_FLT = 73;
+  int PROPERTY_PATH = 69;
   /** RegularExpression Id. */
-  int DEC_DIGITS = 74;
+  int IDENTIFIER = 70;
   /** RegularExpression Id. */
-  int EXPONENT = 75;
+  int LETTER = 71;
   /** RegularExpression Id. */
-  int FLT_SUFF = 76;
+  int DIGIT = 72;
+  /** RegularExpression Id. */
+  int ESC = 75;
+  /** RegularExpression Id. */
+  int SINGLE_QUOTED_STRING = 77;
+  /** RegularExpression Id. */
+  int STRING_ESC = 78;
+  /** RegularExpression Id. */
+  int DOUBLE_QUOTED_STRING = 80;
+  /** RegularExpression Id. */
+  int INT_LITERAL = 81;
+  /** RegularExpression Id. */
+  int FLOAT_LITERAL = 82;
+  /** RegularExpression Id. */
+  int DEC_FLT = 83;
+  /** RegularExpression Id. */
+  int DEC_DIGITS = 84;
+  /** RegularExpression Id. */
+  int EXPONENT = 85;
+  /** RegularExpression Id. */
+  int FLT_SUFF = 86;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -166,6 +186,16 @@ public interface ExpressionParserConstants {
     "\"currentDate\"",
     "\"currentTime\"",
     "<CURRENT_TIMESTAMP>",
+    "\"year\"",
+    "\"month\"",
+    "\"week\"",
+    "\"dayOfYear\"",
+    "\"day\"",
+    "\"dayOfMonth\"",
+    "\"dayOfWeek\"",
+    "\"hour\"",
+    "\"minute\"",
+    "\"second\"",
     "\"$\"",
     "\"obj:\"",
     "\"db:\"",
@@ -178,10 +208,10 @@ public interface ExpressionParserConstants {
     "\"\\\'\"",
     "\"\\\"\"",
     "<ESC>",
-    "<token of kind 66>",
+    "<token of kind 76>",
     "\"\\\'\"",
     "<STRING_ESC>",
-    "<token of kind 69>",
+    "<token of kind 79>",
     "\"\\\"\"",
     "<INT_LITERAL>",
     "<FLOAT_LITERAL>",

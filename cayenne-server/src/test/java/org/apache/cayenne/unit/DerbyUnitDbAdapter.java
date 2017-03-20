@@ -20,6 +20,7 @@
 package org.apache.cayenne.unit;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.exp.parser.ASTExtract;
 
 /**
  * 
@@ -54,5 +55,16 @@ public class DerbyUnitDbAdapter extends UnitDbAdapter {
     @Override
     public boolean supportsExpressionInHaving() {
         return false;
+    }
+
+    @Override
+    public boolean supportsExtractPart(ASTExtract.DateTimePart part) {
+        switch (part) {
+            case DAY_OF_YEAR:
+            case DAY_OF_WEEK:
+            case WEEK:
+                return false;
+        }
+        return true;
     }
 }

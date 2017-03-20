@@ -19,41 +19,36 @@
 
 package org.apache.cayenne.exp.parser;
 
-import java.io.IOException;
 import java.util.Date;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @since 4.0
  */
-public class ASTCurrentTime extends ASTFunctionCall {
+public class ASTCurrentTimestampTest {
 
-    public ASTCurrentTime() {
-        this(ExpressionParserTreeConstants.JJTCURRENTTIME);
+    @Test
+    public void testParse() {
+        Expression exp2 = ExpressionFactory.exp("currentTimestamp()");
+        assertTrue(exp2 instanceof ASTCurrentTimestamp);
+
+        Expression exp3 = ExpressionFactory.exp("now()");
+        assertTrue(exp3 instanceof ASTCurrentTimestamp);
+
+        assertEquals("currentTimestamp()", exp2.toString());
+        assertEquals("currentTimestamp()", exp3.toString());
     }
 
-    ASTCurrentTime(int id) {
-        super(id, "CURRENT_TIME");
-    }
-
-    @Override
-    public boolean needParenthesis() {
-        return false;
-    }
-
-    @Override
-    protected int getRequiredChildrenCount() {
-        return 0;
-    }
-
-    @Override
-    protected Object evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
-        return new Date();
-    }
-
-    @Override
-    public Expression shallowCopy() {
-        return new ASTCurrentTime(id);
+    @Test
+    public void testEvaluate() {
+        Expression exp = new ASTCurrentTimestamp();
+        Object result = exp.evaluate(new Object());
+        assertTrue(result instanceof Date);
     }
 }

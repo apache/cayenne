@@ -24,6 +24,7 @@ import java.io.IOException;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.Node;
 
@@ -95,6 +96,20 @@ class IngresQualifierTranslator extends TrimmingQualifierTranslator {
             if("TRIM".equals(functionExpression.getFunctionName())) {
                 out.append(")");
             }
+        }
+    }
+
+    @Override
+    protected void appendExtractFunction(ASTExtract functionExpression) {
+        switch (functionExpression.getPart()) {
+            case DAY_OF_WEEK:
+            case DAY_OF_MONTH:
+            case DAY_OF_YEAR:
+                // ingres variants are without '_'
+                out.append(functionExpression.getPart().name().replace("_", ""));
+                break;
+            default:
+                appendFunction(functionExpression);
         }
     }
 

@@ -19,8 +19,11 @@
 
 package org.apache.cayenne.dba.frontbase;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
 
 /**
@@ -96,5 +99,36 @@ public class FrontBaseQualifierTranslator extends QualifierTranslator {
             default:
                 super.clearLastFunctionArgDivider(functionExpression);
         }
+        if(functionExpression instanceof ASTExtract) {
+            out.append(")");
+        }
+    }
+
+    @Override
+    protected boolean parenthesisNeeded(Expression node, Expression parentNode) {
+        if (node.getType() == Expression.FUNCTION_CALL) {
+            if (node instanceof ASTExtract) {
+                return false;
+            }
+        }
+
+        return super.parenthesisNeeded(node, parentNode);
+    }
+
+    @Override
+    protected void appendExtractFunction(ASTExtract functionExpression) {
+        out.append("EXTRACT(");
+        switch (functionExpression.getPart()) {
+            case DAY_OF_WEEK:
+            case DAY_OF_YEAR:
+            case WEEK:
+                throw new CayenneRuntimeException("Function " + functionExpression.getPartCamelCaseName() + "() is unsupported in FrontBase.");
+            case DAY_OF_MONTH:
+                out.append("DAY");
+                break;
+            default:
+                out.append(functionExpression.getPart().name());
+        }
+        out.append(" FROM ");
     }
 }

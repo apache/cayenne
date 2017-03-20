@@ -21,6 +21,7 @@ package org.apache.cayenne.dba.sqlserver;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.map.DbAttribute;
 
@@ -168,5 +169,39 @@ class SQLServerTrimmingQualifierTranslator extends TrimmingQualifierTranslator {
 				out.append(")");
 			}
 		}
+
+		if(functionExpression instanceof ASTExtract) {
+			out.append(")");
+		}
+	}
+
+	@Override
+	protected boolean parenthesisNeeded(Expression node, Expression parentNode) {
+		if (node.getType() == Expression.FUNCTION_CALL) {
+			if (node instanceof ASTExtract) {
+				return false;
+			}
+		}
+
+		return super.parenthesisNeeded(node, parentNode);
+	}
+
+	@Override
+	protected void appendExtractFunction(ASTExtract functionExpression) {
+		out.append("DATEPART(");
+		switch (functionExpression.getPart()) {
+			case DAY_OF_MONTH:
+				out.append("DAY");
+				break;
+			case DAY_OF_WEEK:
+				out.append("WEEKDAY");
+				break;
+			case DAY_OF_YEAR:
+				out.append("DAYOFYEAR");
+				break;
+			default:
+				out.append(functionExpression.getPart().name());
+		}
+		out.append(" , ");
 	}
 }

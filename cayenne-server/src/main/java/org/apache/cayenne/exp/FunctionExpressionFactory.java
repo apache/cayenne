@@ -26,6 +26,7 @@ import org.apache.cayenne.exp.parser.ASTCount;
 import org.apache.cayenne.exp.parser.ASTCurrentDate;
 import org.apache.cayenne.exp.parser.ASTCurrentTime;
 import org.apache.cayenne.exp.parser.ASTCurrentTimestamp;
+import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.exp.parser.ASTLength;
 import org.apache.cayenne.exp.parser.ASTLocate;
 import org.apache.cayenne.exp.parser.ASTLower;
@@ -369,5 +370,159 @@ public class FunctionExpressionFactory {
      */
     public static Expression currentTimestamp() {
         return new ASTCurrentTimestamp();
+    }
+
+    /**
+     * @param exp date/timestamp expression
+     * @return year(exp) function expression
+     */
+    public static Expression yearExp(Expression exp) {
+        return extractExp(exp, ASTExtract.DateTimePart.YEAR);
+    }
+
+    /**
+     * @param path String path
+     * @return year(path) function expression
+     */
+    public static Expression yearExp(String path) {
+        return extractExp(path, ASTExtract.DateTimePart.YEAR);
+    }
+
+    /**
+     * @param exp date/timestamp expression
+     * @return month(exp) function expression
+     */
+    public static Expression monthExp(Expression exp) {
+        return extractExp(exp, ASTExtract.DateTimePart.MONTH);
+    }
+
+    /**
+     * @param path String path
+     * @return month(path) function expression
+     */
+    public static Expression monthExp(String path) {
+        return extractExp(path, ASTExtract.DateTimePart.MONTH);
+    }
+
+    /**
+     * @param exp date/timestamp expression
+     * @return week(exp) function expression
+     */
+    public static Expression weekExp(Expression exp) {
+        return extractExp(exp, ASTExtract.DateTimePart.WEEK);
+    }
+
+    /**
+     * @param path String path
+     * @return week(path) function expression
+     */
+    public static Expression weekExp(String path) {
+        return extractExp(path, ASTExtract.DateTimePart.WEEK);
+    }
+
+    /**
+     * @param exp date/timestamp expression
+     * @return dayOfYear(exp) function expression
+     */
+    public static Expression dayOfYearExp(Expression exp) {
+        return extractExp(exp, ASTExtract.DateTimePart.DAY_OF_YEAR);
+    }
+
+    /**
+     * @param path String path
+     * @return dayOfYear(path) function expression
+     */
+    public static Expression dayOfYearExp(String path) {
+        return extractExp(path, ASTExtract.DateTimePart.DAY_OF_YEAR);
+    }
+
+    /**
+     * @param exp date/timestamp expression
+     * @return dayOfMonth(exp) function expression, synonym for day()
+     */
+    public static Expression dayOfMonthExp(Expression exp) {
+        return extractExp(exp, ASTExtract.DateTimePart.DAY_OF_MONTH);
+    }
+
+    /**
+     * @param path String path
+     * @return dayOfMonth(path) function expression, synonym for day()
+     */
+    public static Expression dayOfMonthExp(String path) {
+        return extractExp(path, ASTExtract.DateTimePart.DAY_OF_MONTH);
+    }
+
+    /**
+     * @param exp date/timestamp expression
+     * @return dayOfWeek(exp) function expression
+     */
+    public static Expression dayOfWeekExp(Expression exp) {
+        return extractExp(exp, ASTExtract.DateTimePart.DAY_OF_WEEK);
+    }
+
+    /**
+     * @param path String path
+     * @return dayOfWeek(path) function expression
+     */
+    public static Expression dayOfWeekExp(String path) {
+        return extractExp(path, ASTExtract.DateTimePart.DAY_OF_WEEK);
+    }
+
+    /**
+     * @param exp date/timestamp expression
+     * @return hour(exp) function expression
+     */
+    public static Expression hourExp(Expression exp) {
+        return extractExp(exp, ASTExtract.DateTimePart.HOUR);
+    }
+
+    /**
+     * @param path String path
+     * @return hour(path) function expression
+     */
+    public static Expression hourExp(String path) {
+        return extractExp(path, ASTExtract.DateTimePart.HOUR);
+    }
+
+    /**
+     * @param exp date/timestamp expression
+     * @return minute(exp) function expression
+     */
+    public static Expression minuteExp(Expression exp) {
+        return extractExp(exp, ASTExtract.DateTimePart.MINUTE);
+    }
+
+    /**
+     * @param path String path
+     * @return minute(path) function expression
+     */
+    public static Expression minuteExp(String path) {
+        return extractExp(path, ASTExtract.DateTimePart.MINUTE);
+    }
+
+    /**
+     * @param exp date/timestamp expression
+     * @return second(exp) function expression
+     */
+    public static Expression secondExp(Expression exp) {
+        return extractExp(exp, ASTExtract.DateTimePart.SECOND);
+    }
+
+    /**
+     * @param path String path
+     * @return second(path) function expression
+     */
+    public static Expression secondExp(String path) {
+        return extractExp(path, ASTExtract.DateTimePart.SECOND);
+    }
+
+    static Expression extractExp(String path, ASTExtract.DateTimePart part) {
+        return extractExp(ExpressionFactory.pathExp(path), part);
+    }
+
+    static Expression extractExp(Expression exp, ASTExtract.DateTimePart part) {
+        ASTExtract extract = new ASTExtract(exp);
+        extract.setPart(part);
+        return extract;
     }
 }

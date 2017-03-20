@@ -179,13 +179,13 @@ void scalarConstExpression() : {}
 	| 
 	  namedParameter()
 	| 
-	  <INT_LITERAL> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
+	  <INT_LITERAL>   { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
 	| 
-	   <FLOAT_LITERAL>{ jjtThis.setValue(token_source.literalValue); }  #Scalar(0)
+	  <FLOAT_LITERAL> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
 	|
-	  <TRUE> { jjtThis.setValue(true); }  #Scalar(0)
+	  <TRUE>  { jjtThis.setValue(true);  } #Scalar(0)
 	| 
-	  <FALSE> { jjtThis.setValue(false); }  #Scalar(0)
+	  <FALSE> { jjtThis.setValue(false); } #Scalar(0)
 }
 
 void numericExpression() : {}
@@ -314,7 +314,7 @@ void upper() #Upper : { }
 
 void functionsReturningNumerics() : { }
 {
-	length() | locate() | abs() | sqrt() | mod()
+	length() | locate() | abs() | sqrt() | mod() | dateTimeExtractingFunction()
 }
 
 void length() #Length : { }
@@ -397,6 +397,27 @@ void currentTimestamp() #CurrentTimestamp : {}
     <CURRENT_TIMESTAMP> "(" ")"
 }
 
+/* Date/time parts extracting function */
+void dateTimeExtractingFunction() #Extract(1) : {
+    Token t;
+}
+{
+    (
+        t = <YEAR>
+        | t = <MONTH>
+        | t = <WEEK>
+        | t = <DAY_OF_YEAR>
+        | t = <DAY>
+        | t = <DAY_OF_MONTH>
+        | t = <DAY_OF_WEEK>
+        | t = <HOUR>
+        | t = <MINUTE>
+        | t = <SECOND>
+    ) {
+        jjtThis.setPartToken(t.image);
+    }
+    "(" pathExpression() ")"
+}
 
 TOKEN_MGR_DECLS:
 {
@@ -519,6 +540,24 @@ TOKEN : /* functions returning datetime */
 	<CURRENT_DATE: "currentDate" >
 	|	<CURRENT_TIME: "currentTime" >
 	|	<CURRENT_TIMESTAMP: "currentTimestamp" | "now" >
+}
+
+/*
+    Data/time parts extracting functions' names.
+    MUST be in sync with enum ASTExtract.DateTimePart.
+*/
+TOKEN :
+{
+    <YEAR: "year">
+    | <MONTH: "month">
+    | <WEEK: "week">
+    | <DAY_OF_YEAR: "dayOfYear">
+    | <DAY: "day">
+    | <DAY_OF_MONTH: "dayOfMonth">
+    | <DAY_OF_WEEK: "dayOfWeek">
+    | <HOUR: "hour">
+    | <MINUTE: "minute">
+    | <SECOND: "second">
 }
 
 void namedParameter() :

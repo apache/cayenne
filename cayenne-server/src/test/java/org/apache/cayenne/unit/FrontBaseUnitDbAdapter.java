@@ -23,6 +23,7 @@ import java.sql.Connection;
 import java.util.Collection;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.map.DataMap;
 
 /**
@@ -85,5 +86,15 @@ public class FrontBaseUnitDbAdapter extends UnitDbAdapter {
     @Override
     public boolean supportsExpressionInHaving() {
         return false;
+    }
+
+    public boolean supportsExtractPart(ASTExtract.DateTimePart part) {
+        switch (part) {
+            case WEEK:
+            case DAY_OF_YEAR:
+            case DAY_OF_WEEK:
+                return false;
+        }
+        return true;
     }
 }

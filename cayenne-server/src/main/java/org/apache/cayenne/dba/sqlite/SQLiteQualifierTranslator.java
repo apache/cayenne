@@ -22,6 +22,7 @@ package org.apache.cayenne.dba.sqlite;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.Node;
 
@@ -91,6 +92,65 @@ public class SQLiteQualifierTranslator extends QualifierTranslator {
             default:
                 super.clearLastFunctionArgDivider(functionExpression);
         }
+        if(functionExpression instanceof ASTExtract) {
+            out.append(") as integer)");
+        }
+    }
+
+    @Override
+    protected boolean parenthesisNeeded(Expression node, Expression parentNode) {
+        if (node.getType() == Expression.FUNCTION_CALL) {
+            if (node instanceof ASTExtract) {
+                return false;
+            }
+        }
+
+        return super.parenthesisNeeded(node, parentNode);
+    }
+
+
+    /**
+     * Translates to cast(strftime('format', column) as integer).
+     * Depends on connection property "date_class", can be set in connection URL (date_class=text).
+     *
+     * https://www.sqlite.org/lang_datefunc.html
+     */
+    @Override
+    protected void appendExtractFunction(ASTExtract functionExpression) {
+        out.append("cast(strftime(");
+
+        switch (functionExpression.getPart()) {
+            case YEAR:
+                out.append("'%Y'");
+                break;
+            case MONTH:
+                out.append("'%m'");
+                break;
+            case WEEK:
+                out.append("'%W'");
+                break;
+            case DAY:
+            case DAY_OF_MONTH:
+                out.append("'%d'");
+                break;
+            case DAY_OF_WEEK:
+                out.append("'%w'");
+                break;
+            case DAY_OF_YEAR:
+                out.append("'%j'");
+                break;
+            case HOUR:
+                out.append("'%H'");
+                break;
+            case MINUTE:
+                out.append("'%M'");
+                break;
+            case SECOND:
+                out.append("'%S'");
+                break;
+        }
+
+        out.append(", ");
     }
 
     private void swapNodeChildren(Node node, int i, int j) {

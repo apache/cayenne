@@ -74,9 +74,10 @@ public interface ExpressionParserTreeConstants
   public int JJTCURRENTDATE = 49;
   public int JJTCURRENTTIME = 50;
   public int JJTCURRENTTIMESTAMP = 51;
-  public int JJTNAMEDPARAMETER = 52;
-  public int JJTOBJPATH = 53;
-  public int JJTDBPATH = 54;
+  public int JJTEXTRACT = 52;
+  public int JJTNAMEDPARAMETER = 53;
+  public int JJTOBJPATH = 54;
+  public int JJTDBPATH = 55;
 
 
   public String[] jjtNodeName = {
@@ -132,9 +133,10 @@ public interface ExpressionParserTreeConstants
     "CurrentDate",
     "CurrentTime",
     "CurrentTimestamp",
+    "Extract",
     "NamedParameter",
     "ObjPath",
     "DbPath",
   };
 }
-/* JavaCC - OriginalChecksum=7571de31b81c878cf4b5f52ebb555fb1 (do not edit this line) */
+/* JavaCC - OriginalChecksum=fa5ebea216f594b98b337cf22871715e (do not edit this line) */
