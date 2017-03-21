@@ -672,8 +672,17 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         @Override
         void convert(List<DataRow> mainRows) {
 
-            ClassDescriptor descriptor = metadata.getClassDescriptor();
             PrefetchTreeNode prefetchTree = metadata.getPrefetchTree();
+
+            List<Object> rsMapping = metadata.getResultSetMapping();
+            EntityResultSegment resultSegment = null;
+            if(rsMapping != null && !rsMapping.isEmpty()) {
+                resultSegment = (EntityResultSegment)rsMapping.get(0);
+            }
+
+            ClassDescriptor descriptor = resultSegment == null
+                    ? metadata.getClassDescriptor()
+                    : resultSegment.getClassDescriptor();
 
             PrefetchProcessorNode node = toResultsTree(descriptor, prefetchTree, mainRows);
             List<Persistent> objects = node.getObjects();
@@ -714,7 +723,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                             prefetchTreeNode = new PrefetchTreeNode();
                         }
                         PrefetchTreeNode addPath = prefetchTreeNode.addPath(prefetch.getPath());
-                        addPath.setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+                        addPath.setSemantics(prefetch.getSemantics());
                         addPath.setPhantom(false);
                     }
                 }

@@ -161,6 +161,11 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 */
 	public static final int ASTERISK = 46;
 
+	/**
+	 * @since 4.0
+	 */
+	public static final int FULL_OBJECT = 47;
+
 	protected int type;
 
 	/**

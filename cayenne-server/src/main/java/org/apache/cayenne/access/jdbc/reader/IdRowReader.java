@@ -26,6 +26,7 @@ import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.Util;
 
@@ -36,10 +37,12 @@ class IdRowReader<T> extends BaseRowReader<T> {
 
     protected int[] pkIndices;
 
-    public IdRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, DataRowPostProcessor postProcessor) {
+    public IdRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, EntityResultSegment resultMetadata, DataRowPostProcessor postProcessor) {
         super(descriptor, queryMetadata, postProcessor);
 
-        DbEntity dbEntity = queryMetadata.getDbEntity();
+        DbEntity dbEntity = resultMetadata == null
+                ? queryMetadata.getDbEntity()
+                : resultMetadata.getClassDescriptor().getEntity().getDbEntity();
         if (dbEntity == null) {
             throw new CayenneRuntimeException("Null root DbEntity, can't index PK");
         }
@@ -99,13 +102,9 @@ class IdRowReader<T> extends BaseRowReader<T> {
 
         DataRow idRow = new DataRow(2);
         idRow.setEntityName(entityName);
-        int len = pkIndices.length;
 
-        for (int i = 0; i < len; i++) {
-
+        for (int index : pkIndices) {
             // dereference column index
-            int index = pkIndices[i];
-
             // note: jdbc column indexes start from 1, not 0 as in arrays
             Object val = converters[index].materializeObject(resultSet, index + 1, types[index]);
             idRow.put(labels[index], val);

@@ -59,7 +59,7 @@ import java.util.NoSuchElementException;
 public class IncrementalFaultList<E> implements List<E>, Serializable {
 
 	protected int pageSize;
-	protected List elements;
+	protected final List elements;
 	protected DataContext dataContext;
 	protected ObjEntity rootEntity;
 	protected SelectQuery<?> internalQuery;
@@ -71,7 +71,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 */
 	protected int idWidth;
 
-	private IncrementalListHelper helper;
+	IncrementalListHelper helper;
 
 	/**
 	 * Defines the upper limit on the size of fetches. This is needed to avoid
@@ -156,12 +156,11 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * 
 	 * @since 3.0
 	 */
-	protected void fillIn(final Query query, List elementsList) {
+	protected void fillIn(final Query query, List<Object> elementsList) {
 
 		elementsList.clear();
 
-		try (ResultIterator it = dataContext.performIteratedQuery(query);) {
-
+		try (ResultIterator it = dataContext.performIteratedQuery(query)) {
 			while (it.hasNextRow()) {
 				elementsList.add(it.nextRow());
 			}
@@ -236,7 +235,6 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 			}
 
 			// fetch the range of objects in fetchSize chunks
-			boolean fetchesDataRows = internalQuery.isFetchingDataRows();
 			List<Object> objects = new ArrayList<>(qualsSize);
 
 			int fetchSize = maxFetchSize > 0 ? maxFetchSize : Integer.MAX_VALUE;
@@ -244,15 +242,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 			int fetchEnd = Math.min(qualsSize, fetchSize);
 			int fetchBegin = 0;
 			while (fetchBegin < qualsSize) {
-				SelectQuery<Object> query = new SelectQuery<>(rootEntity, ExpressionFactory.joinExp(
-						Expression.OR, quals.subList(fetchBegin, fetchEnd)));
-
-				query.setFetchingDataRows(fetchesDataRows);
-
-				if (!query.isFetchingDataRows()) {
-					query.setPrefetchTree(internalQuery.getPrefetchTree());
-				}
-
+				SelectQuery<Object> query = createSelectQuery(quals.subList(fetchBegin, fetchEnd));
 				objects.addAll(dataContext.performQuery(query));
 				fetchBegin = fetchEnd;
 				fetchEnd += Math.min(fetchSize, qualsSize - fetchEnd);
@@ -262,13 +252,28 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 			checkPageResultConsistency(objects, ids);
 
 			// replace ids in the list with objects
-			Iterator it = objects.iterator();
-			while (it.hasNext()) {
-				helper.updateWithResolvedObjectInRange(it.next(), fromIndex, toIndex);
-			}
-
-			unfetchedObjects -= objects.size();
+			updatePageWithResults(objects, fromIndex, toIndex);
 		}
+	}
+
+	void updatePageWithResults(List<Object> objects, int fromIndex, int toIndex) {
+		for (Object object : objects) {
+			helper.updateWithResolvedObjectInRange(object, fromIndex, toIndex);
+		}
+
+		unfetchedObjects -= objects.size();
+	}
+
+	SelectQuery<Object> createSelectQuery(List<Expression> expressions) {
+		SelectQuery<Object> query = new SelectQuery<>(rootEntity,
+				ExpressionFactory.joinExp(Expression.OR, expressions));
+
+		query.setFetchingDataRows(internalQuery.isFetchingDataRows());
+		if (!query.isFetchingDataRows()) {
+			query.setPrefetchTree(internalQuery.getPrefetchTree());
+		}
+
+		return query;
 	}
 
 	/**

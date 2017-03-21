@@ -28,6 +28,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.RefreshQuery;
@@ -75,8 +76,7 @@ class DataContextQueryAction extends ObjectContextQueryAction {
             ObjectIdQuery oidQuery = (ObjectIdQuery) query;
 
             if (!oidQuery.isFetchMandatory()) {
-                Object object = polymorphicObjectFromCache(
-                        oidQuery.getObjectId());
+                Object object = polymorphicObjectFromCache(oidQuery.getObjectId());
                 if (object != null) {
 
                     // TODO: andrus, 10/14/2006 - obtaining a row from an object is the
@@ -104,23 +104,27 @@ class DataContextQueryAction extends ObjectContextQueryAction {
     @Override
     protected boolean interceptPaginatedQuery() {
         if (metadata.getPageSize() > 0) {
-
-            DbEntity dbEntity = metadata.getDbEntity();
-            Integer maxIdQualifierSize = actingDataContext
-                    .getParentDataDomain()
-                    .getMaxIdQualifierSize();
+            Integer maxIdQualifierSize = actingDataContext.getParentDataDomain().getMaxIdQualifierSize();
             List<?> paginatedList;
-            if (dbEntity != null && dbEntity.getPrimaryKeys().size() == 1) {
-                paginatedList = new SimpleIdIncrementalFaultList<Object>(
-                        actingDataContext,
-                        query,
-                        maxIdQualifierSize);
+            List<Object> rsMapping = metadata.getResultSetMapping();
+            boolean mixedResults = false;
+            if(rsMapping != null) {
+                if(rsMapping.size() > 1) {
+                    mixedResults = true;
+                } else if(rsMapping.size() == 1) {
+                    mixedResults = !(rsMapping.get(0) instanceof EntityResultSegment);
+                }
             }
-            else {
-                paginatedList = new IncrementalFaultList<Object>(
-                        actingDataContext,
-                        query,
-                        maxIdQualifierSize);
+
+            if(mixedResults) {
+                paginatedList = new MixedResultIncrementalFaultList<>(actingDataContext, query, maxIdQualifierSize);
+            } else {
+                DbEntity dbEntity = metadata.getDbEntity();
+                if (dbEntity != null && dbEntity.getPrimaryKeys().size() == 1) {
+                    paginatedList = new SimpleIdIncrementalFaultList<Object>(actingDataContext, query, maxIdQualifierSize);
+                } else {
+                    paginatedList = new IncrementalFaultList<Object>(actingDataContext, query, maxIdQualifierSize);
+                }
             }
 
             response = new ListResponse(paginatedList);

@@ -125,7 +125,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      * @param entityType base persistent class that will be used as a root for this query
      * @param column single column to select
      */
-    protected static <E> ColumnSelect<E> columnQuery(Class<?> entityType, Property<E> column) {
+    public static <E> ColumnSelect<E> columnQuery(Class<?> entityType, Property<E> column) {
         return new ColumnSelect<>().entityType(entityType).column(column);
     }
 
@@ -136,7 +136,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      * @param firstColumn column to select
      * @param otherColumns columns to select
      */
-    protected static ColumnSelect<Object[]> columnQuery(Class<?> entityType, Property<?> firstColumn, Property<?>... otherColumns) {
+    public static ColumnSelect<Object[]> columnQuery(Class<?> entityType, Property<?> firstColumn, Property<?>... otherColumns) {
         return new ColumnSelect<Object[]>().entityType(entityType).columns(firstColumn, otherColumns);
     }
 

@@ -33,6 +33,7 @@ import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTDivide;
 import org.apache.cayenne.exp.parser.ASTEqual;
 import org.apache.cayenne.exp.parser.ASTFalse;
+import org.apache.cayenne.exp.parser.ASTFullObject;
 import org.apache.cayenne.exp.parser.ASTGreater;
 import org.apache.cayenne.exp.parser.ASTGreaterOrEqual;
 import org.apache.cayenne.exp.parser.ASTIn;
@@ -1243,6 +1244,14 @@ public class ExpressionFactory {
 		}
 
 		return joinExp(Expression.OR, pairs);
+	}
+
+	public static Expression fullObjectExp() {
+		return new ASTFullObject();
+	}
+
+	public static Expression fullObjectExp(Expression exp) {
+		return new ASTFullObject(exp);
 	}
 
 	/**

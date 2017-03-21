@@ -19,6 +19,7 @@
 package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.dba.DbAdapter;
@@ -103,6 +104,11 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 	 */
 	boolean haveAggregate;
 	Map<ColumnDescriptor, List<DbAttributeBinding>> groupByColumns;
+
+	/**
+	 * Callback for joins creation
+	 */
+	AddJoinListener joinListener;
 
 
 	public DefaultSelectTranslator(Query query, DbAdapter adapter, EntityResolver entityResolver) {
@@ -278,14 +284,22 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 	 * @since 4.0
 	 */
 	protected void appendGroupByColumn(StringBuilder buffer, Map.Entry<ColumnDescriptor, List<DbAttributeBinding>> entry) {
+		String fullName;
+		if(entry.getKey().isExpression()) {
+			fullName = entry.getKey().getDataRowKey();
+		} else {
+			QuotingStrategy strategy = getAdapter().getQuotingStrategy();
+			fullName = strategy.quotedIdentifier(queryMetadata.getDataMap(),
+					entry.getKey().getNamePrefix(), entry.getKey().getName());
+		}
+
+		buffer.append(fullName);
+
 		if(entry.getKey().getDataRowKey().equals(entry.getKey().getName())) {
-			buffer.append(entry.getKey().getName());
-            for (DbAttributeBinding binding : entry.getValue()) {
-                addToParamList(binding.getAttribute(), binding.getValue());
-            }
-        } else {
-            buffer.append(entry.getKey().getDataRowKey());
-        }
+			for (DbAttributeBinding binding : entry.getValue()) {
+				addToParamList(binding.getAttribute(), binding.getValue());
+			}
+		}
 	}
 
 	/**
@@ -360,9 +374,9 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		} else if (query.getRoot() instanceof DbEntity) {
 			appendDbEntityColumns(columns, query);
 		} else if (getQueryMetadata().getPageSize() > 0) {
-			appendIdColumns(columns, query);
+			appendIdColumns(columns, queryMetadata.getClassDescriptor().getEntity());
 		} else {
-			appendQueryColumns(columns, query);
+			appendQueryColumns(columns, query, queryMetadata.getClassDescriptor(), null);
 		}
 
 		return columns;
@@ -376,11 +390,59 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 
 		QualifierTranslator qualifierTranslator = adapter.getQualifierTranslator(this);
 		AccumulatingBindingListener bindingListener = new AccumulatingBindingListener();
+		final String[] joinTableAliasForProperty = {null};
+		joinListener = new AddJoinListener() {
+			@Override
+			public void joinAdded() {
+				// capture last alias for joined table, will use it to resolve object columns
+				joinTableAliasForProperty[0] = getCurrentAlias();
+			}
+		};
 		setAddBindingListener(bindingListener);
 
 		for(Property<?> property : query.getColumns()) {
+			int expressionType = property.getExpression().getType();
+			boolean objectProperty = expressionType == Expression.FULL_OBJECT;
+			// evaluate ObjPath with Persistent type as toOne relations and use it as full object
+			if(Persistent.class.isAssignableFrom(property.getType())) {
+				if(expressionType == Expression.OBJ_PATH) {
+					objectProperty = true;
+				} else {
+					// should we warn or throw an error?
+				}
+			}
+
+			// forbid direct selection of toMany relationships columns
+			if((expressionType == Expression.OBJ_PATH || expressionType == Expression.DB_PATH) &&
+					(Collection.class.isAssignableFrom(property.getType()) ||
+							Map.class.isAssignableFrom(property.getType()))) {
+				throw new CayenneRuntimeException("Can't directly select toMany relationship columns. " +
+						"Either select it with aggregate functions like count() or with flat() function to select full related objects.");
+			}
+
+			// Qualifier Translator in case of Object Columns have side effect -
+			// it will create required joins, that we catch with listener above.
+			// And we force created join alias for all columns of Object we select.
 			qualifierTranslator.setQualifier(property.getExpression());
+			qualifierTranslator.setForceJoinForRelations(objectProperty);
 			StringBuilder builder = qualifierTranslator.appendPart(new StringBuilder());
+
+			// If we want full object, use appendQueryColumns method, to fully process class descriptor
+			if(objectProperty) {
+				List<ColumnDescriptor> classColumns = new ArrayList<>();
+				ObjEntity entity = entityResolver.getObjEntity(property.getType());
+				if(getQueryMetadata().getPageSize() > 0) {
+					appendIdColumns(classColumns, entity);
+				} else {
+					ClassDescriptor classDescriptor = entityResolver.getClassDescriptor(entity.getName());
+					appendQueryColumns(classColumns, query, classDescriptor, joinTableAliasForProperty[0]);
+				}
+				for(ColumnDescriptor descriptor : classColumns) {
+					columns.add(descriptor);
+					groupByColumns.put(descriptor, Collections.<DbAttributeBinding>emptyList());
+				}
+				continue;
+			}
 
 			int type = TypesMapping.getSqlTypeByJava(property.getType());
 
@@ -402,6 +464,8 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		}
 
 		setAddBindingListener(null);
+		qualifierTranslator.setForceJoinForRelations(false);
+		joinListener = null;
 
 		if(!haveAggregate) {
 			// if no expression with aggregation function found, we don't need this information
@@ -442,9 +506,9 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 	 * Appends columns needed for object SelectQuery to the provided columns
 	 * list.
 	 */
-	<T> List<ColumnDescriptor> appendQueryColumns(final List<ColumnDescriptor> columns, SelectQuery<T> query) {
+	<T> List<ColumnDescriptor> appendQueryColumns(final List<ColumnDescriptor> columns, SelectQuery<T> query, ClassDescriptor descriptor, final String tableAlias) {
 
-		final Set<ColumnTracker> attributes = new HashSet<ColumnTracker>();
+		final Set<ColumnTracker> attributes = new HashSet<>();
 
 		// fetched attributes include attributes that are either:
 		//
@@ -452,8 +516,6 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		// * PK
 		// * FK used in relationship
 		// * joined prefetch PK
-
-		ClassDescriptor descriptor = queryMetadata.getClassDescriptor();
 		ObjEntity oe = descriptor.getEntity();
 
 		PropertyVisitor visitor = new PropertyVisitor() {
@@ -474,7 +536,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 					} else if (pathPart instanceof DbAttribute) {
 						DbAttribute dbAttr = (DbAttribute) pathPart;
 
-						appendColumn(columns, oa, dbAttr, attributes, null);
+						appendColumn(columns, oa, dbAttr, attributes, null, tableAlias);
 					}
 				}
 				return true;
@@ -499,7 +561,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 				List<DbJoin> joins = dbRel.getJoins();
 				for (DbJoin join : joins) {
 					DbAttribute src = join.getSource();
-					appendColumn(columns, null, src, attributes, null);
+					appendColumn(columns, null, src, attributes, null, tableAlias);
 				}
 			}
 		};
@@ -511,9 +573,9 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		resetJoinStack();
 
 		// add remaining needed attrs from DbEntity
-		DbEntity table = getQueryMetadata().getDbEntity();
+		DbEntity table = oe.getDbEntity();
 		for (DbAttribute dba : table.getPrimaryKeys()) {
-			appendColumn(columns, null, dba, attributes, null);
+			appendColumn(columns, null, dba, attributes, null, tableAlias);
 		}
 
 		// special handling of a disjoint query...
@@ -571,6 +633,12 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 
 		// handle joint prefetches directly attached to this query...
 		if (query.getPrefetchTree() != null) {
+			// Set entity name, in case MixedConversionStrategy will be used to select objects from this query
+			// Note: all prefetch nodes will point to query root, it is not a problem until select query can't
+			// perform some sort of union or sub-queries.
+			for(PrefetchTreeNode prefetch : query.getPrefetchTree().getChildren()) {
+				prefetch.setEntityName(oe.getName());
+			}
 
 			for (PrefetchTreeNode prefetch : query.getPrefetchTree().adjacentJointNodes()) {
 
@@ -633,14 +701,12 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		return columns;
 	}
 
-	<T> List<ColumnDescriptor> appendIdColumns(final List<ColumnDescriptor> columns, SelectQuery<T> query) {
+	<T> List<ColumnDescriptor> appendIdColumns(final List<ColumnDescriptor> columns, ObjEntity objEntity) {
 
-		Set<ColumnTracker> skipSet = new HashSet<ColumnTracker>();
+		Set<ColumnTracker> skipSet = new HashSet<>();
 
-		ClassDescriptor descriptor = queryMetadata.getClassDescriptor();
-		ObjEntity oe = descriptor.getEntity();
-		DbEntity dbEntity = oe.getDbEntity();
-		for (ObjAttribute attribute : oe.getPrimaryKeys()) {
+		DbEntity dbEntity = objEntity.getDbEntity();
+		for (ObjAttribute attribute : objEntity.getPrimaryKeys()) {
 
 			// synthetic objattributes can't reliably lookup their DbAttribute,
 			// so do it manually..
@@ -652,9 +718,17 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 	}
 
 	private void appendColumn(List<ColumnDescriptor> columns, ObjAttribute objAttribute, DbAttribute attribute,
-			Set<ColumnTracker> skipSet, String label) {
+							  Set<ColumnTracker> skipSet, String label) {
+		appendColumn(columns, objAttribute, attribute, skipSet, label, null);
+	}
 
-		String alias = getCurrentAlias();
+	private void appendColumn(List<ColumnDescriptor> columns, ObjAttribute objAttribute, DbAttribute attribute,
+			Set<ColumnTracker> skipSet, String label, String alias) {
+
+		if(alias == null) {
+			alias = getCurrentAlias();
+		}
+
 		if (skipSet.add(new ColumnTracker(alias, attribute))) {
 
 			ColumnDescriptor column = (objAttribute != null) ? new ColumnDescriptor(objAttribute, attribute, alias)
@@ -712,6 +786,9 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		}
 
 		getJoinStack().pushJoin(relationship, joinType, joinSplitAlias);
+		if(joinListener != null) {
+			joinListener.joinAdded();
+		}
 	}
 
 	/**
@@ -787,5 +864,9 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		public List<DbAttributeBinding> getBindings() {
 			return new ArrayList<>(bindings);
 		}
+	}
+
+	interface AddJoinListener {
+		void joinAdded();
 	}
 }

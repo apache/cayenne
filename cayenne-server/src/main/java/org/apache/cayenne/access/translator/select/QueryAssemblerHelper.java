@@ -46,6 +46,12 @@ public abstract class QueryAssemblerHelper {
 	protected QuotingStrategy strategy;
 
 	/**
+	 * Force joining tables for all relations, not only for toMany
+	 * @since 4.0
+	 */
+	private boolean forceJoinForRelations;
+
+	/**
 	 * Creates QueryAssemblerHelper initializing with parent
 	 * {@link QueryAssembler} and output buffer object.
 	 */
@@ -444,7 +450,7 @@ public abstract class QueryAssemblerHelper {
 	 */
 	protected void processRelTermination(DbRelationship rel, JoinType joinType, String joinSplitAlias) {
 
-		if (rel.isToMany()) {
+		if (forceJoinForRelations || rel.isToMany()) {
 			// append joins
 			queryAssembler.dbRelationshipAdded(rel, joinType, joinSplitAlias);
 		}
@@ -452,33 +458,39 @@ public abstract class QueryAssemblerHelper {
 		// get last DbRelationship on the list
 		List<DbJoin> joins = rel.getJoins();
 		if (joins.size() != 1) {
-			StringBuilder msg = new StringBuilder();
-			msg.append("OBJ_PATH expressions are only supported ").append("for a single-join relationships. ")
-					.append("This relationship has ").append(joins.size()).append(" joins.");
+			String msg = "OBJ_PATH expressions are only supported for a single-join relationships. " +
+					"This relationship has " + joins.size() + " joins.";
 
-			throw new CayenneRuntimeException(msg.toString());
+			throw new CayenneRuntimeException(msg);
 		}
 
 		DbJoin join = joins.get(0);
 
-		DbAttribute attribute = null;
+		DbAttribute attribute;
 
 		if (rel.isToMany()) {
-			DbEntity ent = (DbEntity) join.getRelationship().getTargetEntity();
+			DbEntity ent = join.getRelationship().getTargetEntity();
 			Collection<DbAttribute> pk = ent.getPrimaryKeys();
 			if (pk.size() != 1) {
-				StringBuilder msg = new StringBuilder();
-				msg.append("DB_NAME expressions can only support ").append("targets with a single column PK. ")
-						.append("This entity has ").append(pk.size()).append(" columns in primary key.");
+				String msg = "DB_NAME expressions can only support targets with a single column PK. " +
+						"This entity has " + pk.size() + " columns in primary key.";
 
-				throw new CayenneRuntimeException(msg.toString());
+				throw new CayenneRuntimeException(msg);
 			}
 
 			attribute = pk.iterator().next();
 		} else {
-			attribute = join.getSource();
+			attribute = forceJoinForRelations ? join.getTarget() : join.getSource();
 		}
 
 		processColumn(attribute);
+	}
+
+	/**
+	 * Force joining tables for all relations, not only for toMany
+	 * @since 4.0
+	 */
+	protected void setForceJoinForRelations(boolean forceJoinForRelations) {
+		this.forceJoinForRelations = forceJoinForRelations;
 	}
 }

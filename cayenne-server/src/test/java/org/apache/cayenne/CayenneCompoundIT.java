@@ -20,6 +20,8 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -63,6 +65,12 @@ public class CayenneCompoundIT extends ServerCase {
 
 	private void createOneCompoundPK() throws Exception {
 		tCompoundPKTest.insert("PK1", "PK2", "BBB");
+	}
+
+	private void createCompoundPKs(int size) throws Exception {
+		for(int i=0; i<size; i++) {
+			tCompoundPKTest.insert("PK"+i, "PK"+(2*i), "BBB"+i);
+		}
 	}
 
 	private void createOneCharPK() throws Exception {
@@ -157,4 +165,20 @@ public class CayenneCompoundIT extends ServerCase {
 		assertEquals("CPK", Cayenne.pkForObject(object));
 	}
 
+
+	@Test
+	public void testPaginatedColumnSelect() throws Exception {
+		createCompoundPKs(20);
+
+		List<Object[]> result = ObjectSelect.query(CompoundPkTestEntity.class)
+				.columns(CompoundPkTestEntity.NAME, Property.createSelf(CompoundPkTestEntity.class))
+				.pageSize(7)
+				.select(context);
+		assertEquals(20, result.size());
+		for(Object[] next : result) {
+			assertEquals(2, next.length);
+			assertEquals(String.class, next[0].getClass());
+			assertEquals(CompoundPkTestEntity.class, next[1].getClass());
+		}
+	}
 }

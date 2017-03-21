@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -27,6 +29,7 @@ import org.apache.cayenne.reflect.PropertyUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -788,6 +791,24 @@ public class Property<E> {
         return new Property<>(alias, this.getExpression(), this.getType());
     }
 
+    /**
+     * <p>Create new "flat" property for toMany relationship.</p>
+     * <p>
+     *     Example:
+     *     <pre>{@code
+     *     List<Object[]> result = ObjectSelect
+     *          .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat(Painting.class))
+     *          .select(context);
+     *     }</pre>
+     * </p>
+     */
+    public <T extends Persistent> Property<T> flat(Class<? super T> tClass) {
+        if(!Collection.class.isAssignableFrom(type) && !Map.class.isAssignableFrom(type)) {
+            throw new CayenneRuntimeException("Can use flat() function only on Property mapped on toMany relationship.");
+        }
+        return create(ExpressionFactory.fullObjectExp(getExpression()), tClass);
+    }
+
     public Class<? super E> getType() {
         return type;
     }
@@ -817,6 +838,27 @@ public class Property<E> {
      */
     public static <T> Property<T> create(String name, Expression expression, Class<? super T> type) {
         return new Property<>(name, expression, type);
+    }
+
+    /**
+     * <p>
+     * Creates "self" Property for persistent class.
+     * This property can be used to select full object along with some of it properties (or
+     * properties that can be resolved against query root)
+     * </p>
+     * <p>
+     *     Here is sample code, that will select all Artists and count of their Paintings:
+     *     <pre>{@code
+     *     Property<Artist> artistFull = Property.createSelf(Artist.class);
+     *     List<Object[]> result = ObjectSelect
+     *          .columnQuery(Artist.class, artistFull, Artist.PAINTING_ARRAY.count())
+     *          .select(context);
+     *     }
+     *     </pre>
+     * </p>
+     */
+    public static <T extends Persistent> Property<T> createSelf(Class<? super T> type) {
+        return new Property<>(null, ExpressionFactory.fullObjectExp(), type);
     }
 
     /**

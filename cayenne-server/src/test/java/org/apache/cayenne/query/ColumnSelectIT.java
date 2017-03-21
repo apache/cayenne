@@ -23,15 +23,24 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Types;
 import java.text.DateFormat;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.Fault;
+import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.ResultBatchIterator;
+import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.FunctionExpressionFactory;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.PostgresUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -42,8 +51,10 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.apache.cayenne.exp.FunctionExpressionFactory.substringExp;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -333,4 +344,499 @@ public class ColumnSelectIT extends ServerCase {
                 .selectOne(context);
         assertEquals(count2, count3);
     }
+
+    @Test
+    public void testSelectFirst_MultiColumns() throws Exception {
+        Object[] a = ObjectSelect.query(Artist.class)
+                .columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
+                .columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
+                .columns(Artist.ARTIST_NAME.alias("newName"))
+                .where(Artist.ARTIST_NAME.like("artist%"))
+                .orderBy("db:ARTIST_ID")
+                .selectFirst(context);
+        assertNotNull(a);
+        assertEquals("artist1", a[0]);
+        assertEquals("artist1", a[4]);
+    }
+
+    @Test
+    public void testSelectFirst_SingleValueInColumns() throws Exception {
+        Object[] a = ObjectSelect.query(Artist.class)
+                .columns(Artist.ARTIST_NAME)
+                .where(Artist.ARTIST_NAME.like("artist%"))
+                .orderBy("db:ARTIST_ID")
+                .selectFirst(context);
+        assertNotNull(a);
+        assertEquals("artist1", a[0]);
+    }
+
+    @Test
+    public void testSelectFirst_SubstringName() throws Exception {
+        Expression exp = FunctionExpressionFactory.substringExp(Artist.ARTIST_NAME.path(), 5, 3);
+        Property<String> substrName = Property.create("substrName", exp, String.class);
+        Object[] a = ObjectSelect.query(Artist.class)
+                .columns(Artist.ARTIST_NAME, substrName)
+                .where(substrName.eq("st3"))
+                .selectFirst(context);
+
+        assertNotNull(a);
+        assertEquals("artist3", a[0]);
+        assertEquals("st3", a[1]);
+    }
+
+    @Test
+    public void testSelectFirst_RelColumns() throws Exception {
+        // set shorter than painting_array.paintingTitle alias as some DBs doesn't support dot in alias
+        Property<String> paintingTitle = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).alias("paintingTitle");
+
+        Object[] a = ObjectSelect.query(Artist.class)
+                .columns(Artist.ARTIST_NAME, paintingTitle)
+                .orderBy(paintingTitle.asc())
+                .selectFirst(context);
+        assertNotNull(a);
+        assertEquals("painting1", a[1]);
+    }
+
+    @Test
+    public void testSelectFirst_RelColumn() throws Exception {
+        // set shorter than painting_array.paintingTitle alias as some DBs doesn't support dot in alias
+        Property<String> paintingTitle = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).alias("paintingTitle");
+
+        String a = ObjectSelect.query(Artist.class)
+                .column(paintingTitle)
+                .orderBy(paintingTitle.asc())
+                .selectFirst(context);
+        assertNotNull(a);
+        assertEquals("painting1", a);
+    }
+
+    @Test
+    public void testSelectFirst_RelColumnWithFunction() throws Exception {
+        Property<String> altTitle = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
+                .substring(7, 3).concat(" ", Artist.ARTIST_NAME)
+                .alias("altTitle");
+
+        String a = ObjectSelect.query(Artist.class)
+                .column(altTitle)
+                .where(altTitle.like("ng1%"))
+                .and(Artist.ARTIST_NAME.like("%ist1"))
+//				.orderBy(altTitle.asc()) // unsupported for now
+                .selectFirst(context);
+        assertNotNull(a);
+        assertEquals("ng1 artist1", a);
+    }
+
+    /*
+     *  Test iterated select
+     */
+
+    @Test
+    public void testIterationSingleColumn() throws Exception {
+        ColumnSelect<String> columnSelect = ObjectSelect.query(Artist.class).column(Artist.ARTIST_NAME);
+
+        final int[] count = new int[1];
+        columnSelect.iterate(context, new ResultIteratorCallback<String>() {
+            @Override
+            public void next(String object) {
+                count[0]++;
+                assertTrue(object.startsWith("artist"));
+            }
+        });
+
+        assertEquals(20, count[0]);
+    }
+
+    @Test
+    public void testBatchIterationSingleColumn() throws Exception {
+        ColumnSelect<String> columnSelect = ObjectSelect.query(Artist.class).column(Artist.ARTIST_NAME);
+
+        try(ResultBatchIterator<String> it = columnSelect.batchIterator(context, 10)) {
+            List<String> next = it.next();
+            assertEquals(10, next.size());
+            assertTrue(next.get(0).startsWith("artist"));
+        }
+    }
+
+    @Test
+    public void testIterationMultiColumns() throws Exception {
+        ColumnSelect<Object[]> columnSelect = ObjectSelect.query(Artist.class).columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
+
+        final int[] count = new int[1];
+        columnSelect.iterate(context, new ResultIteratorCallback<Object[]>() {
+            @Override
+            public void next(Object[] object) {
+                count[0]++;
+                assertTrue(object[0] instanceof String);
+                assertTrue(object[1] instanceof java.util.Date);
+            }
+        });
+
+        assertEquals(20, count[0]);
+    }
+
+    @Test
+    public void testBatchIterationMultiColumns() throws Exception {
+        ColumnSelect<Object[]> columnSelect = ObjectSelect.query(Artist.class).columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
+
+        try(ResultBatchIterator<Object[]> it = columnSelect.batchIterator(context, 10)) {
+            List<Object[]> next = it.next();
+            assertEquals(10, next.size());
+            assertTrue(next.get(0)[0] instanceof String);
+            assertTrue(next.get(0)[1] instanceof java.util.Date);
+        }
+    }
+
+    /*
+     *  Test select with page size
+     */
+
+    @Test
+    public void testPageSizeOneScalar() {
+        List<String> a = ObjectSelect.query(Artist.class)
+                .column(Artist.ARTIST_NAME.trim())
+                .pageSize(10)
+                .select(context);
+        assertNotNull(a);
+        assertEquals(20, a.size());
+        int idx = 0;
+        for(String next : a) {
+            assertNotNull(""+idx, next);
+            idx++;
+        }
+    }
+
+    @Test
+    public void testPageSizeScalars() {
+        List<Object[]> a = ObjectSelect.query(Artist.class)
+                .columns(Artist.ARTIST_NAME.trim(), Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.count())
+                .pageSize(10)
+                .select(context);
+        assertNotNull(a);
+        assertEquals(5, a.size());
+        int idx = 0;
+        for(Object[] next : a) {
+            assertNotNull(next);
+            assertTrue("" + idx, next[0] instanceof String);
+            assertTrue("" + idx, next[1] instanceof java.util.Date);
+            assertTrue("" + idx, next[2] instanceof Long);
+            idx++;
+        }
+    }
+
+    @Test
+    public void testPageSizeOneObject() {
+        Property<Artist> artistFull = Property.createSelf(Artist.class);
+        List<Artist> a = ObjectSelect.query(Artist.class)
+                .column(artistFull)
+                .pageSize(10)
+                .select(context);
+        assertNotNull(a);
+        assertEquals(20, a.size());
+        for(Artist next : a){
+            assertNotNull(next);
+        }
+    }
+
+    @Test
+    public void testPageSizeObjectAndScalars() {
+        Property<Artist> artistFull = Property.createSelf(Artist.class);
+        List<Object[]> a = ObjectSelect.query(Artist.class)
+                .columns(Artist.ARTIST_NAME, artistFull, Artist.PAINTING_ARRAY.count())
+                .pageSize(10)
+                .select(context);
+        assertNotNull(a);
+        assertEquals(5, a.size());
+        int idx = 0;
+        for(Object[] next : a) {
+            assertNotNull(next);
+            assertEquals("" + idx, String.class, next[0].getClass());
+            assertEquals("" + idx, Artist.class, next[1].getClass());
+            assertEquals("" + idx, Long.class, next[2].getClass());
+            idx++;
+        }
+    }
+
+    @Test
+    public void testPageSizeObjects() {
+        Property<Artist> artistFull = Property.createSelf(Artist.class);
+        List<Object[]> a = ObjectSelect.query(Artist.class)
+                .columns(Artist.ARTIST_NAME, artistFull, Artist.PAINTING_ARRAY.flat(Painting.class))
+                .pageSize(10)
+                .select(context);
+        assertNotNull(a);
+        assertEquals(21, a.size());
+        int idx = 0;
+        for(Object[] next : a) {
+            assertNotNull(next);
+            assertEquals("" + idx, String.class, next[0].getClass());
+            assertEquals("" + idx, Artist.class, next[1].getClass());
+            assertEquals("" + idx, Painting.class, next[2].getClass());
+            idx++;
+        }
+    }
+
+    /*
+     *  Test prefetch
+     */
+
+    @Test
+    public void testObjectColumnWithJointPrefetch() {
+        Property<Artist> artistFull = Property.createSelf(Artist.class);
+
+        List<Object[]> result = ObjectSelect.query(Artist.class)
+                .columns(artistFull, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
+                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .select(context);
+
+        checkPrefetchResults(result);
+    }
+
+    @Test
+    public void testObjectColumnWithDisjointPrefetch() {
+        Property<Artist> artistFull = Property.createSelf(Artist.class);
+
+        List<Object[]> result = ObjectSelect.query(Artist.class)
+                .columns(artistFull, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
+                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .select(context);
+
+        checkPrefetchResults(result);
+    }
+
+    @Test
+    public void testObjectColumnWithDisjointByIdPrefetch() {
+        Property<Artist> artistFull = Property.createSelf(Artist.class);
+
+        List<Object[]> result = ObjectSelect.query(Artist.class)
+                .columns(artistFull, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
+                .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                .select(context);
+
+        checkPrefetchResults(result);
+    }
+
+    private void checkPrefetchResults(List<Object[]> result) {
+        assertEquals(21, result.size());
+        for(Object[] next : result) {
+            assertTrue(next[0] instanceof Artist);
+            assertTrue(next[1] instanceof java.util.Date);
+            assertTrue(next[2] instanceof String);
+            Artist artist = (Artist)next[0];
+            assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
+
+            Object paintingsArr = artist.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            assertFalse(paintingsArr instanceof Fault);
+            assertTrue(((List)paintingsArr).size() > 0);
+        }
+    }
+
+    @Test
+    public void testAggregateColumnWithJointPrefetch() {
+        Property<Artist> artistFull = Property.createSelf(Artist.class);
+
+        List<Object[]> result = ObjectSelect.query(Artist.class)
+                .columns(artistFull, Artist.PAINTING_ARRAY.count())
+                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .select(context);
+
+        checkAggregatePrefetchResults(result);
+    }
+
+    @Test
+    public void testAggregateColumnWithDisjointPrefetch() {
+        Property<Artist> artistFull = Property.createSelf(Artist.class);
+
+        List<Object[]> result = ObjectSelect.query(Artist.class)
+                .columns(artistFull, Artist.PAINTING_ARRAY.count())
+                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .select(context);
+
+        checkAggregatePrefetchResults(result);
+    }
+
+    @Test
+    public void testAggregateColumnWithDisjointByIdPrefetch() {
+        Property<Artist> artistFull = Property.createSelf(Artist.class);
+
+        List<Object[]> result = ObjectSelect.query(Artist.class)
+                .columns(artistFull, Artist.PAINTING_ARRAY.count())
+                .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                .select(context);
+
+        checkAggregatePrefetchResults(result);
+    }
+
+    private void checkAggregatePrefetchResults(List<Object[]> result) {
+        assertEquals(5, result.size());
+        for(Object[] next : result) {
+            assertTrue(next[0] instanceof Artist);
+            assertTrue(next[1] instanceof Long);
+            Artist artist = (Artist)next[0];
+            assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
+
+            Object paintingsArr = artist.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            assertFalse(paintingsArr instanceof Fault);
+            assertTrue(((List)paintingsArr).size() == (long)next[1]);
+        }
+    }
+
+    @Test
+    public void testObjectSelectWithJointPrefetch() {
+        List<Artist> result = ObjectSelect.query(Artist.class)
+                .column(Property.createSelf(Artist.class))
+                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .select(context);
+        assertEquals(20, result.size());
+
+        for(Artist artist : result) {
+            assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
+
+            Object paintingsArr = artist.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            assertFalse(paintingsArr instanceof Fault);
+        }
+    }
+
+    @Test
+    public void testObjectWithDisjointPrefetch() {
+        List<Artist> result = ObjectSelect.query(Artist.class)
+                .column(Property.createSelf(Artist.class))
+                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .select(context);
+        assertEquals(20, result.size());
+        for(Artist artist : result) {
+            assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
+
+            Object paintingsArr = artist.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            assertFalse(paintingsArr instanceof Fault);
+        }
+    }
+
+    @Test
+    public void testObjectWithDisjointByIdPrefetch() {
+        List<Artist> result = ObjectSelect.query(Artist.class)
+                .column(Property.createSelf(Artist.class))
+                .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                .select(context);
+        assertEquals(20, result.size());
+        for(Artist artist : result) {
+            assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
+
+            Object paintingsArr = artist.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            assertFalse(paintingsArr instanceof Fault);
+        }
+    }
+
+    /*
+     *  Test Persistent object select
+     */
+
+    @Test
+    public void testObjectColumn() {
+        Property<Artist> artistFull = Property.createSelf(Artist.class);
+
+        List<Object[]> result = ObjectSelect.query(Artist.class)
+                .columns(artistFull, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
+                .select(context);
+        assertEquals(5, result.size());
+
+        for(Object[] next : result) {
+            assertTrue(next[0] instanceof Artist);
+            assertTrue(next[1] instanceof String);
+            assertTrue(next[2] instanceof Long);
+            assertEquals(PersistenceState.COMMITTED, ((Artist)next[0]).getPersistenceState());
+        }
+    }
+
+    @Test
+    public void testObjectColumnToOne() {
+        Property<Artist> artistFull = Property.create(ExpressionFactory.fullObjectExp(Painting.TO_ARTIST.getExpression()), Artist.class);
+        Property<Gallery> galleryFull = Property.create(ExpressionFactory.fullObjectExp(Painting.TO_GALLERY.getExpression()), Gallery.class);
+
+        List<Object[]> result = ObjectSelect.query(Painting.class)
+                .columns(Painting.PAINTING_TITLE, artistFull, galleryFull)
+                .select(context);
+        assertEquals(21, result.size());
+
+        for(Object[] next : result) {
+            assertTrue(next[0] instanceof String);
+            assertTrue(next[1] instanceof Artist);
+            assertTrue(next[2] instanceof Gallery);
+            assertEquals(PersistenceState.COMMITTED, ((Artist)next[1]).getPersistenceState());
+        }
+    }
+
+    @Test
+    public void testObjectColumnToOneAsObjPath() {
+
+        List<Object[]> result = ObjectSelect.query(Painting.class)
+                .columns(Painting.PAINTING_TITLE, Painting.TO_ARTIST, Painting.TO_GALLERY)
+                .select(context);
+        assertEquals(21, result.size());
+
+        for(Object[] next : result) {
+            assertTrue(next[0] instanceof String);
+            assertTrue(next[1] instanceof Artist);
+            assertTrue(next[2] instanceof Gallery);
+            assertEquals(PersistenceState.COMMITTED, ((Artist)next[1]).getPersistenceState());
+        }
+    }
+
+    @Test
+    public void testObjectColumnToMany() throws Exception {
+        Property<Artist> artist = Property.createSelf(Artist.class);
+
+        List<Object[]> result = ObjectSelect.query(Artist.class)
+                .columns(artist, Artist.PAINTING_ARRAY.flat(Painting.class), Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY))
+                .select(context);
+        assertEquals(21, result.size());
+
+        for(Object[] next : result) {
+            assertTrue(next[0] instanceof Artist);
+            assertTrue(next[1] instanceof Painting);
+            assertTrue(next[2] instanceof Gallery);
+            assertEquals(PersistenceState.COMMITTED, ((Artist)next[0]).getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, ((Painting)(next[1])).getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, ((Gallery)(next[2])).getPersistenceState());
+        }
+    }
+
+    @Test(expected = CayenneRuntimeException.class)
+    public void testDirectRelationshipSelect() {
+        // We should fail here as actual result will be just distinct paintings' ids.
+        List<List<Painting>> result = ObjectSelect.query(Artist.class)
+                .column(Artist.PAINTING_ARRAY).select(context);
+        assertEquals(21, result.size());
+    }
+
+    @Test(expected = CayenneRuntimeException.class)
+    public void testSelfPropertyInOrderBy() {
+        Property<Artist> artistProperty = Property.createSelf(Artist.class);
+        ObjectSelect.query(Artist.class)
+                .column(artistProperty)
+                .orderBy(artistProperty.desc())
+                .select(context);
+    }
+
+    @Test(expected = CayenneRuntimeException.class)
+    public void testSelfPropertyInWhere() {
+        Artist artist = ObjectSelect.query(Artist.class).selectFirst(context);
+        Property<Artist> artistProperty = Property.createSelf(Artist.class);
+        List<Artist> result = ObjectSelect.query(Artist.class)
+                .column(artistProperty)
+                .where(artistProperty.eq(artist))
+                .select(context);
+    }
+
+    @Test
+    public void testObjPropertyInWhere() {
+        Artist artist = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist1"))
+                .selectFirst(context);
+        Property<Painting> paintingProperty = Property.createSelf(Painting.class);
+        List<Painting> result = ObjectSelect.query(Painting.class)
+                .column(paintingProperty)
+                .where(Painting.TO_ARTIST.eq(artist))
+                .select(context);
+        assertEquals(4, result.size());
+    }
+
 }

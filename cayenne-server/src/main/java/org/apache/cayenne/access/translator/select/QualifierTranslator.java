@@ -142,9 +142,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 			}
 		}
 
-		/**
-		 * Attaching root Db entity's qualifier
-		 */
+		// Attaching root Db entity's qualifier
 		if (getDbEntity() != null) {
 			Expression dbQualifier = getDbEntity().getQualifier();
 			if (dbQualifier != null) {
@@ -423,6 +421,10 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 				out.append("(");
 			}
 			return;
+		}
+
+		if(node.getType() == Expression.FULL_OBJECT && parentNode != null) {
+			throw new CayenneRuntimeException("Expression is not supported in where clause.");
 		}
 
 		int count = node.getOperandCount();
