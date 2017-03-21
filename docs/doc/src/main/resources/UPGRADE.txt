@@ -7,6 +7,10 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 
 UPGRADING TO 4.0.M6
 
+* Per CAY-2268 DI methods for binding ordered lists, introduced in 4.0.M3 where changed:
+       - method after() replaced by explicit addAfter(), addAllAfter()
+       - method before() replaced by insertBefore(), insertAllBefore()
+
 * Per CAY-2258 Injection of List and Map are made type-safe, if you are using following methods:
         - bindMap(String bindingName)
         - bindList(String bindingName)

@@ -89,7 +89,7 @@ public class CacheInvalidationModuleBuilder {
 
                 // want the filter to be INSIDE transaction
                 ServerModule.contributeDomainFilters(binder)
-                        .add(CacheInvalidationFilter.class).before(TransactionFilter.class);
+                        .insertBefore(CacheInvalidationFilter.class, TransactionFilter.class);
             }
         };
     }

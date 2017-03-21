@@ -134,9 +134,9 @@ public class PostCommitModuleBuilder {
 				binder.bind(PostCommitFilter.class).to(PostCommitFilter.class);
 
 				if (excludeFromTransaction) {
-					ServerModule.contributeDomainFilters(binder).add(PostCommitFilter.class).after(TransactionFilter.class);
+					ServerModule.contributeDomainFilters(binder).addAfter(PostCommitFilter.class, TransactionFilter.class);
 				} else {
-					ServerModule.contributeDomainFilters(binder).add(PostCommitFilter.class).before(TransactionFilter.class);
+					ServerModule.contributeDomainFilters(binder).insertBefore(PostCommitFilter.class, TransactionFilter.class);
 				}
 			}
 		};

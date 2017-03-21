@@ -36,13 +36,10 @@ class ListProvider<T> implements Provider<List<T>> {
 
     private Map<Key<? extends T>, Provider<? extends T>> providers;
     private DIGraph<Key<? extends T>> graph;
-    private Key<? extends T> lastKey;
-    private Collection<Key<? extends T>> lastKeys;
 
     public ListProvider() {
         this.providers = new HashMap<>();
         this.graph = new DIGraph<>();
-        this.lastKeys = Collections.emptySet();
     }
 
     @Override
@@ -72,38 +69,34 @@ class ListProvider<T> implements Provider<List<T>> {
     void add(Key<? extends T> key, Provider<? extends T> provider) {
         providers.put(key, provider);
         graph.add(key);
-        lastKey = key;
-        lastKeys.clear();
+    }
+
+    void addAfter(Key<? extends T> key, Provider<? extends T> provider, Key<? extends T> after) {
+        providers.put(key, provider);
+        graph.add(key, after);
+    }
+
+    void insertBefore(Key<? extends T> key, Provider<? extends T> provider, Key<? extends T> before) {
+        providers.put(key, provider);
+        graph.add(before, key);
     }
 
     void addAll(Map<Key<? extends T>, Provider<? extends T>> keyProviderMap) {
         providers.putAll(keyProviderMap);
         graph.addAll(keyProviderMap.keySet());
-        lastKeys = keyProviderMap.keySet();
     }
 
-    void after(Key<? extends T> after) {
-        if (!lastKeys.isEmpty()) {
-            for (Key<? extends T> key : lastKeys) {
-                graph.add(key, after);
-            }
-
-            return;
+    void addAllAfter(Map<Key<? extends T>, Provider<? extends T>> keyProviderMap, Key<? extends T> after) {
+        providers.putAll(keyProviderMap);
+        for (Key<? extends T> key : keyProviderMap.keySet()) {
+            graph.add(key, after);
         }
-
-        graph.add(lastKey, after);
     }
 
-    void before(Key<? extends T> before) {
-        if (!lastKeys.isEmpty()) {
-            for (Key<? extends T> key: lastKeys) {
-                graph.add(before, key);
-            }
-
-            return;
+    void insertAllBefore(Map<Key<? extends T>, Provider<? extends T>> keyProviderMap, Key<? extends T> before) {
+        providers.putAll(keyProviderMap);
+        for (Key<? extends T> key : keyProviderMap.keySet()) {
+            graph.add(before, key);
         }
-
-        graph.add(before, lastKey);
     }
-
 }

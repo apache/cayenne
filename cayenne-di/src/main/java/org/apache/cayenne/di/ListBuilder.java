@@ -16,7 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.di;
+
+import java.util.Collection;
 
 /**
  * A binding builder for list configurations.
@@ -24,26 +27,44 @@ package org.apache.cayenne.di;
  * @param <T> A type of list values.
  * @since 3.1
  */
-public interface ListBuilder<T> extends UnorderedListBuilder<T> {
+public interface ListBuilder<T> {
+
+    ListBuilder<T> add(Class<? extends T> interfaceType) throws DIRuntimeException;
+
+    ListBuilder<T> add(T value) throws DIRuntimeException;
+
+    ListBuilder<T> addAll(Collection<T> values) throws DIRuntimeException;
 
     /**
      * @since 4.0
      */
-    UnorderedListBuilder<T> after(Class<? extends T> type);
+    ListBuilder<T> addAfter(Class<? extends T> interfaceType, Class<? extends T> afterType) throws DIRuntimeException;
 
     /**
      * @since 4.0
      */
-    UnorderedListBuilder<T> after(Key<? extends T> key);
+    ListBuilder<T> addAfter(T value, Class<? extends T> afterType) throws DIRuntimeException;
 
     /**
      * @since 4.0
      */
-    UnorderedListBuilder<T> before(Class<? extends T> type);
+    ListBuilder<T> addAllAfter(Collection<T> values, Class<? extends T> afterType) throws DIRuntimeException;
 
     /**
      * @since 4.0
      */
-    UnorderedListBuilder<T> before(Key<? extends T> key);
+    ListBuilder<T> insertBefore(Class<? extends T> interfaceType, Class<? extends T> beforeType) throws DIRuntimeException;
+
+    /**
+     * @since 4.0
+     */
+    ListBuilder<T> insertBefore(T value, Class<? extends T> beforeType) throws DIRuntimeException;
+
+    /**
+     * @since 4.0
+     */
+    ListBuilder<T> insertAllBefore(Collection<T> values, Class<? extends T> afterType) throws DIRuntimeException;
+
+    void in(Scope scope);
 
 }
