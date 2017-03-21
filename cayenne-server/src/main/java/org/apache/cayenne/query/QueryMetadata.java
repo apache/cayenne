@@ -257,4 +257,9 @@ public interface QueryMetadata {
      * @since 3.0
      */
     int getStatementFetchSize();
+
+    /**
+     * @since 4.0
+     */
+    boolean isSuppressingDistinct();
 }

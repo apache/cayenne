@@ -120,4 +120,9 @@ public class MockQueryMetadata implements QueryMetadata {
     public int getStatementFetchSize() {
         return 0;
     }
+
+    @Override
+    public boolean isSuppressingDistinct() {
+        return false;
+    }
 }

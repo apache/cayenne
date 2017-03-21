@@ -769,11 +769,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                     }
                 }
             }
-            Set<List<?>> seen = new HashSet<>(mainRows.size());
-            Iterator<Object[]> it = mainRows.iterator();
-            while (it.hasNext()) {
-                if (!seen.add(Arrays.asList(it.next()))) {
-                    it.remove();
+
+            if(!metadata.isSuppressingDistinct()) {
+                Set<List<?>> seen = new HashSet<>(mainRows.size());
+                Iterator<Object[]> it = mainRows.iterator();
+                while (it.hasNext()) {
+                    if (!seen.add(Arrays.asList(it.next()))) {
+                        it.remove();
+                    }
                 }
             }
 

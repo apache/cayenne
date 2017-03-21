@@ -614,6 +614,14 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	}
 
 	/**
+	 * Sets <code>distinct</code> property that determines whether this query
+	 * returns distinct row.
+	 */
+	public void setSuppressDistinct(boolean suppressDistinct) {
+		this.metaData.setSuppressingDistinct(suppressDistinct);
+	}
+
+	/**
 	 * Adds one or more aliases for the qualifier expression path. Aliases serve
 	 * to instruct Cayenne to generate separate sets of joins for overlapping
 	 * paths, that maybe needed for complex conditions. An example of an

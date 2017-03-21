@@ -59,6 +59,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 	
 	Map<String, String> pathSplitAliases;
 	boolean isSingleResultSetMapping;
+	boolean suppressingDistinct;
 
 	@Override
 	void copyFromInfo(QueryMetadata info) {
@@ -382,5 +383,20 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 	@Override
 	public boolean isSingleResultSetMapping() {
 		return isSingleResultSetMapping;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public boolean isSuppressingDistinct() {
+		return suppressingDistinct;
+	}
+
+	/**
+	 * @since 4.0
+	 */
+	public void setSuppressingDistinct(boolean suppressingDistinct) {
+		this.suppressingDistinct = suppressingDistinct;
 	}
 }

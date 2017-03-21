@@ -62,6 +62,8 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
     // package private for tests
     boolean singleColumn = true;
     private Expression having;
+    boolean distinct;
+    boolean suppressDistinct;
 
     protected ColumnSelect() {
         super();
@@ -93,6 +95,8 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
         replacement.setColumns(columns);
         replacement.setHavingQualifier(having);
         replacement.setCanReturnScalarValue(singleColumn);
+        replacement.setDistinct(distinct);
+        replacement.setSuppressDistinct(suppressDistinct);
         return replacement;
     }
 
@@ -283,6 +287,24 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
         }
 
         setActiveExpression(ExpressionFactory.or(all));
+        return this;
+    }
+
+    /**
+     * Explicitly request distinct in query.
+     */
+    public ColumnSelect<T> distinct() {
+        this.suppressDistinct = false;
+        this.distinct = true;
+        return this;
+    }
+
+    /**
+     * Explicitly suppress distinct in query.
+     */
+    public ColumnSelect<T> suppressDistinct() {
+        this.suppressDistinct = true;
+        this.distinct = false;
         return this;
     }
 

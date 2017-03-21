@@ -160,4 +160,9 @@ class ObjectsFromDataRowsQuery implements Query, QueryMetadata {
     public int getStatementFetchSize() {
         return 0;
     }
+
+    @Override
+    public boolean isSuppressingDistinct() {
+        return false;
+    }
 }

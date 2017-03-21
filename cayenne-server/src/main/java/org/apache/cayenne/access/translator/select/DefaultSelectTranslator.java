@@ -153,12 +153,13 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		// check if DISTINCT is appropriate
 		// side effect: "suppressingDistinct" flag may end up being flipped here
 		if (forcingDistinct || getSelectQuery().isDistinct()) {
-			suppressingDistinct = false;
-
-			for (ColumnDescriptor column : resultColumns) {
-				if (isUnsupportedForDistinct(column.getJdbcType())) {
-					suppressingDistinct = true;
-					break;
+			suppressingDistinct = queryMetadata.isSuppressingDistinct();
+			if(!suppressingDistinct) {
+				for (ColumnDescriptor column : resultColumns) {
+					if (isUnsupportedForDistinct(column.getJdbcType())) {
+						suppressingDistinct = true;
+						break;
+					}
 				}
 			}
 

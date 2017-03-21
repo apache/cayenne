@@ -238,6 +238,11 @@ public class StringIdQuery implements Query {
             public int getStatementFetchSize() {
                 return QueryMetadata.STATEMENT_FETCH_SIZE_DEFAULT;
             }
+
+            @Override
+            public boolean isSuppressingDistinct() {
+                return false;
+            }
         };
     }
 

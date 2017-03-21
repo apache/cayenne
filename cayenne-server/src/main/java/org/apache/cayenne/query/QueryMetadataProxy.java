@@ -143,4 +143,9 @@ public class QueryMetadataProxy implements QueryMetadata {
     public int getStatementFetchSize() {
         return mdDelegate.getStatementFetchSize();
     }
+
+    @Override
+    public boolean isSuppressingDistinct() {
+        return mdDelegate.isSuppressingDistinct();
+    }
 }

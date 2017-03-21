@@ -180,7 +180,8 @@ public class SelectAction extends BaseSQLAction {
 	}
 
 	private <T> ResultIterator<T> forSuppressedDistinct(ResultIterator<T> iterator, SelectTranslator translator) {
-		if (!translator.isSuppressingDistinct()) {
+		if (!translator.isSuppressingDistinct() ||
+				queryMetadata.isSuppressingDistinct()) {
 			return iterator;
 		}
 

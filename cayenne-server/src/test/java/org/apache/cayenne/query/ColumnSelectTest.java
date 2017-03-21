@@ -237,4 +237,22 @@ public class ColumnSelectTest {
         assertEquals(properties, q.getColumns());
     }
 
+    @Test
+    public void testDistinct() {
+        ColumnSelect<Artist> q = new ColumnSelect<>();
+
+        assertFalse(q.distinct);
+        assertFalse(q.suppressDistinct);
+
+        q.distinct();
+
+        assertTrue(q.distinct);
+        assertFalse(q.suppressDistinct);
+
+        q.suppressDistinct();
+
+        assertFalse(q.distinct);
+        assertTrue(q.suppressDistinct);
+    }
+
 }

@@ -517,4 +517,12 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 			prefetchTree.removePath(prefetch);
 		}
 	}
+
+	/**
+	 * @since 4.0
+	 */
+	@Override
+	public boolean isSuppressingDistinct() {
+		return false;
+	}
 }

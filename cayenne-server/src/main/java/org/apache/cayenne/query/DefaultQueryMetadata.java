@@ -163,4 +163,12 @@ class DefaultQueryMetadata implements QueryMetadata {
     public int getStatementFetchSize() {
         return QueryMetadata.STATEMENT_FETCH_SIZE_DEFAULT;
     }
+
+    /**
+     * @since 4.0
+     */
+    @Override
+    public boolean isSuppressingDistinct() {
+        return false;
+    }
 }

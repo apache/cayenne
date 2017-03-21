@@ -51,6 +51,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -75,7 +76,7 @@ public class ColumnSelectIT extends ServerCase {
     // Format: d/m/YY
     private static final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
 
-    private TableHelper tArtist;
+    private TableHelper tArtist, tPaintings;
 
     @Before
     public void createArtistsDataSet() throws Exception {
@@ -95,7 +96,7 @@ public class ColumnSelectIT extends ServerCase {
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
         tGallery.insert(1, "tate modern");
 
-        TableHelper tPaintings = new TableHelper(dbHelper, "PAINTING");
+        tPaintings = new TableHelper(dbHelper, "PAINTING");
         tPaintings.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID", "ESTIMATED_PRICE");
         for (int i = 1; i <= 20; i++) {
             tPaintings.insert(i, "painting" + i, i % 5 + 1, 1, 22 - i);
@@ -839,4 +840,57 @@ public class ColumnSelectIT extends ServerCase {
         assertEquals(4, result.size());
     }
 
+    /*
+     * Test distinct() / suppressDistinct() methods
+     */
+
+    @Test
+    public void testExplicitDistinct() throws Exception {
+        tArtist.insert(21, "artist1", null);
+
+        List<String> result = ObjectSelect
+                .columnQuery(Artist.class, Artist.ARTIST_NAME)
+                .select(context);
+        assertEquals(21, result.size());
+
+        List<String> result2 = ObjectSelect
+                .columnQuery(Artist.class, Artist.ARTIST_NAME)
+                .suppressDistinct()
+                .select(context);
+        assertEquals(result, result2);
+
+        result = ObjectSelect
+                .columnQuery(Artist.class, Artist.ARTIST_NAME)
+                .distinct()
+                .select(context);
+        assertEquals(20, result.size());
+    }
+
+
+    @Test
+    public void testSuppressDistinct() throws Exception {
+        // create non unique artist name / painting name pair
+        tArtist.insert(21, "artist1", null);
+        tPaintings.insert(22, "painting10", 21, 1, 23);
+
+        List<Object[]> result = ObjectSelect
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
+                .select(context);
+        assertEquals(21, result.size());
+
+        List<Object[]> result2 = ObjectSelect
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
+                .distinct()
+                .select(context);
+        assertEquals(result.size(), result2.size());
+        for(int i=0; i<result.size(); i++) {
+            assertArrayEquals(result.get(i), result2.get(i));
+        }
+
+        result = ObjectSelect
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
+                .suppressDistinct()
+                .select(context);
+        assertEquals(22, result.size());
+    }
 }
