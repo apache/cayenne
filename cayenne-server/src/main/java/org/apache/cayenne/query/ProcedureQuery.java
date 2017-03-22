@@ -36,8 +36,9 @@ import java.util.Map;
 /**
  * A query based on Procedure. Can be used as a select query, or as a query of an
  * arbitrary complexity, performing data modification, selecting data (possibly with
- * multiple result sets per call), returning values via OUT parameters. <h3>Execution with
- * DataContext</h3> <h4>Reading OUT parameters</h4>
+ * multiple result sets per call), returning values via OUT parameters.
+ * <h3>Execution with DataContext</h3>
+ * <h4>Reading OUT parameters</h4>
  * <p>
  * If a ProcedureQuery has OUT parameters, they are wrapped in a separate List in the
  * query result. Such list will contain a single Map with OUT parameter values.
@@ -72,8 +73,7 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
 
     ProcedureQueryMetadata metaData = new ProcedureQueryMetadata();
 
-    // TODO: ColumnDescriptor is not XMLSerializable so we can't store
-    // it in a DataMap
+    // TODO: ColumnDescriptor is not XMLSerializable so we can't store it in a DataMap
     /**
      * @since 1.2
      */

@@ -19,6 +19,7 @@ CAY-2258 DI: type-safe binding of List and Map
 CAY-2266 Move EventBridge implementations into autoloadable modules
 CAY-2267 Contribute lifecycle events listeners via DI
 CAY-2259 QueryCache: support for referencing type-safe caches
+CAY-2261 Replace NamedQuery with MappedXYZ in *datamap.vm
 CAY-2268 DI: Refactor ListBuilder API ambiguities for before() / after() bindings
 CAY-2269 Add support for date/time components extraction in expression functions
 CAY-2270 Update function support in expression parser

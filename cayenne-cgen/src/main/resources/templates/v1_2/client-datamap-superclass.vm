@@ -34,10 +34,10 @@
 ${importUtils.setPackage($superPackageName)}##
 #if(${superPackageName})${importUtils.addReservedType("${superPackageName}.${superClassName}")}#end##
 #if(${basePackageName})${importUtils.addType("${basePackageName}.${baseClassName}")}#end##
-#if( ${object.hasSelectQueries()} ) 
+#if( ${object.hasSelectQueries()} )
 ${importUtils.addType('java.util.List')}##
 ${importUtils.addType('org.apache.cayenne.ObjectContext')}##
-${importUtils.addType('org.apache.cayenne.query.NamedQuery')}##
+${importUtils.addType('org.apache.cayenne.query.MappedSelect')}##
 #foreach( $selectQuery in ${object.SelectQueries})
 ${importUtils.addType(${selectQuery.Root.ClientClassName})}##
 #foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})})
@@ -45,6 +45,11 @@ ${importUtils.addType(${dataMapUtils.getParameterType(${selectQuery}, ${paramete
 #end    
 #end
 #end
+#if($object.hasExecQueries())##
+${importUtils.addType('java.util.Map')}##
+${importUtils.addType('org.apache.cayenne.QueryResult')}##
+${importUtils.addType('org.apache.cayenne.query.MappedExec')}##
+#end##
 ${importUtils.generate()}
 
 /**
@@ -60,24 +65,23 @@ public class ${superClassName} {
     public static final String ${stringUtils.capitalizedAsConstant($qname)}_QUERYNAME = "$qname";
 #end
 #end
+
 #foreach( $selectQuery in ${object.SelectQueries})
-
-    public List<${stringUtils.stripPackageName($selectQuery.Root.ClientClassName)}> perform${dataMapUtils.getQueryMethodName(${selectQuery})}(ObjectContext context #foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})}), ${stringUtils.stripPackageName(${dataMapUtils.getParameterType(${selectQuery}, ${parameter})})} ${parameter}#end) {
-#if(${dataMapUtils.hasParameters($selectQuery)})
-        String[] parameters = {
+#set($rootClass = ${stringUtils.stripPackageName($selectQuery.Root.ClassName)})
+    public List<$rootClass> perform${dataMapUtils.getQueryMethodName(${selectQuery})}(ObjectContext context#foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})}), ${stringUtils.stripPackageName(${dataMapUtils.getParameterType(${selectQuery}, ${parameter})})} ${parameter}#end) {
+        MappedSelect<${rootClass}> query = MappedSelect.query(${stringUtils.capitalizedAsConstant(${selectQuery.Name})}_QUERYNAME, ${rootClass}.class);
 #foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})})
-            "${parameter}",
+        query.param("${parameter}", ${parameter});
 #end
-        };
-
-        Object[] values = {
-#foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})})
-            ${parameter},
-#end
-        };
-
-#end
-        return context.performQuery(new NamedQuery("${selectQuery.Name}"#if(${dataMapUtils.hasParameters($selectQuery)}), parameters, values#end));
+        return query.select(context);
     }
+
+#end
+#foreach( $execQuery in ${object.ExecQueries})
+    public QueryResult<?> perform${dataMapUtils.getQueryMethodName(${execQuery})}(ObjectContext context, Map<String, ?> parameters) {
+        MappedExec query = MappedExec.query(${stringUtils.capitalizedAsConstant(${execQuery.Name})}_QUERYNAME).params(parameters);
+        return query.execute(context);
+    }
+
 #end
 }

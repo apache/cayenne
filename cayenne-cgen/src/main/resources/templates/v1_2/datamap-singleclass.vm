@@ -36,16 +36,20 @@
 ${importUtils.setPackage($subPackageName)}##
 ${importUtils.addReservedType("${subPackageName}.${subClassName}")}##
 ${importUtils.addType("${basePackageName}.${baseClassName}")}##
-${importUtils.addType('java.util.List')}
-${importUtils.addType('java.util.Map')}
-${importUtils.addType('java.util.HashMap')}
-${importUtils.addType('org.apache.cayenne.ObjectContext')}
+${importUtils.addType('java.util.List')}##
+${importUtils.addType('org.apache.cayenne.ObjectContext')}##
+${importUtils.addType('org.apache.cayenne.query.MappedSelect')}##
 #foreach( $selectQuery in ${object.SelectQueries})
-${importUtils.addType(${selectQuery.Root.ClassName})}
+${importUtils.addType(${selectQuery.Root.ClassName})}##
 #foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})})
-${importUtils.addType(${dataMapUtils.getParameterType(${selectQuery}, ${parameter})})}
-#end
-#end
+${importUtils.addType(${dataMapUtils.getParameterType(${selectQuery}, ${parameter})})}##
+#end##
+#end##
+#if($object.hasExecQueries())##
+${importUtils.addType('java.util.Map')}##
+${importUtils.addType('org.apache.cayenne.QueryResult')}##
+${importUtils.addType('org.apache.cayenne.query.MappedExec')}##
+#end##
 ${importUtils.generate()}
 
 /**
@@ -58,7 +62,7 @@ public class ${subClassName} {
 #if( ${object.hasQueryNames()})
 #foreach( $qname in ${object.QueryNames})
 
-public static final String ${stringUtils.capitalizedAsConstant($qname)}_QUERYNAME = "$qname";
+    public static final String ${stringUtils.capitalizedAsConstant($qname)}_QUERYNAME = "$qname";
 #end
 #end
 
@@ -66,31 +70,31 @@ public static final String ${stringUtils.capitalizedAsConstant($qname)}_QUERYNAM
 
     private ${subClassName}() {}
 
-    public ${subClassName} getInstance() {
-      if( instance == null) {
-        instance = new ${subClassName}();
-      }
-      return instance;
+    public static ${subClassName} getInstance() {
+        if( instance == null) {
+            instance = new ${subClassName}();
+        }
+        return instance;
     }
 
 #foreach( $selectQuery in ${object.SelectQueries})
-    public List<${stringUtils.stripPackageName($selectQuery.Root.ClassName)}> perform${dataMapUtils.getQueryMethodName(${selectQuery})}(ObjectContext context #foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})}), ${stringUtils.stripPackageName(${dataMapUtils.getParameterType(${selectQuery}, ${parameter})})} ${parameter} #end) {
-    #if(${dataMapUtils.hasParameters($selectQuery)})
-      String[] parameters = new String[] {
-      #foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})})
-      "${parameter}",
-      #end
-      };
-
-      Object[] values = new Object[] {
-      #foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})})
-      ${parameter},
-      #end
-      };
-    #end
-
-      NamedQuery query = new NamedQuery("${selectQuery.Name}"#if(${dataMapUtils.hasParameters($selectQuery)}), parameters, values#end);
-      return context.performQuery(query);
+#if(${dataMapUtils.isValidParameterNames($selectQuery)})
+    #set($rootClass = ${stringUtils.stripPackageName($selectQuery.Root.ClassName)})
+    public List<$rootClass> perform${dataMapUtils.getQueryMethodName(${selectQuery})}(ObjectContext context#foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})}), ${stringUtils.stripPackageName(${dataMapUtils.getParameterType(${selectQuery}, ${parameter})})} ${parameter}#end) {
+        MappedSelect<${rootClass}> query = MappedSelect.query(${stringUtils.capitalizedAsConstant(${selectQuery.Name})}_QUERYNAME, ${rootClass}.class);
+#foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})})
+        query.param("${parameter}", ${parameter});
+#end
+        return query.select(context);
     }
+
+#end
+#end
+#foreach( $execQuery in ${object.ExecQueries})
+    public QueryResult<?> perform${dataMapUtils.getQueryMethodName(${execQuery})}(ObjectContext context, Map<String, ?> parameters) {
+        MappedExec query = MappedExec.query(${stringUtils.capitalizedAsConstant(${execQuery.Name})}_QUERYNAME).params(parameters);
+        return query.execute(context);
+    }
+
 #end
 }

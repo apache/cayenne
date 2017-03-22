@@ -38,17 +38,14 @@ public class DataMapArtifact implements Artifact {
 
     protected DataMap dataMap;
     protected Collection<QueryDescriptor> selectQueries;
-    protected Collection<QueryDescriptor> sqlTemplateQueries;
-    protected Collection<QueryDescriptor> procedureQueries;
-    protected Collection<QueryDescriptor> ejbqlQueries;
+    protected Collection<QueryDescriptor> execQueries;
+
     protected Collection<String> queryNames;
 
     public DataMapArtifact(DataMap dataMap, Collection<QueryDescriptor> queries) {
         this.dataMap = dataMap;
         selectQueries = new LinkedList<>();
-        sqlTemplateQueries = new LinkedList<>();
-        procedureQueries = new LinkedList<>();
-        ejbqlQueries = new LinkedList<>();
+        execQueries = new LinkedList<>();
         queryNames = new LinkedList<>();
         addQueries(queries);
     }
@@ -99,14 +96,12 @@ public class DataMapArtifact implements Artifact {
             case QueryDescriptor.SELECT_QUERY:
                 selectQueries.add(query);
                 break;
+            // For now put all other queries to MappedExec list.
+            // Some additional flag could be introduced to control this explicitly.
             case QueryDescriptor.PROCEDURE_QUERY:
-                procedureQueries.add(query);
-                break;
             case QueryDescriptor.SQL_TEMPLATE:
-                sqlTemplateQueries.add(query);
-                break;
             case QueryDescriptor.EJBQL_QUERY:
-                ejbqlQueries.add(query);
+                execQueries.add(query);
                 break;
         }
 
@@ -119,8 +114,16 @@ public class DataMapArtifact implements Artifact {
         return selectQueries;
     }
 
+    public Collection<QueryDescriptor> getExecQueries() {
+        return execQueries;
+    }
+
     public boolean hasSelectQueries() {
-        return selectQueries.size() > 0;
+        return !selectQueries.isEmpty();
+    }
+
+    public boolean hasExecQueries() {
+        return !execQueries.isEmpty();
     }
 
     public boolean hasQueryNames() {
