@@ -113,7 +113,7 @@ public class DataContextObjectTrackingIT extends ServerCase {
 
         assertEquals(PersistenceState.TRANSIENT, obj.getPersistenceState());
         assertNull(obj.getObjectContext());
-        assertNull(obj.getObjectId());
+        assertEquals(oid, obj.getObjectId());
         assertNull(context.getGraphManager().getNode(oid));
         assertNull(context.getObjectStore().getCachedSnapshot(oid));
     }

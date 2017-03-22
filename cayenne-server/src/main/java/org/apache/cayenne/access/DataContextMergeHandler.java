@@ -37,8 +37,7 @@ import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.Util;
 
 /**
- * A listener of GraphEvents sent by the DataChannel that merges changes to the
- * DataContext.
+ * A listener of GraphEvents sent by the DataChannel that merges changes to the DataContext.
  * 
  * @since 1.2
  */
@@ -97,8 +96,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
             if (diff instanceof SnapshotEventDecorator) {
                 SnapshotEvent decoratedEvent = ((SnapshotEventDecorator) diff).getEvent();
                 context.getObjectStore().processSnapshotEvent(decoratedEvent);
-            }
-            else {
+            } else {
                 synchronized (context.getObjectStore()) {
                     diff.apply(this);
                 }
@@ -154,7 +152,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
     public void nodeRemoved(Object nodeId) {
         ObjectStore os = context.getObjectStore();
         synchronized (os) {
-            os.processDeletedID(nodeId);
+            os.processDeletedID((ObjectId)nodeId);
         }
     }
 

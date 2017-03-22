@@ -44,7 +44,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * A GraphMap extension that works together with ObjectContext to track persistent object
+ * A GraphMap extension that works together with {@link ObjectContext} to track persistent object
  * changes and send events.
  * 
  * @since 1.2
@@ -108,6 +108,9 @@ final class CayenneContextGraphManager extends GraphMap {
         if (node != null) {
             stateLog.unregisterNode(nodeId);
             changeLog.unregisterNode(nodeId);
+            Persistent object = (Persistent)node;
+            object.setObjectContext(null);
+            object.setPersistenceState(PersistenceState.TRANSIENT);
             return node;
         }
 

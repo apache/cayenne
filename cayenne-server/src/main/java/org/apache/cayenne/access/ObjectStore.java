@@ -157,10 +157,8 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         if (objectDiff == null) {
 
             Persistent object = objectMap.get(nodeId);
-
             if (object == null) {
-                throw new CayenneRuntimeException(
-                        "No object is registered in context with Id " + nodeId);
+                throw new CayenneRuntimeException("No object is registered in context with Id " + nodeId);
             }
 
             if (object.getPersistenceState() == PersistenceState.COMMITTED) {
@@ -287,9 +285,8 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
         Collection<ObjectId> ids = new ArrayList<>(objects.size());
 
-        Iterator it = objects.iterator();
-        while (it.hasNext()) {
-            Persistent object = (Persistent) it.next();
+        for (Object object1 : objects) {
+            Persistent object = (Persistent) object1;
 
             ObjectId id = object.getObjectId();
 
@@ -299,7 +296,6 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             ids.add(id);
 
             object.setObjectContext(null);
-            object.setObjectId(null);
             object.setPersistenceState(PersistenceState.TRANSIENT);
         }
 
@@ -310,10 +306,10 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             // send an event for removed snapshots
             getDataRowCache().processSnapshotChanges(
                     this,
-                    Collections.EMPTY_MAP,
-                    Collections.EMPTY_LIST,
+                    Collections.<ObjectId, DataRow>emptyMap(),
+                    Collections.<ObjectId>emptyList(),
                     ids,
-                    Collections.EMPTY_LIST);
+                    Collections.<ObjectId>emptyList());
         }
     }
 
@@ -323,11 +319,11 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @since 1.1
      */
     public synchronized void objectsRolledBack() {
-        Iterator it = getObjectIterator();
+        Iterator<Persistent> it = getObjectIterator();
 
         // collect candidates
         while (it.hasNext()) {
-            Persistent object = (Persistent) it.next();
+            Persistent object = it.next();
             int objectState = object.getPersistenceState();
             switch (objectState) {
                 case PersistenceState.NEW:
@@ -498,7 +494,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     /**
      * Returns an iterator over the registered objects.
      */
-    public synchronized Iterator getObjectIterator() {
+    public synchronized Iterator<Persistent> getObjectIterator() {
         return objectMap.values().iterator();
     }
 
@@ -553,21 +549,17 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      */
     synchronized void processSnapshotEvent(SnapshotEvent event) {
 
-        Map modifiedDiffs = event.getModifiedDiffs();
+        Map<ObjectId, DataRow> modifiedDiffs = event.getModifiedDiffs();
         if (modifiedDiffs != null && !modifiedDiffs.isEmpty()) {
-            Iterator oids = modifiedDiffs.entrySet().iterator();
-
-            while (oids.hasNext()) {
-                Map.Entry entry = (Map.Entry) oids.next();
-                processUpdatedSnapshot(entry.getKey(), (DataRow) entry.getValue());
+            for (Map.Entry<ObjectId, DataRow> entry : modifiedDiffs.entrySet()) {
+                processUpdatedSnapshot(entry.getKey(), entry.getValue());
             }
         }
 
-        Collection deletedIDs = event.getDeletedIds();
+        Collection<ObjectId> deletedIDs = event.getDeletedIds();
         if (deletedIDs != null && !deletedIDs.isEmpty()) {
-            Iterator it = deletedIDs.iterator();
-            while (it.hasNext()) {
-                processDeletedID(it.next());
+            for (ObjectId deletedID : deletedIDs) {
+                processDeletedID(deletedID);
             }
         }
 
@@ -604,10 +596,9 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * 
      * @since 1.2
      */
-    void processDeletedID(Object nodeId) {
+    void processDeletedID(ObjectId nodeId) {
 
-        // access object map directly - the method should be called in a synchronized
-        // context...
+        // access object map directly - the method should be called in a synchronized context...
         Persistent object = objectMap.get(nodeId);
 
         if (object != null) {
@@ -662,11 +653,9 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     /**
      * @since 1.1
      */
-    void processInvalidatedIDs(Collection invalidatedIDs) {
+    void processInvalidatedIDs(Collection<ObjectId> invalidatedIDs) {
         if (invalidatedIDs != null && !invalidatedIDs.isEmpty()) {
-            Iterator it = invalidatedIDs.iterator();
-            while (it.hasNext()) {
-                ObjectId oid = (ObjectId) it.next();
+            for (ObjectId oid : invalidatedIDs) {
                 DataObject object = (DataObject) getNode(oid);
 
                 if (object == null) {
@@ -713,17 +702,12 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * 
      * @since 1.1
      */
-    void processIndirectlyModifiedIDs(Collection indirectlyModifiedIDs) {
-        Iterator indirectlyModifiedIt = indirectlyModifiedIDs.iterator();
-        while (indirectlyModifiedIt.hasNext()) {
-            ObjectId oid = (ObjectId) indirectlyModifiedIt.next();
-
-            // access object map directly - the method should be called in a synchronized
-            // context...
+    void processIndirectlyModifiedIDs(Collection<ObjectId> indirectlyModifiedIDs) {
+        for (ObjectId oid : indirectlyModifiedIDs) {
+            // access object map directly - the method should be called in a synchronized context...
             final DataObject object = (DataObject) objectMap.get(oid);
 
-            if (object == null
-                    || object.getPersistenceState() != PersistenceState.COMMITTED) {
+            if (object == null || object.getPersistenceState() != PersistenceState.COMMITTED) {
                 continue;
             }
 
@@ -772,10 +756,9 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * 
      * @since 1.1
      */
-    void processUpdatedSnapshot(Object nodeId, DataRow diff) {
+    void processUpdatedSnapshot(ObjectId nodeId, DataRow diff) {
 
-        // access object map directly - the method should be called in a synchronized
-        // context...
+        // access object map directly - the method should be called in a synchronized context...
         DataObject object = (DataObject) objectMap.get(nodeId);
 
         // no object, or HOLLOW object require no processing
@@ -791,17 +774,14 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
                     if (delegate.shouldMergeChanges(object, diff)) {
                         ClassDescriptor descriptor = context
                                 .getEntityResolver()
-                                .getClassDescriptor(((ObjectId) nodeId).getEntityName());
+                                .getClassDescriptor(nodeId.getEntityName());
 
                         // TODO: andrus, 5/26/2006 - call to 'getSnapshot' is expensive,
                         // however my attempts to merge the 'diff' instead of snapshot
-                        // via 'refreshObjectWithSnapshot' resulted in even worse
-                        // performance.
-                        // This sounds counterintuitive (Not sure if this is some HotSpot
-                        // related glitch)... still keeping the old algorithm here until
-                        // we
-                        // switch from snapshot events to GraphEvents and all this code
-                        // becomes obsolete.
+                        // via 'refreshObjectWithSnapshot' resulted in even worse performance.
+                        // This sounds counterintuitive (Not sure if this is some HotSpot related glitch)...
+                        // still keeping the old algorithm here until we switch from snapshot events
+                        // to GraphEvents and all this code becomes obsolete.
                         DataRow snapshot = getSnapshot(object.getObjectId());
 
                         DataRowUtils.refreshObjectWithSnapshot(
@@ -821,7 +801,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
                     if (delegate.shouldMergeChanges(object, diff)) {
                         ClassDescriptor descriptor = context
                                 .getEntityResolver()
-                                .getClassDescriptor(((ObjectId) nodeId).getEntityName());
+                                .getClassDescriptor(nodeId.getEntityName());
                         DataRowUtils.forceMergeWithSnapshot(
                                 context,
                                 descriptor,
@@ -985,7 +965,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             registerLifecycleEventInducedChange(diff);
         }
 
-        registerDiff(nodeId, diff);
+        registerDiff((ObjectId)nodeId, diff);
     }
 
     // an ObjectIdQuery optimized for retrieval of multiple snapshots - it can be reset

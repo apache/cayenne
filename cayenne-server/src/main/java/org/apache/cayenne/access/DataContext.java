@@ -612,8 +612,8 @@ public class DataContext extends BaseContext {
 
     /**
      * Unregisters a Collection of DataObjects from the DataContext and the
-     * underlying ObjectStore. This operation also unsets DataContext and
-     * ObjectId for each object and changes its state to TRANSIENT.
+     * underlying ObjectStore. This operation also unsets DataContext for
+     * each object and changes its state to TRANSIENT.
      * 
      * @see #invalidateObjects(Collection)
      */

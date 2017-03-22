@@ -87,7 +87,7 @@ public class ObjectStoreIT extends ServerCase {
 
         context.getObjectStore().objectsUnregistered(Collections.singletonList(object));
 
-        assertNull(object.getObjectId());
+        assertEquals(oid, object.getObjectId());
         assertNull(context.getObjectStore().getNode(oid));
 
         // in the future this may not be the case
