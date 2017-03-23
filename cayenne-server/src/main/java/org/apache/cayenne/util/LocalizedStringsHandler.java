@@ -42,8 +42,7 @@ public class LocalizedStringsHandler {
 
         try {
             return getBundle().getString(key);
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             return "";
         }
     }
@@ -52,12 +51,10 @@ public class LocalizedStringsHandler {
         if (bundle == null) {
             try {
                 bundle = ResourceBundle.getBundle(DEFAULT_MESSAGE_BUNDLE);
-            }
-            catch (MissingResourceException e) {
+            } catch (MissingResourceException e) {
                 // do not throw Cayenne exceptions, as they rely on
                 // LocalizedStringsHandler, and we can get into infinite loop
-                throw new RuntimeException("Can't load properties: "
-                        + DEFAULT_MESSAGE_BUNDLE, e);
+                throw new RuntimeException("Can't load properties: " + DEFAULT_MESSAGE_BUNDLE, e);
             }
         }
         return bundle;

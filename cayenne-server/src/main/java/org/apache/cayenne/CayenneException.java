@@ -33,13 +33,7 @@ public class CayenneException extends Exception {
     static {
         String version = LocalizedStringsHandler.getString("cayenne.version");
         String date = LocalizedStringsHandler.getString("cayenne.build.date");
-
-        if (version != null || date != null) {
-            exceptionLabel = "[v." + version + " " + date + "] ";
-        }
-        else {
-            exceptionLabel = "";
-        }
+        exceptionLabel = "[v." + version + " " + date + "] ";
     }
 
     public static String getExceptionLabel() {
