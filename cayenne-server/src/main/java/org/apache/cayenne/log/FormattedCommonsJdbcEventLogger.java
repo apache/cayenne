@@ -121,6 +121,7 @@ public class FormattedCommonsJdbcEventLogger extends CommonsJdbcEventLogger {
     }
 
     @Override
+    @Deprecated
     public void logQuery(
             String queryStr,
             List<DbAttribute> attrs,

@@ -29,7 +29,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.CayenneException;
@@ -99,11 +98,11 @@ class Oracle8LOBBatchAction implements SQLAction {
 
 			selectQuery.indexLOBAttributes(row);
 
-			int updated = 0;
+			int updated;
 			String updateStr = translator.createSql(row);
 
 			// 1. run row update
-			logger.logQuery(updateStr, Collections.EMPTY_LIST);
+			logger.log(updateStr);
 
 			try (PreparedStatement statement = connection.prepareStatement(updateStr)) {
 

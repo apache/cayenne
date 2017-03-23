@@ -164,7 +164,6 @@ public class ProcedureTranslator {
 				loggableParameters.add(val);
 			}
 
-			// FIXME: compute proper attributes via callParams
 			logger.logQuery(sqlStr, null, loggableParameters, time);
 		}
 		CallableStatement stmt = connection.prepareCall(sqlStr);

@@ -57,7 +57,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
 	@Override
 	public Object generatePk(DataNode node, DbAttribute pk) throws Exception {
 
-		DbEntity entity = (DbEntity) pk.getEntity();
+		DbEntity entity = pk.getEntity();
 
 		switch (pk.getType()) {
 		case Types.BINARY:
@@ -68,11 +68,11 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
 		long value = longPkFromDatabase(node, entity);
 
 		if (pk.getType() == Types.BIGINT) {
-			return Long.valueOf(value);
+			return value;
 		} else {
 			// leaving it up to the user to ensure that PK does not exceed max
 			// int...
-			return Integer.valueOf((int) value);
+			return (int) value;
 		}
 	}
 
@@ -92,13 +92,11 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
 	protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
 
 		String sql = newIDString(entity);
-		adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
+		adapter.getJdbcEventLogger().log(sql);
 
-		try (Connection con = node.getDataSource().getConnection();) {
-
-			try (Statement st = con.createStatement();) {
-
-				try (ResultSet rs = st.executeQuery(sql);) {
+		try (Connection con = node.getDataSource().getConnection()) {
+			try (Statement st = con.createStatement()) {
+				try (ResultSet rs = st.executeQuery(sql)) {
 					// Object pk = null;
 					if (!rs.next()) {
 						throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName());
@@ -127,23 +125,20 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
 	}
 
 	@Override
-	public void createAutoPk(DataNode node, List dbEntities) throws Exception {
+	public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
 		// looks like generating a PK on top of an existing one does not
 		// result in errors...
 
 		// create needed sequences
-		Iterator<?> it = dbEntities.iterator();
-		while (it.hasNext()) {
-			DbEntity entity = (DbEntity) it.next();
-
+		for (DbEntity dbEntity : dbEntities) {
 			// the caller must take care of giving us the right entities
 			// but lets check anyway
-			if (!canCreatePK(entity)) {
+			if (!canCreatePK(dbEntity)) {
 				continue;
 			}
 
-			runUpdate(node, createPKString(entity));
-			runUpdate(node, createUniquePKIndexString(entity));
+			runUpdate(node, createPKString(dbEntity));
+			runUpdate(node, createUniquePKIndexString(dbEntity));
 		}
 	}
 
@@ -151,20 +146,17 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      * 
      */
 	@Override
-	public List createAutoPkStatements(List dbEntities) {
+	public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
 		List<String> list = new ArrayList<>(2 * dbEntities.size());
-		Iterator<?> it = dbEntities.iterator();
-		while (it.hasNext()) {
-			DbEntity entity = (DbEntity) it.next();
-
+		for (DbEntity dbEntity : dbEntities) {
 			// the caller must take care of giving us the right entities
 			// but lets check anyway
-			if (!canCreatePK(entity)) {
+			if (!canCreatePK(dbEntity)) {
 				continue;
 			}
 
-			list.add(createPKString(entity));
-			list.add(createUniquePKIndexString(entity));
+			list.add(createPKString(dbEntity));
+			list.add(createUniquePKIndexString(dbEntity));
 		}
 
 		return list;
@@ -178,7 +170,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      * 
      */
 	@Override
-	public void dropAutoPk(DataNode node, List dbEntities) throws Exception {
+	public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
 		// there is no simple way to do that... probably requires
 		// editing metadata tables...
 		// Good thing is that it doesn't matter, since PK support
@@ -190,8 +182,8 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
 	 * Returns an empty list, since OpenBase doesn't support this operation.
 	 */
 	@Override
-	public List dropAutoPkStatements(List dbEntities) {
-		return Collections.EMPTY_LIST;
+	public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
+		return Collections.emptyList();
 	}
 
 	/**

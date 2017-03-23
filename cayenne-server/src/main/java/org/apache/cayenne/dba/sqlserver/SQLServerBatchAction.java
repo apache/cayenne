@@ -22,7 +22,6 @@ package org.apache.cayenne.dba.sqlserver;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
@@ -71,9 +70,9 @@ public class SQLServerBatchAction extends BatchAction {
 		String flag = on ? " ON" : " OFF";
 		String configSQL = "SET IDENTITY_INSERT " + query.getDbEntity().getFullyQualifiedName() + flag;
 
-		dataNode.getJdbcEventLogger().logQuery(configSQL, Collections.EMPTY_LIST);
+		dataNode.getJdbcEventLogger().log(configSQL);
 
-		try (Statement statement = connection.createStatement();) {
+		try (Statement statement = connection.createStatement()) {
 			statement.execute(configSQL);
 		}
 	}

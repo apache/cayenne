@@ -337,7 +337,7 @@ public class DbGenerator {
 	protected boolean safeExecute(Connection connection, String sql) throws SQLException {
 
 		try (Statement statement = connection.createStatement();) {
-			jdbcEventLogger.logQuery(sql, null);
+			jdbcEventLogger.log(sql);
 			statement.execute(sql);
 			return true;
 		} catch (SQLException ex) {

@@ -100,13 +100,13 @@ public class BatchAction extends BaseSQLAction {
 		boolean isLoggable = logger.isLoggable();
 
 		// log batch SQL execution
-		logger.logQuery(sql, Collections.EMPTY_LIST);
+		logger.log(sql);
 
 		// run batch
 
 		DbAdapter adapter = dataNode.getAdapter();
 
-		try (PreparedStatement statement = con.prepareStatement(sql);) {
+		try (PreparedStatement statement = con.prepareStatement(sql)) {
 			for (BatchQueryRow row : query.getRows()) {
 
 				DbAttributeBinding[] bindings = translator.updateBindings(row);
@@ -151,7 +151,7 @@ public class BatchAction extends BaseSQLAction {
 		String queryStr = translator.getSql();
 
 		// log batch SQL execution
-		logger.logQuery(queryStr, Collections.EMPTY_LIST);
+		logger.log(queryStr);
 
 		// run batch queries one by one
 

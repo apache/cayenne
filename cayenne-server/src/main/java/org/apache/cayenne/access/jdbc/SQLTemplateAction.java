@@ -214,7 +214,7 @@ public class SQLTemplateAction implements SQLAction {
 						break;
 					}
 
-					updateCounts.add(Integer.valueOf(updateCount));
+					updateCounts.add(updateCount);
 					dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
 				}
 			}

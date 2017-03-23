@@ -39,7 +39,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -172,7 +171,7 @@ public class JdbcPkGenerator implements PkGenerator {
 	 *             in case of query failure.
 	 */
 	public int runUpdate(DataNode node, String sql) throws SQLException {
-		adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
+		adapter.getJdbcEventLogger().log(sql);
 
 		try (Connection con = node.getDataSource().getConnection()) {
 			try (Statement upd = con.createStatement()) {

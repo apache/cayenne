@@ -92,7 +92,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 					// THIS MUST BE EXECUTED NO MATTER WHAT, OR WE WILL LOCK THE PRIMARY KEY TABLE!!
 					try {
 						String unlockString = "UNLOCK TABLES";
-						adapter.getJdbcEventLogger().logQuery(unlockString, Collections.EMPTY_LIST);
+						adapter.getJdbcEventLogger().log(unlockString);
 						st.execute(unlockString);
 					} catch (SQLException unlockEx) {
 						exception = processSQLException(unlockEx, exception);
@@ -145,12 +145,12 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 	protected long getLongPrimaryKey(Statement statement, String entityName) throws SQLException {
 		// lock
 		String lockString = "LOCK TABLES AUTO_PK_SUPPORT WRITE";
-		adapter.getJdbcEventLogger().logQuery(lockString, Collections.EMPTY_LIST);
+		adapter.getJdbcEventLogger().log(lockString);
 		statement.execute(lockString);
 
 		// select
 		String selectString = super.pkSelectString(entityName);
-		adapter.getJdbcEventLogger().logQuery(selectString, Collections.EMPTY_LIST);
+		adapter.getJdbcEventLogger().log(selectString);
 		long pk;
 		try(ResultSet rs = statement.executeQuery(selectString)) {
 			if (!rs.next()) {
@@ -165,7 +165,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 
 		// update
 		String updateString = super.pkUpdateString(entityName) + " AND NEXT_ID = " + pk;
-		adapter.getJdbcEventLogger().logQuery(updateString, Collections.EMPTY_LIST);
+		adapter.getJdbcEventLogger().log(updateString);
 		int updated = statement.executeUpdate(updateString);
 		// optimistic lock failure...
 		if (updated != 1) {
