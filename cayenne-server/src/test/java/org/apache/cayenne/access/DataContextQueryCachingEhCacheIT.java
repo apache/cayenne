@@ -18,18 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.cache.EhCacheQueryCache;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.After;
 import org.junit.Before;
 
+@SuppressWarnings("deprecation")
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextQueryCachingEhCacheIT extends DataContextQueryCachingIT {
     
-    protected EhCacheQueryCache domainCache;
-    protected EhCacheQueryCache contextCache;
+    protected org.apache.cayenne.cache.EhCacheQueryCache domainCache;
+    protected org.apache.cayenne.cache.EhCacheQueryCache contextCache;
 
     @Before
     public void setUp() throws Exception {
@@ -46,8 +46,8 @@ public class DataContextQueryCachingEhCacheIT extends DataContextQueryCachingIT 
         domain = context.getParentDataDomain();
         oldCache = domain.getQueryCache();
         
-        domainCache = new EhCacheQueryCache();
-        contextCache = new EhCacheQueryCache();
+        domainCache = new org.apache.cayenne.cache.EhCacheQueryCache();
+        contextCache = new org.apache.cayenne.cache.EhCacheQueryCache();
         domain.setQueryCache(domainCache);
         context.setQueryCache(contextCache);
     }

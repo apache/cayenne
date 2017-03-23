@@ -102,7 +102,7 @@ public class DataContextQueryCachingIT extends ServerCase {
 
     @Test
     public void testLocalCacheDataRowsRefresh() throws Exception {
-        SelectQuery select = new SelectQuery(Artist.class);
+        SelectQuery<Artist> select = new SelectQuery<>(Artist.class);
         select.setFetchingDataRows(true);
         select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
@@ -142,7 +142,7 @@ public class DataContextQueryCachingIT extends ServerCase {
     @Test
     public void testSharedCacheDataRowsRefresh() throws Exception {
 
-        SelectQuery select = new SelectQuery(Artist.class);
+        SelectQuery<Artist> select = new SelectQuery<>(Artist.class);
         select.setFetchingDataRows(true);
         select.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
@@ -184,7 +184,7 @@ public class DataContextQueryCachingIT extends ServerCase {
     @Test
     public void testLocalCacheDataObjectsRefresh() throws Exception {
 
-        SelectQuery select = new SelectQuery(Artist.class);
+        SelectQuery<Artist> select = new SelectQuery<>(Artist.class);
         select.setFetchingDataRows(false);
         select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
@@ -226,15 +226,14 @@ public class DataContextQueryCachingIT extends ServerCase {
     public void testLocalCacheRefreshObjectsRefresh() throws Exception {
         createInsertDataSet();
 
-        SelectQuery select = new SelectQuery(Artist.class);
-        select.setName("c");
+        SelectQuery<Artist> select = new SelectQuery<>(Artist.class);
         select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE_REFRESH);
 
         // no cache yet...
 
-        List<?> objects1 = context.performQuery(select);
+        List<Artist> objects1 = context.performQuery(select);
         assertEquals(1, objects1.size());
-        Artist a1 = (Artist) objects1.get(0);
+        Artist a1 = objects1.get(0);
         assertEquals("aaa", a1.getArtistName());
 
         // cache, but force refresh
@@ -249,11 +248,11 @@ public class DataContextQueryCachingIT extends ServerCase {
     }
 
     private List<?> mockupDataRows(int len) {
-        List<Object> rows = new ArrayList<Object>(len);
+        List<Object> rows = new ArrayList<>(len);
 
         for (int i = 0; i < len; i++) {
             DataRow a = new DataRow(3);
-            a.put("ARTIST_ID", new Integer(i + 1));
+            a.put("ARTIST_ID", i + 1);
             a.put("ARTIST_NAME", "A-" + (i + 1));
             rows.add(a);
         }

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -40,8 +41,8 @@ public class QueryChainIT extends ServerCase {
     public void testSelectQuery() {
 
         QueryChain chain = new QueryChain();
-        chain.addQuery(new SelectQuery(Artist.class));
-        chain.addQuery(new SelectQuery(Artist.class));
+        chain.addQuery(new SelectQuery<>(Artist.class));
+        chain.addQuery(new SelectQuery<>(Artist.class));
 
         QueryMetadata md = chain.getMetaData(runtime.getDataDomain().getEntityResolver());
 
@@ -54,12 +55,10 @@ public class QueryChainIT extends ServerCase {
     public void testSelectQueryDataRows() {
 
         QueryChain chain = new QueryChain();
-        SelectQuery q1 = new SelectQuery(Artist.class);
-        q1.setFetchingDataRows(true);
+        SelectQuery<DataRow> q1 = SelectQuery.dataRowQuery(Artist.class);
         chain.addQuery(q1);
 
-        SelectQuery q2 = new SelectQuery(Artist.class);
-        q2.setFetchingDataRows(true);
+        SelectQuery<DataRow> q2 = SelectQuery.dataRowQuery(Artist.class);
         chain.addQuery(q2);
 
         QueryMetadata md = chain.getMetaData(runtime.getDataDomain().getEntityResolver());

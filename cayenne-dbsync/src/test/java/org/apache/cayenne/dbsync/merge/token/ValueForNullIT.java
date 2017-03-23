@@ -95,6 +95,7 @@ public class ValueForNullIT extends MergeCase {
         // check values for null
         Expression qual = ExpressionFactory.matchExp(objAttr.getName(), DEFAULT_VALUE_STRING);
         SelectQuery query = new SelectQuery("Painting", qual);
+        @SuppressWarnings("unchecked")
         List<Persistent> rows = context.performQuery(query);
         assertEquals(nrows, rows.size());
 

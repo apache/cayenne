@@ -119,8 +119,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
     public void testIndexOf1() throws Exception {
 
         Expression qual = ExpressionFactory.matchExp("artistName", "artist20");
-        SelectQuery query = new SelectQuery(Artist.class, qual);
-        query.setFetchingDataRows(true);
+        SelectQuery<DataRow> query = SelectQuery.dataRowQuery(Artist.class, qual);
         List<?> artists = context1.performQuery(query);
 
         assertEquals(1, artists.size());
@@ -142,8 +141,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
         list.get(0);
 
         Expression qual = ExpressionFactory.matchExp("artistName", "artist2");
-        SelectQuery query = new SelectQuery(Artist.class, qual);
-        query.setFetchingDataRows(true);
+        SelectQuery<DataRow> query = SelectQuery.dataRowQuery(Artist.class, qual);
         List<?> artists = context1.performQuery(query);
 
         assertEquals(1, artists.size());
@@ -162,8 +160,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
         list.get(0);
 
         Expression qual = ExpressionFactory.matchExp("artistName", "artist3");
-        SelectQuery query = new SelectQuery(Artist.class, qual);
-        query.setFetchingDataRows(true);
+        SelectQuery<DataRow> query = SelectQuery.dataRowQuery(Artist.class, qual);
         List<?> artists = context1.performQuery(query);
 
         assertEquals(1, artists.size());
@@ -179,8 +176,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
     public void testLastIndexOf2() throws Exception {
 
         Expression qual = ExpressionFactory.matchExp("artistName", "artist20");
-        SelectQuery query = new SelectQuery(Artist.class, qual);
-        query.setFetchingDataRows(true);
+        SelectQuery<DataRow> query = SelectQuery.dataRowQuery(Artist.class, qual);
         List<?> artists = context1.performQuery(query);
 
         assertEquals(1, artists.size());

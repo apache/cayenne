@@ -36,7 +36,7 @@ public class WeightedAshwoodEntitySorterTest {
 
     @Before
     public void setUp() throws Exception {
-        runtime = new ServerRuntime("cayenne-lifecycle.xml");
+        runtime = ServerRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
     }
 
     @After

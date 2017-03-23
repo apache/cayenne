@@ -59,7 +59,7 @@ public class PersistentObjectListTest {
         owner.setGlobalAttribute1("a");
         PersistentObjectList list = new PersistentObjectList(owner, "x");
 
-        List objects = new ArrayList();
+        List<Object> objects = new ArrayList<>();
         objects.add("a");
         objects.add("b");
         list.setObjectList(objects);

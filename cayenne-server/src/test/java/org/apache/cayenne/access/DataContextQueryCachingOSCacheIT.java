@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.cache.OSQueryCache;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 
+@SuppressWarnings("deprecation")
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextQueryCachingOSCacheIT extends DataContextQueryCachingIT {
 
@@ -42,7 +42,7 @@ public class DataContextQueryCachingOSCacheIT extends DataContextQueryCachingIT 
 
         domain = context.getParentDataDomain();
         oldCache = domain.getQueryCache();
-        domain.setQueryCache(new OSQueryCache());
-        context.setQueryCache(new OSQueryCache());
+        domain.setQueryCache(new org.apache.cayenne.cache.OSQueryCache());
+        context.setQueryCache(new org.apache.cayenne.cache.OSQueryCache());
     }
 }

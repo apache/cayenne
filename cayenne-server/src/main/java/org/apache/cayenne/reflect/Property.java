@@ -27,51 +27,5 @@ package org.apache.cayenne.reflect;
  * @deprecated since 4.0 renamed to PropertyDescriptor.
  * 
  */
-public interface Property {
-
-    /**
-     * Returns property name.
-     */
-    String getName();
-
-    /**
-     * Returns a property value of an object without disturbing the object fault status.
-     */
-    Object readPropertyDirectly(Object object) throws PropertyException;
-
-    /**
-     * Returns a property value, inflating unresolved object if need.
-     */
-    Object readProperty(Object object) throws PropertyException;
-
-    /**
-     * Sets a property value of an object without disturbing the object fault status. Old
-     * value of the property is specified as a hint and can be ignored by the property
-     * implementor.
-     */
-    void writePropertyDirectly(Object object, Object oldValue, Object newValue)
-            throws PropertyException;
-
-    /**
-     * Sets a property value, inflating unresolved object if need. Old value of the
-     * property is specified as a hint and can be ignored by the property implementor.
-     */
-    void writeProperty(Object object, Object oldValue, Object newValue)
-            throws PropertyException;
-
-    /**
-     * A visitor accept method.
-     * 
-     * @return a status returned by the corresponding callback method of the visitor. It
-     *         serves as an indication of whether peer properties processing is still
-     *         needed.
-     */
-    boolean visit(PropertyVisitor visitor);
-
-    /**
-     * If a property is implemented as a ValueHolder, this operation would create an
-     * unfaulted value holder and inject it into the object, if an object doesn't have it
-     * set yet.
-     */
-    void injectValueHolder(Object object) throws PropertyException;
+public interface Property extends PropertyDescriptor {
 }

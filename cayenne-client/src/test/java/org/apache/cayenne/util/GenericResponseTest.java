@@ -35,7 +35,7 @@ public class GenericResponseTest {
 
     @Test
     public void testSerializationWithHessian() throws Exception {
-        List list = new ArrayList();
+        List<Object> list = new ArrayList<>();
         list.add(new HashMap());
 
         GenericResponse r = new GenericResponse();

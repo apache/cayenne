@@ -91,7 +91,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
     public void testRefreshCollection() throws Exception {
         createRefreshCollectionDataSet();
 
-        SelectQuery q = new SelectQuery(Artist.class);
+        SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
         q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
         List<?> artists = context.performQuery(q);
 
@@ -135,7 +135,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
     public void testRefreshCollectionToOne() throws Exception {
         createRefreshCollectionDataSet();
 
-        SelectQuery q = new SelectQuery(Painting.class);
+        SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
         q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
         List<?> paints = context.performQuery(q);
 
@@ -180,7 +180,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
     public void testRefreshSingleObject() throws Exception {
         createRefreshCollectionDataSet();
 
-        SelectQuery q = new SelectQuery(Artist.class);
+        SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
         q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
         List<?> artists = context.performQuery(q);
 
@@ -211,7 +211,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
     public void testRefreshObjectToMany() throws Exception {
         createRefreshObjectToManyDataSet();
 
-        Artist a = Cayenne.objectForPK(context, Artist.class, 33001l);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 33001L);
         assertEquals(2, a.getPaintingArray().size());
 
         createRefreshObjectToManyUpdateDataSet();
@@ -227,10 +227,10 @@ public class DataContextRefreshQueryIT extends ServerCase {
         createRefreshCollectionDataSet();
 
         Expression qual = Painting.PAINTING_TITLE.eq("P2");
-        SelectQuery q = new SelectQuery(Painting.class, qual);
+        SelectQuery<Painting> q = new SelectQuery<>(Painting.class, qual);
         q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
         q.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        q.setCacheGroups("X");
+        q.setCacheGroup("X");
         List<?> paints = context.performQuery(q);
 
         // fetch P1 separately from cached query
@@ -280,10 +280,10 @@ public class DataContextRefreshQueryIT extends ServerCase {
         createRefreshCollectionDataSet();
 
         Expression qual = Painting.PAINTING_TITLE.eq("P2");
-        SelectQuery q = new SelectQuery(Painting.class, qual);
+        SelectQuery<Painting> q = new SelectQuery<>(Painting.class, qual);
         q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
         q.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-        q.setCacheGroups("X");
+        q.setCacheGroup("X");
         List<?> paints = context.performQuery(q);
 
         // fetch P1 separately from cached query
@@ -333,10 +333,10 @@ public class DataContextRefreshQueryIT extends ServerCase {
         createRefreshCollectionDataSet();
 
         Expression qual = Painting.PAINTING_TITLE.eq("P2");
-        SelectQuery q = new SelectQuery(Painting.class, qual);
+        SelectQuery<Painting> q = new SelectQuery<>(Painting.class, qual);
         q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
         q.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        q.setCacheGroups("X");
+        q.setCacheGroup("X");
         List<?> paints = context.performQuery(q);
 
         // fetch P1 separately from cached query
@@ -386,7 +386,7 @@ public class DataContextRefreshQueryIT extends ServerCase {
     public void testRefreshAll() throws Exception {
         createRefreshCollectionDataSet();
 
-        SelectQuery q = new SelectQuery(Artist.class);
+        SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
         q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
         List<?> artists = context.performQuery(q);
 

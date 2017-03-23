@@ -34,6 +34,7 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings("deprecation")
 public class EhCacheQueryCache_WithConfigTest {
 
     protected CacheManager cacheManager;

@@ -95,6 +95,7 @@ public class ClientChannel implements DataChannel {
         return eventManager;
     }
 
+    @SuppressWarnings("unchecked")
     public QueryResponse onQuery(ObjectContext context, Query query) {
 
         QueryResponse response = send( new QueryMessage(query), QueryResponse.class);
@@ -234,10 +235,7 @@ public class ClientChannel implements DataChannel {
                         notification.add(replyDiff);
                     }
 
-                    Object postedBy = (originatingContext != null)
-                            ? originatingContext
-                            : this;
-                    GraphEvent e = new GraphEvent(this, postedBy, notification);
+                    GraphEvent e = new GraphEvent(this, originatingContext, notification);
                     eventManager.postEvent(e, subject);
                 }
             }

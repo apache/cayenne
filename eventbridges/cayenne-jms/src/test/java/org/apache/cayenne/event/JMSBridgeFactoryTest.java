@@ -40,7 +40,7 @@ public class JMSBridgeFactoryTest {
         EventBridge bridge = new JMSBridgeFactory().createEventBridge(
                 subjects,
                 externalSubject,
-                Collections.EMPTY_MAP);
+                Collections.<String, String>emptyMap());
 
         assertNotNull(bridge);
         assertTrue(bridge instanceof JMSBridge);
@@ -52,7 +52,7 @@ public class JMSBridgeFactoryTest {
     public void testUseProperties() throws Exception {
         JMSBridgeFactory bridgeFactory = new JMSBridgeFactory();
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(JMSBridge.TOPIC_CONNECTION_FACTORY_PROPERTY, JMSBridgeProviderTest.TOPIC_CONNECTION_FACTORY_TEST);
 
         JMSBridge bridge = (JMSBridge) bridgeFactory.createEventBridge(
@@ -69,7 +69,7 @@ public class JMSBridgeFactoryTest {
         JMSBridge bridge = (JMSBridge) bridgeFactory.createEventBridge(
                 subjects,
                 externalSubject,
-                Collections.EMPTY_MAP);
+                Collections.<String, String>emptyMap());
 
         assertEquals(bridge.getTopicConnectionFactoryName(), JMSBridge.TOPIC_CONNECTION_FACTORY_DEFAULT);
     }

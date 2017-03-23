@@ -130,8 +130,7 @@ public class PasswordEncoderEditor extends CayenneController {
 
         DataSourceInfo dsi = node.getDataSourceDescriptor();
 
-        if (view.getPasswordEncoder().getSelectedItem().equals(
-                dsi.getPasswordEncoderClass()) == false)
+        if (!view.getPasswordEncoder().getSelectedItem().equals(dsi.getPasswordEncoderClass()))
             return;
 
         if (dsi.getPasswordEncoder() == null) {

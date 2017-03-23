@@ -114,7 +114,7 @@ class Oracle8LOBBatchQueryWrapper {
 				}
 			};
 
-			try (ObjectOutputStream out = new ObjectOutputStream(bytes);) {
+			try (ObjectOutputStream out = new ObjectOutputStream(bytes)) {
 				out.writeObject(value);
 			} catch (IOException e) {
 				throw new CayenneRuntimeException("Error serializing object", e);
@@ -192,9 +192,9 @@ class Oracle8LOBBatchQueryWrapper {
 
 		int len = this.updatedLOBAttributes.length;
 		List<Object> values = new ArrayList<>(len);
-		for (int i = 0; i < len; i++) {
-			if (this.updatedLOBAttributes[i] != null) {
-				values.add(this.updatedLOBAttributes[i]);
+		for (Object updatedLOBAttribute : this.updatedLOBAttributes) {
+			if (updatedLOBAttribute != null) {
+				values.add(updatedLOBAttribute);
 			}
 		}
 

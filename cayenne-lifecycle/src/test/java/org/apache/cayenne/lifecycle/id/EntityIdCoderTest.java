@@ -42,7 +42,7 @@ public class EntityIdCoderTest {
 
     @Before
     public void setUp() throws Exception {
-        runtime = new ServerRuntime("cayenne-lifecycle.xml");
+        runtime = ServerRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
     }
 
     @After
@@ -109,7 +109,7 @@ public class EntityIdCoderTest {
         when(entity.getDbEntityName()).thenReturn(dbEntity.getName());
         when(entity.getDbEntity()).thenReturn(dbEntity);
 
-        ObjectId id = new ObjectId("x", "ID", 3l);
+        ObjectId id = new ObjectId("x", "ID", 3L);
 
         EntityIdCoder coder = new EntityIdCoder(entity);
         assertEquals("x:3", coder.toStringId(id));
@@ -189,7 +189,7 @@ public class EntityIdCoderTest {
 
         Map<String, Object> idMap = new HashMap<>();
         idMap.put("ID", "X;Y");
-        idMap.put("ABC", 6783463l);
+        idMap.put("ABC", 6783463L);
         idMap.put("ZZZ", "'_'");
         ObjectId id = new ObjectId("x", idMap);
         assertEquals("x:6783463:X%3BY:%27_%27", coder.toStringId(id));

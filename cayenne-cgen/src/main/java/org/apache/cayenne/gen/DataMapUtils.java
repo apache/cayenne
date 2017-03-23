@@ -60,7 +60,7 @@ public class DataMapUtils {
 	 * Return valid method name based on query name (replace all illegal
 	 * characters with underscore '_').
 	 * 
-	 * @param query
+	 * @param query descriptor
 	 * @return Method name that perform query.
 	 */
 	public String getQueryMethodName(QueryDescriptor query) {
@@ -70,7 +70,7 @@ public class DataMapUtils {
 	/**
 	 * Get all parameter names that used in query qualifier.
 	 *
-	 * @param query
+	 * @param query select query descriptor
 	 * @return Parameter names.
 	 */
 	public Collection getParameterNames(SelectQueryDescriptor query) {
@@ -131,6 +131,7 @@ public class DataMapUtils {
 	 * @return List of parameter names.
 	 */
 	private Set parseQualifier(String qualifierString) {
+		@SuppressWarnings("unchecked")
 		Set<String> result = (Set<String>)new ListOrderedSet();
 		Pattern pattern = Pattern.compile("\\$[\\w]+");
 		Matcher matcher = pattern.matcher(qualifierString);
@@ -156,8 +157,8 @@ public class DataMapUtils {
 	/**
 	 * Get type of parameter for given name.
 	 *
-	 * @param query
-	 * @param name
+	 * @param query descriptor
+	 * @param name parameter name
 	 * @return Parameter type.
 	 */
 	public String getParameterType(SelectQueryDescriptor query, String name) {

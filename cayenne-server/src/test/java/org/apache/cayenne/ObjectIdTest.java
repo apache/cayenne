@@ -53,7 +53,7 @@ public class ObjectIdTest {
     @Test
     public void testSerializabilityTemp() throws Exception {
         ObjectId temp1 = new ObjectId("e");
-        ObjectId temp2 = (ObjectId) Util.cloneViaSerialization(temp1);
+        ObjectId temp2 = Util.cloneViaSerialization(temp1);
 
         assertTrue(temp1.isTemporary());
         assertNotSame(temp1, temp2);
@@ -69,7 +69,7 @@ public class ObjectIdTest {
         assertEquals(h, perm1.hashCode);
         assertTrue(perm1.hashCode != 0);
 
-        ObjectId perm2 = (ObjectId) Util.cloneViaSerialization(perm1);
+        ObjectId perm2 = Util.cloneViaSerialization(perm1);
 
         // make sure hashCode is reset to 0
         assertTrue(perm2.hashCode == 0);
@@ -96,7 +96,7 @@ public class ObjectIdTest {
 
     @Test
     public void testEquals2() {
-        Map hm = new HashMap();
+        Map<String, Object> hm = new HashMap<>();
         ObjectId oid1 = new ObjectId("T", hm);
         ObjectId oid2 = new ObjectId("T", hm);
         assertEquals(oid1, oid2);
@@ -107,10 +107,10 @@ public class ObjectIdTest {
     public void testEquals3() {
         String pknm = "xyzabc";
 
-        Map hm1 = new HashMap();
+        Map<String, Object> hm1 = new HashMap<>();
         hm1.put(pknm, "123");
 
-        Map hm2 = new HashMap();
+        Map<String, Object> hm2 = new HashMap<>();
         hm2.put(pknm, "123");
 
         ObjectId oid1 = new ObjectId("T", hm1);
@@ -125,13 +125,13 @@ public class ObjectIdTest {
     @Test
     public void testEquals5() {
 
-        Map hm1 = new HashMap();
-        hm1.put("key1", new Integer(1));
-        hm1.put("key2", new Integer(11));
+        Map<String, Object> hm1 = new HashMap<>();
+        hm1.put("key1", 1);
+        hm1.put("key2", 11);
 
-        Map hm2 = new HashMap();
-        hm2.put("key1", new Integer(11));
-        hm2.put("key2", new Integer(1));
+        Map<String, Object> hm2 = new HashMap<>();
+        hm2.put("key1", 11);
+        hm2.put("key2", 1);
 
         ObjectId ref = new ObjectId("T", hm1);
         ObjectId oid = new ObjectId("T", hm2);
@@ -144,13 +144,13 @@ public class ObjectIdTest {
     @Test
     public void testEquals6() {
 
-        Map hm1 = new HashMap();
-        hm1.put("key1", new Integer(1));
-        hm1.put("key2", new Integer(2));
+        Map<String, Object> hm1 = new HashMap<>();
+        hm1.put("key1", 1);
+        hm1.put("key2", 2);
 
-        Map hm2 = new HashMap();
-        hm2.put("key1", new Integer(1));
-        hm2.put("key2", new Integer(2));
+        Map<String, Object> hm2 = new HashMap<>();
+        hm2.put("key1", 1);
+        hm2.put("key2", 2);
 
         ObjectId ref = new ObjectId("T", hm1);
         ObjectId oid = new ObjectId("T", hm2);
@@ -167,14 +167,16 @@ public class ObjectIdTest {
 
         // create maps with guaranteed iteration order
 
-        Map hm1 = new LinkedMap();
-        hm1.put("KEY1", new Integer(1));
-        hm1.put("KEY2", new Integer(2));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> hm1 = new LinkedMap();
+        hm1.put("KEY1", 1);
+        hm1.put("KEY2", 2);
 
-        Map hm2 = new LinkedMap();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> hm2 = new LinkedMap();
         // put same keys but in different order
-        hm2.put("KEY2", new Integer(2));
-        hm2.put("KEY1", new Integer(1));
+        hm2.put("KEY2", 2);
+        hm2.put("KEY1", 1);
 
         ObjectId ref = new ObjectId("T", hm1);
         ObjectId oid = new ObjectId("T", hm2);
@@ -185,10 +187,10 @@ public class ObjectIdTest {
     @Test
     public void testEqualsBinaryKey() {
 
-        Map hm1 = new HashMap();
+        Map<String, Object> hm1 = new HashMap<>();
         hm1.put("key1", new byte[] { 3, 4, 10, -1 });
 
-        Map hm2 = new HashMap();
+        Map<String, Object> hm2 = new HashMap<>();
         hm2.put("key1", new byte[] { 3, 4, 10, -1 });
 
         ObjectId ref = new ObjectId("T", hm1);
@@ -205,15 +207,15 @@ public class ObjectIdTest {
 
     @Test
     public void testIdAsMapKey() {
-        Map map = new HashMap();
+        Map<ObjectId, Object> map = new HashMap<>();
         Object o1 = new Object();
 
         String pknm = "xyzabc";
 
-        Map hm1 = new HashMap();
+        Map<String, Object> hm1 = new HashMap<>();
         hm1.put(pknm, "123");
 
-        Map hm2 = new HashMap();
+        Map<String, Object> hm2 = new HashMap<>();
         hm2.put(pknm, "123");
 
         ObjectId oid1 = new ObjectId("T", hm1);
@@ -234,10 +236,10 @@ public class ObjectIdTest {
     @Test
     public void testNotEqual2() {
 
-        Map hm1 = new HashMap();
+        Map<String, Object> hm1 = new HashMap<>();
         hm1.put("pk1", "123");
 
-        Map hm2 = new HashMap();
+        Map<String, Object> hm2 = new HashMap<>();
         hm2.put("pk2", "123");
 
         ObjectId oid1 = new ObjectId("T", hm1);
@@ -253,14 +255,16 @@ public class ObjectIdTest {
 
         // create maps with guaranteed iteration order
 
-        Map hm1 = new LinkedMap();
-        hm1.put("KEY1", new Integer(1));
-        hm1.put("KEY2", new Integer(2));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> hm1 = new LinkedMap();
+        hm1.put("KEY1", 1);
+        hm1.put("KEY2", 2);
 
-        Map hm2 = new LinkedMap();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> hm2 = new LinkedMap();
         // put same keys but in different order
         hm2.put("KEY2", new BigDecimal(2.00));
-        hm2.put("KEY1", new Long(1));
+        hm2.put("KEY1", 1L);
 
         ObjectId ref = new ObjectId("T", hm1);
         ObjectId oid = new ObjectId("T", hm2);
@@ -270,12 +274,12 @@ public class ObjectIdTest {
 
     @Test
     public void testToString() {
-        Map m1 = new HashMap();
+        Map<String, Object> m1 = new HashMap<>();
         m1.put("a", "1");
         m1.put("b", "2");
         ObjectId i1 = new ObjectId("e1", m1);
 
-        Map m2 = new HashMap();
+        Map<String, Object> m2 = new HashMap<>();
         m2.put("b", "2");
         m2.put("a", "1");
 

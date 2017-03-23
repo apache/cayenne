@@ -20,7 +20,6 @@ package org.apache.cayenne.cache;
 
 import com.opensymphony.oscache.base.CacheEntry;
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
-import org.apache.cayenne.cache.OSQueryCache.RefreshSpecification;
 import org.apache.cayenne.query.MockQueryMetadata;
 import org.apache.cayenne.query.QueryMetadata;
 import org.junit.Test;
@@ -34,6 +33,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings("deprecation")
 public class OSQueryCacheTest {
 
     @Test
@@ -78,12 +78,12 @@ public class OSQueryCacheTest {
         assertNotNull(cache.refreshSpecifications);
         assertEquals(2, cache.refreshSpecifications.size());
 
-        RefreshSpecification abc = cache.refreshSpecifications.get("ABC");
+        org.apache.cayenne.cache.OSQueryCache.RefreshSpecification abc = cache.refreshSpecifications.get("ABC");
         assertNotNull(abc);
         assertEquals("12 * * * * *", abc.cronExpression);
         assertEquals(25, abc.refreshPeriod);
 
-        RefreshSpecification xyz = cache.refreshSpecifications.get("XYZ");
+        org.apache.cayenne.cache.OSQueryCache.RefreshSpecification xyz = cache.refreshSpecifications.get("XYZ");
         assertNotNull(xyz);
         assertEquals("24 * * * * *", xyz.cronExpression);
         assertEquals(35, xyz.refreshPeriod);

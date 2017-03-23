@@ -44,7 +44,7 @@ public class StringIdQueryTest {
 
     @Before
     public void setUp() throws Exception {
-        runtime = new ServerRuntime("cayenne-lifecycle.xml");
+        runtime = ServerRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
         dbHelper = new DBHelper(runtime.getDataSource("lifecycle-db"));
         e1Helper = new TableHelper(dbHelper, "E1", "ID");
         e2Helper = new TableHelper(dbHelper, "E2", "ID");

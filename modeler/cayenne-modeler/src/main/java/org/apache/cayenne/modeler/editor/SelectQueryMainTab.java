@@ -32,7 +32,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.ListCellRenderer;
 
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.exp.Expression;

@@ -259,13 +259,7 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 	public PasswordEncoding getPasswordEncoder() {
 		try {
 			return (PasswordEncoding) Util.getJavaClass(getPasswordEncoderClass()).newInstance();
-		} catch (InstantiationException e) {
-			; // Swallow it -- no need to throw/etc.
-		} catch (IllegalAccessException e) {
-			; // Swallow it -- no need to throw/etc.
-		} catch (ClassNotFoundException e) {
-			; // Swallow it -- no need to throw/etc.
-		} catch (DIRuntimeException e) {
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | DIRuntimeException e) {
 			; // Swallow it -- no need to throw/etc.
 		}
 

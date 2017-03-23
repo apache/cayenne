@@ -107,7 +107,7 @@ class ObjectIdBatchFault {
 				coder = new EntityIdCoder(resolver.getObjEntity(entityName));
 				codersByEntity.put(entityName, coder);
 
-				query = new SelectQuery<DataObject>(entityName);
+				query = new SelectQuery<>(entityName);
 				queriesByEntity.put(entityName, query);
 			} else {
 				query = queriesByEntity.get(entityName);
@@ -124,6 +124,7 @@ class ObjectIdBatchFault {
 		for (SelectQuery<DataObject> query : queriesByEntity.values()) {
 
 			EntityIdCoder coder = codersByEntity.get(query.getRoot());
+			@SuppressWarnings("unchecked")
 			List<DataObject> objects = context.performQuery(query);
 			for (DataObject object : objects) {
 				String uuid = coder.toStringId(object.getObjectId());

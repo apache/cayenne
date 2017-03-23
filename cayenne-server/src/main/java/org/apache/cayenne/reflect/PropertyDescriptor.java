@@ -25,7 +25,7 @@ package org.apache.cayenne.reflect;
  * 
  * @since 4.0
  */
-public interface PropertyDescriptor extends Property {
+public interface PropertyDescriptor {
 
     /**
      * Returns property name.

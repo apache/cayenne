@@ -64,7 +64,7 @@ public class AuditableFilterTest {
         when(channel.getEntityResolver()).thenReturn(resolver);
 
         this.processor = mock(AuditableProcessor.class);
-        this.runtime = new ServerRuntime("cayenne-lifecycle.xml");
+        this.runtime = ServerRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
         this.filter = new AuditableFilter(processor);
         this.filter.init(channel);
     }
