@@ -436,7 +436,7 @@ public abstract class GeneratorController extends CayenneController {
 
         if (!relationship.isToMany()) {
 
-            ObjEntity targetEntity = (ObjEntity) relationship.getTargetEntity();
+            ObjEntity targetEntity = relationship.getTargetEntity();
 
             if (clientValidation && targetEntity != null) {
                 targetEntity = targetEntity.getClientEntity();
@@ -554,8 +554,7 @@ public abstract class GeneratorController extends CayenneController {
     }
 
     private void initOutputFolder() {
-
-        String path = null;
+        String path;
         if (getOutputPath() == null) {
             if (System.getProperty("cayenne.cgen.destdir") != null) {
                 setOutputPath(System.getProperty("cayenne.cgen.destdir"));
@@ -582,11 +581,10 @@ public abstract class GeneratorController extends CayenneController {
         if (idx < 0) {
             return null;
         }
-        return path.substring(0, idx) + buildFilePath("src", dirType, "java")
-                + path.substring(idx + resourcePath.length());
+        return path.substring(0, idx) + buildFilePath("src", dirType, "java");
     }
 
-    private static final String buildFilePath(String... pathElements) {
+    private static String buildFilePath(String... pathElements) {
         if (pathElements.length == 0) {
             return "";
         }
