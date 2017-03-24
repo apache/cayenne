@@ -28,6 +28,7 @@ CAY-2272 ColumnSelect: methods to manually control DISTINCT clause
 
 Bug Fixes:
 
+CAY-2094 SelectById query doesn't work from ROP client
 CAY-2240 Modeler: issue with cursor rendering for EJBQL query
 CAY-2243 ObjectContext.getGraphManager().unregisterObject() inconsistencies
 CAY-2256 Cannot Save/Insert an Object With null Flattened (complex) toOne Relationship (see also CAY-2146)

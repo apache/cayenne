@@ -109,8 +109,7 @@ public class LocalConnection extends BaseConnection {
                     break;
 
                 case JAVA_SERIALIZATION:
-                    processedMessage = (ClientMessage) Util
-                            .cloneViaSerialization(message);
+                    processedMessage = Util.cloneViaSerialization(message);
                     break;
 
                 default:

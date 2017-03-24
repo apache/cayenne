@@ -60,7 +60,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	PrefetchTreeNode prefetches;
 
 	public static <T> SelectById<T> query(Class<T> entityType, Object id) {
-		SelectById<T> q = new SelectById<T>();
+		SelectById<T> q = new SelectById<>();
 
 		q.entityType = entityType;
 		q.singleId = id;
@@ -70,7 +70,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	}
 
 	public static <T> SelectById<T> query(Class<T> entityType, Map<String, ?> id) {
-		SelectById<T> q = new SelectById<T>();
+		SelectById<T> q = new SelectById<>();
 
 		q.entityType = entityType;
 		q.mapId = id;
@@ -82,7 +82,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	public static <T> SelectById<T> query(Class<T> entityType, ObjectId id) {
 		checkObjectId(id);
 
-		SelectById<T> q = new SelectById<T>();
+		SelectById<T> q = new SelectById<>();
 
 		q.entityName = id.getEntityName();
 		q.mapId = id.getIdSnapshot();
@@ -146,7 +146,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	@Override
 	public void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
-		context.iterate((Select<T>) this, callback);
+		context.iterate(this, callback);
 	}
 
 	@Override
@@ -288,7 +288,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		ObjEntity entity = resolveEntity(resolver);
 		Map<String, ?> id = resolveId(entity);
 
-		SelectQuery<Object> query = new SelectQuery<Object>();
+		SelectQuery<Object> query = new SelectQuery<>();
 		query.setRoot(entity);
 		query.setFetchingDataRows(fetchingDataRows);
 		query.setQualifier(matchAllDbExp(id, Expression.EQUAL_TO));
@@ -328,6 +328,6 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 			throw new CayenneRuntimeException("Misconfigured query. Either entityName or entityType must be set");
 		}
 
-		return entityName != null ? resolver.getObjEntity(entityName) : resolver.getObjEntity(entityType);
+		return entityName != null ? resolver.getObjEntity(entityName) : resolver.getObjEntity(entityType, true);
 	}
 }

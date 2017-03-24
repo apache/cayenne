@@ -65,8 +65,8 @@ public class ClientObjectSelectIT extends ClientCase {
 
     @Test
     public void testSelect() throws Exception{
-        List<ClientMtTable1> list = ObjectSelect.query(ClientMtTable1.class).
-                select(context);
+        List<ClientMtTable1> list = ObjectSelect.query(ClientMtTable1.class)
+                .select(context);
 
         assertNotNull(list);
         assertEquals(20, list.size());
@@ -74,7 +74,7 @@ public class ClientObjectSelectIT extends ClientCase {
 
     @Test
     public void testCacheSelect() throws Exception{
-        final ObjectSelect objectSelect = ObjectSelect.query(ClientMtTable1.class).
+        final ObjectSelect<ClientMtTable1> objectSelect = ObjectSelect.query(ClientMtTable1.class).
                 cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
         final List<ClientMtTable1> list1 = objectSelect.select(context);
@@ -105,7 +105,7 @@ public class ClientObjectSelectIT extends ClientCase {
 
     @Test
     public void testCacheLimitSelect() throws Exception {
-        final ObjectSelect objectSelect = ObjectSelect.query(ClientMtTable1.class)
+        final ObjectSelect<ClientMtTable1> objectSelect = ObjectSelect.query(ClientMtTable1.class)
                 .cacheStrategy(QueryCacheStrategy.SHARED_CACHE)
                 .offset(5)
                 .limit(10);
@@ -126,7 +126,7 @@ public class ClientObjectSelectIT extends ClientCase {
 
     @Test
     public void testPageSelect() throws Exception{
-        final ObjectSelect objectSelect = ObjectSelect.query(ClientMtTable1.class)
+        final ObjectSelect<ClientMtTable1> objectSelect = ObjectSelect.query(ClientMtTable1.class)
                 .pageSize(5);
 
         final List<ClientMtTable1> list = objectSelect.select(context);
@@ -144,6 +144,13 @@ public class ClientObjectSelectIT extends ClientCase {
         });
 
         assertEquals(1, count);
+    }
+
+    @Test
+    public void testCAY_2094() {
+        ClientMtTable1 clientMtTable1 = SelectById.query(ClientMtTable1.class, 1).selectOne(context);
+        assertNotNull(clientMtTable1);
+        assertEquals(1, clientMtTable1.getObjectId().getIdSnapshot().get("TABLE1_ID"));
     }
 
 }

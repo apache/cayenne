@@ -104,20 +104,7 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 
 			if (root != null) {
 				if (root instanceof Class<?>) {
-					entity = resolver.getObjEntity((Class<?>) root);
-					if (entity == null) { // entity not found, try to resolve it
-											// with
-						// client resolver
-						EntityResolver clientResolver = resolver.getClientEntityResolver();
-						if (clientResolver != resolver) {
-							ObjEntity clientEntity = clientResolver.getObjEntity((Class<?>) root);
-
-							if (clientEntity != null) {
-								entity = resolver.getObjEntity(clientEntity.getName());
-							}
-						}
-					}
-
+					entity = resolver.getObjEntity((Class<?>) root, true);
 					if (entity != null) {
 						this.dbEntity = entity.getDbEntity();
 						this.dataMap = entity.getDataMap();
