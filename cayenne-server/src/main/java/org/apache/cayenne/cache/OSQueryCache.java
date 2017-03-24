@@ -283,27 +283,14 @@ public class OSQueryCache implements QueryCache {
         catch (NeedsRefreshException e) {
             boolean updated = false;
             try {
-                Object result = factory.createObject();
-
-                if (!(result instanceof List)) {
-                    if (result == null) {
-                        throw new CayenneRuntimeException("Null on cache rebuilding: "
-                                + metadata.getCacheKey());
-                    }
-                    else {
-                        throw new CayenneRuntimeException(
-                                "Invalid query result, expected List, got "
-                                        + result.getClass().getName());
-                    }
+                List result = factory.createObject();
+                if (result == null) {
+                    throw new CayenneRuntimeException("Null on cache rebuilding: %s", metadata.getCacheKey());
                 }
-
-                List list = (List) result;
-
-                put(metadata, list);
+                put(metadata, result);
                 updated = true;
-                return list;
-            }
-            finally {
+                return result;
+            } finally {
                 if (!updated) {
                     // It is essential that cancelUpdate is called if the
                     // cached content could not be rebuilt

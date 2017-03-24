@@ -22,7 +22,6 @@ package org.apache.cayenne;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.map.DeleteRule;
@@ -63,15 +62,13 @@ class ObjectContextDeleteAction {
 
         if (object.getObjectContext() == null) {
             throw new CayenneRuntimeException(
-                    "Attempt to delete unregistered non-TRANSIENT object: " + object);
+                    "Attempt to delete unregistered non-TRANSIENT object: %s", object);
         }
 
         if (object.getObjectContext() != context) {
             throw new CayenneRuntimeException(
-                    "Attempt to delete object regsitered in a different ObjectContext. Object: "
-                            + object
-                            + ", context: "
-                            + context);
+                    "Attempt to delete object regsitered in a different ObjectContext. Object: %s, context: %s"
+                            , object, context);
         }
 
         // must resolve HOLLOW objects before delete... needed
@@ -108,21 +105,20 @@ class ObjectContextDeleteAction {
         context.getGraphManager().nodeRemoved(object.getObjectId());
     }
 
-    private Collection toCollection(Object object) {
+    @SuppressWarnings("unchecked")
+    private Collection<Persistent> toCollection(Object object) {
 
         if (object == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         // create copies of collections to avoid iterator exceptions
         if (object instanceof Collection) {
-            return new ArrayList((Collection) object);
-        }
-        else if (object instanceof Map) {
-            return new ArrayList(((Map) object).values());
-        }
-        else {
-            return Collections.singleton(object);
+            return new ArrayList<>((Collection<Persistent>) object);
+        } else if (object instanceof Map) {
+            return new ArrayList<>(((Map<?, Persistent>) object).values());
+        } else {
+            return Collections.singleton((Persistent)object);
         }
     }
 
@@ -143,9 +139,8 @@ class ObjectContextDeleteAction {
                 continue;
             }
 
-            ArcProperty property = (ArcProperty) descriptor.getProperty(relationship
-                    .getName());
-            Collection relatedObjects = toCollection(property.readProperty(object));
+            ArcProperty property = (ArcProperty) descriptor.getProperty(relationship.getName());
+            final Collection<Persistent> relatedObjects = toCollection(property.readProperty(object));
 
             // no related object, bail out
             if (relatedObjects.size() == 0) {
@@ -166,11 +161,9 @@ class ObjectContextDeleteAction {
             // joins must be removed even if they are non-existent or ignored in the
             // object graph
             if (processFlattened) {
-                Iterator iterator = relatedObjects.iterator();
-                while (iterator.hasNext()) {
-                    Persistent relatedObject = (Persistent) iterator.next();
-                    context.getGraphManager().arcDeleted(object.getObjectId(), relatedObject
-                            .getObjectId(), relationship.getName());
+                for (Persistent relatedObject : relatedObjects) {
+                    context.getGraphManager().arcDeleted(object.getObjectId()
+                            , relatedObject.getObjectId(), relationship.getName());
                 }
             }
 
@@ -186,8 +179,6 @@ class ObjectContextDeleteAction {
                         break;
                     }
 
-                    final Collection finalRelatedObjects = relatedObjects;
-
                     reverseArc.visit(new PropertyVisitor() {
 
                         public boolean visitAttribute(AttributeProperty property) {
@@ -195,21 +186,16 @@ class ObjectContextDeleteAction {
                         }
 
                         public boolean visitToMany(ToManyProperty property) {
-                            Iterator iterator = finalRelatedObjects.iterator();
-                            while (iterator.hasNext()) {
-                                Object relatedObject = iterator.next();
+                            for (Persistent relatedObject : relatedObjects) {
                                 property.removeTarget(relatedObject, object, true);
                             }
-
                             return false;
                         }
 
                         public boolean visitToOne(ToOneProperty property) {
                             // Inverse is to-one - find all related objects and
                             // nullify the reverse relationship
-                            Iterator iterator = finalRelatedObjects.iterator();
-                            while (iterator.hasNext()) {
-                                Object relatedObject = iterator.next();
+                            for (Persistent relatedObject : relatedObjects) {
                                 property.setTarget(relatedObject, null, true);
                             }
                             return false;
@@ -219,17 +205,14 @@ class ObjectContextDeleteAction {
                     break;
                 case DeleteRule.CASCADE:
                     // Delete all related objects
-                    Iterator iterator = relatedObjects.iterator();
-                    while (iterator.hasNext()) {
-                        Persistent relatedObject = (Persistent) iterator.next();
+                    for (Persistent relatedObject : relatedObjects) {
                         performDelete(relatedObject);
                     }
 
                     break;
                 default:
                     object.setPersistenceState(oldState);
-                    throw new CayenneRuntimeException("Invalid delete rule "
-                            + relationship.getDeleteRule());
+                    throw new CayenneRuntimeException("Invalid delete rule %s", relationship.getDeleteRule());
             }
         }
     }

@@ -237,10 +237,8 @@ public class IndexPropertyList extends AbstractList implements ValueHolder {
     protected int getIndexValue(Object object) {
         Number n = (Number) PropertyUtils.getProperty(object, indexProperty);
         if (n == null) {
-            throw new CayenneRuntimeException("Null index property '"
-                    + indexProperty
-                    + "' for object "
-                    + object);
+            throw new CayenneRuntimeException("Null index property '%s' for object %s"
+                    , indexProperty, object);
         }
 
         return n.intValue();

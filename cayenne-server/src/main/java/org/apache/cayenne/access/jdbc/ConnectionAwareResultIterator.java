@@ -61,10 +61,8 @@ public class ConnectionAwareResultIterator<T> implements ResultIterator<T> {
         try {
             delegate.close();
         } catch (Exception e1) {
-            if (errors == null) {
-                errors = new StringBuilder();
-            }
-            errors.append("Error closing ResultSet: " + e1);
+            errors = new StringBuilder();
+            errors.append("Error closing ResultSet: ").append(e1);
         }
 
         try {
@@ -74,11 +72,11 @@ public class ConnectionAwareResultIterator<T> implements ResultIterator<T> {
                 errors = new StringBuilder();
             }
 
-            errors.append("Error closing connection: " + e2);
+            errors.append("Error closing connection: ").append(e2);
         }
 
         if (errors != null) {
-            throw new CayenneRuntimeException("Error closing ResultIterator: " + errors.toString());
+            throw new CayenneRuntimeException("Error closing ResultIterator: %s", errors);
         }
     }
 

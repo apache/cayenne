@@ -257,7 +257,7 @@ public class DataNode implements QueryEngine {
 		}
 
 		if (callback.isIteratedResult() && listSize > 1) {
-			throw new CayenneRuntimeException("Iterated queries are not allowed in a batch. Batch size: " + listSize);
+			throw new CayenneRuntimeException("Iterated queries are not allowed in a batch. Batch size: %d", listSize);
 		}
 
 		// do this meaningless inexpensive operation to trigger AutoAdapter lazy

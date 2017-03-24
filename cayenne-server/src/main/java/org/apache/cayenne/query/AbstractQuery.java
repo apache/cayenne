@@ -152,8 +152,7 @@ public abstract class AbstractQuery extends CacheableQuery {
         DataMap map = getMetaData(resolver).getDataMap();
 
         if (map == null) {
-            throw new CayenneRuntimeException("No DataMap found, can't route query "
-                    + this);
+            throw new CayenneRuntimeException("No DataMap found, can't route query %s", this);
         }
 
         router.route(router.engineForDataMap(map), this, substitutedQuery);

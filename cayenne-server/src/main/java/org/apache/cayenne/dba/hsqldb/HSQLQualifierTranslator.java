@@ -44,8 +44,7 @@ public class HSQLQualifierTranslator extends TrimmingQualifierTranslator {
         char escapeChar = patternMatchNode.getEscapeChar();
 
         if ('?' == escapeChar) {
-            throw new CayenneRuntimeException(
-                    "the escape character of '?' is illegal for LIKE clauses.");
+            throw new CayenneRuntimeException("the escape character of '?' is illegal for LIKE clauses.");
         }
 
         if (0 != escapeChar) {

@@ -92,8 +92,7 @@ class ClientServerChannelQueryAction {
 
                     cachedList = channel.getQueryCache().get(serverMetadata);
                     if (cachedList == null) {
-                        throw new CayenneRuntimeException("No cached list for "
-                                + serverMetadata.getCacheKey());
+                        throw new CayenneRuntimeException("No cached list for %s", serverMetadata.getCacheKey());
                     }
                 } else {
                     return !DONE;
@@ -260,8 +259,7 @@ class ClientServerChannelQueryAction {
 
         // sanity check
         if (id == null) {
-            throw new CayenneRuntimeException("Server returned an object without an id: "
-                    + object);
+            throw new CayenneRuntimeException("Server returned an object without an id: %s", object);
         }
 
         // have to resolve descriptor here for every object, as

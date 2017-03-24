@@ -144,7 +144,7 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
             }
 
             if (errors.length() > 0) {
-                throw new CayenneRuntimeException("Error closing ResultIterator: " + errors.toString());
+                throw new CayenneRuntimeException("Error closing ResultIterator: %s", errors);
             }
 
             closed = true;

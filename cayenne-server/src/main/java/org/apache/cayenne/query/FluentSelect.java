@@ -76,7 +76,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Indi
 
             ObjEntity entity = resolver.getObjEntity(entityName);
             if (entity == null) {
-                throw new CayenneRuntimeException("Unrecognized ObjEntity name: " + entityName);
+                throw new CayenneRuntimeException("Unrecognized ObjEntity name: %s", entityName);
             }
 
             replacement.setRoot(entity);
@@ -84,7 +84,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Indi
 
             DbEntity entity = resolver.getDbEntity(dbEntityName);
             if (entity == null) {
-                throw new CayenneRuntimeException("Unrecognized DbEntity name: " + dbEntityName);
+                throw new CayenneRuntimeException("Unrecognized DbEntity name: %s", dbEntityName);
             }
 
             replacement.setRoot(entity);

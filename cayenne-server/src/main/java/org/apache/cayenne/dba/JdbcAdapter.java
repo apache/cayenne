@@ -319,8 +319,8 @@ public class JdbcAdapter implements DbAdapter {
 
 				// attribute may not be fully valid, do a simple check
 				if (column.getType() == TypesMapping.NOT_DEFINED) {
-					throw new CayenneRuntimeException("Undefined type for attribute '" + entity.getFullyQualifiedName()
-							+ "." + column.getName() + "'.");
+					throw new CayenneRuntimeException("Undefined type for attribute '%s.%s'."
+							, entity.getFullyQualifiedName(), column.getName());
 				}
 
 				createTableAppendColumn(sqlBuffer, column);
@@ -397,8 +397,8 @@ public class JdbcAdapter implements DbAdapter {
 		String[] types = adapter.externalTypesForJdbcType(column.getType());
 		if (types == null || types.length == 0) {
 			String entityName = column.getEntity() != null ? column.getEntity().getFullyQualifiedName() : "<null>";
-			throw new CayenneRuntimeException("Undefined type for attribute '" + entityName + "." + column.getName()
-					+ "': " + column.getType());
+			throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s."
+					, entityName, column.getName(), column.getType());
 		}
 		return types[0];
 	}

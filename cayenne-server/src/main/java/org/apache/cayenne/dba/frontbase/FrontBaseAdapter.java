@@ -132,14 +132,14 @@ public class FrontBaseAdapter extends JdbcAdapter {
 
 			// attribute may not be fully valid, do a simple check
 			if (at.getType() == TypesMapping.NOT_DEFINED) {
-				throw new CayenneRuntimeException("Undefined type for attribute '" + ent.getFullyQualifiedName() + "."
-						+ at.getName() + "'.");
+				throw new CayenneRuntimeException("Undefined type for attribute '%s.%s'."
+						, ent.getFullyQualifiedName(), at.getName());
 			}
 
 			String[] types = externalTypesForJdbcType(at.getType());
 			if (types == null || types.length == 0) {
-				throw new CayenneRuntimeException("Undefined type for attribute '" + ent.getFullyQualifiedName() + "."
-						+ at.getName() + "': " + at.getType());
+				throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s"
+						, ent.getFullyQualifiedName(), at.getName(), at.getType());
 			}
 
 			String type = types[0];

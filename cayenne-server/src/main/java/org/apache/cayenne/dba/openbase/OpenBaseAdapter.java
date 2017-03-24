@@ -168,14 +168,14 @@ public class OpenBaseAdapter extends JdbcAdapter {
 
             // attribute may not be fully valid, do a simple check
             if (at.getType() == TypesMapping.NOT_DEFINED) {
-                throw new CayenneRuntimeException("Undefined type for attribute '" + ent.getFullyQualifiedName() + "."
-                        + at.getName() + "'.");
+                throw new CayenneRuntimeException("Undefined type for attribute '%s.%s'"
+                        , ent.getFullyQualifiedName(), at.getName());
             }
 
             String[] types = externalTypesForJdbcType(at.getType());
             if (types == null || types.length == 0) {
-                throw new CayenneRuntimeException("Undefined type for attribute '" + ent.getFullyQualifiedName() + "."
-                        + at.getName() + "': " + at.getType());
+                throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s"
+                        , ent.getFullyQualifiedName(), at.getName(), at.getType());
             }
 
             String type = types[0];
@@ -233,7 +233,7 @@ public class OpenBaseAdapter extends JdbcAdapter {
 
         int joinsLen = rel.getJoins().size();
         if (joinsLen == 0) {
-            throw new CayenneRuntimeException("Relationship has no joins: " + rel.getName());
+            throw new CayenneRuntimeException("Relationship has no joins: %s", rel.getName());
         } else if (joinsLen > 1) {
             // ignore extra joins
         }

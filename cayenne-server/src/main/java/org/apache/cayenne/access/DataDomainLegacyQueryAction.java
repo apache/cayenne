@@ -120,7 +120,7 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
         QueryEngine node = domain.lookupDataNode(map);
 
         if (node == null) {
-            throw new CayenneRuntimeException("No DataNode exists for DataMap " + map);
+            throw new CayenneRuntimeException("No DataNode exists for DataMap %s", map);
         }
 
         return node;
@@ -137,7 +137,7 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
         if (name != null) {
             node = domain.getDataNode(name);
             if (node == null) {
-                throw new CayenneRuntimeException("No DataNode exists for name " + name);
+                throw new CayenneRuntimeException("No DataNode exists for name %s", name);
             }
         } else {
             node = domain.getDefaultNode();

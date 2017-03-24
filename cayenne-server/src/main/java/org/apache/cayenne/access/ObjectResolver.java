@@ -66,14 +66,13 @@ class ObjectResolver {
 
 		DbEntity dbEntity = descriptor.getEntity().getDbEntity();
 		if (dbEntity == null) {
-			throw new CayenneRuntimeException("ObjEntity '" + descriptor.getEntity().getName() + "' has no DbEntity.");
+			throw new CayenneRuntimeException("ObjEntity '%s' has no DbEntity.", descriptor.getEntity().getName());
 		}
 
 		this.primaryKey = dbEntity.getPrimaryKeys();
 		if (primaryKey.size() == 0) {
-			throw new CayenneRuntimeException("Won't be able to create ObjectId for '"
-					+ descriptor.getEntity().getName() + "'. Reason: DbEntity '" + dbEntity.getName()
-					+ "' has no Primary Key defined.");
+			throw new CayenneRuntimeException("Won't be able to create ObjectId for '%s'. Reason: DbEntity " +
+					"'%s' has no Primary Key defined.", descriptor.getEntity().getName(), dbEntity.getName());
 		}
 
 		this.context = context;

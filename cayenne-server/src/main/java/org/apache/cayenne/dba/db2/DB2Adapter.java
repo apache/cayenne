@@ -99,8 +99,8 @@ public class DB2Adapter extends JdbcAdapter {
         String[] types = externalTypesForJdbcType(column.getType());
         if (types == null || types.length == 0) {
             String entityName = column.getEntity() != null ? column.getEntity().getFullyQualifiedName() : "<null>";
-            throw new CayenneRuntimeException("Undefined type for attribute '"
-                    + entityName + "." + column.getName() + "': " + column.getType());
+            throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s"
+                    , entityName, column.getName(), column.getType());
         }
         String type = types[0];
 

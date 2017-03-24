@@ -70,7 +70,7 @@ public class ObjectDetachOperation {
             ClassDescriptor descriptor,
             final PrefetchTreeNode prefetchTree) {
         if (!(object instanceof Persistent)) {
-            throw new CayenneRuntimeException("Expected Persistent, got: " + object);
+            throw new CayenneRuntimeException("Expected Persistent, got: %s", object);
         }
 
         final Persistent source = (Persistent) object;
@@ -78,8 +78,7 @@ public class ObjectDetachOperation {
 
         // sanity check
         if (id == null) {
-            throw new CayenneRuntimeException("Server returned an object without an id: "
-                    + source);
+            throw new CayenneRuntimeException("Server returned an object without an id: %s", source);
         }
 
         Object seenTarget = seen.get(id);

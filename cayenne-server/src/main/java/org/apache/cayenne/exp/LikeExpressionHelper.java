@@ -104,7 +104,7 @@ class LikeExpressionHelper {
 		if (escapeChar == 0) {
 			// if we start seeing this this error in the wild, I guess we'll
 			// need to extend escape char set beyond ASCII
-			throw new CayenneRuntimeException("Could not properly escape pattern: " + pattern);
+			throw new CayenneRuntimeException("Could not properly escape pattern: %s", pattern);
 		}
 		
 		exp.setEscapeChar(escapeChar);

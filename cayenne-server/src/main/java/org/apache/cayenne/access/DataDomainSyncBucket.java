@@ -226,7 +226,7 @@ abstract class DataDomainSyncBucket {
                     }
                     else if (id.isTemporary()) {
                         throw new CayenneRuntimeException(
-                                "Temporary ID hasn't been replaced on commit: " + object);
+                                "Temporary ID hasn't been replaced on commit: %s", object);
                     }
                     else {
                         finalId = id;
@@ -307,11 +307,7 @@ abstract class DataDomainSyncBucket {
             Object value = masterID.getIdSnapshot().get(masterKey);
             if (value == null) {
                 throw new CayenneRuntimeException("Can't extract a master key. "
-                        + "Missing key ("
-                        + masterKey
-                        + "), master ID ("
-                        + masterID
-                        + ")");
+                        + "Missing key (%s), master ID (%s)", masterKey, masterID);
             }
 
             return value;

@@ -37,17 +37,13 @@ class DispatchHelper {
         // do most common messages first...
         if (message instanceof QueryMessage) {
             return channel.onQuery(null, ((QueryMessage) message).getQuery());
-        }
-        else if (message instanceof SyncMessage) {
+        } else if (message instanceof SyncMessage) {
             SyncMessage sync = (SyncMessage) message;
             return channel.onSync(null, sync.getSenderChanges(), sync.getType());
-        }
-        else if (message instanceof BootstrapMessage) {
+        } else if (message instanceof BootstrapMessage) {
             return channel.getEntityResolver().getClientEntityResolver();
-        }
-        else {
-            throw new CayenneRuntimeException(
-                    "Message dispatch error. Unsupported message: " + message);
+        } else {
+            throw new CayenneRuntimeException("Message dispatch error. Unsupported message: %s", message);
         }
     }
 }

@@ -75,7 +75,7 @@ public class MapQueryCache implements QueryCache, Serializable {
         if (result == null) {
             List newObject = factory.createObject();
             if (newObject == null) {
-                throw new CayenneRuntimeException("Null on cache rebuilding: " + metadata.getCacheKey());
+                throw new CayenneRuntimeException("Null on cache rebuilding: %s", metadata.getCacheKey());
             }
 
             result = newObject;

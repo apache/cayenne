@@ -145,9 +145,7 @@ public abstract class Relationship implements CayenneMapEntry, XMLSerializable,
         Entity entity = getSourceEntity();
 
         if (entity == null) {
-            throw new CayenneRuntimeException("Relationship '"
-                    + getName()
-                    + "' has no parent Entity.");
+            throw new CayenneRuntimeException("Relationship '%s' has no parent Entity.", getName());
         }
 
         return entity.getNonNullNamespace();

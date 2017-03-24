@@ -77,10 +77,8 @@ class SelectQueryPrefetchRouterAction implements PrefetchProcessor {
         }
 
         if (relationship == null) {
-            throw new CayenneRuntimeException(
-                    "Invalid prefetch '%s' for entity '%s'",
-                    prefetchPath,
-                    classDescriptor.getEntity().getName());
+            throw new CayenneRuntimeException("Invalid prefetch '%s' for entity '%s'"
+                    , prefetchPath, classDescriptor.getEntity().getName());
         }
 
         // chain query and entity qualifiers

@@ -396,8 +396,8 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 		} else if (this.getObjectContext() != null && object.getObjectContext() == null) {
 			this.getObjectContext().registerNewObject(object);
 		} else {
-			throw new CayenneRuntimeException("Cannot set object as destination of relationship " + relationshipName
-					+ " because it is in a different ObjectContext");
+			throw new CayenneRuntimeException("Cannot set object as destination of relationship %s"
+					+ " because it is in a different ObjectContext",  relationshipName);
 		}
 	}
 
@@ -581,7 +581,7 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 
 		ObjEntity objEntity = getObjectContext().getEntityResolver().getObjEntity(this);
 		if (objEntity == null) {
-			throw new CayenneRuntimeException("No ObjEntity mapping found for DataObject " + getClass().getName());
+			throw new CayenneRuntimeException("No ObjEntity mapping found for DataObject %s", getClass().getName());
 		}
 
 		// validate mandatory attributes
@@ -607,8 +607,8 @@ public class CayenneDataObject extends PersistentObject implements DataObject, V
 			DbAttribute dbAttribute = next.getDbAttribute();
 
 			if (dbAttribute == null) {
-				throw new CayenneRuntimeException("ObjAttribute '" + next.getName()
-						+ "' does not have a corresponding DbAttribute");
+				throw new CayenneRuntimeException("ObjAttribute '%s"
+						+ "' does not have a corresponding DbAttribute", next.getName());
 			}
 
 			// pk may still be generated

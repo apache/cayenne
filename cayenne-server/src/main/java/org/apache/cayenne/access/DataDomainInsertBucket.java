@@ -166,7 +166,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                     idMap.put(dbAttrName, pkValue);
                     autoPkDone = true;
                 } catch (Exception ex) {
-                    throw new CayenneRuntimeException("Error generating PK: " + ex.getMessage(), ex);
+                    throw new CayenneRuntimeException("Error generating PK: %s", ex,  ex.getMessage());
                 }
             }
         }

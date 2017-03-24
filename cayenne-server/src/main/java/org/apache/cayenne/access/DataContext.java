@@ -347,8 +347,8 @@ public class DataContext extends BaseContext {
                 if (targetObject instanceof Fault) {
                     DataRow storedSnapshot = getObjectStore().getSnapshot(object.getObjectId());
                     if (storedSnapshot == null) {
-                        throw new CayenneRuntimeException("No matching objects found for ObjectId "
-                                + object.getObjectId() + ". Object may have been deleted externally.");
+                        throw new CayenneRuntimeException("No matching objects found for ObjectId %s"
+                                + ". Object may have been deleted externally.", object.getObjectId());
                     }
 
                     DbRelationship dbRel = rel.getDbRelationships().get(0);
@@ -433,7 +433,7 @@ public class DataContext extends BaseContext {
         ObjEntity entity = this.getEntityResolver().getObjEntity(objectClass);
 
         if (entity == null) {
-            throw new CayenneRuntimeException("Unmapped Java class: " + objectClass);
+            throw new CayenneRuntimeException("Unmapped Java class: %s", objectClass);
         }
 
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());

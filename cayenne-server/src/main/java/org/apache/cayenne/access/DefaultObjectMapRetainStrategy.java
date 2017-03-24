@@ -57,7 +57,7 @@ public class DefaultObjectMapRetainStrategy implements ObjectMapRetainStrategy {
         } else if (HARD_RETAIN_STRATEGY.equals(strategy)) {
             return new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.HARD);
         } else {
-            throw new CayenneRuntimeException("Unsupported retain strategy " + strategy);
+            throw new CayenneRuntimeException("Unsupported retain strategy %s", strategy);
         }
     }
 }

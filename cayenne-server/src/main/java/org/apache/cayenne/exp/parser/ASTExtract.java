@@ -82,7 +82,7 @@ public class ASTExtract extends ASTFunctionCall {
     void setPartToken(String partToken) {
         part = NAME_TO_PART.get(partToken);
         if(part == null) {
-            throw new CayenneRuntimeException("Unknown timestamp part: " + partToken);
+            throw new CayenneRuntimeException("Unknown timestamp part: %s", partToken);
         }
         this.partName = partToken;
     }

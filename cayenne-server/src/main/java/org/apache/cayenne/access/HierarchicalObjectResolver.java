@@ -307,7 +307,7 @@ class HierarchicalObjectResolver {
 
         @Override
         public boolean startUnknownPrefetch(PrefetchTreeNode node) {
-            throw new CayenneRuntimeException("Unknown prefetch node: " + node);
+            throw new CayenneRuntimeException("Unknown prefetch node: %s", node);
         }
 
         @Override
@@ -404,7 +404,7 @@ class HierarchicalObjectResolver {
 
         @Override
         public boolean startUnknownPrefetch(PrefetchTreeNode node) {
-            throw new CayenneRuntimeException("Unknown prefetch node: " + node);
+            throw new CayenneRuntimeException("Unknown prefetch node: %s", node);
         }
 
         @Override
@@ -456,7 +456,7 @@ class HierarchicalObjectResolver {
 
         @Override
         public boolean startUnknownPrefetch(PrefetchTreeNode node) {
-            throw new CayenneRuntimeException("Unknown prefetch node: " + node);
+            throw new CayenneRuntimeException("Unknown prefetch node: %s", node);
         }
     }
 }

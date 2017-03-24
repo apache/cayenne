@@ -486,8 +486,8 @@ public class DataDomain implements QueryEngine, DataChannel {
 					nodesByDataMapName.put(map.getName(), defaultNode);
 					node = defaultNode;
 				} else {
-					throw new CayenneRuntimeException("No DataNode configured for DataMap '" + map.getName()
-							+ "' and no default DataNode set");
+					throw new CayenneRuntimeException("No DataNode configured for DataMap '%s'"
+							+ " and no default DataNode set", map.getName());
 				}
 			}
 		}
@@ -603,7 +603,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 			result =  onSyncFlush(originatingContext, changes);
 			break;
 		default:
-			throw new CayenneRuntimeException("Invalid synchronization type: " + syncType);
+			throw new CayenneRuntimeException("Invalid synchronization type: %d", syncType);
 		}
 
 		return result;
@@ -623,9 +623,8 @@ public class DataDomain implements QueryEngine, DataChannel {
 	GraphDiff onSyncFlush(ObjectContext originatingContext, GraphDiff childChanges) {
 
 		if (!(originatingContext instanceof DataContext)) {
-			throw new CayenneRuntimeException(
-					"No support for committing ObjectContexts that are not DataContexts yet. "
-							+ "Unsupported context: " + originatingContext);
+			throw new CayenneRuntimeException("No support for committing ObjectContexts that are not DataContexts yet. "
+							+ "Unsupported context: %s", originatingContext);
 		}
 
 		DataDomainFlushAction action = new DataDomainFlushAction(this);

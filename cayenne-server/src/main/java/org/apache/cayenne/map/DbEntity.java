@@ -821,9 +821,8 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
             DbRelationship revNextDBR = relationship.getReverseRelationship();
 
             if (revNextDBR == null) {
-                throw new CayenneRuntimeException("Unable to find reverse DbRelationship for "
-                        + relationship.getSourceEntity().getName() + Entity.PATH_SEPARATOR + relationship.getName()
-                        + ".");
+                throw new CayenneRuntimeException("Unable to find reverse DbRelationship for %s.%s."
+                        , relationship.getSourceEntity().getName(), relationship.getName());
             }
 
             finalPath.addFirst(revNextDBR.getName());

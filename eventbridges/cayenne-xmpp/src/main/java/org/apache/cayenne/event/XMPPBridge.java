@@ -117,12 +117,10 @@ public class XMPPBridge extends EventBridge {
 
         String portString = properties.get(XMPP_PORT_PROPERTY);
         if (portString != null) {
-
             try {
                 this.xmppPort = Integer.parseInt(portString);
-            }
-            catch (NumberFormatException e) {
-                throw new CayenneRuntimeException("Invalid port: " + portString);
+            } catch (NumberFormatException e) {
+                throw new CayenneRuntimeException("Invalid port: %s", portString);
             }
         }
     }
@@ -201,8 +199,7 @@ public class XMPPBridge extends EventBridge {
             if (secureConnection) {
                 int port = xmppPort > 0 ? xmppPort : DEFAULT_XMPP_SECURE_PORT;
                 this.connection = new SSLXMPPConnection(xmppHost, port);
-            }
-            else {
+            } else {
                 int port = xmppPort > 0 ? xmppPort : DEFAULT_XMPP_PORT;
                 this.connection = new XMPPConnection(xmppHost, port);
             }
@@ -212,33 +209,20 @@ public class XMPPBridge extends EventBridge {
                 // third argument ("sessionHandle" is such string); without it same
                 // loginId can not be reused from the same machine.
                 connection.login(loginId, password, sessionHandle);
-            }
-            else {
+            } else {
                 connection.loginAnonymously();
             }
-        }
-        catch (XMPPException e) {
-            throw new CayenneRuntimeException("Error connecting to XMPP Server"
-                    + e.getLocalizedMessage());
+        } catch (XMPPException e) {
+            throw new CayenneRuntimeException("Error connecting to XMPP Server: %s", e.getLocalizedMessage());
         }
 
-        String service = this.chatService != null
-                ? this.chatService
-                : DEFAULT_CHAT_SERVICE;
-
+        String service = chatService != null ? chatService : DEFAULT_CHAT_SERVICE;
         try {
-            this.groupChat = connection.createGroupChat(externalSubject
-                    + '@'
-                    + service
-                    + "."
-                    + connection.getHost());
-
+            groupChat = connection.createGroupChat(externalSubject + '@' + service + "." + connection.getHost());
             groupChat.join(sessionHandle);
             groupChat.addMessageListener(new XMPPListener());
-        }
-        catch (XMPPException e) {
-            throw new CayenneRuntimeException("Error setting up a group chat: "
-                    + e.getLocalizedMessage());
+        } catch (XMPPException e) {
+            throw new CayenneRuntimeException("Error setting up a group chat: %s", e.getLocalizedMessage());
         }
 
         this.connected = true;
@@ -280,19 +264,13 @@ public class XMPPBridge extends EventBridge {
 
                 // filter our own messages
                 if (sessionHandle.equals(message.getThread())) {
-                    // discarding
-                }
-                else {
-
                     String payload = message.getBody();
-
                     try {
                         Object event = deserializeFromString(payload);
                         if (event instanceof CayenneEvent) {
                             onExternalEvent((CayenneEvent) event);
                         }
-                    }
-                    catch (Exception ex) {
+                    } catch (Exception ex) {
                         // ignore for now... need to add logging.
                     }
                 }

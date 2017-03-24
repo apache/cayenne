@@ -44,7 +44,7 @@ public class JCacheEntryLoader implements EntryProcessor<String, List, List> {
             List result = (List)entryFactory.createObject();
             // sanity checking value
             if (result == null) {
-                throw new CayenneRuntimeException("Null object created: " + entry.getKey());
+                throw new CayenneRuntimeException("Null object created: %s", entry.getKey());
             }
             entry.setValue(result);
         }

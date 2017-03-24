@@ -122,7 +122,7 @@ public class FrontBaseQualifierTranslator extends QualifierTranslator {
             case DAY_OF_WEEK:
             case DAY_OF_YEAR:
             case WEEK:
-                throw new CayenneRuntimeException("Function " + functionExpression.getPartCamelCaseName() + "() is unsupported in FrontBase.");
+                throw new CayenneRuntimeException("Function %s() is unsupported in FrontBase.", functionExpression.getPartCamelCaseName());
             case DAY_OF_MONTH:
                 out.append("DAY");
                 break;

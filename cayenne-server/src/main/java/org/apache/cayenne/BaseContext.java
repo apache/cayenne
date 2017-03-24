@@ -253,19 +253,19 @@ public abstract class BaseContext implements ObjectContext {
 
 		// first look for the ID in the local GraphManager
 		synchronized (getGraphManager()) {
+			@SuppressWarnings("unchecked")
 			T localObject = (T) getGraphManager().getNode(id);
 			if (localObject != null) {
 				return localObject;
 			}
 
-			// create a hollow object, optimistically assuming that the ID we
-			// got from
-			// 'objectFromAnotherContext' is a valid ID either in the parent
-			// context or in
-			// the DB. This essentially defers possible FaultFailureExceptions.
+			// create a hollow object, optimistically assuming that the ID we got from
+			// 'objectFromAnotherContext' is a valid ID either in the parent context or in the DB.
+			// This essentially defers possible FaultFailureExceptions.
 
 			ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(id.getEntityName());
-			Persistent persistent = (Persistent) descriptor.createObject();
+			@SuppressWarnings("unchecked")
+			T persistent = (T) descriptor.createObject();
 
 			persistent.setObjectContext(this);
 			persistent.setObjectId(id);
@@ -273,7 +273,7 @@ public abstract class BaseContext implements ObjectContext {
 
 			getGraphManager().registerNode(id, persistent);
 
-			return (T) persistent;
+			return persistent;
 		}
 	}
 
@@ -317,7 +317,7 @@ public abstract class BaseContext implements ObjectContext {
 		if (objects.size() == 0) {
 			return null;
 		} else if (objects.size() > 1) {
-			throw new CayenneRuntimeException("Expected zero or one object, instead query matched: " + objects.size());
+			throw new CayenneRuntimeException("Expected zero or one object, instead query matched: %d", objects.size());
 		}
 
 		return objects.get(0);
@@ -501,7 +501,7 @@ public abstract class BaseContext implements ObjectContext {
 		case DataChannel.FLUSH_CASCADE_SYNC:
 			return onContextFlush(originatingContext, changes, true);
 		default:
-			throw new CayenneRuntimeException("Unrecognized SyncMessage type: " + syncType);
+			throw new CayenneRuntimeException("Unrecognized SyncMessage type: %d", syncType);
 		}
 	}
 

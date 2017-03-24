@@ -92,11 +92,11 @@ public class MemoryClob implements Clob {
         pos--;
 
         if (pos < 0 || pos > dlen) {
-            throw new CayenneRuntimeException("Invalid position: " + (pos + 1L));
+            throw new CayenneRuntimeException("Invalid position: %d", (pos + 1L));
         }
 
         if (length < 0 || length > dlen - pos) {
-            throw new CayenneRuntimeException("Invalid length: " + length);
+            throw new CayenneRuntimeException("Invalid length: %s", length);
         }
 
         if (pos == 0 && length == dlen) {
@@ -261,16 +261,12 @@ public class MemoryClob implements Clob {
         final long chars = len >> 1;
 
         if (chars == dlen) {
-
             // nothing has changed, so there's nothing to be done
-        }
-        else if (len < 0 || chars > dlen) {
-            throw new CayenneRuntimeException("Invalid length: " + len);
-        }
-        else {
-
+        } else if (len < 0 || chars > dlen) {
+            throw new CayenneRuntimeException("Invalid length: %d", len);
+        } else {
             // use new String() to ensure we get rid of slack
-            data = new String(ldata.substring(0, (int) chars));
+            data = ldata.substring(0, (int) chars);
         }
     }
 

@@ -66,7 +66,7 @@ public class IteratedSelectObserver extends DefaultOperationObserver {
                 // this should never happen
             }
 
-            throw new CayenneRuntimeException("Error getting ResultIterator: " + str.getBuffer());
+            throw new CayenneRuntimeException("Error getting ResultIterator: %s", str.getBuffer());
         }
 
         return resultIterator;

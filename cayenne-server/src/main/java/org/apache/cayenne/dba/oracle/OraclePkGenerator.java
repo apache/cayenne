@@ -170,7 +170,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 
 				try (ResultSet rs = st.executeQuery(sql)) {
 					if (!rs.next()) {
-						throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName());
+						throw new CayenneRuntimeException("Error generating pk for DbEntity %s", entity.getName());
 					}
 					return rs.getLong(1);
 				}

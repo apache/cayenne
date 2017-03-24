@@ -151,16 +151,15 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
     private void initWithModel(DbRelationship aRelationship) {
         // sanity check
         if (aRelationship.getSourceEntity() == null) {
-            throw new CayenneRuntimeException("Null source entity: " + aRelationship);
+            throw new CayenneRuntimeException("Null source entity: %s", aRelationship);
         }
 
         if (aRelationship.getTargetEntity() == null) {
-            throw new CayenneRuntimeException("Null target entity: " + aRelationship);
+            throw new CayenneRuntimeException("Null target entity: %s", aRelationship);
         }
 
         if (aRelationship.getSourceEntity().getDataMap() == null) {
-            throw new CayenneRuntimeException("Null DataMap: "
-                    + aRelationship.getSourceEntity());
+            throw new CayenneRuntimeException("Null DataMap: %s", aRelationship.getSourceEntity());
         }
 
         // Once assigned, can reference relationship directly. Would it be

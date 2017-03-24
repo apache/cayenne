@@ -152,8 +152,7 @@ public class ProcedureAction extends BaseSQLAction {
 
 			// if one result is described, all of them must be present...
 			if (setIndex >= descriptors.size() || descriptors.get(setIndex) == null) {
-				throw new CayenneRuntimeException("No descriptor for result set at index '" + setIndex
-						+ "' configured.");
+				throw new CayenneRuntimeException("No descriptor for result set at index '%d' configured.", setIndex);
 			}
 
 			ColumnDescriptor[] columns = descriptors.get(setIndex);

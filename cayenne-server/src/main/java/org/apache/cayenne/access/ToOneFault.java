@@ -82,17 +82,12 @@ public class ToOneFault extends Fault {
 
         if (objects.isEmpty()) {
             return null;
-        }
-        else if (objects.size() == 1) {
+        } else if (objects.size() == 1) {
             return objects.get(0);
-        }
-        else {
+        } else {
             throw new CayenneRuntimeException("Error resolving to-one fault. "
-                    + "More than one object found. "
-                    + "Source Id: "
-                    + sourceObject.getObjectId()
-                    + ", relationship: "
-                    + relationshipName);
+                    + "More than one object found. Source Id: %s, relationship: %s"
+                    , sourceObject.getObjectId(), relationshipName);
         }
     }
 }

@@ -240,9 +240,7 @@ public class EmbeddedAttribute extends ObjAttribute {
     final MappingNamespace getNonNullNamespace() {
 
         if (entity == null) {
-            throw new CayenneRuntimeException("Embedded attribute '"
-                    + getName()
-                    + "' has no parent Entity.");
+            throw new CayenneRuntimeException("Embedded attribute '%s' has no parent Entity.", getName());
         }
 
         return entity.getNonNullNamespace();

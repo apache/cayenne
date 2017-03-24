@@ -60,15 +60,13 @@ public class DriverDataSource implements DataSource {
 		try {
 			driverClass = Util.getJavaClass(driverClassName);
 		} catch (Exception ex) {
-			throw new CayenneRuntimeException("Can not load JDBC driver named '" + driverClassName + "': "
-					+ ex.getMessage());
+			throw new CayenneRuntimeException("Can not load JDBC driver named '%s': %s", driverClassName, ex.getMessage());
 		}
 
 		try {
 			return (Driver) driverClass.newInstance();
 		} catch (Exception ex) {
-			throw new CayenneRuntimeException("Error instantiating driver '" + driverClassName + "': "
-					+ ex.getMessage());
+			throw new CayenneRuntimeException("Error instantiating driver '%s': %s", driverClassName, ex.getMessage());
 		}
 	}
 

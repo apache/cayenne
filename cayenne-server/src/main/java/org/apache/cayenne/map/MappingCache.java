@@ -171,8 +171,8 @@ class MappingCache implements MappingNamespace {
         ObjEntity entity = objEntitiesByClassName.get(entityClass.getName());
 
         if (entity == OBJ_DUPLICATE_MARKER) {
-            throw new CayenneRuntimeException("Can't perform lookup. There is more than one ObjEntity mapped to "
-                    + entityClass.getName());
+            throw new CayenneRuntimeException("Can't perform lookup. There is more than one ObjEntity mapped to %s"
+                    , entityClass.getName());
         }
 
         return entity;

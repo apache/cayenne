@@ -530,7 +530,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 					Object pathPart = dbPathIterator.next();
 
 					if (pathPart == null) {
-						throw new CayenneRuntimeException("ObjAttribute has no component: " + oa.getName());
+						throw new CayenneRuntimeException("ObjAttribute has no component: %s", oa.getName());
 					} else if (pathPart instanceof DbRelationship) {
 						DbRelationship rel = (DbRelationship) pathPart;
 						dbRelationshipAdded(rel, JoinType.LEFT_OUTER, null);
@@ -657,8 +657,8 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 				}
 
 				if (r == null) {
-					throw new CayenneRuntimeException("Invalid joint prefetch '" + prefetch + "' for entity: "
-							+ oe.getName());
+					throw new CayenneRuntimeException("Invalid joint prefetch '%s' for entity: %s"
+							, prefetch, oe.getName());
 				}
 
 				// add columns from the target entity, including those that are
@@ -679,7 +679,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 						Object pathPart = dbPathIterator.next();
 
 						if (pathPart == null) {
-							throw new CayenneRuntimeException("ObjAttribute has no component: " + oa.getName());
+							throw new CayenneRuntimeException("ObjAttribute has no component: %s", oa.getName());
 						} else if (pathPart instanceof DbRelationship) {
 							DbRelationship rel = (DbRelationship) pathPart;
 							dbRelationshipAdded(rel, JoinType.INNER, null);

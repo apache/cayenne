@@ -71,13 +71,13 @@ public class PoolingDataSourceBuilder {
 
 		// sanity checks...
 		if (poolParameters.getMaxConnections() < 0) {
-			throw new CayenneRuntimeException("Maximum number of connections can not be negative ("
-					+ poolParameters.getMaxConnections() + ").");
+			throw new CayenneRuntimeException("Maximum number of connections can not be negative (%d)."
+					, poolParameters.getMaxConnections());
 		}
 
 		if (poolParameters.getMinConnections() < 0) {
-			throw new CayenneRuntimeException("Minimum number of connections can not be negative ("
-					+ poolParameters.getMinConnections() + ").");
+			throw new CayenneRuntimeException("Minimum number of connections can not be negative (%d)"
+					, poolParameters.getMinConnections());
 		}
 
 		if (poolParameters.getMinConnections() > poolParameters.getMaxConnections()) {

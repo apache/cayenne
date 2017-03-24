@@ -95,7 +95,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                     Object pathPart = dbPathIterator.next();
 
                     if (pathPart == null) {
-                        throw new CayenneRuntimeException("ObjAttribute has no component: " + oa.getName());
+                        throw new CayenneRuntimeException("ObjAttribute has no component: %s", oa.getName());
                     } else if (pathPart instanceof DbRelationship) {
 
                         if (marker == null) {
@@ -174,21 +174,16 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                     for (PathComponent<DbAttribute, DbRelationship> component : table.resolvePath(dbPrefetch, context
                             .getMetadata().getPathSplitAliases())) {
                         r = component.getRelationship();
-
                     }
 
                     if (r == null) {
-                        throw new CayenneRuntimeException("Invalid joint prefetch '" + prefetch + "' for entity: "
-                                + objectEntity.getName());
+                        throw new CayenneRuntimeException("Invalid joint prefetch '%s' for entity: %s"
+                                , prefetch, objectEntity.getName());
                     }
 
-                    Iterator<DbAttribute> targetAttributes = (Iterator<DbAttribute>) r.getTargetEntity()
-                            .getAttributes().iterator();
-                    while (targetAttributes.hasNext()) {
-                        DbAttribute attribute = targetAttributes.next();
+                    for (DbAttribute attribute : r.getTargetEntity().getAttributes()) {
                         appendColumn(prefetch.getEjbqlPathEntityId() + "." + prefetch.getPath(), attribute, "",
                                 prefetch.getPath() + "." + attribute.getName(), null);
-
                     }
                 }
             }
@@ -211,7 +206,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
     public void appendColumn(String identifier, DbAttribute column, String columnAlias, String dataRowKey,
             String javaType) {
 
-        DbEntity table = (DbEntity) column.getEntity();
+        DbEntity table = column.getEntity();
         String alias = context.getTableAlias(identifier, context.getQuotingStrategy().quotedFullyQualifiedName(table));
         String columnName = alias + "." + context.getQuotingStrategy().quotedName(column);
 
@@ -244,7 +239,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
     private Set<String> getColumns() {
 
         if (columns == null) {
-            columns = new HashSet<String>();
+            columns = new HashSet<>();
         }
 
         return columns;

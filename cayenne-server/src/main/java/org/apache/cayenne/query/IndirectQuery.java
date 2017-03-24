@@ -111,8 +111,7 @@ public abstract class IndirectQuery implements Query {
 	 */
 	@Override
 	public SQLAction createSQLAction(SQLActionVisitor visitor) {
-		throw new CayenneRuntimeException(this.getClass().getName()
-				+ " is an indirect query and doesn't support its own sql actions. "
-				+ "It should've been delegated to another " + "query during resolution or routing phase.");
+		throw new CayenneRuntimeException("%s is an indirect query and doesn't support its own sql actions. "
+				+ "It should've been delegated to another query during resolution or routing phase.", getClass().getName());
 	}
 }

@@ -245,7 +245,7 @@ public class CayenneContext extends BaseContext {
 
         ObjEntity entity = getEntityResolver().getObjEntity(persistentClass);
         if (entity == null) {
-            throw new CayenneRuntimeException("No entity mapped for class: " + persistentClass);
+            throw new CayenneRuntimeException("No entity mapped for class: %s", persistentClass);
         }
 
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());

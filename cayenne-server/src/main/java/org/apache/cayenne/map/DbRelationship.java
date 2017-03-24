@@ -418,7 +418,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
         } else if (foundNulls == numJoins) {
             return null;
         } else {
-            throw new CayenneRuntimeException("Some parts of FK are missing in snapshot," + " relationship: " + this);
+            throw new CayenneRuntimeException("Some parts of FK are missing in snapshot, relationship: %s", this);
         }
     }
 

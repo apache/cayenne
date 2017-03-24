@@ -199,8 +199,7 @@ public class RemoteIncrementalFaultList implements List {
         }
 
         if (context == null) {
-            throw new CayenneRuntimeException(
-                    "No ObjectContext set, can't resolve objects.");
+            throw new CayenneRuntimeException("No ObjectContext set, can't resolve objects.");
         }
 
         // bounds checking
@@ -261,10 +260,8 @@ public class RemoteIncrementalFaultList implements List {
 
         // sanity check
         if (sublist.size() != fetchLimit) {
-            throw new CayenneRuntimeException("Resolved range size '"
-                    + sublist.size()
-                    + "' is not the same as expected: "
-                    + fetchLimit);
+            throw new CayenneRuntimeException("Resolved range size %d is not the same as expected: %d"
+                    , sublist.size(), fetchLimit);
         }
 
         for (int i = 0; i < fetchLimit; i++) {

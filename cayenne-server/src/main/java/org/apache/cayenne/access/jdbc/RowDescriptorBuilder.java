@@ -60,8 +60,7 @@ public class RowDescriptorBuilder {
     /**
      * Returns a RowDescriptor built based on the builder internal state.
      */
-    public RowDescriptor getDescriptor(ExtendedTypeMap typeMap) throws SQLException,
-            IllegalStateException {
+    public RowDescriptor getDescriptor(ExtendedTypeMap typeMap) throws SQLException, IllegalStateException {
 
         ColumnDescriptor[] columnsForRD;
 
@@ -69,12 +68,10 @@ public class RowDescriptorBuilder {
             // do merge between explicitly-set columns and ResultSetMetadata
             // explicitly-set columns take precedence
             columnsForRD = mergeResultSetAndPresetColumns();
-        }
-        else if (this.columns != null) {
+        } else if (this.columns != null) {
             // use explicitly-set columns
             columnsForRD = this.columns;
-        }
-        else {
+        } else {
             throw new IllegalStateException(
                     "Can't build RowDescriptor, both 'columns' and 'resultSetMetadata' are null");
         }
@@ -102,10 +99,8 @@ public class RowDescriptorBuilder {
         int columnLen = (columns != null) ? columns.length : 0;
 
         if (rsLen < columnLen) {
-            throw new CayenneRuntimeException(
-                    "'ResultSetMetadata' has less elements then 'columns'.");
-        }
-        else if (rsLen == columnLen) {
+            throw new CayenneRuntimeException("'ResultSetMetadata' has less elements then 'columns'.");
+        } else if (rsLen == columnLen) {
             // 'columns' contains ColumnDescriptor for every column
             // in resultSetMetadata. This return is for optimization.
             return columns;
@@ -177,19 +172,16 @@ public class RowDescriptorBuilder {
         int len = columnArray.length;
 
         if (caseTransformer != null) {
-            for (int i = 0; i < len; i++) {
-
-                columnArray[i].setDataRowKey((String) caseTransformer
-                        .transform(columnArray[i].getDataRowKey()));
-                columnArray[i].setName((String) caseTransformer.transform(columnArray[i]
-                        .getName()));
+            for (ColumnDescriptor aColumnArray : columnArray) {
+                aColumnArray.setDataRowKey((String) caseTransformer.transform(aColumnArray.getDataRowKey()));
+                aColumnArray.setName((String) caseTransformer.transform(aColumnArray.getName()));
             }
         }
         if (typeOverrides != null) {
-            for (int i = 0; i < len; i++) {
-                String type = typeOverrides.get(columnArray[i].getName());
+            for (ColumnDescriptor aColumnArray : columnArray) {
+                String type = typeOverrides.get(aColumnArray.getName());
                 if (type != null) {
-                    columnArray[i].setJavaClass(type);
+                    aColumnArray.setJavaClass(type);
                 }
             }
         }

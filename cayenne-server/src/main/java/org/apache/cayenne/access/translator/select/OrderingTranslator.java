@@ -83,7 +83,7 @@ public class OrderingTranslator extends QueryAssemblerHelper {
 				} else if (exp.getType() == Expression.FUNCTION_CALL) {
 					appendFunction(exp);
 				} else {
-					throw new CayenneRuntimeException("Unsupported ordering expression: " + exp);
+					throw new CayenneRuntimeException("Unsupported ordering expression: %s", exp);
 				}
 
 				// Close UPPER() modifier

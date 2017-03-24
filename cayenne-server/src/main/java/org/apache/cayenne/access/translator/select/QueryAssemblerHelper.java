@@ -178,7 +178,7 @@ public abstract class QueryAssemblerHelper {
 					Object pathPart = dbPathIterator.next();
 
 					if (pathPart == null) {
-						throw new CayenneRuntimeException("ObjAttribute has no component: " + attribute.getName());
+						throw new CayenneRuntimeException("ObjAttribute has no component: %s", attribute.getName());
 					} else if (pathPart instanceof DbRelationship) {
 						queryAssembler.dbRelationshipAdded((DbRelationship) pathPart, JoinType.INNER, joinSplitAlias);
 					} else if (pathPart instanceof DbAttribute) {
@@ -287,11 +287,8 @@ public abstract class QueryAssemblerHelper {
 
 			Map<String, Object> snap = id.getIdSnapshot();
 			if (snap.size() != 1) {
-				StringBuilder msg = new StringBuilder();
-				msg.append("Object must have a single primary key column ").append("to serve as a query parameter. ")
-						.append("This object has ").append(snap.size()).append(": ").append(snap);
-
-				throw new CayenneRuntimeException(msg.toString());
+				throw new CayenneRuntimeException("Object must have a single primary key column to serve " +
+						"as a query parameter. This object has %s: %s", snap.size(), snap);
 			}
 
 			// checks have been passed, use id value
@@ -306,11 +303,8 @@ public abstract class QueryAssemblerHelper {
 
 			Map<String, Object> snap = id.getIdSnapshot();
 			if (snap.size() != 1) {
-				StringBuilder msg = new StringBuilder();
-				msg.append("Object must have a single primary key column ").append("to serve as a query parameter. ")
-						.append("This object has ").append(snap.size()).append(": ").append(snap);
-
-				throw new CayenneRuntimeException(msg.toString());
+				throw new CayenneRuntimeException("Object must have a single primary key column to serve " +
+						"as a query parameter. This object has %s: %s", snap.size(), snap);
 			}
 
 			// checks have been passed, use id value
@@ -459,9 +453,8 @@ public abstract class QueryAssemblerHelper {
 		List<DbJoin> joins = rel.getJoins();
 		if (joins.size() != 1) {
 			String msg = "OBJ_PATH expressions are only supported for a single-join relationships. " +
-					"This relationship has " + joins.size() + " joins.";
-
-			throw new CayenneRuntimeException(msg);
+					"This relationship has %s joins.";
+			throw new CayenneRuntimeException(msg, joins.size());
 		}
 
 		DbJoin join = joins.get(0);
@@ -473,9 +466,8 @@ public abstract class QueryAssemblerHelper {
 			Collection<DbAttribute> pk = ent.getPrimaryKeys();
 			if (pk.size() != 1) {
 				String msg = "DB_NAME expressions can only support targets with a single column PK. " +
-						"This entity has " + pk.size() + " columns in primary key.";
-
-				throw new CayenneRuntimeException(msg);
+						"This entity has %d columns in primary key.";
+				throw new CayenneRuntimeException(msg, pk.size());
 			}
 
 			attribute = pk.iterator().next();

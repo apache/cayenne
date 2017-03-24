@@ -79,8 +79,8 @@ public class DB2QualifierTranslator extends TrimmingQualifierTranslator {
 			String[] types = queryAssembler.getAdapter().externalTypesForJdbcType(jdbcType);
 
 			if (types == null || types.length == 0) {
-				throw new CayenneRuntimeException("Can't find database type for JDBC type '"
-						+ TypesMapping.getSqlNameByType(jdbcType));
+				throw new CayenneRuntimeException("Can't find database type for JDBC type '%s'"
+						, TypesMapping.getSqlNameByType(jdbcType));
 			}
 
 			out.append(types[0]);

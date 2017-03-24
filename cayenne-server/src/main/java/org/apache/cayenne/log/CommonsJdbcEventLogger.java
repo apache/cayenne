@@ -428,11 +428,8 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 		}
 
 		if (queryExecutionTimeLoggingThreshold > 0 && time > queryExecutionTimeLoggingThreshold) {
-			StringBuilder buf = new StringBuilder();
-			buf.append("Query time exceeded threshold (").append(time).append(" ms): ");
-			buf.append(sql);
-			String message = buf.toString();
-			logger.warn(message, new CayenneRuntimeException(message));
+			String message = "Query time exceeded threshold (" + time + " ms): ";
+			logger.warn(message + sql, new CayenneRuntimeException(message + "%s", sql));
 		}
 	}
 

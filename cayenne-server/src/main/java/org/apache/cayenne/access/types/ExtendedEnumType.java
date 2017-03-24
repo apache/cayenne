@@ -128,8 +128,7 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType<T> {
         // Check for duplicates.
         if (enumerationMappings.containsKey(databaseValue)
                 || enumerationMappings.containsValue(enumeration))
-            throw new CayenneRuntimeException(
-                    "Enumerations/values may not be duplicated.");
+            throw new CayenneRuntimeException("Enumerations/values may not be duplicated.");
 
         // Store by database value/enum because we have to lookup by db value later.
         enumerationMappings.put(databaseValue, enumeration);
@@ -141,13 +140,10 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType<T> {
     private T lookup(Object databaseValue) {
         if (!enumerationMappings.containsKey(databaseValue)) {
             // All integers enums are mapped. Not necessarily all strings.
-            if (databaseValue instanceof Integer)
-                throw new CayenneRuntimeException("Missing enumeration mapping for "
-                        + getClassName()
-                        + " with value "
-                        + databaseValue
-                        + ".");
-
+            if (databaseValue instanceof Integer) {
+                throw new CayenneRuntimeException("Missing enumeration mapping for %s with value %s."
+                        , getClassName(), databaseValue);
+            }
             // Use the database value (a String) as the enum value.
             return Enum.valueOf(enumerationClass, (String) databaseValue);
         }

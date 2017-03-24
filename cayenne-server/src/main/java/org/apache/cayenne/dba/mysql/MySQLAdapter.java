@@ -307,10 +307,10 @@ public class MySQLAdapter extends JdbcAdapter {
 
 		String[] types = externalTypesForJdbcType(column.getType());
 		if (types == null || types.length == 0) {
-			String entityName = column.getEntity() != null ? ((DbEntity) column.getEntity()).getFullyQualifiedName()
-					: "<null>";
-			throw new CayenneRuntimeException("Undefined type for attribute '" + entityName + "." + column.getName()
-					+ "': " + column.getType());
+			String entityName = column.getEntity() != null
+					? column.getEntity().getFullyQualifiedName() : "<null>";
+			throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s"
+					, entityName, column.getName(), column.getType());
 		}
 
 		String type = types[0];

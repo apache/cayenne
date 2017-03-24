@@ -68,16 +68,11 @@ class JoinedIdParentAttachementStrategy implements ParentAttachmentStrategy {
 
             ObjectId id = node.getResolver().createObjectId(row, entity, relatedIdPrefix);
             if (id == null) {
-                throw new CayenneRuntimeException("Can't build ObjectId from row: "
-                        + row
-                        + ", entity: "
-                        + entity.getName()
-                        + ", prefix: "
-                        + relatedIdPrefix);
+                throw new CayenneRuntimeException("Can't build ObjectId from row: %s, entity: %s, prefix: %s"
+                        , row, entity.getName(), relatedIdPrefix);
             }
 
             parentObject = (Persistent) graphManager.getNode(id);
-
             if (parentObject != null) {
                 break;
             }

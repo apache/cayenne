@@ -87,9 +87,8 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
 
             if (relationship.isFlattened()) {
                 if (relationship.isReadOnly()) {
-                    throw new CayenneRuntimeException("Cannot set the read-only flattened relationship '"
-                            + relationship.getName() + "' in ObjEntity '" + relationship.getSourceEntity().getName()
-                            + "'.");
+                    throw new CayenneRuntimeException("Cannot set the read-only flattened relationship '%s' in ObjEntity '%s'."
+                            , relationship.getName(), relationship.getSourceEntity().getName());
                 }
 
                 // Register this combination (so we can remove it later if an
@@ -121,8 +120,8 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
 
             if (relationship.isFlattened()) {
                 if (relationship.isReadOnly()) {
-                    throw new CayenneRuntimeException("Cannot unset the read-only flattened relationship "
-                            + relationship.getName());
+                    throw new CayenneRuntimeException("Cannot unset the read-only flattened relationship %s"
+                            , relationship.getName());
                 }
 
                 // Register this combination (so we can remove it later if an

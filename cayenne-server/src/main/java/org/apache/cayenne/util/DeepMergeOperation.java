@@ -70,8 +70,7 @@ public class DeepMergeOperation {
 
         // sanity check
         if (id == null) {
-            throw new CayenneRuntimeException("Server returned an object without an id: "
-                    + peerInParentContext);
+            throw new CayenneRuntimeException("Server returned an object without an id: %s", peerInParentContext);
         }
 
         Persistent seenTarget = seen.get(id);

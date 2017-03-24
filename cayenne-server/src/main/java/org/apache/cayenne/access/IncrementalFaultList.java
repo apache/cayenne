@@ -327,7 +327,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 
 			throw new CayenneRuntimeException(buffer.toString());
 		} else if (objects.size() > ids.size()) {
-			throw new CayenneRuntimeException("Expected " + ids.size() + " objects, retrieved " + objects.size());
+			throw new CayenneRuntimeException("Expected %d objects, retrieved %d", ids.size(), objects.size());
 		}
 	}
 
@@ -659,7 +659,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 			}
 
 			if (!found) {
-				throw new CayenneRuntimeException("Can't find id for " + object);
+				throw new CayenneRuntimeException("Can't find id for %s", object);
 			}
 		}
 

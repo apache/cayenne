@@ -93,8 +93,8 @@ class DataNodeSyncQualifierDescriptor {
 			// supported...
 			if (descriptor.getPathFromMaster().size() != 1) {
 				throw new CayenneRuntimeException(
-						"Only single step dependent relationships are currently supported. Actual path length: "
-								+ descriptor.getPathFromMaster().size());
+				        "Only single step dependent relationships are currently supported. Actual path length: %d"
+                        , descriptor.getPathFromMaster().size());
 			}
 
 			DbRelationship masterDependentDbRel = descriptor.getPathFromMaster().get(0);

@@ -192,16 +192,15 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 
 	private SimpleNode parse(String template) {
 
-		SimpleNode nodeTree = null;
-
+		SimpleNode nodeTree;
 		try {
 			nodeTree = velocityRuntime.parse(new StringReader(template), template);
 		} catch (ParseException pex) {
-			throw new CayenneRuntimeException("Error parsing template '" + template + "' : " + pex.getMessage());
+			throw new CayenneRuntimeException("Error parsing template '%s' : %s", template, pex.getMessage());
 		}
 
 		if (nodeTree == null) {
-			throw new CayenneRuntimeException("Error parsing template " + template);
+			throw new CayenneRuntimeException("Error parsing template %s", template);
 		}
 
 		return nodeTree;

@@ -121,7 +121,7 @@ final class FlattenedArcKey {
 				snapshot.put(dbAttrName, pkValue);
 				autoPkDone = true;
 			} catch (Exception ex) {
-				throw new CayenneRuntimeException("Error generating PK: " + ex.getMessage(), ex);
+				throw new CayenneRuntimeException("Error generating PK: %s", ex,  ex.getMessage());
 			}
 		}
 
@@ -134,7 +134,7 @@ final class FlattenedArcKey {
 	 * theoretically possible, so the return value is a list.
 	 */
 	List buildJoinSnapshotsForDelete(DataNode node) {
-		Map snapshot = eagerJoinSnapshot();
+		Map<String, Object> snapshot = eagerJoinSnapshot();
 
 		DbEntity joinEntity = getJoinEntity();
 
@@ -299,12 +299,12 @@ final class FlattenedArcKey {
 		return false;
 	}
 
-	private Map eagerJoinSnapshot() {
+	private Map<String, Object> eagerJoinSnapshot() {
 
 		List<DbRelationship> relList = relationship.getDbRelationships();
 		if (relList.size() != 2) {
 			throw new CayenneRuntimeException(
-					"Only single-step flattened relationships are supported in this operation: " + relationship);
+					"Only single-step flattened relationships are supported in this operation: %s", relationship);
 		}
 
 		DbRelationship firstDbRel = relList.get(0);
@@ -332,7 +332,7 @@ final class FlattenedArcKey {
 		List<DbRelationship> relList = relationship.getDbRelationships();
 		if (relList.size() != 2) {
 			throw new CayenneRuntimeException(
-					"Only single-step flattened relationships are supported in this operation: " + relationship);
+					"Only single-step flattened relationships are supported in this operation: %s", relationship);
 		}
 
 		DbRelationship firstDbRel = relList.get(0);
@@ -346,15 +346,12 @@ final class FlattenedArcKey {
 		// here ordering of ids is determined by 'relationship', so use id1, id2
 		// instead of orderedIds
 
-		for (int i = 0, numJoins = fromSourceJoins.size(); i < numJoins; i++) {
-			DbJoin join = fromSourceJoins.get(i);
-
+		for (DbJoin join : fromSourceJoins) {
 			Object value = new PropagatedValueFactory(id1.getSourceId(), join.getSourceName());
 			snapshot.put(join.getTargetName(), value);
 		}
 
-		for (int i = 0, numJoins = toTargetJoins.size(); i < numJoins; i++) {
-			DbJoin join = toTargetJoins.get(i);
+		for (DbJoin join : toTargetJoins) {
 			Object value = new PropagatedValueFactory(id2.getSourceId(), join.getTargetName());
 			snapshot.put(join.getSourceName(), value);
 		}

@@ -171,12 +171,12 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 						if (rs.next()) {
 							return rs.getLong(1);
 						} else {
-							throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName());
+							throw new CayenneRuntimeException("Error generating pk for DbEntity %s", entity.getName());
 						}
 					}
 				} else {
-					throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName()
-							+ ", no result set from stored procedure.");
+					throw new CayenneRuntimeException("Error generating pk for DbEntity %s"
+							+ ", no result set from stored procedure.", entity.getName());
 				}
 			}
 		} finally {

@@ -121,11 +121,10 @@ public class ObjectIdQuery extends IndirectQuery {
         }
 
         if (objectId.isTemporary() && !objectId.isReplacementIdAttached()) {
-            throw new CayenneRuntimeException("Can't build a query for temporary id: "
-                    + objectId);
+            throw new CayenneRuntimeException("Can't build a query for temporary id: %s", objectId);
         }
 
-        SelectQuery<Object> query = new SelectQuery<Object>(objectId.getEntityName(), ExpressionFactory
+        SelectQuery<Object> query = new SelectQuery<>(objectId.getEntityName(), ExpressionFactory
                 .matchAllDbExp(objectId.getIdSnapshot(), Expression.EQUAL_TO));
 
         // if we got to the point of fetch, always force refresh....

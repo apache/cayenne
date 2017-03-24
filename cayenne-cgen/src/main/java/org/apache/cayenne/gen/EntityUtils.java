@@ -257,8 +257,7 @@ public class EntityUtils {
         // its type.
         ObjAttribute attribute = targetEntity.getAttribute(relationship.getMapKey());
         if (attribute == null) {
-            throw new CayenneRuntimeException("Invalid map key '" + relationship.getMapKey()
-                    + "', no matching attribute found");
+            throw new CayenneRuntimeException("Invalid map key '%s', no matching attribute found", relationship.getMapKey());
         }
 
         return attribute.getType();

@@ -181,7 +181,7 @@ public class SQLExec extends IndirectQuery {
         QueryResult results = execute(context);
 
         if (results.size() != 1) {
-            throw new CayenneRuntimeException("Expected a single update result. Got a total of " + results.size());
+            throw new CayenneRuntimeException("Expected a single update result. Got a total of %d", results.size());
         }
 
         return results.firstUpdateCount();
@@ -192,7 +192,7 @@ public class SQLExec extends IndirectQuery {
         QueryResult results = execute(context);
 
         if (results.size() != 1) {
-            throw new CayenneRuntimeException("Expected a single update result. Got a total of " + results.size());
+            throw new CayenneRuntimeException("Expected a single update result. Got a total of %d", results.size());
         }
 
         return results.firstBatchUpdateCount();

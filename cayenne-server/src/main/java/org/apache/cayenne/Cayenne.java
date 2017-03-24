@@ -270,7 +270,7 @@ public class Cayenne {
         Object value = pkForObject(dataObject);
 
         if (!(value instanceof Number)) {
-            throw new CayenneRuntimeException("PK is not a number: " + dataObject.getObjectId());
+            throw new CayenneRuntimeException("PK is not a number: %s", dataObject.getObjectId());
         }
 
         return ((Number) value).longValue();
@@ -285,7 +285,7 @@ public class Cayenne {
         Object value = pkForObject(dataObject);
 
         if (!(value instanceof Number)) {
-            throw new CayenneRuntimeException("PK is not a number: " + dataObject.getObjectId());
+            throw new CayenneRuntimeException("PK is not a number: %s", dataObject.getObjectId());
         }
 
         return ((Number) value).intValue();
@@ -300,7 +300,7 @@ public class Cayenne {
         Map<String, Object> pk = extractObjectId(dataObject);
 
         if (pk.size() != 1) {
-            throw new CayenneRuntimeException("Expected single column PK, got " + pk.size() + " columns, ID: " + pk);
+            throw new CayenneRuntimeException("Expected single column PK, got %d columns, ID: %s", pk.size(), pk);
         }
 
         return pk.entrySet().iterator().next().getValue();
@@ -389,7 +389,7 @@ public class Cayenne {
 
         ObjEntity entity = context.getEntityResolver().getObjEntity(dataObjectClass);
         if (entity == null) {
-            throw new CayenneRuntimeException("Non-existent ObjEntity for class: " + dataObjectClass);
+            throw new CayenneRuntimeException("Non-existent ObjEntity for class: %s", dataObjectClass);
         }
 
         return (T) objectForPK(context, new ObjectId(entity.getName(), pk));
@@ -407,7 +407,7 @@ public class Cayenne {
      * @see #objectForPK(ObjectContext, ObjectId)
      */
     public static Object objectForPK(ObjectContext context, String objEntityName, int pk) {
-        return objectForPK(context, buildId(context, objEntityName, Integer.valueOf(pk)));
+        return objectForPK(context, buildId(context, objEntityName, pk));
     }
 
     /**
@@ -469,7 +469,7 @@ public class Cayenne {
         if (objects.size() == 0) {
             return null;
         } else if (objects.size() > 1) {
-            throw new CayenneRuntimeException("Expected zero or one object, instead query matched: " + objects.size());
+            throw new CayenneRuntimeException("Expected zero or one object, instead query matched: %d", objects.size());
         }
 
         return objects.get(0);
@@ -486,12 +486,12 @@ public class Cayenne {
 
         ObjEntity entity = context.getEntityResolver().getObjEntity(objEntityName);
         if (entity == null) {
-            throw new CayenneRuntimeException("Non-existent ObjEntity: " + objEntityName);
+            throw new CayenneRuntimeException("Non-existent ObjEntity: %s", objEntityName);
         }
 
         Collection<String> pkAttributes = entity.getPrimaryKeyNames();
         if (pkAttributes.size() != 1) {
-            throw new CayenneRuntimeException("PK contains " + pkAttributes.size() + " columns, expected 1.");
+            throw new CayenneRuntimeException("PK contains %d columns, expected 1.", pkAttributes.size());
         }
 
         String attr = pkAttributes.iterator().next();
@@ -509,12 +509,12 @@ public class Cayenne {
 
         ObjEntity entity = context.getEntityResolver().getObjEntity(dataObjectClass);
         if (entity == null) {
-            throw new CayenneRuntimeException("Unmapped DataObject Class: " + dataObjectClass.getName());
+            throw new CayenneRuntimeException("Unmapped DataObject Class: %s", dataObjectClass.getName());
         }
 
         Collection<String> pkAttributes = entity.getPrimaryKeyNames();
         if (pkAttributes.size() != 1) {
-            throw new CayenneRuntimeException("PK contains " + pkAttributes.size() + " columns, expected 1.");
+            throw new CayenneRuntimeException("PK contains %d columns, expected 1.", pkAttributes.size());
         }
 
         String attr = pkAttributes.iterator().next();

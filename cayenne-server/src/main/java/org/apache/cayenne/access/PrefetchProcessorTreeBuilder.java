@@ -158,8 +158,8 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
             arc = (ArcProperty) currentNode.getResolver().getDescriptor().getProperty(node.getName());
 
             if (arc == null) {
-                throw new CayenneRuntimeException("No relationship with name '" + node.getName() + "' found in entity "
-                        + currentNode.getResolver().getEntity().getName());
+                throw new CayenneRuntimeException("No relationship with name '%s' found in entity '%s'"
+                        , node.getName(), currentNode.getResolver().getEntity().getName());
             }
 
             descriptor = arc.getTargetDescriptor();

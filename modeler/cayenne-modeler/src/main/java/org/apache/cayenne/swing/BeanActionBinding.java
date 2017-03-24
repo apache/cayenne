@@ -70,8 +70,7 @@ public class BeanActionBinding extends BindingBase {
         }
 
         if (!foundActionEvents) {
-            throw new CayenneRuntimeException("Component does not define action events: "
-                    + component);
+            throw new CayenneRuntimeException("Component does not define action events: %s", component);
         }
     }
 

@@ -101,16 +101,13 @@ public class PersistentObjectMap extends RelationshipFault implements Map, Value
 
         if (value == null || value instanceof Map) {
             setObjectMap((Map) value);
-        }
-        // we can index collections on the fly - this is needed for prefetch handling...
-        // although it seems to be breaking the contract for 'setValueDirectly' ???
-        else if (value instanceof Collection) {
-            setObjectMap(indexCollection((Collection) value));
-        }
-        else {
-            throw new CayenneRuntimeException(
-                    "Value must be a Map, a Collection or null, got: "
-                            + value.getClass().getName());
+        } else if (value instanceof Collection) {
+            // we can index collections on the fly - this is needed for prefetch handling...
+            // although it seems to be breaking the contract for 'setValueDirectly' ???
+            setObjectMap(indexCollection((Collection<Object>) value));
+        } else {
+            throw new CayenneRuntimeException("Value must be a Map, a Collection or null, got: %s"
+                            , value.getClass().getName());
         }
 
         return old;
@@ -166,12 +163,9 @@ public class PersistentObjectMap extends RelationshipFault implements Map, Value
                 Object key = mapKeyAccessor.getValue(next);
                 Object previous = map.put(key, next);
                 if (previous != null && previous != next) {
-                    throw new CayenneRuntimeException("Duplicate key '"
-                            + key
-                            + "' in relationship map. Relationship: "
-                            + relationshipName
-                            + ", source object: "
-                            + relationshipOwner.getObjectId());
+                    throw new CayenneRuntimeException("Duplicate key '%s' in relationship map. "
+                            + "Relationship: %s, source object: %s"
+                            , key, relationshipName, relationshipOwner.getObjectId());
                 }
             }
         }

@@ -133,6 +133,6 @@ public class ClassDescriptorMap {
             }
         }
 
-        throw new CayenneRuntimeException("Failed to create descriptor for entity: " + entityName);
+        throw new CayenneRuntimeException("Failed to create descriptor for entity: %s", entityName);
     }
 }

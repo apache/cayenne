@@ -258,7 +258,7 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                 }
                 break;
             default:
-                throw new CayenneRuntimeException("Unknown query type: " + descriptor.getType());
+                throw new CayenneRuntimeException("Unknown query type: %s", descriptor.getType());
         }
 
         return query;

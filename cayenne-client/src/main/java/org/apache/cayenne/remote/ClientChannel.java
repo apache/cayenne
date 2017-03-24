@@ -173,8 +173,7 @@ public class ClientChannel implements DataChannel {
 
         // sanity check
         if (id == null) {
-            throw new CayenneRuntimeException("Server returned an object without an id: "
-                    + object);
+            throw new CayenneRuntimeException("Server returned an object without an id: %s", object);
         }
 
         return merger.merge(object);
@@ -300,10 +299,9 @@ public class ClientChannel implements DataChannel {
 
         if (result != null && !resultClass.isInstance(result)) {
             String resultString = new ToStringBuilder(result).toString();
-            throw new CayenneRuntimeException("Expected result type: "
-                    + resultClass.getName()
-                    + ", actual: "
-                    + resultString);
+            throw new CayenneRuntimeException("Expected result type: %s, actual: %s"
+                    , resultClass.getName()
+                    , resultString);
         }
 
         return resultClass.cast(result);

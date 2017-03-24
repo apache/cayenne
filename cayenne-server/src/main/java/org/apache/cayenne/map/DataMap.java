@@ -373,15 +373,8 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		encodeDBRelationshipsAsXML(getDbEntityMap(), encoder);
 		encodeOBJRelationshipsAsXML(getObjEntityMap(), encoder);
 
-		// since Queries are not XMLSerializable by default, check for
-		// non-serilaizable
-		// queries and throws if they are not..
 		for (QueryDescriptor query : getQueryDescriptors()) {
-			if (query instanceof XMLSerializable) {
-				((XMLSerializable) query).encodeAsXML(encoder);
-			} else {
-				throw new CayenneRuntimeException("Query is not XMLSerilaizable: " + query);
-			}
+			query.encodeAsXML(encoder);
 		}
 
 		encoder.indent(-1);

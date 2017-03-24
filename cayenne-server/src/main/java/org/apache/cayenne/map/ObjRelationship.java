@@ -272,9 +272,9 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
         if (numDbRelationships > 0) {
             DbRelationship lastRel = dbRelationships.get(numDbRelationships - 1);
             if (!lastRel.getTargetEntityName().equals(dbRel.getSourceEntity().getName())) {
-                throw new CayenneRuntimeException("Error adding db relationship " + dbRel + " to ObjRelationship "
-                        + this + " because the source of the newly added relationship "
-                        + "is not the target of the previous relationship " + "in the chain");
+                throw new CayenneRuntimeException("Error adding db relationship %s to ObjRelationship %s"
+                        + " because the source of the newly added relationship"
+                        + " is not the target of the previous relationship in the chain.", dbRel, this);
             }
         }
 
@@ -538,7 +538,7 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
 
             // another sanity check
             if (reverse == null) {
-                throw new CayenneRuntimeException("No reverse relationship exist for " + relationship);
+                throw new CayenneRuntimeException("No reverse relationship exist for %s", relationship);
             }
 
             if (buffer.length() > 0) {

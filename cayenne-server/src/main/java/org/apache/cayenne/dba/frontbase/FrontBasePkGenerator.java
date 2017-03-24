@@ -123,7 +123,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
 			@Override
 			public void nextRows(Query query, List<?> dataRows) {
 				if (dataRows.size() != 1) {
-					throw new CayenneRuntimeException("Error fetching PK. Expected one row, got " + dataRows.size());
+					throw new CayenneRuntimeException("Error fetching PK. Expected one row, got %d", dataRows.size());
 				}
 
 				DataRow row = (DataRow) dataRows.get(0);

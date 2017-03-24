@@ -51,7 +51,7 @@ class IdRowReader<T> extends BaseRowReader<T> {
 
         // sanity check
         if (len == 0) {
-            throw new CayenneRuntimeException("Root DBEntity has no PK defined: " + dbEntity);
+            throw new CayenneRuntimeException("Root DBEntity has no PK defined: %s", dbEntity);
         }
 
         int[] pk = new int[len];

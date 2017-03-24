@@ -59,7 +59,7 @@ class HierarchicalObjectResolverNode extends PrefetchObjectResolver {
 
             Persistent object = objectFromDataRow(row, anId, classDescriptor);
             if (object == null) {
-                throw new CayenneRuntimeException("Can't build Object from row: " + row);
+                throw new CayenneRuntimeException("Can't build Object from row: %s", row);
             }
 
             // keep the dupe objects (and data rows) around, as there maybe an

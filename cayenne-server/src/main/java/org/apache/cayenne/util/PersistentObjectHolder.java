@@ -125,10 +125,8 @@ public class PersistentObjectHolder extends RelationshipFault implements ValueHo
         }
 
         if (relationshipOwner.getObjectContext() != persistent.getObjectContext()) {
-            throw new CayenneRuntimeException(
-                    "Cannot set object as destination of relationship "
-                            + relationshipName
-                            + " because it is in a different ObjectContext");
+            throw new CayenneRuntimeException("Cannot set object as destination of relationship %s " +
+                            "because it is in a different ObjectContext", relationshipName);
         }
 
         return persistent;

@@ -665,7 +665,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
 
     private Collection<ObjAttribute> getMutablePrimaryKeys() {
         if (getDbEntity() == null) {
-            throw new CayenneRuntimeException("No DbEntity for ObjEntity: " + getName());
+            throw new CayenneRuntimeException("No DbEntity for ObjEntity: %s", getName());
         }
 
         Collection<DbAttribute> pkAttributes = getDbEntity().getPrimaryKeys();
@@ -1070,8 +1070,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         }
 
         if (getDbEntity() == null) {
-            throw new CayenneRuntimeException("Can't translate expression to DB_PATH, no DbEntity for '" + getName()
-                    + "'.");
+            throw new CayenneRuntimeException("Can't translate expression to DB_PATH, no DbEntity for '%s'.", getName());
         }
 
         // converts all OBJ_PATH expressions to DB_PATH expressions
@@ -1097,7 +1096,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         }
 
         if (getDbEntity() == null) {
-            throw new CayenneRuntimeException("Can't transform expression, no DbEntity for '" + getName() + "'.");
+            throw new CayenneRuntimeException("Can't transform expression, no DbEntity for '%s'.", getName());
         }
 
         // converts all OBJ_PATH expressions to DB_PATH expressions
@@ -1145,7 +1144,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
                 } else if (component.getRelationship() != null) {
                     dbSubpath = ((ObjRelationship) component.getRelationship()).getDbRelationships().iterator();
                 } else {
-                    throw new CayenneRuntimeException("Unknown path component: " + component);
+                    throw new CayenneRuntimeException("Unknown path component: %s", component);
                 }
 
                 while (dbSubpath.hasNext()) {

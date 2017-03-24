@@ -125,7 +125,7 @@ public class EhCacheQueryCache implements QueryCache {
             // object to the cache ourselves
             List object = factory.createObject();
             if (object == null) {
-                throw new CayenneRuntimeException("Null object created: " + metadata.getCacheKey());
+                throw new CayenneRuntimeException("Null object created: %s", metadata.getCacheKey());
             }
 
             cache.put(new Element(key, object));

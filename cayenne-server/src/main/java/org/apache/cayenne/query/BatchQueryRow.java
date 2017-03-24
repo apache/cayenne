@@ -69,7 +69,7 @@ public abstract class BatchQueryRow {
                 // sanity check
                 if (value == null) {
                     String name = attribute.getEntity() != null ? attribute.getEntity().getName() : "<null>";
-                    throw new CayenneRuntimeException("Failed to generate PK: " + name + "." + attribute.getName());
+                    throw new CayenneRuntimeException("Failed to generate PK: %s.%s", name, attribute.getName());
                 }
 
                 ObjectId id = getObjectId();

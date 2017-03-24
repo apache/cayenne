@@ -267,8 +267,8 @@ public class AshwoodEntitySorter implements EntitySorter {
 		while (sorter.hasNext()) {
 			Persistent o = sorter.next();
 			if (o == null)
-				throw new CayenneRuntimeException("Sorting objects for " + objEntity.getClassName()
-						+ " failed. Cycles found.");
+				throw new CayenneRuntimeException("Sorting objects for %s failed. Cycles found."
+						, objEntity.getClassName());
 			sorted.add(o);
 		}
 

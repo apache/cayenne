@@ -188,10 +188,10 @@ class Oracle8LOBBatchAction implements SQLAction {
 							writeBlob(blob, (byte[]) blobVal);
 						} else {
 							String className = (blobVal != null) ? blobVal.getClass().getName() : null;
-							throw new CayenneRuntimeException("Unsupported class of BLOB value: " + className);
+							throw new CayenneRuntimeException("Unsupported class of BLOB value: %s", className);
 						}
 					} else {
-						throw new CayenneRuntimeException("Only BLOB or CLOB is expected here, got: " + type);
+						throw new CayenneRuntimeException("Only BLOB or CLOB is expected here, got: %s", type);
 					}
 				}
 

@@ -291,7 +291,7 @@ public class ClassGenerationAction {
 		}
 
 		if (!destDir.canWrite()) {
-			throw new CayenneRuntimeException("Do not have write permissions for " + destDir);
+			throw new CayenneRuntimeException("Do not have write permissions for %s", destDir);
 		}
 	}
 

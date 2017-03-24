@@ -40,6 +40,7 @@ import java.util.Map;
  * @since 1.2
  * @deprecated since 4.0 you should use {@link MappedSelect} or {@link MappedExec} instead.
  */
+@SuppressWarnings("deprecation")
 @Deprecated
 public class NamedQuery extends IndirectQuery {
 
@@ -162,15 +163,10 @@ public class NamedQuery extends IndirectQuery {
      */
     protected Query resolveQuery(EntityResolver resolver) {
         QueryDescriptor queryDescriptor = resolver.getQueryDescriptor(getName());
-
         Query query = queryDescriptor.buildQuery();
 
-        Object root = queryDescriptor.getRoot();
-
         if (query == this) {
-            throw new CayenneRuntimeException("Named query resolves to self: '"
-                    + getName()
-                    + "'");
+            throw new CayenneRuntimeException("Named query resolves to self: '%s'", getName());
         }
 
         return query;

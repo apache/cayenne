@@ -76,7 +76,7 @@ public class TransactionFilter implements DataChannelFilter {
 
                 break;
             default:
-                throw new CayenneRuntimeException("Invalid synchronization type: " + syncType);
+                throw new CayenneRuntimeException("Invalid synchronization type: %d", syncType);
         }
 
         callbackAction.applyPostCommit();

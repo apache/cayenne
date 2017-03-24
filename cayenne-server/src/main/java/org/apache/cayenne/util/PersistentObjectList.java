@@ -94,10 +94,8 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
             Object old = this.objectList;
             setObjectList((List) value);
             return old;
-        }
-        else {
-            throw new CayenneRuntimeException("Value must be a list, got: "
-                    + value.getClass().getName());
+        } else {
+            throw new CayenneRuntimeException("Value must be a list, got: %s", value.getClass().getName());
         }
     }
 

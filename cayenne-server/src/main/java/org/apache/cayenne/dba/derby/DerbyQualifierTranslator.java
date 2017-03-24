@@ -132,7 +132,8 @@ public class DerbyQualifierTranslator extends TrimmingQualifierTranslator {
 			case DAY_OF_WEEK:
 			case DAY_OF_YEAR:
 			case WEEK:
-				throw new CayenneRuntimeException("Function " + functionExpression.getPartCamelCaseName() + "() is unsupported in Derby.");
+				throw new CayenneRuntimeException("Function %s() is unsupported in Derby."
+						, functionExpression.getPartCamelCaseName());
 			default:
 				super.appendExtractFunction(functionExpression);
 		}

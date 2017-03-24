@@ -182,7 +182,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                         // processed
                         // later when appending table
                         if (pathPart == null) {
-                            throw new CayenneRuntimeException("ObjAttribute has no component: " + attribute.getName());
+                            throw new CayenneRuntimeException("ObjAttribute has no component: %s", attribute.getName());
                         } else if (pathPart instanceof DbAttribute) {
                             DbAttribute dbAttribute = (DbAttribute) pathPart;
                             appendColumn(attribute.getType(),

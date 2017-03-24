@@ -99,7 +99,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
 				try (ResultSet rs = st.executeQuery(sql)) {
 					// Object pk = null;
 					if (!rs.next()) {
-						throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName());
+						throw new CayenneRuntimeException("Error generating pk for DbEntity %s", entity.getName());
 					}
 					return rs.getLong(1);
 				}
@@ -116,8 +116,8 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
 	 */
 	protected String newIDString(DbEntity ent) {
 		if (ent.getPrimaryKeys() == null || ent.getPrimaryKeys().size() != 1) {
-			throw new CayenneRuntimeException("Error generating pk for DbEntity " + ent.getName()
-					+ ": pk must be single attribute");
+			throw new CayenneRuntimeException("Error generating pk for DbEntity %s"
+					+ ": pk must be single attribute", ent.getName());
 		}
 		DbAttribute primaryKeyAttribute = ent.getPrimaryKeys().iterator().next();
 
@@ -193,7 +193,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
 		Collection<DbAttribute> pk = entity.getPrimaryKeys();
 
 		if (pk == null || pk.size() == 0) {
-			throw new CayenneRuntimeException("Entity '" + entity.getName() + "' has no PK defined.");
+			throw new CayenneRuntimeException("Entity '%s' has no PK defined.", entity.getName());
 		}
 
 		StringBuilder buffer = new StringBuilder();
@@ -230,7 +230,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
 
 		QuotingStrategy context = getAdapter().getQuotingStrategy();
 		if (pk == null || pk.size() == 0) {
-			throw new CayenneRuntimeException("Entity '" + entity.getName() + "' has no PK defined.");
+			throw new CayenneRuntimeException("Entity '%s' has no PK defined.", entity.getName());
 		}
 
 		StringBuilder buffer = new StringBuilder();

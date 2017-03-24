@@ -18,10 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.pref;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
@@ -50,21 +48,14 @@ public class ChildrenMapPreference extends PreferenceDecorator {
 		Map<String, Object> children = new HashMap<>();
 		try {
 			String[] names = getCurrentPreference().childrenNames();
-			for (int i = 0; i < names.length; i++) {
-
+			for (String name : names) {
 				try {
-					Class cls = delegate.getClass();
-					Class partypes[] = new Class[2];
-					partypes[0] = String.class;
-					partypes[1] = boolean.class;
-					Constructor ct = cls.getConstructor(partypes);
-					Object arglist[] = new Object[2];
-					arglist[0] = names[i];
-					arglist[1] = true;
-					Object retobj = ct.newInstance(arglist);
-					children.put(names[i], retobj);
+					Object newInstance = delegate.getClass()
+							.getConstructor(String.class, boolean.class)
+							.newInstance(name, true);
+					children.put(name, newInstance);
 				} catch (Throwable e) {
-					new CayenneRuntimeException("Error initializing preference", e);
+					throw new CayenneRuntimeException("Error initializing preference", e);
 				}
 			}
 
@@ -89,18 +80,12 @@ public class ChildrenMapPreference extends PreferenceDecorator {
 
 	public CayennePreference create(String nodeName) {
 		try {
-			Class cls = delegate.getClass();
-			Class partypes[] = new Class[2];
-			partypes[0] = String.class;
-			partypes[1] = boolean.class;
-			Constructor ct = cls.getConstructor(partypes);
-			Object arglist[] = new Object[2];
-			arglist[0] = nodeName;
-			arglist[1] = false;
-			Object retobj = ct.newInstance(arglist);
-			children.put(nodeName, retobj);
+			Object newInstance = delegate.getClass()
+					.getConstructor(String.class, boolean.class)
+					.newInstance(nodeName, false);
+			children.put(nodeName, newInstance);
 		} catch (Throwable e) {
-			new CayenneRuntimeException("Error creating preference");
+			throw new CayenneRuntimeException("Error creating preference");
 		}
 		return (CayennePreference) children.get(nodeName);
 	}
@@ -111,22 +96,18 @@ public class ChildrenMapPreference extends PreferenceDecorator {
 
 	public void save() {
 		if (removeObject.size() > 0) {
-			for (int i = 0; i < removeObject.size(); i++) {
+			for (String aRemoveObject : removeObject) {
 				try {
-					delegate.getCurrentPreference().node(removeObject.get(i)).removeNode();
+					delegate.getCurrentPreference().node(aRemoveObject).removeNode();
 				} catch (BackingStoreException e) {
-					new CayenneRuntimeException("Error saving preference");
+					throw new CayenneRuntimeException("Error saving preference");
 				}
 			}
 		}
 
-		Iterator it = children.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry pairs = (Map.Entry) it.next();
-
-			delegate.getCurrentPreference().node((String) pairs.getKey());
+		for (Map.Entry<String, Object> pairs : children.entrySet()) {
+			delegate.getCurrentPreference().node(pairs.getKey());
 			((CayennePreference) pairs.getValue()).saveObjectPreference();
-
 		}
 	}
 

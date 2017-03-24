@@ -125,7 +125,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	private static void checkObjectId(ObjectId id) {
 		if (id.isTemporary() && !id.isReplacementIdAttached()) {
-			throw new CayenneRuntimeException("Can't build a query for temporary id: " + id);
+			throw new CayenneRuntimeException("Can't build a query for temporary id: %s", id);
 		}
 	}
 
@@ -315,7 +315,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 		Collection<String> pkAttributes = entity.getPrimaryKeyNames();
 		if (pkAttributes.size() != 1) {
-			throw new CayenneRuntimeException("PK contains " + pkAttributes.size() + " columns, expected 1.");
+			throw new CayenneRuntimeException("PK contains %d columns, expected 1.",  pkAttributes.size());
 		}
 
 		String pk = pkAttributes.iterator().next();

@@ -110,10 +110,8 @@ public class RelationshipQuery extends IndirectQuery {
     protected Query createReplacementQuery(EntityResolver resolver) {
 
         if (objectId.isTemporary() && !objectId.isReplacementIdAttached()) {
-            throw new CayenneRuntimeException("Can't build a query for relationship '"
-                    + relationshipName
-                    + "' for temporary id: "
-                    + objectId);
+            throw new CayenneRuntimeException("Can't build a query for relationship '%s' for temporary id: %s"
+                    , relationshipName, objectId);
         }
 
         ObjRelationship relationship = getRelationship(resolver);
@@ -142,8 +140,7 @@ public class RelationshipQuery extends IndirectQuery {
         if (metadataResolver != resolver) {
 
             if (objectId == null) {
-                throw new CayenneRuntimeException(
-                        "Can't resolve query - objectID is null.");
+                throw new CayenneRuntimeException("Can't resolve query - objectID is null.");
             }
 
             ClassDescriptor descriptor = resolver.getClassDescriptor(objectId
@@ -151,12 +148,8 @@ public class RelationshipQuery extends IndirectQuery {
             this.arc = (ArcProperty) descriptor.getProperty(relationshipName);
 
             if (arc == null) {
-                throw new CayenneRuntimeException("No relationship named "
-                        + relationshipName
-                        + " found in entity "
-                        + objectId.getEntityName()
-                        + "; object id: "
-                        + objectId);
+                throw new CayenneRuntimeException("No relationship named %s found in entity %s; object id: %s"
+                        , relationshipName, objectId.getEntityName(), objectId);
             }
 
             this.metadata = new DefaultQueryMetadata() {

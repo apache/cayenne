@@ -281,9 +281,9 @@ public class ChildDiffLoader implements GraphChangeHandler {
 		List<?> objects = response.firstList();
 
 		if (objects.size() == 0) {
-			throw new CayenneRuntimeException("No object for ID exists: " + nodeId);
+			throw new CayenneRuntimeException("No object for ID exists: %s", nodeId);
 		} else if (objects.size() > 1) {
-			throw new CayenneRuntimeException("Expected zero or one object, instead query matched: " + objects.size());
+			throw new CayenneRuntimeException("Expected zero or one object, instead query matched: %d", objects.size());
 		}
 
 		return (Persistent) objects.get(0);

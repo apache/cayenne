@@ -37,10 +37,7 @@ public class CayenneProjectPreferences {
 
     public CayenneProjectPreferences() {
         cayennePreferences = new HashMap<>();
-
-        cayennePreferences.put(DBConnectionInfo.class, new ChildrenMapPreference(
-                new DBConnectionInfo()));
-
+        cayennePreferences.put(DBConnectionInfo.class, new ChildrenMapPreference(new DBConnectionInfo()));
         projectCayennePreferences = new HashMap<>();
 
         for (ChildrenMapPreference value : cayennePreferences.values()) {
@@ -60,13 +57,11 @@ public class CayenneProjectPreferences {
 
         if (preference == null) {
             try {
-                Constructor<? extends CayennePreference> ct = objectClass
-                        .getConstructor(Preferences.class);
+                Constructor<? extends CayennePreference> ct = objectClass.getConstructor(Preferences.class);
                 preference = ct.newInstance(preferences);
                 projectCayennePreferences.put(preferences, preference);
-            }
-            catch (Throwable e) {
-                new CayenneRuntimeException("Error initialzing preference", e);
+            } catch (Throwable e) {
+                throw new CayenneRuntimeException("Error initializing preferences", e);
             }
         }
 
@@ -78,9 +73,8 @@ public class CayenneProjectPreferences {
         try {
             preference.removeNode();
             projectCayennePreferences.remove(preference);
-        }
-        catch (BackingStoreException e) {
-            new CayenneRuntimeException("error delete preferences " + e);
+        } catch (BackingStoreException e) {
+            throw new CayenneRuntimeException("Error delete preferences", e);
         }
     }
 }

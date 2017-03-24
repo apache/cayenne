@@ -77,11 +77,8 @@ public class CalendarType<T extends Calendar> implements ExtendedType<Calendar> 
                 Object object = rs.getObject(index);
 
                 if (object != null && !(object instanceof Date)) {
-                    throw new CayenneRuntimeException(
-                            "Expected an instance of java.util.Date, instead got "
-                                    + object.getClass().getName()
-                                    + ", column index: "
-                                    + index);
+                    throw new CayenneRuntimeException("Expected an instance of java.util.Date, " +
+                            "instead got %s, column index: %d", object.getClass().getName(), index);
                 }
 
                 val = (Date) object;
@@ -118,11 +115,8 @@ public class CalendarType<T extends Calendar> implements ExtendedType<Calendar> 
                 Object object = rs.getObject(index);
 
                 if (object != null && !(object instanceof Date)) {
-                    throw new CayenneRuntimeException(
-                            "Expected an instance of java.util.Date, instead got "
-                                    + object.getClass().getName()
-                                    + ", column index: "
-                                    + index);
+                    throw new CayenneRuntimeException("Expected an instance of java.util.Date, " +
+                            "instead got %s, column index: %d", object.getClass().getName(), index);
                 }
 
                 val = (Date) object;

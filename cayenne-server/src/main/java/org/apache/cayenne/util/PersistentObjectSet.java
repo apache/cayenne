@@ -82,16 +82,12 @@ public class PersistentObjectSet extends RelationshipFault
 
         if (value == null || value instanceof Set) {
             setObjectSet((Set) value);
-        }
-        // we can wrap non-set collections on the fly - this is needed for prefetch
-        // handling...
-        // although it seems to be breaking the contract for 'setValueDirectly' ???
-        else if (value instanceof Collection) {
+        } else if (value instanceof Collection) {
+            // we can wrap non-set collections on the fly - this is needed for prefetch handling...
+            // although it seems to be breaking the contract for 'setValueDirectly' ???
             setObjectSet(new HashSet((Collection) value));
-        }
-        else {
-            throw new CayenneRuntimeException("Value must be a list, got: "
-                    + value.getClass().getName());
+        } else {
+            throw new CayenneRuntimeException("Value must be a list, got: %s", value.getClass().getName());
         }
 
         return old;

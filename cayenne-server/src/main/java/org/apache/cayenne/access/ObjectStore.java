@@ -158,7 +158,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
             Persistent object = objectMap.get(nodeId);
             if (object == null) {
-                throw new CayenneRuntimeException("No object is registered in context with Id " + nodeId);
+                throw new CayenneRuntimeException("No object is registered in context with Id %s", nodeId);
             }
 
             if (object.getPersistenceState() == PersistenceState.COMMITTED) {

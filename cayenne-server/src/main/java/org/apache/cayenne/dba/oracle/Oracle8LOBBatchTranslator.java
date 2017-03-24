@@ -104,8 +104,8 @@ abstract class Oracle8LOBBatchTranslator extends DefaultBatchTranslator {
             } else if (type == Types.BLOB) {
                 buf.append(newBlobFunction);
             } else {
-                throw new CayenneRuntimeException("Unknown LOB column type: " + type + "("
-                        + TypesMapping.getSqlNameByType(type) + "). Query buffer: " + buf);
+                throw new CayenneRuntimeException("Unknown LOB column type: %s(%s). Query buffer: %s."
+                         , type, TypesMapping.getSqlNameByType(type), buf);
             }
         }
     }

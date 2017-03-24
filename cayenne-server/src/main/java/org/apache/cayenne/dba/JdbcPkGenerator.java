@@ -323,7 +323,7 @@ public class JdbcPkGenerator implements PkGenerator {
 
 		public long getId() {
 			if (id == null) {
-				throw new CayenneRuntimeException("No key was retrieved for entity " + entityName);
+				throw new CayenneRuntimeException("No key was retrieved for entity %s", entityName);
 			}
 
 			return id.longValue();
@@ -332,11 +332,11 @@ public class JdbcPkGenerator implements PkGenerator {
 		public void nextRows(Query query, List<?> dataRows) {
 			// process selected object, issue an update query
 			if (dataRows == null || dataRows.size() == 0) {
-				throw new CayenneRuntimeException("Error generating PK : entity not supported: " + entityName);
+				throw new CayenneRuntimeException("Error generating PK : entity not supported: %s", entityName);
 			}
 
 			if (dataRows.size() > 1) {
-				throw new CayenneRuntimeException("Error generating PK : too many rows for entity: " + entityName);
+				throw new CayenneRuntimeException("Error generating PK : too many rows for entity: %s", entityName);
 			}
 
 			DataRow lastPk = (DataRow) dataRows.get(0);
@@ -345,8 +345,8 @@ public class JdbcPkGenerator implements PkGenerator {
 
 		public void nextCount(Query query, int resultCount) {
 			if (resultCount != 1) {
-				throw new CayenneRuntimeException("Error generating PK for entity '" + entityName
-						+ "': update count is wrong - " + resultCount);
+				throw new CayenneRuntimeException("Error generating PK for entity '%s': update count is wrong - %d"
+						, entityName, resultCount);
 			}
 		}
 

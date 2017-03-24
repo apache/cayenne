@@ -128,14 +128,8 @@ public class FieldAccessor implements Accessor {
                 // allow primitive to object conversions...
                 if (!PropertyUtils.normalizeType(field.getType()).isAssignableFrom(
                         PropertyUtils.normalizeType(propertyType))) {
-                    throw new CayenneRuntimeException("Expected property type '"
-                            + propertyType.getName()
-                            + "', got '"
-                            + field.getType().getName()
-                            + "'. Property: '"
-                            + beanClass.getName()
-                            + "'.'"
-                            + propertyName + "'");
+                    throw new CayenneRuntimeException("Expected property type '%s', got '%s'. Property: '%s.%s'."
+                            , propertyType.getName(), field.getType().getName(), beanClass.getName(), propertyName);
                 }
             }
         }

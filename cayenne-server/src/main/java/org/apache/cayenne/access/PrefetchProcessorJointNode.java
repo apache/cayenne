@@ -283,8 +283,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
             // sanity check
             if (idIndices[i] == -1) {
-                throw new CayenneRuntimeException("PK column is not part of result row: "
-                        + pk.getName());
+                throw new CayenneRuntimeException("PK column is not part of result row: %s", pk.getName());
             }
         }
     }

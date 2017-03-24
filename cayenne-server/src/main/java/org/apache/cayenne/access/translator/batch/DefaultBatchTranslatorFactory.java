@@ -41,7 +41,7 @@ public class DefaultBatchTranslatorFactory implements BatchTranslatorFactory {
         } else if (query instanceof DeleteBatchQuery) {
             return deleteTranslator((DeleteBatchQuery) query, adapter, trimFunction);
         } else {
-            throw new CayenneRuntimeException("Unsupported batch query: " + query);
+            throw new CayenneRuntimeException("Unsupported batch query: %s", query);
         }
     }
 

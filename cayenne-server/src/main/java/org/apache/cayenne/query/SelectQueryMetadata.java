@@ -340,8 +340,8 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 				ASTDbPath dbPrefetch = (ASTDbPath) oe.translateToDbPath(prefetchExp);
 				DbRelationship r = findRelationByPath(table, dbPrefetch);
 				if (r == null) {
-					throw new CayenneRuntimeException("Invalid joint prefetch '" + prefetch + "' for entity: "
-							+ oe.getName());
+					throw new CayenneRuntimeException("Invalid joint prefetch '%s' for entity: %s"
+							, prefetch, oe.getName());
 				}
 
 				// go via target OE to make sure that Java types are mapped correctly...
