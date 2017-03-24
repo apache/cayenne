@@ -26,13 +26,17 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DetectedDbEntity;
+import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.ProcedureQueryDescriptor;
 import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectTreeModel;
@@ -47,6 +51,7 @@ import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.query.SQLTemplate;
 
 import javax.swing.JTextField;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -68,17 +73,21 @@ public class FindAction extends CayenneAction {
      */
     private static final Map<Class<?>, Integer> PRIORITY_BY_TYPE = new HashMap<>();
     static {
-        PRIORITY_BY_TYPE.put(ObjEntity.class,              1);
-        PRIORITY_BY_TYPE.put(DbEntity.class,               2);
-        PRIORITY_BY_TYPE.put(DetectedDbEntity.class,       2); // this one comes from db reverse engineering
-        PRIORITY_BY_TYPE.put(ObjAttribute.class,           5);
-        PRIORITY_BY_TYPE.put(DbAttribute.class,            6);
-        PRIORITY_BY_TYPE.put(ObjRelationship.class,        7);
-        PRIORITY_BY_TYPE.put(DbRelationship.class,         8);
-        PRIORITY_BY_TYPE.put(DbRelationshipDetected.class, 8); // this one comes from db reverse engineering
-        PRIORITY_BY_TYPE.put(QueryDescriptor.class,        9);
-        PRIORITY_BY_TYPE.put(Embeddable.class,            10);
-        PRIORITY_BY_TYPE.put(EmbeddableAttribute.class,   11);
+        PRIORITY_BY_TYPE.put(ObjEntity.class,                1);
+        PRIORITY_BY_TYPE.put(DbEntity.class,                 2);
+        PRIORITY_BY_TYPE.put(DetectedDbEntity.class,         2); // this one comes from db reverse engineering
+        PRIORITY_BY_TYPE.put(ObjAttribute.class,             5);
+        PRIORITY_BY_TYPE.put(DbAttribute.class,              6);
+        PRIORITY_BY_TYPE.put(ObjRelationship.class,          7);
+        PRIORITY_BY_TYPE.put(DbRelationship.class,           8);
+        PRIORITY_BY_TYPE.put(DbRelationshipDetected.class,   8); // this one comes from db reverse engineering
+        PRIORITY_BY_TYPE.put(QueryDescriptor.class,          9);
+        PRIORITY_BY_TYPE.put(SelectQueryDescriptor.class,   10);
+        PRIORITY_BY_TYPE.put(EJBQLQueryDescriptor.class,    11);
+        PRIORITY_BY_TYPE.put(SQLTemplateDescriptor.class,   12);
+        PRIORITY_BY_TYPE.put(ProcedureQueryDescriptor.class,13);
+        PRIORITY_BY_TYPE.put(Embeddable.class,              14);
+        PRIORITY_BY_TYPE.put(EmbeddableAttribute.class,     15);
     }
 
     public static String getActionName() {
