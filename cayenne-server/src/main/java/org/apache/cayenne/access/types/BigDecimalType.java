@@ -39,8 +39,7 @@ public class BigDecimalType implements ExtendedType<BigDecimal> {
     }
 
     @Override
-    public BigDecimal materializeObject(CallableStatement rs, int index, int type)
-            throws Exception {
+    public BigDecimal materializeObject(CallableStatement rs, int index, int type) throws Exception {
         return rs.getBigDecimal(index);
     }
 
@@ -54,8 +53,7 @@ public class BigDecimalType implements ExtendedType<BigDecimal> {
 
         if (value == null) {
             statement.setNull(pos, type);
-        }
-        else {
+        } else {
             statement.setBigDecimal(pos, value);
         }
     }

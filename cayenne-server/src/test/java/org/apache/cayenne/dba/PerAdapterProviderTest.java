@@ -20,6 +20,7 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
@@ -49,18 +50,19 @@ public class PerAdapterProviderTest {
 
         ResourceLocator locator = new ClassLoaderResourceLocator(new DefaultClassLoaderManager());
         RuntimeProperties runtimeProperties = mock(RuntimeProperties.class);
+        ValueObjectTypeRegistry valueObjectTypeRegistry = mock(ValueObjectTypeRegistry.class);
 
         this.oracleAdapter = new OracleAdapter(runtimeProperties,
                 Collections.<ExtendedType>emptyList(),
                 Collections.<ExtendedType>emptyList(),
                 Collections.<ExtendedTypeFactory>emptyList(),
-                locator);
+                locator, valueObjectTypeRegistry);
 
         this.derbyAdapter = new DerbyAdapter(runtimeProperties,
                 Collections.<ExtendedType>emptyList(),
                 Collections.<ExtendedType>emptyList(),
                 Collections.<ExtendedTypeFactory>emptyList(),
-                locator);
+                locator, valueObjectTypeRegistry);
 
         this.autoDerbyAdapter = new AutoAdapter(new Provider<DbAdapter>() {
             @Override

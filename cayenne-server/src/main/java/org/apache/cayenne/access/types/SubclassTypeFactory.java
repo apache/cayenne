@@ -43,8 +43,7 @@ class SubclassTypeFactory implements ExtendedTypeFactory {
                     || javaClass.isPrimitive()) {
                 javaClass = null;
             }
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             // ignore.
         }
     }

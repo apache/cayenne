@@ -19,44 +19,38 @@
 
 package org.apache.cayenne.java8.access.types;
 
-import org.apache.cayenne.access.types.ExtendedType;
-
-import java.sql.CallableStatement;
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.time.LocalDate;
 
-public class LocalDateType implements ExtendedType<LocalDate> {
+import org.apache.cayenne.access.types.ValueObjectType;
+
+/**
+ * @since 4.0
+ */
+public class LocalDateValueType implements ValueObjectType<LocalDate, Date> {
 
     @Override
-    public String getClassName() {
-        return LocalDate.class.getName();
+    public Class<Date> getTargetType() {
+        return Date.class;
     }
 
     @Override
-    public void setJdbcObject(PreparedStatement statement, LocalDate value, int pos, int type, int scale) throws Exception {
-        statement.setDate(pos, Date.valueOf(value));
+    public Class<LocalDate> getValueType() {
+        return LocalDate.class;
     }
 
     @Override
-    public LocalDate materializeObject(ResultSet rs, int index, int type) throws Exception {
-        Date date = rs.getDate(index);
-        return date != null ? date.toLocalDate() : null;
+    public LocalDate toJavaObject(Date value) {
+        return value.toLocalDate();
     }
 
     @Override
-    public LocalDate materializeObject(CallableStatement rs, int index, int type) throws Exception {
-        Date date = rs.getDate(index);
-        return date != null ? date.toLocalDate() : null;
+    public Date fromJavaObject(LocalDate object) {
+        return Date.valueOf(object);
     }
 
     @Override
-    public String toString(LocalDate value) {
-        if (value == null) {
-            return "NULL";
-        }
-
-        return '\'' + value.toString() + '\'';
+    public String toCacheKey(LocalDate object) {
+        return object.toString();
     }
 }

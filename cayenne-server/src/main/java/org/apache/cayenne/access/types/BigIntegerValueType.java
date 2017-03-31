@@ -16,54 +16,38 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.access.types;
 
-import java.sql.CallableStatement;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.math.BigInteger;
 
 /**
- * @since 3.0
+ * @since 4.0
  */
-public class DateType implements ExtendedType<Date> {
+public class BigIntegerValueType implements ValueObjectType<BigInteger, Long> {
 
     @Override
-    public String getClassName() {
-        return Date.class.getName();
+    public Class<Long> getTargetType() {
+        return Long.class;
     }
 
     @Override
-    public Date materializeObject(ResultSet rs, int index, int type) throws Exception {
-        return rs.getDate(index);
+    public Class<BigInteger> getValueType() {
+        return BigInteger.class;
     }
 
     @Override
-    public Date materializeObject(CallableStatement rs, int index, int type) throws Exception {
-        return rs.getDate(index);
+    public BigInteger toJavaObject(Long value) {
+        return new BigInteger(value.toString());
     }
 
     @Override
-    public void setJdbcObject(
-            PreparedStatement statement,
-            Date value,
-            int pos,
-            int type,
-            int scale) throws Exception {
-
-        if (value == null) {
-            statement.setNull(pos, type);
-        } else {
-            statement.setDate(pos, value);
-        }
+    public Long fromJavaObject(BigInteger object) {
+        return object.longValue();
     }
 
     @Override
-    public String toString(Date value) {
-        if (value == null) {
-            return "NULL";
-        }
-
-        return '\'' + value.toString() + '\'';
+    public String toCacheKey(BigInteger object) {
+        return object.toString();
     }
 }

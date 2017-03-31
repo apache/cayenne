@@ -32,6 +32,8 @@ import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.ValueObjectTypeFactory;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
@@ -78,8 +80,7 @@ public class JdbcAdapter implements DbAdapter {
 
 	/**
 	 * @since 3.1
-	 * @deprecated since 4.0 BatchQueryBuilderfactory is attached to the
-	 * DataNode.
+	 * @deprecated since 4.0 BatchQueryBuilderfactory is attached to the DataNode.
 	 */
 	@Inject
 	protected BatchTranslatorFactory batchQueryBuilderFactory;
@@ -94,7 +95,8 @@ public class JdbcAdapter implements DbAdapter {
 	                   @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
 	                   @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
 	                   @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-	                   @Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator) {
+	                   @Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator,
+					   @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
 
 		// init defaults
 		this.setSupportsBatchUpdates(false);
@@ -108,7 +110,7 @@ public class JdbcAdapter implements DbAdapter {
 		this.ejbqlTranslatorFactory = createEJBQLTranslatorFactory();
 		this.typesHandler = TypesHandler.getHandler(findResource("/types.xml"));
 		this.extendedTypes = new ExtendedTypeMap();
-		initExtendedTypes(defaultExtendedTypes, userExtendedTypes, extendedTypeFactories);
+		initExtendedTypes(defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, valueObjectTypeRegistry);
 	}
 
 	/**
@@ -159,7 +161,7 @@ public class JdbcAdapter implements DbAdapter {
 	}
 
 	/**
-	 * Called from {@link #initExtendedTypes(List, List, List)} to load
+	 * Called from {@link #initExtendedTypes(List, List, List, ValueObjectTypeRegistry)} to load
 	 * adapter-specific types into the ExtendedTypeMap right after the default
 	 * types are loaded, but before the DI overrides are. This method has
 	 * specific implementations in JdbcAdapter subclasses.
@@ -172,7 +174,8 @@ public class JdbcAdapter implements DbAdapter {
 	 * @since 3.1
 	 */
 	protected void initExtendedTypes(List<ExtendedType> defaultExtendedTypes, List<ExtendedType> userExtendedTypes,
-	                                 List<ExtendedTypeFactory> extendedTypeFactories) {
+	                                 List<ExtendedTypeFactory> extendedTypeFactories,
+									 ValueObjectTypeRegistry valueObjectTypeRegistry) {
 		for (ExtendedType type : defaultExtendedTypes) {
 			extendedTypes.registerType(type);
 		}
@@ -186,6 +189,7 @@ public class JdbcAdapter implements DbAdapter {
 		for (ExtendedTypeFactory typeFactory : extendedTypeFactories) {
 			extendedTypes.addFactory(typeFactory);
 		}
+		extendedTypes.addFactory(new ValueObjectTypeFactory(extendedTypes, valueObjectTypeRegistry));
 	}
 
 	/**
@@ -285,11 +289,7 @@ public class JdbcAdapter implements DbAdapter {
 	 */
 	@Override
 	public Collection<String> dropTableStatements(DbEntity table) {
-
-		StringBuilder buf = new StringBuilder("DROP TABLE ");
-		buf.append(quotingStrategy.quotedFullyQualifiedName(table));
-
-		return Collections.singleton(buf.toString());
+		return Collections.singleton("DROP TABLE " + quotingStrategy.quotedFullyQualifiedName(table));
 	}
 
 	/**

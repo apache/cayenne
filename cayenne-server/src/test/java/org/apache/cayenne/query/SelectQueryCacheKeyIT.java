@@ -30,6 +30,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -170,7 +171,7 @@ public class SelectQueryCacheKeyIT extends ServerCase {
         assertNotNull(q1.getMetaData(resolver).getCacheKey());
         assertEquals(q1.getMetaData(resolver).getCacheKey(), q2.getMetaData(resolver).getCacheKey());
 
-        assertFalse(q1.getMetaData(resolver).getCacheKey().equals(q3.getMetaData(resolver).getCacheKey()));
+        assertNotEquals(q1.getMetaData(resolver).getCacheKey(), q3.getMetaData(resolver).getCacheKey());
     }
 
     @Test
@@ -191,7 +192,7 @@ public class SelectQueryCacheKeyIT extends ServerCase {
         assertNotNull(q1.getMetaData(resolver).getCacheKey());
         assertEquals(q1.getMetaData(resolver).getCacheKey(), q2.getMetaData(resolver).getCacheKey());
 
-        assertFalse(q1.getMetaData(resolver).getCacheKey().equals(q3.getMetaData(resolver).getCacheKey()));
+        assertNotEquals(q1.getMetaData(resolver).getCacheKey(), q3.getMetaData(resolver).getCacheKey());
     }
 
     @Test
@@ -215,7 +216,7 @@ public class SelectQueryCacheKeyIT extends ServerCase {
         assertNotNull(q1.getMetaData(resolver).getCacheKey());
         assertEquals(q1.getMetaData(resolver).getCacheKey(), q2.getMetaData(resolver).getCacheKey());
 
-        assertFalse(q1.getMetaData(resolver).getCacheKey().equals(q3.getMetaData(resolver).getCacheKey()));
-        assertFalse(q1.getMetaData(resolver).getCacheKey().equals(q4.getMetaData(resolver).getCacheKey()));
+        assertNotEquals(q1.getMetaData(resolver).getCacheKey(), q3.getMetaData(resolver).getCacheKey());
+        assertNotEquals(q1.getMetaData(resolver).getCacheKey(), q4.getMetaData(resolver).getCacheKey());
     }
 }

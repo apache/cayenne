@@ -19,7 +19,13 @@
 
 package org.apache.cayenne.remote;
 
-import org.apache.cayenne.*;
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.DataChannelSyncCallbackAction;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
@@ -72,8 +78,7 @@ public class ClientChannel implements DataChannel {
         } else {
             try {
                 setupRemoteChannelListener();
-            }
-            catch (CayenneRuntimeException e) {}
+            } catch (CayenneRuntimeException ignored) {}
         }
     }
 

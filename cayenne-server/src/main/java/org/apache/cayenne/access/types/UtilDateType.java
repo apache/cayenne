@@ -42,24 +42,22 @@ public class UtilDateType implements ExtendedType<Date> {
     }
 
     protected Object convertToJdbcObject(Date val, int type) throws Exception {
-        if (type == Types.DATE)
+        if (type == Types.DATE) {
             return new java.sql.Date(val.getTime());
-        else if (type == Types.TIME)
+        } else if (type == Types.TIME) {
             return new java.sql.Time(val.getTime());
-        else if (type == Types.TIMESTAMP)
+        } else if (type == Types.TIMESTAMP) {
             return new java.sql.Timestamp(val.getTime());
-        else
+        } else {
             throw new IllegalArgumentException(
-                    "Only DATE, TIME or TIMESTAMP can be mapped as '"
-                            + getClassName()
-                            + "', got "
-                            + TypesMapping.getSqlNameByType(type));
+                    "Only DATE, TIME or TIMESTAMP can be mapped as '" + getClassName()
+                            + "', got " + TypesMapping.getSqlNameByType(type));
+        }
     }
 
     @Override
     public Date materializeObject(ResultSet rs, int index, int type) throws Exception {
-        Date val = null;
-
+        Date val;
         switch (type) {
             case Types.TIMESTAMP:
                 val = rs.getTimestamp(index);
@@ -80,10 +78,8 @@ public class UtilDateType implements ExtendedType<Date> {
     }
 
     @Override
-    public Date materializeObject(CallableStatement cs, int index, int type)
-            throws Exception {
-        Date val = null;
-
+    public Date materializeObject(CallableStatement cs, int index, int type) throws Exception {
+        Date val;
         switch (type) {
             case Types.TIMESTAMP:
                 val = cs.getTimestamp(index);
@@ -113,8 +109,7 @@ public class UtilDateType implements ExtendedType<Date> {
 
         if (value == null) {
             statement.setNull(pos, type);
-        }
-        else {
+        } else {
             statement.setObject(pos, convertToJdbcObject(value, type), type);
         }
     }

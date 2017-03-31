@@ -35,8 +35,7 @@ public class ObjectType implements ExtendedType<Object> {
     }
 
     @Override
-    public Object materializeObject(CallableStatement rs, int index, int type)
-            throws Exception {
+    public Object materializeObject(CallableStatement rs, int index, int type) throws Exception {
         return rs.getObject(index);
     }
 
@@ -54,8 +53,7 @@ public class ObjectType implements ExtendedType<Object> {
             int scale) throws Exception {
         if (scale != -1) {
             statement.setObject(pos, value, type, scale);
-        }
-        else {
+        } else {
             statement.setObject(pos, value, type);
         }
     }

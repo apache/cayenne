@@ -51,8 +51,7 @@ public class ShortType implements ExtendedType<Short> {
     }
 
     @Override
-    public Short materializeObject(CallableStatement st, int index, int type)
-            throws Exception {
+    public Short materializeObject(CallableStatement st, int index, int type) throws Exception {
         short s = st.getShort(index);
         return (st.wasNull()) ? null : s;
     }
@@ -67,13 +66,10 @@ public class ShortType implements ExtendedType<Short> {
 
         if (value == null) {
             statement.setNull(pos, type);
-        }
-        else {
-
+        } else {
             if (widenShorts) {
                 statement.setInt(pos, value.intValue());
-            }
-            else {
+            } else {
                 statement.setShort(pos, value);
             }
         }

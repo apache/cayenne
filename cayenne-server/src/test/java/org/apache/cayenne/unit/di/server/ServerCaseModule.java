@@ -25,13 +25,14 @@ import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.types.BigDecimalType;
-import org.apache.cayenne.access.types.BigIntegerType;
+import org.apache.cayenne.access.types.BigIntegerValueType;
 import org.apache.cayenne.access.types.BooleanType;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CalendarType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.DateType;
+import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.DoubleType;
 import org.apache.cayenne.access.types.FloatType;
 import org.apache.cayenne.access.types.IntegerType;
@@ -39,8 +40,9 @@ import org.apache.cayenne.access.types.LongType;
 import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.access.types.TimeType;
 import org.apache.cayenne.access.types.TimestampType;
-import org.apache.cayenne.access.types.UUIDType;
+import org.apache.cayenne.access.types.UUIDValueType;
 import org.apache.cayenne.access.types.UtilDateType;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.VoidType;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.Constants;
@@ -124,44 +126,28 @@ public class ServerCaseModule implements Module {
         // unit test injector. ServerRuntime injector contents are customized
         // inside ServerRuntimeProvider.
 
-        binder.bindMap(String.class, UnitDbAdapterProvider.TEST_ADAPTERS_MAP).put(
-                FirebirdAdapter.class.getName(),
-                FirebirdUnitDbAdapter.class.getName()).put(
-                OracleAdapter.class.getName(),
-                OracleUnitDbAdapter.class.getName()).put(
-                DerbyAdapter.class.getName(),
-                DerbyUnitDbAdapter.class.getName()).put(
-                Oracle8Adapter.class.getName(),
-                OracleUnitDbAdapter.class.getName()).put(
-                SybaseAdapter.class.getName(),
-                SybaseUnitDbAdapter.class.getName()).put(
-                MySQLAdapter.class.getName(),
-                MySQLUnitDbAdapter.class.getName()).put(
-                PostgresAdapter.class.getName(),
-                PostgresUnitDbAdapter.class.getName()).put(
-                OpenBaseAdapter.class.getName(),
-                OpenBaseUnitDbAdapter.class.getName()).put(
-                SQLServerAdapter.class.getName(),
-                SQLServerUnitDbAdapter.class.getName()).put(
-                DB2Adapter.class.getName(),
-                DB2UnitDbAdapter.class.getName()).put(
-                HSQLDBAdapter.class.getName(),
-                HSQLDBUnitDbAdapter.class.getName()).put(
-                H2Adapter.class.getName(),
-                H2UnitDbAdapter.class.getName()).put(
-                FrontBaseAdapter.class.getName(),
-                FrontBaseUnitDbAdapter.class.getName()).put(
-                IngresAdapter.class.getName(),
-                IngresUnitDbAdapter.class.getName()).put(
-                SQLiteAdapter.class.getName(),
-                SQLiteUnitDbAdapter.class.getName());
+        binder.bindMap(String.class, UnitDbAdapterProvider.TEST_ADAPTERS_MAP)
+                .put(FirebirdAdapter.class.getName(), FirebirdUnitDbAdapter.class.getName())
+                .put(OracleAdapter.class.getName(), OracleUnitDbAdapter.class.getName())
+                .put(DerbyAdapter.class.getName(), DerbyUnitDbAdapter.class.getName())
+                .put(Oracle8Adapter.class.getName(), OracleUnitDbAdapter.class.getName())
+                .put(SybaseAdapter.class.getName(), SybaseUnitDbAdapter.class.getName())
+                .put(MySQLAdapter.class.getName(), MySQLUnitDbAdapter.class.getName())
+                .put(PostgresAdapter.class.getName(), PostgresUnitDbAdapter.class.getName())
+                .put(OpenBaseAdapter.class.getName(), OpenBaseUnitDbAdapter.class.getName())
+                .put(SQLServerAdapter.class.getName(), SQLServerUnitDbAdapter.class.getName())
+                .put(DB2Adapter.class.getName(), DB2UnitDbAdapter.class.getName())
+                .put(HSQLDBAdapter.class.getName(), HSQLDBUnitDbAdapter.class.getName())
+                .put(H2Adapter.class.getName(), H2UnitDbAdapter.class.getName())
+                .put(FrontBaseAdapter.class.getName(), FrontBaseUnitDbAdapter.class.getName())
+                .put(IngresAdapter.class.getName(), IngresUnitDbAdapter.class.getName())
+                .put(SQLiteAdapter.class.getName(), SQLiteUnitDbAdapter.class.getName());
         ServerModule.contributeProperties(binder);
         
         // configure extended types
         ServerModule.contributeDefaultTypes(binder)
                 .add(new VoidType())
                 .add(new BigDecimalType())
-                .add(new BigIntegerType())
                 .add(new BooleanType())
                 .add(new ByteArrayType(false, true))
                 .add(new ByteType(false))
@@ -175,24 +161,24 @@ public class ServerCaseModule implements Module {
                 .add(new TimeType())
                 .add(new TimestampType())
                 .add(new UtilDateType())
-                .add(new CalendarType<GregorianCalendar>(GregorianCalendar.class))
-                .add(new CalendarType<Calendar>(Calendar.class))
-                .add(new UUIDType());
+                .add(new CalendarType<>(GregorianCalendar.class))
+                .add(new CalendarType<>(Calendar.class));
         ServerModule.contributeUserTypes(binder);
         ServerModule.contributeTypeFactories(binder);
+        ServerModule.contributeValueObjectTypes(binder)
+                .add(BigIntegerValueType.class)
+                .add(UUIDValueType.class);
+        binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
 
         binder.bind(SchemaBuilder.class).to(SchemaBuilder.class);
         binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-        binder.bind(ObjectMapRetainStrategy.class).to(
-                DefaultObjectMapRetainStrategy.class);
+        binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
 
         // singleton objects
-        binder.bind(UnitTestLifecycleManager.class).toInstance(
-                new ServerCaseLifecycleManager(testScope));
+        binder.bind(UnitTestLifecycleManager.class).toInstance(new ServerCaseLifecycleManager(testScope));
 
-        binder.bind(DataSourceInfo.class).toProvider(
-                ServerCaseDataSourceInfoProvider.class);
+        binder.bind(DataSourceInfo.class).toProvider(ServerCaseDataSourceInfoProvider.class);
         binder.bind(DataSourceFactory.class).to(ServerCaseSharedDataSourceFactory.class);
         binder.bind(DbAdapter.class).toProvider(ServerCaseDbAdapterProvider.class);
         binder.bind(JdbcAdapter.class).toProvider(ServerCaseDbAdapterProvider.class);
@@ -201,14 +187,10 @@ public class ServerCaseModule implements Module {
         // this factory is a hack that allows to inject to DbAdapters loaded outside of
         // server runtime... BatchQueryBuilderFactory is hardcoded and whatever is placed
         // in the ServerModule is ignored
-        binder.bind(BatchTranslatorFactory.class).toProvider(
-                ServerCaseBatchQueryBuilderFactoryProvider.class);
-        binder.bind(DataChannelInterceptor.class).to(
-                ServerCaseDataChannelInterceptor.class);
-        binder.bind(SQLTemplateCustomizer.class).toProvider(
-                SQLTemplateCustomizerProvider.class);
-        binder.bind(ServerCaseDataSourceFactory.class).to(
-                ServerCaseDataSourceFactory.class);
+        binder.bind(BatchTranslatorFactory.class).toProvider(ServerCaseBatchQueryBuilderFactoryProvider.class);
+        binder.bind(DataChannelInterceptor.class).to(ServerCaseDataChannelInterceptor.class);
+        binder.bind(SQLTemplateCustomizer.class).toProvider(SQLTemplateCustomizerProvider.class);
+        binder.bind(ServerCaseDataSourceFactory.class).to(ServerCaseDataSourceFactory.class);
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
@@ -218,26 +200,13 @@ public class ServerCaseModule implements Module {
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
 
         // test-scoped objects
-        binder.bind(EntityResolver.class).toProvider(
-                ServerCaseEntityResolverProvider.class).in(testScope);
-        binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class).in(
-                testScope);
-        binder.bind(ServerCaseProperties.class).to(ServerCaseProperties.class).in(
-                testScope);
-        binder.bind(ServerRuntime.class).toProvider(ServerRuntimeProvider.class).in(
-                testScope);
-        binder
-                .bind(ObjectContext.class)
-                .toProvider(ServerCaseObjectContextProvider.class)
-                .withoutScope();
-        binder
-                .bind(DataContext.class)
-                .toProvider(ServerCaseDataContextProvider.class)
-                .withoutScope();
-
-        binder.bind(DBHelper.class).toProvider(FlavoredDBHelperProvider.class).in(
-                testScope);
-        binder.bind(DBCleaner.class).toProvider(DBCleanerProvider.class).in(
-                testScope);
+        binder.bind(EntityResolver.class).toProvider(ServerCaseEntityResolverProvider.class).in(testScope);
+        binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class).in(testScope);
+        binder.bind(ServerCaseProperties.class).to(ServerCaseProperties.class).in(testScope);
+        binder.bind(ServerRuntime.class).toProvider(ServerRuntimeProvider.class).in(testScope);
+        binder.bind(ObjectContext.class).toProvider(ServerCaseObjectContextProvider.class).withoutScope();
+        binder.bind(DataContext.class).toProvider(ServerCaseDataContextProvider.class).withoutScope();
+        binder.bind(DBHelper.class).toProvider(FlavoredDBHelperProvider.class).in(testScope);
+        binder.bind(DBCleaner.class).toProvider(DBCleanerProvider.class).in(testScope);
     }
 }

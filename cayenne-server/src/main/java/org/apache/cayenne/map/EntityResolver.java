@@ -21,6 +21,7 @@ package org.apache.cayenne.map;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
@@ -68,6 +69,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     // callbacks are not serializable
     protected transient LifecycleCallbackRegistry callbackRegistry;
+
+    protected transient ValueObjectTypeRegistry valueObjectTypeRegistry;
 
     /**
      * Creates new empty EntityResolver.
@@ -660,5 +663,13 @@ public class EntityResolver implements MappingNamespace, Serializable {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         refreshMappingCache();
+    }
+
+    public ValueObjectTypeRegistry getValueObjectTypeRegistry() {
+        return valueObjectTypeRegistry;
+    }
+
+    public void setValueObjectTypeRegistry(ValueObjectTypeRegistry valueObjectTypeRegistry) {
+        this.valueObjectTypeRegistry = valueObjectTypeRegistry;
     }
 }

@@ -39,7 +39,7 @@ class DIUtil {
             Type[] parameters = parameterizedType.getActualTypeArguments();
 
             if (parameters.length == 1) {
-                return (Class<?>) parameters[0];
+                return typeToClass(parameters[0]);
             }
         }
 
@@ -55,13 +55,7 @@ class DIUtil {
             arr = new Class[parameters.length];
             int i=0;
             for(Type next : parameters) {
-                if(next instanceof Class) {
-                    arr[i++] = (Class<?>) next;
-                } else if(next instanceof ParameterizedType){
-                    arr[i++] = (Class<?>) ((ParameterizedType)next).getRawType();
-                } else {
-                    arr[i++] = Object.class;
-                }
+                arr[i++] = typeToClass(next);
             }
         }
 
@@ -85,5 +79,15 @@ class DIUtil {
         }
 
         return Key.get(type, bindingName);
+    }
+
+    static Class<?> typeToClass(Type type) {
+        if(type instanceof Class) {
+            return  (Class<?>) type;
+        } else if(type instanceof ParameterizedType){
+            return  (Class<?>) ((ParameterizedType)type).getRawType();
+        } else {
+            return Object.class;
+        }
     }
 }

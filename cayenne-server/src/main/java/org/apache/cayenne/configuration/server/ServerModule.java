@@ -35,13 +35,14 @@ import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslatorFactory;
 import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
 import org.apache.cayenne.access.types.BigDecimalType;
-import org.apache.cayenne.access.types.BigIntegerType;
+import org.apache.cayenne.access.types.BigIntegerValueType;
 import org.apache.cayenne.access.types.BooleanType;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CalendarType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.DateType;
+import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.DoubleType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
@@ -51,8 +52,9 @@ import org.apache.cayenne.access.types.LongType;
 import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.access.types.TimeType;
 import org.apache.cayenne.access.types.TimestampType;
-import org.apache.cayenne.access.types.UUIDType;
+import org.apache.cayenne.access.types.UUIDValueType;
 import org.apache.cayenne.access.types.UtilDateType;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.VoidType;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
@@ -101,6 +103,7 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntitySorter;
+import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
@@ -245,6 +248,16 @@ public class ServerModule implements Module {
     }
 
     /**
+     *
+     * @param binder DI binder passed to module during injector startup
+     * @return ListBuilder for user-contributed ValueObjectTypes
+     * @since 4.0
+     */
+    public static ListBuilder<ValueObjectType> contributeValueObjectTypes(Binder binder) {
+        return binder.bindList(ValueObjectType.class);
+    }
+
+    /**
      * Creates a new {@link ServerModule}.
      *
      * @since 4.0
@@ -300,15 +313,23 @@ public class ServerModule implements Module {
         contributeDomainListeners(binder);
 
         // configure extended types
-        contributeDefaultTypes(binder).add(new VoidType()).add(new BigDecimalType())
-                .add(new BigIntegerType()).add(new BooleanType()).add(new ByteArrayType(false, true))
-                .add(new ByteType(false)).add(new CharType(false, true)).add(new DateType()).add(new DoubleType())
-                .add(new FloatType()).add(new IntegerType()).add(new LongType()).add(new ShortType(false))
-                .add(new TimeType()).add(new TimestampType()).add(new UtilDateType())
-                .add(new CalendarType<GregorianCalendar>(GregorianCalendar.class))
-                .add(new CalendarType<Calendar>(Calendar.class)).add(new UUIDType());
+        contributeDefaultTypes(binder)
+                .add(new VoidType())
+                .add(new BigDecimalType())
+                .add(new BooleanType()).add(new ByteType(false)).add(new CharType(false, true))
+                .add(new DoubleType()).add(new FloatType()).add(new IntegerType()).add(new LongType()).add(new ShortType(false))
+                .add(new ByteArrayType(false, true))
+                .add(new DateType()).add(new TimeType()).add(new TimestampType())
+                // should be converted from ExtendedType to ValueType
+                .add(new UtilDateType()).add(new CalendarType<>(GregorianCalendar.class)).add(new CalendarType<>(Calendar.class));
         contributeUserTypes(binder);
         contributeTypeFactories(binder);
+
+        // Custom ValueObjects types contribution
+        contributeValueObjectTypes(binder)
+                .add(BigIntegerValueType.class)
+                .add(UUIDValueType.class);
+        binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
 
         // configure explicit configurations
         ListBuilder<String> locationsListBuilder = contributeProjectLocations(binder);

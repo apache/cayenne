@@ -16,54 +16,44 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.access.types;
 
-import java.sql.CallableStatement;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.util.UUID;
+
+import org.apache.cayenne.CayenneRuntimeException;
 
 /**
- * @since 3.0
+ * @since 4.0
  */
-public class DateType implements ExtendedType<Date> {
+public class UUIDValueType implements ValueObjectType<UUID, String> {
 
     @Override
-    public String getClassName() {
-        return Date.class.getName();
+    public Class<String> getTargetType() {
+        return String.class;
     }
 
     @Override
-    public Date materializeObject(ResultSet rs, int index, int type) throws Exception {
-        return rs.getDate(index);
+    public Class<UUID> getValueType() {
+        return UUID.class;
     }
 
     @Override
-    public Date materializeObject(CallableStatement rs, int index, int type) throws Exception {
-        return rs.getDate(index);
-    }
-
-    @Override
-    public void setJdbcObject(
-            PreparedStatement statement,
-            Date value,
-            int pos,
-            int type,
-            int scale) throws Exception {
-
-        if (value == null) {
-            statement.setNull(pos, type);
-        } else {
-            statement.setDate(pos, value);
+    public UUID toJavaObject(String value) {
+        try {
+            return UUID.fromString(value);
+        } catch (IllegalArgumentException e) {
+            throw new CayenneRuntimeException("Invalid UUID value: " + value, e);
         }
     }
 
     @Override
-    public String toString(Date value) {
-        if (value == null) {
-            return "NULL";
-        }
+    public String fromJavaObject(UUID object) {
+        return object.toString();
+    }
 
-        return '\'' + value.toString() + '\'';
+    @Override
+    public String toCacheKey(UUID object) {
+        return object.toString();
     }
 }

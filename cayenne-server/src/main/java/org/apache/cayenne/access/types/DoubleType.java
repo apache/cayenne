@@ -39,8 +39,7 @@ public class DoubleType implements ExtendedType<Double> {
     }
 
     @Override
-    public Double materializeObject(CallableStatement rs, int index, int type)
-            throws Exception {
+    public Double materializeObject(CallableStatement rs, int index, int type) throws Exception {
         double d = rs.getDouble(index);
         return rs.wasNull() ? null : d;
     }
@@ -55,8 +54,7 @@ public class DoubleType implements ExtendedType<Double> {
 
         if (value == null) {
             statement.setNull(pos, type);
-        }
-        else {
+        } else {
             statement.setDouble(pos, value);
         }
     }

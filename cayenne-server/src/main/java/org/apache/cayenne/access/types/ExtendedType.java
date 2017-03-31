@@ -70,7 +70,7 @@ public interface ExtendedType<T> {
     /**
      * Converts value of the supported type to a human-readable String representation.
      *
-     * @param value a vlue to convert to String.
+     * @param value a value to convert to String.
      * @since 4.0
      */
     String toString(T value);

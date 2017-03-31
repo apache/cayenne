@@ -24,6 +24,7 @@ import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -61,13 +62,15 @@ public class SQLiteAdapter extends JdbcAdapter {
             @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
             @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
             @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-            @Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator) {
+            @Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator,
+            @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
         super(
                 runtimeProperties,
                 defaultExtendedTypes,
                 userExtendedTypes,
                 extendedTypeFactories,
-                resourceLocator);
+                resourceLocator,
+                valueObjectTypeRegistry);
         this.setSupportsUniqueConstraints(false);
         this.setSupportsGeneratedKeys(true);
     }

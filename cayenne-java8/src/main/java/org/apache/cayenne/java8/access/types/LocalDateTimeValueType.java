@@ -19,44 +19,38 @@
 
 package org.apache.cayenne.java8.access.types;
 
-import org.apache.cayenne.access.types.ExtendedType;
-
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-public class LocalDateTimeType implements ExtendedType<LocalDateTime> {
+import org.apache.cayenne.access.types.ValueObjectType;
+
+/**
+ * @since 4.0
+ */
+public class LocalDateTimeValueType implements ValueObjectType<LocalDateTime, Timestamp> {
 
     @Override
-    public String getClassName() {
-        return LocalDateTime.class.getName();
+    public Class<Timestamp> getTargetType() {
+        return Timestamp.class;
     }
 
     @Override
-    public void setJdbcObject(PreparedStatement statement, LocalDateTime value, int pos, int type, int scale) throws Exception {
-        statement.setTimestamp(pos, Timestamp.valueOf(value));
+    public Class<LocalDateTime> getValueType() {
+        return LocalDateTime.class;
     }
 
     @Override
-    public LocalDateTime materializeObject(ResultSet rs, int index, int type) throws Exception {
-        Timestamp timestamp = rs.getTimestamp(index);
-        return timestamp != null ? timestamp.toLocalDateTime() : null;
+    public LocalDateTime toJavaObject(Timestamp value) {
+        return value.toLocalDateTime();
     }
 
     @Override
-    public LocalDateTime materializeObject(CallableStatement rs, int index, int type) throws Exception {
-        Timestamp timestamp = rs.getTimestamp(index);
-        return timestamp != null ? timestamp.toLocalDateTime() : null;
+    public Timestamp fromJavaObject(LocalDateTime object) {
+        return Timestamp.valueOf(object);
     }
 
     @Override
-    public String toString(LocalDateTime value) {
-        if (value == null) {
-            return "NULL";
-        }
-
-        return '\'' + value.toString() + '\'';
+    public String toCacheKey(LocalDateTime object) {
+        return object.toString();
     }
 }

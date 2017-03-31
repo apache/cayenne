@@ -31,9 +31,6 @@ import java.sql.ResultSet;
  * An ExtendedType that handles an enum class. If Enum is mapped to a character column,
  * its name is used as persistent value; if it is mapped to a numeric column, its ordinal
  * (i.e. a position in enum class) is used.
- * <p>
- * <i>Requires Java 1.5 or newer</i>
- * </p>
  * 
  * @since 1.2
  */
@@ -54,11 +51,8 @@ public class EnumType<T extends Enum<T>> implements ExtendedType<T> {
         try {
             Method m = enumClass.getMethod("values");
             this.values = (T[]) m.invoke(null);
-        }
-        catch (Exception e) {
-            throw new IllegalArgumentException("Class "
-                    + enumClass.getName()
-                    + " is not an Enum", e);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Class " + enumClass.getName() + " is not an Enum", e);
         }
     }
 
@@ -78,12 +72,10 @@ public class EnumType<T extends Enum<T>> implements ExtendedType<T> {
         if (value != null) {
             if (TypesMapping.isNumeric(type)) {
                 statement.setInt(pos, value.ordinal());
-            }
-            else {
+            } else {
                 statement.setString(pos, value.name());
             }
-        }
-        else {
+        } else {
             statement.setNull(pos, type);
         }
     }
@@ -93,21 +85,18 @@ public class EnumType<T extends Enum<T>> implements ExtendedType<T> {
         if (TypesMapping.isNumeric(type)) {
             int i = rs.getInt(index);
             return (rs.wasNull() || index < 0) ? null : values[i];
-        }
-        else {
+        } else {
             String string = rs.getString(index);
             return string != null ? Enum.valueOf(enumClass, string) : null;
         }
     }
 
     @Override
-    public T materializeObject(CallableStatement rs, int index, int type)
-            throws Exception {
+    public T materializeObject(CallableStatement rs, int index, int type) throws Exception {
         if (TypesMapping.isNumeric(type)) {
             int i = rs.getInt(index);
             return (rs.wasNull() || index < 0) ? null : values[i];
-        }
-        else {
+        } else {
             String string = rs.getString(index);
             return string != null ? Enum.valueOf(enumClass, string) : null;
         }

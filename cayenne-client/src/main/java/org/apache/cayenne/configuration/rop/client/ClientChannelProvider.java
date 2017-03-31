@@ -20,7 +20,6 @@ package org.apache.cayenne.configuration.rop.client;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
@@ -41,9 +40,7 @@ public class ClientChannelProvider implements Provider<DataChannel> {
 
     public DataChannel get() throws ConfigurationException {
 
-        boolean channelEvents = properties.getBoolean(
-                ClientConstants.ROP_CHANNEL_EVENTS_PROPERTY,
-                false);
+        boolean channelEvents = properties.getBoolean(ClientConstants.ROP_CHANNEL_EVENTS_PROPERTY, false);
 
         return new ClientChannel(connection, channelEvents, eventManager, channelEvents);
     }

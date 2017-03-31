@@ -36,6 +36,8 @@ import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslatorFactory;
 import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
+import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.annotation.PostLoad;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.QueryCache;
@@ -205,6 +207,9 @@ public class DataDomainProviderTest {
 
                 binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
                 binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
+
+				ServerModule.contributeValueObjectTypes(binder);
+				binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
 			}
 		};
 

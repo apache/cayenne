@@ -55,9 +55,7 @@ public class ExtendedTypeMap {
 
 	Collection<ExtendedTypeFactory> extendedTypeFactories;
 
-	// standard type factories registered by Cayenne that are consulted after
-	// the user
-	// factories.
+	// standard type factories registered by Cayenne that are consulted after the user factories.
 	Collection<ExtendedTypeFactory> internalTypeFactories;
 
 	/**
@@ -87,8 +85,7 @@ public class ExtendedTypeMap {
 		internalTypeFactories.add(new ByteOrCharArrayFactory(this));
 
 		// note that Serializable type should be used as a last resort after all
-		// other
-		// alternatives are exhausted.
+		// other alternatives are exhausted.
 		internalTypeFactories.add(new SerializableTypeFactory(this));
 	}
 

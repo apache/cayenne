@@ -24,6 +24,7 @@ import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DataRowStoreFactory;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ConfigurationTree;
@@ -88,6 +89,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
 	@Inject
 	protected DataNodeFactory dataNodeFactory;
 
+	@Inject
+	protected ValueObjectTypeRegistry valueObjectTypeRegistry;
+
 	@Override
 	public DataDomain get() throws ConfigurationException {
 
@@ -127,6 +131,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
 		dataDomain.getEntityResolver().applyDBLayerDefaults();
 		dataDomain.getEntityResolver().applyObjectLayerDefaults();
+		dataDomain.getEntityResolver().setValueObjectTypeRegistry(valueObjectTypeRegistry);
 
 		for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {
 			addDataNode(dataDomain, nodeDescriptor);

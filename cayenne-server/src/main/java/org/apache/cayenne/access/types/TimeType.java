@@ -39,8 +39,7 @@ public class TimeType implements ExtendedType<Time> {
     }
 
     @Override
-    public Time materializeObject(CallableStatement rs, int index, int type)
-            throws Exception {
+    public Time materializeObject(CallableStatement rs, int index, int type) throws Exception {
         return rs.getTime(index);
     }
 
@@ -54,8 +53,7 @@ public class TimeType implements ExtendedType<Time> {
 
         if (value == null) {
             statement.setNull(pos, type);
-        }
-        else {
+        } else {
             statement.setTime(pos, value);
         }
     }

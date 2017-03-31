@@ -39,8 +39,7 @@ public class FloatType implements ExtendedType<Float> {
     }
 
     @Override
-    public Float materializeObject(CallableStatement rs, int index, int type)
-            throws Exception {
+    public Float materializeObject(CallableStatement rs, int index, int type) throws Exception {
         float f = rs.getFloat(index);
         return rs.wasNull() ? null : f;
     }
@@ -55,8 +54,7 @@ public class FloatType implements ExtendedType<Float> {
 
         if (value == null) {
             statement.setNull(pos, type);
-        }
-        else {
+        } else {
             statement.setFloat(pos, value);
         }
     }

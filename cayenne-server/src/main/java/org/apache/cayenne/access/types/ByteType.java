@@ -53,8 +53,7 @@ public class ByteType implements ExtendedType<Byte> {
     }
 
     @Override
-    public Byte materializeObject(CallableStatement st, int index, int type)
-            throws Exception {
+    public Byte materializeObject(CallableStatement st, int index, int type) throws Exception {
         byte b = st.getByte(index);
         return (st.wasNull()) ? null : b;
     }
@@ -70,12 +69,10 @@ public class ByteType implements ExtendedType<Byte> {
         if (value == null) {
             statement.setNull(pos, type);
         } else {
-
-            Byte b = value;
             if (widenBytes) {
-                statement.setInt(pos, b.intValue());
+                statement.setInt(pos, value.intValue());
             } else {
-                statement.setByte(pos, b.byteValue());
+                statement.setByte(pos, value);
             }
         }
     }

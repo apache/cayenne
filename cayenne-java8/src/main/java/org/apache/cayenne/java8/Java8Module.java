@@ -21,9 +21,9 @@ package org.apache.cayenne.java8;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.java8.access.types.LocalDateTimeType;
-import org.apache.cayenne.java8.access.types.LocalDateType;
-import org.apache.cayenne.java8.access.types.LocalTimeType;
+import org.apache.cayenne.java8.access.types.LocalDateTimeValueType;
+import org.apache.cayenne.java8.access.types.LocalDateValueType;
+import org.apache.cayenne.java8.access.types.LocalTimeValueType;
 
 /**
  * @since 4.0
@@ -32,9 +32,9 @@ public class Java8Module implements Module {
 
     @Override
     public void configure(Binder binder) {
-        ServerModule.contributeDefaultTypes(binder)
-                .add(new LocalDateType())
-                .add(new LocalTimeType())
-                .add(new LocalDateTimeType());
+        ServerModule.contributeValueObjectTypes(binder)
+                .add(LocalDateValueType.class)
+                .add(LocalTimeValueType.class)
+                .add(LocalDateTimeValueType.class);
     }
 }

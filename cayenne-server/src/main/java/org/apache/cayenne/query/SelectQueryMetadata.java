@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,10 +27,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.types.ValueObjectType;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.parser.ASTFunctionCall;
+import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -67,14 +73,12 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		this.pathSplitAliases = new HashMap<>(info.getPathSplitAliases());
 	}
 
-	<T> boolean resolve(Object root, EntityResolver resolver, SelectQuery<T> query) {
+	boolean resolve(Object root, EntityResolver resolver, SelectQuery<?> query) {
 
 		if (super.resolve(root, resolver, null)) {
-
 			// generate unique cache key, but only if we are caching..
-
 			if (cacheStrategy != null && cacheStrategy != QueryCacheStrategy.NO_CACHE) {
-				this.cacheKey = makeCacheKey(query);
+				this.cacheKey = makeCacheKey(query, resolver);
 			}
 
 			resolveAutoAliases(query);
@@ -87,12 +91,14 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		return false;
 	}
 
-	private String makeCacheKey(SelectQuery<?> query) {
+	private String makeCacheKey(SelectQuery<?> query, EntityResolver resolver) {
 
-		// create a unique key based on entity, qualifier, ordering and
-		// fetch offset and limit
+		// create a unique key based on entity or columns, qualifier, ordering, fetch offset and limit
 
 		StringBuilder key = new StringBuilder();
+		// handler to create string out of expressions, created lazily
+		TraversalHandler traversalHandler = null;
+
 		ObjEntity entity = getObjEntity();
 		if (entity != null) {
 			key.append(entity.getName());
@@ -102,23 +108,19 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 
 		if(query.getColumns() != null && !query.getColumns().isEmpty()) {
 			key.append("/");
+			traversalHandler = new ToCacheKeyTraversalHandler(resolver.getValueObjectTypeRegistry(), key);
 			for(Property<?> property : query.getColumns()) {
 				key.append("c:");
-				try {
-					property.getExpression().appendAsString(key);
-				} catch (IOException e) {
-					throw new CayenneRuntimeException("Unexpected IO Exception appending to StringBuilder", e);
-				}
+				property.getExpression().traverse(traversalHandler);
 			}
 		}
 
 		if (query.getQualifier() != null) {
 			key.append('/');
-			try {
-				query.getQualifier().appendAsString(key);
-			} catch (IOException e) {
-				throw new CayenneRuntimeException("Unexpected IO Exception appending to StringBuilder", e);
+			if(traversalHandler == null) {
+				traversalHandler = new ToCacheKeyTraversalHandler(resolver.getValueObjectTypeRegistry(), key);
 			}
+			query.getQualifier().traverse(traversalHandler);
 		}
 
 		if (!query.getOrderings().isEmpty()) {
@@ -145,10 +147,9 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		}
 
 		return key.toString();
-
 	}
 
-	private <T> void resolveAutoAliases(SelectQuery<T> query) {
+	private void resolveAutoAliases(SelectQuery<?> query) {
 		Expression qualifier = query.getQualifier();
 		if (qualifier != null) {
 			resolveAutoAliases(qualifier);
@@ -399,4 +400,79 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 	public void setSuppressingDistinct(boolean suppressingDistinct) {
 		this.suppressingDistinct = suppressingDistinct;
 	}
+
+	/**
+	 * Expression traverse handler to create cache key string out of Expression.
+	 * {@link Expression#appendAsString(Appendable)} where previously used for that,
+	 * but it can't handle custom value objects properly (see CAY-2210).
+	 *
+	 * @see ValueObjectTypeRegistry
+	 *
+	 * @since 4.0
+	 */
+	static class ToCacheKeyTraversalHandler implements TraversalHandler {
+
+		private ValueObjectTypeRegistry registry;
+		private StringBuilder out;
+
+		ToCacheKeyTraversalHandler(ValueObjectTypeRegistry registry, StringBuilder out) {
+			this.registry = registry;
+			this.out = out;
+		}
+
+		@Override
+		public void finishedChild(Expression node, int childIndex, boolean hasMoreChildren) {
+			out.append(',');
+		}
+
+		@Override
+		public void startNode(Expression node, Expression parentNode) {
+			if(node.getType() == Expression.FUNCTION_CALL) {
+				out.append(((ASTFunctionCall)node).getFunctionName()).append('(');
+			} else {
+				out.append(node.getType()).append('(');
+			}
+		}
+
+		@Override
+		public void endNode(Expression node, Expression parentNode) {
+			out.append(')');
+		}
+
+		@Override
+		public void objectNode(Object leaf, Expression parentNode) {
+			if(leaf == null) {
+				out.append("null");
+				return;
+			}
+
+			if(leaf instanceof ASTScalar) {
+				leaf = ((ASTScalar) leaf).getValue();
+			} else if(leaf instanceof Object[]) {
+				for(Object value : (Object[])leaf) {
+					objectNode(value, parentNode);
+					out.append(',');
+				}
+				return;
+			}
+
+			if (leaf instanceof Persistent) {
+				ObjectId id = ((Persistent) leaf).getObjectId();
+				Object encode = (id != null) ? id : leaf;
+				out.append(encode);
+			} else if (leaf instanceof Enum<?>) {
+				Enum<?> e = (Enum<?>) leaf;
+				out.append("e:").append(leaf.getClass().getName()).append(':').append(e.ordinal());
+			} else {
+				ValueObjectType<Object, ?> valueObjectType;
+				if (registry == null || (valueObjectType = registry.getValueType(leaf.getClass())) == null) {
+					// Registry will be null in cayenne-client context.
+					// Maybe we shouldn't create cache key at all in that case...
+					out.append(leaf);
+				} else {
+					out.append(valueObjectType.toCacheKey(leaf));
+				}
+			}
+		}
+	};
 }

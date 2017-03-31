@@ -49,12 +49,10 @@ public class BooleanType implements ExtendedType<Boolean> {
 
         if (val == null) {
             st.setNull(pos, type);
-        }
-        else if (type == Types.BIT || type == Types.BOOLEAN) {
+        } else if (type == Types.BIT || type == Types.BOOLEAN) {
             boolean flag = Boolean.TRUE.equals(val);
             st.setBoolean(pos, flag);
-        }
-        else {
+        } else {
             st.setObject(pos, val, type);
         }
     }
@@ -66,8 +64,7 @@ public class BooleanType implements ExtendedType<Boolean> {
     }
 
     @Override
-    public Boolean materializeObject(CallableStatement st, int index, int type)
-            throws Exception {
+    public Boolean materializeObject(CallableStatement st, int index, int type) throws Exception {
         boolean b = st.getBoolean(index);
         return (st.wasNull()) ? null : b ? Boolean.TRUE : Boolean.FALSE;
     }

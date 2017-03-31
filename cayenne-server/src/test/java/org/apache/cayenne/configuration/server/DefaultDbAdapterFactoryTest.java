@@ -21,6 +21,8 @@ package org.apache.cayenne.configuration.server;
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockDataSource;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
@@ -119,6 +121,9 @@ public class DefaultDbAdapterFactoryTest {
                 binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
                 binder.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
+
+                ServerModule.contributeValueObjectTypes(binder);
+                binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
             }
         };
 
@@ -156,6 +161,9 @@ public class DefaultDbAdapterFactoryTest {
                 binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
                 binder.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
+
+                ServerModule.contributeValueObjectTypes(binder);
+                binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
             }
         };
 

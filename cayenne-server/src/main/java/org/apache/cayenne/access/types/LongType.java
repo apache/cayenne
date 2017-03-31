@@ -39,8 +39,7 @@ public class LongType implements ExtendedType<Long> {
     }
 
     @Override
-    public Long materializeObject(CallableStatement rs, int index, int type)
-            throws Exception {
+    public Long materializeObject(CallableStatement rs, int index, int type) throws Exception {
         long value = rs.getLong(index);
         return (rs.wasNull()) ? null : value;
     }
@@ -55,8 +54,7 @@ public class LongType implements ExtendedType<Long> {
 
         if (value == null) {
             statement.setNull(pos, type);
-        }
-        else {
+        } else {
             statement.setLong(pos, value);
         }
     }

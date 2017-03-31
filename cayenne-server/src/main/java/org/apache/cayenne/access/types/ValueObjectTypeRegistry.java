@@ -19,24 +19,21 @@
 
 package org.apache.cayenne.access.types;
 
-import org.apache.cayenne.ExtendedEnumeration;
-
 /**
- * ExtendedTypeFactory for handling Enum types.
- * 
- * @since 3.0
+ * <p>Registry of user-defined descriptors of custom value objects' classes.</p>
+ * <p>Used to convert this objects into values that can be used directly with JDBC.</p>
+ * <p>Part of replacement for the {@link ExtendedType ExtendedTypes API} for the end-user.</p>
+ *
+ * @see ValueObjectType
+ * @since 4.0
  */
-public class EnumTypeFactory implements ExtendedTypeFactory {
+public interface ValueObjectTypeRegistry {
 
-    @SuppressWarnings("unchecked")
-    public ExtendedType getType(Class<?> objectClass) {
-        if (ExtendedEnumeration.class.isAssignableFrom(objectClass)) {
-            return new ExtendedEnumType(objectClass);
-        } else if (objectClass.isEnum()) {
-            return new EnumType(objectClass);
-        } else {
-            return null;
-        }
-    }
-
+    /**
+     * Lookup descriptor in this registry.
+     *
+     * @param valueClass class of the custom value object
+     * @return {@link ValueObjectType} descriptor
+     */
+    <T> ValueObjectType<T,?> getValueType(Class<? extends T> valueClass);
 }

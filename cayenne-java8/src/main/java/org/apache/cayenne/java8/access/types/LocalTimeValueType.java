@@ -19,45 +19,38 @@
 
 package org.apache.cayenne.java8.access.types;
 
-import org.apache.cayenne.access.types.ExtendedType;
-
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.Time;
 import java.time.LocalTime;
 
-public class LocalTimeType implements ExtendedType<LocalTime> {
+import org.apache.cayenne.access.types.ValueObjectType;
+
+/**
+ * @since 4.0
+ */
+public class LocalTimeValueType implements ValueObjectType<LocalTime, Time> {
 
     @Override
-    public String getClassName() {
-        return LocalTime.class.getName();
+    public Class<Time> getTargetType() {
+        return Time.class;
     }
 
     @Override
-    public void setJdbcObject(PreparedStatement statement, LocalTime value, int pos, int type, int scale) throws Exception {
-        statement.setTime(pos, Time.valueOf(value));
+    public Class<LocalTime> getValueType() {
+        return LocalTime.class;
     }
 
     @Override
-    public LocalTime materializeObject(ResultSet rs, int index, int type) throws Exception {
-        Time time = rs.getTime(index);
-        return time != null ? time.toLocalTime() : null;
+    public LocalTime toJavaObject(Time value) {
+        return value.toLocalTime();
     }
 
     @Override
-    public LocalTime materializeObject(CallableStatement rs, int index, int type) throws Exception {
-        Time time = rs.getTime(index);
-        return time != null ? time.toLocalTime() : null;
+    public Time fromJavaObject(LocalTime object) {
+        return Time.valueOf(object);
     }
 
     @Override
-    public String toString(LocalTime value) {
-        if (value == null) {
-            return "NULL";
-        }
-
-        return '\'' + value.toString() + '\'';
+    public String toCacheKey(LocalTime object) {
+        return object.toString();
     }
-
 }

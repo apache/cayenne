@@ -39,8 +39,7 @@ public class IntegerType implements ExtendedType<Integer> {
     }
 
     @Override
-    public Integer materializeObject(CallableStatement rs, int index, int type)
-            throws Exception {
+    public Integer materializeObject(CallableStatement rs, int index, int type) throws Exception {
         int value = rs.getInt(index);
         return (rs.wasNull()) ? null : value;
     }
@@ -55,8 +54,7 @@ public class IntegerType implements ExtendedType<Integer> {
 
         if (value == null) {
             statement.setNull(pos, type);
-        }
-        else {
+        } else {
             statement.setInt(pos, value);
         }
     }

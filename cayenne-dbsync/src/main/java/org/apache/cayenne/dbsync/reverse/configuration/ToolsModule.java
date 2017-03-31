@@ -21,6 +21,8 @@ package org.apache.cayenne.dbsync.reverse.configuration;
 
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
+import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -84,6 +86,8 @@ public class ToolsModule implements Module {
         ServerModule.contributeDefaultTypes(binder);
         ServerModule.contributeUserTypes(binder);
         ServerModule.contributeTypeFactories(binder);
+        ServerModule.contributeValueObjectTypes(binder);
+        binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
 
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);

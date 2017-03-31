@@ -39,8 +39,7 @@ public class TimestampType implements ExtendedType<Timestamp> {
     }
 
     @Override
-    public Timestamp materializeObject(CallableStatement cs, int index, int type)
-            throws Exception {
+    public Timestamp materializeObject(CallableStatement cs, int index, int type) throws Exception {
         return cs.getTimestamp(index);
     }
 
@@ -54,8 +53,7 @@ public class TimestampType implements ExtendedType<Timestamp> {
 
         if (value == null) {
             statement.setNull(pos, type);
-        }
-        else {
+        } else {
             statement.setTimestamp(pos, value);
         }
     }
