@@ -83,9 +83,15 @@ public class CryptoUnitUtils {
 
             Header header = Header.create(source, 0);
 
+            int offset = header.size();
+            if(header.haveHMAC()) {
+                byte hmacLength = source[offset];
+                offset += hmacLength + 1;
+            }
+
             int blockSize = decCipher.getBlockSize();
-            byte[] ivBytes = Arrays.copyOfRange(source, header.size(), header.size() + blockSize);
-            byte[] cipherText = Arrays.copyOfRange(source, header.size() + blockSize, source.length);
+            byte[] ivBytes = Arrays.copyOfRange(source, offset, offset + blockSize);
+            byte[] cipherText = Arrays.copyOfRange(source, offset + blockSize, source.length);
 
             Key key = runtime.getInjector().getInstance(KeySource.class).getKey(header.getKeyName());
 

@@ -74,10 +74,15 @@ public class Header {
      */
     private static final int COMPRESS_BIT = 0;
 
+    /**
+     * A position if the HMAC bit
+     */
+    private static final int HMAC_BIT = 1;
+
     private byte[] data;
     private int offset;
 
-    public static Header create(String keyName, boolean compessed) {
+    public static Header create(String keyName, boolean compressed, boolean withHMAC) {
         byte[] keyNameBytes;
         try {
             keyNameBytes = keyName.getBytes(KEY_NAME_CHARSET);
@@ -99,8 +104,11 @@ public class Header {
         data[SIZE_POSITION] = (byte) n;
 
         // flags
-        if (compessed) {
+        if (compressed) {
             data[FLAGS_POSITION] = bitOn(data[FLAGS_POSITION], COMPRESS_BIT);
+        }
+        if (withHMAC) {
+            data[FLAGS_POSITION] = bitOn(data[FLAGS_POSITION], HMAC_BIT);
         }
 
         // key name
@@ -115,6 +123,10 @@ public class Header {
 
     public static byte setCompressed(byte bits, boolean compressed) {
         return compressed ? bitOn(bits, COMPRESS_BIT) : bitOff(bits, COMPRESS_BIT);
+    }
+
+    public static byte setHaveHMAC(byte bits, boolean haveHMAC) {
+        return haveHMAC ? bitOn(bits, HMAC_BIT) : bitOff(bits, HMAC_BIT);
     }
 
     private static byte bitOn(byte bits, int position) {
@@ -141,6 +153,10 @@ public class Header {
 
     public boolean isCompressed() {
         return isBitOn(getFlags(), COMPRESS_BIT);
+    }
+
+    public boolean haveHMAC() {
+        return isBitOn(getFlags(), HMAC_BIT);
     }
 
     public byte getFlags() {

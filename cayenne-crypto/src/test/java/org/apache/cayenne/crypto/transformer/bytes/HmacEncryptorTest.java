@@ -16,34 +16,38 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.crypto.transformer.bytes;
-
-import static org.junit.Assert.assertArrayEquals;
-
-import java.io.UnsupportedEncodingException;
 
 import org.apache.cayenne.crypto.unit.SwapBytesTransformer;
 import org.junit.Test;
 
-public class HeaderEncryptorTest {
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+/**
+ * @since 4.0
+ */
+public class HmacEncryptorTest {
 
     @Test
-    public void testTransform() throws UnsupportedEncodingException {
+    public void encrypt() throws Exception {
+        HmacEncryptor encryptor = mock(HmacEncryptor.class);
+        encryptor.delegate = SwapBytesTransformer.encryptor();
+        when(encryptor.createHmac(any(byte[].class))).thenReturn(new byte[]{0, 1, 2, 3, 4, 5, 6, 7});
+        when(encryptor.encrypt(any(byte[].class), anyInt(), any(byte[].class))).thenCallRealMethod();
 
-        Header encryptionHeader = Header.create("mykey", false, false);
+        byte[] input = {-1, -2, -3};
 
-        BytesEncryptor delegate = SwapBytesTransformer.encryptor();
+        byte[] result1 = encryptor.encrypt(input, 0, new byte[1]);
+        assertArrayEquals(new byte[]{8, 0, 1, 2, 3, 4, 5, 6, 7, -3, -2, -1}, result1);
 
-        byte[] input = { 1, 2, 3, 4, 5, 6, 7, 8 };
+        byte[] result2 = encryptor.encrypt(input, 5, new byte[1]);
+        assertArrayEquals(new byte[]{0, 0, 0, 0, 0, 8, 0, 1, 2, 3, 4, 5, 6, 7, -3, -2, -1}, result2);
 
-        // intentionally non-standard block size..
-        HeaderEncryptor encryptor = new HeaderEncryptor(delegate, encryptionHeader);
-
-        byte[] output1 = encryptor.encrypt(input, 0, new byte[1]);
-        assertArrayEquals(new byte[] { 'C', 'C', '1', 10, 0, 'm', 'y', 'k', 'e', 'y', 8, 7, 6, 5, 4, 3, 2, 1 }, output1);
-        
-        byte[] output2 = encryptor.encrypt(input, 1, new byte[1]);
-        assertArrayEquals(new byte[] { 0, 'C', 'C', '1', 10, 0, 'm', 'y', 'k', 'e', 'y', 8, 7, 6, 5, 4, 3, 2, 1 }, output2);
     }
 
 }

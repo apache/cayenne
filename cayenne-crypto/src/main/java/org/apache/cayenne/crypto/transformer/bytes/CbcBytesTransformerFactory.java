@@ -42,7 +42,7 @@ class CbcBytesTransformerFactory implements BytesTransformerFactory {
 
     CbcBytesTransformerFactory(CipherFactory cipherFactory, KeySource keySource, Header encryptionHeader) {
 
-        this.randoms = new ConcurrentLinkedQueue<SecureRandom>();
+        this.randoms = new ConcurrentLinkedQueue<>();
         this.keySource = keySource;
 
         this.cipherFactory = cipherFactory;
@@ -92,6 +92,9 @@ class CbcBytesTransformerFactory implements BytesTransformerFactory {
 
         if (encryptionHeader.isCompressed()) {
             delegate = new GzipEncryptor(delegate);
+        }
+        if (encryptionHeader.haveHMAC()) {
+            delegate = new HmacEncryptor(delegate, encryptionHeader, key);
         }
 
         return new HeaderEncryptor(delegate, encryptionHeader);

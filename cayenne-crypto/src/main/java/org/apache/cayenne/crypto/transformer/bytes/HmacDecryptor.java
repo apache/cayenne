@@ -16,42 +16,44 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.crypto.transformer.bytes;
 
 import java.security.Key;
+import java.util.Arrays;
 
-import org.apache.cayenne.crypto.key.KeySource;
+import org.apache.cayenne.crypto.CayenneCryptoException;
 
 /**
+ * This class not only parse HMAC but also verifies it
+ * and throws {@link org.apache.cayenne.crypto.CayenneCryptoException} in case it is invalid.
+ *
  * @since 4.0
  */
-class HeaderDecryptor implements BytesDecryptor {
+class HmacDecryptor extends HmacCreator implements BytesDecryptor {
 
-    private KeySource keySource;
-    private BytesDecryptor delegate;
-    private BytesDecryptor decompressDelegate;
+    BytesDecryptor delegate;
 
-    HeaderDecryptor(BytesDecryptor delegate, BytesDecryptor decompressDelegate, KeySource keySource) {
+    HmacDecryptor(BytesDecryptor delegate, Header header, Key key) {
+        super(header, key);
         this.delegate = delegate;
-        this.keySource = keySource;
-        this.decompressDelegate = decompressDelegate;
     }
 
     @Override
     public byte[] decrypt(byte[] input, int inputOffset, Key key) {
-
-        Header header = Header.create(input, inputOffset);
-
-        // ignoring the parameter key... using the key from the first block
-        Key inRecordKey = keySource.getKey(header.getKeyName());
-
-        // if compression was used to create a record, filter through GzipDecryptor...
-        BytesDecryptor worker = header.isCompressed() ? decompressDelegate : delegate;
-        // if record has HMAC, create appropriate decryptor
-        if(header.haveHMAC()) {
-            worker = new HmacDecryptor(worker, header, inRecordKey);
+        byte hmacLength = input[inputOffset++];
+        if(hmacLength <= 0) {
+            throw new CayenneCryptoException("Input is corrupted: invalid HMAC length.");
         }
 
-        return worker.decrypt(input, inputOffset + header.size(), inRecordKey);
+        byte[] receivedHmac = new byte[hmacLength];
+        byte[] decrypted = delegate.decrypt(input, inputOffset + hmacLength, key);
+        byte[] realHmac = createHmac(decrypted);
+
+        System.arraycopy(input, inputOffset, receivedHmac, 0, hmacLength);
+        if(!Arrays.equals(receivedHmac, realHmac)) {
+            throw new CayenneCryptoException("Input is corrupted: wrong HMAC.");
+        }
+        return decrypted;
     }
 }

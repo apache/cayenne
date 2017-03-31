@@ -44,8 +44,8 @@ public class SwapBytesTransformer implements BytesEncryptor, BytesDecryptor {
     @Override
     public byte[] decrypt(byte[] input, int inputOffset, Key key) {
 
-        byte[] output = new byte[input.length];
-        System.arraycopy(input, inputOffset, output, 0, input.length);
+        byte[] output = new byte[input.length - inputOffset];
+        System.arraycopy(input, inputOffset, output, 0, input.length - inputOffset);
 
         swap(output, 0, output.length - 1);
         return output;

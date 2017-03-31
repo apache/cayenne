@@ -34,9 +34,9 @@ public class Runtime_AES128_Base {
     protected TableHelper table2;
     protected TableHelper table4;
 
-    protected void setUp(boolean compress) throws Exception {
+    protected void setUp(boolean compress, boolean useHMAC) throws Exception {
 
-        Module crypto = createCryptoModule(compress);
+        Module crypto = createCryptoModule(compress, useHMAC);
         this.runtime = createRuntime(crypto);
 
         setupTestTables(new DBHelper(runtime.getDataSource(null)));
@@ -59,7 +59,7 @@ public class Runtime_AES128_Base {
         return ServerRuntime.builder().addConfig("cayenne-crypto.xml").addModule(crypto).build();
     }
 
-    protected Module createCryptoModule(boolean compress) {
+    protected Module createCryptoModule(boolean compress, boolean useHMAC) {
         URL keyStoreUrl = JceksKeySourceTest.class.getResource(JceksKeySourceTest.KS1_JCEKS);
 
         CryptoModuleBuilder builder = CryptoModule
@@ -68,6 +68,9 @@ public class Runtime_AES128_Base {
 
         if (compress) {
             builder.compress();
+        }
+        if(useHMAC) {
+            builder.useHMAC();
         }
 
         return builder.build();

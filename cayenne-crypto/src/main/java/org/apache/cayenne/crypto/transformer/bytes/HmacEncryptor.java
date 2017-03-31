@@ -16,42 +16,32 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.crypto.transformer.bytes;
 
 import java.security.Key;
 
-import org.apache.cayenne.crypto.key.KeySource;
-
 /**
+ * Encryptor that stores authentication code into output.
+ * HMAC is formed from full header concatenated with unencrypted input.
+ *
  * @since 4.0
  */
-class HeaderDecryptor implements BytesDecryptor {
+class HmacEncryptor extends HmacCreator implements BytesEncryptor {
 
-    private KeySource keySource;
-    private BytesDecryptor delegate;
-    private BytesDecryptor decompressDelegate;
+    BytesEncryptor delegate;
 
-    HeaderDecryptor(BytesDecryptor delegate, BytesDecryptor decompressDelegate, KeySource keySource) {
+    HmacEncryptor(BytesEncryptor delegate, Header header, Key key) {
+        super(header, key);
         this.delegate = delegate;
-        this.keySource = keySource;
-        this.decompressDelegate = decompressDelegate;
     }
 
     @Override
-    public byte[] decrypt(byte[] input, int inputOffset, Key key) {
-
-        Header header = Header.create(input, inputOffset);
-
-        // ignoring the parameter key... using the key from the first block
-        Key inRecordKey = keySource.getKey(header.getKeyName());
-
-        // if compression was used to create a record, filter through GzipDecryptor...
-        BytesDecryptor worker = header.isCompressed() ? decompressDelegate : delegate;
-        // if record has HMAC, create appropriate decryptor
-        if(header.haveHMAC()) {
-            worker = new HmacDecryptor(worker, header, inRecordKey);
-        }
-
-        return worker.decrypt(input, inputOffset + header.size(), inRecordKey);
+    public byte[] encrypt(byte[] input, int outputOffset, byte[] flags) {
+        byte[] hmac = createHmac(input);
+        byte[] encrypted = delegate.encrypt(input, outputOffset + hmac.length + 1, flags);
+        encrypted[outputOffset++] = (byte)hmac.length; // store HMAC length
+        System.arraycopy(hmac, 0, encrypted, outputOffset, hmac.length);
+        return encrypted;
     }
 }

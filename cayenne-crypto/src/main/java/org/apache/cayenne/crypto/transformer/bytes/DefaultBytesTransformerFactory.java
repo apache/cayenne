@@ -38,7 +38,8 @@ public class DefaultBytesTransformerFactory implements BytesTransformerFactory {
 
     static Header createEncryptionHeader(Map<String, String> properties, KeySource keySource) {
         boolean compressed = "true".equals(properties.get(CryptoConstants.COMPRESSION));
-        return Header.create(keySource.getDefaultKeyAlias(), compressed);
+        boolean useHMAC = "true".equals(properties.get(CryptoConstants.USE_HMAC));
+        return Header.create(keySource.getDefaultKeyAlias(), compressed, useHMAC);
     }
 
     public DefaultBytesTransformerFactory(@Inject(CryptoConstants.PROPERTIES_MAP) Map<String, String> properties,

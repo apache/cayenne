@@ -34,6 +34,7 @@ class DefaultValueDecryptor implements ValueDecryptor {
     public DefaultValueDecryptor(BytesConverter preConverter, BytesConverter postConverter, Key defaultKey) {
         this.preConverter = preConverter;
         this.postConverter = postConverter;
+        this.defaultKey = defaultKey;
     }
 
     BytesConverter getPreConverter() {

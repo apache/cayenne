@@ -40,7 +40,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp(false);
+        super.setUp(false, false);
     }
 
     @Test

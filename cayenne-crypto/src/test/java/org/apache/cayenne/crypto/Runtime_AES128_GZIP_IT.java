@@ -43,7 +43,7 @@ public class Runtime_AES128_GZIP_IT extends Runtime_AES128_Base {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp(true);
+        super.setUp(true, false);
     }
 
     @Test

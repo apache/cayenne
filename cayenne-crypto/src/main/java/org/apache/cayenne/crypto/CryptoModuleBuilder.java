@@ -67,6 +67,7 @@ public class CryptoModuleBuilder {
     private char[] keyPassword;
 
     private boolean compress;
+    private boolean useHMAC;
 
     // use CryptoModule.builder() to create the builder...
     protected CryptoModuleBuilder() {
@@ -214,6 +215,14 @@ public class CryptoModuleBuilder {
     }
 
     /**
+     * Enable authentication codes
+     */
+    public CryptoModuleBuilder useHMAC() {
+        this.useHMAC = true;
+        return this;
+    }
+
+    /**
      * Produces a module that can be used to start Cayenne runtime.
      */
     public Module build() {
@@ -244,6 +253,10 @@ public class CryptoModuleBuilder {
 
                 if (compress) {
                     props.put(CryptoConstants.COMPRESSION, "true");
+                }
+
+                if (useHMAC) {
+                    props.put(CryptoConstants.USE_HMAC, "true");
                 }
 
                 if (keyPassword != null) {

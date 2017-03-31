@@ -43,7 +43,7 @@ public class Runtime_LazyInit_IT extends Runtime_AES128_Base {
 
     @Before
     public void before() throws Exception {
-        setUp(false);
+        setUp(false, false);
         UNLOCKED = false;
     }
 
