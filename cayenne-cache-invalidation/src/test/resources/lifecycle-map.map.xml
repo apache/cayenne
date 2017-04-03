@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
+	 project-version="9">
+	<property name="defaultPackage" value="org.apache.cayenne.lifecycle.db"/>
+	<db-entity name="E1">
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="E2">
+		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="E1" className="org.apache.cayenne.lifecycle.db.E1" dbEntityName="E1">
+	</obj-entity>
+	<obj-entity name="E2" className="org.apache.cayenne.lifecycle.db.E2" dbEntityName="E2">
+	</obj-entity>
+</data-map>

@@ -57,29 +57,31 @@ import org.apache.cayenne.query.Query;
  *     </pre>
  * </p>
  *
- * @since 3.1
- * @see InvalidationHandler
  * @see CacheInvalidationModuleBuilder
+ * @see InvalidationHandler
+ *
+ * @since 3.1
+ * @since 4.0 enhanced to support custom handlers.
  */
 public class CacheInvalidationFilter implements DataChannelFilter {
 
     @Inject
     private Provider<QueryCache> cacheProvider;
 
-    @Inject(CacheInvalidationModuleBuilder.INVALIDATION_HANDLERS_LIST)
+    @Inject
     private List<InvalidationHandler> handlers;
 
     private final Map<Class<? extends Persistent>, InvalidationFunction> mappedHandlers;
 
     private final InvalidationFunction skipHandler;
 
-    private final ThreadLocal<Set<String>> groups;
+    private final ThreadLocal<Set<CacheGroupDescriptor>> groups;
 
     public CacheInvalidationFilter() {
         mappedHandlers = new ConcurrentHashMap<>();
         skipHandler = new InvalidationFunction() {
             @Override
-            public Collection<String> apply(Persistent p) {
+            public Collection<CacheGroupDescriptor> apply(Persistent p) {
                 return Collections.emptyList();
             }
         };
@@ -99,11 +101,15 @@ public class CacheInvalidationFilter implements DataChannelFilter {
         try {
             GraphDiff result = filterChain.onSync(originatingContext, changes, syncType);
             // no exceptions, flush...
-            Collection<String> groupSet = groups.get();
+            Collection<CacheGroupDescriptor> groupSet = groups.get();
             if (groupSet != null && !groupSet.isEmpty()) {
                 QueryCache cache = cacheProvider.get();
-                for (String group : groupSet) {
-                    cache.removeGroup(group);
+                for (CacheGroupDescriptor group : groupSet) {
+                    if(group.getKeyType() != Void.class) {
+                        cache.removeGroup(group.getCacheGroupName(), group.getKeyType(), group.getValueType());
+                    } else {
+                        cache.removeGroup(group.getCacheGroupName());
+                    }
                 }
             }
             return result;
@@ -135,15 +141,14 @@ public class CacheInvalidationFilter implements DataChannelFilter {
             mappedHandlers.put(p.getClass(), invalidationFunction);
         }
 
-        Collection<String> objectGroups = invalidationFunction.apply(p);
+        Collection<CacheGroupDescriptor> objectGroups = invalidationFunction.apply(p);
         if (!objectGroups.isEmpty()) {
             getOrCreateTxGroups().addAll(objectGroups);
         }
     }
 
-
-    protected Set<String> getOrCreateTxGroups() {
-        Set<String> txGroups = groups.get();
+    protected Set<CacheGroupDescriptor> getOrCreateTxGroups() {
+        Set<CacheGroupDescriptor> txGroups = groups.get();
         if (txGroups == null) {
             txGroups = new HashSet<>();
             groups.set(txGroups);

@@ -7,6 +7,13 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 
 UPGRADING TO 4.0.M6
 
+* Per CAY-2262 new modules moved out from cayenne-lifecycle and should be added to pom.xml if the corresponding
+        functionality is used by your project:
+       - cayenne-cache-invalidation module
+
+* Per CAY-2259 InvalidationFunction returns CacheGroupDescriptor instead of simple String with cache group name,
+       change your custom functions accordingly.
+
 * Per CAY-2268 DI methods for binding ordered lists, introduced in 4.0.M3 where changed:
        - method after() replaced by explicit addAfter(), addAllAfter()
        - method before() replaced by insertBefore(), insertAllBefore()

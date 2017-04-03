@@ -19,12 +19,16 @@
 
 package org.apache.cayenne.lifecycle.cache;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.lifecycle.db.E1;
 import org.apache.cayenne.lifecycle.unit.CacheInvalidationCase;
 import org.apache.cayenne.query.ObjectSelect;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -32,11 +36,18 @@ import static org.junit.Assert.assertEquals;
 /**
  * @since 4.0
  */
-public class CacheInvalidationIT extends CacheInvalidationCase {
+public class CacheInvalidationCustomHandlerIT extends CacheInvalidationCase {
 
-    @Ignore("MapQueryCache doesn't store cache groups in different caches, so it can't run this test for now.")
+    @Override
+    protected Module buildInvalidationModule() {
+        return CacheInvalidationModuleBuilder.builder()
+                .noCacheGroupsHandler()
+                .invalidationHandler(G1InvalidationHandler.class)
+                .build();
+    }
+
     @Test
-    public void testInvalidate_Custom() throws Exception {
+    public void testInvalidate() throws Exception {
         ObjectContext context = runtime.newContext();
 
         // no explicit cache group must still work - it lands inside default cache called 'cayenne.default.cache'
@@ -58,7 +69,6 @@ public class CacheInvalidationIT extends CacheInvalidationCase {
 
         E1 e1 = context.newObject(E1.class);
         context.commitChanges();
-        runtime.getDataDomain().getQueryCache().removeGroup("g1");
 
         // inserted via Cayenne... "g1" should get auto refreshed...
         assertEquals(0, g0.selectCount(context));
@@ -72,5 +82,17 @@ public class CacheInvalidationIT extends CacheInvalidationCase {
         assertEquals(0, g0.selectCount(context));
         assertEquals(2, g1.selectCount(context));
         assertEquals(0, g2.selectCount(context));
+    }
+
+    public static class G1InvalidationHandler implements InvalidationHandler {
+        @Override
+        public InvalidationFunction canHandle(Class<? extends Persistent> type) {
+            return new InvalidationFunction() {
+                @Override
+                public Collection<CacheGroupDescriptor> apply(Persistent persistent) {
+                    return Collections.singleton(new CacheGroupDescriptor("g1"));
+                }
+            };
+        }
     }
 }

@@ -19,18 +19,13 @@
 
 package org.apache.cayenne.lifecycle.cache;
 
-import java.util.Collection;
+import org.apache.cayenne.unit.util.ModuleProviderChecker;
+import org.junit.Test;
 
-import org.apache.cayenne.Persistent;
+public class CayenneCacheInvalidationModuleProviderTest {
 
-/**
- * @since 4.0
- */
-public interface InvalidationFunction {
-
-    /**
-     * @return collection of cache groups to invalidate for given object
-     */
-    Collection<String> apply(Persistent persistent);
-
+    @Test
+    public void testAutoLoadable() {
+        ModuleProviderChecker.testProviderPresent(CacheInvalidationModuleProvider.class);
+    }
 }

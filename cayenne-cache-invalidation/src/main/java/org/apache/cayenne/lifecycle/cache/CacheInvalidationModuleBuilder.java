@@ -22,18 +22,14 @@ package org.apache.cayenne.lifecycle.cache;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.tx.TransactionFilter;
 
 /**
  * @since 4.0
  */
 public class CacheInvalidationModuleBuilder {
-
-    public static final String INVALIDATION_HANDLERS_LIST = "cayenne.querycache.invalidation_handlers";
 
     private Collection<Class<? extends InvalidationHandler>> handlerTypes;
 
@@ -43,10 +39,6 @@ public class CacheInvalidationModuleBuilder {
 
     public static CacheInvalidationModuleBuilder builder() {
         return new CacheInvalidationModuleBuilder();
-    }
-
-    private static ListBuilder<InvalidationHandler> contributeInvalidationHandler(Binder binder) {
-        return binder.bindList(InvalidationHandler.class, INVALIDATION_HANDLERS_LIST);
     }
 
     CacheInvalidationModuleBuilder() {
@@ -76,7 +68,7 @@ public class CacheInvalidationModuleBuilder {
         return new Module() {
             @Override
             public void configure(Binder binder) {
-                ListBuilder<InvalidationHandler> handlers = contributeInvalidationHandler(binder);
+                ListBuilder<InvalidationHandler> handlers = CacheInvalidationModule.contributeInvalidationHandler(binder);
 
                 if(!noCacheGroupsHandler) {
                     handlers.add(CacheGroupsHandler.class);
@@ -86,10 +78,6 @@ public class CacheInvalidationModuleBuilder {
                 for(Class<? extends InvalidationHandler> handlerType : handlerTypes) {
                     handlers.add(handlerType);
                 }
-
-                // want the filter to be INSIDE transaction
-                ServerModule.contributeDomainFilters(binder)
-                        .insertBefore(CacheInvalidationFilter.class, TransactionFilter.class);
             }
         };
     }

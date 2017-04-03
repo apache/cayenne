@@ -20,40 +20,31 @@
 package org.apache.cayenne.lifecycle.cache;
 
 import java.util.Collection;
+import java.util.Collections;
 
-import org.apache.cayenne.Persistent;
-
-import static java.util.Arrays.asList;
+import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.spi.ModuleProvider;
 
 /**
  * @since 4.0
  */
-public class CacheGroupsHandler implements InvalidationHandler {
+public class CacheInvalidationModuleProvider implements ModuleProvider {
 
-    /**
-     * Return invalidation function that returns values
-     * of {@link CacheGroups} annotations for the given type.
-     */
     @Override
-    public InvalidationFunction canHandle(Class<? extends Persistent> type) {
-
-        CacheGroups a = type.getAnnotation(CacheGroups.class);
-        if (a == null) {
-            return null;
-        }
-
-        String[] groups = a.value();
-        if (groups.length == 0) {
-            return null;
-        }
-
-        final Collection<String> groupsList = asList(groups);
-        return new InvalidationFunction() {
-            @Override
-            public Collection<String> apply(Persistent persistent) {
-                return groupsList;
-            }
-        };
+    public Module module() {
+        return new CacheInvalidationModule();
     }
 
+    @Override
+    public Class<? extends Module> moduleType() {
+        return CacheInvalidationModule.class;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Collection<Class<? extends Module>> overrides() {
+        Collection modules = Collections.singletonList(ServerModule.class);
+        return modules;
+    }
 }

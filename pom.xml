@@ -62,13 +62,14 @@
 		<module>cayenne-joda</module>
 		<module>cayenne-dbcp2</module>
 		<module>cayenne-jcache</module>
+		<module>cayenne-cache-invalidation</module>
 		<module>itests</module>
 		<module>modeler</module>
 		<module>maven-plugins</module>
 		<module>tutorials</module>
 		<module>docs</module>
 		<module>eventbridges</module>
-	</modules>
+    </modules>
 	<issueManagement>
 		<system>jira</system>
 		<url>https://issues.apache.org/jira/browse/CAY</url>

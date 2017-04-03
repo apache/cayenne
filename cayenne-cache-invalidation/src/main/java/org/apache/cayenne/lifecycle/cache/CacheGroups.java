@@ -26,9 +26,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * <p>
  * A built-in annotation that provides declarative cache management for persistent
  * objects.
- * 
+ * </p>
+ *
+ * @see InvalidationHandler
+ * @see CacheGroup
+ *
  * @since 3.1
  */
 @Target(ElementType.TYPE)
@@ -38,9 +43,14 @@ import java.lang.annotation.Target;
 public @interface CacheGroups {
 
     /**
-     * Defines one or more cache group names associated with the tagged entity. If
-     * omitted, it is assumed that cache group names are determined dynamically based on
-     * the object type or state in whatever listener is to process them.
+     * Defines one or more cache group names associated with the tagged entity.
      */
     String[] value() default {};
+
+    /**
+     * Defines one or more typed cache groups associated with the tagged entity.
+     *
+     * @since 4.0
+     */
+    CacheGroup[] groups() default {};
 }

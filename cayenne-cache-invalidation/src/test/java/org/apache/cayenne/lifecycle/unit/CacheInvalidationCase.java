@@ -18,26 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.unit;
 
-import java.util.Collection;
-import java.util.Collections;
-
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
+import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.lifecycle.cache.CacheInvalidationModuleBuilder;
-import org.apache.cayenne.lifecycle.cache.InvalidationFunction;
-import org.apache.cayenne.lifecycle.cache.InvalidationHandler;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.After;
 import org.junit.Before;
 
-public class CacheInvalidationCase {
+public abstract class CacheInvalidationCase {
 
 	protected ServerRuntime runtime;
 
 	protected TableHelper e1;
+
+	protected TableHelper e2;
 
 	@Before
 	public void startCayenne() throws Exception {
@@ -47,17 +43,25 @@ public class CacheInvalidationCase {
 
 		this.e1 = new TableHelper(dbHelper, "E1").setColumns("ID");
 		this.e1.deleteAll();
+
+		this.e2 = new TableHelper(dbHelper, "E2").setColumns("ID");
+		this.e2.deleteAll();
+	}
+
+	protected abstract Module buildInvalidationModule();
+
+	protected Module buildCustomModule() {
+		return new Module() {
+			@Override
+			public void configure(Binder binder) {
+			}
+		};
 	}
 
 	protected ServerRuntimeBuilder configureCayenne() {
-		Module cacheInvalidationModule = CacheInvalidationModuleBuilder
-				.builder()
-                .noCacheGroupsHandler()
-				.invalidationHandler(G1InvalidationHandler.class)
-				.build();
-
 		return ServerRuntime.builder()
-				.addModule(cacheInvalidationModule)
+				.addModule(buildInvalidationModule())
+				.addModule(buildCustomModule())
 				.addConfig("cayenne-lifecycle.xml");
 	}
 
@@ -65,18 +69,6 @@ public class CacheInvalidationCase {
 	public void shutdownCayenne() {
 		if (runtime != null) {
 			runtime.shutdown();
-		}
-	}
-
-	public static class G1InvalidationHandler implements InvalidationHandler {
-		@Override
-		public InvalidationFunction canHandle(Class<? extends Persistent> type) {
-			return new InvalidationFunction() {
-				@Override
-				public Collection<String> apply(Persistent persistent) {
-					return Collections.singleton("g1");
-				}
-			};
 		}
 	}
 
