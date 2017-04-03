@@ -337,6 +337,10 @@ public class OSQueryCache implements QueryCache {
         }
     }
 
+    public void removeGroup(String groupKey, Class<?> keyType, Class<?> valueType) {
+        removeGroup(groupKey);
+    }
+
     public void clear() {
         osCache.flushAll();
     }

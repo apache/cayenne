@@ -109,6 +109,11 @@ public class NestedQueryCache implements QueryCache {
         delegate.removeGroup(groupKey);
     }
 
+    @Override
+    public void removeGroup(String groupKey, Class<?> keyType, Class<?> valueType) {
+        delegate.removeGroup(groupKey, keyType, valueType);
+    }
+
     /**
      * Returns a shared cache size.
      * @see QueryCache#size()

@@ -44,6 +44,10 @@ public class MockQueryCache implements QueryCache {
     public void removeGroup(String groupKey) {
     }
 
+    public void removeGroup(String groupKey, Class<?> keyType, Class<?> valueType) {
+        removeGroup(groupKey);
+    }
+
     public int size() {
         return 0;
     }

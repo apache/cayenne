@@ -19,9 +19,9 @@
 package org.apache.cayenne.cache;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.query.QueryMetadata;
@@ -35,32 +35,32 @@ import org.apache.commons.collections.map.LRUMap;
  */
 public class MapQueryCache implements QueryCache, Serializable {
 
-    public static final int DEFAULT_CACHE_SIZE = 2000;
+    public static final int DEFAULT_CACHE_SIZE = 1000;
 
-    protected Map<String, CacheEntry> map;
+    static final String DEFAULT_CACHE_NAME = "cayenne.default.cache";
+
+    protected final Map<String, Map<String, List<?>>> cacheGroups;
+
+    private int maxSize;
 
     public MapQueryCache() {
         this(DEFAULT_CACHE_SIZE);
     }
 
-    @SuppressWarnings("unchecked")
     public MapQueryCache(int maxSize) {
-        this.map = new LRUMap(maxSize);
+        this.cacheGroups = new ConcurrentHashMap<>();
+        this.maxSize = maxSize;
     }
 
-    @SuppressWarnings("rawtypes")
     public List get(QueryMetadata metadata) {
         String key = metadata.getCacheKey();
         if (key == null) {
             return null;
         }
-
-        CacheEntry entry;
-        synchronized (this) {
-            entry = map.get(key);
+        Map<String, List<?>> map = createIfAbsent(metadata);
+        synchronized (map) {
+            return map.get(key);
         }
-
-        return (entry != null) ? entry.list : null;
     }
 
     /**
@@ -85,24 +85,25 @@ public class MapQueryCache implements QueryCache, Serializable {
         return result;
     }
 
-    @SuppressWarnings("rawtypes")
     public void put(QueryMetadata metadata, List results) {
         String key = metadata.getCacheKey();
-        if (key != null) {
+        if (key == null) {
+            return;
+        }
 
-            CacheEntry entry = new CacheEntry();
-            entry.list = results;
-            entry.cacheGroup = metadata.getCacheGroup();
-
-            synchronized (this) {
-                map.put(key, entry);
-            }
+        Map<String, List<?>> map = createIfAbsent(metadata);
+        synchronized (map) {
+            map.put(key, results);
         }
     }
 
     public void remove(String key) {
-        if (key != null) {
-            synchronized (this) {
+        if (key == null) {
+            return;
+        }
+
+        for(Map<String, List<?>> map : cacheGroups.values()) {
+            synchronized (map) {
                 map.remove(key);
             }
         }
@@ -110,33 +111,64 @@ public class MapQueryCache implements QueryCache, Serializable {
 
     public void removeGroup(String groupKey) {
         if (groupKey != null) {
-            synchronized (this) {
-                Iterator<CacheEntry> it = map.values().iterator();
-                while (it.hasNext()) {
-                    CacheEntry entry = it.next();
-                    if (entry.cacheGroup != null) {
-                        if (groupKey.equals(entry.cacheGroup)) {
-                            it.remove();
-                            break;
-                        }
-                    }
-                }
-            }
+            cacheGroups.remove(groupKey);
         }
+    }
+
+    public void removeGroup(String groupKey, Class<?> keyType, Class<?> valueType) {
+        removeGroup(groupKey);
     }
 
     public void clear() {
-        synchronized (this) {
-            map.clear();
-        }
+        cacheGroups.clear();
     }
 
     public int size() {
-        return map.size();
+        int size = 0;
+        for(Map<String, List<?>> map : cacheGroups.values()) {
+            synchronized (map) {
+                size += map.size();
+            }
+        }
+        return size;
     }
 
-    final static class CacheEntry implements Serializable {
-        List<?> list;
-        String cacheGroup;
+    protected Map<String, List<?>> createIfAbsent(QueryMetadata metadata) {
+        return createIfAbsent(cacheName(metadata));
+    }
+
+    protected Map<String, List<?>> createIfAbsent(String cacheName) {
+        Map<String, List<?>> cache = getCache(cacheName);
+        if (cache == null) {
+            cache = createCache(cacheName);
+        }
+
+        return cache;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected synchronized Map<String, List<?>> createCache(String cacheName) {
+        Map<String, List<?>> map = getCache(cacheName);
+        if(map != null) {
+            return map;
+        }
+        map = new LRUMap(maxSize);
+        cacheGroups.put(cacheName, map);
+        return map;
+    }
+
+    protected Map<String, List<?>> getCache(String name) {
+        return cacheGroups.get(name);
+    }
+
+    protected String cacheName(QueryMetadata metadata) {
+
+        String cacheGroup = metadata.getCacheGroup();
+        if (cacheGroup != null) {
+            return cacheGroup;
+        }
+
+        // no explicit cache group
+        return DEFAULT_CACHE_NAME;
     }
 }

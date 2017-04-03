@@ -67,6 +67,15 @@ public interface QueryCache {
     void removeGroup(String groupKey);
 
     /**
+     * Removes a group of entries identified by group key.
+     * Can be used if cache provider supports strictly typed caches.
+     * @see QueryCache#removeGroup(String)
+     *
+     * @since 4.0
+     */
+    void removeGroup(String groupKey, Class<?> keyType, Class<?> valueType);
+
+    /**
      * Clears all cache entries.
      *
      * @deprecated since 4.0. Please use implementation specific methods to perform cache management tasks.
