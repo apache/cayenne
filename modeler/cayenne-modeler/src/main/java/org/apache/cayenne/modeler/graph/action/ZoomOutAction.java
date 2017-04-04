@@ -33,7 +33,7 @@ public class ZoomOutAction extends CayenneAction {
     private final DataDomainGraphTab dataDomainGraphTab;
     
     public ZoomOutAction(DataDomainGraphTab dataDomainGraphTab, Application application) {
-        super("Zoom In", application);
+        super("Zoom Out", application);
         this.dataDomainGraphTab = dataDomainGraphTab;
         setEnabled(true);
     }
