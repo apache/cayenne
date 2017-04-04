@@ -63,7 +63,7 @@ public class Artist extends _Artist {
                         + DEFAULT_DATE_FORMAT + "': " + yearMonthDay);
             }
 
-            setDateOfBirth(date);
+            setDateOfBirth(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         }
     }
 }</programlisting>
