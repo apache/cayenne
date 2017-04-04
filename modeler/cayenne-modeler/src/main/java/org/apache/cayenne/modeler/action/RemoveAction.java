@@ -129,6 +129,7 @@ public class RemoveAction extends CayenneAction {
         ProjectController mediator = getProjectController();
 
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
+        
         if (mediator.getCurrentObjEntity() != null) {
             if (dialog
                     .shouldDelete("ObjEntity", mediator.getCurrentObjEntity().getName())) {
