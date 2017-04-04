@@ -77,7 +77,7 @@ public class ConfirmRemoveDialog {
     }
 
     public boolean shouldDelete(String type, String name) {
-        return shouldDelete(String.format("%s named '%s'?", type, name));
+        return shouldDelete(String.format("%s named '%s", type, name));
     }
 
     public boolean shouldDelete(String name) {
