@@ -129,29 +129,8 @@ public class RemoveAction extends CayenneAction {
         ProjectController mediator = getProjectController();
 
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
-
-        if(mediator.getCurrentCallbackMethods().length > 0) {
-            removeMethods(mediator, dialog, getProjectController().getCurrentCallbackMethods());
-        }
-        else if(mediator.getCurrentObjRelationships().length > 0) {
-      		removeObjRelationships(mediator, dialog, getProjectController().getCurrentObjRelationships());
-        }
-        else if(mediator.getCurrentDbRelationships().length > 0) {
-      		removeDBRelationships(mediator, dialog, getProjectController().getCurrentDbRelationships());
-        }
-        else if(mediator.getCurrentObjAttributes().length > 0) {
-      		removeObjAttributes(mediator, dialog, getProjectController().getCurrentObjAttributes());
-        }
-        else if(mediator.getCurrentEmbAttributes().length > 0) {
-      		removeEmbAttributes(mediator, dialog, getProjectController().getCurrentEmbAttributes());
-        }
-        else if(mediator.getCurrentDbAttributes().length > 0) {
-        	removeDbAttributes(mediator, dialog, getProjectController().getCurrentDbAttributes());
-        }
-        else if(mediator.getCurrentProcedureParameters().length > 0) {
-        	removeProcedureParameters(mediator.getCurrentProcedure(), mediator.getCurrentProcedureParameters());
-        }
-        else if (mediator.getCurrentObjEntity() != null) {
+        
+        if (mediator.getCurrentObjEntity() != null) {
             if (dialog
                     .shouldDelete("ObjEntity", mediator.getCurrentObjEntity().getName())) {
                 application.getUndoManager().addEdit(
@@ -255,6 +234,26 @@ public class RemoveAction extends CayenneAction {
                 application.getUndoManager().addEdit(compoundEdit);
 
             }
+        } else if(mediator.getCurrentCallbackMethods().length > 0) {
+            removeMethods(mediator, dialog, getProjectController().getCurrentCallbackMethods());
+        }
+        else if(mediator.getCurrentObjRelationships().length > 0) {
+      		removeObjRelationships(mediator, dialog, getProjectController().getCurrentObjRelationships());
+        }
+        else if(mediator.getCurrentDbRelationships().length > 0) {
+      		removeDBRelationships(mediator, dialog, getProjectController().getCurrentDbRelationships());
+        }
+        else if(mediator.getCurrentObjAttributes().length > 0) {
+      		removeObjAttributes(mediator, dialog, getProjectController().getCurrentObjAttributes());
+        }
+        else if(mediator.getCurrentEmbAttributes().length > 0) {
+      		removeEmbAttributes(mediator, dialog, getProjectController().getCurrentEmbAttributes());
+        }
+        else if(mediator.getCurrentDbAttributes().length > 0) {
+        	removeDbAttributes(mediator, dialog, getProjectController().getCurrentDbAttributes());
+        }
+        else if(mediator.getCurrentProcedureParameters().length > 0) {
+        	removeProcedureParameters(mediator.getCurrentProcedure(), mediator.getCurrentProcedureParameters());
         }
 
     }
