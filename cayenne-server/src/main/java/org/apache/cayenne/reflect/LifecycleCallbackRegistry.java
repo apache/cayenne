@@ -133,7 +133,7 @@ public class LifecycleCallbackRegistry {
 	 */
 	public void addListener(Class<?> entityClass, LifecycleListener listener) {
 		addListener(LifecycleEvent.POST_ADD, entityClass, listener, "postAdd");
-		addListener(LifecycleEvent.POST_PERSIST, entityClass, listener, "prePersist");
+		addListener(LifecycleEvent.PRE_PERSIST, entityClass, listener, "prePersist");
 		addListener(LifecycleEvent.POST_PERSIST, entityClass, listener, "postPersist");
 		addListener(LifecycleEvent.PRE_REMOVE, entityClass, listener, "preRemove");
 		addListener(LifecycleEvent.POST_REMOVE, entityClass, listener, "postRemove");
