@@ -126,6 +126,7 @@
 &lt;%@ page import="org.apache.cayenne.query.*" %>
 &lt;%@ page import="java.util.*" %&gt;
 &lt;%@ page import="java.text.*" %&gt;
+&lt;%@ page import="java.time.format.DateTimeFormatter" %>
 
 &lt;% 
     ObjectContext context = BaseContext.getThreadObjectContext();
@@ -160,8 +161,10 @@
     }
 
     String name = artist.getName() == null ? "" : artist.getName();
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     String dob = artist.getDateOfBirth() == null
-            ? "" : new SimpleDateFormat("yyyyMMdd").format(artist.getDateOfBirth());
+                        ? "" :artist.getDateOfBirth().format(formatter);
 %&gt;
 &lt;html&gt;
     &lt;head&gt;
@@ -208,7 +211,7 @@
     &lt;plugins&gt;
         &lt;plugin&gt;
             &lt;groupId&gt;org.eclipse.jetty&lt;/groupId&gt;
-            &lt;artifactId&gt;maven-jetty-plugin&lt;/artifactId&gt;
+            &lt;artifactId&gt;jetty-maven-plugin&lt;/artifactId&gt;
             &lt;version&gt;9.3.14.v20161028&lt;/version&gt;
         &lt;/plugin&gt;
     &lt;/plugins&gt;

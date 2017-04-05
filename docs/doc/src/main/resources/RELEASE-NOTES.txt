@@ -38,6 +38,7 @@ CAY-2250 Remove: Incorrect text in Confirm Remove message when cursor is set on 
 CAY-2256 Cannot Save/Insert an Object With null Flattened (complex) toOne Relationship (see also CAY-2146)
 CAY-2265 ServerRuntime.builder() fails to set default runtime name when a the project file doesn't follow recognized pattern
 CAY-2273 Modeler: default suggested cgen location is rooted in subpackage
+CAY-2275 Documentation: tutorial is out of sync with 4.0.M5 version
 CAY-2276 PrePersist listener registered as PostPersist in LifecycleCallbackRegistry.addListener(Class<?>, LifecycleListener)
 
 ----------------------------------
