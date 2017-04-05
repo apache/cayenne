@@ -34,8 +34,7 @@
             birth, taking a string argument for the date. It will be preserved even if the model
             changes later:</para>
         <programlisting language="java">package org.example.cayenne.persistent;
-
-import org.example.cayenne.persistent.auto._Artist;
+            
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -56,7 +55,7 @@ public class Artist extends _Artist {
 
             LocalDate date;
             try {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT);
                 date = LocalDate.parse(yearMonthDay, formatter);
             } catch (DateTimeParseException e) {
                 throw new IllegalArgumentException(
