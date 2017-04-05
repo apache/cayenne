@@ -67,6 +67,12 @@
             &lt;!-- Here specify the version of Cayenne you are actually using --&gt;
             &lt;version&gt;<?eval ${project.version}?>&lt;/version&gt;
         &lt;/dependency&gt;
+        &lt;!--  For java.time.* types you need to use this dependency-->
+        &lt;dependency>
+            &lt;groupId>org.apache.cayenne&lt;/groupId>
+            &lt;artifactId>cayenne-java8&lt;/artifactId>
+            &lt;version>4.0.M5&lt;/version>
+        &lt;/dependency>
     &lt;/dependencies&gt;
 &lt;/project&gt;</programlisting></para>
         <para>Your computer must be connected to the internet. Once you edit the <code>pom.xml</code>, IDEA
