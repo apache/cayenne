@@ -19,11 +19,9 @@
 
 package org.apache.cayenne.gen;
 
+import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.*;
 import org.apache.commons.logging.Log;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -513,7 +511,7 @@ public class ClassGenerationAction {
 	/**
 	 * Adds entities to the internal entity list.
 	 */
-	public void addEntities(Collection<ObjEntity> entities) {
+	public void addEntities(Collection<ObjEntity> entities) throws CayenneException {
 		if (artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
 				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
 			if (entities != null) {
