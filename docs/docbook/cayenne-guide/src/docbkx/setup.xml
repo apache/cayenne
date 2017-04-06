@@ -127,7 +127,7 @@
     &lt;plugins>
         &lt;plugin>
             &lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
-            &lt;artifactId>maven-cayenne-modeler-plugin&lt;/artifactId>
+            &lt;artifactId>cayenne-modeler-maven-plugin&lt;/artifactId>
             &lt;version><?eval ${project.version}?>&lt;/version>
         &lt;/plugin>
     &lt;/plugins>
