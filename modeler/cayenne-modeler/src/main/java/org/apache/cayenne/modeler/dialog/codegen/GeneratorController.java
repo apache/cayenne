@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
+import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
@@ -169,38 +170,43 @@ public abstract class GeneratorController extends CayenneController {
         Collection<ClassGenerationAction> generators = new ArrayList<>();
         Collection<StandardPanelComponent> dataMapLines = ((GeneratorControllerPanel) getView()).getDataMapLines();
         for (DataMap map : getParentController().getDataMaps()) {
-            ClassGenerationAction generator = newGenerator();
-            generator.setArtifactsGenerationMode(mode);
-            generator.setDataMap(map);
+            try {
+                ClassGenerationAction generator = newGenerator();
+                generator.setArtifactsGenerationMode(mode);
+                generator.setDataMap(map);
 
-            LinkedList<ObjEntity> objEntities = new LinkedList<>(map.getObjEntities());
-            objEntities.retainAll(selectedEntities);
-            generator.addEntities(objEntities);
+                LinkedList<ObjEntity> objEntities = new LinkedList<>(map.getObjEntities());
+                objEntities.retainAll(selectedEntities);
+                generator.addEntities(objEntities);
 
-            LinkedList<Embeddable> embeddables = new LinkedList<>(map.getEmbeddables());
-            embeddables.retainAll(getParentController().getSelectedEmbeddables());
-            generator.addEmbeddables(embeddables);
+                LinkedList<Embeddable> embeddables = new LinkedList<>(map.getEmbeddables());
+                embeddables.retainAll(getParentController().getSelectedEmbeddables());
+                generator.addEmbeddables(embeddables);
 
-            generator.addQueries(map.getQueryDescriptors());
+                generator.addQueries(map.getQueryDescriptors());
 
-            Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
+                Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
 
-            if (preferences != null) {
-                generator.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
+                if (preferences != null) {
+                    generator.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
 
-            }
-
-            generator.setDestDir(outputDir);
-            generator.setMakePairs(true);
-
-            for (StandardPanelComponent dataMapLine : dataMapLines) {
-                if(dataMapLine.getDataMap() == map && !Util.isEmptyString(dataMapLine.getSuperclassPackage().getText())) {
-                    generator.setSuperPkg(dataMapLine.getSuperclassPackage().getText());
-                    break;
                 }
-            }
 
-            generators.add(generator);
+                generator.setDestDir(outputDir);
+                generator.setMakePairs(true);
+
+                for (StandardPanelComponent dataMapLine : dataMapLines) {
+                    if (dataMapLine.getDataMap() == map && !Util.isEmptyString(dataMapLine.getSuperclassPackage().getText())) {
+                        generator.setSuperPkg(dataMapLine.getSuperclassPackage().getText());
+                        break;
+                    }
+                }
+
+                generators.add(generator);
+            } catch (CayenneException exception) {
+                JOptionPane.showMessageDialog(this.getView(), exception.getUnlabeledMessage());
+                return null;
+            }
         }
 
         return generators;

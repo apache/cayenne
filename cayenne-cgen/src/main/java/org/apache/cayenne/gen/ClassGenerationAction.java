@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.gen;
 
+import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
@@ -513,7 +514,15 @@ public class ClassGenerationAction {
 	/**
 	 * Adds entities to the internal entity list.
 	 */
-	public void addEntities(Collection<ObjEntity> entities) {
+
+	/**
+	 *
+	 * @param entities
+	 * @throws CayenneException
+	 *
+	 * @since 4.0 throws exception
+	 */
+	public void addEntities(Collection<ObjEntity> entities) throws CayenneException {
 		if (artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
 				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
 			if (entities != null) {
