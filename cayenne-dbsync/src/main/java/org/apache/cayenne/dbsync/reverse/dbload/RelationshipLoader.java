@@ -66,7 +66,7 @@ public class RelationshipLoader extends AbstractLoader {
             ExportedKey.KeyData FK = key.getFk();
             DbEntity pkEntity = map.getDbEntity(PK.getTable());
             DbEntity fkEntity = map.getDbEntity(FK.getTable());
-            if(pkEntity == null || fkEntity == null) {
+            if (pkEntity == null || fkEntity == null) {
                 // Check for existence of this entities were made in creation of ExportedKey
                 throw new IllegalStateException();
             }
@@ -143,6 +143,7 @@ public class RelationshipLoader extends AbstractLoader {
 
     private void createAndAppendJoins(Set<ExportedKey> exportedKeys, DbEntity pkEntity, DbEntity fkEntity,
                                       DbRelationship forwardRelationship, DbRelationship reverseRelationship) {
+
         for (ExportedKey exportedKey : exportedKeys) {
             // Create and append joins
             String pkName = exportedKey.getPk().getColumn();
@@ -161,8 +162,21 @@ public class RelationshipLoader extends AbstractLoader {
                 continue;
             }
 
-            forwardRelationship.addJoin(new DbJoin(forwardRelationship, pkName, fkName));
-            reverseRelationship.addJoin(new DbJoin(reverseRelationship, fkName, pkName));
+
+            addJoin(forwardRelationship, pkName, fkName);
+            addJoin(reverseRelationship, fkName, pkName);
+
         }
+    }
+
+    private void addJoin(DbRelationship relationship, String sourceName, String targetName){
+
+        for (DbJoin join : relationship.getJoins()) {
+            if (join.getSourceName().equals(sourceName) && join.getTargetName().equals(targetName)) {
+                return;
+            }
+        }
+
+        relationship.addJoin(new DbJoin(relationship, sourceName, targetName));
     }
 }

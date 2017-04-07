@@ -31,6 +31,7 @@ CAY-2277 Create ClientRuntime with ClientRuntimeBuilder just like ServerRuntime
 
 Bug Fixes:
 
+CAY-2021 cdbimport: detect when same FK constraint is defined twice
 CAY-2077 Bug in CayenneRuntimeException using wrong specified string in Formatter
 CAY-2094 SelectById query doesn't work from ROP client
 CAY-2161 'Not for Client Use' option is ignored at Class Generation
