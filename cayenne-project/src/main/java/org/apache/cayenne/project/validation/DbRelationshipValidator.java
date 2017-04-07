@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -25,6 +26,7 @@ import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -100,6 +102,24 @@ class DbRelationshipValidator extends ConfigurationNodeValidator {
         }
 
         checkForDuplicates(relationship, validationResult);
+        checkOnGeneratedStrategyConflict(relationship, validationResult);
+    }
+
+    private void checkOnGeneratedStrategyConflict(DbRelationship relationship, ValidationResult validationResult) {
+        if (relationship.isToDependentPK()) {
+            Collection<DbAttribute> attributes = relationship.getTargetEntity().getGeneratedAttributes();
+            for (DbAttribute attribute : attributes) {
+
+                if (attribute.isGenerated()) {
+                   addFailure(
+                           validationResult,
+                           relationship,
+                           "'To Dep Pk' incompatible with Database-Generated on '%s' relationship",
+                           toString(relationship));
+                }
+
+            }
+        }
     }
 
     /**
