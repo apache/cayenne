@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.event;
 
+import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
 import org.junit.Test;
 
@@ -29,7 +30,7 @@ public class CayenneJMSModuleProviderTest {
 
     @Test
     public void testAutoLoadable() {
-        ModuleProviderChecker.testProviderPresent(JMSModuleProvider.class);
+        ModuleProviderChecker.testProviderPresent(JMSServerModuleProvider.class, CayenneServerModuleProvider.class);
     }
 
 }

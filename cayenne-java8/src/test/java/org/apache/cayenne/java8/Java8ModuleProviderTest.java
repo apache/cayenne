@@ -18,6 +18,7 @@
  */
 package org.apache.cayenne.java8;
 
+import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
 import org.junit.Test;
 
@@ -25,6 +26,6 @@ public class Java8ModuleProviderTest {
 
     @Test
     public void testProviderPresent() {
-        ModuleProviderChecker.testProviderPresent(Java8ModuleProvider.class);
+        ModuleProviderChecker.testProviderPresent(Java8ServerModuleProvider.class, CayenneServerModuleProvider.class);
     }
 }

@@ -19,18 +19,20 @@
 
 package org.apache.cayenne.rop.protostuff;
 
+import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.rop.client.ClientConstants;
-import org.apache.cayenne.configuration.rop.client.ClientLocalRuntime;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
+import org.apache.cayenne.configuration.rop.client.LocalClientServerChannelProvider;
 import org.apache.cayenne.configuration.rop.client.ProtostuffModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.java8.Java8Module;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.service.ProtostuffLocalConnectionProvider;
 import org.junit.Before;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,24 +44,21 @@ public class RuntimeBase extends ProtostuffProperties {
 
     @Before
     public void setUpRuntimes() throws Exception {
-        this.serverRuntime = ServerRuntime
-                .builder()
+        this.serverRuntime = ServerRuntime.builder()
                 .addConfig("cayenne-protostuff.xml")
-                .addModule(new ProtostuffModule())
                 .build();
 
-        Map<String, String> properties = new HashMap<>();
-        properties.put(ClientConstants.ROP_CHANNEL_EVENTS_PROPERTY, Boolean.TRUE.toString());
+        Module module = binder -> {
+            binder.bind(ClientConnection.class)
+                    .toProviderInstance(new ProtostuffLocalConnectionProvider());
+            binder.bind(Key.get(DataChannel.class, ClientRuntime.CLIENT_SERVER_CHANNEL_KEY))
+                    .toProviderInstance(new LocalClientServerChannelProvider(serverRuntime.getInjector()));
+        };
 
-        Module module = binder -> binder.bind(ClientConnection.class)
-                .toProviderInstance(new ProtostuffLocalConnectionProvider());
-
-        this.clientRuntime = new ClientLocalRuntime(
-                serverRuntime.getInjector(),
-                properties,
-                new ProtostuffModule(),
-                new Java8Module(),
-                module);
+        this.clientRuntime = ClientRuntime.builder()
+                .properties(Collections.singletonMap(ClientConstants.ROP_CHANNEL_EVENTS_PROPERTY, "true"))
+                .addModule(module)
+                .build();
 
         this.context = clientRuntime.newContext();
     }

@@ -27,6 +27,7 @@ CAY-2269 Add support for date/time components extraction in expression functions
 CAY-2270 Update function support in expression parser
 CAY-2271 ColumnSelect: support for prefetch and limit
 CAY-2272 ColumnSelect: methods to manually control DISTINCT clause
+CAY-2277 Create ClientRuntime with ClientRuntimeBuilder just like ServerRuntime
 
 Bug Fixes:
 

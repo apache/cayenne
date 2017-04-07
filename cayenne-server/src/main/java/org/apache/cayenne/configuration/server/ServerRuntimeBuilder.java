@@ -235,7 +235,7 @@ public class ServerRuntimeBuilder {
     }
 
     private Collection<? extends Module> autoLoadedModules() {
-        return new ModuleLoader().load();
+        return new ModuleLoader().load(CayenneServerModuleProvider.class);
     }
 
     private Collection<? extends Module> defaultModules() {

@@ -18,6 +18,7 @@
  */
 package org.apache.cayenne.joda;
 
+import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
 import org.junit.Test;
 
@@ -25,6 +26,6 @@ public class JodaModuleProviderTest {
 
     @Test
     public void testProviderPresent() {
-        ModuleProviderChecker.testProviderPresent(JodaModuleProvider.class);
+        ModuleProviderChecker.testProviderPresent(JodaServerModuleProvider.class, CayenneServerModuleProvider.class);
     }
 }

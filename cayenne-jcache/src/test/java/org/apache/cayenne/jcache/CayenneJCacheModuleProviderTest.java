@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.jcache;
 
+import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
 import org.junit.Test;
 
@@ -26,6 +27,6 @@ public class CayenneJCacheModuleProviderTest {
 
     @Test
     public void testAutoLoadable() {
-        ModuleProviderChecker.testProviderPresent(JCacheModuleProvider.class);
+        ModuleProviderChecker.testProviderPresent(JCacheServerModuleProvider.class, CayenneServerModuleProvider.class);
     }
 }

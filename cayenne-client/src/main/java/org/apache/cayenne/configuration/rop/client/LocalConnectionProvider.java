@@ -30,7 +30,7 @@ import org.apache.cayenne.remote.service.LocalConnection;
  */
 public class LocalConnectionProvider implements Provider<ClientConnection> {
 
-    @Inject(ClientLocalRuntime.CLIENT_SERVER_CHANNEL_KEY)
+    @Inject(ClientRuntime.CLIENT_SERVER_CHANNEL_KEY)
     protected Provider<DataChannel> clientServerChannelProvider;
 
     public ClientConnection get() throws ConfigurationException {

@@ -7,9 +7,21 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 
 UPGRADING TO 4.0.M6
 
-* Per CAY-2262 new modules moved out from cayenne-lifecycle and should be added to pom.xml if the corresponding
-        functionality is used by your project:
-       - cayenne-cache-invalidation module
+* Per CAY-2277 ClientRuntime created with ClientRuntimeBuilder, direct instantiation of
+       ClientRuntime is deprecated. Also whole ClientLocalRuntime class is deprecated, use instead
+       ClientRuntimeBuilder.local() method.
+
+* Per CAY-2262 Client modules are now auto-loaded by default to turn off auto-loading use
+       ClientRuntimeBuilder.disableModulesAutoLoading() method.
+
+       List of client modules:
+       - cayenne-client
+       - cayenne-client-jetty
+       - cayenne-protostuff (it also supports auto-loading by ServerRuntimeBuilder)
+
+       Also new modules are introduced and should be added to your pom.xml if the corresponding
+       functionality is used by your project:
+       - cayenne-cache-invalidation (moved from cayenne-lifecycle)
 
 * Per CAY-2259 InvalidationFunction returns CacheGroupDescriptor instead of simple String with cache group name,
        change your custom functions accordingly.
@@ -408,7 +420,10 @@ UPGRADING TO 3.0M3
 
 * Java 5 is now required as a minimum for Cayenne Modeler and the Cayenne libraries.
 
-* After the move to Java 5, generics have been implemented in many of the Cayenne APIs. If you don't use generics in your project this should not affect you, but if you do you will need to review any new compiler errors or warnings. The effect of generics is at compile time only, so their introduction will not change the runtime behaviour of your application once compiled.
+* After the move to Java 5, generics have been implemented in many of the Cayenne APIs. If you don't use generics
+in your project this should not affect you, but if you do you will need to review any new compiler errors or warnings.
+The effect of generics is at compile time only, so their introduction will not change the runtime behaviour of
+your application once compiled.
 
 UPGRADING TO 3.0M2
 

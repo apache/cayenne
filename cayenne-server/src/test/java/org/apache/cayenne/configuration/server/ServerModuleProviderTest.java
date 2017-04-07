@@ -25,6 +25,6 @@ public class ServerModuleProviderTest {
 
     @Test
     public void testProviderPresent() {
-        ModuleProviderChecker.testProviderPresent(ServerModuleProvider.class);
+        ModuleProviderChecker.testProviderPresent(MainCayenneServerModuleProvider.class, CayenneServerModuleProvider.class);
     }
 }

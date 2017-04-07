@@ -31,27 +31,28 @@ import java.util.ServiceLoader;
 
 /**
  * Auto-loads DI modules using ServiceLoader. To make a module auto-loadable, you will need to ship the jar with a file
- * "META-INF/services/org.apache.cayenne.di.spi.ModuleProvider" that contains provider implementation for the module in
+ * "META-INF/services/&lt;full.provider.class.name&gt;" that contains provider implementation for the module in
  * question.
  *
+ * @see ModuleProvider
  * @since 4.0
  */
 public class ModuleLoader {
 
     /**
      * Auto-loads all modules declared on classpath. Modules are loaded from the SPI declarations stored in
-     * "META-INF/services/org.apache.cayenne.di.spi.ModuleProvider", and then sorted in the order of override dependency.
+     * "META-INF/services/&lt;full.provider.class.name&gt;", and then sorted in the order of override dependency.
      *
      * @return a sorted collection of auto-loadable modules.
      * @throws DIRuntimeException if auto-loaded modules have circular override dependencies.
      */
-    public List<Module> load() {
+    public List<Module> load(Class<? extends ModuleProvider> providerClass) {
 
         // map providers by class
 
         Map<Class<? extends Module>, ModuleProvider> providers = new HashMap<>();
 
-        for (ModuleProvider provider : ServiceLoader.load(ModuleProvider.class)) {
+        for (ModuleProvider provider : ServiceLoader.load(providerClass)) {
 
             ModuleProvider existing = providers.put(provider.moduleType(), provider);
             if (existing != null && !existing.getClass().equals(provider.getClass())) {

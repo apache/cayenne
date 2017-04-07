@@ -42,27 +42,21 @@ public class ClientCaseModule implements Module {
 
         // singletons
 
-        binder.bind(UnitTestLifecycleManager.class).toInstance(
-                new ClientCaseLifecycleManager(testScope));
-        binder.bind(Key.get(DataChannelInterceptor.class, ClientCase.ROP_CLIENT_KEY)).to(
-                ClientServerDataChannelInterceptor.class);
+        binder.bind(UnitTestLifecycleManager.class).toInstance(new ClientCaseLifecycleManager(testScope));
+        binder.bind(Key.get(DataChannelInterceptor.class, ClientCase.ROP_CLIENT_KEY))
+                .to(ClientServerDataChannelInterceptor.class);
 
         // test-scoped objects
 
-        binder.bind(ClientCaseProperties.class).to(ClientCaseProperties.class).in(
-                testScope);
+        binder.bind(ClientCaseProperties.class).to(ClientCaseProperties.class).in(testScope);
 
-        binder.bind(ClientRuntime.class).toProvider(ClientRuntimeProvider.class).in(
-                testScope);
+        binder.bind(ClientRuntime.class).toProvider(ClientRuntimeProvider.class).in(testScope);
 
-        binder.bind(Key.get(ObjectContext.class, ClientCase.ROP_CLIENT_KEY)).toProvider(
-                ClientCaseObjectContextProvider.class).in(testScope);
-        binder.bind(CayenneContext.class).toProvider(
-                ClientCaseCayenneContextProvider.class).in(testScope);
+        binder.bind(Key.get(ObjectContext.class, ClientCase.ROP_CLIENT_KEY))
+                .toProvider(ClientCaseObjectContextProvider.class).in(testScope);
+        binder.bind(CayenneContext.class).toProvider(ClientCaseCayenneContextProvider.class).in(testScope);
 
-        binder.bind(ClientServerChannel.class).toProvider(
-                ClientServerChannelProvider.class).in(testScope);
-        binder.bind(ClientConnection.class).toProvider(
-                ClientCaseClientConnectionProvider.class).in(testScope);
+        binder.bind(ClientServerChannel.class).toProvider(ClientServerChannelProvider.class).in(testScope);
+        binder.bind(ClientConnection.class).toProvider(ClientCaseClientConnectionProvider.class).in(testScope);
     }
 }

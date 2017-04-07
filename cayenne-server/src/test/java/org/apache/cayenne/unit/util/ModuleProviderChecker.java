@@ -25,24 +25,33 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ServiceLoader;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class ModuleProviderChecker {
 
     private Class<? extends ModuleProvider> expectedProvider;
+    private Class<? extends ModuleProvider> providerInterface;
 
-    public static void testProviderPresent(Class<? extends ModuleProvider> expectedProvider) {
-        new ModuleProviderChecker(expectedProvider).testProviderPresent();
+    public static void testProviderPresent(Class<? extends ModuleProvider> expectedProvider,
+                                           Class<? extends ModuleProvider> providerInterface) {
+        new ModuleProviderChecker(expectedProvider, providerInterface).testProviderPresent();
     }
 
-    protected ModuleProviderChecker(Class<? extends ModuleProvider> expectedProvider) {
+    protected ModuleProviderChecker(Class<? extends ModuleProvider> expectedProvider,
+                                    Class<? extends ModuleProvider> providerInterface) {
         this.expectedProvider = Objects.requireNonNull(expectedProvider);
+        this.providerInterface = Objects.requireNonNull(providerInterface);
+        assertTrue("Provider interface expected", providerInterface.isInterface());
+        if(expectedProvider.equals(providerInterface)) {
+            fail("Expected provider class and required interface should be different.");
+        }
     }
 
     protected void testProviderPresent() {
 
         List<ModuleProvider> providers = new ArrayList<>();
-        for (ModuleProvider p : ServiceLoader.load(ModuleProvider.class)) {
+        for (ModuleProvider p : ServiceLoader.load(providerInterface)) {
             if (expectedProvider.equals(p.getClass())) {
                 providers.add(p);
             }

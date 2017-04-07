@@ -31,7 +31,6 @@ import org.apache.cayenne.remote.service.LocalConnection;
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -50,8 +49,10 @@ public class ClientLocalRuntimeTest {
 			}
 		};
 
-		ClientLocalRuntime runtime = new ClientLocalRuntime(DIBootstrap.createInjector(serverModule),
-				Collections.<String, String> emptyMap());
+		ClientRuntime runtime = ClientRuntime.builder()
+				.disableModulesAutoLoading()
+				.local(DIBootstrap.createInjector(serverModule))
+				.build();
 		Collection<Module> cmodules = runtime.getModules();
 		assertEquals(2, cmodules.size());
 
@@ -79,8 +80,9 @@ public class ClientLocalRuntimeTest {
 			}
 		};
 
-		ClientLocalRuntime runtime = new ClientLocalRuntime(DIBootstrap.createInjector(serverModule),
-				Collections.EMPTY_MAP);
+		ClientRuntime runtime = ClientRuntime.builder()
+				.local(DIBootstrap.createInjector(serverModule))
+				.build();
 
 		ClientConnection connection = runtime.getConnection();
 		assertNotNull(connection);

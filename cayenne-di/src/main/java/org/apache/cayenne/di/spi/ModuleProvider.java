@@ -23,7 +23,12 @@ import org.apache.cayenne.di.Module;
 import java.util.Collection;
 
 /**
+ * <p>
  * Provider of modules used by module auto-loading mechanism to identify and load modules.
+ * </p>
+ * <p>
+ * Multiple providers can be created by inheriting from this interface and using it with {@link ModuleLoader}
+ *</p>
  *
  * @since 4.0
  */

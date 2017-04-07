@@ -18,6 +18,7 @@
  */
 package org.apache.cayenne.crypto;
 
+import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
 import org.junit.Test;
 
@@ -25,6 +26,6 @@ public class CryptoModuleProviderTest {
 
     @Test
     public void testProviderPresent() {
-        ModuleProviderChecker.testProviderPresent(CryptoModuleProvider.class);
+        ModuleProviderChecker.testProviderPresent(CryptoServerModuleProvider.class, CayenneServerModuleProvider.class);
     }
 }

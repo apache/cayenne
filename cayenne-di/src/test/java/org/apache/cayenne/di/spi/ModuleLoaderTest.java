@@ -36,7 +36,7 @@ public class ModuleLoaderTest {
     @Test
     public void testLoad() {
 
-        List<Module> modules = new ModuleLoader().load();
+        List<Module> modules = new ModuleLoader().load(ModuleProvider.class);
         assertEquals(4, modules.size());
         assertTrue(String.valueOf(modules.get(0)), modules.get(0) instanceof Module3);
         assertTrue(String.valueOf(modules.get(1)), modules.get(1) instanceof Module4);
@@ -46,6 +46,17 @@ public class ModuleLoaderTest {
         Injector i = DIBootstrap.createInjector(modules);
         assertEquals("a", i.getInstance(String.class));
         assertEquals(Integer.valueOf(56), i.getInstance(Integer.class));
+    }
+
+    @Test
+    public void testLoadCustom() {
+        List<Module> modules = new ModuleLoader().load(CustomModuleProvider.class);
+        assertEquals(2, modules.size());
+        assertTrue(String.valueOf(modules.get(0)), modules.get(0) instanceof Module5);
+        assertTrue(String.valueOf(modules.get(1)), modules.get(1) instanceof Module6);
+
+        Injector i = DIBootstrap.createInjector(modules);
+        assertEquals(Integer.valueOf(66), i.getInstance(Integer.class));
     }
 
     public static class Module1 implements Module {
@@ -77,6 +88,20 @@ public class ModuleLoaderTest {
         @Override
         public void configure(Binder binder) {
             binder.bind(Integer.class).toInstance(56);
+        }
+    }
+
+    public static class Module5 implements Module {
+        @Override
+        public void configure(Binder binder) {
+            binder.bind(Integer.class).toInstance(56);
+        }
+    }
+
+    public static class Module6 implements Module {
+        @Override
+        public void configure(Binder binder) {
+            binder.bind(Integer.class).toInstance(66);
         }
     }
 
@@ -155,6 +180,44 @@ public class ModuleLoaderTest {
         @SuppressWarnings("unchecked")
         public Collection<Class<? extends Module>> overrides() {
             Collection c = Collections.singletonList(Module3.class);
+            return c;
+        }
+    }
+
+    public static class ModuleProvider5 implements CustomModuleProvider {
+
+        @Override
+        public Module module() {
+            return new Module5();
+        }
+
+        @Override
+        public Class<? extends Module> moduleType() {
+            return Module5.class;
+        }
+
+        @Override
+        public Collection<Class<? extends Module>> overrides() {
+            return Collections.emptyList();
+        }
+    }
+
+    public static class ModuleProvider6 implements CustomModuleProvider {
+
+        @Override
+        public Module module() {
+            return new Module6();
+        }
+
+        @Override
+        public Class<? extends Module> moduleType() {
+            return Module6.class;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Collection<Class<? extends Module>> overrides() {
+            Collection c = Collections.singletonList(Module5.class);
             return c;
         }
     }

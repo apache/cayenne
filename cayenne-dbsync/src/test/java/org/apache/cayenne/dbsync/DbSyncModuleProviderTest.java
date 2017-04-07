@@ -18,12 +18,13 @@
  */
 package org.apache.cayenne.dbsync;
 
+import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
 import org.junit.Test;
 
 public class DbSyncModuleProviderTest {
     @Test
     public void testProviderPresent() {
-        ModuleProviderChecker.testProviderPresent(DbSyncModuleProvider.class);
+        ModuleProviderChecker.testProviderPresent(DbSyncServerModuleProvider.class, CayenneServerModuleProvider.class);
     }
 }

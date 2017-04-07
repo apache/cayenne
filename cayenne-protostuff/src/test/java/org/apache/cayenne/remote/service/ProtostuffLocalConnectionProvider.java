@@ -21,14 +21,14 @@ package org.apache.cayenne.remote.service;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.configuration.rop.client.ClientLocalRuntime;
+import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.remote.ClientConnection;
 
 public class ProtostuffLocalConnectionProvider implements Provider<ClientConnection> {
 
-    @Inject(ClientLocalRuntime.CLIENT_SERVER_CHANNEL_KEY)
+    @Inject(ClientRuntime.CLIENT_SERVER_CHANNEL_KEY)
     protected Provider<DataChannel> clientServerChannelProvider;
 
     @Override

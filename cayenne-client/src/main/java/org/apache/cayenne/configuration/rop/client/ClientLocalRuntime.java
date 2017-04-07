@@ -37,10 +37,14 @@ import static java.util.Arrays.asList;
  * connection on top of a server stack.
  *
  * @since 3.1
+ * @deprecated since 4.0, use {@link ClientRuntimeBuilder#local(Injector)}
  */
-// TODO: module auto-loading and ClientLocalRuntimeBuilder
+@Deprecated
 public class ClientLocalRuntime extends ClientRuntime {
 
+    /**
+     * Moved to {@link ClientRuntime#CLIENT_SERVER_CHANNEL_KEY}
+     */
     public static final String CLIENT_SERVER_CHANNEL_KEY = "client-server-channel";
 
     private static Collection<Module> collectModules(
@@ -57,7 +61,7 @@ public class ClientLocalRuntime extends ClientRuntime {
         modules.add(new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(Key.get(DataChannel.class, CLIENT_SERVER_CHANNEL_KEY)).toProviderInstance(
+                binder.bind(Key.get(DataChannel.class, ClientRuntime.CLIENT_SERVER_CHANNEL_KEY)).toProviderInstance(
                         new LocalClientServerChannelProvider(serverInjector));
                 binder.bind(ClientConnection.class).toProviderInstance(new LocalConnectionProvider());
             }
