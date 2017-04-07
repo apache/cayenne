@@ -132,7 +132,7 @@ public class ExportedKey implements Comparable {
         private final String column;
         private final String name;
 
-        private KeyData(String catalog, String schema, String table, String column, String name) {
+        KeyData(String catalog, String schema, String table, String column, String name) {
             this.catalog = catalog;
             this.schema = schema;
             this.table = table;

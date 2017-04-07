@@ -30,6 +30,7 @@ CAY-2272 ColumnSelect: methods to manually control DISTINCT clause
 
 Bug Fixes:
 
+CAY-2021 cdbimport: detect when same FK constraint is defined twice
 CAY-2077 Bug in CayenneRuntimeException using wrong specified string in Formatter
 CAY-2094 SelectById query doesn't work from ROP client
 CAY-2240 Modeler: issue with cursor rendering for EJBQL query
