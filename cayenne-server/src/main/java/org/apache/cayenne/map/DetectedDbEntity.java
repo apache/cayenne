@@ -24,9 +24,18 @@ package org.apache.cayenne.map;
 public class DetectedDbEntity extends DbEntity {
 
     protected String primaryKeyName;
+    protected String type;
 
     public DetectedDbEntity(String name) {
         super(name);
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
     }
 
     /**

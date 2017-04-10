@@ -44,6 +44,7 @@ CAY-2265 ServerRuntime.builder() fails to set default runtime name when a the pr
 CAY-2273 Modeler: default suggested cgen location is rooted in subpackage
 CAY-2275 Documentation: tutorial is out of sync with 4.0.M5 version
 CAY-2276 PrePersist listener registered as PostPersist in LifecycleCallbackRegistry.addListener(Class<?>, LifecycleListener)
+CAY-2279 cdbimport: skip PK comparison for VIEWs
 
 ----------------------------------
 Release: 4.0.M5

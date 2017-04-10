@@ -110,13 +110,18 @@ class DbEntityMerger extends AbstractMerger<DataMap, DbEntity> {
         Collection<DbAttribute> primaryKeyNew = original.getPrimaryKeys();
 
         String primaryKeyName = null;
-        if (imported instanceof DetectedDbEntity) {
+        if (imported instanceof DetectedDbEntity){
+            if("VIEW".equals(((DetectedDbEntity) imported).getType())){
+                // Views doesn't has PKs in a database, but if the user selects some PKs in a model, we put these keys.
+                return null;
+            }
             primaryKeyName = ((DetectedDbEntity) imported).getPrimaryKeyName();
         }
 
         if (upperCaseEntityNames(primaryKeyOriginal).equals(upperCaseEntityNames(primaryKeyNew))) {
             return null;
         }
+
         return Collections.singleton(
                 getTokenFactory().createSetPrimaryKeyToDb(
                         original, primaryKeyOriginal, primaryKeyNew, primaryKeyName
