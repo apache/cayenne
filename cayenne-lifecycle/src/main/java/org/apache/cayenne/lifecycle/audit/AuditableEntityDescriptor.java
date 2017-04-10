@@ -30,13 +30,14 @@ import org.apache.cayenne.lifecycle.changeset.PropertyChange;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 
+@Deprecated
 class AuditableEntityDescriptor {
 
     private Collection<String> ignoredProperties;
 
     AuditableEntityDescriptor(ObjEntity auditableEntity, String[] ignoredProperties) {
 
-        this.ignoredProperties = new HashSet<String>();
+        this.ignoredProperties = new HashSet<>();
 
         // ignore runtime relationships
         for (ObjRelationship relationship : auditableEntity.getRelationships()) {

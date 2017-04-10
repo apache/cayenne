@@ -49,13 +49,9 @@ public class WeightedAshwoodEntitySorterTest {
 
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
-        // since it is impossible to ensure non-coincidental sort order of
-        // unrelated
-        // DbEntities (without overriding DbEntity.hashCode()), we'll test on 2
-        // entities
-        // with a relationship, and reverse the topological order with
-        // SortWeight
-        // annotation.
+        // since it is impossible to ensure non-coincidental sort order of unrelated
+        // DbEntities (without overriding DbEntity.hashCode()), we'll test on 2 entities
+        // with a relationship, and reverse the topological order with SortWeight annotation.
 
         List<DbEntity> eSorted = Arrays.asList(resolver.getDbEntity("SORT_DEP"), resolver.getDbEntity("SORT_ROOT"));
 

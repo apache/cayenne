@@ -20,6 +20,7 @@ CAY-2255 ObjectSelect improvement: columns as full entities
 CAY-2258 DI: type-safe binding of List and Map
 CAY-2259 QueryCache: support for referencing type-safe caches
 CAY-2261 Replace NamedQuery with MappedXYZ in *datamap.vm
+CAY-2262 Module auto-loading
 CAY-2266 Move EventBridge implementations into autoloadable modules
 CAY-2267 Contribute lifecycle events listeners via DI
 CAY-2268 DI: Refactor ListBuilder API ambiguities for before() / after() bindings
@@ -29,6 +30,7 @@ CAY-2271 ColumnSelect: support for prefetch and limit
 CAY-2272 ColumnSelect: methods to manually control DISTINCT clause
 CAY-2274 Modeler: Validate case when dependent PK is marked as “generated”
 CAY-2277 Create ClientRuntime with ClientRuntimeBuilder just like ServerRuntime
+CAY-2278 Extract cayenne-postcommit module from cayenne-lifecycle
 
 Bug Fixes:
 

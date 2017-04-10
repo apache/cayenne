@@ -36,7 +36,10 @@ import java.util.Map;
  * thread.
  * 
  * @since 3.1
+ * @deprecated since 4.0
+ * @see org.apache.cayenne.lifecycle.changemap.ChangeMap
  */
+@Deprecated
 public class GenericChangeSet implements ChangeSet {
 
     private GraphDiff diff;

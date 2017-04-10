@@ -22,7 +22,10 @@ package org.apache.cayenne.lifecycle.audit;
  * An enum of possible operations that can be audited.
  * 
  * @since 3.1
+ * @deprecated since 4.0, use {@link org.apache.cayenne.lifecycle.postcommit.PostCommitFilter}
+ * @see org.apache.cayenne.lifecycle.changemap.ObjectChangeType
  */
+@Deprecated
 public enum AuditableOperation {
 
     INSERT, UPDATE, DELETE;

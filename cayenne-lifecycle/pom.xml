@@ -27,6 +27,11 @@
 			<artifactId>cayenne-server</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-postcommit</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<!-- Test dependencies -->
 		<dependency>

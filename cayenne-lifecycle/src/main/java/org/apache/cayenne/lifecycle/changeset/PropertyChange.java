@@ -22,7 +22,9 @@ package org.apache.cayenne.lifecycle.changeset;
  * A change to a single object property.
  * 
  * @since 3.1
+ * @deprecated since 4.0
  */
+@Deprecated
 public class PropertyChange {
 
     private String propertyName;

@@ -30,12 +30,14 @@ import java.lang.annotation.Target;
  * algorithm used by Cayenne by default in special occasions.
  * 
  * @since 3.1
+ *
+ * @deprecated since 4.0, use instead {@link org.apache.cayenne.ashwood.SortWeight}
+ * @see org.apache.cayenne.ashwood.SortWeight
  */
-@Target( {
-    ElementType.TYPE
-})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Deprecated
 public @interface SortWeight {
 
     /**

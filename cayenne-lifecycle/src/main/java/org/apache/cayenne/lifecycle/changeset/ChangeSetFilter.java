@@ -34,7 +34,9 @@ import org.apache.cayenne.query.Query;
  * filter is intended to be used by pre-commit and post-commit listeners.
  * 
  * @since 3.1
+ * @deprecated since 4.0 in favour of {@link org.apache.cayenne.lifecycle.postcommit.PostCommitFilter}
  */
+@Deprecated
 public class ChangeSetFilter implements DataChannelFilter {
 
     private static final ThreadLocal<ChangeSet> PRE_COMMIT_CHANGE_SET = new ThreadLocal<ChangeSet>();

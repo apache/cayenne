@@ -58,6 +58,7 @@
 		<module>cayenne-ant</module>
 		<module>cayenne-project</module>
 		<module>cayenne-lifecycle</module>
+		<module>cayenne-postcommit</module>
 		<module>cayenne-crypto</module>
 		<module>cayenne-joda</module>
 		<module>cayenne-dbcp2</module>

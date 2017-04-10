@@ -30,6 +30,7 @@ import org.apache.cayenne.Persistent;
  * 
  * @since 3.1
  */
+@Deprecated
 class AuditableAggregator {
 
     private static final int[] OP_PRECEDENCE;

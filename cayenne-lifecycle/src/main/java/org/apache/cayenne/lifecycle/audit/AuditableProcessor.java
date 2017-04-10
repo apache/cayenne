@@ -25,6 +25,7 @@ import org.apache.cayenne.Persistent;
  * annotation, that provides basic needed callbacks.
  * 
  * @since 3.1
+ * @deprecated since 4.0, use {@link org.apache.cayenne.lifecycle.postcommit.PostCommitFilter}
  */
 public interface AuditableProcessor {
 

@@ -42,13 +42,11 @@ import org.apache.cayenne.query.Query;
  */
 public class PostCommitFilter implements DataChannelFilter {
 
-	static final String POST_COMMIT_LISTENERS_LIST = "cayenne.server.post_commit.listeners";
-
 	private PostCommitEntityFactory entityFactory;
 	private Collection<PostCommitListener> listeners;
 
 	public PostCommitFilter(@Inject PostCommitEntityFactory entityFactory,
-			@Inject(POST_COMMIT_LISTENERS_LIST) List<PostCommitListener> listeners) {
+			@Inject List<PostCommitListener> listeners) {
 		this.entityFactory = entityFactory;
 		this.listeners = listeners;
 	}
@@ -93,9 +91,7 @@ public class PostCommitFilter implements DataChannelFilter {
 
 	private void beforeCommit(MutableChangeMap changes, DataChannel channel, GraphDiff contextDiff) {
 
-		// capture snapshots of deleted objects before they are purged from
-		// cache
-
+		// capture snapshots of deleted objects before they are purged from cache
 		GraphChangeHandler handler = new DiffFilter(entityFactory,
 				new DeletedDiffProcessor(changes, channel, entityFactory));
 		contextDiff.apply(handler);
