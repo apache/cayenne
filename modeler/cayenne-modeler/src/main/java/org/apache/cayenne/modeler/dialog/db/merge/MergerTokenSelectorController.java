@@ -222,7 +222,7 @@ public class MergerTokenSelectorController extends CayenneController {
 
     public void reverseAllAction() {
 
-        isReverse = true;
+        isReverse = !isReverse;
 
         for (int i = 0; i < selectableTokensList.size(); i++) {
             MergerToken token = selectableTokensList.get(i);
