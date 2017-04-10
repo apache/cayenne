@@ -38,6 +38,7 @@ CAY-2021 cdbimport: detect when same FK constraint is defined twice
 CAY-2077 Bug in CayenneRuntimeException using wrong specified string in Formatter
 CAY-2094 SelectById query doesn't work from ROP client
 CAY-2161 'Not for Client Use' option is ignored at Class Generation
+CAY-2171 Modeler: Undo db Entity Sync throws error
 CAY-2240 Modeler: issue with cursor rendering for EJBQL query
 CAY-2243 ObjectContext.getGraphManager().unregisterObject() inconsistencies
 CAY-2250 Remove: Incorrect text in Confirm Remove message when cursor is set on attribute row

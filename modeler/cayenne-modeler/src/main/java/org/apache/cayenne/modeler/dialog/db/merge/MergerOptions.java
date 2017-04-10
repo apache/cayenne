@@ -283,6 +283,10 @@ public class MergerOptions extends CayenneController {
         notifyProjectModified(modelChanged);
 
         reportFailures(mergerContext);
+
+        if(tokens.isReverse()) {
+            getApplication().getUndoManager().discardAllEdits();
+        }
     }
 
     private ModelMergeDelegate createDelegate(final Collection<ObjEntity> loadedObjEntities) {
