@@ -30,6 +30,7 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DetectedDbEntity;
 
 class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
 
@@ -66,6 +67,12 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
             tokens.add(getTokenFactory().createSetNotNullToDb(originalDbEntity, original));
         }
 
+        if(original.isPrimaryKey()
+                && originalDbEntity instanceof DetectedDbEntity
+                && "VIEW".equals(((DetectedDbEntity) originalDbEntity).getType())) {
+            // Views doesn't has PKs in a database, but if the user selects some PKs in a model, we put these keys.
+            return null;
+        }
         return tokens;
     }
 

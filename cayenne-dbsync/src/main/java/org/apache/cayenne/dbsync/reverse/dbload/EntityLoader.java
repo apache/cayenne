@@ -54,6 +54,7 @@ class EntityLoader extends PerCatalogAndSchemaLoader {
         String name = rs.getString("TABLE_NAME");
         String catalogName = rs.getString("TABLE_CAT");
         String schemaName = rs.getString("TABLE_SCHEM");
+        String type = rs.getString("TABLE_TYPE");
 
         // Oracle 9i and newer has a nifty recycle bin feature...
         // but we don't want dropped tables to be included here;
@@ -74,6 +75,7 @@ class EntityLoader extends PerCatalogAndSchemaLoader {
         DetectedDbEntity table = new DetectedDbEntity(name);
         table.setCatalog(catalogName);
         table.setSchema(schemaName);
+        table.setType(type);
         addDbEntityToMap(table, map);
     }
 
