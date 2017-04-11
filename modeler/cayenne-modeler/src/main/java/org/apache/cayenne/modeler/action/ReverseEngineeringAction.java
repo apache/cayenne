@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.dialog.db.load.LoadDataMapTask;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.Collection;
-import javax.swing.*;
+import javax.swing.JOptionPane;
 
 /**
  * Action that imports database structure into a DataMap.
