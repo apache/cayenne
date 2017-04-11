@@ -28,6 +28,7 @@ import org.apache.cayenne.modeler.dialog.db.load.LoadDataMapTask;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.Collection;
+import javax.swing.SwingUtilities;
 import javax.swing.JOptionPane;
 
 /**
