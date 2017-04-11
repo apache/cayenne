@@ -21,13 +21,20 @@ package org.apache.cayenne.access.jdbc;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.commons.collections.Transformer;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A builder class that helps to assemble {@link RowDescriptor} instances from various
@@ -36,6 +43,8 @@ import org.apache.commons.collections.Transformer;
  * @since 3.0
  */
 public class RowDescriptorBuilder {
+
+    private static final Log logger = LogFactory.getLog(RowDescriptorBuilder.class);
 
     private static final Transformer UPPERCASE_TRANSFORMER = new Transformer() {
 
@@ -56,6 +65,8 @@ public class RowDescriptorBuilder {
 
     protected Transformer caseTransformer;
     protected Map<String, String> typeOverrides;
+
+    protected boolean validateDuplicateColumnNames;
 
     /**
      * Returns a RowDescriptor built based on the builder internal state.
@@ -107,15 +118,35 @@ public class RowDescriptorBuilder {
         }
 
         ColumnDescriptor[] rsColumns = new ColumnDescriptor[rsLen];
+        List<String> duplicates = null;
+        Set<String> uniqueNames = null;
+        if(validateDuplicateColumnNames) {
+            duplicates = new ArrayList<>();
+            uniqueNames = new HashSet<>();
+        }
 
         int outputLen = 0;
         for (int i = 0; i < rsLen; i++) {
             String rowkey = resolveDataRowKeyFromResultSet(i + 1);
             
             // resolve column descriptor from 'columns' or create new
-            rsColumns[outputLen] = getColumnDescriptor(rowkey, columns, i + 1);
+            ColumnDescriptor descriptor = getColumnDescriptor(rowkey, columns, i + 1);
+
+            // validate uniqueness of names
+            if(validateDuplicateColumnNames) {
+                if(!uniqueNames.add(descriptor.getDataRowKey())) {
+                    duplicates.add(descriptor.getDataRowKey());
+                }
+            }
+            rsColumns[outputLen] = descriptor;
             outputLen++;
         }
+
+        if(validateDuplicateColumnNames && !duplicates.isEmpty()) {
+            logger.warn("Found duplicated columns '" + StringUtils.join(duplicates, "', '") + "' in row descriptor. " +
+                    "This can lead to errors when converting result to persistent objects.");
+        }
+
         if (outputLen < rsLen) {
             // cut ColumnDescriptor array
             ColumnDescriptor[] rsColumnsCut = new ColumnDescriptor[outputLen];
@@ -219,6 +250,15 @@ public class RowDescriptorBuilder {
         }
 
         typeOverrides.put(columnName, type);
+        return this;
+    }
+
+    /**
+     * Validate and report duplicate names of columns.
+     * @return this builder
+     */
+    public RowDescriptorBuilder validateDuplicateColumnNames() {
+        this.validateDuplicateColumnNames = true;
         return this;
     }
 

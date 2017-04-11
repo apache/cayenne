@@ -39,6 +39,7 @@ CAY-2077 Bug in CayenneRuntimeException using wrong specified string in Formatte
 CAY-2094 SelectById query doesn't work from ROP client
 CAY-2161 'Not for Client Use' option is ignored at Class Generation
 CAY-2171 Modeler: Undo db Entity Sync throws error
+CAY-2208 SQLTemplate: LEFT JOIN to a subset of a table returns nulls for entries that don't have a match in the subset
 CAY-2230 Error using connection to postgresql with db schema in DB URL
 CAY-2240 Modeler: issue with cursor rendering for EJBQL query
 CAY-2243 ObjectContext.getGraphManager().unregisterObject() inconsistencies
