@@ -30,7 +30,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
@@ -57,7 +57,7 @@ public class DbGeneratorTask extends CayenneTask {
 	@Override
 	public void execute() {
 
-		Log logger = new AntLogger(this);
+		Logger logger = new AntLogger(this);
 
 		log(String.format("connection settings - [driver: %s, url: %s, username: %s]", driver, url, userName),
 				Project.MSG_VERBOSE);

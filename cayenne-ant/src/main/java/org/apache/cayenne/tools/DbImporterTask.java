@@ -39,9 +39,9 @@ import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.slf4j.Logger;
 import org.apache.tools.ant.Task;
 
 import java.io.File;
@@ -110,7 +110,7 @@ public class DbImporterTask extends Task {
         config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering).build());
         validateAttributes();
 
-        Log logger = new AntLogger(this);
+        Logger logger = new AntLogger(this);
         config.setLogger(logger);
         config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
         config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
