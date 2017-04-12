@@ -31,6 +31,7 @@ import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import sun.util.logging.PlatformLogger;
 
 import javax.swing.*;
 import java.io.File;
@@ -66,6 +67,10 @@ public class Main {
     }
 
     protected void launch() {
+
+
+        PlatformLogger platformLogger = PlatformLogger.getLogger("java.util.prefs");
+        platformLogger.setLevel(PlatformLogger.Level.OFF);
 
         // TODO: use module auto-loading...
         final Injector injector = DIBootstrap.createInjector(appendModules(new ArrayList<Module>()));
