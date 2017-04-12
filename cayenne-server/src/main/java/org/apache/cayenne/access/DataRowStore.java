@@ -32,8 +32,8 @@ import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -52,7 +52,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class DataRowStore implements Serializable {
 
-    private static Log logger = LogFactory.getLog(DataRowStore.class);
+    private static Logger logger = LoggerFactory.getLogger(DataRowStore.class);
 
     /**
      * @deprecated since 4.0, never used actually

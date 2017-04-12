@@ -39,8 +39,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStream;
@@ -60,7 +60,7 @@ import java.util.StringTokenizer;
  */
 public class EOModelProcessor {
 
-	private static final Log logger = LogFactory.getLog(EOModelProcessor.class);
+	private static final Logger logger = LoggerFactory.getLogger(EOModelProcessor.class);
 
 	protected Predicate prototypeChecker;
 

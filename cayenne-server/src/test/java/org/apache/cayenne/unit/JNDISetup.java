@@ -21,8 +21,8 @@ package org.apache.cayenne.unit;
 import javax.naming.NamingException;
 import javax.naming.spi.NamingManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mock.jndi.SimpleNamingContextBuilder;
 
 /**
@@ -30,7 +30,7 @@ import org.springframework.mock.jndi.SimpleNamingContextBuilder;
  */
 public class JNDISetup {
 
-    private static Log logger = LogFactory.getLog(JNDISetup.class);
+    private static Logger logger = LoggerFactory.getLogger(JNDISetup.class);
 
     private static volatile boolean setup;
 

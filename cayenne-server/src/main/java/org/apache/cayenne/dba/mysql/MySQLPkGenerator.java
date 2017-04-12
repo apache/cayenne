@@ -31,14 +31,14 @@ import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  */
 public class MySQLPkGenerator extends JdbcPkGenerator {
 
-	private static final Log logger = LogFactory.getLog(MySQLPkGenerator.class);
+	private static final Logger logger = LoggerFactory.getLogger(MySQLPkGenerator.class);
 
 	MySQLPkGenerator(JdbcAdapter adapter) {
 		super(adapter);

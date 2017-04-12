@@ -31,8 +31,8 @@ import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link DataSourceFactory} that loads JDBC connection information from an
@@ -45,7 +45,7 @@ import org.apache.commons.logging.LogFactory;
 // something else?
 public class XMLPoolingDataSourceFactory implements DataSourceFactory {
 
-	private static final Log logger = LogFactory.getLog(XMLPoolingDataSourceFactory.class);
+	private static final Logger logger = LoggerFactory.getLogger(XMLPoolingDataSourceFactory.class);
 
 	@Inject
 	private RuntimeProperties properties;

@@ -42,8 +42,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -57,7 +57,7 @@ import java.util.List;
  */
 public class DataDomainProvider implements Provider<DataDomain> {
 
-	private static Log logger = LogFactory.getLog(DataDomainProvider.class);
+	private static Logger logger = LoggerFactory.getLogger(DataDomainProvider.class);
 
 	@Inject
 	protected ResourceLocator resourceLocator;

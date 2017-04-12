@@ -25,8 +25,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ExtendedTypeFactory for handling serializable objects. Returned ExtendedType
@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
  */
 class SerializableTypeFactory implements ExtendedTypeFactory {
 
-	private static final Log logger = LogFactory.getLog(SerializableTypeFactory.class);
+	private static final Logger logger = LoggerFactory.getLogger(SerializableTypeFactory.class);
 
 	private ExtendedTypeMap map;
 

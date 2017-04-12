@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Shared functionality for cacheable queries.
@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class CacheableQuery implements Query {
 
-    protected static final Log logger = LogFactory.getLog(SelectQuery.class);
+    protected static final Logger logger = LoggerFactory.getLogger(SelectQuery.class);
 
     abstract protected BaseQueryMetadata getBaseMetaData();
 

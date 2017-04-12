@@ -19,11 +19,11 @@
 package org.apache.cayenne.access.dbsync;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 
 public class BaseSchemaUpdateStrategy_ConcurrencyTest {
 
-    private static final Log LOGGER = LogFactory.getLog(BaseSchemaUpdateStrategy_ConcurrencyTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseSchemaUpdateStrategy_ConcurrencyTest.class);
 
     private ExecutorService threadPool;
     private DataNode dataNode;

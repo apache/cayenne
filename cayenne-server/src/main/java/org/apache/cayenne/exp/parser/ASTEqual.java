@@ -23,8 +23,8 @@ import java.util.Collection;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ValueInjector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * "Equal To" expression.
@@ -35,7 +35,7 @@ public class ASTEqual extends ConditionNode implements ValueInjector {
 
 	private static final long serialVersionUID = 1211234198602067833L;
 	
-	private static final Log LOGGER = LogFactory.getLog(ASTEqual.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ASTEqual.class);
 
 	/**
 	 * Constructor used by expression parser. Do not invoke directly.

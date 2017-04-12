@@ -29,13 +29,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A non-blocking {@link DataSource} with a pool of connections.
@@ -89,7 +88,7 @@ public class UnmanagedPoolingDataSource implements PoolingDataSource {
 	 */
 	public static final int MAX_QUEUE_WAIT_DEFAULT = 20000;
 
-	private static Log LOGGER = LogFactory.getLog(UnmanagedPoolingDataSource.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(UnmanagedPoolingDataSource.class);
 
 	private DataSource nonPoolingDataSource;
 	private long maxQueueWaitTime;
@@ -390,7 +389,7 @@ public class UnmanagedPoolingDataSource implements PoolingDataSource {
 	}
 
 	@Override
-	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+	public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		return nonPoolingDataSource.getParentLogger();
 	}
 

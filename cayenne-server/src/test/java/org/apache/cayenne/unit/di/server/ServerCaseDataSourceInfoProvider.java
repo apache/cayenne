@@ -26,8 +26,8 @@ import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.di.Provider;
 import org.apache.commons.collections.ExtendedProperties;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +36,7 @@ import java.util.Map;
 
 public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo> {
 
-    private static Log logger = LogFactory.getLog(ServerCaseDataSourceInfoProvider.class);
+    private static Logger logger = LoggerFactory.getLogger(ServerCaseDataSourceInfoProvider.class);
 
     private static final String PROPERTIES_FILE = "connection.properties";
     private static final String CONNECTION_NAME_KEY = "cayenneTestConnection";

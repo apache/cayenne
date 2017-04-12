@@ -28,14 +28,14 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.PropertyUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ASTObjPath extends ASTPath {
 
 	private static final long serialVersionUID = -3574281576491705706L;
 
-	private static final Log LOGGER = LogFactory.getLog(ASTObjPath.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ASTObjPath.class);
 
 	public static final String OBJ_PREFIX = "obj:";
 

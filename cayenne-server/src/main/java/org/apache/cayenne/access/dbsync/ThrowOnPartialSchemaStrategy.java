@@ -21,8 +21,8 @@ package org.apache.cayenne.access.dbsync;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class ThrowOnPartialSchemaStrategy extends BaseSchemaUpdateStrategy {
 
-    private final static Log LOGGER = LogFactory.getLog(ThrowOnPartialSchemaStrategy.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(ThrowOnPartialSchemaStrategy.class);
 
 
     @Override

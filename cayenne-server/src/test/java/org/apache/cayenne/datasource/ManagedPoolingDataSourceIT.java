@@ -38,19 +38,19 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.mockito.stubbing.OngoingStubbing;
+import org.slf4j.LoggerFactory;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ManagedPoolingDataSourceIT {
 
-	private static final Log LOGGER = LogFactory.getLog(ManagedPoolingDataSourceIT.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ManagedPoolingDataSourceIT.class);
 
 	private int poolSize;
 	private OnOffDataSourceManager dataSourceManager;

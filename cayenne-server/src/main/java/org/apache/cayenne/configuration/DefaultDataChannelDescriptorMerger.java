@@ -19,8 +19,8 @@
 package org.apache.cayenne.configuration;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A default implementation of {@link DataChannelDescriptorMerger}. The general rule of
@@ -47,8 +47,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DefaultDataChannelDescriptorMerger implements DataChannelDescriptorMerger {
 
-    private static Log logger = LogFactory
-            .getLog(DefaultDataChannelDescriptorMerger.class);
+    private static Logger logger = LoggerFactory
+            .getLogger(DefaultDataChannelDescriptorMerger.class);
 
     public DataChannelDescriptor merge(DataChannelDescriptor... descriptors) {
         if (descriptors == null || descriptors.length == 0) {

@@ -35,8 +35,8 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -58,7 +58,7 @@ import java.util.Map;
  */
 public class DbGenerator {
 
-	private Log logObj = LogFactory.getLog(DbGenerator.class);
+	private Logger logObj = LoggerFactory.getLogger(DbGenerator.class);
 
 	protected DbAdapter adapter;
 	protected DataMap map;
