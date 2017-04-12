@@ -28,8 +28,8 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.rop.http.JettyHttpROPConnector;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.util.BasicAuthentication;
@@ -43,7 +43,7 @@ import java.net.URI;
  */
 public class JettyHttpClientConnectionProvider implements Provider<ClientConnection> {
 
-    private static Log logger = LogFactory.getLog(JettyHttpROPConnector.class);
+    private static Logger logger = LoggerFactory.getLogger(JettyHttpROPConnector.class);
 
     @Inject
     protected RuntimeProperties runtimeProperties;
