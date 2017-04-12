@@ -30,12 +30,12 @@ import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.SchemaFilter;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProcedureColumnLoader extends PerCatalogAndSchemaLoader {
 
-    private static final Log LOGGER = LogFactory.getLog(DbLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbLoader.class);
 
     ProcedureColumnLoader(DbAdapter adapter, DbLoaderConfiguration config, DbLoaderDelegate delegate) {
         super(adapter, config, delegate);

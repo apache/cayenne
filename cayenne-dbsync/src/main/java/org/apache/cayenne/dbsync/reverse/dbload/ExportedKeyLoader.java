@@ -24,12 +24,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.cayenne.map.DbEntity;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class ExportedKeyLoader extends PerEntityLoader {
 
-    private static final Log LOGGER = LogFactory.getLog(ExportedKeyLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExportedKeyLoader.class);
 
     ExportedKeyLoader(DbLoaderConfiguration config, DbLoaderDelegate delegate) {
         super(null, config, delegate);

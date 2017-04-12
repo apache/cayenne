@@ -26,12 +26,12 @@ import java.sql.SQLException;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DetectedDbEntity;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class PrimaryKeyLoader extends PerEntityLoader {
 
-    private static final Log LOGGER = LogFactory.getLog(DbLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbLoader.class);
 
     PrimaryKeyLoader(DbLoaderConfiguration config, DbLoaderDelegate delegate) {
         super(null, config, delegate);

@@ -54,7 +54,7 @@ import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.validation.ValidationResult;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import javax.swing.JFileChooser;
@@ -173,7 +173,7 @@ public class MergerOptions extends CayenneController {
             try (Connection conn = dataSource.getConnection();) {
                 dbImport = new DbLoader(adapter, conn,
                         config,
-                        new LoggingDbLoaderDelegate(LogFactory.getLog(DbLoader.class)),
+                        new LoggingDbLoaderDelegate(LoggerFactory.getLogger(DbLoader.class)),
                         new DefaultObjectNameGenerator(NoStemStemmer.getInstance()))
                         .load();
             } catch (SQLException e) {
