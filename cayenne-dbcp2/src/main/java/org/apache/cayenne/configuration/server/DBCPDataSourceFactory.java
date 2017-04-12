@@ -28,8 +28,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.resource.Resource;
 import org.apache.commons.dbcp2.BasicDataSourceFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link DataSourceFactory} based on DBCP2 connection pool library.
@@ -38,7 +38,7 @@ public class DBCPDataSourceFactory implements DataSourceFactory {
 
 	private static final String DBCP2_PROPERTIES = "dbcp2.properties";
 
-	private static final Log logger = LogFactory.getLog(DBCPDataSourceFactory.class);
+	private static final Logger logger = LoggerFactory.getLogger(DBCPDataSourceFactory.class);
 
 	@Override
 	public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
