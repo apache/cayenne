@@ -43,8 +43,8 @@ import org.apache.cayenne.modeler.Main;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
 import org.apache.cayenne.swing.components.textpane.syntax.SyntaxConstant;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JCayenneTextPane extends JPanel {
 
@@ -69,7 +69,7 @@ public class JCayenneTextPane extends JPanel {
         this.tooltipTextError = tooltipTextError;
     }
 
-    private static Log logObj = LogFactory.getLog(Main.class);
+    private static Logger logObj = LoggerFactory.getLogger(Main.class);
 
     public void setText(String text) {
         pane.setText(text);

@@ -104,7 +104,7 @@ import org.apache.cayenne.modeler.event.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.RecentFileMenu;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main frame of CayenneModeler. Responsibilities include coordination of
@@ -297,7 +297,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
                     .bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 400);
         }
         catch (Exception ex) {
-            LogFactory.getLog(getClass()).error("Cannot bind divider property", ex);
+            LoggerFactory.getLogger(getClass()).error("Cannot bind divider property", ex);
         }
 
         JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 1));

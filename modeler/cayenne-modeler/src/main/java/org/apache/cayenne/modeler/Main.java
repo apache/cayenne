@@ -29,8 +29,8 @@ import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.init.CayenneModelerModule;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 import org.apache.cayenne.project.ProjectModule;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
@@ -44,7 +44,7 @@ import java.util.prefs.Preferences;
  */
 public class Main {
 
-    private static Log logger = LogFactory.getLog(Main.class);
+    private static Logger logger = LoggerFactory.getLogger(Main.class);
 
     protected String[] args;
 

@@ -36,8 +36,8 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.undo.CayenneTableModelUndoableEdit;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Superclass of CayenneModeler table model classes.
@@ -48,7 +48,7 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
     protected Object eventSource;
     protected List<T> objectList;
 
-    private static Log logObj = LogFactory.getLog(CayenneTableModel.class);
+    private static Logger logObj = LoggerFactory.getLogger(CayenneTableModel.class);
 
     /**
      * Constructor for CayenneTableModel.

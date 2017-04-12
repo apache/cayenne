@@ -38,12 +38,12 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
 import org.apache.cayenne.pref.PreferenceEditor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ClasspathPreferences extends CayenneController {
 
-    private static final Log logger = LogFactory.getLog(ClasspathPreferences.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClasspathPreferences.class);
 
     protected ClasspathPreferencesView view;
     protected List<String> classPathEntries;

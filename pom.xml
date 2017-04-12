@@ -38,6 +38,7 @@
 		<maven.build.timestamp.format>MMM dd yyyy HH:mm:ss</maven.build.timestamp.format>
 		<project.build.datetime>${maven.build.timestamp}</project.build.datetime>
         <jacoco.version>0.7.1.201405082137</jacoco.version>
+		<slf4j.version>1.7.25</slf4j.version>
 
         <pmd.skip>true</pmd.skip>
         <checkstyle.skip>true</checkstyle.skip>
@@ -306,6 +307,7 @@
 				<artifactId>commons-collections</artifactId>
 				<version>3.2.1</version>
 			</dependency>
+
 			<dependency>
 				<groupId>commons-logging</groupId>
 				<artifactId>commons-logging</artifactId>
@@ -468,17 +470,17 @@
         	<dependency>
     			<groupId>org.slf4j</groupId>
     			<artifactId>jcl-over-slf4j</artifactId>
-    			<version>1.7.7</version>
+    			<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
     			<groupId>org.slf4j</groupId>
     			<artifactId>slf4j-api</artifactId>
-    			<version>1.7.7</version>
+    			<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
     			<groupId>org.slf4j</groupId>
     			<artifactId>slf4j-simple</artifactId>
-    			<version>1.7.7</version>
+    			<version>${slf4j.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

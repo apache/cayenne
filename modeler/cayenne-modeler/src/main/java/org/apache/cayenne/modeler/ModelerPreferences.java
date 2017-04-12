@@ -22,8 +22,8 @@ package org.apache.cayenne.modeler;
 import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.pref.Preference;
 import org.apache.cayenne.pref.UpgradeCayennePreference;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class ModelerPreferences implements PreferenceChangeListener {
 
     private static Preferences cayennePrefs;
 
-    private static final Log logObj = LogFactory.getLog(ModelerPreferences.class);
+    private static final Logger logObj = LoggerFactory.getLogger(ModelerPreferences.class);
 
     /** Name of the log file. */
     public static final String LOGFILE_NAME = "modeler.log";

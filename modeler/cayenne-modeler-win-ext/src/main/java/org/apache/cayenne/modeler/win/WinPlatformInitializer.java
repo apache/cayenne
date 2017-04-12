@@ -20,15 +20,15 @@ package org.apache.cayenne.modeler.win;
 
 import com.jgoodies.looks.windows.WindowsLookAndFeel;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 public class WinPlatformInitializer implements PlatformInitializer {
 
-    private static Log logger = LogFactory.getLog(WinPlatformInitializer.class);
+    private static Logger logger = LoggerFactory.getLogger(WinPlatformInitializer.class);
 
     public void setupMenus(JFrame frame) {
     }

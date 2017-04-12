@@ -33,15 +33,15 @@ import org.apache.cayenne.modeler.graph.DataDomainGraphTab;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 import org.jgraph.JGraph;
+import org.slf4j.LoggerFactory;
 
 /**
  * Action for saving graph as image
  */
 public class SaveAsImageAction extends CayenneAction {
-	private static final Log logObj = LogFactory.getLog(SaveAsImageAction.class);
+	private static final Logger logObj = LoggerFactory.getLogger(SaveAsImageAction.class);
 
 	private final DataDomainGraphTab dataDomainGraphTab;
 

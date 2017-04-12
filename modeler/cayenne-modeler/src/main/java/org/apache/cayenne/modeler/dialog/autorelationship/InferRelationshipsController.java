@@ -39,15 +39,15 @@ import org.apache.cayenne.modeler.undo.InferRelationshipsUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InferRelationshipsController extends InferRelationshipsControllerBase {
 
     public static final int SELECT = 1;
     public static final int CANCEL = 0;
 
-    private static Log logObj = LogFactory.getLog(ErrorDebugDialog.class);
+    private static Logger logObj = LoggerFactory.getLogger(ErrorDebugDialog.class);
 
     protected InferRelationshipsDialog view;
 

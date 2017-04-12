@@ -39,8 +39,8 @@ import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -78,7 +78,7 @@ import java.util.List;
  */
 public abstract class AbstractCallbackMethodsTab extends JPanel {
 
-    private static Log logger = LogFactory.getLog(AbstractCallbackMethodsTab.class);
+    private static Logger logger = LoggerFactory.getLogger(AbstractCallbackMethodsTab.class);
 
     /**
      * mediator instance

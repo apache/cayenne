@@ -44,8 +44,8 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A panel that supports editing the properties of a GenericSelectQuery.
@@ -53,7 +53,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class SelectPropertiesPanel extends JPanel {
 
-    private static Log logObj = LogFactory.getLog(SelectPropertiesPanel.class);
+    private static Logger logObj = LoggerFactory.getLogger(SelectPropertiesPanel.class);
 
     private static final Integer ZERO = 0;
 

@@ -22,8 +22,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.resource.Resource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 import java.io.InputStream;
@@ -34,7 +34,7 @@ import java.net.URL;
  */
 public class XMLDataMapLoader implements DataMapLoader {
 
-    private static Log logger = LogFactory.getLog(XMLDataMapLoader.class);
+    private static Logger logger = LoggerFactory.getLogger(XMLDataMapLoader.class);
 
     public DataMap load(Resource configurationResource) throws CayenneRuntimeException {
 

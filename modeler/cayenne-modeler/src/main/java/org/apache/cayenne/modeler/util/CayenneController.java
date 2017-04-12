@@ -40,15 +40,15 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.swing.BoundComponent;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A superclass of CayenneModeler controllers.
  */
 public abstract class CayenneController implements BoundComponent {
 
-    private static Log logObj = LogFactory.getLog(CayenneController.class);
+    private static Logger logObj = LoggerFactory.getLogger(CayenneController.class);
 
     protected CayenneController parent;
     protected Application application;

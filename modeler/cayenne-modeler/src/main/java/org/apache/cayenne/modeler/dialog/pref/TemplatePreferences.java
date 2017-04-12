@@ -35,8 +35,8 @@ import org.apache.cayenne.pref.PreferenceEditor;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TemplatePreferences extends CayenneController {
 
@@ -45,7 +45,7 @@ public class TemplatePreferences extends CayenneController {
     protected List<FSPath> templateEntries;
     protected ObjectBinding tableBinding;
 
-    private static Log logger = LogFactory.getLog(TemplatePreferences.class);
+    private static Logger logger = LoggerFactory.getLogger(TemplatePreferences.class);
 
     public TemplatePreferences(PreferenceDialog parent) {
         super(parent);

@@ -32,8 +32,8 @@ import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.action.SaveAction;
 import org.apache.cayenne.modeler.dialog.FileDeletedDialog;
 import org.apache.cayenne.project.Project;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ProjectWatchdog class is responsible for tracking changes in cayenne.xml and
@@ -42,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ProjectFileChangeTracker extends Thread {
 
-    private static final Log log = LogFactory.getLog(ProjectFileChangeTracker.class);
+    private static final Logger log = LoggerFactory.getLogger(ProjectFileChangeTracker.class);
 
     /**
      * The default delay between every file modification check

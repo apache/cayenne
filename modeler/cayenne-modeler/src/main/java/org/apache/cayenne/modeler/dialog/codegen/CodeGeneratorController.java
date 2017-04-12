@@ -26,8 +26,8 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.JOptionPane;
 import java.awt.Component;
@@ -40,7 +40,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
     /**
      * Logger to print stack traces
      */
-    private static Log logObj = LogFactory.getLog(ErrorDebugDialog.class);
+    private static Logger logObj = LoggerFactory.getLogger(ErrorDebugDialog.class);
 
     protected CodeGeneratorDialog view;
 

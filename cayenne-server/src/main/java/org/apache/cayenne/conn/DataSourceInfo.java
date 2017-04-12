@@ -27,8 +27,8 @@ import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper JavaBean class that holds DataSource login information.
@@ -37,7 +37,7 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 
 	private static final long serialVersionUID = 3748394113864532902L;
 
-	private static Log logger = LogFactory.getLog(DataSourceInfo.class);
+	private static Logger logger = LoggerFactory.getLogger(DataSourceInfo.class);
 
 	public static final String PASSWORD_LOCATION_CLASSPATH = "classpath";
 	public static final String PASSWORD_LOCATION_EXECUTABLE = "executable";

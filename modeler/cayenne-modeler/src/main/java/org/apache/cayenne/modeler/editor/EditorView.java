@@ -47,7 +47,7 @@ import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -289,7 +289,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
                     .bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 150);
         }
         catch (Exception ex) {
-            LogFactory.getLog(getClass()).error("Cannot bind divider property", ex);
+            LoggerFactory.getLogger(getClass()).error("Cannot bind divider property", ex);
         }
     }
 
