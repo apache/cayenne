@@ -69,7 +69,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 		} catch (IOException exception) {
 			// Log the error while trying to open the stream. A null
 			// password will be returned as a result.
-			logger.warn(exception.getMessage());
+			logger.warn(exception.getMessage(), exception);
 		}
 
 		return password;
@@ -88,7 +88,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 
 			password = bufferedReader.readLine();
 		} catch (IOException exception) {
-			logger.warn(exception.getMessage());
+			logger.warn(exception.getMessage(), exception);
 		} finally {
 
 			try {
@@ -339,7 +339,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 						try {
 							password = passwordFromURL(new URL(passwordSource));
 						} catch (MalformedURLException exception) {
-							logger.warn(exception.getMessage());
+							logger.warn(exception.getMessage(), exception);
 						}
 					} else if (passwordLocation.equals(DataSourceInfo.PASSWORD_LOCATION_EXECUTABLE)) {
 						if (passwordSource != null) {
@@ -348,9 +348,9 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 								password = passwordFromInputStream(process.getInputStream());
 								process.waitFor();
 							} catch (IOException exception) {
-								logger.warn(exception.getMessage());
+								logger.warn(exception.getMessage(), exception);
 							} catch (InterruptedException exception) {
-								logger.warn(exception.getMessage());
+								logger.warn(exception.getMessage(), exception);
 							}
 						}
 					}

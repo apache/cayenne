@@ -22,8 +22,8 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticTheme;
@@ -31,7 +31,7 @@ import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 
 public class GenericPlatformInitializer implements PlatformInitializer {
 
-    private static Log logger = LogFactory.getLog(GenericPlatformInitializer.class);
+    private static Logger logger = LoggerFactory.getLogger(GenericPlatformInitializer.class);
 
     static final String DEFAULT_LAF_NAME = PlasticXPLookAndFeel.class.getName();
 
