@@ -28,6 +28,8 @@ import org.apache.maven.plugin.logging.Log;
  */
 class MavenLogger implements Logger {
 
+	private static final String LOGGER_NAME = "MavenLogger";
+
 	private Log logger;
 
 	public MavenLogger(AbstractMojo parent) {
@@ -35,28 +37,28 @@ class MavenLogger implements Logger {
 	}
 
 	@Override
-	public void debug(String s) {
-		logger.debug(s);
+	public void debug(String message) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void debug(String s, Object o) {
-		logger.debug(s);
+	public void debug(String message, Object object) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void debug(String s, Object o, Object o1) {
-		logger.debug(s);
+	public void debug(String message, Object object, Object secondObject) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void debug(String s, Object... objects) {
-		logger.debug(s);
+	public void debug(String message, Object... objects) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void debug(String s, Throwable throwable) {
-		logger.debug(s, throwable);
+	public void debug(String message, Throwable throwable) {
+		logger.debug(message, throwable);
 	}
 
 	@Override
@@ -65,28 +67,28 @@ class MavenLogger implements Logger {
 	}
 
 	@Override
-	public void debug(Marker marker, String s) {
-		logger.debug(s);
+	public void debug(Marker marker, String message) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void debug(Marker marker, String s, Object o) {
-		logger.debug(s);
+	public void debug(Marker marker, String message, Object object) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void debug(Marker marker, String s, Object o, Object o1) {
-		logger.debug(s);
+	public void debug(Marker marker, String message, Object object, Object secondObject) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void debug(Marker marker, String s, Object... objects) {
-		logger.debug(s);
+	public void debug(Marker marker, String message, Object... objects) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void debug(Marker marker, String s, Throwable throwable) {
-		logger.debug(s, throwable);
+	public void debug(Marker marker, String message, Throwable throwable) {
+		logger.debug(message, throwable);
 	}
 
 	@Override
@@ -95,28 +97,28 @@ class MavenLogger implements Logger {
 	}
 
 	@Override
-	public void error(String s) {
-		logger.error(s);
+	public void error(String message) {
+		logger.error(message);
 	}
 
 	@Override
-	public void error(String s, Object o) {
-		logger.error(s);
+	public void error(String message, Object object) {
+		logger.error(message);
 	}
 
 	@Override
-	public void error(String s, Object o, Object o1) {
-		logger.error(s);
+	public void error(String message, Object object, Object secondObject) {
+		logger.error(message);
 	}
 
 	@Override
-	public void error(String s, Object... objects) {
-		logger.error(s);
+	public void error(String message, Object... objects) {
+		logger.error(message);
 	}
 
 	@Override
-	public void error(String s, Throwable throwable) {
-		logger.error(s, throwable);
+	public void error(String message, Throwable throwable) {
+		logger.error(message, throwable);
 	}
 
 	@Override
@@ -125,53 +127,53 @@ class MavenLogger implements Logger {
 	}
 
 	@Override
-	public void error(Marker marker, String s) {
-		logger.error(s);
+	public void error(Marker marker, String message) {
+		logger.error(message);
 	}
 
 	@Override
-	public void error(Marker marker, String s, Object o) {
-		logger.error(s);
+	public void error(Marker marker, String message, Object object) {
+		logger.error(message);
 	}
 
 	@Override
-	public void error(Marker marker, String s, Object o, Object o1) {
-		logger.error(s);
+	public void error(Marker marker, String message, Object object, Object secondObject) {
+		logger.error(message);
 	}
 
 	@Override
-	public void error(Marker marker, String s, Object... objects) {
-		logger.error(s);
+	public void error(Marker marker, String message, Object... objects) {
+		logger.error(message);
 	}
 
 	@Override
-	public void error(Marker marker, String s, Throwable throwable) {
-		logger.error(s, throwable);
+	public void error(Marker marker, String message, Throwable throwable) {
+		logger.error(message, throwable);
 	}
 
 	@Override
-	public void info(String s) {
-		logger.info(s);
+	public void info(String message) {
+		logger.info(message);
 	}
 
 	@Override
-	public void info(String s, Object o) {
-		logger.info(s);
+	public void info(String message, Object object) {
+		logger.info(message);
 	}
 
 	@Override
-	public void info(String s, Object o, Object o1) {
-		logger.info(s);
+	public void info(String message, Object object, Object secondObject) {
+		logger.info(message);
 	}
 
 	@Override
-	public void info(String s, Object... objects) {
-		logger.info(s);
+	public void info(String message, Object... objects) {
+		logger.info(message);
 	}
 
 	@Override
-	public void info(String s, Throwable throwable) {
-		logger.info(s, throwable);
+	public void info(String message, Throwable throwable) {
+		logger.info(message, throwable);
 	}
 
 	@Override
@@ -180,28 +182,28 @@ class MavenLogger implements Logger {
 	}
 
 	@Override
-	public void info(Marker marker, String s) {
-		logger.info(s);
+	public void info(Marker marker, String message) {
+		logger.info(message);
 	}
 
 	@Override
-	public void info(Marker marker, String s, Object o) {
-		logger.info(s);
+	public void info(Marker marker, String message, Object object) {
+		logger.info(message);
 	}
 
 	@Override
-	public void info(Marker marker, String s, Object o, Object o1) {
-		logger.info(s);
+	public void info(Marker marker, String message, Object object, Object secondObject) {
+		logger.info(message);
 	}
 
 	@Override
-	public void info(Marker marker, String s, Object... objects) {
-		logger.info(s);
+	public void info(Marker marker, String message, Object... objects) {
+		logger.info(message);
 	}
 
 	@Override
-	public void info(Marker marker, String s, Throwable throwable) {
-		logger.info(s, throwable);
+	public void info(Marker marker, String message, Throwable throwable) {
+		logger.info(message, throwable);
 	}
 
 	@Override
@@ -211,7 +213,7 @@ class MavenLogger implements Logger {
 
 	@Override
 	public String getName() {
-		return this.getName();
+		return LOGGER_NAME;
 	}
 
 	@Override
@@ -220,28 +222,28 @@ class MavenLogger implements Logger {
 	}
 
 	@Override
-	public void trace(String s) {
-		logger.debug(s);
+	public void trace(String message) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void trace(String s, Object o) {
-		logger.debug(s);
+	public void trace(String message, Object object) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void trace(String s, Object o, Object o1) {
-		logger.debug(s);
+	public void trace(String message, Object object, Object secondObject) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void trace(String s, Object... objects) {
-		logger.debug(s);
+	public void trace(String message, Object... objects) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void trace(String s, Throwable throwable) {
-		logger.debug(s, throwable);
+	public void trace(String message, Throwable throwable) {
+		logger.debug(message, throwable);
 	}
 
 	@Override
@@ -250,28 +252,28 @@ class MavenLogger implements Logger {
 	}
 
 	@Override
-	public void trace(Marker marker, String s) {
-		logger.debug(s);
+	public void trace(Marker marker, String message) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void trace(Marker marker, String s, Object o) {
-		logger.debug(s);
+	public void trace(Marker marker, String message, Object object) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void trace(Marker marker, String s, Object o, Object o1) {
-		logger.debug(s);
+	public void trace(Marker marker, String message, Object object, Object secondObject) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void trace(Marker marker, String s, Object... objects) {
-		logger.debug(s);
+	public void trace(Marker marker, String message, Object... objects) {
+		logger.debug(message);
 	}
 
 	@Override
-	public void trace(Marker marker, String s, Throwable throwable) {
-		logger.debug(s, throwable);
+	public void trace(Marker marker, String message, Throwable throwable) {
+		logger.debug(message, throwable);
 	}
 
 	@Override
@@ -280,28 +282,28 @@ class MavenLogger implements Logger {
 	}
 
 	@Override
-	public void warn(String s) {
-		logger.warn(s);
+	public void warn(String message) {
+		logger.warn(message);
 	}
 
 	@Override
-	public void warn(String s, Object o) {
-		logger.warn(s);
+	public void warn(String message, Object object) {
+		logger.warn(message);
 	}
 
 	@Override
-	public void warn(String s, Object... objects) {
-		logger.warn(s);
+	public void warn(String message, Object... objects) {
+		logger.warn(message);
 	}
 
 	@Override
-	public void warn(String s, Object o, Object o1) {
-		logger.warn(s);
+	public void warn(String message, Object object, Object secondObject) {
+		logger.warn(message);
 	}
 
 	@Override
-	public void warn(String s, Throwable throwable) {
-		logger.warn(s, throwable);
+	public void warn(String message, Throwable throwable) {
+		logger.warn(message, throwable);
 	}
 
 	@Override
@@ -310,28 +312,28 @@ class MavenLogger implements Logger {
 	}
 
 	@Override
-	public void warn(Marker marker, String s) {
-		logger.warn(s);
+	public void warn(Marker marker, String message) {
+		logger.warn(message);
 	}
 
 	@Override
-	public void warn(Marker marker, String s, Object o) {
-		logger.warn(s);
+	public void warn(Marker marker, String message, Object object) {
+		logger.warn(message);
 	}
 
 	@Override
-	public void warn(Marker marker, String s, Object o, Object o1) {
-		logger.warn(s);
+	public void warn(Marker marker, String message, Object object, Object secondObject) {
+		logger.warn(message);
 	}
 
 	@Override
-	public void warn(Marker marker, String s, Object... objects) {
-		logger.warn(s);
+	public void warn(Marker marker, String message, Object... objects) {
+		logger.warn(message);
 	}
 
 	@Override
-	public void warn(Marker marker, String s, Throwable throwable) {
-		logger.warn(s, throwable);
+	public void warn(Marker marker, String message, Throwable throwable) {
+		logger.warn(message, throwable);
 	}
 
 	@Override

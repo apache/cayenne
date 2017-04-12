@@ -46,33 +46,33 @@ public class ModelerLogger implements Logger {
     }
 
     @Override
-    public void debug(String s) {
-        delegate.debug(s);
-        log("DEBUG", s, null, LogConsole.WARN_STYLE);
+    public void debug(String message) {
+        delegate.debug(message);
+        log("DEBUG", message, null, LogConsole.WARN_STYLE);
     }
 
     @Override
-    public void debug(String s, Object o) {
-        delegate.debug(s, o);
-        log("DEBUG", s, null, LogConsole.WARN_STYLE, o);
+    public void debug(String message, Object object) {
+        delegate.debug(message, object);
+        log("DEBUG", message, null, LogConsole.WARN_STYLE, object);
     }
 
     @Override
-    public void debug(String s, Object o, Object o1) {
-        delegate.debug(s, o, o1);
-        log("DEBUG", s, null, LogConsole.WARN_STYLE, o, o1);
+    public void debug(String message, Object object, Object secondObject) {
+        delegate.debug(message, object, secondObject);
+        log("DEBUG", message, null, LogConsole.WARN_STYLE, object, secondObject);
     }
 
     @Override
-    public void debug(String s, Object... objects) {
-        delegate.debug(s, objects);
-        log("DEBUG", s, null, LogConsole.WARN_STYLE, objects);
+    public void debug(String message, Object... objects) {
+        delegate.debug(message, objects);
+        log("DEBUG", message, null, LogConsole.WARN_STYLE, objects);
     }
 
     @Override
-    public void debug(String s, Throwable throwable) {
-        delegate.debug(s, throwable);
-        log("DEBUG", s, throwable, LogConsole.WARN_STYLE);
+    public void debug(String message, Throwable throwable) {
+        delegate.debug(message, throwable);
+        log("DEBUG", message, throwable, LogConsole.WARN_STYLE);
     }
 
     @Override
@@ -81,33 +81,33 @@ public class ModelerLogger implements Logger {
     }
 
     @Override
-    public void debug(Marker marker, String s) {
-        delegate.debug(marker, s);
-        log("DEBUG", s, null, LogConsole.WARN_STYLE);
+    public void debug(Marker marker, String message) {
+        delegate.debug(marker, message);
+        log("DEBUG", message, null, LogConsole.WARN_STYLE);
     }
 
     @Override
-    public void debug(Marker marker, String s, Object o) {
-        delegate.debug(marker, s, o);
-        log("DEBUG", s, null, LogConsole.WARN_STYLE, o);
+    public void debug(Marker marker, String message, Object object) {
+        delegate.debug(marker, message, object);
+        log("DEBUG", message, null, LogConsole.WARN_STYLE, object);
     }
 
     @Override
-    public void debug(Marker marker, String s, Object o, Object o1) {
-        delegate.debug(marker, s, o, o1);
-        log("DEBUG", s, null, LogConsole.WARN_STYLE, o, o1);
+    public void debug(Marker marker, String message, Object object, Object secondObject) {
+        delegate.debug(marker, message, object, secondObject);
+        log("DEBUG", message, null, LogConsole.WARN_STYLE, object, secondObject);
     }
 
     @Override
-    public void debug(Marker marker, String s, Object... objects) {
-        delegate.debug(marker, s, objects);
-        log("DEBUG", s, null, LogConsole.WARN_STYLE, objects);
+    public void debug(Marker marker, String message, Object... objects) {
+        delegate.debug(marker, message, objects);
+        log("DEBUG", message, null, LogConsole.WARN_STYLE, objects);
     }
 
     @Override
-    public void debug(Marker marker, String s, Throwable throwable) {
-        delegate.debug(marker, s, throwable);
-        log("DEBUG", s, throwable, LogConsole.WARN_STYLE);
+    public void debug(Marker marker, String message, Throwable throwable) {
+        delegate.debug(marker, message, throwable);
+        log("DEBUG", message, throwable, LogConsole.WARN_STYLE);
     }
 
     @Override
@@ -116,33 +116,33 @@ public class ModelerLogger implements Logger {
     }
 
     @Override
-    public void error(String s) {
-        delegate.error(s);
-        log("ERROR", s, null, LogConsole.ERROR_STYLE);
+    public void error(String message) {
+        delegate.error(message);
+        log("ERROR", message, null, LogConsole.ERROR_STYLE);
     }
 
     @Override
-    public void error(String s, Object o) {
-        delegate.error(s, o);
-        log("ERROR", s, null, LogConsole.ERROR_STYLE, o);
+    public void error(String message, Object object) {
+        delegate.error(message, object);
+        log("ERROR", message, null, LogConsole.ERROR_STYLE, object);
     }
 
     @Override
-    public void error(String s, Object o, Object o1) {
-        delegate.error(s, o, o1);
-        log("ERROR", s, null, LogConsole.ERROR_STYLE, o, o1);
+    public void error(String message, Object object, Object secondObject) {
+        delegate.error(message, object, secondObject);
+        log("ERROR", message, null, LogConsole.ERROR_STYLE, object, secondObject);
     }
 
     @Override
-    public void error(String s, Object... objects) {
-        delegate.error(s, objects);
-        log("ERROR", s, null, LogConsole.ERROR_STYLE, objects);
+    public void error(String message, Object... objects) {
+        delegate.error(message, objects);
+        log("ERROR", message, null, LogConsole.ERROR_STYLE, objects);
     }
 
     @Override
-    public void error(String s, Throwable throwable) {
-        delegate.error(s, throwable);
-        log("ERROR", s, throwable, LogConsole.ERROR_STYLE);
+    public void error(String message, Throwable throwable) {
+        delegate.error(message, throwable);
+        log("ERROR", message, throwable, LogConsole.ERROR_STYLE);
     }
 
     @Override
@@ -151,63 +151,63 @@ public class ModelerLogger implements Logger {
     }
 
     @Override
-    public void error(Marker marker, String s) {
-        delegate.error(marker, s);
-        log("ERROR", s, null, LogConsole.ERROR_STYLE);
+    public void error(Marker marker, String message) {
+        delegate.error(marker, message);
+        log("ERROR", message, null, LogConsole.ERROR_STYLE);
     }
 
     @Override
-    public void error(Marker marker, String s, Object o) {
-        delegate.error(marker, s , o);
-        log("ERROR", s, null, LogConsole.ERROR_STYLE, o);
+    public void error(Marker marker, String message, Object object) {
+        delegate.error(marker, message , object);
+        log("ERROR", message, null, LogConsole.ERROR_STYLE, object);
     }
 
     @Override
-    public void error(Marker marker, String s, Object o, Object o1) {
-        delegate.error(marker, s , o, o1);
-        log("ERROR", s, null, LogConsole.ERROR_STYLE, o, o1);
+    public void error(Marker marker, String message, Object object, Object secondObject) {
+        delegate.error(marker, message , object, secondObject);
+        log("ERROR", message, null, LogConsole.ERROR_STYLE, object, secondObject);
     }
 
     @Override
-    public void error(Marker marker, String s, Object... objects) {
-        delegate.error(marker, s, objects);
-        log("ERROR", s, null, LogConsole.ERROR_STYLE, objects);
+    public void error(Marker marker, String message, Object... objects) {
+        delegate.error(marker, message, objects);
+        log("ERROR", message, null, LogConsole.ERROR_STYLE, objects);
     }
 
     @Override
-    public void error(Marker marker, String s, Throwable throwable) {
-        delegate.error(marker, s, throwable);
-        log("ERROR", s, throwable, LogConsole.ERROR_STYLE);
+    public void error(Marker marker, String message, Throwable throwable) {
+        delegate.error(marker, message, throwable);
+        log("ERROR", message, throwable, LogConsole.ERROR_STYLE);
     }
 
     @Override
-    public void info(String s) {
-        delegate.info(s);
-        log("INFO", s, null, LogConsole.INFO_STYLE);
+    public void info(String message) {
+        delegate.info(message);
+        log("INFO", message, null, LogConsole.INFO_STYLE);
     }
 
     @Override
-    public void info(String s, Object o) {
-        delegate.info(s, o);
-        log("INFO", s, null, LogConsole.INFO_STYLE, o);
+    public void info(String message, Object object) {
+        delegate.info(message, object);
+        log("INFO", message, null, LogConsole.INFO_STYLE, object);
     }
 
     @Override
-    public void info(String s, Object o, Object o1) {
-        delegate.info(s, o, o1);
-        log("INFO", s, null, LogConsole.INFO_STYLE, o, o1);
+    public void info(String message, Object object, Object secondObject) {
+        delegate.info(message, object, secondObject);
+        log("INFO", message, null, LogConsole.INFO_STYLE, object, secondObject);
     }
 
     @Override
-    public void info(String s, Object... objects) {
-        delegate.info(s, objects);
-        log("INFO", s, null, LogConsole.INFO_STYLE, objects);
+    public void info(String message, Object... objects) {
+        delegate.info(message, objects);
+        log("INFO", message, null, LogConsole.INFO_STYLE, objects);
     }
 
     @Override
-    public void info(String s, Throwable throwable) {
-        delegate.info(s, throwable);
-        log("INFO", s, throwable, LogConsole.INFO_STYLE);
+    public void info(String message, Throwable throwable) {
+        delegate.info(message, throwable);
+        log("INFO", message, throwable, LogConsole.INFO_STYLE);
     }
 
     @Override
@@ -216,33 +216,33 @@ public class ModelerLogger implements Logger {
     }
 
     @Override
-    public void info(Marker marker, String s) {
-        delegate.info(marker, s);
-        log("INFO", s, null, LogConsole.INFO_STYLE);
+    public void info(Marker marker, String message) {
+        delegate.info(marker, message);
+        log("INFO", message, null, LogConsole.INFO_STYLE);
     }
 
     @Override
-    public void info(Marker marker, String s, Object o) {
-        delegate.info(marker, s, o);
-        log("INFO", s, null, LogConsole.INFO_STYLE, o);
+    public void info(Marker marker, String message, Object object) {
+        delegate.info(marker, message, object);
+        log("INFO", message, null, LogConsole.INFO_STYLE, object);
     }
 
     @Override
-    public void info(Marker marker, String s, Object o, Object o1) {
-        delegate.info(marker, s, o, o1);
-        log("INFO", s, null, LogConsole.INFO_STYLE, o, o1);
+    public void info(Marker marker, String message, Object object, Object secondObject) {
+        delegate.info(marker, message, object, secondObject);
+        log("INFO", message, null, LogConsole.INFO_STYLE, object, secondObject);
     }
 
     @Override
-    public void info(Marker marker, String s, Object... objects) {
-        delegate.info(marker, s, objects);
-        log("INFO", s, null, LogConsole.INFO_STYLE, objects);
+    public void info(Marker marker, String message, Object... objects) {
+        delegate.info(marker, message, objects);
+        log("INFO", message, null, LogConsole.INFO_STYLE, objects);
     }
 
     @Override
-    public void info(Marker marker, String s, Throwable throwable) {
-        delegate.info(marker, s, throwable);
-        log("INFO", s, throwable, LogConsole.INFO_STYLE);
+    public void info(Marker marker, String message, Throwable throwable) {
+        delegate.info(marker, message, throwable);
+        log("INFO", message, throwable, LogConsole.INFO_STYLE);
     }
 
     @Override
@@ -261,33 +261,33 @@ public class ModelerLogger implements Logger {
     }
 
     @Override
-    public void trace(String s) {
-        delegate.trace(s);
-        log("TRACE", s, null, LogConsole.DEBUG_STYLE);
+    public void trace(String message) {
+        delegate.trace(message);
+        log("TRACE", message, null, LogConsole.DEBUG_STYLE);
     }
 
     @Override
-    public void trace(String s, Object o) {
-        delegate.trace(s, o);
-        log("TRACE", s, null, LogConsole.DEBUG_STYLE, o);
+    public void trace(String message, Object object) {
+        delegate.trace(message, object);
+        log("TRACE", message, null, LogConsole.DEBUG_STYLE, object);
     }
 
     @Override
-    public void trace(String s, Object o, Object o1) {
-        delegate.trace(s, o, o1);
-        log("TRACE", s, null, LogConsole.DEBUG_STYLE, o, o1);
+    public void trace(String message, Object object, Object secondObject) {
+        delegate.trace(message, object, secondObject);
+        log("TRACE", message, null, LogConsole.DEBUG_STYLE, object, secondObject);
     }
 
     @Override
-    public void trace(String s, Object... objects) {
-        delegate.trace(s, objects);
-        log("TRACE", s, null, LogConsole.DEBUG_STYLE, objects);
+    public void trace(String message, Object... objects) {
+        delegate.trace(message, objects);
+        log("TRACE", message, null, LogConsole.DEBUG_STYLE, objects);
     }
 
     @Override
-    public void trace(String s, Throwable throwable) {
-        delegate.trace(s, throwable);
-        log("TRACE", s, throwable, LogConsole.DEBUG_STYLE);
+    public void trace(String message, Throwable throwable) {
+        delegate.trace(message, throwable);
+        log("TRACE", message, throwable, LogConsole.DEBUG_STYLE);
     }
 
     @Override
@@ -296,33 +296,33 @@ public class ModelerLogger implements Logger {
     }
 
     @Override
-    public void trace(Marker marker, String s) {
-        delegate.trace(marker, s);
-        log("TRACE", s, null, LogConsole.DEBUG_STYLE);
+    public void trace(Marker marker, String message) {
+        delegate.trace(marker, message);
+        log("TRACE", message, null, LogConsole.DEBUG_STYLE);
     }
 
     @Override
-    public void trace(Marker marker, String s, Object o) {
-        delegate.trace(marker, s, o);
-        log("TRACE", s, null, LogConsole.DEBUG_STYLE, o);
+    public void trace(Marker marker, String message, Object object) {
+        delegate.trace(marker, message, object);
+        log("TRACE", message, null, LogConsole.DEBUG_STYLE, object);
     }
 
     @Override
-    public void trace(Marker marker, String s, Object o, Object o1) {
-        delegate.trace(marker, s, o, o1);
-        log("TRACE", s, null, LogConsole.DEBUG_STYLE, o, o1);
+    public void trace(Marker marker, String message, Object object, Object secondObject) {
+        delegate.trace(marker, message, object, secondObject);
+        log("TRACE", message, null, LogConsole.DEBUG_STYLE, object, secondObject);
     }
 
     @Override
-    public void trace(Marker marker, String s, Object... objects) {
-        delegate.trace(marker, s, objects);
-        log("TRACE", s, null, LogConsole.DEBUG_STYLE, objects);
+    public void trace(Marker marker, String message, Object... objects) {
+        delegate.trace(marker, message, objects);
+        log("TRACE", message, null, LogConsole.DEBUG_STYLE, objects);
     }
 
     @Override
-    public void trace(Marker marker, String s, Throwable throwable) {
-        delegate.trace(marker, s, throwable);
-        log("TRACE", s, throwable, LogConsole.DEBUG_STYLE);
+    public void trace(Marker marker, String message, Throwable throwable) {
+        delegate.trace(marker, message, throwable);
+        log("TRACE", message, throwable, LogConsole.DEBUG_STYLE);
     }
 
     @Override
@@ -331,33 +331,33 @@ public class ModelerLogger implements Logger {
     }
 
     @Override
-    public void warn(String s) {
-        delegate.warn(s);
-        log("WARN", s, null, LogConsole.WARN_STYLE);
+    public void warn(String message) {
+        delegate.warn(message);
+        log("WARN", message, null, LogConsole.WARN_STYLE);
     }
 
     @Override
-    public void warn(String s, Object o) {
-        delegate.warn(s, o);
-        log("WARN", s, null, LogConsole.WARN_STYLE, o);
+    public void warn(String message, Object object) {
+        delegate.warn(message, object);
+        log("WARN", message, null, LogConsole.WARN_STYLE, object);
     }
 
     @Override
-    public void warn(String s, Object... objects) {
-        delegate.warn(s, objects);
-        log("WARN", s, null, LogConsole.WARN_STYLE, objects);
+    public void warn(String message, Object... objects) {
+        delegate.warn(message, objects);
+        log("WARN", message, null, LogConsole.WARN_STYLE, objects);
     }
 
     @Override
-    public void warn(String s, Object o, Object o1) {
-        delegate.warn(s, o, o1);
-        log("WARN", s, null, LogConsole.WARN_STYLE, o, o1);
+    public void warn(String message, Object object, Object secondObject) {
+        delegate.warn(message, object, secondObject);
+        log("WARN", message, null, LogConsole.WARN_STYLE, object, secondObject);
     }
 
     @Override
-    public void warn(String s, Throwable throwable) {
-        delegate.warn(s, throwable);
-        log("WARN", s, throwable, LogConsole.WARN_STYLE);
+    public void warn(String message, Throwable throwable) {
+        delegate.warn(message, throwable);
+        log("WARN", message, throwable, LogConsole.WARN_STYLE);
     }
 
     @Override
@@ -366,33 +366,33 @@ public class ModelerLogger implements Logger {
     }
 
     @Override
-    public void warn(Marker marker, String s) {
-        delegate.warn(marker, s);
-        log("WARN", s, null, LogConsole.WARN_STYLE);
+    public void warn(Marker marker, String message) {
+        delegate.warn(marker, message);
+        log("WARN", message, null, LogConsole.WARN_STYLE);
     }
 
     @Override
-    public void warn(Marker marker, String s, Object o) {
-        delegate.warn(marker, s, o);
-        log("WARN", s, null, LogConsole.WARN_STYLE, o);
+    public void warn(Marker marker, String message, Object object) {
+        delegate.warn(marker, message, object);
+        log("WARN", message, null, LogConsole.WARN_STYLE, object);
     }
 
     @Override
-    public void warn(Marker marker, String s, Object o, Object o1) {
-        delegate.warn(marker, s, o, o1);
-        log("WARN", s, null, LogConsole.WARN_STYLE, o, o1);
+    public void warn(Marker marker, String message, Object object, Object secondObject) {
+        delegate.warn(marker, message, object, secondObject);
+        log("WARN", message, null, LogConsole.WARN_STYLE, object, secondObject);
     }
 
     @Override
-    public void warn(Marker marker, String s, Object... objects) {
-        delegate.warn(marker, s, objects);
-        log("WARN", s, null, LogConsole.WARN_STYLE, objects);
+    public void warn(Marker marker, String message, Object... objects) {
+        delegate.warn(marker, message, objects);
+        log("WARN", message, null, LogConsole.WARN_STYLE, objects);
     }
 
     @Override
-    public void warn(Marker marker, String s, Throwable throwable) {
-        delegate.warn(marker, s, throwable);
-        log("WARN", s, throwable, LogConsole.WARN_STYLE);
+    public void warn(Marker marker, String message, Throwable throwable) {
+        delegate.warn(marker, message, throwable);
+        log("WARN", message, throwable, LogConsole.WARN_STYLE);
     }
 
     @Override
@@ -404,15 +404,15 @@ public class ModelerLogger implements Logger {
      * Prints common message to the console
      */
 
-    private void log(String level, String message, Throwable t, AttributeSet style, Object... parameters) {
+    private void log(String level, String message, Throwable throwable, AttributeSet style, Object... parameters) {
         for (Object parameter : parameters) {
             message.replaceFirst("\\{\\}", String.valueOf(parameter));
         }
-        getLogConsole().appendMessage(level, message, t, style);
+        getLogConsole().appendMessage(level, message, throwable, style);
     }
 
-    private void log(String level, Object message, Throwable t, AttributeSet style) {
-        getLogConsole().appendMessage(level, String.valueOf(message), t, style);
+    private void log(String level, Object message, Throwable throwable, AttributeSet style) {
+        getLogConsole().appendMessage(level, String.valueOf(message), throwable, style);
     }
 
     private LogConsole getLogConsole() {
