@@ -23,7 +23,7 @@ import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -189,7 +189,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			destDir.mkdirs();
 		}
 
-		Log logger = new MavenLogger(this);
+		Logger logger = new MavenLogger(this);
 		CayenneGeneratorMapLoaderAction loaderAction = new CayenneGeneratorMapLoaderAction();
 		loaderAction.setMainDataMapFile(map);
 

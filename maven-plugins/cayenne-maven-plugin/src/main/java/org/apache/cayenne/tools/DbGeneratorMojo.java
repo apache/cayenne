@@ -32,7 +32,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -119,7 +119,7 @@ public class DbGeneratorMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        Log logger = new MavenLogger(this);
+        Logger logger = new MavenLogger(this);
 
         // check missing data source parameters
         dataSource.validate();

@@ -24,7 +24,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.test.jdbc.SQLReader;
 import org.apache.cayenne.test.resource.ResourceUtil;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.codehaus.plexus.util.FileUtils;
@@ -75,23 +75,23 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     @Test
     public void testToParameters_MeaningfulPkTables() throws Exception {
 
-        DbImportConfiguration parameters1 = getCdbImport("dbimporter-pom1.xml").createConfig(mock(Log.class));
+        DbImportConfiguration parameters1 = getCdbImport("dbimporter-pom1.xml").createConfig(mock(Logger.class));
         assertNull(parameters1.getMeaningfulPkTables());
         assertPathEquals("target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml", parameters1.getTargetDataMap()
                 .getPath());
 
-        assertEquals("x,b*", getCdbImport("dbimporter-pom2.xml").createConfig(mock(Log.class)).getMeaningfulPkTables());
-        assertEquals("*", getCdbImport("dbimporter-pom3.xml").createConfig(mock(Log.class)).getMeaningfulPkTables());
+        assertEquals("x,b*", getCdbImport("dbimporter-pom2.xml").createConfig(mock(Logger.class)).getMeaningfulPkTables());
+        assertEquals("*", getCdbImport("dbimporter-pom3.xml").createConfig(mock(Logger.class)).getMeaningfulPkTables());
     }
 
     public void testToParameters_Map() throws Exception {
 
-        DbImportConfiguration parameters1 = getCdbImport("dbimporter-pom1.xml").createConfig(mock(Log.class));
+        DbImportConfiguration parameters1 = getCdbImport("dbimporter-pom1.xml").createConfig(mock(Logger.class));
         assertNotNull(parameters1.getTargetDataMap());
         assertPathEquals("target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml", parameters1.getTargetDataMap()
                 .getPath());
 
-        assertNull(getCdbImport("dbimporter-pom2.xml").createConfig(mock(Log.class)).getTargetDataMap());
+        assertNull(getCdbImport("dbimporter-pom2.xml").createConfig(mock(Logger.class)).getTargetDataMap());
     }
 
     private DbImporterMojo getCdbImport(String pomFileName) throws Exception {
@@ -340,7 +340,7 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
             mapFileCopy = mapFile;
         }
 
-        DbImportConfiguration parameters = cdbImport.createConfig(mock(Log.class));
+        DbImportConfiguration parameters = cdbImport.createConfig(mock(Logger.class));
         prepareDatabase(name, parameters);
 
         try {
