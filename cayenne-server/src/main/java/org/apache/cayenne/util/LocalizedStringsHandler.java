@@ -32,16 +32,21 @@ public class LocalizedStringsHandler {
 
     protected static ResourceBundle bundle;
 
+    static {
+        // "static constructor"
+        bundle = getBundle();
+    }
+
     /**
      * Returns localized string for the given key.
      */
     public static String getString(String key) {
-        if (getBundle() == null) {
+        if ( bundle == null ) {
             return "";
         }
 
         try {
-            return getBundle().getString(key);
+            return bundle.getString(key);
         } catch (Throwable e) {
             return "";
         }
