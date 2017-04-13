@@ -45,11 +45,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.caucho</groupId>
             <artifactId>hessian</artifactId>
 			<scope>compile</scope>

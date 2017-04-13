@@ -382,7 +382,7 @@ ServerRuntime runtime = ServerRuntime.builder()
                 logging API for Cayenne internals. It provides facilities for logging queries,
                 commits, transactions, etc. The default implementation is
                     <code>org.apache.cayenne.log.CommonsJdbcEventLogger</code> that performs logging
-                via commons-logging library. Cayenne library includes another potentially useful
+                via slf4j-api library. Cayenne library includes another potentially useful
                 logger - <code>org.apache.cayenne.log.FormattedCommonsJdbcEventLogger</code> that
                 produces formatted multiline SQL output that can be easier to read.</para>
         </section>

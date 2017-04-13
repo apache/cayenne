@@ -38,7 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * A {@link JdbcEventLogger} built on top of commons-logging.
+ * A {@link JdbcEventLogger} built on top of slf4j-api logger.
  * 
  * @since 3.1
  */

@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A common base class for concrete ClientConnection implementations. Provides message
- * logging functionality via commons-logging.
+ * logging functionality via slf4j logging.
  * 
  * @since 1.2
  */

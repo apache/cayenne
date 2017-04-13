@@ -7,6 +7,23 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 
 UPGRADING TO 4.0.M6
 
+* Per CAY-2280 org.apache.commons.logging.Log logger was replaced to org.slf4j.Logger logger.
+
+        To change the logger to SLF4J need:
+        - Replace logger dependencies in pom.xml files from commons-logging to slf4j-api (if pom.xml contains slf4j-api
+        in test scope - replace test scope to compile scope);
+        - In classes that import org.apache.commons.logging.Log, replace org.apache.commons.logging.Log to
+        org.slf4j.Logger (and org.apache.commons.logging.LogFactory to org.slf4j.LoggerFactory if exist);
+        - Replace all fields type of Log to Logger (and LogFactory to LoggerFactory if exist, and methods call from
+        LogFactory.getLog(...) to LoggerFactory.getLogger(...) if exist);
+        - Change interface in custom loggers (MavenLogger, AntLogger, ModelerLogger(if exist)) from Log to Logger, and
+         override standart methods;
+        - Delete commons-logging.properties file.
+
+        For go to a SLF4J without changing the source code need:
+        - Add to pom.xml files jcl-over-slf4j dependency;
+        - Exclude commons-logging dependencies from pom.xml.
+
 * Per CAY-2278 The org.apache.cayenne.lifecycle.audit package (with the exception of AuditableChild annotation) and the
        org.apache.cayenne.lifecycle.changeset package where deprecated.
        Weighted graph sorter moved to cayenne-server into org.apache.cayenne.ashwood package.

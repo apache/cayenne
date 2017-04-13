@@ -686,7 +686,7 @@
 			&lt;include name="cayenne-server-*.jar" />
 			&lt;include name="commons-collections-*.jar" />
 			&lt;include name="commons-lang-*.jar" />
-			&lt;include name="commons-logging-*.jar" />
+			&lt;include name="slf4j-api-*.jar" />
 			&lt;include name="velocity-*.jar" />
 			&lt;include name="vpp-2.2.1.jar" />
 		&lt;/fileset>
