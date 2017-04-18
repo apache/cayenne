@@ -96,8 +96,7 @@ class DbRelationshipValidator extends ConfigurationNodeValidator {
         checkForDuplicates(relationship, validationResult);
         checkOnGeneratedStrategyConflict(relationship, validationResult);
         checkToMany(relationship, validationResult);
-}
-
+    }
 
     private void checkToMany(DbRelationship relationship, ValidationResult validationResult) {
         if (relationship != null && relationship.getReverseRelationship() != null) {
@@ -105,7 +104,7 @@ class DbRelationshipValidator extends ConfigurationNodeValidator {
                 addFailure(
                         validationResult,
                         relationship,
-                        "Relationship '%s' and '%s' ManyToMany is impossible",
+                        "Relationship '%s' and reverse '%s' are both toMany",
                         relationship.getName(), relationship.getReverseRelationship().getName());
             }
         }

@@ -14,9 +14,10 @@ Date:
 Changes/New Features:
 
 CAY-1873 Move DataDomain cache configuration from the Modeler and into DI
-CAY-1891 Add To-Many / To-One Warnings to Cayenne Modeler
-CAY-2057 Clean up OS X Modeler
-CAY-2109 cayenne-crypto: add value authentication (HMAC)
+CAY-1891 Modeler: Add To-Many Warning
+CAY-1892 Modeler: Add Relationship Data Type Warning
+CAY-2057 Modeler: Clean up OS X version
+CAY-2109 cayenne-crypto: add value authentication (HMAC) 
 CAY-2210 Query cache: incorrect cache key for queries with custom value objects
 CAY-2255 ObjectSelect improvement: columns as full entities
 CAY-2258 DI: type-safe binding of List and Map
@@ -36,7 +37,6 @@ CAY-2278 Extract cayenne-postcommit module from cayenne-lifecycle
 
 Bug Fixes:
 
-CAY-1892 Add Relationship Data Type Warning to Cayenne Modeler
 CAY-2021 cdbimport: detect when same FK constraint is defined twice
 CAY-2077 Bug in CayenneRuntimeException using wrong specified string in Formatter
 CAY-2094 SelectById query doesn't work from ROP client
