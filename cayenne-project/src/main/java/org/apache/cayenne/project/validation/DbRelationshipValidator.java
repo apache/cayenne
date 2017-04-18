@@ -95,6 +95,19 @@ class DbRelationshipValidator extends ConfigurationNodeValidator {
 
         checkForDuplicates(relationship, validationResult);
         checkOnGeneratedStrategyConflict(relationship, validationResult);
+        checkTypesOfAttributesInRelationship(relationship, validationResult);
+    }
+
+    private void checkTypesOfAttributesInRelationship(DbRelationship relationship, ValidationResult validationResult) {
+        for (DbJoin join: relationship.getJoins()) {
+            if (join.getSource().getType() != join.getTarget().getType()) {
+                addFailure(
+                        validationResult,
+                        relationship,
+                        "Attributes '%s' and '%s' have different types in a relationship '%s'",
+                        join.getSourceName(), join.getTargetName(), relationship.getName());
+            }
+        }
     }
 
     private void checkOnGeneratedStrategyConflict(DbRelationship relationship, ValidationResult validationResult) {
