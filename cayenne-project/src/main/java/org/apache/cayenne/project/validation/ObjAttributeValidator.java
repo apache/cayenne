@@ -50,6 +50,18 @@ class ObjAttributeValidator extends ConfigurationNodeValidator {
         }
 
         checkForDuplicates(attribute, validationResult);
+        validateAttribute(attribute, validationResult);
+    }
+
+    private void validateAttribute(ObjAttribute attribute, ValidationResult validationResult) {
+        for (ObjAttribute objAttribute: attribute.getEntity().getDeclaredAttributes()) {
+            if (attribute.getName().equals(objAttribute.getName())
+                    && objAttribute.getEntity().getSuperEntity() != null
+                    && objAttribute.getEntity().getSuperEntity().getAttribute(objAttribute.getName()) != null) {
+                addFailure(validationResult, objAttribute, "'%s' and '%s' can't have attribute '%s' together ",
+                        objAttribute.getEntity().getName(), objAttribute.getEntity().getSuperEntity().getName(), objAttribute.getName());
+            }
+        }
     }
 
     private void validateName(ObjAttribute attribute, ValidationResult validationResult) {

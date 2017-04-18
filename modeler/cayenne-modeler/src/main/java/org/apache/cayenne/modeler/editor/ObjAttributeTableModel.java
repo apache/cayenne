@@ -82,7 +82,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
     }
 
     private static List<ObjAttributeWrapper> wrapObjAttributes(Collection<ObjAttribute> attributes) {
-        List<ObjAttributeWrapper>  wrappedAttributes = new ArrayList<ObjAttributeWrapper>();
+        List<ObjAttributeWrapper>  wrappedAttributes = new ArrayList<>();
         for(ObjAttribute attr : attributes) {
             wrappedAttributes.add(new ObjAttributeWrapper(attr));
         }

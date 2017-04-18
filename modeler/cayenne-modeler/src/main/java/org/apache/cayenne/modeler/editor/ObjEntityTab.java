@@ -670,7 +670,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
     }
 
     private List<ObjAttribute> getDuplicatedAttributes(ObjEntity superEntity) {
-        List<ObjAttribute> result = new LinkedList<ObjAttribute>();
+        List<ObjAttribute> result = new LinkedList<>();
 
         ObjEntity entity = mediator.getCurrentObjEntity();
 
