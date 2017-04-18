@@ -136,5 +136,36 @@
         <para>And then can be run as
             <screen><prompt>$</prompt> mvn cayenne-modeler:run</screen>
         </para>
+        <para>
+        <table frame="void">
+            <caption>modeler plugin parameters</caption>
+            <col width="14%"/>
+            <col width="7%"/>
+            <col width="79%"/>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>modelFile</code>
+                    </td>
+                    <td>File</td>
+                    <td>Name of the model file to open. Here is some simple example:
+                        <programlisting language="xml">&lt;plugin>
+    &lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
+    &lt;artifactId>maven-cayenne-modeler-plugin&lt;/artifactId>
+    &lt;version>${cayenne.version}&lt;/version>
+    &lt;configuration>
+        &lt;modelFile>src/main/resources/cayenne.xml&lt;/modelFile>
+    &lt;/configuration>
+&lt;/plugin></programlisting>
+                    </td>
+                </tr>
+            </tbody>
+        </table></para>
     </section>
 </chapter>
