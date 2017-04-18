@@ -35,6 +35,7 @@ CAY-2278 Extract cayenne-postcommit module from cayenne-lifecycle
 
 Bug Fixes:
 
+CAY-1892 Add Relationship Data Type Warning to Cayenne Modeler
 CAY-2021 cdbimport: detect when same FK constraint is defined twice
 CAY-2077 Bug in CayenneRuntimeException using wrong specified string in Formatter
 CAY-2094 SelectById query doesn't work from ROP client
