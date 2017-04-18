@@ -14,6 +14,7 @@ Date:
 Changes/New Features:
 
 CAY-1873 Move DataDomain cache configuration from the Modeler and into DI
+CAY-1891 Add To-Many / To-One Warnings to Cayenne Modeler
 CAY-2109 cayenne-crypto: add value authentication (HMAC)
 CAY-2210 Query cache: incorrect cache key for queries with custom value objects
 CAY-2255 ObjectSelect improvement: columns as full entities
