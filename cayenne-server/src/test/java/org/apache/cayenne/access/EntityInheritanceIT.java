@@ -19,7 +19,9 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.testdo.inheritance.BaseEntity;
 import org.apache.cayenne.testdo.inheritance.RelatedEntity;
 import org.apache.cayenne.testdo.inheritance.SubEntity;
@@ -92,6 +94,21 @@ public class EntityInheritanceIT extends ServerCase {
         //
         // context.deleteObject(sub);
         // assertEquals(0, direct.getSubEntities().size());
+    }
+
+    @Test
+    public void testCAY2091() {
+        final int SUB_ENTITY_ID = 200;
+        RelatedEntity related = context.newObject(RelatedEntity.class);
+        SubEntity subEntity = context.newObject(SubEntity.class);
+        subEntity.setToRelatedEntity(related);
+        context.commitChanges();
+
+        BaseEntity forPkLoadedEntity = Cayenne.objectForPK(context, BaseEntity.class, SUB_ENTITY_ID);
+        assertEquals(forPkLoadedEntity.getClass(), SubEntity.class);
+
+        BaseEntity selectLoadedEntity = SelectById.query(BaseEntity.class, SUB_ENTITY_ID).selectOne(context);
+        assertEquals(selectLoadedEntity.getClass(), SubEntity.class);
     }
 
 }
