@@ -48,6 +48,7 @@ import org.apache.cayenne.modeler.util.DbAttributePathComboBoxRenderer;
 import org.apache.cayenne.modeler.util.DbAttributePathComboBoxEditor;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
+import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
@@ -296,13 +297,8 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
     }
 
     public void removeDuplicateAttribute(AttributeEvent e) {
-        ObjEntity current = (ObjEntity) e.getEntity();
-        Collection<ObjEntity> objEntities = new ArrayList<>();
-        for (ObjEntity objEntity: e.getEntity().getDataMap().getObjEntities()) {
-            if (objEntity.isSubentityOf(current)) {
-                objEntities.add(objEntity);
-            }
-        }
+        Collection<ObjEntity> objEntities = ProjectUtil.getCollectionOfChildren((ObjEntity) e.getEntity());
+
 
         for (ObjEntity objEntity: objEntities) {
             if (objEntity.getDeclaredAttribute(e.getAttribute().getName()) != null) {
@@ -322,6 +318,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 shouldDelete = selectedValue != null && selectedValue.equals(JOptionPane.YES_OPTION);
                 if (shouldDelete) {
                     objEntity.removeAttribute(e.getAttribute().getName());
+                    objEntity.removeAttributeOverride(e.getAttribute().getName());
                 }
             }
         }

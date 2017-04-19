@@ -429,4 +429,14 @@ public class ProjectUtil {
         }
         return relationships;
     }
+
+    public static Collection<ObjEntity> getCollectionOfChildren(ObjEntity objEntity) {
+        Collection<ObjEntity> objEntities = new ArrayList<>();
+        for (ObjEntity child: objEntity.getDataMap().getObjEntities()) {
+            if (child.isSubentityOf(objEntity)) {
+                objEntities.add(child);
+            }
+        }
+        return objEntities;
+    }
 }

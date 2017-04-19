@@ -787,6 +787,13 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     /**
+     * @since 4.0
+     */
+    public void removeAttributeOverride(String attributeName) {
+        attributeOverrides.remove(attributeName);
+    }
+
+    /**
      * @since 3.0
      */
     public Map<String, String> getDeclaredAttributeOverrides() {
