@@ -82,6 +82,7 @@
 				<include>org.apache.cayenne:cayenne-di</include>
 				<include>org.apache.cayenne:cayenne-joda</include>
 				<include>org.apache.cayenne:cayenne-lifecycle</include>
+				<include>org.apache.cayenne:cayenne-postcommit</include>
 				<include>org.apache.cayenne:cayenne-project</include>
 				<include>org.apache.cayenne:cayenne-server</include>
 				<include>org.apache.cayenne:cayenne-dbsync</include>

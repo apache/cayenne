@@ -116,8 +116,7 @@ public class SQLTemplateAction implements SQLAction {
 		}
 
 		// notify of combined counts of all queries inside SQLTemplate
-		// multiplied by the
-		// number of parameter sets...
+		// multiplied by the number of parameter sets...
 		int[] ints = new int[counts.size()];
 		for (int i = 0; i < ints.length; i++) {
 			ints[i] = counts.get(i).intValue();
@@ -201,9 +200,7 @@ public class SQLTemplateAction implements SQLAction {
 							}
 						}
 
-						// ignore possible following update counts and bail
-						// early on
-						// iterated results
+						// ignore possible following update counts and bail early on iterated results
 						if (iteratedResult) {
 							break;
 						}
@@ -274,20 +271,18 @@ public class SQLTemplateAction implements SQLAction {
 	 */
 	protected RowDescriptorBuilder configureRowDescriptorBuilder(SQLStatement compiled, ResultSet resultSet)
 			throws SQLException {
-		RowDescriptorBuilder builder = new RowDescriptorBuilder();
-		builder.setResultSet(resultSet);
+		RowDescriptorBuilder builder = new RowDescriptorBuilder()
+                .setResultSet(resultSet)
+                .validateDuplicateColumnNames();
 
-		// SQLTemplate #result columns take precedence over other ways to
-		// determine the
-		// type
+		// SQLTemplate #result columns take precedence over other ways to determine the type
 		if (compiled.getResultColumns().length > 0) {
 			builder.setColumns(compiled.getResultColumns());
 		}
 
 		ObjEntity entity = queryMetadata.getObjEntity();
 		if (entity != null) {
-			// TODO: andrus 2008/03/28 support flattened attributes with
-			// aliases...
+			// TODO: andrus 2008/03/28 support flattened attributes with aliases...
 			for (ObjAttribute attribute : entity.getAttributes()) {
 				String column = attribute.getDbAttributePath();
 				if (column == null || column.indexOf('.') > 0) {
@@ -297,16 +292,12 @@ public class SQLTemplateAction implements SQLAction {
 			}
 		}
 
-		// override numeric Java types based on JDBC defaults for DbAttributes,
-		// as
-		// Oracle
+		// override numeric Java types based on JDBC defaults for DbAttributes, as Oracle
 		// ResultSetMetadata is not very precise about NUMERIC distinctions...
 		// (BigDecimal vs Long vs. Integer)
 		if (dbEntity != null) {
 			for (DbAttribute attribute : dbEntity.getAttributes()) {
-
 				if (!builder.isOverriden(attribute.getName()) && TypesMapping.isNumeric(attribute.getType())) {
-
 					builder.overrideColumnType(attribute.getName(), TypesMapping.getJavaBySqlType(attribute.getType()));
 				}
 			}
@@ -333,10 +324,8 @@ public class SQLTemplateAction implements SQLAction {
 	protected String extractTemplateString() {
 		String sql = query.getTemplate(dbAdapter.getClass().getName());
 
-		// note that we MUST convert line breaks to spaces. On some databases
-		// (DB2)
-		// queries with breaks simply won't run; the rest are affected by
-		// CAY-726.
+		// note that we MUST convert line breaks to spaces. On some databases (DB2)
+		// queries with breaks simply won't run; the rest are affected by CAY-726.
 		return Util.stripLineBreaks(sql, ' ');
 	}
 

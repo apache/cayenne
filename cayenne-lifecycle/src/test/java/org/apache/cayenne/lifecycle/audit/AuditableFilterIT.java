@@ -234,10 +234,10 @@ public class AuditableFilterIT extends AuditableServerCase {
 
 		void reset() {
 
-			audited = new EnumMap<AuditableOperation, Collection<Object>>(AuditableOperation.class);
+			audited = new EnumMap<>(AuditableOperation.class);
 
 			for (AuditableOperation op : AuditableOperation.values()) {
-				audited.put(op, new ArrayList<Object>());
+				audited.put(op, new ArrayList<>());
 			}
 		}
 

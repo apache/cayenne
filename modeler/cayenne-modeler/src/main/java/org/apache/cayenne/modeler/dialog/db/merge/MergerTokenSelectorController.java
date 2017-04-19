@@ -49,12 +49,13 @@ public class MergerTokenSelectorController extends CayenneController {
     protected Set<MergerToken> excludedTokens;
     protected List<MergerToken> selectableTokensList;
     protected MergerTokenFactory mergerTokenFactory;
+    protected boolean isReverse;
 
     public MergerTokenSelectorController(CayenneController parent) {
         super(parent);
         this.view = new MergerTokenSelectorView();
-        this.excludedTokens = new HashSet<MergerToken>();
-        this.selectableTokensList = new ArrayList<MergerToken>();
+        this.excludedTokens = new HashSet<>();
+        this.selectableTokensList = new ArrayList<>();
         initController();
     }
 
@@ -69,7 +70,7 @@ public class MergerTokenSelectorController extends CayenneController {
     }
 
     public List<MergerToken> getSelectedTokens() {
-        List<MergerToken> t = new ArrayList<MergerToken>(selectableTokensList);
+        List<MergerToken> t = new ArrayList<>(selectableTokensList);
         t.removeAll(excludedTokens);
         return Collections.unmodifiableList(t);
     }
@@ -121,8 +122,7 @@ public class MergerTokenSelectorController extends CayenneController {
 
         if (b) {
             excludedTokens.remove(token);
-        }
-        else {
+        } else {
             excludedTokens.add(token);
         }
 
@@ -137,8 +137,7 @@ public class MergerTokenSelectorController extends CayenneController {
 
         if (unselectedCount == selectableTokensList.size()) {
             view.getCheckAll().setSelected(false);
-        }
-        else if (unselectedCount == 0) {
+        } else if (unselectedCount == 0) {
             view.getCheckAll().setSelected(true);
         }
     }
@@ -183,8 +182,7 @@ public class MergerTokenSelectorController extends CayenneController {
     public void select(MergerToken token, boolean select) {
         if (select) {
             excludedTokens.remove(token);
-        }
-        else {
+        } else {
             excludedTokens.add(token);
         }
     }
@@ -200,9 +198,7 @@ public class MergerTokenSelectorController extends CayenneController {
             excludedTokens.add(reverse);
         }
         
-        /**
-         * Repaint, so that "Operation" column updates properly
-         */
+        // Repaint, so that "Operation" column updates properly
         view.getTokens().repaint();
     }
 
@@ -212,8 +208,7 @@ public class MergerTokenSelectorController extends CayenneController {
 
         if (isCheckAllSelected) {
             excludedTokens.clear();
-        }
-        else {
+        } else {
             excludedTokens.addAll(selectableTokensList);
         }
 
@@ -221,8 +216,14 @@ public class MergerTokenSelectorController extends CayenneController {
         model.fireTableDataChanged();
     }
 
+    public boolean isReverse() {
+        return isReverse;
+    }
+
     public void reverseAllAction() {
-        
+
+        isReverse = !isReverse;
+
         for (int i = 0; i < selectableTokensList.size(); i++) {
             MergerToken token = selectableTokensList.get(i);
             MergerToken reverse = token.createReverse(mergerTokenFactory);

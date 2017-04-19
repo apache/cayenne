@@ -50,17 +50,21 @@ class ObjAttributeValidator extends ConfigurationNodeValidator {
         }
 
         checkForDuplicates(attribute, validationResult);
-        validateAttribute(attribute, validationResult);
+        checkSuperEntityAttributes(attribute, validationResult);
     }
 
-    private void validateAttribute(ObjAttribute attribute, ValidationResult validationResult) {
-        for (ObjAttribute objAttribute: attribute.getEntity().getDeclaredAttributes()) {
-            if (attribute.getName().equals(objAttribute.getName())
-                    && objAttribute.getEntity().getSuperEntity() != null
-                    && objAttribute.getEntity().getSuperEntity().getAttribute(objAttribute.getName()) != null) {
-                addFailure(validationResult, objAttribute, "'%s' and '%s' can't have attribute '%s' together ",
-                        objAttribute.getEntity().getName(), objAttribute.getEntity().getSuperEntity().getName(), objAttribute.getName());
-            }
+    private void checkSuperEntityAttributes(ObjAttribute attribute, ValidationResult validationResult) {
+        // Check there is an attribute in entity and super entity at the same time
+
+        boolean selfAttribute = false;
+        if (attribute.getEntity().getDeclaredAttribute(attribute.getName()) != null) {
+            selfAttribute = true;
+        }
+
+        ObjEntity superEntity = attribute.getEntity().getSuperEntity();
+        if (selfAttribute && superEntity != null && superEntity.getAttribute(attribute.getName()) != null) {
+                addFailure(validationResult, attribute, "'%s' and super '%s' can't have attribute '%s' together ",
+                        attribute.getEntity().getName(), superEntity.getName(), attribute.getName());
         }
     }
 

@@ -30,7 +30,11 @@ import org.apache.cayenne.graph.GraphDiff;
  * same object are all combined in a single {@link PropertyChange} instance.
  * 
  * @since 3.1
+ * @deprecated since 4.0 in favour of {@link org.apache.cayenne.lifecycle.postcommit.PostCommitFilter}
+ *
+ * @see org.apache.cayenne.lifecycle.changemap.ChangeMap
  */
+@Deprecated
 public interface ChangeSet {
 
     public static final String OBJECT_ID_PROPERTY_NAME = "cayenne:objectId";

@@ -304,15 +304,9 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
             }
         }
 
-        boolean isDuplicate = false;
         for (ObjEntity objEntity: objEntities) {
-            for (ObjAttribute objAttribute: objEntity.getDeclaredAttributes()) {
-                if (objAttribute.getName().equals(e.getAttribute().getName())) {
-                    isDuplicate = true;
-                    break;
-                }
-            }
-            if (isDuplicate) {
+            if (objEntity.getDeclaredAttribute(e.getAttribute().getName()) != null) {
+
                 JOptionPane pane = new JOptionPane(
                         String.format("'%s' and '%s' can't have attribute '%s' together. " +
                                 "Would you like to delete this attribute from the '%s' class?",
@@ -325,7 +319,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
                 boolean shouldDelete;
                 Object selectedValue = pane.getValue();
-                shouldDelete = selectedValue==null?false:selectedValue.equals(JOptionPane.YES_OPTION);
+                shouldDelete = selectedValue != null && selectedValue.equals(JOptionPane.YES_OPTION);
                 if (shouldDelete) {
                     objEntity.removeAttribute(e.getAttribute().getName());
                 }

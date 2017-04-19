@@ -14,12 +14,16 @@ Date:
 Changes/New Features:
 
 CAY-1873 Move DataDomain cache configuration from the Modeler and into DI
-CAY-2109 cayenne-crypto: add value authentication (HMAC)
+CAY-1891 Modeler: Add To-Many Warning
+CAY-1892 Modeler: Add Relationship Data Type Warning
+CAY-2057 Modeler: Clean up OS X version
+CAY-2109 cayenne-crypto: add value authentication (HMAC) 
 CAY-2210 Query cache: incorrect cache key for queries with custom value objects
 CAY-2255 ObjectSelect improvement: columns as full entities
 CAY-2258 DI: type-safe binding of List and Map
 CAY-2259 QueryCache: support for referencing type-safe caches
 CAY-2261 Replace NamedQuery with MappedXYZ in *datamap.vm
+CAY-2262 Module auto-loading
 CAY-2266 Move EventBridge implementations into autoloadable modules
 CAY-2267 Contribute lifecycle events listeners via DI
 CAY-2268 DI: Refactor ListBuilder API ambiguities for before() / after() bindings
@@ -29,6 +33,7 @@ CAY-2271 ColumnSelect: support for prefetch and limit
 CAY-2272 ColumnSelect: methods to manually control DISTINCT clause
 CAY-2274 Modeler: Validate case when dependent PK is marked as “generated”
 CAY-2277 Create ClientRuntime with ClientRuntimeBuilder just like ServerRuntime
+CAY-2278 Extract cayenne-postcommit module from cayenne-lifecycle
 
 Bug Fixes:
 
@@ -37,6 +42,9 @@ CAY-2077 Bug in CayenneRuntimeException using wrong specified string in Formatte
 CAY-2082 Modeler generates incorrect underscore class with inheritance
 CAY-2094 SelectById query doesn't work from ROP client
 CAY-2161 'Not for Client Use' option is ignored at Class Generation
+CAY-2171 Modeler: Undo db Entity Sync throws error
+CAY-2208 SQLTemplate: LEFT JOIN to a subset of a table returns nulls for entries that don't have a match in the subset
+CAY-2230 Error using connection to postgresql with db schema in DB URL
 CAY-2240 Modeler: issue with cursor rendering for EJBQL query
 CAY-2243 ObjectContext.getGraphManager().unregisterObject() inconsistencies
 CAY-2250 Remove: Incorrect text in Confirm Remove message when cursor is set on attribute row

@@ -37,6 +37,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
@@ -45,6 +46,7 @@ import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
@@ -65,6 +67,9 @@ public class SQLTemplateActionIT extends ServerCase {
 
 	@Inject
 	protected JdbcAdapter adapter;
+
+	@Inject
+	protected UnitDbAdapter unitDbAdapter;
 
 	@Inject
 	protected ObjectContext objectContext;
@@ -139,6 +144,26 @@ public class SQLTemplateActionIT extends ServerCase {
 		assertEquals(((Number) bindings.get("id")).longValue(), id.longValue());
 		assertEquals("artist4", row.get("ARTIST_NAME"));
 		assertTrue(row.containsKey("DATE_OF_BIRTH"));
+	}
+
+	@Test
+	public void selectObjects() throws Exception {
+		createFourArtists();
+
+		String templateString = "SELECT * FROM ARTIST";
+		SQLTemplate sqlTemplate = new SQLTemplate(Artist.class, templateString);
+
+		if(unitDbAdapter.isLowerCaseNames()) {
+			sqlTemplate.setColumnNamesCapitalization(CapsStrategy.UPPER);
+		}
+
+		@SuppressWarnings("unchecked")
+		List<Artist> artists = (List<Artist>)objectContext.performQuery(sqlTemplate);
+
+		assertEquals(4, artists.size());
+		for(Artist artist : artists){
+			assertTrue(artist.getArtistName().startsWith("artist"));
+		}
 	}
 
 	@Test

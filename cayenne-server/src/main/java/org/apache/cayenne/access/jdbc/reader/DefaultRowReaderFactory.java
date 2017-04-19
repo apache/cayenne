@@ -84,7 +84,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 							createEntityRowReader(descriptor, queryMetadata, (EntityResultSegment) segment,
 									postProcessorFactory));
 				} else {
-					reader.addRowReader(i, new ScalarRowReader<Object>(descriptor, (ScalarResultSegment) segment));
+					reader.addRowReader(i, new ScalarRowReader<>(descriptor, (ScalarResultSegment) segment));
 				}
 			}
 

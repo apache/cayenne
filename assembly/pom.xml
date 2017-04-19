@@ -74,6 +74,12 @@
 
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-postcommit</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-crypto</artifactId>
 			<version>${project.version}</version>
 		</dependency>

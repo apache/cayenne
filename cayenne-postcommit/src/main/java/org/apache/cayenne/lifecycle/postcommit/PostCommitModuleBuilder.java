@@ -54,7 +54,7 @@ public class PostCommitModuleBuilder {
 	private boolean excludeFromTransaction;
 
 	PostCommitModuleBuilder() {
-		this.entityFactoryType = IncludeAllPostCommitEntityFactory.class;
+		entityFactory(IncludeAllPostCommitEntityFactory.class);
 		this.listenerTypes = new HashSet<>();
 		this.listenerInstances = new HashSet<>();
 	}
@@ -86,8 +86,7 @@ public class PostCommitModuleBuilder {
 	 * excluded from the change collection.
 	 */
 	public PostCommitModuleBuilder auditableEntitiesOnly() {
-		this.entityFactoryType = AuditablePostCommitEntityFactory.class;
-		return this;
+		return entityFactory(AuditablePostCommitEntityFactory.class);
 	}
 
 	/**
@@ -117,21 +116,15 @@ public class PostCommitModuleBuilder {
 
 				binder.bind(PostCommitEntityFactory.class).to(entityFactoryType);
 
-				ListBuilder<PostCommitListener> listeners = binder
-						.bindList(PostCommitListener.class, PostCommitFilter.POST_COMMIT_LISTENERS_LIST)
+				ListBuilder<PostCommitListener> listeners = PostCommitModule.contributeListeners(binder)
 						.addAll(listenerInstances);
 
 				// types have to be added one-by-one
 				for (Class type : listenerTypes) {
-
-					// TODO: temp hack - need to bind each type before adding to
-					// collection...
+					// TODO: temp hack - need to bind each type before adding to collection...
 					binder.bind(type).to(type);
-
 					listeners.add(type);
 				}
-
-				binder.bind(PostCommitFilter.class).to(PostCommitFilter.class);
 
 				if (excludeFromTransaction) {
 					ServerModule.contributeDomainFilters(binder).addAfter(PostCommitFilter.class, TransactionFilter.class);

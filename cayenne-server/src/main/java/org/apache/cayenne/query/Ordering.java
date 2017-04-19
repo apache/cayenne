@@ -59,6 +59,9 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 * according the default iteration order of the Orderings list. I.e. each
 	 * Ordering with lower index is more significant than any other Ordering
 	 * with higher index. List being ordered is modified in place.
+	 *
+	 * @param objects elements to sort
+	 * @param orderings list of Orderings to be applied
 	 */
 	@SuppressWarnings("unchecked")
 	public static void orderList(List<?> objects, List<? extends Ordering> orderings) {
@@ -69,11 +72,15 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 * Orders a given list of objects, using a List of Orderings applied
 	 * according the default iteration order of the Orderings list. I.e. each
 	 * Ordering with lower index is more significant than any other Ordering
-	 * with higher index. List being ordered is modified in place.
-	 * 
+	 * with higher index.
+	 *
+	 * @param objects elements to sort
+	 * @param orderings list of Orderings to be applied
+	 * @return new List with ordered elements
+	 *
 	 * @since 4.0
 	 */
-	public static <E> List<E> orderedList(Collection<E> objects, List<? extends Ordering> orderings) {
+	public static <E> List<E> orderedList(final Collection<E> objects, List<? extends Ordering> orderings) {
 		List<E> newList = new ArrayList<>(objects);
 		
 		orderList(newList, orderings);
@@ -172,6 +179,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	/**
 	 * Sets sort order for whether nulls are at the top or bottom of the
 	 * resulting list. Default is true.
+	 * Affects only in-memory sorting.
 	 * 
 	 * @param nullSortedFirst
 	 *            true sorts nulls to the top of the list, false sorts nulls to

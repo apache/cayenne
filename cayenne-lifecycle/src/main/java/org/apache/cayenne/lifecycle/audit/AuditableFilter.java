@@ -44,7 +44,9 @@ import org.apache.cayenne.query.Query;
  * analyze ignored properties.
  * 
  * @since 3.1
+ * @deprecated since 4.0, use {@link org.apache.cayenne.lifecycle.postcommit.PostCommitFilter}
  */
+@Deprecated
 public class AuditableFilter implements DataChannelFilter {
 
     private ThreadLocal<AuditableAggregator> threadAggregator;
