@@ -21,6 +21,8 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
 
+import java.util.Collection;
+
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Attribute;
@@ -171,6 +173,11 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
                     entity,
                     MapEvent.REMOVE);
             mediator.fireObjAttributeEvent(e);
+
+            Collection<ObjEntity> objEntities = ProjectUtil.getCollectionOfChildren((ObjEntity) e.getEntity());
+            for (ObjEntity objEntity: objEntities) {
+                objEntity.removeAttributeOverride(e.getAttribute().getName());
+            }
         }
     }
 

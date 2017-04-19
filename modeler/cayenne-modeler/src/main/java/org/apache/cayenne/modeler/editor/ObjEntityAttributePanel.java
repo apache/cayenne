@@ -322,6 +322,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 shouldDelete = selectedValue != null && selectedValue.equals(JOptionPane.YES_OPTION);
                 if (shouldDelete) {
                     objEntity.removeAttribute(e.getAttribute().getName());
+                    objEntity.removeAttributeOverride(e.getAttribute().getName());
                 }
             }
         }
