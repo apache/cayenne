@@ -55,6 +55,8 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -74,7 +76,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -245,6 +247,9 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         }
 
         table.select(ind);
+        if (e.getOldName() != null) {
+            removeDuplicateAttribute(e);
+        }
     }
 
     public void objAttributeAdded(AttributeEvent e) {
@@ -287,6 +292,38 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
             model.removeRow(list.get(ind));
             model.fireTableDataChanged();
             table.select(ind);
+        }
+    }
+
+    public void removeDuplicateAttribute(AttributeEvent e) {
+        ObjEntity current = (ObjEntity) e.getEntity();
+        Collection<ObjEntity> objEntities = new ArrayList<>();
+        for (ObjEntity objEntity: e.getEntity().getDataMap().getObjEntities()) {
+            if (objEntity.isSubentityOf(current)) {
+                objEntities.add(objEntity);
+            }
+        }
+
+        for (ObjEntity objEntity: objEntities) {
+            if (objEntity.getDeclaredAttribute(e.getAttribute().getName()) != null) {
+
+                JOptionPane pane = new JOptionPane(
+                        String.format("'%s' and '%s' can't have attribute '%s' together. " +
+                                        "Would you like to delete this attribute from the '%s' class?",
+                                objEntity.getName(), e.getEntity().getName(), e.getAttribute().getName(), objEntity.getName()),
+                        JOptionPane.QUESTION_MESSAGE,
+                        JOptionPane.YES_NO_OPTION);
+
+                JDialog dialog = pane.createDialog(Application.getFrame(), "Confirm Remove");
+                dialog.setVisible(true);
+
+                boolean shouldDelete;
+                Object selectedValue = pane.getValue();
+                shouldDelete = selectedValue != null && selectedValue.equals(JOptionPane.YES_OPTION);
+                if (shouldDelete) {
+                    objEntity.removeAttribute(e.getAttribute().getName());
+                }
+            }
         }
     }
 

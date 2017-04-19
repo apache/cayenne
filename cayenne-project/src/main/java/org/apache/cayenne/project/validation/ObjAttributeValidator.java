@@ -50,6 +50,7 @@ class ObjAttributeValidator extends ConfigurationNodeValidator {
         }
 
         checkForDuplicates(attribute, validationResult);
+        checkSuperEntityAttributes(attribute, validationResult);
     }
 
     private void validateName(ObjAttribute attribute, ValidationResult validationResult) {
@@ -71,6 +72,21 @@ class ObjAttributeValidator extends ConfigurationNodeValidator {
             addFailure(validationResult, attribute,
                     "ObjAttribute name '%s' is invalid",
                     attribute.getName());
+        }
+    }
+
+    private void checkSuperEntityAttributes(ObjAttribute attribute, ValidationResult validationResult) {
+        // Check there is an attribute in entity and super entity at the same time
+
+        boolean selfAttribute = false;
+        if (attribute.getEntity().getDeclaredAttribute(attribute.getName()) != null) {
+            selfAttribute = true;
+        }
+
+        ObjEntity superEntity = attribute.getEntity().getSuperEntity();
+        if (selfAttribute && superEntity != null && superEntity.getAttribute(attribute.getName()) != null) {
+            addFailure(validationResult, attribute, "'%s' and super '%s' can't have attribute '%s' together ",
+                    attribute.getEntity().getName(), superEntity.getName(), attribute.getName());
         }
     }
 
