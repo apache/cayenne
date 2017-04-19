@@ -55,7 +55,7 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
 
             Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity
                     .get(dbEntity);
-            Map<Object, Query> batches = new LinkedHashMap<Object, Query>();
+            Map<Object, Query> batches = new LinkedHashMap<>();
 
             for (DbEntityClassDescriptor descriptor : descriptors) {
                 ObjEntity entity = descriptor.getEntity();

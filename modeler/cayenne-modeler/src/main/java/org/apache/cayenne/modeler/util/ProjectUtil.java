@@ -266,7 +266,7 @@ public class ProjectUtil {
             // check individual relationships
             for (ObjRelationship rel : entity.getRelationships()) {
 
-                List<DbRelationship> dbRelList = new ArrayList<DbRelationship>(rel
+                List<DbRelationship> dbRelList = new ArrayList<>(rel
                         .getDbRelationships());
                 for (DbRelationship dbRel : dbRelList) {
                     Entity srcEnt = dbRel.getSourceEntity();

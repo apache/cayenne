@@ -39,6 +39,7 @@ Bug Fixes:
 
 CAY-2021 cdbimport: detect when same FK constraint is defined twice
 CAY-2077 Bug in CayenneRuntimeException using wrong specified string in Formatter
+CAY-2082 Modeler generates incorrect underscore class with inheritance
 CAY-2094 SelectById query doesn't work from ROP client
 CAY-2161 'Not for Client Use' option is ignored at Class Generation
 CAY-2171 Modeler: Undo db Entity Sync throws error

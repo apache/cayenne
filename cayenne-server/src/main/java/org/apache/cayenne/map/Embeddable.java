@@ -54,7 +54,7 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
 	}
 
 	public Embeddable(String className) {
-		this.attributes = new TreeMap<String, EmbeddableAttribute>();
+		this.attributes = new TreeMap<>();
 		this.className = className;
 	}
 
