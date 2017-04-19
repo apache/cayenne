@@ -814,6 +814,21 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     /**
+     * Finds attribute declared by this ObjEntity,
+     * excluding inherited attributes.
+     *
+     * @param name of the attribute
+     * @return declared attribute or null if no attribute is found
+     *
+     * @see ObjEntity#getAttribute(String)
+     *
+     * @since 4.0
+     */
+    public ObjAttribute getDeclaredAttribute(String name) {
+        return (ObjAttribute) super.getAttribute(name);
+    }
+
+    /**
      * Returns a named Relationship that either belongs to this ObjEntity or is
      * inherited. Returns null if no matching attribute is found.
      */
