@@ -113,7 +113,8 @@ class DbRelationshipValidator extends ConfigurationNodeValidator {
 
     private void checkTypesOfAttributesInRelationship(DbRelationship relationship, ValidationResult validationResult) {
         for (DbJoin join: relationship.getJoins()) {
-            if (join.getSource().getType() != join.getTarget().getType()) {
+            if (join.getSource() != null && join.getTarget() != null
+                    && join.getSource().getType() != join.getTarget().getType()) {
                 addFailure(
                         validationResult,
                         relationship,

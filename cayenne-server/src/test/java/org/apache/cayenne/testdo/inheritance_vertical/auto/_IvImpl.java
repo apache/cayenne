@@ -43,6 +43,7 @@ public abstract class _IvImpl extends IvBase {
         return (IvOther)readProperty("other1");
     }
 
+
     public void setOther2(IvOther other2) {
         setToOneTarget("other2", other2, true);
     }

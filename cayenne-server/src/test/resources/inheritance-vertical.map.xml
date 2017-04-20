@@ -68,7 +68,7 @@
 		<db-attribute name="SUB2_NAME" type="VARCHAR" length="100"/>
 	</db-entity>
 	<db-entity name="IV_SUB3">
-		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="IV_ROOT_ID" type="INTEGER" isMandatory="true"/>
 	</db-entity>
 	<obj-entity name="Iv1Root" className="org.apache.cayenne.testdo.inheritance_vertical.Iv1Root" dbEntityName="IV1_ROOT">
@@ -174,9 +174,6 @@
 	<db-relationship name="other2" source="IV_IMPL" target="IV_OTHER" toMany="false">
 		<db-attribute-pair source="OTHER2_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="impls" source="IV_OTHER" target="IV_IMPL" toMany="true">
-		<db-attribute-pair source="ID" target="OTHER_ID"/>
-	</db-relationship>
 	<db-relationship name="ivSub3s" source="IV_ROOT" target="IV_SUB3" toMany="true">
 		<db-attribute-pair source="ID" target="IV_ROOT_ID"/>
 	</db-relationship>
@@ -209,6 +206,5 @@
 	<obj-relationship name="parent" source="IvConcrete" target="IvConcrete" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="other1" source="IvImpl" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other1"/>
 	<obj-relationship name="other2" source="IvImpl" target="IvOther" deleteRule="Nullify" db-relationship-path="impl.other2"/>
-	<obj-relationship name="impls" source="IvOther" target="IvImpl" deleteRule="Deny" db-relationship-path="impls.base"/>
 	<obj-relationship name="ivRoot" source="IvSub3" target="IvRoot" deleteRule="Nullify" db-relationship-path="sub3.ivRoot1"/>
 </data-map>
