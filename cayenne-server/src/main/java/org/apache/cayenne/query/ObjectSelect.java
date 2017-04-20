@@ -21,11 +21,17 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,7 +49,7 @@ import java.util.List;
  *
  * @since 4.0
  */
-public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
+public class ObjectSelect<T> extends FluentSelect<T> {
 
     private static final long serialVersionUID = -156124021150949227L;
 
@@ -152,6 +158,371 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
         SelectQuery<?> replacement = (SelectQuery<?>) super.createReplacementQuery(resolver);
         replacement.setFetchingDataRows(fetchingDataRows);
         return replacement;
+    }
+
+    /**
+     * Sets the type of the entity to fetch without changing the return type of
+     * the query.
+     *
+     * @return this object
+     */
+    public ObjectSelect<T> entityType(Class<?> entityType) {
+        return resetEntity(entityType, null, null);
+    }
+
+    /**
+     * Sets the {@link ObjEntity} name to fetch without changing the return type
+     * of the query. This form is most often used for generic entities that
+     * don't map to a distinct class.
+     *
+     * @return this object
+     */
+    public ObjectSelect<T> entityName(String entityName) {
+        return resetEntity(null, entityName, null);
+    }
+
+    /**
+     * Sets the {@link DbEntity} name to fetch without changing the return type
+     * of the query. This form is most often used for generic entities that
+     * don't map to a distinct class.
+     *
+     * @return this object
+     */
+    public ObjectSelect<T> dbEntityName(String dbEntityName) {
+        return resetEntity(null, null, dbEntityName);
+    }
+
+    private ObjectSelect<T> resetEntity(Class<?> entityType, String entityName, String dbEntityName) {
+        this.entityType = entityType;
+        this.entityName = entityName;
+        this.dbEntityName = dbEntityName;
+        return this;
+    }
+
+    /**
+     * Appends a qualifier expression of this query. An equivalent to
+     * {@link #and(Expression...)} that can be used a syntactic sugar.
+     *
+     * @return this object
+     */
+    public ObjectSelect<T> where(Expression expression) {
+        return and(expression);
+    }
+
+    /**
+     * Appends a qualifier expression of this query, using provided expression
+     * String and an array of position parameters. This is an equivalent to
+     * calling "and".
+     *
+     * @return this object
+     */
+    public ObjectSelect<T> where(String expressionString, Object... parameters) {
+        return and(ExpressionFactory.exp(expressionString, parameters));
+    }
+
+    /**
+     * AND's provided expressions to the existing WHERE clause expression.
+     *
+     * @return this object
+     */
+    public ObjectSelect<T> and(Expression... expressions) {
+        if (expressions == null || expressions.length == 0) {
+            return this;
+        }
+
+        return and(Arrays.asList(expressions));
+    }
+
+    /**
+     * AND's provided expressions to the existing WHERE clause expression.
+     *
+     * @return this object
+     */
+    public ObjectSelect<T> and(Collection<Expression> expressions) {
+
+        if (expressions == null || expressions.isEmpty()) {
+            return this;
+        }
+
+        Collection<Expression> all;
+
+        if (where != null) {
+            all = new ArrayList<>(expressions.size() + 1);
+            all.add(where);
+            all.addAll(expressions);
+        } else {
+            all = expressions;
+        }
+
+        where = ExpressionFactory.and(all);
+        return this;
+    }
+
+    /**
+     * OR's provided expressions to the existing WHERE clause expression.
+     *
+     * @return this object
+     */
+    public ObjectSelect<T> or(Expression... expressions) {
+        if (expressions == null || expressions.length == 0) {
+            return this;
+        }
+
+        return or(Arrays.asList(expressions));
+    }
+
+    /**
+     * OR's provided expressions to the existing WHERE clause expression.
+     *
+     * @return this object
+     */
+    public ObjectSelect<T> or(Collection<Expression> expressions) {
+        if (expressions == null || expressions.isEmpty()) {
+            return this;
+        }
+
+        Collection<Expression> all;
+
+        if (where != null) {
+            all = new ArrayList<>(expressions.size() + 1);
+            all.add(where);
+            all.addAll(expressions);
+        } else {
+            all = expressions;
+        }
+
+        where = ExpressionFactory.or(all);
+        return this;
+    }
+
+    /**
+     * Add an ascending ordering on the given property. If there is already an ordering
+     * on this query then add this ordering with a lower priority.
+     *
+     * @param property the property to sort on
+     * @return this object
+     */
+    public ObjectSelect<T> orderBy(String property) {
+        return orderBy(new Ordering(property));
+    }
+
+    /**
+     * Add an ordering on the given property. If there is already an ordering
+     * on this query then add this ordering with a lower priority.
+     *
+     * @param property  the property to sort on
+     * @param sortOrder the direction of the ordering
+     * @return this object
+     */
+    public ObjectSelect<T> orderBy(String property, SortOrder sortOrder) {
+        return orderBy(new Ordering(property, sortOrder));
+    }
+
+    /**
+     * Add one or more orderings to this query.
+     *
+     * @return this object
+     */
+    public ObjectSelect<T> orderBy(Ordering... orderings) {
+
+        if (orderings == null) {
+            return this;
+        }
+
+        if (this.orderings == null) {
+            this.orderings = new ArrayList<>(orderings.length);
+        }
+
+        Collections.addAll(this.orderings, orderings);
+
+        return this;
+    }
+
+    /**
+     * Adds a list of orderings to this query.
+     *
+     * @return this object
+     */
+    public ObjectSelect<T> orderBy(Collection<Ordering> orderings) {
+
+        if (orderings == null) {
+            return this;
+        }
+
+        if (this.orderings == null) {
+            this.orderings = new ArrayList<>(orderings.size());
+        }
+
+        this.orderings.addAll(orderings);
+
+        return this;
+    }
+
+    /**
+     * Merges prefetch into the query prefetch tree.
+     *
+     * @return this object
+     */
+    public ObjectSelect<T> prefetch(PrefetchTreeNode prefetch) {
+
+        if (prefetch == null) {
+            return this;
+        }
+
+        if (prefetches == null) {
+            prefetches = new PrefetchTreeNode();
+        }
+
+        prefetches.merge(prefetch);
+        return this;
+    }
+
+    /**
+     * Merges a prefetch path with specified semantics into the query prefetch
+     * tree.
+     *
+     * @return this object
+     */
+    public ObjectSelect<T> prefetch(String path, int semantics) {
+
+        if (path == null) {
+            return this;
+        }
+
+        if (prefetches == null) {
+            prefetches = new PrefetchTreeNode();
+        }
+
+        prefetches.addPath(path).setSemantics(semantics);
+        return this;
+    }
+
+    /**
+     * Resets query fetch limit - a parameter that defines max number of objects
+     * that should be ever be fetched from the database.
+     */
+    @SuppressWarnings("unchecked")
+    public ObjectSelect<T> limit(int fetchLimit) {
+        if (this.limit != fetchLimit) {
+            this.limit = fetchLimit;
+            this.replacementQuery = null;
+        }
+
+        return this;
+    }
+
+    /**
+     * Resets query fetch offset - a parameter that defines how many objects
+     * should be skipped when reading data from the database.
+     */
+    public ObjectSelect<T> offset(int fetchOffset) {
+        if (this.offset != fetchOffset) {
+            this.offset = fetchOffset;
+            this.replacementQuery = null;
+        }
+
+        return this;
+    }
+
+    /**
+     * Resets query page size. A non-negative page size enables query result
+     * pagination that saves memory and processing time for large lists if only
+     * parts of the result are ever going to be accessed.
+     */
+    public ObjectSelect<T> pageSize(int pageSize) {
+        if (this.pageSize != pageSize) {
+            this.pageSize = pageSize;
+            this.replacementQuery = null;
+        }
+
+        return this;
+    }
+
+    /**
+     * Sets fetch size of the PreparedStatement generated for this query. Only
+     * non-negative values would change the default size.
+     *
+     * @see Statement#setFetchSize(int)
+     */
+    public ObjectSelect<T> statementFetchSize(int size) {
+        if (this.statementFetchSize != size) {
+            this.statementFetchSize = size;
+            this.replacementQuery = null;
+        }
+
+        return this;
+    }
+
+    public ObjectSelect<T> cacheStrategy(QueryCacheStrategy strategy) {
+        if (this.cacheStrategy != strategy) {
+            this.cacheStrategy = strategy;
+            this.replacementQuery = null;
+        }
+
+        if(this.cacheGroup != null) {
+            this.cacheGroup = null;
+            this.replacementQuery = null;
+        }
+
+        return this;
+    }
+
+    public ObjectSelect<T> cacheStrategy(QueryCacheStrategy strategy, String cacheGroup) {
+        return cacheStrategy(strategy).cacheGroup(cacheGroup);
+    }
+
+    public ObjectSelect<T> cacheGroup(String cacheGroup) {
+        this.cacheGroup = cacheGroup;
+        this.replacementQuery = null;
+        return this;
+    }
+
+    /**
+     * Instructs Cayenne to look for query results in the "local" cache when
+     * running the query. This is a short-hand notation for:
+     * <p>
+     * <pre>
+     * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroup);
+     * </pre>
+     */
+    public ObjectSelect<T> localCache(String cacheGroup) {
+        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroup);
+    }
+
+    /**
+     * Instructs Cayenne to look for query results in the "local" cache when
+     * running the query. This is a short-hand notation for:
+     * <p>
+     * <pre>
+     * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+     * </pre>
+     */
+    public ObjectSelect<T> localCache() {
+        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+    }
+
+    /**
+     * Instructs Cayenne to look for query results in the "shared" cache when
+     * running the query. This is a short-hand notation for:
+     * <p>
+     * <pre>
+     * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroup);
+     * </pre>
+     */
+    public ObjectSelect<T> sharedCache(String cacheGroup) {
+        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroup);
+    }
+
+    /**
+     * Instructs Cayenne to look for query results in the "shared" cache when
+     * running the query. This is a short-hand notation for:
+     * <p>
+     * <pre>
+     * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+     * </pre>
+     */
+    public ObjectSelect<T> sharedCache() {
+        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
     }
 
     /**
@@ -273,6 +644,11 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      */
     public long selectCount(ObjectContext context) {
         return count().selectOne(context);
+    }
+
+    @Override
+    public T selectFirst(ObjectContext context) {
+        return context.selectFirst(limit(1));
     }
 
     public boolean isFetchingDataRows() {
