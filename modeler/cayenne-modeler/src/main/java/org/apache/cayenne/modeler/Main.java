@@ -69,7 +69,6 @@ public class Main {
 
         // TODO: use module auto-loading...
         final Injector injector = DIBootstrap.createInjector(appendModules(new ArrayList<Module>()));
-
         logger.info("Starting CayenneModeler.");
         logger.info("JRE v."
                 + System.getProperty("java.version")

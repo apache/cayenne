@@ -21,14 +21,12 @@ package org.apache.cayenne.modeler.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.impl.SimpleLoggerFactory;
+import org.slf4j.ILoggerFactory;
 
 /**
- * Factory for creating ModelerLogger instances. LogFactoryImpl is subclassed to
- * save default behavior
+ * Factory for creating ModelerLogger instances.
  */
-public class ModelerLogFactory extends SimpleLoggerFactory {
+public class ModelerLogFactory implements ILoggerFactory {
 
 	/**
 	 * Local cache of modeler loggers
@@ -39,13 +37,14 @@ public class ModelerLogFactory extends SimpleLoggerFactory {
 		localCache = new HashMap<>();
 	}
 
-	public Logger getInstance(String name) {
+	public ModelerLogger getLogger(String name) {
 		ModelerLogger local = localCache.get(name);
 		if (local == null) {
-			Logger def = super.getLogger(name);
-			local = new ModelerLogger(name, def);
+			//Logger def = LoggerFactory.getLogger(name);
+			local = new ModelerLogger(name);
 			localCache.put(name, local);
 		}
 		return local;
 	}
+
 }

@@ -21,307 +21,401 @@ package org.apache.cayenne.modeler.util;
 import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
+import org.slf4j.helpers.FormattingTuple;
+import org.slf4j.helpers.MessageFormatter;
 
 import javax.swing.text.AttributeSet;
+import java.io.PrintStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
- * ModelerLogger is a Log implementation, which performs output
- * to the LogConsole. Default behavior is saved since they are delegated
- * to default Log instance. 
+ * ModelerLogger is a Logger implementation, which performs output
+ * to the LogConsole.
  */
 public class ModelerLogger implements Logger {
-    /**
-     * 'Default' Log instance (i.e. Log4jLogger, Jdk14Logger, or other)
-     */
-    Logger delegate;
+
+    private static final int BUFFER_SIZE = 32;
+    private static final byte LOG_LEVEL_INFO = 2;
+    private static final byte LOG_LEVEL_DEBUG = 1;
+    private static final byte LOG_LEVEL_TRACE = 0;
+    private static final byte LOG_LEVEL_WARNING = 3;
+    private static final byte LOG_LEVEL_ERROR = 4;
+
+    private static final String INFO_LOG_NAME = "INFO";
+    private static final String DEBUG_LOG_NAME = "DEBUG";
+    private static final String TRACE_LOG_NAME = "TRACE";
+    private static final String WARNING_LOG_NAME = "WARNING";
+    private static final String ERROR_LOG_NAME = "ERROR";
+    private static final String DATE_FORMAT = "yyyy/MM/dd HH.mm.ss";
     
     /** 
      * Logger name 
      */
-    String name;
-    
-    public ModelerLogger(String name, Logger delegate) {
+    private String name;
+    private int currentLogLevel = LOG_LEVEL_INFO;
+
+    public ModelerLogger(String name) {
         this.name = name;
-        this.delegate = delegate;
+    }
+
+    private String getLogLevel(byte level) {
+        switch (level) {
+            case LOG_LEVEL_INFO:
+                return INFO_LOG_NAME;
+
+            case LOG_LEVEL_DEBUG:
+                return DEBUG_LOG_NAME;
+
+            case LOG_LEVEL_TRACE:
+                return TRACE_LOG_NAME;
+
+            case LOG_LEVEL_WARNING:
+                return WARNING_LOG_NAME;
+
+            case LOG_LEVEL_ERROR:
+                return ERROR_LOG_NAME;
+
+            default:
+                throw new IllegalStateException("Unregistered log level - " + level);
+
+        }
+    }
+
+    private void consoleLog(byte level, String message, Throwable throwable) {
+        if(this.isLevelEnabled(level)) {
+            StringBuilder buffer = new StringBuilder(BUFFER_SIZE);
+            buffer.append(this.getFormattedDate());
+            buffer.append(' ');
+
+            buffer.append('[');
+            buffer.append(Thread.currentThread().getName());
+            buffer.append("] ");
+
+            buffer.append('[');
+            String levelStr = this.getLogLevel(level);
+            buffer.append(levelStr);
+            buffer.append(']');
+
+            buffer.append(' ');
+            buffer.append(message);
+            this.write(buffer, throwable);
+        }
+    }
+    
+    private void consoleLog(byte level, String message) {
+        consoleLog(level, message, (Throwable) null);
+    }
+
+    private void consoleLog(byte level, String format, Object... arguments) {
+        if(this.isLevelEnabled(level)) {
+            FormattingTuple tuple = MessageFormatter.arrayFormat(format, arguments);
+            this.consoleLog(level, tuple.getMessage(), tuple.getThrowable());
+        }
+    }
+
+    private String getFormattedDate() {
+        Date currentDate = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
+        String dateText = formatter.format(currentDate);
+        return dateText;
+    }
+
+    private void write(StringBuilder buffer, Throwable throwable) {
+        PrintStream targetStream = System.err;
+        targetStream.println(buffer.toString());
+        this.writeThrowable(throwable, targetStream);
+        targetStream.flush();
+    }
+
+    private void writeThrowable(Throwable throwable, PrintStream targetStream) {
+        if(throwable != null) {
+            throwable.printStackTrace(targetStream);
+        }
+
+    }
+
+    private boolean isLevelEnabled(int logLevel) {
+        return (logLevel >= this.currentLogLevel);
     }
 
     @Override
     public void debug(String message) {
-        delegate.debug(message);
+        consoleLog(LOG_LEVEL_DEBUG, message);
         log("DEBUG", message, null, LogConsole.WARN_STYLE);
     }
 
     @Override
     public void debug(String message, Object object) {
-        delegate.debug(message, object);
+        consoleLog(LOG_LEVEL_DEBUG, message, object);
         log("DEBUG", message, null, LogConsole.WARN_STYLE, object);
     }
 
     @Override
     public void debug(String message, Object object, Object secondObject) {
-        delegate.debug(message, object, secondObject);
+        consoleLog(LOG_LEVEL_DEBUG, message, object, secondObject);
         log("DEBUG", message, null, LogConsole.WARN_STYLE, object, secondObject);
     }
 
     @Override
     public void debug(String message, Object... objects) {
-        delegate.debug(message, objects);
+        consoleLog(LOG_LEVEL_DEBUG, message, objects);
         log("DEBUG", message, null, LogConsole.WARN_STYLE, objects);
     }
 
     @Override
     public void debug(String message, Throwable throwable) {
-        delegate.debug(message, throwable);
+        consoleLog(LOG_LEVEL_DEBUG, message, throwable);
         log("DEBUG", message, throwable, LogConsole.WARN_STYLE);
     }
 
     @Override
     public boolean isDebugEnabled(Marker marker) {
-        return delegate.isDebugEnabled(marker);
+        return isLevelEnabled(LOG_LEVEL_DEBUG);
     }
 
     @Override
     public void debug(Marker marker, String message) {
-        delegate.debug(marker, message);
+        consoleLog(LOG_LEVEL_DEBUG, message);
         log("DEBUG", message, null, LogConsole.WARN_STYLE);
     }
 
     @Override
     public void debug(Marker marker, String message, Object object) {
-        delegate.debug(marker, message, object);
+        consoleLog(LOG_LEVEL_DEBUG, message, object);
         log("DEBUG", message, null, LogConsole.WARN_STYLE, object);
     }
 
     @Override
     public void debug(Marker marker, String message, Object object, Object secondObject) {
-        delegate.debug(marker, message, object, secondObject);
+        consoleLog(LOG_LEVEL_DEBUG, message, object, secondObject);
         log("DEBUG", message, null, LogConsole.WARN_STYLE, object, secondObject);
     }
 
     @Override
     public void debug(Marker marker, String message, Object... objects) {
-        delegate.debug(marker, message, objects);
+        consoleLog(LOG_LEVEL_DEBUG, message, objects);
         log("DEBUG", message, null, LogConsole.WARN_STYLE, objects);
     }
 
     @Override
     public void debug(Marker marker, String message, Throwable throwable) {
-        delegate.debug(marker, message, throwable);
+        consoleLog(LOG_LEVEL_DEBUG, message, throwable);
         log("DEBUG", message, throwable, LogConsole.WARN_STYLE);
     }
 
     @Override
     public boolean isInfoEnabled() {
-        return delegate.isInfoEnabled();
+        return isLevelEnabled(LOG_LEVEL_INFO);
     }
 
     @Override
     public void error(String message) {
-        delegate.error(message);
+        consoleLog(LOG_LEVEL_ERROR, message);
         log("ERROR", message, null, LogConsole.ERROR_STYLE);
     }
 
     @Override
     public void error(String message, Object object) {
-        delegate.error(message, object);
+        consoleLog(LOG_LEVEL_ERROR, message, object);
         log("ERROR", message, null, LogConsole.ERROR_STYLE, object);
     }
 
     @Override
     public void error(String message, Object object, Object secondObject) {
-        delegate.error(message, object, secondObject);
+        consoleLog(LOG_LEVEL_ERROR, message, object, secondObject);
         log("ERROR", message, null, LogConsole.ERROR_STYLE, object, secondObject);
     }
 
     @Override
     public void error(String message, Object... objects) {
-        delegate.error(message, objects);
+        consoleLog(LOG_LEVEL_ERROR, message, objects);
         log("ERROR", message, null, LogConsole.ERROR_STYLE, objects);
     }
 
     @Override
     public void error(String message, Throwable throwable) {
-        delegate.error(message, throwable);
+        consoleLog(LOG_LEVEL_ERROR, message, throwable);
         log("ERROR", message, throwable, LogConsole.ERROR_STYLE);
     }
 
     @Override
     public boolean isErrorEnabled(Marker marker) {
-        return delegate.isErrorEnabled(marker);
+        return isLevelEnabled(LOG_LEVEL_ERROR);
     }
 
     @Override
     public void error(Marker marker, String message) {
-        delegate.error(marker, message);
+        consoleLog(LOG_LEVEL_ERROR, message);
         log("ERROR", message, null, LogConsole.ERROR_STYLE);
     }
 
     @Override
     public void error(Marker marker, String message, Object object) {
-        delegate.error(marker, message , object);
+        consoleLog(LOG_LEVEL_ERROR, message, object);
         log("ERROR", message, null, LogConsole.ERROR_STYLE, object);
     }
 
     @Override
     public void error(Marker marker, String message, Object object, Object secondObject) {
-        delegate.error(marker, message , object, secondObject);
+        consoleLog(LOG_LEVEL_ERROR, message, object, secondObject);
         log("ERROR", message, null, LogConsole.ERROR_STYLE, object, secondObject);
     }
 
     @Override
     public void error(Marker marker, String message, Object... objects) {
-        delegate.error(marker, message, objects);
+        consoleLog(LOG_LEVEL_ERROR, message, objects);
         log("ERROR", message, null, LogConsole.ERROR_STYLE, objects);
     }
 
     @Override
     public void error(Marker marker, String message, Throwable throwable) {
-        delegate.error(marker, message, throwable);
+        consoleLog(LOG_LEVEL_ERROR, message, throwable);
         log("ERROR", message, throwable, LogConsole.ERROR_STYLE);
     }
 
     @Override
     public void info(String message) {
-        delegate.info(message);
+        consoleLog(LOG_LEVEL_INFO, message);
         log("INFO", message, null, LogConsole.INFO_STYLE);
     }
 
     @Override
     public void info(String message, Object object) {
-        delegate.info(message, object);
+        consoleLog(LOG_LEVEL_INFO, message, object);
         log("INFO", message, null, LogConsole.INFO_STYLE, object);
     }
 
     @Override
     public void info(String message, Object object, Object secondObject) {
-        delegate.info(message, object, secondObject);
+        consoleLog(LOG_LEVEL_INFO, message, object, secondObject);
         log("INFO", message, null, LogConsole.INFO_STYLE, object, secondObject);
     }
 
     @Override
     public void info(String message, Object... objects) {
-        delegate.info(message, objects);
+        consoleLog(LOG_LEVEL_INFO, message, objects);
         log("INFO", message, null, LogConsole.INFO_STYLE, objects);
     }
 
     @Override
     public void info(String message, Throwable throwable) {
-        delegate.info(message, throwable);
+        consoleLog(LOG_LEVEL_INFO, message, throwable);
         log("INFO", message, throwable, LogConsole.INFO_STYLE);
     }
 
     @Override
     public boolean isInfoEnabled(Marker marker) {
-        return delegate.isInfoEnabled(marker);
+        return isLevelEnabled(LOG_LEVEL_INFO);
     }
 
     @Override
     public void info(Marker marker, String message) {
-        delegate.info(marker, message);
+        consoleLog(LOG_LEVEL_INFO, message);
         log("INFO", message, null, LogConsole.INFO_STYLE);
     }
 
     @Override
     public void info(Marker marker, String message, Object object) {
-        delegate.info(marker, message, object);
+        consoleLog(LOG_LEVEL_INFO, message, object);
         log("INFO", message, null, LogConsole.INFO_STYLE, object);
     }
 
     @Override
     public void info(Marker marker, String message, Object object, Object secondObject) {
-        delegate.info(marker, message, object, secondObject);
+        consoleLog(LOG_LEVEL_INFO, message, object, secondObject);
         log("INFO", message, null, LogConsole.INFO_STYLE, object, secondObject);
     }
 
     @Override
     public void info(Marker marker, String message, Object... objects) {
-        delegate.info(marker, message, objects);
+        consoleLog(LOG_LEVEL_INFO, message, objects);
         log("INFO", message, null, LogConsole.INFO_STYLE, objects);
     }
 
     @Override
     public void info(Marker marker, String message, Throwable throwable) {
-        delegate.info(marker, message, throwable);
+        consoleLog(LOG_LEVEL_INFO, message, throwable);
         log("INFO", message, throwable, LogConsole.INFO_STYLE);
     }
 
     @Override
     public boolean isWarnEnabled() {
-        return delegate.isWarnEnabled();
+        return isLevelEnabled(LOG_LEVEL_WARNING);
     }
 
     @Override
     public String getName() {
-        return delegate.getName();
+        return name;
     }
 
     @Override
     public boolean isTraceEnabled() {
-        return delegate.isTraceEnabled();
+        return isLevelEnabled(LOG_LEVEL_TRACE);
     }
 
     @Override
     public void trace(String message) {
-        delegate.trace(message);
+        consoleLog(LOG_LEVEL_TRACE, message);
         log("TRACE", message, null, LogConsole.DEBUG_STYLE);
     }
 
     @Override
     public void trace(String message, Object object) {
-        delegate.trace(message, object);
+        consoleLog(LOG_LEVEL_TRACE, message, object);
         log("TRACE", message, null, LogConsole.DEBUG_STYLE, object);
     }
 
     @Override
     public void trace(String message, Object object, Object secondObject) {
-        delegate.trace(message, object, secondObject);
+        consoleLog(LOG_LEVEL_TRACE, message, secondObject);
         log("TRACE", message, null, LogConsole.DEBUG_STYLE, object, secondObject);
     }
 
     @Override
     public void trace(String message, Object... objects) {
-        delegate.trace(message, objects);
+        consoleLog(LOG_LEVEL_TRACE, message, objects);
         log("TRACE", message, null, LogConsole.DEBUG_STYLE, objects);
     }
 
     @Override
     public void trace(String message, Throwable throwable) {
-        delegate.trace(message, throwable);
+        consoleLog(LOG_LEVEL_TRACE, message, throwable);
         log("TRACE", message, throwable, LogConsole.DEBUG_STYLE);
     }
 
     @Override
     public boolean isTraceEnabled(Marker marker) {
-        return delegate.isTraceEnabled(marker);
+        return isLevelEnabled(LOG_LEVEL_TRACE);
     }
 
     @Override
     public void trace(Marker marker, String message) {
-        delegate.trace(marker, message);
+        consoleLog(LOG_LEVEL_TRACE, message);
         log("TRACE", message, null, LogConsole.DEBUG_STYLE);
     }
 
     @Override
     public void trace(Marker marker, String message, Object object) {
-        delegate.trace(marker, message, object);
+        consoleLog(LOG_LEVEL_TRACE, message, object);
         log("TRACE", message, null, LogConsole.DEBUG_STYLE, object);
     }
 
     @Override
     public void trace(Marker marker, String message, Object object, Object secondObject) {
-        delegate.trace(marker, message, object, secondObject);
+        consoleLog(LOG_LEVEL_TRACE, message, object, secondObject);
         log("TRACE", message, null, LogConsole.DEBUG_STYLE, object, secondObject);
     }
 
     @Override
     public void trace(Marker marker, String message, Object... objects) {
-        delegate.trace(marker, message, objects);
+        consoleLog(LOG_LEVEL_TRACE, message, objects);
         log("TRACE", message, null, LogConsole.DEBUG_STYLE, objects);
     }
 
     @Override
     public void trace(Marker marker, String message, Throwable throwable) {
-        delegate.trace(marker, message, throwable);
+        consoleLog(LOG_LEVEL_TRACE, message, throwable);
         log("TRACE", message, throwable, LogConsole.DEBUG_STYLE);
     }
 
@@ -332,83 +426,81 @@ public class ModelerLogger implements Logger {
 
     @Override
     public void warn(String message) {
-        delegate.warn(message);
+        consoleLog(LOG_LEVEL_WARNING, message);
         log("WARN", message, null, LogConsole.WARN_STYLE);
     }
 
     @Override
     public void warn(String message, Object object) {
-        delegate.warn(message, object);
+        consoleLog(LOG_LEVEL_WARNING, message, object);
         log("WARN", message, null, LogConsole.WARN_STYLE, object);
     }
 
     @Override
     public void warn(String message, Object... objects) {
-        delegate.warn(message, objects);
+        consoleLog(LOG_LEVEL_WARNING, message, objects);
         log("WARN", message, null, LogConsole.WARN_STYLE, objects);
     }
 
     @Override
     public void warn(String message, Object object, Object secondObject) {
-        delegate.warn(message, object, secondObject);
+        consoleLog(LOG_LEVEL_WARNING, message, secondObject);
         log("WARN", message, null, LogConsole.WARN_STYLE, object, secondObject);
     }
 
     @Override
     public void warn(String message, Throwable throwable) {
-        delegate.warn(message, throwable);
+        consoleLog(LOG_LEVEL_WARNING, message, throwable);
         log("WARN", message, throwable, LogConsole.WARN_STYLE);
     }
 
     @Override
     public boolean isWarnEnabled(Marker marker) {
-        return delegate.isWarnEnabled(marker);
+        return isLevelEnabled(LOG_LEVEL_WARNING);
     }
 
     @Override
     public void warn(Marker marker, String message) {
-        delegate.warn(marker, message);
+        consoleLog(LOG_LEVEL_WARNING, message);
         log("WARN", message, null, LogConsole.WARN_STYLE);
     }
 
     @Override
     public void warn(Marker marker, String message, Object object) {
-        delegate.warn(marker, message, object);
+        consoleLog(LOG_LEVEL_WARNING, message, object);
         log("WARN", message, null, LogConsole.WARN_STYLE, object);
     }
 
     @Override
     public void warn(Marker marker, String message, Object object, Object secondObject) {
-        delegate.warn(marker, message, object, secondObject);
+        consoleLog(LOG_LEVEL_WARNING, message, object, secondObject);
         log("WARN", message, null, LogConsole.WARN_STYLE, object, secondObject);
     }
 
     @Override
     public void warn(Marker marker, String message, Object... objects) {
-        delegate.warn(marker, message, objects);
+        consoleLog(LOG_LEVEL_WARNING, message, objects);
         log("WARN", message, null, LogConsole.WARN_STYLE, objects);
     }
 
     @Override
     public void warn(Marker marker, String message, Throwable throwable) {
-        delegate.warn(marker, message, throwable);
+        consoleLog(LOG_LEVEL_WARNING, message, throwable);
         log("WARN", message, throwable, LogConsole.WARN_STYLE);
     }
 
     @Override
     public boolean isErrorEnabled() {
-        return delegate.isErrorEnabled();
+        return isLevelEnabled(LOG_LEVEL_ERROR);
     }
 
     /**
-     * Prints common message to the console
+     * Prints common message to the modeler console
      */
 
     private void log(String level, String message, Throwable throwable, AttributeSet style, Object... parameters) {
-        for (Object parameter : parameters) {
-            message.replaceFirst("\\{\\}", String.valueOf(parameter));
-        }
-        getLogConsole().appendMessage(level, message, throwable, style);
+        FormattingTuple tuple = MessageFormatter.arrayFormat(message, parameters);
+        getLogConsole().appendMessage(level, tuple.getMessage(), throwable, style);
     }
 
     private void log(String level, Object message, Throwable throwable, AttributeSet style) {
