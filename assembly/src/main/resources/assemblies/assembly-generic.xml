@@ -102,7 +102,7 @@
 			<!-- Include only a minimal set of dependencies to run cayenne-server and ant tasks -->
 			<includes>
 				<include>commons-collections:commons-collections</include>
-				<include>slf4-api:slf4j-api</include>
+				<include>org.slf4j:slf4j-api</include>
 				<include>commons-lang:commons-lang</include>
 				<include>org.apache.velocity:velocity</include>
 				<include>foundrylogic.vpp:vpp</include>
