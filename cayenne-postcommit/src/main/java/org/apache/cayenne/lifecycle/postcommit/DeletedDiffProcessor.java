@@ -36,12 +36,12 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class DeletedDiffProcessor implements GraphChangeHandler {
 
-	private static final Log LOGGER = LogFactory.getLog(DeletedDiffProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DeletedDiffProcessor.class);
 
 	private PostCommitEntityFactory entityFactory;
 	private MutableChangeMap changeSet;

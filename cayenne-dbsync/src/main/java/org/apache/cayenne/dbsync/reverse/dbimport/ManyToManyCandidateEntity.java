@@ -24,8 +24,8 @@ import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.List;
  */
 class ManyToManyCandidateEntity {
 
-    private static final Log LOG = LogFactory.getLog(ManyToManyCandidateEntity.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ManyToManyCandidateEntity.class);
 
     private final ObjEntity joinEntity;
 

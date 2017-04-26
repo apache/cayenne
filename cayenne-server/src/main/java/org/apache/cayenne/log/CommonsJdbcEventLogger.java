@@ -29,8 +29,8 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.util.IDUtil;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Array;
 import java.sql.SQLException;
@@ -38,13 +38,13 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * A {@link JdbcEventLogger} built on top of commons-logging.
+ * A {@link JdbcEventLogger} built on top of slf4j-api logger.
  * 
  * @since 3.1
  */
 public class CommonsJdbcEventLogger implements JdbcEventLogger {
 
-	private static final Log logger = LogFactory.getLog(CommonsJdbcEventLogger.class);
+	private static final Logger logger = LoggerFactory.getLogger(CommonsJdbcEventLogger.class);
 
     /**
      * @deprecated  since 4.0

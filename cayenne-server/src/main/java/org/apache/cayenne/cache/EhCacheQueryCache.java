@@ -23,12 +23,12 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import org.slf4j.LoggerFactory;
 
 /**
  * @deprecated since 4.0 please use JCacheQueryCache (provided by "cayenne-jcache" module)
@@ -41,7 +41,7 @@ public class EhCacheQueryCache implements QueryCache {
      */
     private static final String DEFAULT_CACHE_NAME = "cayenne.default.cachegroup";
 
-    private static final Log logger = LogFactory.getLog(EhCacheQueryCache.class);
+    private static final Logger logger = LoggerFactory.getLogger(EhCacheQueryCache.class);
 
     protected CacheManager cacheManager;
 

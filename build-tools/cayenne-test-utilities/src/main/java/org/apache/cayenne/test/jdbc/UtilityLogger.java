@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.test.jdbc;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class UtilityLogger {
 
-    private static Log logger = LogFactory.getLog(UtilityLogger.class);
+    private static Logger logger = LoggerFactory.getLogger(UtilityLogger.class);
 
     static void log(String sql) {
         logger.info(sql);

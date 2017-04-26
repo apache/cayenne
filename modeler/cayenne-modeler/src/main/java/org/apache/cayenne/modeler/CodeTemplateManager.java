@@ -22,8 +22,8 @@ package org.apache.cayenne.modeler;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.modeler.pref.FSPath;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public class CodeTemplateManager {
 	protected Map<String, String> customTemplates;
 	protected Map<String, String> standardTemplates;
 
-	private static Log logger = LogFactory.getLog(CodeTemplateManager.class);
+	private static Logger logger = LoggerFactory.getLogger(CodeTemplateManager.class);
 
 	public Preferences getTemplatePreferences(Application application) {
 		return application.getPreferencesNode(this.getClass(), NODE_NAME);

@@ -27,7 +27,7 @@ import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 
@@ -36,7 +36,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     @Inject
     private DataMap targetMap;
 
-    public ModelerDbImportAction(@Inject Log logger,
+    public ModelerDbImportAction(@Inject Logger logger,
                                  @Inject ProjectSaver projectSaver,
                                  @Inject DataSourceFactory dataSourceFactory,
                                  @Inject DbAdapterFactory adapterFactory,

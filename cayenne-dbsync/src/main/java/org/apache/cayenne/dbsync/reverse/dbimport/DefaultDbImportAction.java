@@ -23,7 +23,6 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.dbsync.merge.token.model.AbstractToModelToken;
 import org.apache.cayenne.dbsync.merge.DataMapMerger;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
@@ -52,7 +51,7 @@ import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.xml.sax.InputSource;
 
 import javax.sql.DataSource;
@@ -74,13 +73,13 @@ import java.util.List;
 public class DefaultDbImportAction implements DbImportAction {
 
     private final ProjectSaver projectSaver;
-    private final Log logger;
+    private final Logger logger;
     private final DataSourceFactory dataSourceFactory;
     private final DbAdapterFactory adapterFactory;
     private final MapLoader mapLoader;
     private final MergerTokenFactoryProvider mergerTokenFactoryProvider;
 
-    public DefaultDbImportAction(@Inject Log logger,
+    public DefaultDbImportAction(@Inject Logger logger,
                                  @Inject ProjectSaver projectSaver,
                                  @Inject DataSourceFactory dataSourceFactory,
                                  @Inject DbAdapterFactory adapterFactory,
@@ -130,7 +129,7 @@ public class DefaultDbImportAction implements DbImportAction {
 
         if (logger.isDebugEnabled()) {
             logger.debug("DB connection: " + config.getDataSourceInfo());
-            logger.debug(config);
+            logger.debug(String.valueOf(config));
         }
 
         boolean hasChanges = false;

@@ -31,12 +31,12 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.util.EqualsBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RelationshipLoader extends AbstractLoader {
 
-    private static final Log LOGGER = LogFactory.getLog(DbLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbLoader.class);
 
     private final ObjectNameGenerator nameGenerator;
 

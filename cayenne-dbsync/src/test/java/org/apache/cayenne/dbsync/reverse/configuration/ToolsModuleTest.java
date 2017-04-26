@@ -28,7 +28,7 @@ import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -42,10 +42,10 @@ public class ToolsModuleTest {
     @Test
     public void testModuleContents() {
 
-        Log log = mock(Log.class);
+        Logger log = mock(Logger.class);
         Injector i = DIBootstrap.createInjector(new ToolsModule(log));
 
-        assertSame(log, i.getInstance(Log.class));
+        assertSame(log, i.getInstance(Logger.class));
         assertTrue(i.getInstance(DataSourceFactory.class) instanceof DriverDataSourceFactory);
         assertTrue(i.getInstance(AdhocObjectFactory.class) instanceof DefaultAdhocObjectFactory);
         assertTrue(i.getInstance(DbAdapterFactory.class) instanceof DefaultDbAdapterFactory);
@@ -53,7 +53,7 @@ public class ToolsModuleTest {
 
     @Test
     public void testDbApdater() throws Exception {
-        Log log = mock(Log.class);
+        Logger log = mock(Logger.class);
         Injector i = DIBootstrap.createInjector(new ToolsModule(log));
 
         DbAdapterFactory factory = i.getInstance(DbAdapterFactory.class);

@@ -20,7 +20,7 @@
 package org.apache.cayenne.dbsync.filter;
 
 import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -49,7 +49,7 @@ public class NamePatternMatcher implements NameFilter {
     private final Pattern[] itemIncludeFilters;
     private final Pattern[] itemExcludeFilters;
 
-    public static NamePatternMatcher build(Log logger, String includePattern, String excludePattern) {
+    public static NamePatternMatcher build(Logger logger, String includePattern, String excludePattern) {
         return new NamePatternMatcher(createPatterns(logger, includePattern), createPatterns(logger, excludePattern));
     }
 
@@ -101,7 +101,7 @@ public class NamePatternMatcher implements NameFilter {
      * <code>^billing_.*$</code><br>
      * <code>^user.?$</code><br>
      */
-    public static Pattern[] createPatterns(Log logger, String patternString) {
+    public static Pattern[] createPatterns(Logger logger, String patternString) {
         if (patternString == null) {
             return new Pattern[0];
         }

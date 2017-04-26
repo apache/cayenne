@@ -44,8 +44,8 @@ import org.apache.cayenne.modeler.util.DbRelationshipPathComboBoxEditor;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
@@ -78,7 +78,7 @@ import java.util.List;
 public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDisplayListener,
         ObjEntityListener, ObjRelationshipListener {
 
-    private static Log logObj = LogFactory.getLog(ObjEntityRelationshipPanel.class);
+    private static Logger logObj = LoggerFactory.getLogger(ObjEntityRelationshipPanel.class);
 
     private static final Object[] DELETE_RULES = new Object[]{
             DeleteRule.deleteRuleName(DeleteRule.NO_ACTION),

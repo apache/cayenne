@@ -31,8 +31,9 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.OverwriteDialog;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.project.Project;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * File chooser panel used to select a directory to store project files.
@@ -40,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
  */
 class ProjectOpener extends JFileChooser {
 
-    private static Log logObj = LogFactory.getLog(ProjectOpener.class);
+    private static Logger logObj = LoggerFactory.getLogger(ProjectOpener.class);
 
     /**
      * Selects a directory to store the project.

@@ -71,13 +71,20 @@
         &lt;dependency>
             &lt;groupId>org.apache.cayenne&lt;/groupId>
             &lt;artifactId>cayenne-java8&lt;/artifactId>
-            &lt;version>4.0.M5&lt;/version>
+            &lt;version><?eval ${project.version}?>&lt;/version>
+        &lt;/dependency>
+        &lt;dependency>
+            &lt;groupId>org.slf4j&lt;/groupId>
+            &lt;artifactId>slf4j-simple&lt;/artifactId>
+            &lt;version>1.7.25&lt;/version>
         &lt;/dependency>
     &lt;/dependencies&gt;
 &lt;/project&gt;</programlisting></para>
         <para>Your computer must be connected to the internet. Once you edit the <code>pom.xml</code>, IDEA
             will download the needed Cayenne jar file and add it to the project build path. As a
-            result, all the errors should disappear.</para>
+            result, all the errors should disappear. In tutorial for console output we use slf4j-simple logger
+            implementation. Due to use SLF4J logger in Apache Cayenne, you can use your custom logger through bridges
+            (e.g log4j bridge, jcl bridge et. al.)</para>
         <para><inlinemediaobject>
                 <imageobject>
                     <imagedata fileref="images/idea-generated-classes.png" scalefit="1" width="100%"/>

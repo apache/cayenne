@@ -28,8 +28,8 @@ import org.apache.cayenne.lifecycle.postcommit.meta.IncludeAllPostCommitEntityFa
 import org.apache.cayenne.lifecycle.postcommit.meta.PostCommitEntity;
 import org.apache.cayenne.lifecycle.postcommit.meta.PostCommitEntityFactory;
 import org.apache.cayenne.tx.TransactionFilter;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -42,7 +42,7 @@ import java.util.HashSet;
  */
 public class PostCommitModuleBuilder {
 
-	private static final Log LOGGER = LogFactory.getLog(PostCommitModuleBuilder.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PostCommitModuleBuilder.class);
 
 	public static PostCommitModuleBuilder builder() {
 		return new PostCommitModuleBuilder();

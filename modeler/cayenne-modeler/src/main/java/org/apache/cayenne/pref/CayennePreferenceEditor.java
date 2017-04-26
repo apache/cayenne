@@ -29,8 +29,8 @@ import java.util.prefs.Preferences;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An editor for modifying CayennePreferenceService.
@@ -46,7 +46,7 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
     private List<Preferences> removedNode;
     private List<Preferences> addedNode;
 
-    private static Log logger = LogFactory.getLog(CayennePreferenceEditor.class);
+    private static Logger logger = LoggerFactory.getLogger(CayennePreferenceEditor.class);
 
     public CayennePreferenceEditor(CayenneProjectPreferences cayenneProjectPreferences) {
         this.cayenneProjectPreferences = cayenneProjectPreferences;

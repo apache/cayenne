@@ -55,7 +55,7 @@ import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 
 /**
  * A DI module to bootstrap DI container for Cayenne Ant tasks and Maven
@@ -65,9 +65,9 @@ import org.apache.commons.logging.Log;
  */
 public class ToolsModule implements Module {
 
-    private Log logger;
+    private Logger logger;
 
-    public ToolsModule(Log logger) {
+    public ToolsModule(Logger logger) {
 
         if (logger == null) {
             throw new NullPointerException("Null logger");
@@ -78,7 +78,7 @@ public class ToolsModule implements Module {
 
     public void configure(Binder binder) {
 
-        binder.bind(Log.class).toInstance(logger);
+        binder.bind(Logger.class).toInstance(logger);
 
         // configure empty global stack properties
         ServerModule.contributeProperties(binder);

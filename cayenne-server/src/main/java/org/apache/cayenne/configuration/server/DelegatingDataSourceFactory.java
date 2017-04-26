@@ -26,8 +26,8 @@ import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.ScopeEventListener;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -48,8 +48,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DelegatingDataSourceFactory implements DataSourceFactory {
 
-    private static final Log logger = LogFactory
-            .getLog(DelegatingDataSourceFactory.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(DelegatingDataSourceFactory.class);
 
     @Inject
     protected AdhocObjectFactory objectFactory;

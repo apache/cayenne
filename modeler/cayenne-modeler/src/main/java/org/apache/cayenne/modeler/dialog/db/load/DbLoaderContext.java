@@ -41,15 +41,15 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 4.0
  */
 public class DbLoaderContext {
 
-    private static Log LOGGER = LogFactory.getLog(DbLoaderContext.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(DbLoaderContext.class);
 
     private DbImportConfiguration config;
     private Connection connection;

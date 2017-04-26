@@ -33,8 +33,8 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A builder class that helps to assemble {@link RowDescriptor} instances from various
@@ -44,7 +44,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class RowDescriptorBuilder {
 
-    private static final Log logger = LogFactory.getLog(RowDescriptorBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(RowDescriptorBuilder.class);
 
     private static final Transformer UPPERCASE_TRANSFORMER = new Transformer() {
 

@@ -45,8 +45,8 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.wocompat.EOModelProcessor;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -65,7 +65,7 @@ import java.util.Map;
  */
 public class ImportEOModelAction extends CayenneAction {
 
-    private static Log logObj = LogFactory.getLog(ImportEOModelAction.class);
+    private static Logger logObj = LoggerFactory.getLogger(ImportEOModelAction.class);
 
     public static String getActionName() {
         return "Import EOModel";

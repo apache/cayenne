@@ -80,8 +80,8 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.resource.Resource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.Action;
 import javax.swing.JMenuItem;
@@ -114,7 +114,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         ProcedureDisplayListener, MultipleObjectsDisplayListener,
         EmbeddableDisplayListener, EmbeddableListener {
 
-    private static final Log logObj = LogFactory.getLog(ProjectTreeView.class);
+    private static final Logger logObj = LoggerFactory.getLogger(ProjectTreeView.class);
 
     protected ProjectController mediator;
     protected TreeSelectionListener treeSelectionListener;

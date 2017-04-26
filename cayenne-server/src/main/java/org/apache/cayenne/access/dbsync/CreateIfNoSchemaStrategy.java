@@ -23,8 +23,8 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -39,7 +39,7 @@ import java.util.Map;
  */
 public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
 
-    private final static Log LOGGER = LogFactory.getLog(CreateIfNoSchemaStrategy.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(CreateIfNoSchemaStrategy.class);
 
 
     @Override

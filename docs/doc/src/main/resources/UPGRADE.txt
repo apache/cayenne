@@ -7,6 +7,16 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 
 UPGRADING TO 4.0.M6
 
+* Per CAY-2280 Cayenne migrated from commons-logging to SLF4J.
+      Here is options you have to upgrade your project accordingly:
+      1) Migrate your logging to SLF4J. Please see https://www.slf4j.org for documentation about
+      inclusion into your project logging backend of you choice.
+
+      2) Other option is to use commons-logging over SLF4J and keep all logging compatible with previous Cayenne versions.
+      In order to do so you need:
+      - remove commons-logging dependency if you have it
+      - add to your project slf4j-jcl dependency
+
 * Per CAY-2278 The org.apache.cayenne.lifecycle.audit package (with the exception of AuditableChild annotation) and the
        org.apache.cayenne.lifecycle.changeset package where deprecated.
        Weighted graph sorter moved to cayenne-server into org.apache.cayenne.ashwood package.

@@ -29,7 +29,7 @@ import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -108,7 +108,7 @@ public class DbImporterMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        Log logger = new MavenLogger(this);
+        Logger logger = new MavenLogger(this);
 
         // check missing data source parameters
         dataSource.validate();
@@ -141,7 +141,7 @@ public class DbImporterMojo extends AbstractMojo {
         }
     }
 
-    DbImportConfiguration createConfig(Log logger) {
+    DbImportConfiguration createConfig(Logger logger) {
 
         DbImportConfiguration config = new DbImportConfiguration();
         config.setAdapter(adapter);

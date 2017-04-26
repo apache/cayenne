@@ -40,12 +40,12 @@ import org.apache.cayenne.project.upgrade.UpgradeType;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.swing.control.FileMenuItem;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OpenProjectAction extends ProjectAction {
 
-    private static Log logObj = LogFactory.getLog(OpenProjectAction.class);
+    private static Logger logObj = LoggerFactory.getLogger(OpenProjectAction.class);
 
     private ProjectOpener fileChooser;
 

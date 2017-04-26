@@ -20,8 +20,8 @@
 package org.apache.cayenne.modeler.util;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -40,7 +40,7 @@ import java.awt.event.ActionListener;
  */
 public abstract class LongRunningTask<T> {
 
-    private static final Log LOGGER = LogFactory.getLog(LongRunningTask.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LongRunningTask.class);
 
     protected static final int DEFAULT_MS_TO_DECIDE_TO_POPUP = 500;
 

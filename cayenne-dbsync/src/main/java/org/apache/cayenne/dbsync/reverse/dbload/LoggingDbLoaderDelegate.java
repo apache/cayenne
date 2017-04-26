@@ -20,16 +20,16 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 
 /**
  * @since 4.0
  */
 public class LoggingDbLoaderDelegate extends DefaultDbLoaderDelegate {
 
-    private final Log logger;
+    private final Logger logger;
 
-    public LoggingDbLoaderDelegate(Log logger) {
+    public LoggingDbLoaderDelegate(Logger logger) {
         this.logger = logger;
     }
 

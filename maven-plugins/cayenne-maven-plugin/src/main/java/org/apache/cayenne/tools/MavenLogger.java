@@ -19,87 +19,325 @@
 package org.apache.cayenne.tools;
 
 import org.apache.maven.plugin.AbstractMojo;
+import org.slf4j.Logger;
+import org.slf4j.Marker;
+import org.apache.maven.plugin.logging.Log;
 
 /**
  * @since 3.0
  */
-class MavenLogger implements org.apache.commons.logging.Log {
+class MavenLogger implements Logger {
 
-	private org.apache.maven.plugin.logging.Log logger;
+	private static final String LOGGER_NAME = "MavenLogger";
+
+	private Log logger;
 
 	public MavenLogger(AbstractMojo parent) {
 		this.logger = parent.getLog();
 	}
 
-	public void debug(Object message, Throwable th) {
-		logger.debug(String.valueOf(message), th);
+	@Override
+	public void debug(String message) {
+		logger.debug(message);
 	}
 
-	public void debug(Object message) {
-		logger.debug(String.valueOf(message));
+	@Override
+	public void debug(String message, Object object) {
+		logger.debug(message);
 	}
 
-	public void error(Object message, Throwable th) {
-		logger.error(String.valueOf(message), th);
+	@Override
+	public void debug(String message, Object object, Object secondObject) {
+		logger.debug(message);
 	}
 
-	public void error(Object message) {
-		logger.error(String.valueOf(message));
+	@Override
+	public void debug(String message, Object... objects) {
+		logger.debug(message);
 	}
 
-	public void fatal(Object message, Throwable th) {
-		logger.error(String.valueOf(message), th);
+	@Override
+	public void debug(String message, Throwable throwable) {
+		logger.debug(message, throwable);
 	}
 
-	public void fatal(Object message) {
-		logger.error(String.valueOf(message));
-	}
-
-	public void info(Object message, Throwable th) {
-		logger.info(String.valueOf(message), th);
-	}
-
-	public void info(Object message) {
-		logger.info(String.valueOf(message));
-	}
-
-	public boolean isDebugEnabled() {
+	@Override
+	public boolean isDebugEnabled(Marker marker) {
 		return logger.isDebugEnabled();
 	}
 
-	public boolean isErrorEnabled() {
-		return logger.isErrorEnabled();
+	@Override
+	public void debug(Marker marker, String message) {
+		logger.debug(message);
 	}
 
-	public boolean isFatalEnabled() {
-		return logger.isErrorEnabled();
+	@Override
+	public void debug(Marker marker, String message, Object object) {
+		logger.debug(message);
 	}
 
+	@Override
+	public void debug(Marker marker, String message, Object object, Object secondObject) {
+		logger.debug(message);
+	}
+
+	@Override
+	public void debug(Marker marker, String message, Object... objects) {
+		logger.debug(message);
+	}
+
+	@Override
+	public void debug(Marker marker, String message, Throwable throwable) {
+		logger.debug(message, throwable);
+	}
+
+	@Override
 	public boolean isInfoEnabled() {
 		return logger.isInfoEnabled();
 	}
 
-	public boolean isTraceEnabled() {
-		return logger.isDebugEnabled();
+	@Override
+	public void error(String message) {
+		logger.error(message);
 	}
 
+	@Override
+	public void error(String message, Object object) {
+		logger.error(message);
+	}
+
+	@Override
+	public void error(String message, Object object, Object secondObject) {
+		logger.error(message);
+	}
+
+	@Override
+	public void error(String message, Object... objects) {
+		logger.error(message);
+	}
+
+	@Override
+	public void error(String message, Throwable throwable) {
+		logger.error(message, throwable);
+	}
+
+	@Override
+	public boolean isErrorEnabled(Marker marker) {
+		return logger.isErrorEnabled();
+	}
+
+	@Override
+	public void error(Marker marker, String message) {
+		logger.error(message);
+	}
+
+	@Override
+	public void error(Marker marker, String message, Object object) {
+		logger.error(message);
+	}
+
+	@Override
+	public void error(Marker marker, String message, Object object, Object secondObject) {
+		logger.error(message);
+	}
+
+	@Override
+	public void error(Marker marker, String message, Object... objects) {
+		logger.error(message);
+	}
+
+	@Override
+	public void error(Marker marker, String message, Throwable throwable) {
+		logger.error(message, throwable);
+	}
+
+	@Override
+	public void info(String message) {
+		logger.info(message);
+	}
+
+	@Override
+	public void info(String message, Object object) {
+		logger.info(message);
+	}
+
+	@Override
+	public void info(String message, Object object, Object secondObject) {
+		logger.info(message);
+	}
+
+	@Override
+	public void info(String message, Object... objects) {
+		logger.info(message);
+	}
+
+	@Override
+	public void info(String message, Throwable throwable) {
+		logger.info(message, throwable);
+	}
+
+	@Override
+	public boolean isInfoEnabled(Marker marker) {
+		return isInfoEnabled();
+	}
+
+	@Override
+	public void info(Marker marker, String message) {
+		logger.info(message);
+	}
+
+	@Override
+	public void info(Marker marker, String message, Object object) {
+		logger.info(message);
+	}
+
+	@Override
+	public void info(Marker marker, String message, Object object, Object secondObject) {
+		logger.info(message);
+	}
+
+	@Override
+	public void info(Marker marker, String message, Object... objects) {
+		logger.info(message);
+	}
+
+	@Override
+	public void info(Marker marker, String message, Throwable throwable) {
+		logger.info(message, throwable);
+	}
+
+	@Override
 	public boolean isWarnEnabled() {
 		return logger.isWarnEnabled();
 	}
 
-	public void trace(Object message, Throwable th) {
-		logger.debug(String.valueOf(message), th);
+	@Override
+	public String getName() {
+		return LOGGER_NAME;
 	}
 
-	public void trace(Object message) {
-		logger.debug(String.valueOf(message));
+	@Override
+	public boolean isTraceEnabled() {
+		return logger.isDebugEnabled();
 	}
 
-	public void warn(Object message, Throwable th) {
-		logger.warn(String.valueOf(message), th);
+	@Override
+	public void trace(String message) {
+		logger.debug(message);
 	}
 
-	public void warn(Object message) {
-		logger.warn(String.valueOf(message));
+	@Override
+	public void trace(String message, Object object) {
+		logger.debug(message);
+	}
+
+	@Override
+	public void trace(String message, Object object, Object secondObject) {
+		logger.debug(message);
+	}
+
+	@Override
+	public void trace(String message, Object... objects) {
+		logger.debug(message);
+	}
+
+	@Override
+	public void trace(String message, Throwable throwable) {
+		logger.debug(message, throwable);
+	}
+
+	@Override
+	public boolean isTraceEnabled(Marker marker) {
+		return logger.isDebugEnabled();
+	}
+
+	@Override
+	public void trace(Marker marker, String message) {
+		logger.debug(message);
+	}
+
+	@Override
+	public void trace(Marker marker, String message, Object object) {
+		logger.debug(message);
+	}
+
+	@Override
+	public void trace(Marker marker, String message, Object object, Object secondObject) {
+		logger.debug(message);
+	}
+
+	@Override
+	public void trace(Marker marker, String message, Object... objects) {
+		logger.debug(message);
+	}
+
+	@Override
+	public void trace(Marker marker, String message, Throwable throwable) {
+		logger.debug(message, throwable);
+	}
+
+	@Override
+	public boolean isDebugEnabled() {
+		return logger.isDebugEnabled();
+	}
+
+	@Override
+	public void warn(String message) {
+		logger.warn(message);
+	}
+
+	@Override
+	public void warn(String message, Object object) {
+		logger.warn(message);
+	}
+
+	@Override
+	public void warn(String message, Object... objects) {
+		logger.warn(message);
+	}
+
+	@Override
+	public void warn(String message, Object object, Object secondObject) {
+		logger.warn(message);
+	}
+
+	@Override
+	public void warn(String message, Throwable throwable) {
+		logger.warn(message, throwable);
+	}
+
+	@Override
+	public boolean isWarnEnabled(Marker marker) {
+		return logger.isWarnEnabled();
+	}
+
+	@Override
+	public void warn(Marker marker, String message) {
+		logger.warn(message);
+	}
+
+	@Override
+	public void warn(Marker marker, String message, Object object) {
+		logger.warn(message);
+	}
+
+	@Override
+	public void warn(Marker marker, String message, Object object, Object secondObject) {
+		logger.warn(message);
+	}
+
+	@Override
+	public void warn(Marker marker, String message, Object... objects) {
+		logger.warn(message);
+	}
+
+	@Override
+	public void warn(Marker marker, String message, Throwable throwable) {
+		logger.warn(message, throwable);
+	}
+
+	@Override
+	public boolean isErrorEnabled() {
+		return logger.isErrorEnabled();
 	}
 }

@@ -46,15 +46,15 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Displays CayenneModeler exceptions and warning messages.
  * 
  */
 public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
-    private static Log logObj = LogFactory.getLog(ErrorDebugDialog.class);
+    private static Logger logObj = LoggerFactory.getLogger(ErrorDebugDialog.class);
     
     /**
      * Sole instance of error/warning dialog to disallow showing of multiple dialogs

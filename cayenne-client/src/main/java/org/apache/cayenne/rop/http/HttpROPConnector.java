@@ -23,8 +23,8 @@ import org.apache.cayenne.rop.HttpClientConnection;
 import org.apache.cayenne.rop.ROPConnector;
 import org.apache.cayenne.rop.ROPConstants;
 import org.apache.cayenne.rop.ROPUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +37,7 @@ import java.util.Map;
 
 public class HttpROPConnector implements ROPConnector {
 
-    private static Log logger = LogFactory.getLog(HttpROPConnector.class);
+    private static Logger logger = LoggerFactory.getLogger(HttpROPConnector.class);
 
     public static final String SESSION_COOKIE_NAME = "JSESSIONID";
 

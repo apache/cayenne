@@ -50,7 +50,7 @@ import org.apache.cayenne.project.FileProjectSaver;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.xml.sax.InputSource;
@@ -281,7 +281,7 @@ public class DefaultDbImportActionTest {
     private DefaultDbImportAction buildDbImportAction(FileProjectSaver projectSaver, MapLoader mapLoader, final DbLoader dbLoader)
             throws Exception {
 
-        Log log = mock(Log.class);
+        Logger log = mock(Logger.class);
         when(log.isDebugEnabled()).thenReturn(true);
         when(log.isInfoEnabled()).thenReturn(true);
 
@@ -309,7 +309,7 @@ public class DefaultDbImportActionTest {
 
     @Test
     public void testSaveLoaded() throws Exception {
-        Log log = mock(Log.class);
+        Logger log = mock(Logger.class);
         Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
 
         DefaultDbImportAction action = (DefaultDbImportAction) i.getInstance(DbImportAction.class);

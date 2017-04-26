@@ -28,8 +28,8 @@ import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -50,7 +50,7 @@ class XMLDataChannelDescriptorLoader_V3_0_0_1 {
 
 	static final String DBCP_DATA_SOURCE_FACTORY = "org.apache.cayenne.configuration.server.DBCPDataSourceFactory";
 
-	private static Log logger = LogFactory.getLog(XMLDataChannelDescriptorLoader_V3_0_0_1.class);
+	private static Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader_V3_0_0_1.class);
 
 	static final String DOMAINS_TAG = "domains";
 	static final String DOMAIN_TAG = "domain";

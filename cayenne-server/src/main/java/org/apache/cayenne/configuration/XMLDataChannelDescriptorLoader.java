@@ -25,8 +25,8 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -44,7 +44,7 @@ import java.net.URL;
  */
 public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoader {
 
-	private static Log logger = LogFactory.getLog(XMLDataChannelDescriptorLoader.class);
+	private static Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
 	static final String DOMAIN_TAG = "domain";
 	static final String MAP_TAG = "map";
@@ -69,7 +69,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 		} catch (IOException exception) {
 			// Log the error while trying to open the stream. A null
 			// password will be returned as a result.
-			logger.warn(exception);
+			logger.warn(exception.getMessage(), exception);
 		}
 
 		return password;
@@ -88,7 +88,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 
 			password = bufferedReader.readLine();
 		} catch (IOException exception) {
-			logger.warn(exception);
+			logger.warn(exception.getMessage(), exception);
 		} finally {
 
 			try {
@@ -339,7 +339,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 						try {
 							password = passwordFromURL(new URL(passwordSource));
 						} catch (MalformedURLException exception) {
-							logger.warn(exception);
+							logger.warn(exception.getMessage(), exception);
 						}
 					} else if (passwordLocation.equals(DataSourceInfo.PASSWORD_LOCATION_EXECUTABLE)) {
 						if (passwordSource != null) {
@@ -348,9 +348,9 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 								password = passwordFromInputStream(process.getInputStream());
 								process.waitFor();
 							} catch (IOException exception) {
-								logger.warn(exception);
+								logger.warn(exception.getMessage(), exception);
 							} catch (InterruptedException exception) {
-								logger.warn(exception);
+								logger.warn(exception.getMessage(), exception);
 							}
 						}
 					}

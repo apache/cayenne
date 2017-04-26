@@ -23,7 +23,7 @@ import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -34,7 +34,7 @@ public class DbImportModuleTest {
     @Test
     public void testModuleContents() {
 
-        Log log = mock(Log.class);
+        Logger log = mock(Logger.class);
         Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
         assertTrue(i.getInstance(DbImportAction.class) instanceof DbImportAction);
     }

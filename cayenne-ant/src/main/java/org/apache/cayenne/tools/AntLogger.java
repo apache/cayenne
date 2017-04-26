@@ -19,14 +19,15 @@
 
 package org.apache.cayenne.tools;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+import org.slf4j.Marker;
 
 /**
  * @since 3.0
  */
-class AntLogger implements Log {
+class AntLogger implements Logger {
 
     private Task parentTask;
 
@@ -34,75 +35,308 @@ class AntLogger implements Log {
         this.parentTask = parentTask;
     }
 
-    public void debug(Object message, Throwable th) {
-        parentTask.log(String.valueOf(message), Project.MSG_DEBUG);
+    @Override
+    public void debug(String message) {
+        parentTask.log(message, Project.MSG_DEBUG);
     }
 
-    public void debug(Object message) {
-        parentTask.log(String.valueOf(message), Project.MSG_DEBUG);
+    @Override
+    public void debug(String message, Object object) {
+        parentTask.log(message, Project.MSG_DEBUG);
     }
 
-    public void error(Object message, Throwable th) {
-        parentTask.log(String.valueOf(message), Project.MSG_ERR);
+    @Override
+    public void debug(String message, Object object, Object secondObject) {
+        parentTask.log(message, Project.MSG_DEBUG);
     }
 
-    public void error(Object message) {
-        parentTask.log(String.valueOf(message), Project.MSG_ERR);
+    @Override
+    public void debug(String message, Object... objects) {
+        parentTask.log(message, Project.MSG_DEBUG);
     }
 
-    public void fatal(Object message, Throwable th) {
-        parentTask.log(String.valueOf(message), Project.MSG_ERR);
+    @Override
+    public void debug(String message, Throwable throwable) {
+        parentTask.log(message, throwable, Project.MSG_DEBUG);
     }
 
-    public void fatal(Object message) {
-        parentTask.log(String.valueOf(message), Project.MSG_ERR);
-    }
-
-    public void info(Object message, Throwable th) {
-        parentTask.log(String.valueOf(message), Project.MSG_INFO);
-    }
-
-    public void info(Object message) {
-        parentTask.log(String.valueOf(message), Project.MSG_INFO);
-    }
-
-    public void trace(Object message, Throwable th) {
-        parentTask.log(String.valueOf(message), Project.MSG_VERBOSE);
-    }
-
-    public void trace(Object message) {
-        parentTask.log(String.valueOf(message), Project.MSG_VERBOSE);
-    }
-
-    public void warn(Object message, Throwable th) {
-        parentTask.log(String.valueOf(message), Project.MSG_WARN);
-    }
-
-    public void warn(Object message) {
-        parentTask.log(String.valueOf(message), Project.MSG_WARN);
-    }
-
-    public boolean isWarnEnabled() {
+    @Override
+    public boolean isDebugEnabled(Marker marker) {
         return true;
     }
 
-    public boolean isDebugEnabled() {
-        return true;
+    @Override
+    public void debug(Marker marker, String message) {
+        parentTask.log(message, Project.MSG_DEBUG);
     }
 
-    public boolean isErrorEnabled() {
-        return true;
+    @Override
+    public void debug(Marker marker, String message, Object object) {
+        parentTask.log(message, Project.MSG_DEBUG);
     }
 
-    public boolean isFatalEnabled() {
-        return true;
+    @Override
+    public void debug(Marker marker, String message, Object object, Object secondObject) {
+        parentTask.log(message, Project.MSG_DEBUG);
     }
 
+    @Override
+    public void debug(Marker marker, String message, Object... objects) {
+        parentTask.log(message, Project.MSG_DEBUG);
+    }
+
+    @Override
+    public void debug(Marker marker, String message, Throwable throwable) {
+        parentTask.log(message, throwable, Project.MSG_DEBUG);
+    }
+
+    @Override
     public boolean isInfoEnabled() {
         return true;
     }
 
+    @Override
+    public void error(String message) {
+        parentTask.log(message, Project.MSG_ERR);
+    }
+
+    @Override
+    public void error(String message, Object object) {
+        parentTask.log(message, Project.MSG_ERR);
+    }
+
+    @Override
+    public void error(String message, Object object, Object secondObject) {
+        parentTask.log(message, Project.MSG_ERR);
+    }
+
+    @Override
+    public void error(String message, Object... objects) {
+        parentTask.log(message, Project.MSG_ERR);
+    }
+
+    @Override
+    public void error(String message, Throwable throwable) {
+        parentTask.log(message, throwable, Project.MSG_ERR);
+    }
+
+    @Override
+    public boolean isErrorEnabled(Marker marker) {
+        return true;
+    }
+
+    @Override
+    public void error(Marker marker, String message) {
+        parentTask.log(message, Project.MSG_ERR);
+    }
+
+    @Override
+    public void error(Marker marker, String message, Object object) {
+        parentTask.log(message, Project.MSG_ERR);
+    }
+
+    @Override
+    public void error(Marker marker, String message, Object object, Object secondObject) {
+        parentTask.log(message, Project.MSG_ERR);
+    }
+
+    @Override
+    public void error(Marker marker, String message, Object... objects) {
+        parentTask.log(message, Project.MSG_ERR);
+    }
+
+    @Override
+    public void error(Marker marker, String message, Throwable throwable) {
+        parentTask.log(message, throwable, Project.MSG_ERR);
+    }
+
+    @Override
+    public void info(String message) {
+        parentTask.log(message, Project.MSG_INFO);
+    }
+
+    @Override
+    public void info(String message, Object object) {
+        parentTask.log(message, Project.MSG_INFO);
+    }
+
+    @Override
+    public void info(String message, Object object, Object secondObject) {
+        parentTask.log(message, Project.MSG_INFO);
+    }
+
+    @Override
+    public void info(String message, Object... objects) {
+        parentTask.log(message, Project.MSG_INFO);
+    }
+
+    @Override
+    public void info(String message, Throwable throwable) {
+        parentTask.log(message, throwable, Project.MSG_INFO);
+    }
+
+    @Override
+    public boolean isInfoEnabled(Marker marker) {
+        return true;
+    }
+
+    @Override
+    public void info(Marker marker, String message) {
+        parentTask.log(message, Project.MSG_INFO);
+    }
+
+    @Override
+    public void info(Marker marker, String message, Object object) {
+        parentTask.log(message, Project.MSG_INFO);
+    }
+
+    @Override
+    public void info(Marker marker, String message, Object object, Object secondObject) {
+        parentTask.log(message, Project.MSG_INFO);
+    }
+
+    @Override
+    public void info(Marker marker, String message, Object... objects) {
+        parentTask.log(message, Project.MSG_INFO);
+    }
+
+    @Override
+    public void info(Marker marker, String message, Throwable throwable) {
+        parentTask.log(message, throwable, Project.MSG_INFO);
+    }
+
+    @Override
+    public boolean isWarnEnabled() {
+        return true;
+    }
+
+    @Override
+    public String getName() {
+        return parentTask.getTaskName();
+    }
+
+    @Override
     public boolean isTraceEnabled() {
+        return true;
+    }
+
+    @Override
+    public void trace(String message) {
+        parentTask.log(message, Project.MSG_VERBOSE);
+    }
+
+    @Override
+    public void trace(String message, Object object) {
+        parentTask.log(message, Project.MSG_VERBOSE);
+    }
+
+    @Override
+    public void trace(String message, Object object, Object secondObject) {
+        parentTask.log(message, Project.MSG_VERBOSE);
+    }
+
+    @Override
+    public void trace(String message, Object... objects) {
+        parentTask.log(message, Project.MSG_VERBOSE);
+    }
+
+    @Override
+    public void trace(String message, Throwable throwable) {
+        parentTask.log(message, throwable, Project.MSG_VERBOSE);
+    }
+
+    @Override
+    public boolean isTraceEnabled(Marker marker) {
+        return true;
+    }
+
+    @Override
+    public void trace(Marker marker, String message) {
+        parentTask.log(message, Project.MSG_VERBOSE);
+    }
+
+    @Override
+    public void trace(Marker marker, String message, Object object) {
+        parentTask.log(message, Project.MSG_VERBOSE);
+    }
+
+    @Override
+    public void trace(Marker marker, String message, Object object, Object secondObject) {
+        parentTask.log(message, Project.MSG_VERBOSE);
+    }
+
+    @Override
+    public void trace(Marker marker, String message, Object... objects) {
+        parentTask.log(message, Project.MSG_VERBOSE);
+    }
+
+    @Override
+    public void trace(Marker marker, String message, Throwable throwable) {
+        parentTask.log(message, throwable, Project.MSG_VERBOSE);
+    }
+
+    @Override
+    public boolean isDebugEnabled() {
+        return true;
+    }
+
+    @Override
+    public void warn(String message) {
+        parentTask.log(message, Project.MSG_WARN);
+    }
+
+    @Override
+    public void warn(String message, Object object) {
+        parentTask.log(message, Project.MSG_WARN);
+    }
+
+    @Override
+    public void warn(String message, Object... objects) {
+        parentTask.log(message, Project.MSG_WARN);
+    }
+
+    @Override
+    public void warn(String message, Object object, Object secondObject) {
+        parentTask.log(message, Project.MSG_WARN);
+    }
+
+    @Override
+    public void warn(String message, Throwable throwable) {
+        parentTask.log(message, throwable, Project.MSG_WARN);
+    }
+
+    @Override
+    public boolean isWarnEnabled(Marker marker) {
+        return true;
+    }
+
+    @Override
+    public void warn(Marker marker, String message) {
+        parentTask.log(message, Project.MSG_WARN);
+    }
+
+    @Override
+    public void warn(Marker marker, String message, Object object) {
+        parentTask.log(message, Project.MSG_WARN);
+    }
+
+    @Override
+    public void warn(Marker marker, String message, Object object, Object secondObject) {
+        parentTask.log(message, Project.MSG_WARN);
+    }
+
+    @Override
+    public void warn(Marker marker, String message, Object... objects) {
+        parentTask.log(message, Project.MSG_WARN);
+    }
+
+    @Override
+    public void warn(Marker marker, String message, Throwable throwable) {
+        parentTask.log(message, throwable, Project.MSG_WARN);
+    }
+
+    @Override
+    public boolean isErrorEnabled() {
         return true;
     }
 }

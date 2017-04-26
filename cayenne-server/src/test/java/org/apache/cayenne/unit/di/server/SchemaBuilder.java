@@ -39,8 +39,8 @@ import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.testdo.extended_type.StringET1ExtendedType;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 import java.io.InputStream;
@@ -62,7 +62,7 @@ import java.util.ListIterator;
  */
 public class SchemaBuilder {
 
-	private static Log logger = LogFactory.getLog(SchemaBuilder.class);
+	private static Logger logger = LoggerFactory.getLogger(SchemaBuilder.class);
 
 	public static final String SKIP_SCHEMA_KEY = "cayenneTestSkipSchemaCreation";
 

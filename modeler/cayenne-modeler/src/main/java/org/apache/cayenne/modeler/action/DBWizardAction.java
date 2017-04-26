@@ -31,11 +31,11 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
 import org.apache.cayenne.modeler.dialog.db.DbActionOptionsDialog;
 import org.apache.cayenne.modeler.util.CayenneAction;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class DBWizardAction<T extends DbActionOptionsDialog> extends CayenneAction {
-	private static Log LOGGER = LogFactory.getLog(DBWizardAction.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(DBWizardAction.class);
 	
     public DBWizardAction(String name, Application application) {
         super(name, application);

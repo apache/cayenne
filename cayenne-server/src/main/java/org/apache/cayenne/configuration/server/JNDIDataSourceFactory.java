@@ -25,8 +25,8 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Locates DataSource mapped via JNDI.
@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class JNDIDataSourceFactory implements DataSourceFactory {
 
-	private static final Log LOGGER = LogFactory.getLog(JNDIDataSourceFactory.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JNDIDataSourceFactory.class);
 
 	@Override
 	public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {

@@ -22,8 +22,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.map.DataMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -35,7 +35,7 @@ import java.util.List;
  */
 public class ThrowOnPartialOrCreateSchemaStrategy extends ThrowOnPartialSchemaStrategy {
 
-    private final static Log LOGGER = LogFactory.getLog(ThrowOnPartialOrCreateSchemaStrategy.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(ThrowOnPartialOrCreateSchemaStrategy.class);
 
 
     @Override

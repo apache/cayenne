@@ -22,8 +22,7 @@ package org.apache.cayenne.rop.http;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.RemoteSession;
 import org.apache.cayenne.rop.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -32,6 +31,7 @@ import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.client.util.InputStreamResponseListener;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -47,7 +47,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class JettyHttpROPConnector implements ROPConnector {
 
-    private static Log logger = LogFactory.getLog(JettyHttpROPConnector.class);
+    private static Logger logger = LoggerFactory.getLogger(JettyHttpROPConnector.class);
 
     public static final String SESSION_COOKIE_NAME = "JSESSIONID";
 

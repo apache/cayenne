@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -68,7 +68,7 @@ public class ClassGenerationAction {
 	protected ArtifactsGenerationMode artifactsGenerationMode;
 	protected boolean makePairs;
 
-	protected Log logger;
+	protected Logger logger;
 	protected File destDir;
 	protected boolean overwrite;
 	protected boolean usePkgPath;
@@ -569,7 +569,7 @@ public class ClassGenerationAction {
 	 * Injects an optional logger that will be used to trace generated files at
 	 * the info level.
 	 */
-	public void setLogger(Log logger) {
+	public void setLogger(Logger logger) {
 		this.logger = logger;
 	}
 

@@ -30,8 +30,8 @@ import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.resource.Resource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 import javax.swing.*;
@@ -49,7 +49,7 @@ import java.net.URL;
  */
 public class ImportDataMapAction extends CayenneAction {
 
-    private static Log logObj = LogFactory.getLog(ImportDataMapAction.class);
+    private static Logger logObj = LoggerFactory.getLogger(ImportDataMapAction.class);
 
     private ConfigurationNameMapper nameMapper;
 

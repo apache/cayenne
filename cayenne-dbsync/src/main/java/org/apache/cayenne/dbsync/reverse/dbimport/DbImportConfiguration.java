@@ -36,7 +36,7 @@ import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.dbload.DefaultDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.dbload.LoggingDbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.regex.Pattern;
@@ -56,7 +56,7 @@ public class DbImportConfiguration {
     private String adapter;
     private boolean usePrimitives;
     private boolean useJava7Types;
-    private Log logger;
+    private Logger logger;
     private String namingStrategy;
     private String stripFromTableNames;
     private boolean forceDataMapCatalog;
@@ -75,11 +75,11 @@ public class DbImportConfiguration {
         this.stripFromTableNames = stripFromTableNames;
     }
 
-    public Log getLogger() {
+    public Logger getLogger() {
         return logger;
     }
 
-    public void setLogger(Log logger) {
+    public void setLogger(Logger logger) {
         this.logger = logger;
     }
 

@@ -29,8 +29,8 @@ import org.apache.cayenne.remote.ClientMessage;
 import org.apache.cayenne.remote.RemoteService;
 import org.apache.cayenne.remote.RemoteSession;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.rmi.RemoteException;
 import java.util.Collections;
@@ -47,7 +47,7 @@ public abstract class BaseRemoteService implements RemoteService {
 
 	// keep logger non-static so that it could be garbage collected with this
 	// instance.
-	protected final Log logger;
+	protected final Logger logger;
 
 	protected ObjectContextFactory contextFactory;
 	protected String eventBridgeFactoryName;
@@ -58,7 +58,7 @@ public abstract class BaseRemoteService implements RemoteService {
 	 */
 	public BaseRemoteService(ObjectContextFactory contextFactory, Map<String, String> eventBridgeProperties) {
 
-		logger = LogFactory.getLog(getClass());
+		logger = LoggerFactory.getLogger(getClass());
 
 		// start Cayenne service
 		logger.debug("ROP service is starting");

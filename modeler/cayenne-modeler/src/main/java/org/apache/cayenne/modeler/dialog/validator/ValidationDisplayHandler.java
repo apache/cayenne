@@ -34,8 +34,8 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.validation.ValidationFailure;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Superclass of CayenneModeler validation messages.
@@ -43,7 +43,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class ValidationDisplayHandler {
 
-    private static Log logObj = LogFactory.getLog(ValidationDisplayHandler.class);
+    private static Logger logObj = LoggerFactory.getLogger(ValidationDisplayHandler.class);
 
     public static final int NO_ERROR = 0;
     public static final int WARNING = 1;

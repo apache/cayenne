@@ -34,6 +34,7 @@ CAY-2272 ColumnSelect: methods to manually control DISTINCT clause
 CAY-2274 Modeler: Validate case when dependent PK is marked as “generated”
 CAY-2277 Create ClientRuntime with ClientRuntimeBuilder just like ServerRuntime
 CAY-2278 Extract cayenne-postcommit module from cayenne-lifecycle
+CAY-2280 Switch from commons-logging to slf4j
 
 Bug Fixes:
 

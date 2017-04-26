@@ -30,8 +30,8 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.reflect.generic.DataObjectDescriptorFactory;
 import org.apache.cayenne.reflect.valueholder.ValueHolderDescriptorFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class EntityResolver implements MappingNamespace, Serializable {
 
-    protected static final Log logger = LogFactory.getLog(EntityResolver.class);
+    protected static final Logger logger = LoggerFactory.getLogger(EntityResolver.class);
     protected static AtomicLong incrementer = new AtomicLong();
 
     @Deprecated

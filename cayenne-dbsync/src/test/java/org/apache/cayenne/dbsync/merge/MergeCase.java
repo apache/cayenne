@@ -48,9 +48,9 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 import org.junit.Before;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -69,7 +69,7 @@ public abstract class MergeCase extends DbSyncCase {
     @Inject
     protected DataNode node;
     protected DataMap map;
-    private Log logger = LogFactory.getLog(MergeCase.class);
+    private Logger logger = LoggerFactory.getLogger(MergeCase.class);
     @Inject
     private DBHelper dbHelper;
     @Inject
@@ -121,7 +121,7 @@ public abstract class MergeCase extends DbSyncCase {
         try (Connection conn = node.getDataSource().getConnection();) {
             dbImport = new DbLoader(node.getAdapter(), conn,
                     loaderConfiguration,
-                    new LoggingDbLoaderDelegate(LogFactory.getLog(DbLoader.class)),
+                    new LoggingDbLoaderDelegate(LoggerFactory.getLogger(DbLoader.class)),
                     new DefaultObjectNameGenerator(NoStemStemmer.getInstance()))
                     .load();
 

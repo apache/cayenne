@@ -19,26 +19,26 @@
 
 package org.apache.cayenne.remote;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 import org.apache.cayenne.CayenneRuntimeException;
+import org.slf4j.LoggerFactory;
 
 /**
  * A common base class for concrete ClientConnection implementations. Provides message
- * logging functionality via commons-logging.
+ * logging functionality via slf4j logging.
  * 
  * @since 1.2
  */
 public abstract class BaseConnection implements ClientConnection {
 
-    protected Log logger;
+    protected Logger logger;
     protected long messageId;
     
     /**
      * Default constructor that initializes logging and a single threaded EventManager.
      */
     protected BaseConnection() {
-        this.logger = LogFactory.getLog(getClass());
+        this.logger = LoggerFactory.getLogger(getClass());
     }
 
     /**

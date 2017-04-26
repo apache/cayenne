@@ -29,15 +29,15 @@ import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportModule;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 4.0
  */
 final public class LoadDataMapTask extends LongRunningTask {
 
-    private static Log LOGGER = LogFactory.getLog(DbLoaderContext.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(DbLoaderContext.class);
 
     private DbLoaderContext context;
 
