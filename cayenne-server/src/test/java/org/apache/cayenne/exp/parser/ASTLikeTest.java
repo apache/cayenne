@@ -92,4 +92,25 @@ public class ASTLikeTest {
 		assertTrue("Failed: " + like, like.match(match));
 	}
 
+	@Test
+	public void testEvaluateUnicode() {
+		Expression like = new ASTLike(new ASTObjPath("artistName"), "àбğþ%");
+		Expression notLike = new ASTNotLike(new ASTObjPath("artistName"), "àбğþ%");
+
+		Artist noMatch1 = new Artist();
+		noMatch1.setArtistName("àbğþd");
+		assertFalse(like.match(noMatch1));
+		assertTrue(notLike.match(noMatch1));
+
+		Artist match1 = new Artist();
+		match1.setArtistName("àбğþ");
+		assertTrue("Failed: " + like, like.match(match1));
+		assertFalse("Failed: " + notLike, notLike.match(match1));
+
+		Artist match2 = new Artist();
+		match2.setArtistName("àбğþa");
+		assertTrue("Failed: " + like, like.match(match2));
+		assertFalse("Failed: " + notLike, notLike.match(match2));
+	}
+
 }

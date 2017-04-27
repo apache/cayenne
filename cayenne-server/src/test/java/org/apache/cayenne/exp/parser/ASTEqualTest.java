@@ -98,4 +98,25 @@ public class ASTEqualTest {
 		p.setEstimatedPrice(bd4);
 		assertFalse(equalTo.match(p));
 	}
+
+	@Test
+	public void testEvaluateUnicodeChars() {
+		ASTEqual equalToFull = new ASTEqual(new ASTObjPath("artistName"), "àбçğþ");
+		ASTEqual equalToSimple = new ASTEqual(new ASTObjPath("artistName"), "àğç");
+
+		Artist noMatch = new Artist();
+		noMatch.setArtistName("agc");
+		assertFalse(equalToSimple.match(noMatch));
+		assertFalse(equalToFull.match(noMatch));
+
+		Artist matchSimple = new Artist();
+		matchSimple.setArtistName("àğç");
+		assertTrue(equalToSimple.match(matchSimple));
+		assertFalse(equalToFull.match(matchSimple));
+
+		Artist matchFull = new Artist();
+		matchFull.setArtistName("àбçğþ");
+		assertFalse(equalToSimple.match(matchFull));
+		assertTrue(equalToFull.match(matchFull));
+	}
 }

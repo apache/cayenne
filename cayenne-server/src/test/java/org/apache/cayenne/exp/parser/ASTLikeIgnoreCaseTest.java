@@ -85,6 +85,27 @@ public class ASTLikeIgnoreCaseTest {
 		assertTrue("Failed: " + like, notLike.match(match2));
 	}
 
+	@Test
+	public void testEvaluateUnicode() {
+		Expression like = new ASTLikeIgnoreCase(new ASTObjPath("artistName"), "ÀБĞÞ%");
+		Expression notLike = new ASTNotLikeIgnoreCase(new ASTObjPath("artistName"), "ÀБĞÞ%");
+
+		Artist noMatch1 = new Artist();
+		noMatch1.setArtistName("àbğþ");
+		assertFalse(like.match(noMatch1));
+		assertTrue(notLike.match(noMatch1));
+
+		Artist match1 = new Artist();
+		match1.setArtistName("àбğþd");
+		assertTrue("Failed: " + like, like.match(match1));
+		assertFalse("Failed: " + notLike, notLike.match(match1));
+
+		Artist match2 = new Artist();
+		match2.setArtistName("àБğÞ");
+		assertTrue("Failed: " + like, like.match(match2));
+		assertFalse("Failed: " + notLike, notLike.match(match2));
+	}
+
 	private Painting createPainting(String name) {
 		Painting p = new Painting();
 		p.setPaintingTitle(name);

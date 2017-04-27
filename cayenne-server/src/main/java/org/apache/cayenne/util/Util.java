@@ -485,7 +485,7 @@ public class Util {
 	public static Pattern sqlPatternToPattern(String pattern, boolean ignoreCase) {
 		String preprocessed = RegexUtil.sqlPatternToRegex(pattern);
 
-		int flag = (ignoreCase) ? Pattern.CASE_INSENSITIVE : 0;
+		int flag = (ignoreCase) ? Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE : 0;
 		return Pattern.compile(preprocessed, flag);
 	}
 
