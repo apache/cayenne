@@ -21,9 +21,9 @@ package org.apache.cayenne.velocity;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.jdbc.SQLParameterBinding;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.InternalContextAdapterImpl;
@@ -152,7 +152,7 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 	}
 
 	SQLStatement processTemplate(String template, SimpleNode parsedTemplate, Map<String, Object> parameters) {
-		List<SQLParameterBinding> bindings = new ArrayList<>();
+		List<ParameterBinding> bindings = new ArrayList<>();
 		List<ColumnDescriptor> results = new ArrayList<>();
 		parameters.put(BINDINGS_LIST_KEY, bindings);
 		parameters.put(RESULT_COLUMNS_LIST_KEY, results);
@@ -165,7 +165,7 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 			throw new CayenneRuntimeException("Error processing Velocity template", e);
 		}
 
-		SQLParameterBinding[] bindingsArray = new SQLParameterBinding[bindings.size()];
+		ParameterBinding[] bindingsArray = new ParameterBinding[bindings.size()];
 		bindings.toArray(bindingsArray);
 
 		ColumnDescriptor[] resultsArray = new ColumnDescriptor[results.size()];

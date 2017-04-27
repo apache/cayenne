@@ -20,8 +20,8 @@ package org.apache.cayenne.log;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ExtendedEnumeration;
-import org.apache.cayenne.access.jdbc.SQLParameterBinding;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.conn.DataSourceInfo;
@@ -47,7 +47,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 	private static final Logger logger = LoggerFactory.getLogger(CommonsJdbcEventLogger.class);
 
     /**
-     * @deprecated  since 4.0
+     * @deprecated since 4.0
      */
 	private static final int TRIM_VALUES_THRESHOLD = 30;
 
@@ -86,7 +86,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 		}
 		// handle byte pretty formatting
 		else if (object instanceof Byte) {
-			IDUtil.appendFormattedByte(buffer, ((Byte) object).byteValue());
+			IDUtil.appendFormattedByte(buffer, (Byte) object);
 		} else if (object instanceof Number) {
 			// process numeric value (do something smart in the future)
 			buffer.append(object);
@@ -118,8 +118,8 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 				buffer.append(((Enum<?>) object).ordinal());
 				// FIXME -- this isn't quite right
 			}
-		} else if (object instanceof SQLParameterBinding) {
-			sqlLiteralForObject(buffer, ((SQLParameterBinding) object).getValue());
+		} else if (object instanceof ParameterBinding) {
+			sqlLiteralForObject(buffer, ((ParameterBinding) object).getValue());
 		} else if (object.getClass().isArray()) {
 			buffer.append("< ");
 
@@ -232,7 +232,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 
 	/**
 	 * @deprecated since 4.0 use
-	 *             {@link #logQuery(String, DbAttributeBinding[], long)}.
+	 *             {@link #logQuery(String, ParameterBinding[], long)}.
 	 */
 	@Deprecated
 	@Override
@@ -297,7 +297,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 	}
 
 	@Override
-	public void logQuery(String sql, DbAttributeBinding[] bindings, long translatedIn) {
+	public void logQuery(String sql, ParameterBinding[] bindings, long translatedIn) {
 		if (isLoggable()) {
 
 			StringBuilder buffer = new StringBuilder(sql).append(" ");
@@ -340,7 +340,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 	}
 
 	@Override
-	public void logQueryParameters(String label, DbAttributeBinding[] bindings) {
+	public void logQueryParameters(String label, ParameterBinding[] bindings) {
 
 		if (isLoggable() && bindings.length > 0) {
 
@@ -353,7 +353,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 		}
 	}
 
-	private void appendParameters(StringBuilder buffer, String label, DbAttributeBinding[] bindings) {
+	private void appendParameters(StringBuilder buffer, String label, ParameterBinding[] bindings) {
 
 		int len = bindings.length;
 		if (len > 0) {
@@ -361,7 +361,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 			boolean hasIncluded = false;
 
 			for (int i = 0, j = 1; i < len; i++) {
-				DbAttributeBinding b = bindings[i];
+				ParameterBinding b = bindings[i];
 
 				if (b.isExcluded()) {
 					continue;
@@ -374,13 +374,15 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 					buffer.append("[").append(label).append(": ");
 				}
 
-				DbAttribute attribute = b.getAttribute();
 
 				buffer.append(j++);
 
-				if (attribute != null) {
-					buffer.append("->");
-					buffer.append(attribute.getName());
+				if(b instanceof DbAttributeBinding) {
+					DbAttribute attribute = ((DbAttributeBinding) b).getAttribute();
+					if (attribute != null) {
+						buffer.append("->");
+						buffer.append(attribute.getName());
+					}
 				}
 
 				buffer.append(":");
@@ -389,8 +391,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 					buffer.append(b.getExtendedType().toString(b.getValue()));
 				} else if(b.getValue() == null) {
 				    buffer.append("NULL");
-                }
-                else {
+                } else {
 					buffer.append(b.getValue().getClass().getName())
                             .append("@")
                             .append(System.identityHashCode(b.getValue()));

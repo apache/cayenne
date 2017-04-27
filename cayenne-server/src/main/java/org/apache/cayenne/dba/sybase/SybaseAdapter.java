@@ -137,14 +137,14 @@ public class SybaseAdapter extends JdbcAdapter {
 
         // Sybase driver doesn't like CLOBs and BLOBs as parameters
         if (binding.getValue() == null) {
-            if (binding.getType() == Types.CLOB) {
-                binding.setType(Types.VARCHAR);
-            } else if (binding.getType() == Types.BLOB) {
-                binding.setType(Types.VARBINARY);
+            if (binding.getJdbcType() == Types.CLOB) {
+                binding.setJdbcType(Types.VARCHAR);
+            } else if (binding.getJdbcType() == Types.BLOB) {
+                binding.setJdbcType(Types.VARBINARY);
             }
         }
 
-        if (binding.getValue() == null && binding.getType() == 0) {
+        if (binding.getValue() == null && binding.getJdbcType() == 0) {
             statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
         } else {
             super.bindParameter(statement, binding);

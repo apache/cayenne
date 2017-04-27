@@ -39,8 +39,8 @@ public class DbAttributeBinding extends ParameterBinding {
 	}
 
 	@Override
-	public Integer getType() {
-		return super.getType() != null ? super.getType() : attribute.getType();
+	public Integer getJdbcType() {
+		return super.getJdbcType() != null ? super.getJdbcType() : attribute.getType();
 	}
 
 	@Override

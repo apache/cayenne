@@ -31,8 +31,8 @@ import java.util.Map;
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.access.jdbc.SQLParameterBinding;
 import org.apache.cayenne.access.jdbc.SQLStatement;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -223,12 +223,12 @@ public class VelocitySQLTemplateProcessorTest {
 	}
 
 	private void assertBindingValue(Object expectedValue, Object binding) {
-		assertTrue("Not a binding!", binding instanceof SQLParameterBinding);
-		assertEquals(expectedValue, ((SQLParameterBinding) binding).getValue());
+		assertTrue("Not a binding!", binding instanceof ParameterBinding);
+		assertEquals(expectedValue, ((ParameterBinding) binding).getValue());
 	}
 
-	private void assertBindingType(int expectedType, Object binding) {
-		assertTrue("Not a binding!", binding instanceof SQLParameterBinding);
-		assertEquals(expectedType, ((SQLParameterBinding) binding).getJdbcType());
+	private void assertBindingType(Integer expectedType, Object binding) {
+		assertTrue("Not a binding!", binding instanceof ParameterBinding);
+		assertEquals(expectedType, ((ParameterBinding) binding).getJdbcType());
 	}
 }

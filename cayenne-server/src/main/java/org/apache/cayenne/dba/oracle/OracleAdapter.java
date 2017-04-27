@@ -238,10 +238,10 @@ public class OracleAdapter extends JdbcAdapter {
 		// Oracle doesn't support BOOLEAN even when binding NULL, so have to
 		// intercept
 		// NULL Boolean here, as super doesn't pass it through ExtendedType...
-		if (binding.getValue() == null && binding.getType() == Types.BOOLEAN) {
+		if (binding.getValue() == null && binding.getJdbcType() == Types.BOOLEAN) {
 			ExtendedType typeProcessor = getExtendedTypes().getRegisteredType(Boolean.class);
 			typeProcessor.setJdbcObject(statement, binding.getValue(), binding.getStatementPosition(), binding
-							.getType(),binding.getScale());
+							.getJdbcType(),binding.getScale());
 		} else {
 			super.bindParameter(statement, binding);
 		}

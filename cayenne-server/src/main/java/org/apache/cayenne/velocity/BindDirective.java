@@ -24,7 +24,7 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.cayenne.access.jdbc.SQLParameterBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.util.ConversionUtil;
 import org.apache.velocity.context.InternalContextAdapter;
@@ -81,7 +81,7 @@ public class BindDirective extends Directive {
 
 	/**
 	 * Extracts the value of the object property to render and passes control to
-	 * {@link #render(InternalContextAdapter, Writer, SQLParameterBinding)} to do
+	 * {@link #render(InternalContextAdapter, Writer, ParameterBinding)} to do
 	 * the actual rendering.
 	 */
 	@Override
@@ -130,10 +130,10 @@ public class BindDirective extends Directive {
 					+ ") at line " + node.getLine() + ", column " + node.getColumn());
 		}
 
-		render(context, writer, new SQLParameterBinding(value, jdbcType, scale));
+		render(context, writer, new ParameterBinding(value, jdbcType, scale));
 	}
 
-	protected void render(InternalContextAdapter context, Writer writer, SQLParameterBinding binding) throws IOException {
+	protected void render(InternalContextAdapter context, Writer writer, ParameterBinding binding) throws IOException {
 
 		bind(context, binding);
 		writer.write('?');
@@ -146,7 +146,7 @@ public class BindDirective extends Directive {
 	/**
 	 * Adds value to the list of bindings in the context.
 	 */
-	protected void bind(InternalContextAdapter context, SQLParameterBinding binding) {
+	protected void bind(InternalContextAdapter context, ParameterBinding binding) {
 
 		Collection bindings = (Collection) context.getInternalUserContext().get(
 				VelocitySQLTemplateProcessor.BINDINGS_LIST_KEY);

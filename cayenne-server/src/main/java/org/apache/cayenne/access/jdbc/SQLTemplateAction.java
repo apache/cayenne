@@ -132,13 +132,12 @@ public class SQLTemplateAction implements SQLAction {
 				query.getPositionalParams());
 
 		if (loggable) {
-			dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), Arrays.asList(compiled.getBindings()));
+			dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), compiled.getBindings(), 0);
 		}
 
 		execute(connection, callback, compiled, counts);
 	}
 
-	@SuppressWarnings("deprecation")
 	private void runWithNamedParametersBatch(Connection connection, OperationObserver callback, String template,
 			Collection<Number> counts, boolean loggable) throws Exception {
 
@@ -158,7 +157,7 @@ public class SQLTemplateAction implements SQLAction {
 			SQLStatement compiled = dataNode.getSqlTemplateProcessor().processTemplate(template, nextParameters);
 
 			if (loggable) {
-				dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), Arrays.asList(compiled.getBindings()));
+				dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), compiled.getBindings(), 0);
 			}
 
 			execute(connection, callback, compiled, counts);
@@ -332,25 +331,18 @@ public class SQLTemplateAction implements SQLAction {
 	/**
 	 * Binds parameters to the PreparedStatement.
 	 */
-	protected void bind(PreparedStatement preparedStatement, SQLParameterBinding[] bindings)
+	protected void bind(PreparedStatement preparedStatement, ParameterBinding[] bindings)
 			throws SQLException, Exception {
 		// bind parameters
-		if (bindings.length > 0) {
-			int len = bindings.length;
-			for (int i = 0; i < len; i++) {
-
-				Object value = bindings[i].getValue();
-				ExtendedType extendedType = value != null
-						? getAdapter().getExtendedTypes().getRegisteredType(value.getClass())
-						: getAdapter().getExtendedTypes().getDefaultType();
-
-				ParameterBinding binding = new ParameterBinding();
-				binding.setType(bindings[i].getJdbcType());
-				binding.setStatementPosition(i + 1);
-				binding.setValue(value);
-				binding.setExtendedType(extendedType);
-				dataNode.getAdapter().bindParameter(preparedStatement, binding);
-			}
+		int i = 1;
+		for (ParameterBinding binding : bindings) {
+			Object value = binding.getValue();
+			ExtendedType extendedType = value != null
+					? getAdapter().getExtendedTypes().getRegisteredType(value.getClass())
+					: getAdapter().getExtendedTypes().getDefaultType();
+			binding.setExtendedType(extendedType);
+			binding.setStatementPosition(i++);
+			dataNode.getAdapter().bindParameter(preparedStatement, binding);
 		}
 
 		if (queryMetadata.getStatementFetchSize() != 0) {

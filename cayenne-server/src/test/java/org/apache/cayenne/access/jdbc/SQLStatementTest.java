@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -31,7 +32,7 @@ public class SQLStatementTest {
 
     @Test
     public void testConstructor() throws Exception {
-        SQLParameterBinding[] bindings = new SQLParameterBinding[0];
+        ParameterBinding[] bindings = new ParameterBinding[0];
         SQLStatement statement = new SQLStatement("abc", bindings);
         assertEquals("abc", statement.getSql());
         assertSame(bindings, statement.getBindings());

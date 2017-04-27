@@ -543,12 +543,12 @@ public class JdbcAdapter implements DbAdapter {
 			throws SQLException, Exception {
 
 		if (binding.getValue() == null) {
-			statement.setNull(binding.getStatementPosition(), binding.getType());
+			statement.setNull(binding.getStatementPosition(), binding.getJdbcType());
 		} else {
 			binding.getExtendedType().setJdbcObject(statement,
 					binding.getValue(),
 					binding.getStatementPosition(),
-					binding.getType(),
+					binding.getJdbcType(),
 					binding.getScale());
 		}
 	}

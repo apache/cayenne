@@ -114,7 +114,7 @@ public class IngresAdapter extends JdbcAdapter {
 	public void bindParameter(PreparedStatement statement, ParameterBinding binding)
 			throws SQLException, Exception {
 
-		if (binding.getValue() == null && (binding.getType() == Types.BIT)) {
+		if (binding.getValue() == null && (binding.getJdbcType() == Types.BIT)) {
 			statement.setNull(binding.getStatementPosition(), Types.SMALLINT);
 		} else {
 			super.bindParameter(statement, binding);

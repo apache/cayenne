@@ -27,13 +27,19 @@ import org.apache.cayenne.access.types.ExtendedType;
  */
 public class ParameterBinding {
 
-	static final int EXCLUDED_POSITION = -1;
+	private static final int EXCLUDED_POSITION = -1;
 
 	private Object value;
 	private int statementPosition;
 	private ExtendedType extendedType;
-	private Integer type;
+	private Integer jdbcType;
 	private int scale;
+
+	public ParameterBinding(Object value, Integer jdbcType, int scale) {
+		this.value = value;
+		this.jdbcType = jdbcType;
+		this.scale = scale;
+	}
 
 	public ParameterBinding() {
 		this.statementPosition = EXCLUDED_POSITION;
@@ -86,12 +92,12 @@ public class ParameterBinding {
 		this.extendedType = extendedType;
 	}
 
-	public Integer getType() {
-		return type;
+	public Integer getJdbcType() {
+		return jdbcType;
 	}
 
-	public void setType(Integer type) {
-		this.type = type;
+	public void setJdbcType(Integer type) {
+		this.jdbcType = type;
 	}
 
 	public int getScale() {

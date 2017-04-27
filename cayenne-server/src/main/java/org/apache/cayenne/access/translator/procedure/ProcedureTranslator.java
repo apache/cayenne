@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ProcedureParameterBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
@@ -155,16 +156,17 @@ public class ProcedureTranslator {
 		if (logger.isLoggable()) {
 			// need to convert OUT/VOID parameters to loggable strings
 			long time = System.currentTimeMillis() - t1;
-
-			List<Object> loggableParameters = new ArrayList<>(values.size());
-			for (Object val : values) {
-				if (val instanceof NotInParam) {
-					val = val.toString();
+			ParameterBinding[] parameterBindings = new ParameterBinding[values.size()];
+			for (int i=0; i<values.size(); i++) {
+				ProcedureParameter procedureParameter = callParams.get(i);
+				Object value = values.get(i);
+				if(value instanceof NotInParam) {
+					value = value.toString();
 				}
-				loggableParameters.add(val);
+				parameterBindings[i] = new ParameterBinding(value,
+						procedureParameter.getType(), procedureParameter.getPrecision());
 			}
-
-			logger.logQuery(sqlStr, null, loggableParameters, time);
+			logger.logQuery(sqlStr, parameterBindings, time);
 		}
 		CallableStatement stmt = connection.prepareCall(sqlStr);
 		initStatement(stmt);

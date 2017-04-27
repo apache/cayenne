@@ -212,7 +212,7 @@ public class MySQLAdapter extends JdbcAdapter {
 	@Override
 	public void bindParameter(PreparedStatement statement, ParameterBinding binding)
 			throws SQLException, Exception {
-		binding.setType(mapNTypes(binding.getType()));
+		binding.setJdbcType(mapNTypes(binding.getJdbcType()));
 		super.bindParameter(statement, binding);
 	}
 

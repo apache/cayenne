@@ -20,7 +20,7 @@ package org.apache.cayenne.log;
 
 import java.util.List;
 
-import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DbAttribute;
 
@@ -83,7 +83,7 @@ public class NoopJdbcEventLogger implements JdbcEventLogger {
 	}
 	
 	@Override
-	public void logQuery(String sql, DbAttributeBinding[] bindings, long translatedIn) {
+	public void logQuery(String sql, ParameterBinding[] bindings, long translatedIn) {
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class NoopJdbcEventLogger implements JdbcEventLogger {
 	}
 
 	@Override
-	public void logQueryParameters(String label, DbAttributeBinding[] bindings) {
+	public void logQueryParameters(String label, ParameterBinding[] bindings) {
 	}
 
 	@Override

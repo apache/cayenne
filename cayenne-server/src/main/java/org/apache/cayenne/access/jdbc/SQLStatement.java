@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import org.apache.cayenne.access.translator.ParameterBinding;
+
 /**
  * A PreparedStatement descriptor containing a String of SQL and an array of parameters.
  * SQLStatement is essentially a "compiled" version of any single query.
@@ -28,13 +30,13 @@ package org.apache.cayenne.access.jdbc;
 public class SQLStatement {
 
     protected String sql;
-    protected SQLParameterBinding[] bindings;
+    protected ParameterBinding[] bindings;
     protected ColumnDescriptor[] resultColumns;
 
     public SQLStatement() {
     }
 
-    public SQLStatement(String sql, SQLParameterBinding[] bindings) {
+    public SQLStatement(String sql, ParameterBinding[] bindings) {
         this(sql, null, bindings);
     }
 
@@ -42,7 +44,7 @@ public class SQLStatement {
      * @since 1.2
      */
     public SQLStatement(String sql, ColumnDescriptor[] resultColumns,
-            SQLParameterBinding[] bindings) {
+                        ParameterBinding[] bindings) {
 
         setSql(sql);
         setBindings(bindings);
@@ -63,7 +65,7 @@ public class SQLStatement {
         resultColumns = descriptors;
     }
 
-    public SQLParameterBinding[] getBindings() {
+    public ParameterBinding[] getBindings() {
         return bindings;
     }
 
@@ -71,7 +73,7 @@ public class SQLStatement {
         return sql;
     }
 
-    public void setBindings(SQLParameterBinding[] bindings) {
+    public void setBindings(ParameterBinding[] bindings) {
         this.bindings = bindings;
     }
 

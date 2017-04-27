@@ -39,7 +39,7 @@ public class ProcedureParameterBinding extends ParameterBinding {
 	}
 
 	@Override
-	public Integer getType() {
+	public Integer getJdbcType() {
 		return parameter.getType();
 	}
 

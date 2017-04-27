@@ -166,10 +166,10 @@ public class DB2Adapter extends JdbcAdapter {
 
     @Override
     public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
-        if (binding.getValue() == null && (binding.getType() == 0 || binding.getType() == Types.BOOLEAN)) {
+        if (binding.getValue() == null && (binding.getJdbcType() == 0 || binding.getJdbcType() == Types.BOOLEAN)) {
             statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
         } else {
-            binding.setType(convertNTypes(binding.getType()));
+            binding.setJdbcType(convertNTypes(binding.getJdbcType()));
             super.bindParameter(statement, binding);
         }
     }

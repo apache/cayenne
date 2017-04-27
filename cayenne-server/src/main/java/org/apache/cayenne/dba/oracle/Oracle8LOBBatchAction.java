@@ -131,7 +131,7 @@ class Oracle8LOBBatchAction implements SQLAction {
 			return;
 		}
 
-		boolean isLoggable = logger.isLoggable();
+		final boolean isLoggable = logger.isLoggable();
 
 		List<Object> qualifierValues = selectQuery.getValuesForLOBSelectQualifier(row);
 		List<Object> lobValues = selectQuery.getValuesForUpdatedLOBColumns();
@@ -140,12 +140,11 @@ class Oracle8LOBBatchAction implements SQLAction {
 
 		String selectStr = queryBuilder.createLOBSelectString(lobAttributes, qualifierAttributes);
 
-		if (isLoggable) {
-			logger.logQuery(selectStr, qualifierValues);
-			logger.logQueryParameters("write LOB", null, lobValues, false);
-		}
-
 		try (PreparedStatement selectStatement = con.prepareStatement(selectStr)) {
+			DbAttributeBinding[] attributeBindings = null;
+			if(isLoggable) {
+				attributeBindings = new DbAttributeBinding[parametersSize];
+			}
 			for (int i = 0; i < parametersSize; i++) {
 				DbAttribute attribute = qualifierAttributes.get(i);
 				Object value = qualifierValues.get(i);
@@ -158,6 +157,13 @@ class Oracle8LOBBatchAction implements SQLAction {
 				binding.setValue(value);
 				binding.setExtendedType(extendedType);
 				adapter.bindParameter(selectStatement, binding);
+				if(isLoggable) {
+					attributeBindings[i] = binding;
+				}
+			}
+
+			if (isLoggable) {
+				logger.logQuery(selectStr, attributeBindings, 0);
 			}
 
 			try (ResultSet result = selectStatement.executeQuery()) {
@@ -166,7 +172,6 @@ class Oracle8LOBBatchAction implements SQLAction {
 				}
 
 				// read the only expected row
-
 				for (int i = 0; i < lobSize; i++) {
 					DbAttribute attribute = lobAttributes.get(i);
 					int type = attribute.getType();

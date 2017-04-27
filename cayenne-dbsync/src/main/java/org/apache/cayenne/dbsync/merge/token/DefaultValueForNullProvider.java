@@ -24,25 +24,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.access.jdbc.SQLParameterBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
 public class DefaultValueForNullProvider implements ValueForNullProvider {
 
-    private Map<String, SQLParameterBinding> values = new HashMap<>();
+    private Map<String, ParameterBinding> values = new HashMap<>();
 
     public void set(DbEntity entity, DbAttribute column, Object value, int type) {
-        values.put(createKey(entity, column), new SQLParameterBinding(value, type, column
+        values.put(createKey(entity, column), new ParameterBinding(value, type, column
                 .getAttributePrecision()));
     }
 
-    protected SQLParameterBinding get(DbEntity entity, DbAttribute column) {
+    protected ParameterBinding get(DbEntity entity, DbAttribute column) {
         return values.get(createKey(entity, column));
     }
 
     public List<String> createSql(DbEntity entity, DbAttribute column) {
-        SQLParameterBinding value = get(entity, column);
+        ParameterBinding value = get(entity, column);
         if (value == null) {
             return Collections.emptyList();
         }
