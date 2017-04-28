@@ -46,7 +46,7 @@ public class AddColumnToModel extends AbstractToModelToken.EntityAndColumn {
     public void execute(MergerContext mergerContext) {
         getEntity().addAttribute(getColumn());
 
-        for (ObjEntity e : getEntity().mappedObjEntities()) {
+        for (ObjEntity e : getMappedObjEntities()) {
             mergerContext.getEntityMergeSupport().synchronizeOnDbAttributeAdded(e, getColumn());
         }
 

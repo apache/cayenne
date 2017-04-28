@@ -71,7 +71,7 @@ public class AddRelationshipToModel extends AbstractToModelToken.Entity {
         }
 
         getEntity().addRelationship(relationship);
-        for (ObjEntity e : getEntity().mappedObjEntities()) {
+        for (ObjEntity e : getMappedObjEntities()) {
             context.getEntityMergeSupport().synchronizeOnDbRelationshipAdded(e, relationship);
         }
 

@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.dbsync.merge.token.model;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.apache.cayenne.dbsync.merge.context.MergeDirection;
 import org.apache.cayenne.dbsync.merge.token.AbstractMergerToken;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
@@ -83,6 +86,20 @@ public abstract class AbstractToModelToken extends AbstractMergerToken {
 
         public DbEntity getEntity() {
             return entity;
+        }
+
+        /**
+         * @return ObjEntities mapped to current DbEntity excluding inherited
+         */
+        public Collection<ObjEntity> getMappedObjEntities() {
+            Collection<ObjEntity> entities = entity.mappedObjEntities();
+            Iterator<ObjEntity> iterator = entities.iterator();
+            while(iterator.hasNext()) {
+                if(iterator.next().getSuperEntity() != null) {
+                    iterator.remove();
+                }
+            }
+            return entities;
         }
 
         public String getTokenValue() {

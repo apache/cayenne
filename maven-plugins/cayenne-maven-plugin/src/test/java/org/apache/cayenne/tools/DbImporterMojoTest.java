@@ -257,6 +257,11 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     }
 
     @Test
+    public void testInheritance() throws Exception {
+        test("testInheritance");
+    }
+
+    @Test
     public void testFilteringConfig() throws Exception {
         DbImporterMojo cdbImport = getCdbImport("config/pom-01.xml");
 
