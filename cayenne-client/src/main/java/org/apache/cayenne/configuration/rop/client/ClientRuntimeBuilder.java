@@ -63,7 +63,7 @@ public class ClientRuntimeBuilder {
 
     /**
      * Disables DI module auto-loading. By default auto-loading is enabled based on
-     * {@link org.apache.cayenne.di.spi.ModuleLoader} service provider interface.
+     * {@link CayenneClientModuleProvider} service provider interface.
      * If you decide to disable auto-loading, make sure you provide all the modules that you need.
      *
      * @return this builder instance.

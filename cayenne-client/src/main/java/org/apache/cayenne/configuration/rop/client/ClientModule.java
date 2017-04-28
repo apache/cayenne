@@ -23,12 +23,12 @@ import java.util.Map;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
@@ -74,10 +74,13 @@ public class ClientModule implements Module {
     @SuppressWarnings("deprecation")
     public void configure(Binder binder) {
 
+        // Contribute always to create binding
+        MapBuilder<String> propertiesBuilder = ServerModule.contributeProperties(binder);
+
         // expose user-provided ROP properties as the main properties map
         // binding here is left only for backward compatibility, should go away with the deprecated code.
         if(properties != null) {
-            ServerModule.contributeProperties(binder).putAll(properties);
+            propertiesBuilder.putAll(properties);
         }
 
         binder.bind(ObjectContextFactory.class).to(CayenneContextFactory.class);

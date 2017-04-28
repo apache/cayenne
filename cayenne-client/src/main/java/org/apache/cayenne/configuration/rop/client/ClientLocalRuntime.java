@@ -43,7 +43,7 @@ import static java.util.Arrays.asList;
 public class ClientLocalRuntime extends ClientRuntime {
 
     /**
-     * Moved to {@link ClientRuntime#CLIENT_SERVER_CHANNEL_KEY}
+     * @since 4.0 moved to {@link ClientRuntime#CLIENT_SERVER_CHANNEL_KEY}
      */
     public static final String CLIENT_SERVER_CHANNEL_KEY = "client-server-channel";
 
