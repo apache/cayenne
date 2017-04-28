@@ -43,6 +43,7 @@ import org.apache.cayenne.lifecycle.relationship.ObjectIdRelationshipHandler;
 import org.apache.cayenne.lifecycle.unit.AuditableServerCase;
 import org.junit.Test;
 
+@Deprecated
 public class AuditableFilterIT extends AuditableServerCase {
 
 	@Test

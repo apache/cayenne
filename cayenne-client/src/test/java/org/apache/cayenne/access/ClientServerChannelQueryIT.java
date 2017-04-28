@@ -83,6 +83,7 @@ public class ClientServerChannelQueryIT extends ClientCase {
         tMtTable2.insert(2, 1, "g2");
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testPaginatedQueryServerCacheOverflow() throws Exception {
         createSevenMtTable1sDataSet();

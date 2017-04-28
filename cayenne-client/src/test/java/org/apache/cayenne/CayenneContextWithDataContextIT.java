@@ -97,6 +97,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testLocalCacheStaysLocal() {
 
