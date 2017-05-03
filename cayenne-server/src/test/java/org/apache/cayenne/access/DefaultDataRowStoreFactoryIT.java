@@ -33,7 +33,7 @@ import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventBridge;
 import org.apache.cayenne.event.MockEventBridgeProvider;
-import org.apache.cayenne.log.CommonsJdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
@@ -71,7 +71,7 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
                 binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
                 binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
                 binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+                binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
                 binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
                 binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
@@ -98,7 +98,7 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
                 binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
                 binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
                 binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+                binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
                 binder.bind(EventBridge.class).toProvider(MockEventBridgeProvider.class);
                 binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);

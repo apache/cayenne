@@ -17,6 +17,10 @@ UPGRADING TO 4.0.M6
       - remove commons-logging dependency if you have it
       - add to your project slf4j-jcl dependency
 
+      As a part of this change classes CommonsJdbcEventLogger and FormattedCommonsJdbcEventLogger
+      were renamed to Slf4jJdbcEventLogger and FormattedSlf4jJdbcEventLogger respectively.
+      Internally they are using now org.apache.cayenne.log.JdbcEventLogger interface as a logger name.
+
 * Per CAY-2278 The org.apache.cayenne.lifecycle.audit package (with the exception of AuditableChild annotation) and the
        org.apache.cayenne.lifecycle.changeset package where deprecated.
        Weighted graph sorter moved to cayenne-server into org.apache.cayenne.ashwood package.

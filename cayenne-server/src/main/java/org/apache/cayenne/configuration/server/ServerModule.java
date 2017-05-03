@@ -100,7 +100,7 @@ import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
-import org.apache.cayenne.log.CommonsJdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.access.types.ValueObjectType;
@@ -293,7 +293,7 @@ public class ServerModule implements Module {
         contributeProperties(binder)
                 .put(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, String.valueOf(DEFAULT_MAX_ID_QUALIFIER_SIZE));
 
-        binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+        binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
 

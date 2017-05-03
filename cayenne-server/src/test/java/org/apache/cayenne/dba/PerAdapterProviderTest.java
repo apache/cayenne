@@ -27,7 +27,7 @@ import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.apache.cayenne.log.CommonsJdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.junit.Before;
@@ -69,7 +69,7 @@ public class PerAdapterProviderTest {
             public DbAdapter get() throws DIRuntimeException {
                 return derbyAdapter;
             }
-        }, new CommonsJdbcEventLogger(runtimeProperties));
+        }, new Slf4jJdbcEventLogger(runtimeProperties));
     }
 
     @Test

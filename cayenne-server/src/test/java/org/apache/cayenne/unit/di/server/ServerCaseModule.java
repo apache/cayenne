@@ -82,7 +82,7 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.di.spi.DefaultScope;
-import org.apache.cayenne.log.CommonsJdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
@@ -171,7 +171,7 @@ public class ServerCaseModule implements Module {
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
 
         binder.bind(SchemaBuilder.class).to(SchemaBuilder.class);
-        binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+        binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
 

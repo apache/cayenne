@@ -39,7 +39,7 @@ import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.apache.cayenne.log.CommonsJdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
@@ -84,7 +84,7 @@ public class DefaultDbAdapterFactoryTest {
             public void configure(Binder binder) {
                 ServerModule.contributeProperties(binder);
 
-                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+                binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
                 binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
@@ -114,7 +114,7 @@ public class DefaultDbAdapterFactoryTest {
                 ServerModule.contributeUserTypes(binder);
                 ServerModule.contributeTypeFactories(binder);
 
-                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+                binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
                 binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
@@ -154,7 +154,7 @@ public class DefaultDbAdapterFactoryTest {
                 ServerModule.contributeUserTypes(binder);
                 ServerModule.contributeTypeFactories(binder);
 
-                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+                binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
                 binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
@@ -202,7 +202,7 @@ public class DefaultDbAdapterFactoryTest {
                 ServerModule.contributeProperties(binder);
 
                 binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
-                binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+                binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
             }

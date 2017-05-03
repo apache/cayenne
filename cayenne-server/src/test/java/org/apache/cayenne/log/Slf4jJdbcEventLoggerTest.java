@@ -27,14 +27,15 @@ import java.util.Collections;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class CommonsJdbcEventLoggerTest {
+public class Slf4jJdbcEventLoggerTest {
 
     @Test
     public void testSqlLiteralForObject() throws Exception {
         StringBuilder buf = new StringBuilder();
 
         // test unsupported type
-        new CommonsJdbcEventLogger(new DefaultRuntimeProperties(Collections.EMPTY_MAP)).sqlLiteralForObject(buf, new Object());
+        new Slf4jJdbcEventLogger(new DefaultRuntimeProperties(Collections.<String, String>emptyMap()))
+                .sqlLiteralForObject(buf, new Object());
         assertTrue(buf.length() > 0);
     }
 

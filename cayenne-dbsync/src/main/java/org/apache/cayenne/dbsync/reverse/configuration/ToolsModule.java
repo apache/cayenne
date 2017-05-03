@@ -51,7 +51,7 @@ import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.apache.cayenne.log.CommonsJdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -96,7 +96,7 @@ public class ToolsModule implements Module {
 
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
-        binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+        binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
 
         ServerModule.contributeAdapterDetectors(binder).add(FirebirdSniffer.class).add(OpenBaseSniffer.class)
                 .add(FrontBaseSniffer.class).add(IngresSniffer.class).add(SQLiteSniffer.class).add(DB2Sniffer.class)

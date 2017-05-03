@@ -381,9 +381,9 @@ ServerRuntime runtime = ServerRuntime.builder()
             <para><code>org.apache.cayenne.log.JdbcEventLogger</code> is the service that defines
                 logging API for Cayenne internals. It provides facilities for logging queries,
                 commits, transactions, etc. The default implementation is
-                    <code>org.apache.cayenne.log.CommonsJdbcEventLogger</code> that performs logging
+                    <code>org.apache.cayenne.log.Slf4jJdbcEventLogger</code> that performs logging
                 via slf4j-api library. Cayenne library includes another potentially useful
-                logger - <code>org.apache.cayenne.log.FormattedCommonsJdbcEventLogger</code> that
+                logger - <code>org.apache.cayenne.log.FormattedSlf4jJdbcEventLogger</code> that
                 produces formatted multiline SQL output that can be easier to read.</para>
         </section>
         <section xml:id="datasourcefactory">

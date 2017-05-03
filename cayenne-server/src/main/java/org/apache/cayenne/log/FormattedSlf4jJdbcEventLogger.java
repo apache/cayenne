@@ -29,12 +29,13 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
- * A {@link CommonsJdbcEventLogger} extension that provides pretty formatting of the
+ * A {@link Slf4jJdbcEventLogger} extension that provides pretty formatting of the
  * logged SQL messages.
  * 
  * @since 3.1
+ * @since 4.0 renamed from FormattedCommonsJdbcEventLogger to FormattedSlf4jJdbcEventLogger as part of migration to SLF4J
  */
-public class FormattedCommonsJdbcEventLogger extends CommonsJdbcEventLogger {
+public class FormattedSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
 
     private final static Map<String, String> KEYWORDS = new HashMap<>();
 
@@ -54,7 +55,7 @@ public class FormattedCommonsJdbcEventLogger extends CommonsJdbcEventLogger {
         KEYWORDS.put(" case ", "CASE");
     }
 
-    public FormattedCommonsJdbcEventLogger(@Inject RuntimeProperties runtimeProperties) {
+    public FormattedSlf4jJdbcEventLogger(@Inject RuntimeProperties runtimeProperties) {
     	super(runtimeProperties);
     }
     
@@ -63,7 +64,7 @@ public class FormattedCommonsJdbcEventLogger extends CommonsJdbcEventLogger {
         Iterator<Integer> iter = scanResult.keySet().iterator();
         int nextKeyIdx = (iter.hasNext()) ? iter.next() : -1;
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         int apixCount = 0;
         int bufferPos = 0;
         for (int pos = 0; pos < sql.length(); pos++) {
@@ -102,7 +103,7 @@ public class FormattedCommonsJdbcEventLogger extends CommonsJdbcEventLogger {
     }
 
     private Map<Integer, String> scanQuery(String sql) {
-        Map<Integer, String> result = new TreeMap<Integer, String>();
+        Map<Integer, String> result = new TreeMap<>();
         String sql2Lower = sql.toLowerCase();
         for (String keyWrd : KEYWORDS.keySet()) {
             int prevIdx = 0;
@@ -111,8 +112,7 @@ public class FormattedCommonsJdbcEventLogger extends CommonsJdbcEventLogger {
                 if (idx >= 0) {
                     result.put(idx, KEYWORDS.get(keyWrd));
                     prevIdx = idx + 1;
-                }
-                else {
+                } else {
                     break;
                 }
             }

@@ -81,7 +81,7 @@ import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
-import org.apache.cayenne.log.CommonsJdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntitySorter;
@@ -199,7 +199,7 @@ public class DataDomainProviderTest {
 				binder.bind(SelectTranslatorFactory.class).to(DefaultSelectTranslatorFactory.class);
 
 				binder.bind(DataSourceFactory.class).toInstance(new MockDataSourceFactory());
-				binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+				binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
 				binder.bind(QueryCache.class).toInstance(mock(QueryCache.class));
 				binder.bind(RowReaderFactory.class).toInstance(mock(RowReaderFactory.class));
 				binder.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);

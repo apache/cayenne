@@ -27,7 +27,7 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.log.CommonsJdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
@@ -92,7 +92,7 @@ public class JavaGroupsBridgeProviderTest {
             binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
             binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
             binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-            binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
+            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
             binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         }
     }

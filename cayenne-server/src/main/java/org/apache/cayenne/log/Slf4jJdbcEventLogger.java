@@ -41,10 +41,11 @@ import java.util.List;
  * A {@link JdbcEventLogger} built on top of slf4j-api logger.
  * 
  * @since 3.1
+ * @since 4.0 renamed from CommonsJdbcEventLogger to Slf4jJdbcEventLogger as part of migration to SLF4J
  */
-public class CommonsJdbcEventLogger implements JdbcEventLogger {
+public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 
-	private static final Logger logger = LoggerFactory.getLogger(CommonsJdbcEventLogger.class);
+	private static final Logger logger = LoggerFactory.getLogger(JdbcEventLogger.class);
 
     /**
      * @deprecated since 4.0
@@ -53,13 +54,14 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 
 	protected long queryExecutionTimeLoggingThreshold;
 
-	public CommonsJdbcEventLogger(@Inject RuntimeProperties runtimeProperties) {
+	public Slf4jJdbcEventLogger(@Inject RuntimeProperties runtimeProperties) {
 		this.queryExecutionTimeLoggingThreshold = runtimeProperties.getLong(
 				Constants.QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY, 0);
 	}
 
 	// this should go away once we can remove 4.0 deprecated API. The actual logic for printing a value is now
     // spread around the ExtendedTypes
+	@Deprecated
 	void sqlLiteralForObject(StringBuilder buffer, Object object) {
 		if (object == null) {
 			buffer.append("NULL");
@@ -166,14 +168,8 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 	@Override
 	public void logConnect(String url, String userName, String password) {
 		if (isLoggable()) {
-			StringBuilder buf = new StringBuilder("Opening connection: ");
-
 			// append URL on the same line to make log somewhat grep-friendly
-			buf.append(url);
-			buf.append("\n\tLogin: ").append(userName);
-			buf.append("\n\tPassword: *******");
-
-			logger.info(buf.toString());
+			logger.info("Opening connection: " + url + "\n\tLogin: " + userName + "\n\tPassword: *******");
 		}
 	}
 
@@ -224,9 +220,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 	public void logGeneratedKey(DbAttribute attribute, Object value) {
 		if (isLoggable()) {
 			String entity = attribute.getEntity().getName();
-			String key = attribute.getName();
-
-			logger.info("Generated PK: " + entity + "." + key + " = " + value);
+			logger.info("Generated PK: " + entity + "." + attribute.getName() + " = " + value);
 		}
 	}
 
@@ -353,6 +347,7 @@ public class CommonsJdbcEventLogger implements JdbcEventLogger {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void appendParameters(StringBuilder buffer, String label, ParameterBinding[] bindings) {
 
 		int len = bindings.length;
