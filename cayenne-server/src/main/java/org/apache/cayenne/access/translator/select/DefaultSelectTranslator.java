@@ -142,6 +142,22 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		QualifierTranslator qualifierTranslator = adapter.getQualifierTranslator(this);
 		StringBuilder whereQualifierBuffer = qualifierTranslator.appendPart(new StringBuilder());
 
+		// build having qualifier
+		Expression havingQualifier = ((SelectQuery)query).getHavingQualifier();
+		StringBuilder havingQualifierBuffer = null;
+		if(havingQualifier != null) {
+			haveAggregate = true;
+			QualifierTranslator havingQualifierTranslator = adapter.getQualifierTranslator(this);
+			havingQualifierTranslator.setQualifier(havingQualifier);
+			havingQualifierBuffer = havingQualifierTranslator.appendPart(new StringBuilder());
+		}
+
+		if(!haveAggregate && groupByColumns != null) {
+			// if no expression with aggregation function found
+			// in select columns and there is no having clause
+			groupByColumns.clear();
+		}
+
 		// build ORDER BY
 		OrderingTranslator orderingTranslator = new OrderingTranslator(this);
 		StringBuilder orderingBuffer = orderingTranslator.appendPart(new StringBuilder());
@@ -209,21 +225,15 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 			queryBuf.append(whereQualifierBuffer);
 		}
 
-		if(haveAggregate && !groupByColumns.isEmpty()) {
+		if(groupByColumns != null && !groupByColumns.isEmpty()) {
 			queryBuf.append(" GROUP BY ");
 			appendGroupByColumns(queryBuf, groupByColumns);
 		}
 
 		// append HAVING qualifier
-		QualifierTranslator havingQualifierTranslator = adapter.getQualifierTranslator(this);
-		Expression havingQualifier = ((SelectQuery)query).getHavingQualifier();
-		if(havingQualifier != null) {
-			havingQualifierTranslator.setQualifier(havingQualifier);
-			StringBuilder havingQualifierBuffer = havingQualifierTranslator.appendPart(new StringBuilder());
-			if(havingQualifierBuffer.length() > 0) {
-				queryBuf.append(" HAVING ");
-				queryBuf.append(havingQualifierBuffer);
-			}
+		if(havingQualifierBuffer != null && havingQualifierBuffer.length() > 0) {
+			queryBuf.append(" HAVING ");
+			queryBuf.append(havingQualifierBuffer);
 		}
 
 		// append prebuilt ordering
@@ -467,11 +477,6 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		setAddBindingListener(null);
 		qualifierTranslator.setForceJoinForRelations(false);
 		joinListener = null;
-
-		if(!haveAggregate) {
-			// if no expression with aggregation function found, we don't need this information
-			groupByColumns.clear();
-		}
 
 		return columns;
 	}

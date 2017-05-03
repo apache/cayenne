@@ -208,6 +208,55 @@ public class ColumnSelectIT extends ServerCase {
     }
 
     @Test
+    public void testHavingWithoutAggregate() throws Exception {
+        Object date = ObjectSelect.columnQuery(Artist.class, Artist.DATE_OF_BIRTH, Artist.ARTIST_NAME)
+                .having(Artist.ARTIST_NAME.like("a%"))
+                .selectFirst(context);
+        assertNotNull(date);
+    }
+
+    /**
+     * This test will fail as ARTIST_NAME wouldn't be in GROUP BY,
+     * but potentially we can detect this case (e.g. add all fields in HAVING clause to GROUP BY).
+     * This just doesn't seem right as in this case WHERE a better choice.
+     *
+     * Current workaround for this is the method above, i.e. just adding field used
+     * in a HAVING qualifier into select.
+     */
+    @Ignore
+    @Test
+    public void testHavingWithoutSelect() throws Exception {
+        Object date = ObjectSelect.columnQuery(Artist.class, Artist.DATE_OF_BIRTH)
+                .having(Artist.ARTIST_NAME.like("a%"))
+                .selectFirst(context);
+        assertNotNull(date);
+    }
+
+    /**
+     * Test using field in HAVING clause without using it in SELECT
+     * i.e. something like this:
+     *      SELECT a.name FROM artist a JOIN painting p ON (..) HAVING COUNT(p.id) > 4
+     */
+    @Test
+    public void testSelectRelationshipCountHavingWithoutFieldSelect() throws Exception {
+        Object[] result = null;
+        try {
+            result = ObjectSelect.query(Artist.class)
+                    .columns(Artist.ARTIST_NAME)
+                    .having(Artist.PAINTING_ARRAY.count().gt(4L))
+                    .selectOne(context);
+        } catch (CayenneRuntimeException ex) {
+            if(unitDbAdapter.supportsExpressionInHaving()) {
+                fail();
+            } else {
+                return;
+            }
+        }
+
+        assertEquals("artist2", result[0]);
+    }
+
+    @Test
     public void testSelectRelationshipCountHaving() throws Exception {
         Property<Long> paintingCount = Artist.PAINTING_ARRAY.count();
 
