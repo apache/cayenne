@@ -61,12 +61,16 @@ public class MigrateAction extends DBWizardAction<DbActionOptionsDialog> {
         MergerTokenFactoryProvider mergerTokenFactoryProvider =
                 getApplication().getInjector().getInstance(MergerTokenFactoryProvider.class);
 
+        if (optionsDialog == null) {
+            return;
+        }
+
         // ... show dialog...
         new MergerOptions(
-                getProjectController(),
-                "Migrate DB Schema: Options",
-                connectWizard.getConnectionInfo(),
-                map, selectedCatalog, selectedSchema, mergerTokenFactoryProvider).startupAction();
+                    getProjectController(),
+                    "Migrate DB Schema: Options",
+                    connectWizard.getConnectionInfo(),
+                    map, selectedCatalog, selectedSchema, mergerTokenFactoryProvider).startupAction();
     }
 
     @Override
