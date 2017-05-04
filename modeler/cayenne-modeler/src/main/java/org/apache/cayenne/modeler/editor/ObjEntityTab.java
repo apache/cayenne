@@ -296,6 +296,15 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
 
                     }
                     entity.setSuperEntityName(name);
+
+                    // drop not valid dbAttributePath
+                    if (name == null) {
+                        for (ObjAttribute objAttribute : entity.getAttributes()) {
+                            if (objAttribute.getDbAttribute() == null) {
+                                objAttribute.setDbAttributePath(null);
+                            }
+                        }
+                    }
                     
                     if (name == null) {
                         dbEntityCombo.setEnabled(true);
