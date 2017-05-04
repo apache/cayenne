@@ -86,16 +86,8 @@ abstract class DataDomainSyncBucket {
         }
 
         if (entity.isReadOnly()) {
-
-            StringBuilder message = new StringBuilder();
-            message
-                    .append("Attempt to modify object(s) mapped to a read-only entity: ")
-                    .append(entity.getName());
-
-            message.append(" '").append(entity.getName()).append("'");
-
-            message.append(". Can't commit changes.");
-            throw new CayenneRuntimeException(message.toString());
+            throw new CayenneRuntimeException("Attempt to modify object(s) mapped to a read-only entity: '%s'. " +
+                    "Can't commit changes.", entity.getName());
         }
     }
 
@@ -108,12 +100,10 @@ abstract class DataDomainSyncBucket {
 
             // root DbEntity
             {
-                DbEntityClassDescriptor dbEntityDescriptor = new DbEntityClassDescriptor(
-                        descriptor);
+                DbEntityClassDescriptor dbEntityDescriptor = new DbEntityClassDescriptor(descriptor);
                 DbEntity dbEntity = dbEntityDescriptor.getDbEntity();
 
-                Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity
-                        .get(dbEntity);
+                Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity.get(dbEntity);
                 if (descriptors == null) {
                     descriptors = new ArrayList<>(1);
                     dbEntities.add(dbEntity);
@@ -127,8 +117,7 @@ abstract class DataDomainSyncBucket {
 
             // secondary DbEntities...
 
-            // Note that this logic won't allow flattened attributes to span multiple
-            // databases...
+            // Note that this logic won't allow flattened attributes to span multiple databases...
             for (ObjAttribute objAttribute : descriptor.getEntity().getAttributes()) {
 
                 if (objAttribute.isFlattened()) {
@@ -137,8 +126,7 @@ abstract class DataDomainSyncBucket {
                             objAttribute);
 
                     DbEntity dbEntity = dbEntityDescriptor.getDbEntity();
-                    Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity
-                            .get(dbEntity);
+                    Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity.get(dbEntity);
 
                     if (descriptors == null) {
                         descriptors = new ArrayList<>(1);
@@ -223,17 +211,13 @@ abstract class DataDomainSyncBucket {
                         }
 
                         finalId = replacementId;
-                    }
-                    else if (id.isTemporary()) {
-                        throw new CayenneRuntimeException(
-                                "Temporary ID hasn't been replaced on commit: %s", object);
-                    }
-                    else {
+                    } else if (id.isTemporary()) {
+                        throw new CayenneRuntimeException("Temporary ID hasn't been replaced on commit: %s", object);
+                    } else {
                         finalId = id;
                     }
 
-                    // do not take the snapshot until generated columns are processed (see
-                    // code above)
+                    // do not take the snapshot until generated columns are processed (see code above)
                     DataRow dataRow = parent.getContext().currentSnapshot(object);
 
                     if (object instanceof DataObject) {
@@ -246,11 +230,9 @@ abstract class DataDomainSyncBucket {
 
                     // update Map reverse relationships
                     for (ArcProperty arc : descriptor.getMapArcProperties()) {
-                        ToManyMapProperty reverseArc = (ToManyMapProperty) arc
-                                .getComplimentaryReverseArc();
+                        ToManyMapProperty reverseArc = (ToManyMapProperty) arc.getComplimentaryReverseArc();
 
-                        // must resolve faults... hopefully for to-one this will not cause
-                        // extra fetches...
+                        // must resolve faults... hopefully for to-one this will not cause extra fetches...
                         Object source = arc.readProperty(object);
                         if (source != null && !reverseArc.isFault(source)) {
                             remapTarget(reverseArc, source, object);
@@ -278,8 +260,7 @@ abstract class DataDomainSyncBucket {
         // key), as we have no control of the order in which this method is called, so
         // another object may be remapped later by the caller
 
-        // must do a slow map scan to ensure the object is not mapped under a different
-        // key...
+        // must do a slow map scan to ensure the object is not mapped under a different key...
         Iterator<Map.Entry<Object, Object>> it = map.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<Object, Object> e = it.next();

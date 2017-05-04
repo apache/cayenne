@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -71,11 +70,10 @@ class DataDomainFlattenedBucket {
 
         DeleteBatchQuery relationDeleteQuery = flattenedDeleteQueries.get(flattenedEntity);
         if (relationDeleteQuery == null) {
-            boolean optimisticLocking = false;
             Collection<DbAttribute> pk = flattenedEntity.getPrimaryKeys();
             List<DbAttribute> pkList = pk instanceof List ? (List<DbAttribute>) pk : new ArrayList<>(pk);
             relationDeleteQuery = new DeleteBatchQuery(flattenedEntity, pkList, Collections.<String> emptySet(), 50);
-            relationDeleteQuery.setUsingOptimisticLocking(optimisticLocking);
+            relationDeleteQuery.setUsingOptimisticLocking(false);
             flattenedDeleteQueries.put(flattenedEntity, relationDeleteQuery);
         }
 

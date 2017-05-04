@@ -105,8 +105,7 @@ final class FlattenedArcKey {
 			DbAdapter adapter = node.getAdapter();
 
 			// skip db-generated... looks like we don't care about the actual PK
-			// value
-			// here, so no need to retrieve db-generated pk back to Java.
+			// value here, so no need to retrieve db-generated pk back to Java.
 			if (adapter.supportsGeneratedKeys() && dbAttr.isGenerated()) {
 				continue;
 			}
@@ -200,7 +199,7 @@ final class FlattenedArcKey {
 		node.performQueries(Collections.singleton((Query) query), new DefaultOperationObserver() {
 
 			@Override
-			public void nextRows(Query query, List dataRows) {
+			public void nextRows(Query query, List<?> dataRows) {
 
 				if (!dataRows.isEmpty()) {
 					// decode results...

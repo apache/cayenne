@@ -69,7 +69,7 @@ class DataDomainDeleteBucket extends DataDomainSyncBucket {
         for (DbEntity dbEntity : dbEntities) {
             Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity
                     .get(dbEntity);
-            Map<Object, Query> batches = new LinkedHashMap<Object, Query>();
+            Map<Object, Query> batches = new LinkedHashMap<>();
 
             for (DbEntityClassDescriptor descriptor : descriptors) {
 

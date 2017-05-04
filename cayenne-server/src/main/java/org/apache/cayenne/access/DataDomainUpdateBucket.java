@@ -23,13 +23,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
@@ -53,9 +54,8 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
 
         for (DbEntity dbEntity : dbEntities) {
 
-            Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity
-                    .get(dbEntity);
-            Map<Object, Query> batches = new LinkedHashMap<Object, Query>();
+            Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity.get(dbEntity);
+            Map<Object, Query> batches = new LinkedHashMap<>();
 
             for (DbEntityClassDescriptor descriptor : descriptors) {
                 ObjEntity entity = descriptor.getEntity();
@@ -64,10 +64,7 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
                 qualifierBuilder.reset(descriptor);
                 boolean isRootDbEntity = entity.getDbEntity() == dbEntity;
 
-                Iterator<Persistent> objects = objectsByDescriptor.get(
-                        descriptor.getClassDescriptor()).iterator();
-                while (objects.hasNext()) {
-                    Persistent o = objects.next();
+                for (Persistent o : objectsByDescriptor.get(descriptor.getClassDescriptor())) {
                     ObjectDiff diff = parent.objectDiff(o.getObjectId());
 
                     Map<String, Object> snapshot = diffBuilder.buildDBDiff(diff);
@@ -81,21 +78,18 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
                     // attempt is made to modify a read only entity
                     checkReadOnly(entity);
 
-                    Map<String, Object> qualifierSnapshot = qualifierBuilder
-                            .createQualifierSnapshot(diff);
+                    Map<String, Object> qualifierSnapshot = qualifierBuilder.createQualifierSnapshot(diff);
 
                     // organize batches by the updated columns + nulls in qualifier
-                    Set snapshotSet = snapshot.keySet();
-                    Set nullQualifierNames = new HashSet();
-                    Iterator it = qualifierSnapshot.entrySet().iterator();
-                    while (it.hasNext()) {
-                        Map.Entry entry = (Map.Entry) it.next();
+                    Set<String> snapshotSet = snapshot.keySet();
+                    Set<String> nullQualifierNames = new HashSet<>();
+                    for (Map.Entry<String, Object> entry : qualifierSnapshot.entrySet()) {
                         if (entry.getValue() == null) {
                             nullQualifierNames.add(entry.getKey());
                         }
                     }
 
-                    List batchKey = Arrays.asList(snapshotSet, nullQualifierNames);
+                    List<Set<String>> batchKey = Arrays.asList(snapshotSet, nullQualifierNames);
 
                     UpdateBatchQuery batch = (UpdateBatchQuery) batches.get(batchKey);
                     if (batch == null) {
@@ -106,8 +100,7 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
                                 nullQualifierNames,
                                 10);
 
-                        batch.setUsingOptimisticLocking(qualifierBuilder
-                                .isUsingOptimisticLocking());
+                        batch.setUsingOptimisticLocking(qualifierBuilder.isUsingOptimisticLocking());
                         batches.put(batchKey, batch);
                     }
 
@@ -137,12 +130,12 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
     /**
      * Creates a list of DbAttributes that are updated in a snapshot
      */
-    private List updatedAttributes(DbEntity entity, Map updatedSnapshot) {
-        List<Object> attributes = new ArrayList<>(updatedSnapshot.size());
-        Map entityAttributes = entity.getAttributeMap();
+    private List<DbAttribute> updatedAttributes(DbEntity entity, Map<String, Object> updatedSnapshot) {
+        List<DbAttribute> attributes = new ArrayList<>(updatedSnapshot.size());
+        Map<String, ? extends Attribute> entityAttributes = entity.getAttributeMap();
 
-        for (Object name : updatedSnapshot.keySet()) {
-            attributes.add(entityAttributes.get(name));
+        for (String name : updatedSnapshot.keySet()) {
+            attributes.add((DbAttribute)entityAttributes.get(name));
         }
 
         return attributes;

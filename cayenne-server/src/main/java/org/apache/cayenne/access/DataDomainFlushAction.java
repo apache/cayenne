@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -126,8 +125,7 @@ class DataDomainFlushAction {
 
         // TODO: Andrus, 3/13/2006 - support categorizing an arbitrary diff
         if (!(changes instanceof ObjectStoreGraphDiff)) {
-            throw new IllegalArgumentException("Expected 'ObjectStoreGraphDiff', got: "
-                    + changes.getClass().getName());
+            throw new IllegalArgumentException("Expected 'ObjectStoreGraphDiff', got: " + changes.getClass().getName());
         }
 
         this.context = context;
@@ -140,7 +138,7 @@ class DataDomainFlushAction {
         this.flattenedBucket = new DataDomainFlattenedBucket(this);
 
         this.queries = new ArrayList<>();
-        this.resultIndirectlyModifiedIds = new HashSet<ObjectId>();
+        this.resultIndirectlyModifiedIds = new HashSet<>();
 
         preprocess(context, changes);
 
@@ -164,12 +162,10 @@ class DataDomainFlushAction {
 
         ObjectStore objectStore = context.getObjectStore();
 
-        Iterator<?> it = changesByObjectId.keySet().iterator();
-        while (it.hasNext()) {
-            ObjectId id = (ObjectId) it.next();
+        for (Object o : changesByObjectId.keySet()) {
+            ObjectId id = (ObjectId) o;
             Persistent object = (Persistent) objectStore.getNode(id);
-            ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
-                    id.getEntityName());
+            ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(id.getEntityName());
 
             switch (object.getPersistenceState()) {
                 case PersistenceState.NEW:
@@ -224,9 +220,7 @@ class DataDomainFlushAction {
                     if (node != lastNode) {
 
                         if (i - rangeStart > 0) {
-                            lastNode.performQueries(
-                                    queries.subList(rangeStart, i),
-                                    observer);
+                            lastNode.performQueries(queries.subList(rangeStart, i), observer);
                         }
 
                         rangeStart = i;
@@ -237,8 +231,7 @@ class DataDomainFlushAction {
 
             // process last segment of the query list...
             lastNode.performQueries(queries.subList(rangeStart, len), observer);
-        }
-        catch (Throwable th) {
+        } catch (Throwable th) {
             BaseTransaction.getThreadTransaction().setRollbackOnly();
             throw new CayenneRuntimeException("Transaction was rolledback.", th);
         }
@@ -266,7 +259,7 @@ class DataDomainFlushAction {
                             context.getObjectStore(),
                             resultModifiedSnapshots,
                             resultDeletedIds,
-                            Collections.EMPTY_LIST,
+                            Collections.<ObjectId>emptyList(),
                             resultIndirectlyModifiedIds);
         }
 

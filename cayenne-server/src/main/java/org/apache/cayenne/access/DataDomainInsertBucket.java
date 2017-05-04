@@ -133,10 +133,8 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                         Class<?> javaClass = objAttr.getJavaClass();
                         if (javaClass.isPrimitive() && value instanceof Number && ((Number) value).intValue() == 0) {
                             // primitive 0 has to be treated as NULL, or
-                            // otherwise we
-                            // can't generate PK for POJO's
+                            // otherwise we can't generate PK for POJO's
                         } else {
-
                             idMap.put(dbAttrName, value);
                             continue;
                         }
@@ -154,8 +152,7 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                 }
 
                 // only a single key can be generated from DB... if this is done
-                // already
-                // in this loop, we must bail out.
+                // already in this loop, we must bail out.
                 if (autoPkDone) {
                     throw new CayenneRuntimeException("Primary Key autogeneration only works for a single attribute.");
                 }

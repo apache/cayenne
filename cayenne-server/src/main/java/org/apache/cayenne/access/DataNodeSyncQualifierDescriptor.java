@@ -89,8 +89,7 @@ class DataNodeSyncQualifierDescriptor {
 			}
 		} else {
 
-			// TODO: andrus 12/23/2007 - only one step relationship is
-			// supported...
+			// TODO: andrus 12/23/2007 - only one step relationship is supported...
 			if (descriptor.getPathFromMaster().size() != 1) {
 				throw new CayenneRuntimeException(
 				        "Only single step dependent relationships are currently supported. Actual path length: %d"
@@ -125,7 +124,8 @@ class DataNodeSyncQualifierDescriptor {
 					// only care about first step in a flattened attribute
 					DbAttribute dbAttribute = (DbAttribute) attribute.getDbPathIterator().next();
 
-					if (!attributes.contains(dbAttribute)) {
+					// only use qualifier if dbEntities match
+					if (dbAttribute.getEntity().equals(descriptor.getDbEntity()) && !attributes.contains(dbAttribute)) {
 						attributes.add(dbAttribute);
 
 						valueTransformers.add(new Transformer() {
@@ -147,11 +147,8 @@ class DataNodeSyncQualifierDescriptor {
 					for (final DbJoin dbAttrPair : dbRelationship.getJoins()) {
 						DbAttribute dbAttribute = dbAttrPair.getSource();
 
-						// relationship transformers override attribute
-						// transformers for
-						// meaningful FK's... why meaningful FKs can go out of
-						// sync is
-						// another story (CAY-595)
+						// relationship transformers override attribute transformers for meaningful FK's...
+						// why meaningful FKs can go out of sync is another story (CAY-595)
 						int index = attributes.indexOf(dbAttribute);
 						if (index >= 0 && !dbAttribute.isForeignKey()) {
 							continue;
