@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor.dbentity;
 
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.event.DbEntityListener;
 import org.apache.cayenne.map.event.EntityEvent;
@@ -62,12 +63,14 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
     private CutAttributeRelationshipAction cut;
     private RemoveAttributeRelationshipAction remove;
     private CopyAttributeRelationshipAction copy;
+    private JToolBar toolBar;
 
     public DbEntityAttributeRelationshipTab(ProjectController mediator) {
         this.mediator = mediator;
 
         init();
         initToolBar();
+        mediator.addDbEntityDisplayListener(this);
     }
 
     private void init() {
@@ -96,7 +99,7 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
     }
 
     private void initToolBar() {
-        JToolBar toolBar = new JToolBar();
+        toolBar = new JToolBar();
         ActionManager actionManager = Application.getInstance().getActionManager();
 
         toolBar.add(actionManager.getAction(CreateObjEntityAction.class).buildButton());
@@ -165,7 +168,13 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
     }
 
     public void currentDbEntityChanged(EntityDisplayEvent e) {
-        attributePanel.currentDbEntityChanged(e);
-        relationshipPanel.currentDbEntityChanged(e);
+        DbEntity entity = (DbEntity) e.getEntity();
+        if(entity.getDataMap().getMappedEntities(entity).isEmpty()) {
+            toolBar.getComponentAtIndex(3).setEnabled(false);
+            toolBar.getComponentAtIndex(4).setEnabled(false);
+        } else {
+            toolBar.getComponentAtIndex(3).setEnabled(true);
+            toolBar.getComponentAtIndex(4).setEnabled(true);
+        }
     }
 }
