@@ -35,6 +35,7 @@ CAY-2274 Modeler: Validate case when dependent PK is marked as “generated”
 CAY-2277 Create ClientRuntime with ClientRuntimeBuilder just like ServerRuntime
 CAY-2278 Extract cayenne-postcommit module from cayenne-lifecycle
 CAY-2280 Switch from commons-logging to slf4j
+CAY-2296 cayenne-crypto: Get java type for DbAttribute bound to ObjAttributes with the same type
 
 Bug Fixes:
 

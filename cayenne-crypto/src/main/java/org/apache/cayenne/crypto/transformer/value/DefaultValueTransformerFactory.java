@@ -26,6 +26,8 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.security.Key;
 import java.util.Collection;
@@ -42,6 +44,8 @@ import java.util.concurrent.ConcurrentMap;
  * @since 4.0
  */
 public class DefaultValueTransformerFactory implements ValueTransformerFactory {
+
+    private static final Logger logger = LoggerFactory.getLogger(DefaultValueTransformerFactory.class);
 
     public static final String DB_TO_BYTE_CONVERTERS_KEY =
             "org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactory.dbToBytes";
@@ -148,24 +152,24 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 
         DbEntity dbEntity = a.getEntity();
         DataMap dataMap = dbEntity.getDataMap();
-        Collection<ObjEntity> objEntities = dataMap.getMappedEntities(dbEntity);
+        Collection<String> javaTypes = new HashSet<>();
 
-        if (objEntities.size() != 1) {
-            return TypesMapping.getJavaBySqlType(a.getType());
-        }
-
-        Collection<String> javaTypes = new HashSet<String>();
-        ObjEntity objEntity = objEntities.iterator().next();
-        for (ObjAttribute oa : objEntity.getAttributes()) {
-
-            // TODO: this won't pick up flattened attributes
-            if (a.getName().equals(oa.getDbAttributePath())) {
-                javaTypes.add(oa.getType());
+        for(ObjEntity objEntity : dataMap.getMappedEntities(dbEntity)) {
+            for (ObjAttribute oa : objEntity.getAttributes()) {
+                // TODO: this won't pick up flattened attributes
+                if (a.getName().equals(oa.getDbAttributePath())) {
+                    javaTypes.add(oa.getType());
+                }
             }
         }
 
         if (javaTypes.size() != 1) {
-            return TypesMapping.getJavaBySqlType(a.getType());
+            String javaType = TypesMapping.getJavaBySqlType(a.getType());
+            String attributeName = dbEntity.getName() + "." + a.getName();
+            String msg = javaTypes.size() > 1 ? "ObjAttributes with different java types" : "No ObjAttributes";
+            // Warn user about this problem as there is nothing else we can do
+            logger.warn(msg + " bound to DbAttribute '" + attributeName + "', " + javaType + " type will be used.");
+            return javaType;
         }
 
         return javaTypes.iterator().next();

@@ -45,6 +45,7 @@ public class DefaultValueTransformerFactoryIT {
     private static DbEntity t1;
     private static DbEntity t2;
     private static DbEntity t3;
+    private static DbEntity t5;
 
     private static Map<String, BytesConverter<?>> dbToBytes, objectToBytes;
 
@@ -56,6 +57,7 @@ public class DefaultValueTransformerFactoryIT {
         t1 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE1");
         t2 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE2");
         t3 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE3");
+        t5 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE5");
 
         dbToBytes = getDefaultDbConverters();
         objectToBytes = getDefaultObjectConverters();
@@ -91,6 +93,25 @@ public class DefaultValueTransformerFactoryIT {
         when(fakeA2.getType()).thenReturn(Types.VARCHAR);
 
         assertEquals("java.lang.String", f.getJavaType(fakeA2));
+    }
+
+    @Test
+    public void testGetAmbiguousJavaType() {
+        // this one have two bound ObjAttributes, warn should be in log
+        DbAttribute a1 = t5.getAttribute("CRYPTO_INT1");
+        assertEquals("java.lang.String", f.getJavaType(a1));
+
+        // this one doesn't have any bindings, warn should be in log
+        DbAttribute a2 = t5.getAttribute("CRYPTO_INT2");
+        assertEquals("byte[]", f.getJavaType(a2));
+
+        // this one have one binding
+        DbAttribute a3 = t5.getAttribute("CRYPTO_INT3");
+        assertEquals("int", f.getJavaType(a3));
+
+        // this one have two bindings but with the same int type
+        DbAttribute a4 = t5.getAttribute("CRYPTO_INT4");
+        assertEquals("int", f.getJavaType(a4));
     }
 
     @Test

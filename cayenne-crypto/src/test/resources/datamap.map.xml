@@ -25,6 +25,13 @@
 		<db-attribute name="PLAIN_INT" type="INTEGER"/>
 		<db-attribute name="PLAIN_STRING" type="VARCHAR" length="200"/>
 	</db-entity>
+	<db-entity name="TABLE5">
+		<db-attribute name="CRYPTO_INT1" type="CLOB"/>
+		<db-attribute name="CRYPTO_INT2" type="BLOB"/>
+		<db-attribute name="CRYPTO_INT3" type="VARBINARY" length="255"/>
+		<db-attribute name="CRYPTO_INT4" type="BLOB"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<obj-entity name="Table1" className="org.apache.cayenne.crypto.db.Table1" dbEntityName="TABLE1">
 		<obj-attribute name="cryptoInt" type="int" db-attribute-path="CRYPTO_INT"/>
 		<obj-attribute name="cryptoString" type="java.lang.String" db-attribute-path="CRYPTO_STRING"/>
@@ -41,5 +48,14 @@
 	<obj-entity name="Table4" className="org.apache.cayenne.crypto.db.Table4" dbEntityName="TABLE4">
 		<obj-attribute name="plainInt" type="int" db-attribute-path="PLAIN_INT"/>
 		<obj-attribute name="plainString" type="java.lang.String" db-attribute-path="PLAIN_STRING"/>
+	</obj-entity>
+	<obj-entity name="Table5" className="org.apache.cayenne.crypto.db.Table5" dbEntityName="TABLE5">
+		<obj-attribute name="cryptoInt1" type="int" db-attribute-path="CRYPTO_INT1"/>
+		<obj-attribute name="cryptoInt3" type="int" db-attribute-path="CRYPTO_INT3"/>
+		<obj-attribute name="cryptoInt4" type="int" db-attribute-path="CRYPTO_INT4"/>
+	</obj-entity>
+	<obj-entity name="Table6" className="org.apache.cayenne.crypto.db.Table6" dbEntityName="TABLE5">
+		<obj-attribute name="cryptoInt1" type="long" db-attribute-path="CRYPTO_INT1"/>
+		<obj-attribute name="cryptoInt4" type="int" db-attribute-path="CRYPTO_INT4"/>
 	</obj-entity>
 </data-map>
