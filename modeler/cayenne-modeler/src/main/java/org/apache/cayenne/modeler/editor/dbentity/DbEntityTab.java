@@ -82,6 +82,8 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
     protected JPanel pkGeneratorDetail;
     protected CardLayout pkGeneratorDetailLayout;
 
+    private JToolBar toolBar;
+
     public DbEntityTab(ProjectController mediator) {
         super();
         this.mediator = mediator;
@@ -92,7 +94,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
 
     private void initView() {
 
-        JToolBar toolBar = new JToolBar();
+        toolBar = new JToolBar();
         ActionManager actionManager = Application.getInstance().getActionManager();
         toolBar.add(actionManager.getAction(CreateObjEntityAction.class).buildButton());
         toolBar.add(actionManager.getAction(DbEntitySyncAction.class).buildButton());
@@ -240,6 +242,13 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
         pkGeneratorType.setSelectedItem(type);
         pkGeneratorDetailLayout.show(pkGeneratorDetail, type);
 
+        if(entity.getDataMap().getMappedEntities(entity).isEmpty()) {
+            toolBar.getComponentAtIndex(1).setEnabled(false);
+            toolBar.getComponentAtIndex(7).setEnabled(false);
+        } else {
+            toolBar.getComponentAtIndex(1).setEnabled(true);
+            toolBar.getComponentAtIndex(7).setEnabled(true);
+        }
     }
 
     void setEntityName(String newName) {
