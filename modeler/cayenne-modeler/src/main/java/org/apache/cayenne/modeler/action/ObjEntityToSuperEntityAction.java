@@ -22,22 +22,21 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.Application;
 
-public class ObjEntityCounterpartAction extends BaseViewEntityAction {
+/**
+ * @since 4.0
+ */
+public class ObjEntityToSuperEntityAction extends BaseViewEntityAction {
 
     public static String getActionName() {
-        return "View related DbEntity";
+        return "View related SuperEntity";
     }
 
-    public ObjEntityCounterpartAction(Application application) {
+    public ObjEntityToSuperEntityAction(Application application) {
         super(getActionName(), application);
-    }
-
-    public String getIconName() {
-        return "icon-move_down.gif";
     }
 
     @Override
     protected Entity getEntity() {
-        return objEntity.getDbEntity();
+        return super.objEntity.getSuperEntity();
     }
 }

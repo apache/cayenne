@@ -32,6 +32,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.CutAttributeRelationshipAction;
+import org.apache.cayenne.modeler.action.ObjEntityToSuperEntityAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.dialog.objentity.ObjAttributeInfoDialog;
@@ -74,6 +75,8 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -129,6 +132,21 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         tablePreferences = new TableColumnPreferences(
                 ObjAttributeTableModel.class,
                 "objEntity/attributeTable");
+
+        // go to SuperEntity from ObjEntity by inheritance icon
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = table.rowAtPoint(e.getPoint());
+                int col = table.columnAtPoint(e.getPoint());
+                if (row >= 0 && col == 0) {
+                    if (Boolean.TRUE.equals(table.getValueAt(row, col))) {
+                        ActionManager actionManager = Application.getInstance().getActionManager();
+                        actionManager.getAction(ObjEntityToSuperEntityAction.class).performAction(null);
+                    }
+                }
+            }
+        });
 
         // Create and install a popup
         Icon ico = ModelerUtil.buildIcon("icon-info.gif");

@@ -93,6 +93,7 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new ObjEntitySyncAction(application));
         registerAction(new DbEntityCounterpartAction(application));
         registerAction(new ObjEntityCounterpartAction(application));
+        registerAction(new ObjEntityToSuperEntityAction(application));
         registerAction(new ReverseEngineeringAction(application));
         registerAction(new InferRelationshipsAction(application));
         registerAction(new ImportEOModelAction(application));
@@ -133,7 +134,7 @@ public class DefaultActionManager implements ActionManager {
 
         registerAction(new CreateEmbeddableAction(application));
         registerAction(new ShowGraphEntityAction(application));
-        
+
         registerAction(new CollapseTreeAction(application));
         registerAction(new FilterAction(application));
 
@@ -192,6 +193,7 @@ public class DefaultActionManager implements ActionManager {
                 CreateAttributeAction.class.getName(),
                 CreateRelationshipAction.class.getName(),
                 ObjEntityCounterpartAction.class.getName(),
+                ObjEntityToSuperEntityAction.class.getName(),
                 ShowGraphEntityAction.class.getName()));
 
         DB_ENTITY_ACTIONS = new HashSet<String>(DATA_MAP_ACTIONS);
