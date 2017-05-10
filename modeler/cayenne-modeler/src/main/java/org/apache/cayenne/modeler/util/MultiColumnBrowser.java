@@ -66,7 +66,7 @@ import javax.swing.tree.TreePath;
  */
 public class MultiColumnBrowser extends JPanel {
 
-    protected static final ImageIcon rightArrow = ModelerUtil.buildIcon("scroll_right.gif");
+    protected static final ImageIcon rightArrow = ModelerUtil.buildIcon("icon-arrow-closed.png");
 
     public static final int DEFAULT_MIN_COLUMNS_COUNT = 3;
 

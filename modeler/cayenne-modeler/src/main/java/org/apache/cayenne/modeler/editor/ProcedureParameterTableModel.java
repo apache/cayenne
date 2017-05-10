@@ -31,43 +31,36 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 
-/**
- */
-public class ProcedureParameterTableModel extends CayenneTableModel {
-    public static final int PARAMETER_NUMBER = 0;
-    public static final int PARAMETER_NAME = 1;
+public class ProcedureParameterTableModel extends CayenneTableModel<ProcedureParameter> {
+
+    public static final int PARAMETER_NUMBER    = 0;
+    public static final int PARAMETER_NAME      = 1;
     public static final int PARAMETER_DIRECTION = 2;
-    public static final int PARAMETER_TYPE = 3;
-    public static final int PARAMETER_LENGTH = 4;
+    public static final int PARAMETER_TYPE      = 3;
+    public static final int PARAMETER_LENGTH    = 4;
     public static final int PARAMETER_PRECISION = 5;
 
-    public static final String IN_PARAMETER = "IN";
-    public static final String OUT_PARAMETER = "OUT";
+    public static final String IN_PARAMETER     = "IN";
+    public static final String OUT_PARAMETER    = "OUT";
     public static final String IN_OUT_PARAMETER = "INOUT";
 
-    public static final String[] PARAMETER_DIRECTION_NAMES =
-        new String[] { "", IN_PARAMETER, OUT_PARAMETER, IN_OUT_PARAMETER };
+    public static final String[] PARAMETER_DIRECTION_NAMES = { "", IN_PARAMETER, OUT_PARAMETER, IN_OUT_PARAMETER };
 
-    private static final int[] PARAMETER_INDEXES =
-        new int[] {
+    private static final int[] PARAMETER_INDEXES = {
             PARAMETER_NUMBER,
             PARAMETER_NAME,
             PARAMETER_DIRECTION,
             PARAMETER_TYPE,
             PARAMETER_LENGTH,
-            PARAMETER_PRECISION };
+            PARAMETER_PRECISION
+    };
 
-    private static final String[] PARAMETER_NAMES =
-        new String[] { "No.", "Name", "Direction", "Type", "Max Length", "Precision" };
+    private static final String[] PARAMETER_NAMES = { "No.", "Name", "Direction", "Type", "Max Length", "Precision" };
 
     protected Procedure procedure;
 
-    public ProcedureParameterTableModel(
-        Procedure procedure,
-        ProjectController mediator,
-        Object eventSource) {
-
-        super(mediator, eventSource, new ArrayList(procedure.getCallParameters()));
+    public ProcedureParameterTableModel(Procedure procedure, ProjectController mediator, Object eventSource) {
+        super(mediator, eventSource, new ArrayList<>(procedure.getCallParameters()));
         this.procedure = procedure;
     }
 
@@ -76,37 +69,35 @@ public class ProcedureParameterTableModel extends CayenneTableModel {
      * Returns NULL if row index is outside the valid range.
      */
     public ProcedureParameter getParameter(int row) {
-        return (row >= 0 && row < objectList.size())
-            ? (ProcedureParameter) objectList.get(row)
-            : null;
+        return (row >= 0 && row < objectList.size()) ? objectList.get(row) : null;
     }
 
+    @Override
     public void setUpdatedValueAt(Object newVal, int rowIndex, int columnIndex) {
         ProcedureParameter parameter = getParameter(rowIndex);
-
         if (parameter == null) {
             return;
         }
 
-        ProcedureParameterEvent event =
-            new ProcedureParameterEvent(eventSource, parameter);
+        String value = (String)newVal;
+        ProcedureParameterEvent event = new ProcedureParameterEvent(eventSource, parameter);
         switch (columnIndex) {
             case PARAMETER_NAME :
                 event.setOldName(parameter.getName());
-                setParameterName((String) newVal, parameter);
+                setParameterName(value, parameter);
                 fireTableCellUpdated(rowIndex, columnIndex);
                 break;
             case PARAMETER_DIRECTION :
-                setParameterDirection((String) newVal, parameter);
+                setParameterDirection(value, parameter);
                 break;
             case PARAMETER_TYPE :
-                setParameterType((String) newVal, parameter);
+                setParameterType(value, parameter);
                 break;
             case PARAMETER_LENGTH :
-                setMaxLength((String) newVal, parameter);
+                setMaxLength(value, parameter);
                 break;
             case PARAMETER_PRECISION :
-                setPrecision((String) newVal, parameter);
+                setPrecision(value, parameter);
                 break;
         }
         mediator.fireProcedureParameterEvent(event);
@@ -115,12 +106,10 @@ public class ProcedureParameterTableModel extends CayenneTableModel {
     protected void setPrecision(String newVal, ProcedureParameter parameter) {
         if (newVal == null || newVal.trim().length() <= 0) {
             parameter.setPrecision(-1);
-        }
-        else {
+        } else {
             try {
                 parameter.setPrecision(Integer.parseInt(newVal));
-            }
-            catch (NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(
                     null,
                     "Invalid precision (" + newVal + "), only numbers are allowed.",
@@ -133,18 +122,15 @@ public class ProcedureParameterTableModel extends CayenneTableModel {
     protected void setMaxLength(String newVal, ProcedureParameter parameter) {
         if (newVal == null || newVal.trim().length() <= 0) {
             parameter.setMaxLength(-1);
-        }
-        else {
+        } else {
             try {
                 parameter.setMaxLength(Integer.parseInt(newVal));
-            }
-            catch (NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(
                     null,
                     "Invalid Max Length (" + newVal + "), only numbers are allowed",
                     "Invalid Maximum Length",
                     JOptionPane.ERROR_MESSAGE);
-                return;
             }
         }
     }
@@ -153,20 +139,13 @@ public class ProcedureParameterTableModel extends CayenneTableModel {
         parameter.setType(TypesMapping.getSqlTypeByName(newVal));
     }
 
-    protected void setParameterDirection(
-        String direction,
-        ProcedureParameter parameter) {
+    protected void setParameterDirection(String direction, ProcedureParameter parameter) {
         if (ProcedureParameterTableModel.IN_PARAMETER.equals(direction)) {
             parameter.setDirection(ProcedureParameter.IN_PARAMETER);
-        }
-        else if (ProcedureParameterTableModel.OUT_PARAMETER.equals(direction)) {
+        } else if (ProcedureParameterTableModel.OUT_PARAMETER.equals(direction)) {
             parameter.setDirection(ProcedureParameter.OUT_PARAMETER);
-        }
-        else if (ProcedureParameterTableModel.IN_OUT_PARAMETER.equals(direction)) {
+        } else if (ProcedureParameterTableModel.IN_OUT_PARAMETER.equals(direction)) {
             parameter.setDirection(ProcedureParameter.IN_OUT_PARAMETER);
-        }
-        else {
-            parameter.setDirection(-1);
         }
     }
 
@@ -174,14 +153,17 @@ public class ProcedureParameterTableModel extends CayenneTableModel {
         ProjectUtil.setProcedureParameterName(parameter, newVal.trim());
     }
 
+    @Override
     public Class getElementsClass() {
         return ProcedureParameter.class;
     }
 
+    @Override
     public int getColumnCount() {
         return PARAMETER_INDEXES.length;
     }
 
+    @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         ProcedureParameter parameter = getParameter(rowIndex);
 
@@ -207,56 +189,48 @@ public class ProcedureParameterTableModel extends CayenneTableModel {
         }
     }
 
-    protected Object getParameterNumber(int rowIndex, ProcedureParameter parameter) {
+    protected String getParameterNumber(int rowIndex, ProcedureParameter parameter) {
         boolean hasReturnValue = parameter.getProcedure().isReturningValue();
 
         if (hasReturnValue) {
             return (rowIndex == 0) ? "R" : "" + rowIndex;
-        }
-        else {
+        } else {
             return "" + (rowIndex + 1);
         }
     }
 
-    protected Object getParameterPrecision(ProcedureParameter parameter) {
+    protected String getParameterPrecision(ProcedureParameter parameter) {
         return (parameter.getPrecision() >= 0)
             ? String.valueOf(parameter.getPrecision())
             : "";
     }
 
-    protected Object getParameterLength(ProcedureParameter parameter) {
+    protected String getParameterLength(ProcedureParameter parameter) {
         return (parameter.getMaxLength() >= 0)
             ? String.valueOf(parameter.getMaxLength())
             : "";
     }
 
-    protected Object getParameterType(ProcedureParameter parameter) {
+    protected String getParameterType(ProcedureParameter parameter) {
         return TypesMapping.getSqlNameByType(parameter.getType());
     }
 
-    protected Object getParameterDirection(ProcedureParameter parameter) {
+    protected String getParameterDirection(ProcedureParameter parameter) {
         int direction = parameter.getDirection();
-        switch (direction) {
-            case ProcedureParameter.IN_PARAMETER :
-                return ProcedureParameterTableModel.IN_PARAMETER;
-            case ProcedureParameter.OUT_PARAMETER :
-                return ProcedureParameterTableModel.OUT_PARAMETER;
-            case ProcedureParameter.IN_OUT_PARAMETER :
-                return ProcedureParameterTableModel.IN_OUT_PARAMETER;
-            default :
-                return "";
-        }
+        return PARAMETER_DIRECTION_NAMES[direction == -1 ? 0 : direction];
     }
 
-    protected Object getParameterName(ProcedureParameter parameter) {
+    protected String getParameterName(ProcedureParameter parameter) {
         return parameter.getName();
     }
 
+    @Override
     public String getColumnName(int col) {
         return PARAMETER_NAMES[col];
     }
 
-    public Class getColumnClass(int col) {
+    @Override
+    public Class<?> getColumnClass(int col) {
         return String.class;
     }
 
@@ -269,6 +243,7 @@ public class ProcedureParameterTableModel extends CayenneTableModel {
         // NOOP
     }
 
+    @Override
     public boolean isCellEditable(int row, int col) {
         return col != PARAMETER_NUMBER;
     }

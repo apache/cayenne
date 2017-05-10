@@ -47,21 +47,16 @@ class ProjectOpener extends JFileChooser {
      * Selects a directory to store the project.
      */
     File newProjectDir(Frame f, Project p) {
-        if (p instanceof Project) {
+        if (p != null) {
             StringBuilder nameProject = new StringBuilder("cayenne");
             if(((DataChannelDescriptor)p.getRootNode()).getName()!=null){
                 nameProject.append("-").append(((DataChannelDescriptor)p.getRootNode()).getName());
             }
             nameProject.append(".xml");
             // configure for application project
-            return newProjectDir(f, nameProject.toString(), FileFilters
-                    .getApplicationFilter());
-        }
-        else {
-            String message = (p == null)
-                    ? "Null project."
-                    : "Unrecognized project class: " + p.getClass().getName();
-            throw new CayenneRuntimeException(message);
+            return newProjectDir(f, nameProject.toString(), FileFilters.getApplicationFilter());
+        } else {
+            throw new CayenneRuntimeException("Null project.");
         }
     }
 
@@ -105,16 +100,11 @@ class ProjectOpener extends JFileChooser {
 
                 if (dialog.shouldOverwrite()) {
                     break;
-                }
-                else if (dialog.shouldSelectAnother()) {
-                    continue;
-                }
-                else {
+                } else if (!dialog.shouldSelectAnother()) {
                     // canceled
                     return null;
                 }
-            }
-            else {
+            } else {
                 break;
             }
         }

@@ -114,21 +114,19 @@ public class TemplateCreator extends CayenneController {
             JOptionPane.showMessageDialog(
                     view,
                     "Enter Template Name",
-                    null,
+                    "Error",
                     JOptionPane.WARNING_MESSAGE);
-        }
-        else if (existingNames.contains(templateName)) {
+        } else if (existingNames.contains(templateName)) {
             JOptionPane.showMessageDialog(
                     view,
                     "'" + templateName + "' is already taken, enter a different name",
-                    null,
+                    "Error",
                     JOptionPane.WARNING_MESSAGE);
-        }
-        else if (view.getTemplateChooser().getFile() == null) {
+        } else if (view.getTemplateChooser().getFile() == null) {
             JOptionPane.showMessageDialog(
                     view,
                     "Must select an existing template file",
-                    null,
+                    "Error",
                     JOptionPane.WARNING_MESSAGE);
         }
         else {

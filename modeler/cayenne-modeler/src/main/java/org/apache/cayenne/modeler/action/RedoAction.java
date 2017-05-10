@@ -57,7 +57,7 @@ public class RedoAction extends CayenneAction {
     
     @Override
     public String getIconName() {
-        return "icon-redo.gif";
+        return "icon-redo.png";
     }
 
     @Override

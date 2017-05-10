@@ -49,7 +49,7 @@ public class DbEntityCounterpartAction extends CayenneAction {
     }
 
     public String getIconName() {
-        return "icon-move_up.gif";
+        return "icon-move_up.png";
     }
 
     /**

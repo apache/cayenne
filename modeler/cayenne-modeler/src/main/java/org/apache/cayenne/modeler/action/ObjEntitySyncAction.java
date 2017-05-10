@@ -51,7 +51,7 @@ public class ObjEntitySyncAction extends CayenneAction {
     }
 
     public String getIconName() {
-        return "icon-sync.gif";
+        return "icon-sync.png";
     }
 
     public KeyStroke getAcceleratorKey() {

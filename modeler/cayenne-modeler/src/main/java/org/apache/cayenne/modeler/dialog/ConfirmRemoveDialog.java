@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.dialog;
 import java.util.prefs.Preferences;
 
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import org.apache.cayenne.modeler.Application;
@@ -32,6 +31,8 @@ import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
  * 
  */
 public class ConfirmRemoveDialog {
+
+    private static final String DELETE = "Delete";
 
     private boolean shouldDelete = true;
 
@@ -53,18 +54,14 @@ public class ConfirmRemoveDialog {
                 neverPromptAgainBox
         };
 
-        JOptionPane pane = new JOptionPane(
-                message,
-                JOptionPane.QUESTION_MESSAGE,
-                JOptionPane.YES_NO_OPTION);
+        JOptionPane pane = new JOptionPane(message, JOptionPane.QUESTION_MESSAGE);
+        pane.setOptions(new Object[]{ DELETE, "Cancel" });
+        pane.setInitialValue(DELETE);
+        pane.createDialog(Application.getFrame(), "Confirm Delete").setVisible(true);
 
-        JDialog dialog = pane.createDialog(Application.getFrame(), "Confirm Remove");
-        dialog.setVisible(true);
+        shouldDelete = DELETE.equals(pane.getValue());
 
-        Object selectedValue = pane.getValue();
-        shouldDelete = selectedValue==null?false:selectedValue.equals(JOptionPane.YES_OPTION);
-
-        // If the user clicks "no" or window close button, we'll just ignore whatever's in the checkbox because
+        // If the user clicks "cancel" or window close button, we'll just ignore whatever's in the checkbox because
         // it's non-sensical.
         if (shouldDelete) {
             Preferences pref = Application.getInstance().getPreferencesNode(
@@ -77,7 +74,7 @@ public class ConfirmRemoveDialog {
     }
 
     public boolean shouldDelete(String type, String name) {
-        return shouldDelete(String.format("%s named '%s", type, name));
+        return shouldDelete(String.format("%s named '%s'", type, name));
     }
 
     public boolean shouldDelete(String name) {

@@ -42,7 +42,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.text.JTextComponent;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -241,7 +240,7 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
 
     private final class PathChooserComboBoxCellRenderer extends DefaultListCellRenderer {
 
-        private  final ImageIcon rightArrow = ModelerUtil.buildIcon("scroll_right.gif");
+        private  final ImageIcon rightArrow = ModelerUtil.buildIcon("icon-arrow-closed.png");
 
         @SuppressWarnings("unchecked")
         @Override
@@ -250,7 +249,6 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
 
             JPanel panel = new JPanel(new BorderLayout());
             JLabel label = new JLabel((String) value);
-            label.setFont(new Font("Verdana", Font.PLAIN , 12));
             panel.add(label);
 
             Object currentNode = getCurrentNode((String) value);

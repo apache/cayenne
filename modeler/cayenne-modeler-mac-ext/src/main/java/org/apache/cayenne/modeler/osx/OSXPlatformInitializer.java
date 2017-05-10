@@ -18,16 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.osx;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.modeler.action.AboutAction;
@@ -43,7 +47,6 @@ import com.apple.eawt.PreferencesHandler;
 import com.apple.eawt.QuitHandler;
 import com.apple.eawt.QuitResponse;
 
-@SuppressWarnings("deprecation")
 public class OSXPlatformInitializer implements PlatformInitializer {
 
     @Inject
@@ -51,10 +54,10 @@ public class OSXPlatformInitializer implements PlatformInitializer {
 
     public void initLookAndFeel() {
 
-        // leave alone the look and feel. Presumably it is Aqua, since this
-        // launcher can only be executed on Mac
+        // override some default styles and colors, assuming that Aqua theme will be used
+        overrideUIDefaults();
 
-        // configure special Mac menu handlers though...
+        // configure special Mac menu handlers
         Application app = Application.getApplication();
         app.setAboutHandler(new AboutHandler() {
             @Override
@@ -80,7 +83,28 @@ public class OSXPlatformInitializer implements PlatformInitializer {
         });
     }
 
+    private void overrideUIDefaults() {
+        Color lightGrey = new Color(0xEEEEEE);
+        Color darkGrey  = new Color(225, 225, 225);
+        Border darkBorder = BorderFactory.createLineBorder(darkGrey);
+
+        UIManager.put("ToolBarSeparatorUI",          OSXToolBarSeparatorUI.class.getName());
+        UIManager.put("PanelUI",                     OSXPanelUI.class.getName());
+        // next two is custom made for Cayenne's MainToolBar
+        UIManager.put("MainToolBar.background",      UIManager.get("ToolBar.background"));
+        UIManager.put("MainToolBar.border",          BorderFactory.createEmptyBorder(0, 7, 0, 7));
+        UIManager.put("ToolBar.background",          lightGrey);
+        UIManager.put("ToolBar.border",              darkBorder);
+        UIManager.put("ScrollPane.border",           darkBorder);
+        UIManager.put("Table.scrollPaneBorder",      darkBorder);
+        UIManager.put("SplitPane.border",            BorderFactory.createEmptyBorder());
+        UIManager.put("SplitPane.background",        darkGrey);
+        UIManager.put("Tree.rendererFillBackground", Boolean.TRUE);
+    }
+
     public void setupMenus(JFrame frame) {
+        // set additional look and feel for the window
+        frame.getRootPane().putClientProperty("apple.awt.brushMetalLook", Boolean.TRUE);
 
         Set<Action> removeActions = new HashSet<>();
         removeActions.add(actionManager.getAction(ExitAction.class));

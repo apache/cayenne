@@ -75,7 +75,7 @@ public class CreateCallbackMethodAction extends CayenneAction {
      * @return icon file name for button
      */
     public String getIconName() {
-        return "icon-create-method.gif";
+        return "icon-create-method.png";
     }
 
     /**

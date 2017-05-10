@@ -35,7 +35,6 @@ import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.ListCellRenderer;
 
 /**
  * EditorTextField is a text field to be used in combobox editor. It paints self normally
@@ -103,23 +102,23 @@ public class EditorTextField extends JTextField implements FocusListener {
 
     @Override
     public void paintComponent(Graphics g) {
-        if (hasFocus)
+        if (hasFocus) {
             super.paintComponent(g);
-        else {
+        } else {
             list.setEnabled(combo.isEnabled());
 
-            ListCellRenderer renderer = combo.getRenderer();
-            Component c = renderer.getListCellRendererComponent(list, combo.getSelectedItem(),
-                    -1, false, false);
-            
-            //fill background first
+            Component c = combo.getRenderer()
+                    .getListCellRendererComponent(list, combo.getSelectedItem(), -1, false, false);
+
+            Insets insets = getInsets();
+
             Color oldColor = g.getColor();
             g.setColor(getBackground());
-            g.fillRect(0, 0, getWidth(), getHeight());
+            g.fillRect(insets.left, insets.top,
+                    getWidth() - insets.right - insets.left, getHeight() - insets.bottom - insets.top);
             g.setColor(oldColor);
-            
-            Insets insets = getInsets();
-            rendererPane.paintComponent(g, c, combo, insets.left, insets.top, 
+
+            rendererPane.paintComponent(g, c, combo, insets.left, insets.top,
                     getWidth() - insets.right - insets.left, getHeight() - insets.bottom - insets.top);
         }
     }

@@ -25,7 +25,7 @@ package org.apache.cayenne.modeler;
 public interface ModelerConstants {
 
     /** Defines path to the images. */
-    public static final String RESOURCE_PATH = "org/apache/cayenne/modeler/images/";
+    String RESOURCE_PATH = "org/apache/cayenne/modeler/images/";
 
-    public static final String TITLE = "CayenneModeler";
+    String TITLE = "CayenneModeler";
 }

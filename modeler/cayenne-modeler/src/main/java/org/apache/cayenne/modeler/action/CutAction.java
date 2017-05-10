@@ -53,7 +53,7 @@ public class CutAction extends CayenneAction {
 
     @Override
     public String getIconName() {
-        return "icon-cut.gif";
+        return "icon-cut.png";
     }
 
     @Override

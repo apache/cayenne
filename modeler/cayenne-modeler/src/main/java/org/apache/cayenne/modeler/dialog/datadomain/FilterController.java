@@ -59,11 +59,11 @@ public class FilterController {
 		this.tree = treePanel;
 		this.treeModel = tree.getProjectModel();
 		
-		filterMap.put("dbEntity",true);
-		filterMap.put("objEntity",true);
-		filterMap.put("embeddable",true);
-		filterMap.put("procedure",true);
-		filterMap.put("query",true);
+		filterMap.put("dbEntity",	true);
+		filterMap.put("objEntity",	true);
+		filterMap.put("embeddable",	true);
+		filterMap.put("procedure",	true);
+		filterMap.put("query",		true);
 	}
 	
 	
@@ -82,10 +82,10 @@ public class FilterController {
 				expandAll(tree, path, action);
 			}
 		}
-		if(action == "expand") {
+
+		if("expand".equals(action)) {
 			tree.expandPath(parent);
-		}
-		else if(action == "collapse") {
+		} else if("collapse".equals(action)) {
 			treeModel.reload(treeModel.getRootNode());
 		}
 	}

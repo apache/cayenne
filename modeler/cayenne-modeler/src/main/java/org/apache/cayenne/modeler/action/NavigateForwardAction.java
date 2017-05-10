@@ -36,14 +36,13 @@ public class NavigateForwardAction extends CayenneAction {
 
     /**
      * Constructor for Move Forward Action
-     * @param name
      */
     public NavigateForwardAction(Application application) {
         super(getActionName(), application);
     }
 
     public String getIconName() {
-        return "icon-forward_nav.gif";
+        return "icon-forward.png";
     }
 
     /**

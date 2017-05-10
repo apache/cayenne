@@ -37,7 +37,9 @@ import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.event.DbEntityDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
+import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.swing.components.image.FilteredIconFactory;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.Icon;
@@ -55,7 +57,7 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
 
     public DbEntityAttributePanel attributePanel;
     public DbEntityRelationshipPanel relationshipPanel;
-    public JButton resolve = new JButton();
+    public JButton resolve = new CayenneAction.CayenneToolbarButton(null, 0);
     private JSplitPane splitPane;
 
     private ProjectController mediator;
@@ -88,10 +90,8 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
                     this.getClass(),
                     "dbEntityAttrRelTab/splitPane/divider");
 
-            geometry
-                    .bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, -1);
-        }
-        catch (Exception ex) {
+            geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, -1);
+        } catch (Exception ex) {
             LoggerFactory.getLogger(getClass()).error("Cannot bind divider property", ex);
         }
 
@@ -100,18 +100,22 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
 
     private void initToolBar() {
         toolBar = new JToolBar();
+        toolBar.setFloatable(false);
         ActionManager actionManager = Application.getInstance().getActionManager();
 
-        toolBar.add(actionManager.getAction(CreateObjEntityAction.class).buildButton());
-        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
-        toolBar.add(actionManager.getAction(CreateRelationshipAction.class).buildButton());
-        toolBar.add(actionManager.getAction(DbEntitySyncAction.class).buildButton());
-        toolBar.add(actionManager.getAction(DbEntityCounterpartAction.class).buildButton());
+        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(CreateRelationshipAction.class).buildButton(3));
         toolBar.addSeparator();
 
-        Icon ico = ModelerUtil.buildIcon("icon-info.gif");
+        toolBar.add(actionManager.getAction(CreateObjEntityAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(DbEntitySyncAction.class).buildButton(2));
+        toolBar.add(actionManager.getAction(DbEntityCounterpartAction.class).buildButton(3));
+        toolBar.addSeparator();
+
+        Icon ico = ModelerUtil.buildIcon("icon-edit.png");
         resolve.setToolTipText("Database Mapping");
         resolve.setIcon(ico);
+        resolve.setDisabledIcon(FilteredIconFactory.createDisabledIcon(ico));
         toolBar.add(resolve).setEnabled(false);
 
         cut = actionManager.getAction(CutAttributeRelationshipAction.class);
@@ -121,9 +125,9 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
         toolBar.addSeparator();
         toolBar.add(remove.buildButton());
         toolBar.addSeparator();
-        toolBar.add(cut.buildButton());
-        toolBar.add(copy.buildButton());
-        toolBar.add(actionManager.getAction(PasteAction.class).buildButton());
+        toolBar.add(cut.buildButton(1));
+        toolBar.add(copy.buildButton(2));
+        toolBar.add(actionManager.getAction(PasteAction.class).buildButton(3));
 
         add(toolBar, BorderLayout.NORTH);
     }
@@ -170,11 +174,11 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
     public void currentDbEntityChanged(EntityDisplayEvent e) {
         DbEntity entity = (DbEntity) e.getEntity();
         if(entity.getDataMap().getMappedEntities(entity).isEmpty()) {
-            toolBar.getComponentAtIndex(3).setEnabled(false);
             toolBar.getComponentAtIndex(4).setEnabled(false);
+            toolBar.getComponentAtIndex(5).setEnabled(false);
         } else {
-            toolBar.getComponentAtIndex(3).setEnabled(true);
             toolBar.getComponentAtIndex(4).setEnabled(true);
+            toolBar.getComponentAtIndex(5).setEnabled(true);
         }
     }
 }

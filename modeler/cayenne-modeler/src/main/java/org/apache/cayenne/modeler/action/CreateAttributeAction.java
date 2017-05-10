@@ -101,7 +101,7 @@ public class CreateAttributeAction extends CayenneAction {
 
     @Override
     public String getIconName() {
-        return "icon-attribute.gif";
+        return "icon-attribute.png";
     }
 
     /**

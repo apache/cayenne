@@ -60,7 +60,7 @@ public class OpenProjectAction extends ProjectAction {
 
     @Override
     public String getIconName() {
-        return "icon-open.gif";
+        return "icon-open.png";
     }
 
     @Override

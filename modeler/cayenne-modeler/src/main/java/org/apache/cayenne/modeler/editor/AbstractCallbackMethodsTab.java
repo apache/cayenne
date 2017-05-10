@@ -184,11 +184,12 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
         this.setLayout(new BorderLayout());
 
         toolBar = new JToolBar();
+        toolBar.setFloatable(false);
         toolBar.add(getRemoveCallbackMethodAction().buildButton());
         toolBar.addSeparator(new Dimension(10, 0));
-	    toolBar.add(getCopyCallbackMethodAction().buildButton());
-	    toolBar.add(getCutCallbackMethodAction().buildButton());
-        toolBar.add(getPasteCallbackMethodAction().buildButton());
+	    toolBar.add(getCopyCallbackMethodAction().buildButton(1));
+	    toolBar.add(getCutCallbackMethodAction().buildButton(2));
+        toolBar.add(getPasteCallbackMethodAction().buildButton(3));
 
         add(toolBar, BorderLayout.NORTH);
 
@@ -246,12 +247,12 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
             	tables[i].changeSelection(row, 0, false, false);
             }
         });
-        
-        for(int i = 0; i < tables.length; i++) {
-	        mediator.getApplication().getActionManager().setupCutCopyPaste(
-	                tables[i],
-	                CutCallbackMethodAction.class,
-	                CopyCallbackMethodAction.class);
+
+        for (CayenneTable table : tables) {
+            mediator.getApplication().getActionManager().setupCutCopyPaste(
+                    table,
+                    CutCallbackMethodAction.class,
+                    CopyCallbackMethodAction.class);
         }
     }
 
@@ -266,14 +267,12 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
        		
        		CallbackType callbackType = callbackTypes[i];
   
-       		List<String> methods = new ArrayList<String>();
+       		List<String> methods = new ArrayList<>();
        		CallbackDescriptor descriptor = null;
        		
        		if (callbackMap != null && callbackType != null) {
        			descriptor = callbackMap.getCallbackDescriptor(callbackType.getType());
-       	        for (String callbackMethod : descriptor.getCallbackMethods()) {
-       	        	methods.add(callbackMethod);
-       	        }
+                methods.addAll(descriptor.getCallbackMethods());
        	    }
         		
             CallbackDescriptorTableModel model = new CallbackDescriptorTableModel(
@@ -285,9 +284,10 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
             
             tables[i].setModel(model);
         }
-       	
-       	for(int i = 0; i < tables.length; i++)
-       		tablePreferences.bind(tables[i], null, null, null);
+
+        for (CayenneTable table : tables) {
+            tablePreferences.bind(table, null, null, null);
+        }
     }
     
     private void createTables() {
@@ -311,7 +311,8 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 
         // drag-and-drop initialization
     	cayenneTable.setDragEnabled(true);
-    	
+
+    	cayenneTable.setSortable(false);
 	    cayenneTable.setRowHeight(25);
 	    cayenneTable.setRowMargin(3);
 	    cayenneTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -329,7 +330,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
         		cayenneTable, 
         		getCreateCallbackMethodAction().buildButton(),
         		new ButtonListener(callbackType), 
-        		ModelerUtil.buildIcon("icon-create-method.gif"));
+        		ModelerUtil.buildIcon("icon-create-method.png"));
 	    
 	    return cayenneTable;
     }
@@ -357,7 +358,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
     }
     
     private void addButtonAtHeader(JTable table, JButton button, ActionListener buttonListener, ImageIcon buttonIcon){
-        PanelBuilder builder = new PanelBuilder(new FormLayout("left:10dlu, 2dlu", "center:10dlu"));
+        PanelBuilder builder = new PanelBuilder(new FormLayout("left:10dlu, 2dlu", "center:14dlu"));
         CellConstraints cc = new CellConstraints();
         
         button.setIcon(buttonIcon);
@@ -374,15 +375,14 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
         JTableHeader header = table.getTableHeader();
         header.setLayout(new BorderLayout());
         header.setReorderingAllowed(false);
-        header.setPreferredSize(new Dimension(150, 20));
+        header.setPreferredSize(new Dimension(150, 22));
         header.add(buttonPanel, BorderLayout.EAST);
     }
 
-    class ButtonListener implements ActionListener  
-    {  
+    class ButtonListener implements ActionListener {
     	private CallbackType callbackType;
     	
-    	public ButtonListener(CallbackType callbackType){
+    	public ButtonListener(CallbackType callbackType) {
     		this.callbackType = callbackType;
     	}
     	
@@ -449,20 +449,17 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
             if (canImport(comp, t.getTransferDataFlavors())) {
                 String callbackMethod;
                 try {
-                    callbackMethod = (String) t
-                            .getTransferData(DataFlavor.stringFlavor);
-                }
-                catch (Exception e) {
+                    callbackMethod = (String) t.getTransferData(DataFlavor.stringFlavor);
+                } catch (Exception e) {
                     logger.warn("Error transferring", e);
                     return false;
                 }
 
                 int rowIndex = table.getSelectedRow();
 
-                CallbackDescriptor callbackDescriptor = ((CallbackDescriptorTableModel)table.getCayenneModel()).getCallbackDescriptor();
-                mediator.setDirty(callbackDescriptor.moveMethod(
-                        callbackMethod,
-                        rowIndex));
+                CallbackDescriptor callbackDescriptor =
+                        ((CallbackDescriptorTableModel)table.getCayenneModel()).getCallbackDescriptor();
+                mediator.setDirty(callbackDescriptor.moveMethod(callbackMethod, rowIndex));
                 rebuildTables();
                 return true;
             }
@@ -493,19 +490,18 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
             	ObjCallbackMethod[] methods = new ObjCallbackMethod[0];
 
                 if(!((ListSelectionModel)e.getSource()).isSelectionEmpty()) {
-	                for(int i = 0; i < tables.length; i++) {
-	                	if(!tables[i].equals(table)) {
-	                		tables[i].clearSelection();
-	                		if(tables[i].getCellEditor() != null) {
-	                			tables[i].getCellEditor().stopCellEditing();
-	                		}
-	                	}
-	                }
+                    for (CayenneTable nextTable : tables) {
+                        if (!nextTable.equals(table)) {
+                            nextTable.clearSelection();
+                            if (nextTable.getCellEditor() != null) {
+                                nextTable.getCellEditor().stopCellEditing();
+                            }
+                        }
+                    }
 
 	                mediator.setCurrentCallbackType(((CallbackDescriptorTableModel)table.getCayenneModel()).getCallbackType());
                 }
 
-            	
                 if (table.getSelectedRow() != -1) {
                     int[] sel = table.getSelectedRows();
                     CallbackType callbackType = mediator.getCurrentCallbackType();
@@ -513,28 +509,23 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
                     methods = new ObjCallbackMethod[sel.length];
                                         
                     for (int i = 0; i < sel.length; i++) {
-                    	String methodName = (String) table
-                                .getValueAt(
-                                        sel[i],
-                                        table
-                                                .convertColumnIndexToView(CallbackDescriptorTableModel.METHOD_NAME));
+                    	String methodName = (String) table.getValueAt(
+                    	        sel[i],
+                                table.convertColumnIndexToView(CallbackDescriptorTableModel.METHOD_NAME));
                     	methods[i] = new ObjCallbackMethod(methodName, callbackType);
                     }
                 }
 
                 mediator.setCurrentCallbackMethods(methods);
-                getRemoveCallbackMethodAction().setEnabled(methods.length > 0);
-                getRemoveCallbackMethodAction().setName(
-                        getRemoveCallbackMethodAction().getActionName(
-                                methods.length > 1));
-                getCopyCallbackMethodAction().setEnabled(methods.length > 0);
-                getCopyCallbackMethodAction().setName(
-                		getCopyCallbackMethodAction().getActionName(
-                                methods.length > 1));
-                getCutCallbackMethodAction().setEnabled(methods.length > 0);
-                getCutCallbackMethodAction().setName(
-                		getCutCallbackMethodAction().getActionName(
-                                methods.length > 1));            
+                boolean enabled = methods.length > 0;
+                boolean multiple = methods.length > 1;
+
+                getRemoveCallbackMethodAction().setEnabled(enabled);
+                getRemoveCallbackMethodAction().setName(getRemoveCallbackMethodAction().getActionName(multiple));
+                getCopyCallbackMethodAction().setEnabled(enabled);
+                getCopyCallbackMethodAction().setName(getCopyCallbackMethodAction().getActionName(multiple));
+                getCutCallbackMethodAction().setEnabled(enabled);
+                getCutCallbackMethodAction().setName(getCutCallbackMethodAction().getActionName(multiple));
             }
         }
     }
@@ -547,14 +538,9 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
     		this.table = table;
     	}
     	
-	    public void columnMarginChanged(ChangeEvent e)
-	    {
-	        if(!table.getColumnWidthChanged())
-	        {
-	            if(table.getTableHeader().getResizingColumn() != null)
-	            {
-	            	table.setColumnWidthChanged(true);
-	            }
+	    public void columnMarginChanged(ChangeEvent e) {
+	        if(!table.getColumnWidthChanged() && table.getTableHeader().getResizingColumn() != null) {
+                table.setColumnWidthChanged(true);
 	        }
 	    }
 	
@@ -584,13 +570,11 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
     	}
     	
     	@Override
-	    public void mouseReleased(MouseEvent e)
-	    {
-	    	if(table.getColumnWidthChanged())
-	        {
-		    	for(int i=0; i<tables.length; i++) {
-	    			tables[i].getColumnModel().getColumn(0).setPreferredWidth(table.getWidth());
-		    	}
+	    public void mouseReleased(MouseEvent e) {
+	    	if(table.getColumnWidthChanged()) {
+                for (CayenneTable nextTable : tables) {
+                    nextTable.getColumnModel().getColumn(0).setPreferredWidth(table.getWidth());
+                }
 		    	
 		    	initTablePreferences();
 	        	table.setColumnWidthChanged(false);
@@ -598,8 +582,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 	    }
 	    
     	@Override
-	    public void mousePressed(MouseEvent e)
-	    {
+	    public void mousePressed(MouseEvent e) {
     		if (e.isPopupTrigger() && e.getComponent() instanceof JTableHeader ) {
 
     			unselectAll();
@@ -622,14 +605,13 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 		}
 		
 		public void mouseDragged(MouseEvent e) {
-	    	if(table.getColumnWidthChanged())
-	        {
+	    	if(table.getColumnWidthChanged()) {
 	    		tablePreferences.bind(table, null, null, null);
-		    	for(int i=0; i<tables.length; i++) {
-		    		if(!table.equals(tables[i])) {
-		    			tables[i].getColumnModel().getColumn(0).setPreferredWidth(table.getWidth());
-		    		}
-		    	}
+                for (CayenneTable nextTable : tables) {
+                    if (!table.equals(nextTable)) {
+                        nextTable.getColumnModel().getColumn(0).setPreferredWidth(table.getWidth());
+                    }
+                }
 	        }
 		}
 	}

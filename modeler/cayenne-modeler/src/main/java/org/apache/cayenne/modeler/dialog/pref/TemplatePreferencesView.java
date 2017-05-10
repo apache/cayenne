@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.dialog.pref;
 
 import java.awt.BorderLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -55,7 +56,9 @@ public class TemplatePreferencesView extends JPanel {
         builder.append(removeButton);
 
         setLayout(new BorderLayout());
-        add(new JScrollPane(table), BorderLayout.CENTER);
+        JScrollPane ScrollPane = new JScrollPane(table);
+        ScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        add(ScrollPane, BorderLayout.CENTER);
         add(builder.getPanel(), BorderLayout.EAST);
     }
 

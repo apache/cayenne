@@ -44,6 +44,7 @@ public class TableColumnPreferences extends CayennePreference {
     private int columnCount;
     private int defaultSortColumn;
     private boolean defaultSortOrder;
+    private int[] currentWidth;
 
     private TableColumnModelListener listener = new TableColumnModelListener() {
 
@@ -51,7 +52,7 @@ public class TableColumnPreferences extends CayennePreference {
         }
 
         public void columnMarginChanged(ChangeEvent e) {
-            TableColumn column = null;
+            TableColumn column;
             for (int i = 0; i < columnCount; i++) {
                 column = table.getColumnModel().getColumn(i);
                 setWidth(column.getModelIndex(), column.getPreferredWidth());
@@ -127,8 +128,9 @@ public class TableColumnPreferences extends CayennePreference {
             Map<Integer, Integer> defaultSizes) {
 
         this.table = table;
-       
         this.columnCount = table.getColumnCount();
+        this.currentWidth = new int[columnCount];
+
         table.getColumnModel().removeColumnModelListener(listener);
         updateTable(minSizes, maxSizes, defaultSizes);
         table.getColumnModel().addColumnModelListener(listener);
@@ -175,7 +177,7 @@ public class TableColumnPreferences extends CayennePreference {
     }
 
     private void updateOrder() {
-        TableColumn column = null;
+        TableColumn column;
         TableColumnModel columnModel = table.getColumnModel();
         TableModel model = table.getModel();
         String columnName = "";
@@ -197,11 +199,17 @@ public class TableColumnPreferences extends CayennePreference {
     }
 
     private int getWidth(int index, int defaultWidth) {
-        return getPreference().getInt(WIDTH_KEY + Integer.toString(index), defaultWidth);
+        if(currentWidth[index] == 0) {
+            currentWidth[index] = getPreference().getInt(WIDTH_KEY + Integer.toString(index), defaultWidth);
+        }
+        return currentWidth[index];
     }
 
     private void setWidth(int index, int width) {
-        getPreference().putInt(WIDTH_KEY + Integer.toString(index), width);
+        if(currentWidth[index] != width) {
+            getPreference().putInt(WIDTH_KEY + Integer.toString(index), width);
+            currentWidth[index] = width;
+        }
     }
 
     private int getOrderIndex(int columnIndex, int defaultOrderIndex) {

@@ -48,7 +48,7 @@ public class LinkDataMapsAction extends CayenneAction {
 
     @Override
     public String getIconName() {
-        return "icon-sync.gif";
+        return "icon-sync.png";
     }
 
     @Override

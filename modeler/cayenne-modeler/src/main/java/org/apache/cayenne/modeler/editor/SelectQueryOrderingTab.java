@@ -28,6 +28,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.prefs.Preferences;
 
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -49,11 +51,14 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.MultiColumnBrowser;
 import org.apache.cayenne.modeler.util.UIUtil;
-import org.apache.cayenne.query.*;
+import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.swing.components.image.FilteredIconFactory;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
@@ -103,9 +108,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
                 getDividerLocationProperty(),
                 defLocation) : defLocation;
 
-        /**
-         * As of CAY-888 #3 main pane is now a JSplitPane. Top component is a bit larger.
-         */
+        //As of CAY-888 #3 main pane is now a JSplitPane. Top component is a bit larger.
         JSplitPane mainPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         mainPanel.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, this);
         mainPanel.setDividerLocation(location);
@@ -197,8 +200,11 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
 
     protected JComponent createToolbar() {
 
-        JButton add = new JButton("Add Ordering", ModelerUtil
-                .buildIcon("icon-move_up.gif"));
+        JButton add = new CayenneAction.CayenneToolbarButton(null, 1);
+        add.setText("Add Ordering");
+        Icon addIcon = ModelerUtil.buildIcon("icon-plus.png");
+        add.setIcon(addIcon);
+        add.setDisabledIcon(FilteredIconFactory.createDisabledIcon(addIcon));
         add.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -207,8 +213,11 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
 
         });
 
-        JButton remove = new JButton("Remove Ordering", ModelerUtil
-                .buildIcon("icon-move_down.gif"));
+        JButton remove = new CayenneAction.CayenneToolbarButton(null, 3);
+        remove.setText("Remove Ordering");
+        Icon removeIcon = ModelerUtil.buildIcon("icon-trash.png");
+        remove.setIcon(removeIcon);
+        remove.setDisabledIcon(FilteredIconFactory.createDisabledIcon(removeIcon));
         remove.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -217,10 +226,12 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
 
         });
 
-        JToolBar toolbar = new JToolBar();
-        toolbar.add(add);
-        toolbar.add(remove);
-        return toolbar;
+        JToolBar toolBar = new JToolBar();
+        toolBar.setBorder(BorderFactory.createEmptyBorder());
+        toolBar.setFloatable(false);
+        toolBar.add(add);
+        toolBar.add(remove);
+        return toolBar;
     }
 
     protected TreeModel createBrowserModel(Entity entity) {
@@ -236,11 +247,11 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
 
         // first item in the path is Entity, so we must have
         // at least two elements to constitute a valid ordering path
-        if (path != null && path.length < 2) {
+        if (path.length < 2) {
             return null;
         }
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
 
         // attribute or relationships
         CayenneMapEntry first = (CayenneMapEntry) path[1];

@@ -23,18 +23,23 @@ import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -104,6 +109,8 @@ import org.apache.cayenne.modeler.event.RecentFileListListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.RecentFileMenu;
+import org.apache.cayenne.swing.components.MainToolBar;
+import org.apache.cayenne.swing.components.TopBorder;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -150,7 +157,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         super(ModelerConstants.TITLE);
         this.actionManager = actionManager;
 
-        recentFileListeners = new Vector<RecentFileListListener>();
+        recentFileListeners = new Vector<>();
 
         setIconImage(ModelerUtil.buildIcon("CayenneModeler.jpg").getImage());
         initMenus();
@@ -233,19 +240,14 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         toolMenu.add(getAction(GenerateDBAction.class).buildMenu());
         toolMenu.add(getAction(MigrateAction.class).buildMenu());
 
-        /**
-         * Menu for opening Log console
-         */
+        // Menu for opening Log console
         toolMenu.addSeparator();
 
         logMenu = getAction(ShowLogConsoleAction.class).buildCheckBoxMenu();
 
         if (!LogConsole.getInstance().getConsoleProperty(LogConsole.DOCKED_PROPERTY)
-                && LogConsole.getInstance().getConsoleProperty(
-                        LogConsole.SHOW_CONSOLE_PROPERTY)) {
-            LogConsole.getInstance().setConsoleProperty(
-                    LogConsole.SHOW_CONSOLE_PROPERTY,
-                    false);
+                && LogConsole.getInstance().getConsoleProperty(LogConsole.SHOW_CONSOLE_PROPERTY)) {
+            LogConsole.getInstance().setConsoleProperty(LogConsole.SHOW_CONSOLE_PROPERTY, false);
         }
 
         updateLogConsoleMenu();
@@ -272,8 +274,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
      * Selects/deselects menu item, depending on status of log console
      */
     public void updateLogConsoleMenu() {
-        logMenu.setSelected(LogConsole.getInstance().getConsoleProperty(
-                LogConsole.SHOW_CONSOLE_PROPERTY));
+        logMenu.setSelected(LogConsole.getInstance().getConsoleProperty(LogConsole.SHOW_CONSOLE_PROPERTY));
     }
 
     protected void initStatusBar() {
@@ -281,30 +282,28 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         status.setFont(status.getFont().deriveFont(Font.PLAIN, 10));
 
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setBorder(TopBorder.create());
         splitPane.getInsets().left = 5;
         splitPane.getInsets().right = 5;
-
         splitPane.setResizeWeight(0.7);
 
-        /**
-         * Moving this to try-catch block per CAY-940. Exception will be stack-traced
-         */
+        //  Moving this to try-catch block per CAY-940. Exception will be stack-traced
         try {
-            ComponentGeometry geometry = new ComponentGeometry(
-                    this.getClass(),
-                    "splitPane/divider");
-            geometry
-                    .bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 400);
-        }
-        catch (Exception ex) {
+            ComponentGeometry geometry = new ComponentGeometry(this.getClass(), "splitPane/divider");
+            geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 400);
+        } catch (Exception ex) {
             LoggerFactory.getLogger(getClass()).error("Cannot bind divider property", ex);
         }
 
         JPanel statusBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 1));
+        statusBar.setBorder(TopBorder.create());
         // add placeholder
         statusBar.add(Box.createVerticalStrut(16));
         statusBar.add(status);
 
+        if(getContentPane() instanceof JPanel) {
+            ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder());
+        }
         getContentPane().add(splitPane, BorderLayout.CENTER);
         getContentPane().add(statusBar, BorderLayout.SOUTH);
     }
@@ -347,96 +346,98 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
     /** Initializes main toolbar. */
     protected void initToolbar() {
-        JToolBar toolBar = new JToolBar();
 
-        toolBar.add(getAction(NewProjectAction.class).buildButton());
-        toolBar.add(getAction(OpenProjectAction.class).buildButton());
-        toolBar.add(getAction(SaveAction.class).buildButton());
+        final JToolBar toolBar = new MainToolBar();
 
-        toolBar.addSeparator();
-        toolBar.add(getAction(RemoveAction.class).buildButton());
+        Dimension smallBtnDim = new Dimension(30, 30);
+        JButton backButton = getAction(NavigateBackwardAction.class).buildButton(1);
+        backButton.setMinimumSize(smallBtnDim);
+        backButton.setPreferredSize(smallBtnDim);
+        toolBar.add(backButton);
 
-        toolBar.addSeparator();
+        JButton forwardButton = getAction(NavigateForwardAction.class).buildButton(3);
+        forwardButton.setMinimumSize(smallBtnDim);
+        forwardButton.setPreferredSize(smallBtnDim);
+        toolBar.add(forwardButton);
 
-        toolBar.add(getAction(CutAction.class).buildButton());
-        toolBar.add(getAction(CopyAction.class).buildButton());
-        toolBar.add(getAction(PasteAction.class).buildButton());
+        toolBar.addSeparator(new Dimension(30, 0));
 
-        toolBar.addSeparator();
-
-        toolBar.add(getAction(UndoAction.class).buildButton());
-        toolBar.add(getAction(RedoAction.class).buildButton());
-
-        toolBar.addSeparator();
-
-        toolBar.add(getAction(CreateNodeAction.class).buildButton());
-        toolBar.add(getAction(CreateDataMapAction.class).buildButton());
+        toolBar.add(getAction(NewProjectAction.class).buildButton(1));
+        toolBar.add(getAction(OpenProjectAction.class).buildButton(2));
+        toolBar.add(getAction(SaveAction.class).buildButton(3));
 
         toolBar.addSeparator();
 
-        toolBar.add(getAction(CreateDbEntityAction.class).buildButton());
-        toolBar.add(getAction(CreateProcedureAction.class).buildButton());
+        JButton removeButton = getAction(RemoveAction.class).buildButton();
+        toolBar.add(removeButton);
 
         toolBar.addSeparator();
 
-        toolBar.add(getAction(CreateObjEntityAction.class).buildButton());
-        toolBar.add(getAction(CreateEmbeddableAction.class).buildButton());
-        toolBar.add(getAction(CreateQueryAction.class).buildButton());
+        toolBar.add(getAction(CutAction.class).buildButton(1));
+        toolBar.add(getAction(CopyAction.class).buildButton(2));
+        toolBar.add(getAction(PasteAction.class).buildButton(3));
 
         toolBar.addSeparator();
 
-        toolBar.add(getAction(NavigateBackwardAction.class).buildButton());
-        toolBar.add(getAction(NavigateForwardAction.class).buildButton());
+        toolBar.add(getAction(UndoAction.class).buildButton(1));
+        toolBar.add(getAction(RedoAction.class).buildButton(3));
 
-        JPanel east = new JPanel(new BorderLayout()); // is used to place search feature
-        // components the most right on a
-        // toolbar
-        final JTextField findField = new JTextField(10);
-        findField.addKeyListener(new KeyListener() {
+        toolBar.addSeparator();
 
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() != KeyEvent.VK_ENTER) {
-                    findField.setBackground(Color.white);
-                }
-            }
+        toolBar.add(getAction(CreateNodeAction.class).buildButton(1));
+        toolBar.add(getAction(CreateDataMapAction.class).buildButton(3));
 
-            public void keyReleased(KeyEvent e) {
-            }
+        toolBar.addSeparator();
 
-            public void keyTyped(KeyEvent e) {
-            }
+        toolBar.add(getAction(CreateDbEntityAction.class).buildButton(1));
+        toolBar.add(getAction(CreateProcedureAction.class).buildButton(3));
 
-        });
-        findField.setAction(getAction(FindAction.class));
-        JLabel findLabel = new JLabel("Search:");
-        findLabel.setLabelFor(findField);
-        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+        toolBar.addSeparator();
 
-            public void eventDispatched(AWTEvent event) {
+        toolBar.add(getAction(CreateObjEntityAction.class).buildButton(1));
+        toolBar.add(getAction(CreateEmbeddableAction.class).buildButton(2));
+        toolBar.add(getAction(CreateQueryAction.class).buildButton(3));
 
-                if (event instanceof KeyEvent) {
-
-                    if (((KeyEvent) event).getModifiers() == Toolkit
-                            .getDefaultToolkit()
-                            .getMenuShortcutKeyMask()
-                            && ((KeyEvent) event).getKeyCode() == KeyEvent.VK_F) {
-                        findField.requestFocus();
-                    }
-                }
-            }
-
-        },
-                AWTEvent.KEY_EVENT_MASK);
-
-        JPanel box = new JPanel(); // is used to place label and text field one after
-        // another
-        box.setLayout(new BoxLayout(box, BoxLayout.X_AXIS));
-        box.add(findLabel);
-        box.add(findField);
-        east.add(box, BorderLayout.EAST);
-        toolBar.add(east);
+        // is used to place search feature components the most right on a toolbar
+        toolBar.add(new SearchPanel());
 
         getContentPane().add(toolBar, BorderLayout.NORTH);
+
+        // Hide some buttons when frame is too small
+        final int defaultBtnWidth = removeButton.getUI().getPreferredSize(backButton).width;
+        addComponentListener(new ComponentAdapter() {
+            private final int[] empty = {};
+            private final int[] all = {6, 7, 8, 9, 10, 11, 12, 13, 14};
+            private final int[] remove = {6, 7};
+            private final int[] removeAndCopy = {6, 7, 8, 9, 10, 11};
+            private final int[] undo = {12, 13, 14};
+            private final int[] undoAndCopy = {8, 9, 10, 11, 12, 13, 14};
+
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int[] hidden, shown;
+                if(getSize().width < (13 * defaultBtnWidth + 300)) {
+                    hidden = all;
+                    shown = empty;
+                } else if(getSize().width < (16 * defaultBtnWidth + 300)) {
+                    hidden = removeAndCopy;
+                    shown = undo;
+                } else if(getSize().width < (18 * defaultBtnWidth + 300)) {
+                    hidden = remove;
+                    shown = undoAndCopy;
+                } else {
+                    hidden = empty;
+                    shown = all;
+                }
+
+                for(int i : hidden) {
+                    toolBar.getComponentAtIndex(i).setVisible(false);
+                }
+                for(int i : shown) {
+                    toolBar.getComponentAtIndex(i).setVisible(true);
+                }
+            }
+        });
     }
 
     public void currentDataNodeChanged(DataNodeDisplayEvent e) {
@@ -463,9 +464,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         actionManager.procedureSelected();
     }
 
-    public void currentObjectsChanged(
-            MultipleObjectsDisplayEvent e,
-            Application application) {
+    public void currentObjectsChanged(MultipleObjectsDisplayEvent e, Application application) {
         actionManager.multipleObjectsSelected(e.getNodes(), application);
     }
 
@@ -505,8 +504,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         if (view != null) {
             splitPane.setTopComponent(view);
-        }
-        else {
+        } else {
             splitPane.setTopComponent(welcomeScreen);
         }
 
@@ -529,4 +527,66 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
             recentFileListener.recentFileListChanged();
         }
     }
+
+    public class SearchPanel extends JPanel {
+
+        private JLabel searchLabel = new JLabel("Search: ");
+        private JPanel box = new JPanel();
+        private JTextField findField;
+
+        SearchPanel() {
+            super(new BorderLayout());
+            initView();
+        }
+
+        void initView() {
+            findField = new JTextField(10);
+            findField.putClientProperty("JTextField.variant", "search");
+            findField.setMaximumSize(new Dimension(100, 22));
+            findField.setPreferredSize(new Dimension(100, 22));
+            findField.addKeyListener(new KeyListener() {
+                public void keyPressed(KeyEvent e) {
+                    if (e.getKeyCode() != KeyEvent.VK_ENTER) {
+                        findField.setBackground(Color.white);
+                    }
+                }
+
+                public void keyReleased(KeyEvent e) {
+                }
+
+                public void keyTyped(KeyEvent e) {
+                }
+            });
+            findField.setAction(getAction(FindAction.class));
+
+            Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+                public void eventDispatched(AWTEvent event) {
+                    if (event instanceof KeyEvent) {
+                        if (((KeyEvent) event).getModifiers() == Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+                                && ((KeyEvent) event).getKeyCode() == KeyEvent.VK_F) {
+                            findField.requestFocus();
+                        }
+                    }
+                }
+            }, AWTEvent.KEY_EVENT_MASK);
+
+            searchLabel.setLabelFor(findField);
+            // is used to place label and text field one after another
+            box.setLayout(new BoxLayout(box, BoxLayout.X_AXIS));
+            box.add(searchLabel);
+            box.add(findField);
+
+            add(box, BorderLayout.EAST);
+        }
+
+        public void hideSearchLabel() {
+            searchLabel.setVisible(false);
+            findField.setMaximumSize(null);
+            findField.setPreferredSize(new Dimension(100, 40));
+            findField.setToolTipText("Search");
+            box.setOpaque(false);
+            box.setBackground(null);
+        }
+    }
+
 }

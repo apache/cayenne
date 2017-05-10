@@ -37,6 +37,7 @@ CAY-2278 Extract cayenne-postcommit module from cayenne-lifecycle
 CAY-2280 Switch from commons-logging to slf4j
 CAY-2295 "Sync ObjEntity with DbEntity" and "View related DbEntity" buttons aren't disabled, if DbEntity doesn't have ObjEntity
 CAY-2296 cayenne-crypto: Get java type for DbAttribute bound to ObjAttributes with the same type
+CAY-2300 Modeler: New icons and design improvements
 
 Bug Fixes:
 

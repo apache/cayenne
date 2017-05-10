@@ -29,9 +29,11 @@ import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.undo.AddPrefetchUndoableEdit;
+import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.EntityTreeFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.swing.components.image.FilteredIconFactory;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -52,8 +54,11 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
     protected JComponent createToolbar() {
 
-        JButton add = new JButton("Add Prefetch", ModelerUtil
-                .buildIcon("icon-move_up.gif"));
+        JButton add = new CayenneAction.CayenneToolbarButton(null, 1);
+        add.setText("Add Prefetch");
+        Icon addIcon = ModelerUtil.buildIcon("icon-plus.png");
+        add.setIcon(addIcon);
+        add.setDisabledIcon(FilteredIconFactory.createDisabledIcon(addIcon));
         
         add.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -70,8 +75,11 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
         });
 
-        JButton remove = new JButton("Remove Prefetch", ModelerUtil
-                .buildIcon("icon-move_down.gif"));
+        JButton remove = new CayenneAction.CayenneToolbarButton(null, 3);
+        remove.setText("Remove Prefetch");
+        Icon removeIcon = ModelerUtil.buildIcon("icon-trash.png");
+        remove.setIcon(removeIcon);
+        remove.setDisabledIcon(FilteredIconFactory.createDisabledIcon(removeIcon));
         
         remove.addActionListener(new ActionListener() {
 
@@ -89,10 +97,12 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
         });
 
-        JToolBar toolbar = new JToolBar();
-        toolbar.add(add);
-        toolbar.add(remove);
-        return toolbar;
+        JToolBar toolBar = new JToolBar();
+        toolBar.setBorder(BorderFactory.createEmptyBorder());
+        toolBar.setFloatable(false);
+        toolBar.add(add);
+        toolBar.add(remove);
+        return toolBar;
     }
 
     protected TreeModel createBrowserModel(Entity entity) {

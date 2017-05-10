@@ -25,12 +25,9 @@ import javax.swing.JCheckBox;
 import javax.swing.JPopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Set;
 
 public class FilterDialog extends JPopupMenu {
-	
-	private String SHOW_ALL = "Show all";
-	
+
 	private JCheckBox dbEntity;
 	private JCheckBox objEntity;
 	private JCheckBox embeddable;
@@ -39,7 +36,9 @@ public class FilterDialog extends JPopupMenu {
 	private JCheckBox all;
 	private ProjectController eventController;
 	private FilterController filterController;
-	
+
+	/* NOTE: Setters and getters are used by view bindings, don't delete them */
+
 	public Boolean getDbEntityFilter() {
 		return filterController.getFilterMap().get("dbEntity");
 	}
@@ -78,19 +77,16 @@ public class FilterDialog extends JPopupMenu {
 	}
 
 	public Boolean getAllFilter() {
-		Set<String> keys=filterController.getFilterMap().keySet();
-		
-		for(String key : keys) {
-			if(filterController.getFilterMap().get(key) != true) {
+		for(Boolean selected : filterController.getFilterMap().values()) {
+			if(!selected) {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	public void setAllFilter(Boolean value) {
-		
 	}
 	
 	public FilterDialog(FilterController filterController){
@@ -103,7 +99,7 @@ public class FilterDialog extends JPopupMenu {
 	
 	public void initView(){
 
-		all = new JCheckBox(SHOW_ALL);
+		all = new JCheckBox("Show all");
 		dbEntity = new JCheckBox("DbEntity");
 		objEntity = new JCheckBox("ObjEntity");
 		embeddable = new JCheckBox("Embeddable");
@@ -139,7 +135,6 @@ public class FilterDialog extends JPopupMenu {
 
         all.setEnabled(false);
 		all.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
 				dbEntity.setSelected(true);
@@ -156,26 +151,13 @@ public class FilterDialog extends JPopupMenu {
 	}
 
 	void checkAllStates() {
-		if(!isAll()) {
+		if(!getAllFilter()) {
 			all.setSelected(false);
 			all.setEnabled(true);
-		}
-		else {
+		} else {
 			all.setSelected(true);
 			all.setEnabled(false);
 		}
-	}
-	
-	private boolean isAll() {
-		Set<String> keys=filterController.getFilterMap().keySet();
-		
-		for(String key : keys) {
-			if(filterController.getFilterMap().get(key) == false) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	private class CheckListener implements ActionListener {
@@ -194,5 +176,4 @@ public class FilterDialog extends JPopupMenu {
             checkAllStates();
 		}
 	}
-	
 }

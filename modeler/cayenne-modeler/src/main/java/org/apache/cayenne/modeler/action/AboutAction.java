@@ -35,7 +35,6 @@ public class AboutAction extends CayenneAction {
 
     /**
      * Constructor for AboutMenuAction.
-     * @param name
      */
     public AboutAction(Application application) {
         super(getActionName(), application);

@@ -82,13 +82,24 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
 
         initView();
         initController();
-        initWithModel(relationship);
+        if(!initWithModel(relationship)){
+            cancelPressed = true;
+            return;
+        }
 
         this.undo = new RelationshipUndoableEdit(relationship);
 
         this.pack();
         this.centerWindow();
 
+    }
+
+    @Override
+    public void setVisible(boolean b) {
+        if(b && cancelPressed) {
+            return;
+        }
+        super.setVisible(b);
     }
 
     /**
@@ -148,18 +159,23 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         }), BorderLayout.SOUTH);
     }
 
-    private void initWithModel(DbRelationship aRelationship) {
+    private boolean initWithModel(DbRelationship aRelationship) {
         // sanity check
         if (aRelationship.getSourceEntity() == null) {
             throw new CayenneRuntimeException("Null source entity: %s", aRelationship);
         }
 
-        if (aRelationship.getTargetEntity() == null) {
-            throw new CayenneRuntimeException("Null target entity: %s", aRelationship);
-        }
-
         if (aRelationship.getSourceEntity().getDataMap() == null) {
             throw new CayenneRuntimeException("Null DataMap: %s", aRelationship.getSourceEntity());
+        }
+
+        if (aRelationship.getTargetEntity() == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please select target DbEntity first",
+                    "Select target",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return false;
         }
 
         // Once assigned, can reference relationship directly. Would it be
@@ -198,6 +214,7 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
 
         name.setText(relationship.getName());
         tablePreferences.bind(table, null, null, null, DbJoinTableModel.SOURCE, true);
+        return true;
     }
 
     private void initController() {

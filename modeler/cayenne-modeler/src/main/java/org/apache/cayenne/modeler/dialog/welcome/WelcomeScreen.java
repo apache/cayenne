@@ -30,6 +30,7 @@ import java.io.File;
 import java.util.List;
 
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -89,6 +90,7 @@ public class WelcomeScreen extends JScrollPane implements RecentFileListListener
                 g2.dispose();
             }
         };
+        setBorder(BorderFactory.createEmptyBorder());
         initButtonsPane();
         initFileListPane();
         setViewportView(mainPanel);

@@ -84,9 +84,7 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
                 "attributeTable");
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
 
-        /**
-         * Create and install a popup
-         */
+        // Create and install a popup
         JPopupMenu popup = new JPopupMenu();
         popup.add(actionManager.getAction(RemoveAttributeRelationshipAction.class).buildMenu());
 
@@ -153,8 +151,7 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
             rebuildTable(entity);
         }
 
-        // if an entity was selected on a tree,
-        // unselect currently selected row
+        // if an entity was selected on a tree, unselect currently selected row
         if (e.isUnselectAttributes()) {
             table.clearSelection();
         }

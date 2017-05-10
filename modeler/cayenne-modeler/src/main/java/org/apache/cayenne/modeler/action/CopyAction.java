@@ -72,7 +72,7 @@ public class CopyAction extends CayenneAction {
 
     @Override
     public String getIconName() {
-        return "icon-copy.gif";
+        return "icon-copy.png";
     }
 
     @Override

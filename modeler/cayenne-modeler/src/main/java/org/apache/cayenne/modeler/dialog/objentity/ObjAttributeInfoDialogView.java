@@ -198,8 +198,8 @@ public class ObjAttributeInfoDialogView extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 boolean isType = false;
                 String[] typeNames = ModelerUtil.getRegisteredTypeNames();
-                for (int i = 0; i < typeNames.length; i++) {
-                    if (typeComboBox.getSelectedItem() == null || typeNames[i].equals(typeComboBox.getSelectedItem().toString())) {
+                for (String typeName : typeNames) {
+                    if (typeComboBox.getSelectedItem() == null || typeName.equals(typeComboBox.getSelectedItem().toString())) {
                         isType = true;
                     }
                 }
@@ -209,7 +209,6 @@ public class ObjAttributeInfoDialogView extends JDialog {
                 } else {
                     ((CardLayout) typeManagerPane.getLayout()).show(typeManagerPane, EMBEDDABLE_PANEL);
                     getCurrentPathLabel().setText("");
-
                 }
             }
 

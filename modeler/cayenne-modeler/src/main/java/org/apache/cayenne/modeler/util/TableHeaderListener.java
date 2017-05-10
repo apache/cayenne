@@ -33,20 +33,20 @@ import java.awt.event.MouseEvent;
 
 public class TableHeaderListener extends MouseAdapter {
 
-    private JTableHeader header;
-    private SortButtonRenderer renderer;
-    private JTable table;
-    private TableColumnPreferences tableColumnPreferences;
-
     private static final int EPSILON = 5;
     private static final Cursor EAST = Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
     private static final Cursor WEST = Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR);
+
+    private JTableHeader header;
+    private SortButtonRenderer renderer;
+    private JTable table;
+
+    private TableColumnPreferences tableColumnPreferences;
 
     public TableHeaderListener(JTableHeader header, SortButtonRenderer renderer) {
         this.header = header;
         this.renderer = renderer;
         table = header.getTable();
-
     }
 
     @Override
@@ -56,19 +56,13 @@ public class TableHeaderListener extends MouseAdapter {
         } else if (!isResizeCursor()) {
             int col = header.columnAtPoint(e.getPoint());
             int sortCol = table.convertColumnIndexToModel(col);
-            if (((CayenneTableModel) table.getModel()).isColumnSortable(sortCol)) {
-                boolean isAscent;
-                if (SortButtonRenderer.DOWN == renderer.getState(col)) {
-                    isAscent = false;
-                } else {
-                    isAscent = true;
-                }
+            if (renderer.isSortingEnabled() && ((CayenneTableModel) table.getModel()).isColumnSortable(sortCol)) {
+                boolean isAscent = SortButtonRenderer.DOWN != renderer.getState(col);
                 sortByDefinedColumn(col, sortCol, isAscent);
                 tableColumnPreferences.setSortOrder(isAscent);
                 tableColumnPreferences.setSortColumn(sortCol);
             }
         }
-
     }
 
     public void mouseReleased(MouseEvent e) {
@@ -77,7 +71,7 @@ public class TableHeaderListener extends MouseAdapter {
 
     public void sortByDefinedColumn(int col, int sortCol, boolean order) {
         CayenneTableModel model = (CayenneTableModel) table.getModel();
-        if (model.isColumnSortable(sortCol)) {
+        if (renderer.isSortingEnabled() && model.isColumnSortable(sortCol)) {
             renderer.setSelectedColumn(col, order);
             header.repaint();
 

@@ -36,14 +36,13 @@ public class NavigateBackwardAction extends CayenneAction {
 
     /**
      * Constructor for Move Backward Action
-     * @param name
      */
     public NavigateBackwardAction(Application application) {
         super(getActionName(), application);
     }
 
     public String getIconName() {
-        return "icon-backward_nav.gif";
+        return "icon-backward.png";
     }
 
     /**

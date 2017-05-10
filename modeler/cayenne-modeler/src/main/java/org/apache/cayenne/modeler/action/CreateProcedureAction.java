@@ -87,6 +87,6 @@ public class CreateProcedureAction extends CayenneAction {
     }
 
     public String getIconName() {
-        return "icon-stored-procedure.gif";
+        return "icon-stored-procedure.png";
     }
 }

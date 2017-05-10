@@ -21,14 +21,17 @@ package org.apache.cayenne.modeler.util;
 
 import javax.swing.BorderFactory;
 import javax.swing.JTable;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.Component;
+import java.awt.Font;
 
 public class BoardTableCellRenderer extends DefaultTableCellRenderer {
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
         setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+        setFont(UIManager.getFont("Label.font"));
         return this;
     }
 }

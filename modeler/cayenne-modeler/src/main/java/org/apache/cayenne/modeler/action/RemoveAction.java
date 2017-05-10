@@ -95,7 +95,7 @@ public class RemoveAction extends CayenneAction {
 
     @Override
     public String getIconName() {
-        return "icon-trash.gif";
+        return "icon-trash.png";
     }
 
     @Override

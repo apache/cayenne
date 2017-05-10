@@ -158,13 +158,13 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         createdObjects = new ArrayList<>();
         relCells = new HashMap<>();
 
-        /**
+        /*
          * an array for entities that are not connected to anyone. We add them
          * separately so that layout doesn't touch them
          */
         List<DefaultGraphCell> isolatedObjects = new ArrayList<DefaultGraphCell>();
 
-        /**
+        /*
          * 1. Add all entities
          */
         for (DataMap map : domain.getDataMaps()) {
@@ -183,7 +183,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
             }
         }
 
-        /**
+        /*
          * 2. Add all relationships
          */
         for (DataMap map : domain.getDataMaps()) {
@@ -205,8 +205,12 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
             layout.setOptimizeBorderLine(false);
             layout.setOptimizeEdgeDistance(false);
 
-            // JGraphSimpleLayout layout = new
-            // JGraphSimpleLayout(JGraphSimpleLayout.TYPE_TILT, 4000, 2000);
+            // JGraphHierarchicalLayout layout = new JGraphHierarchicalLayout();
+            // layout.setInterHierarchySpacing(150.0);
+            // layout.setIntraCellSpacing(150.0);
+            // layout.setInterRankCellSpacing(150.0);
+
+            // JGraphSimpleLayout layout = new JGraphSimpleLayout(JGraphSimpleLayout.TYPE_TILT, 4000, 2000);
             layout.run(facade);
             Map nested = facade.createNestedMap(true, true); // Obtain a map of
                                                              // the
@@ -218,7 +222,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
             edit(nested); // Apply the results to the actual graph
         }
 
-        /**
+        /*
          * Adding isolated objects
          * 
          * We're placing them so that they will take maximum space in left top
@@ -465,10 +469,6 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
 
     /**
      * Updates relationship labels for specified relationship edge.
-     * 
-     * @param order
-     *            order of relationship in entity's same target relationships -
-     *            to differ labels of relationships with same source and target
      */
     protected void updateRelationshipLabels(DefaultEdge edge, Relationship rel, Relationship reverse) {
         DefaultGraphCell sourceCell = entityCells.get(rel.getSourceEntity().getName());

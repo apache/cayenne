@@ -29,10 +29,8 @@ import org.apache.cayenne.modeler.util.CayenneTableModel;
 
 /**
  * Table model for displaying methods list for a particular CallbackDescriptor
- * 
- * @version 1.0 Oct 23, 2007
  */
-public class CallbackDescriptorTableModel extends CayenneTableModel {
+public class CallbackDescriptorTableModel extends CayenneTableModel<String> {
 
     private static final int COLUMN_COUNT = 1;
     public static final int METHOD_NAME = 0;
@@ -49,7 +47,7 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
      * @param callbackDescriptor callback descriptor instance
      */
     public CallbackDescriptorTableModel(ProjectController mediator, Object eventSource,
-            List objectList, CallbackDescriptor callbackDescriptor, CallbackType callbackType) {
+            List<String> objectList, CallbackDescriptor callbackDescriptor, CallbackType callbackType) {
         super(mediator, eventSource, objectList);
         this.callbackDescriptor = callbackDescriptor;
         this.callbackType = callbackType;
@@ -78,7 +76,7 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
      * @return callback method for the specified index
      */
     public String getCallbackMethod(int rowIndex) {
-        return (String) objectList.get(rowIndex);
+        return objectList.get(rowIndex);
     }
 
     /**
@@ -102,13 +100,6 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
      */
     public Object getValueAt(int rowIndex, int columnIndex) {
     	return getCallbackMethod(rowIndex);
-    }
-
-    /**
-     * sorting disabled
-     */
-    protected void orderList() {
-        // NOOP
     }
 
     /**
@@ -142,12 +133,11 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
         if (method != null) {
             method = method.trim();
         }
-        String prevMethod = (String) getObjectList().get(row);
+        String prevMethod = getObjectList().get(row);
 
         if (method != null && method.length() > 0) {
             // check that method changed and name is not duplicate
-            if (!method.equals(prevMethod)
-                    && !getCallbackDescriptor().getCallbackMethods().contains(method)) {
+            if (!method.equals(prevMethod) && !getCallbackDescriptor().getCallbackMethods().contains(method)) {
                 // update model
                 getObjectList().set(row, method);
 
@@ -163,7 +153,6 @@ public class CallbackDescriptorTableModel extends CayenneTableModel {
                         MapEvent.CHANGE));
             }
         }
-
     }
 
     /**

@@ -50,7 +50,7 @@ public class SaveAction extends SaveAsAction {
 
     @Override
     public String getIconName() {
-        return "icon-save.gif";
+        return "icon-save.png";
     }
 
     @Override

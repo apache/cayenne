@@ -33,8 +33,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.query.Query;
 
 /**
  * ProjectTreeModel is a model of Cayenne project tree.
@@ -112,8 +112,7 @@ public class ProjectTreeModel extends DefaultTreeModel {
 			try {
 				// insert
 				insertNodeInto(treeNode, parent, ins);
-			} catch (NullPointerException e) {
-
+			} catch (NullPointerException ignored) {
 			}
 		}
 	}
@@ -164,11 +163,9 @@ public class ProjectTreeModel extends DefaultTreeModel {
 	}
 
 	public int getChildCount(Object parent) {
-		int realCount = super.getChildCount(parent), filterCount = 0;
-
-		for (int i = 0; i < realCount; i++) {
-			DefaultMutableTreeNode dmtn = (DefaultMutableTreeNode) super.getChild(parent, i);
-			if (filter.pass(dmtn)) {
+		int filterCount = 0;
+		for (int i = 0, realCount = super.getChildCount(parent); i < realCount; i++) {
+			if (filter.pass((DefaultMutableTreeNode) super.getChild(parent, i))) {
 				filterCount++;
 			}
 		}
@@ -178,7 +175,7 @@ public class ProjectTreeModel extends DefaultTreeModel {
 	public Object getChild(Object parent, int index) {
 		int cnt = -1;
 		for (int i = 0; i < super.getChildCount(parent); i++) {
-			Object child = super.getChild(parent, i);
+			DefaultMutableTreeNode child = (DefaultMutableTreeNode) super.getChild(parent, i);
 			if (filter.pass(child)) {
 				cnt++;
 			}
@@ -198,20 +195,16 @@ public class ProjectTreeModel extends DefaultTreeModel {
 			pass = false;
 		}
 
-		public boolean pass(Object obj) {
-			Object root = ((DefaultMutableTreeNode) obj).getUserObject();
-			Object firstLeaf = ((DefaultMutableTreeNode) obj).getFirstLeaf().getUserObject();
+		public boolean pass(DefaultMutableTreeNode obj) {
+			Object root = obj.getUserObject();
+			Object firstLeaf = obj.getFirstLeaf().getUserObject();
 
 			return ((pass) || (root instanceof DataMap) || (root instanceof DataNodeDescriptor)
 					|| (firstLeaf instanceof DbEntity && filterMap.get("dbEntity"))
 					|| (firstLeaf instanceof ObjEntity && filterMap.get("objEntity"))
 					|| (firstLeaf instanceof Embeddable && filterMap.get("embeddable"))
-					|| (firstLeaf instanceof Query && filterMap.get("query")) || (firstLeaf instanceof Procedure && filterMap
-					.get("procedure")));
-		}
-
-		public boolean isFiltered() {
-			return pass;
+					|| (firstLeaf instanceof QueryDescriptor && filterMap.get("query"))
+					|| (firstLeaf instanceof Procedure && filterMap.get("procedure")));
 		}
 	}
 }

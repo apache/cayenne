@@ -51,7 +51,7 @@ public class CreateQueryAction extends CayenneAction {
     }
 
     public String getIconName() {
-        return "icon-query.gif";
+        return "icon-new_query.png";
     }
 
     public void performAction(ActionEvent e) {

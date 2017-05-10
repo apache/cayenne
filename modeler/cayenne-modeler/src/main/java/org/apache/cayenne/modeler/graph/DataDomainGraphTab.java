@@ -94,7 +94,8 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
 
         setLayout(new BorderLayout());
         JToolBar toolbar = new JToolBar();
-        toolbar.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 1));
+        toolbar.setFloatable(false);
+        toolbar.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
         GraphType[] types = GraphType.values();
         String[] names = new String[types.length];
@@ -105,11 +106,11 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
         diagramCombo = Application.getWidgetFactory().createComboBox(names, false);
         diagramCombo.addItemListener(this);
 
-        toolbar.add(new RebuildGraphAction(this, Application.getInstance()).buildButton());
-        toolbar.add(new SaveAsImageAction(this, Application.getInstance()).buildButton());
+        toolbar.add(new RebuildGraphAction(this, Application.getInstance()).buildButton(1));
+        toolbar.add(new SaveAsImageAction(this, Application.getInstance()).buildButton(3));
         toolbar.addSeparator();
-        toolbar.add(new ZoomInAction(this, Application.getInstance()).buildButton());
-        toolbar.add(new ZoomOutAction(this, Application.getInstance()).buildButton());
+        toolbar.add(new ZoomInAction(this, Application.getInstance()).buildButton(1));
+        toolbar.add(new ZoomOutAction(this, Application.getInstance()).buildButton(3));
 
         toolbar.addSeparator();
         toolbar.add(new JLabel("Diagram: "));

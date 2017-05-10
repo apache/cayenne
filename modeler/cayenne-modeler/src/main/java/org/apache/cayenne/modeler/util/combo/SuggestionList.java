@@ -18,11 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.util.combo;
 
+import java.awt.Color;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
@@ -58,6 +60,7 @@ public class SuggestionList extends BasicComboPopup {
         
         this.strict = strict;
         list.addMouseListener(new MouseHandler());
+        setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
     }
     
     /**
@@ -147,10 +150,9 @@ public class SuggestionList extends BasicComboPopup {
      */
     @Override
     protected ItemListener createItemListener() {
-        return 
-          new ItemListener() {
+        return new ItemListener() {
             public void itemStateChanged(ItemEvent e) {}
-          };
+        };
     }
     
     /**

@@ -60,7 +60,7 @@ public class CreateDbEntityAction extends CayenneAction {
     }
 
     public String getIconName() {
-        return "icon-dbentity.gif";
+        return "icon-dbentity.png";
     }
 
     /**

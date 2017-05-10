@@ -109,10 +109,8 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
                 DbRelationshipTableModel.class,
                 "relationshipTable");
 
-        /**
-         * Create and install a popup
-         */
-        Icon ico = ModelerUtil.buildIcon("icon-info.gif");
+        // Create and install a popup
+        Icon ico = ModelerUtil.buildIcon("icon-edit.png");
         resolveMenu = new JMenuItem("Database Mapping", ico);
 
         JPopupMenu popup = new JPopupMenu();

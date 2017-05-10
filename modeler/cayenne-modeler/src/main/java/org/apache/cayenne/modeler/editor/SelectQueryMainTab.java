@@ -200,6 +200,9 @@ public class SelectQueryMainTab extends JPanel {
     }
 
     protected SelectQueryDescriptor getQuery() {
+        if(mediator.getCurrentQuery() == null) {
+            return null;
+        }
         return QueryDescriptor.SELECT_QUERY.equals(mediator.getCurrentQuery().getType())
                 ? (SelectQueryDescriptor) mediator.getCurrentQuery()
                 : null;

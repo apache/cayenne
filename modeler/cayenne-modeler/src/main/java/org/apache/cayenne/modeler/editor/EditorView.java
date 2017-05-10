@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -174,22 +173,23 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 	}
 
 	private void initView() {
-
+	    setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 1));
         // init widgets
-        JButton collapseButton = getAction(CollapseTreeAction.class).buildButton();
-        collapseButton.setPreferredSize(new Dimension(30, 20));
-        JButton filterButton = getAction(FilterAction.class).buildButton();
-        filterButton.setPreferredSize(new Dimension(30, 20));
         actionManager.getAction(CollapseTreeAction.class).setAlwaysOn(true);
         actionManager.getAction(FilterAction.class).setAlwaysOn(true);
+        actionManager.getAction(FilterAction.class).resetDialog();
 
         JToolBar barPanel = new JToolBar();
-        barPanel.setMinimumSize(new Dimension(75, 25));
-        barPanel.setBorder(BorderFactory.createEtchedBorder());
+        barPanel.setFloatable(false);
+        barPanel.setMinimumSize(new Dimension(75, 30));
+        barPanel.setBorder(BorderFactory.createEmptyBorder());
         barPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-        barPanel.add(Box.createHorizontalStrut(3));
+
+        JButton collapseButton = getAction(CollapseTreeAction.class).buildButton(1);
+        JButton filterButton = getAction(FilterAction.class).buildButton(3);
+        filterButton.setPreferredSize(new Dimension(30, 30));
+        collapseButton.setPreferredSize(new Dimension(30, 30));
         barPanel.add(filterButton);
-        barPanel.addSeparator();
         barPanel.add(collapseButton);
 
         treePanel = new ProjectTreeView(eventController);
@@ -199,12 +199,14 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         treeNavigatePanel.setLayout(new BorderLayout());
         treeNavigatePanel.add(treePanel, BorderLayout.CENTER);
 
-        this.detailPanel = new JPanel();
-        this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
-        this.leftPanel = new JPanel(new BorderLayout());
+        detailPanel = new JPanel();
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true);
+        splitPane.setDividerSize(2);
+        splitPane.setBorder(BorderFactory.createEmptyBorder());
+        leftPanel = new JPanel(new BorderLayout());
         // assemble...
 
-        this.detailLayout = new CardLayout();
+        detailLayout = new CardLayout();
         detailPanel.setLayout(detailLayout);
 
         // some but not all panels must be wrapped in a scroll pane
@@ -249,14 +251,15 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         detailPanel.add(dbDetailView, DB_VIEW);
 
         leftPanel.add(barPanel, BorderLayout.NORTH);
-        leftPanel.add(new JScrollPane(treeNavigatePanel), BorderLayout.CENTER);
+        leftPanel.setBorder(BorderFactory.createEmptyBorder());
+        JScrollPane scrollPane = new JScrollPane(treeNavigatePanel);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        leftPanel.add(scrollPane, BorderLayout.CENTER);
         splitPane.setLeftComponent(leftPanel);
         splitPane.setRightComponent(detailPanel);
 
         setLayout(new BorderLayout());
         add(splitPane, BorderLayout.CENTER);
-        
-       
     }
     
     private <T extends Action> T getAction(Class<T> type) {
@@ -276,63 +279,38 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         eventController.addQueryDisplayListener(this);
         eventController.addMultipleObjectsDisplayListener(this);
         eventController.addEmbeddableDisplayListener(this);
-          
-        /**
-         * Moving this to try-catch block per CAY-940. Exception will be stack-traced
-         */
-        try {
-            ComponentGeometry geometry = new ComponentGeometry(
-                    this.getClass(),
-                    "splitPane/divider");
 
-            geometry
-                    .bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 150);
-        }
-        catch (Exception ex) {
+        // Moving this to try-catch block per CAY-940. Exception will be stack-traced
+        try {
+            ComponentGeometry geometry = new ComponentGeometry(this.getClass(), "splitPane/divider");
+            geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, 150);
+        } catch (Exception ex) {
             LoggerFactory.getLogger(getClass()).error("Cannot bind divider property", ex);
         }
     }
 
     public void currentProcedureChanged(ProcedureDisplayEvent e) {
-        if (e.getProcedure() == null)
-            detailLayout.show(detailPanel, EMPTY_VIEW);
-        else
-            detailLayout.show(detailPanel, PROCEDURE_VIEW);
+        detailLayout.show(detailPanel, e.getProcedure() == null ? EMPTY_VIEW : PROCEDURE_VIEW);
     }
 
     public void currentDomainChanged(DomainDisplayEvent e) {
-        if (e.getDomain() == null)
-            detailLayout.show(detailPanel, EMPTY_VIEW);
-        else
-            detailLayout.show(detailPanel, DOMAIN_VIEW);
+        detailLayout.show(detailPanel, e.getDomain() == null ? EMPTY_VIEW : DOMAIN_VIEW);
     }
 
     public void currentDataNodeChanged(DataNodeDisplayEvent e) {
-        if (e.getDataNode() == null)
-            detailLayout.show(detailPanel, EMPTY_VIEW);
-        else
-            detailLayout.show(detailPanel, NODE_VIEW);
+        detailLayout.show(detailPanel, e.getDataNode() == null ? EMPTY_VIEW : NODE_VIEW);
     }
 
     public void currentDataMapChanged(DataMapDisplayEvent e) {
-        if (e.getDataMap() == null)
-            detailLayout.show(detailPanel, EMPTY_VIEW);
-        else
-            detailLayout.show(detailPanel, DATA_MAP_VIEW);
+        detailLayout.show(detailPanel, e.getDataMap() == null ? EMPTY_VIEW : DATA_MAP_VIEW);
     }
 
     public void currentObjEntityChanged(EntityDisplayEvent e) {
-        if (e.getEntity() == null)
-            detailLayout.show(detailPanel, EMPTY_VIEW);
-        else
-            detailLayout.show(detailPanel, OBJ_VIEW);
+	    detailLayout.show(detailPanel, e.getEntity() == null ? EMPTY_VIEW : OBJ_VIEW);
     }
 
     public void currentDbEntityChanged(EntityDisplayEvent e) {
-        if (e.getEntity() == null)
-            detailLayout.show(detailPanel, EMPTY_VIEW);
-        else
-            detailLayout.show(detailPanel, DB_VIEW);
+        detailLayout.show(detailPanel, e.getEntity() == null ? EMPTY_VIEW : DB_VIEW);
     }
 
     public void currentQueryChanged(QueryDisplayEvent e) {
@@ -356,16 +334,11 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
         }
     }
 
-    public void currentObjectsChanged(
-            MultipleObjectsDisplayEvent e,
-            Application application) {
+    public void currentObjectsChanged(MultipleObjectsDisplayEvent e, Application application) {
         detailLayout.show(detailPanel, EMPTY_VIEW);
     }
 
     public void currentEmbeddableChanged(EmbeddableDisplayEvent e) {
-        if (e.getEmbeddable() == null)
-            detailLayout.show(detailPanel, EMPTY_VIEW);
-        else
-            detailLayout.show(detailPanel, EMBEDDABLE_VIEW);
+        detailLayout.show(detailPanel, e.getEmbeddable() == null ? EMPTY_VIEW : EMBEDDABLE_VIEW);
     }
 }

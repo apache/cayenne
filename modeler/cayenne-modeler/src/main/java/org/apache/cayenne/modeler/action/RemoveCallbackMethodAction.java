@@ -63,7 +63,7 @@ public class RemoveCallbackMethodAction extends RemoveAction {
      */
     @Override
     public String getIconName() {
-        return "icon-trash.gif";
+        return "icon-trash.png";
     }
     
     /**

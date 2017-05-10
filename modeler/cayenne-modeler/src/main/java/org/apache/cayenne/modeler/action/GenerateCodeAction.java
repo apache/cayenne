@@ -41,7 +41,7 @@ public class GenerateCodeAction extends CayenneAction {
     }
 
     public String getIconName() {
-        return "icon-gen_java.gif";
+        return "icon-gen_java.png";
     }
 
     public void performAction(ActionEvent e) {

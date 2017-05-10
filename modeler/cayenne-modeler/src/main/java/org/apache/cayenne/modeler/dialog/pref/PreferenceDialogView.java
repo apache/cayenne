@@ -19,15 +19,22 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
+import org.apache.cayenne.swing.components.TopBorder;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Frame;
-
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -38,7 +45,7 @@ import javax.swing.JSplitPane;
 public class PreferenceDialogView extends JDialog {
 
     protected JSplitPane split;
-    protected JList list;
+    protected JList<Object> list;
     protected CardLayout detailLayout;
     protected Container detailPanel;
     protected JButton cancelButton;
@@ -55,31 +62,43 @@ public class PreferenceDialogView extends JDialog {
     }
 
     private void init() {
-        this.split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        this.list = new JList();
-        this.detailLayout = new CardLayout();
-        this.detailPanel = new JPanel(detailLayout);
-        this.saveButton = new JButton("Save");
-        this.cancelButton = new JButton("Cancel");
+        split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        split.setBorder(TopBorder.create());
+        list = new JList<>();
+        list.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                setBorder(BorderFactory.createEmptyBorder(5, 8, 5, 0));
+                return this;
+            }
+        });
+        list.setFont(new JLabel().getFont().deriveFont(Font.BOLD, 12));
+        detailLayout = new CardLayout();
+        detailPanel = new JPanel(detailLayout);
+        saveButton = new JButton("Save");
+        cancelButton = new JButton("Cancel");
 
         // assemble
 
         Container leftContainer = new JPanel(new BorderLayout());
-        leftContainer.add(new JScrollPane(list));
+        JScrollPane scrollPane = new JScrollPane(list);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        leftContainer.add(scrollPane);
+        leftContainer.setPreferredSize(new Dimension(180, 400));
+
+        split.setLeftComponent(leftContainer);
+        split.setRightComponent(detailPanel);
+        split.setDividerSize(3);
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
         buttons.add(saveButton);
-
-        Container rightContainer = new JPanel(new BorderLayout());
-        rightContainer.add(detailPanel, BorderLayout.CENTER);
-        rightContainer.add(buttons, BorderLayout.SOUTH);
-
-        split.setLeftComponent(leftContainer);
-        split.setRightComponent(rightContainer);
+        buttons.setBorder(TopBorder.create());
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(split, BorderLayout.CENTER);
+        getContentPane().add(buttons, BorderLayout.SOUTH);
         setTitle("Edit Preferences");
     }
 

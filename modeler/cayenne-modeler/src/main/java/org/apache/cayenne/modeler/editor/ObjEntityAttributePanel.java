@@ -32,6 +32,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.CutAttributeRelationshipAction;
+import org.apache.cayenne.modeler.action.ObjEntityToSuperEntityAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.dialog.objentity.ObjAttributeInfoDialog;
@@ -51,6 +52,7 @@ import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
+import org.apache.cayenne.swing.components.image.FilteredIconFactory;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -63,6 +65,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -74,6 +77,8 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -130,8 +135,23 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 ObjAttributeTableModel.class,
                 "objEntity/attributeTable");
 
+        // go to SuperEntity from ObjEntity by inheritance icon
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                int row = table.rowAtPoint(e.getPoint());
+                int col = table.columnAtPoint(e.getPoint());
+                if (row >= 0 && col == ObjAttributeTableModel.INHERITED) {
+                    if (Boolean.TRUE.equals(table.getValueAt(row, col))) {
+                        ActionManager actionManager = Application.getInstance().getActionManager();
+                        actionManager.getAction(ObjEntityToSuperEntityAction.class).performAction(null);
+                    }
+                }
+            }
+        });
+
         // Create and install a popup
-        Icon ico = ModelerUtil.buildIcon("icon-info.gif");
+        Icon ico = ModelerUtil.buildIcon("icon-edit.png");
         resolveMenu = new JMenuItem("Database Mapping", ico);
 
         JPopupMenu popup = new JPopupMenu();
@@ -441,11 +461,16 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 setIcon(null);
             } else {
                 if (attribute.isInherited()) {
-                    ImageIcon objEntityIcon = ModelerUtil.buildIcon("icon-override.gif");
+                    Icon objEntityIcon = ModelerUtil.buildIcon("icon-inheritance.png");
+                    if(isSelected) {
+                        objEntityIcon = FilteredIconFactory
+                                .createIcon(objEntityIcon, FilteredIconFactory.FilterType.SELECTION);
+                    }
                     setIcon(objEntityIcon);
                 }
                 setText("");
             }
+            setFont(UIManager.getFont("Label.font"));
             setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
 
             return this;

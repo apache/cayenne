@@ -20,13 +20,15 @@
 package org.apache.cayenne.modeler.util;
 
 import java.awt.Component;
+import java.awt.Font;
 
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.ListCellRenderer;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -37,6 +39,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.MappingNamespace;
@@ -46,6 +49,7 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.swing.components.image.FilteredIconFactory;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
@@ -56,68 +60,52 @@ import org.apache.cayenne.util.CayenneMapEntry;
 public final class CellRenderers {
 
     // common icons
-    protected static ImageIcon domainIcon;
-    protected static ImageIcon nodeIcon;
-    protected static ImageIcon mapIcon;
-    protected static ImageIcon dbEntityIcon;
-    protected static ImageIcon objEntityIcon;
-    protected static ImageIcon relationshipIcon;
-    protected static ImageIcon attributeIcon;
-    protected static ImageIcon procedureIcon;
-    protected static ImageIcon queryIcon;
-    protected static ImageIcon embeddableIcon;
-    protected static ImageIcon catalogIcon;
+    protected static Icon domainIcon       = FilteredIconFactory.createIcon(
+            ModelerUtil.buildIcon("icon-dom.png"), FilteredIconFactory.FilterType.GRAY);
+    protected static Icon nodeIcon         = FilteredIconFactory.createIcon(
+            ModelerUtil.buildIcon("icon-node.png"), FilteredIconFactory.FilterType.GRAY);
+    protected static Icon mapIcon          = FilteredIconFactory.createIcon(
+            ModelerUtil.buildIcon("icon-datamap.png"), FilteredIconFactory.FilterType.GRAY);
+    protected static Icon dbEntityIcon     = FilteredIconFactory.createIcon(
+            ModelerUtil.buildIcon("icon-dbentity.png"), FilteredIconFactory.FilterType.BLUE);
+    protected static Icon objEntityIcon    = FilteredIconFactory.createIcon(
+            ModelerUtil.buildIcon("icon-objentity.png"), FilteredIconFactory.FilterType.GREEN);
+    protected static Icon procedureIcon    = FilteredIconFactory.createIcon(
+            ModelerUtil.buildIcon("icon-stored-procedure.png"), FilteredIconFactory.FilterType.GRAY);
+    protected static Icon queryIcon        = FilteredIconFactory.createIcon(
+            ModelerUtil.buildIcon("icon-query.png"), FilteredIconFactory.FilterType.GRAY);
+    protected static Icon embeddableIcon   = FilteredIconFactory.createIcon(
+            ModelerUtil.buildIcon("icon-embeddable.png"), FilteredIconFactory.FilterType.VIOLET);
 
-    static {
-        domainIcon = ModelerUtil.buildIcon("icon-dom.gif");
-        nodeIcon = ModelerUtil.buildIcon("icon-node.gif");
-        mapIcon = ModelerUtil.buildIcon("icon-datamap.gif");
-        dbEntityIcon = ModelerUtil.buildIcon("icon-dbentity.gif");
-        objEntityIcon = ModelerUtil.buildIcon("icon-objentity.gif");
-        procedureIcon = ModelerUtil.buildIcon("icon-stored-procedure.gif");
-        queryIcon = ModelerUtil.buildIcon("icon-query.gif");
-        relationshipIcon = ModelerUtil.buildIcon("icon-relationship.gif");
-        attributeIcon = ModelerUtil.buildIcon("icon-attribute.gif");
-        embeddableIcon = ModelerUtil.buildIcon("icon-embeddable.gif");
-        catalogIcon = ModelerUtil.buildIcon("icon-open.gif");
-    }
+    protected static Icon relationshipIcon = ModelerUtil.buildIcon("icon-relationship.png");
+    protected static Icon attributeIcon    = ModelerUtil.buildIcon("icon-attribute.png");
 
-    public static ImageIcon iconForObject(Object object) {
+    protected static Font defaultFont      = UIManager.getFont("Label.font");
+
+    public static Icon iconForObject(Object object) {
         if (object == null) {
             return null;
         }
 
         if (object instanceof DataChannelDescriptor) {
             return domainIcon;
-        }
-        else if (object instanceof DataNodeDescriptor) {
+        } else if (object instanceof DataNodeDescriptor) {
             return nodeIcon;
-        }
-        else if (object instanceof DataMap) {
+        } else if (object instanceof DataMap) {
             return mapIcon;
-        }
-        else if (object instanceof Entity) {
-            Entity entity = (Entity) object;
-            if (entity instanceof org.apache.cayenne.map.DbEntity) {
-                return dbEntityIcon;
-            }
-            else if (entity instanceof ObjEntity) {
-                return objEntityIcon;
-            }
-        }
-        else if (object instanceof Procedure) {
+        } else if (object instanceof DbEntity) {
+            return dbEntityIcon;
+        } else if (object instanceof ObjEntity) {
+            return objEntityIcon;
+        } else if (object instanceof Procedure) {
             return procedureIcon;
-        }
-        else if (object instanceof QueryDescriptor) {
+        } else if (object instanceof QueryDescriptor) {
             return queryIcon;
-        }
-        else if (object instanceof Relationship) {
+        } else if (object instanceof Relationship) {
             return relationshipIcon;
-        }
-        else if (object instanceof Attribute) {
+        } else if (object instanceof Attribute) {
             return attributeIcon;
-        }
-        else if (object instanceof Embeddable) {
+        } else if (object instanceof Embeddable) {
             return embeddableIcon;
         }
         return null;
@@ -219,7 +207,7 @@ public final class CellRenderers {
 
             // the sequence is important - call super with converted value,
             // then set an icon, and then return "this" 
-            ImageIcon icon = CellRenderers.iconForObject(value);
+            Icon icon = CellRenderers.iconForObject(value);
 
             value = asString(value, namespace);
 
@@ -230,7 +218,8 @@ public final class CellRenderers {
                 isSelected,
                 cellHasFocus);
 
-            setIcon(icon);
+            setIcon(isSelected ? FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.SELECTION) : icon);
+            setFont(defaultFont);
 
             return this;
         }
@@ -270,8 +259,13 @@ public final class CellRenderers {
                 cellHasFocus);
 
             if (showIcons) {
-                setIcon(iconForObject(value));
+                Icon icon = iconForObject(value);
+                if(isSelected) {
+                    icon = FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.SELECTION);
+                }
+                setIcon(icon);
             }
+            setFont(defaultFont);
 
             return this;
         }
@@ -300,7 +294,12 @@ public final class CellRenderers {
                 hasFocus);
 
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-            setIcon(iconForObject(node.getUserObject()));
+            Icon icon = iconForObject(node.getUserObject());
+            if(sel) {
+                icon = FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.SELECTION);
+            }
+            setIcon(icon);
+            setFont(defaultFont);
 
             return this;
         }
@@ -332,8 +331,13 @@ public final class CellRenderers {
                     hasFocus,
                     row,
                     column);
-            
-            setIcon(CellRenderers.iconForObject(oldValue));
+
+            Icon icon = CellRenderers.iconForObject(oldValue);
+            if(isSelected) {
+                icon = FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.SELECTION);
+            }
+            setIcon(icon);
+            setFont(defaultFont);
 
             return this;
         }

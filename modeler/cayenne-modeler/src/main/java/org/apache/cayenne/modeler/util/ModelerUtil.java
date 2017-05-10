@@ -68,14 +68,11 @@ public final class ModelerUtil {
     public static String getObjectName(Object object) {
         if (object == null) {
             return null;
-        }
-        else if (object instanceof CayenneMapEntry) {
+        } else if (object instanceof CayenneMapEntry) {
             return ((CayenneMapEntry) object).getName();
-        }
-        else if (object instanceof String) {
+        } else if (object instanceof String) {
             return (String) object;
-        }
-        else {
+        } else {
             try {
                 // use reflection
                 return (String) PropertyUtils.getProperty(object, "name");
@@ -104,52 +101,47 @@ public final class ModelerUtil {
             DbEntity entity) {
 
         Set<String> keys = entity.getAttributeMap().keySet();
-        List<String> list = new ArrayList<String>(keys.size() + 1);
+        List<String> list = new ArrayList<>(keys.size() + 1);
         list.add("");
         list.addAll(keys);
         return list;
     }
 
     public static String[] getRegisteredTypeNames() {
-        Set<String> nonPrimitives = new HashSet<String>();
-
-        nonPrimitives.add(String.class.getName());
-        nonPrimitives.add(BigDecimal.class.getName());
-        nonPrimitives.add(BigInteger.class.getName());
-        nonPrimitives.add(Boolean.class.getName());
-        nonPrimitives.add(Byte.class.getName());
-        nonPrimitives.add(Character.class.getName());
-        nonPrimitives.add(Date.class.getName());
-        nonPrimitives.add(java.util.Date.class.getName());
-        nonPrimitives.add(Double.class.getName());
-        nonPrimitives.add(Float.class.getName());
-        nonPrimitives.add(Integer.class.getName());
-        nonPrimitives.add(Long.class.getName());
-        nonPrimitives.add(Short.class.getName());
-        nonPrimitives.add(Time.class.getName());
-        nonPrimitives.add(Timestamp.class.getName());
-        nonPrimitives.add(Date.class.getName());
-        nonPrimitives.add(GregorianCalendar.class.getName());
-        nonPrimitives.add(Calendar.class.getName());
-        nonPrimitives.add(UUID.class.getName());
-        nonPrimitives.add(Serializable.class.getName());
-        nonPrimitives.add("java.lang.Character[]");
-        nonPrimitives.add("java.lang.Byte[]");
-        nonPrimitives.add("java.time.LocalDate");
-        nonPrimitives.add("java.time.LocalTime");
-        nonPrimitives.add("java.time.LocalDateTime");
-
-        String[] nonPrimitivesNames = new String[nonPrimitives.size()];
-        nonPrimitives.toArray(nonPrimitivesNames);
+        String[] nonPrimitivesNames = {
+                String.class.getName(),
+                BigDecimal.class.getName(),
+                BigInteger.class.getName(),
+                Boolean.class.getName(),
+                Byte.class.getName(),
+                Character.class.getName(),
+                Date.class.getName(),
+                java.util.Date.class.getName(),
+                Double.class.getName(),
+                Float.class.getName(),
+                Integer.class.getName(),
+                Long.class.getName(),
+                Short.class.getName(),
+                Time.class.getName(),
+                Timestamp.class.getName(),
+                Date.class.getName(),
+                GregorianCalendar.class.getName(),
+                Calendar.class.getName(),
+                UUID.class.getName(),
+                Serializable.class.getName(),
+                "java.lang.Character[]",
+                "java.lang.Byte[]",
+                "java.time.LocalDate",
+                "java.time.LocalTime",
+                "java.time.LocalDateTime"
+        };
         Arrays.sort(nonPrimitivesNames);
 
         String[] primitivesNames = {
                 "boolean", "byte", "byte[]", "char", "char[]", "double", "float", "int", "long", "short"
         };
 
-        String[] finalList = new String[primitivesNames.length
-                + nonPrimitivesNames.length
-                + 1];
+        String[] finalList = new String[primitivesNames.length + nonPrimitivesNames.length + 1];
 
         finalList[0] = "";
         System.arraycopy(primitivesNames, 0, finalList, 1, primitivesNames.length);
@@ -163,17 +155,17 @@ public final class ModelerUtil {
         return finalList;
     }
 
-    public static DataNodeDescriptor getNodeLinkedToMap(
-            DataChannelDescriptor domain,
-            DataMap map) {
+    public static DataNodeDescriptor getNodeLinkedToMap(DataChannelDescriptor domain, DataMap map) {
         Collection<DataNodeDescriptor> nodes = domain.getNodeDescriptors();
 
         // go via an iterator in an indexed loop, since
         // we already obtained the size
         // (and index is required to initialize array)
-        for (DataNodeDescriptor node : nodes)
-            if (node.getDataMapNames().contains(map.getName()))
+        for (DataNodeDescriptor node : nodes) {
+            if (node.getDataMapNames().contains(map.getName())) {
                 return node;
+            }
+        }
 
         return null;
     }
@@ -189,11 +181,9 @@ public final class ModelerUtil {
             Action action = actionManager.getAction(actionType);
 
             if (action instanceof MultipleObjectsAction) {
-
                 MultipleObjectsAction multiObjectAction = (MultipleObjectsAction) action;
                 multiObjectAction.setEnabled(numSelected > 0);
-                ((CayenneAction) multiObjectAction).setName(multiObjectAction
-                        .getActionName(numSelected > 1));
+                ((CayenneAction) multiObjectAction).setName(multiObjectAction.getActionName(numSelected > 1));
             }
         }
     }

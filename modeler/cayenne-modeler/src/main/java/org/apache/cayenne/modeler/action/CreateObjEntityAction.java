@@ -71,7 +71,7 @@ public class CreateObjEntityAction extends CayenneAction {
 
     @Override
     public String getIconName() {
-        return "icon-new_objentity.gif";
+        return "icon-new_objentity.png";
     }
 
     @Override

@@ -19,7 +19,7 @@
 package org.apache.cayenne.modeler.util;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.border.CompoundBorder;
@@ -28,12 +28,25 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 
-public class SortButtonRenderer  extends DefaultTableCellRenderer {
+public class SortButtonRenderer extends DefaultTableCellRenderer {
 
     public static final int NONE = 0;
     public static final int DOWN = 1;
     public static final int UP = 2;
 
+    private static final Icon ICON_DOWN = ModelerUtil.buildIcon("icon-sort-desc.png");
+    private static final Icon ICON_UP = ModelerUtil.buildIcon("icon-sort-asc.png");
+    private static final Font FONT;
+    private static final CompoundBorder BORDER = BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 1, 1, Color.GRAY),
+            BorderFactory.createEmptyBorder(0, 5, 0, 0));
+
+    static {
+        // Get default font for current system
+        FONT = new JLabel().getFont().deriveFont(Font.BOLD);
+    }
+
+    private boolean sortingEnabled = true;
     private int currentState;
     private int currentColumn;
 
@@ -46,23 +59,20 @@ public class SortButtonRenderer  extends DefaultTableCellRenderer {
             int column) {
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-        if (column == currentColumn) {
+        if (sortingEnabled && column == currentColumn) {
             if (currentState == DOWN) {
-                setIcon(new BevelArrowIcon(BevelArrowIcon.DOWN, false, false));
+                setIcon(ICON_DOWN);
             } else {
-                setIcon(new BevelArrowIcon(BevelArrowIcon.UP, false, false));
+                setIcon(ICON_UP);
             }
-        }else {
-            setIcon(new ImageIcon());
+        } else {
+            setIcon(null);
         }
 
-        setText( ((value == null) ? "" : value.toString()));
-        setFont(new Font("Verdana", Font.BOLD, 12));
+        setText(value == null ? "" : value.toString());
+        setFont(FONT);
         setHorizontalTextPosition(JLabel.LEFT);
-        CompoundBorder compoundBorder = BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 1, Color.GRAY),
-                BorderFactory.createEmptyBorder(0, 5, 0, 0));
-        setBorder(compoundBorder);
+        setBorder(BORDER);
         return this;
     }
 
@@ -84,5 +94,13 @@ public class SortButtonRenderer  extends DefaultTableCellRenderer {
             return currentState;
         }
         return NONE;
+    }
+
+    public boolean isSortingEnabled() {
+        return sortingEnabled;
+    }
+
+    public void setSortingEnabled(boolean sortingEnabled) {
+        this.sortingEnabled = sortingEnabled;
     }
 }

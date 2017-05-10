@@ -79,6 +79,7 @@ public class EmbeddableAttributeTab extends JPanel implements
         this.setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
         ActionManager actionManager = Application.getInstance().getActionManager();
 
         toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
@@ -87,9 +88,9 @@ public class EmbeddableAttributeTab extends JPanel implements
         toolBar.add(actionManager.getAction(RemoveAttributeAction.class).buildButton());
         toolBar.addSeparator();
 
-        toolBar.add(actionManager.getAction(CutAttributeAction.class).buildButton());
-        toolBar.add(actionManager.getAction(CopyAttributeAction.class).buildButton());
-        toolBar.add(actionManager.getAction(PasteAction.class).buildButton());
+        toolBar.add(actionManager.getAction(CutAttributeAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(CopyAttributeAction.class).buildButton(2));
+        toolBar.add(actionManager.getAction(PasteAction.class).buildButton(3));
 
         add(toolBar, BorderLayout.NORTH);
 

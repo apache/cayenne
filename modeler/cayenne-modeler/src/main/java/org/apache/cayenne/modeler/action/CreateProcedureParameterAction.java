@@ -59,7 +59,7 @@ public class CreateProcedureParameterAction extends CayenneAction {
 
     @Override
     public String getIconName() {
-        return "icon-plus.gif";
+        return "icon-plus.png";
     }
 
     /**

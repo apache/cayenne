@@ -238,7 +238,7 @@ public class Application {
                 "");
 
         Collection details = new ArrayList<>();
-        String[] keys = null;
+        String[] keys;
         ArrayList<String> values = new ArrayList<>();
 
         try {
@@ -246,14 +246,10 @@ public class Application {
             for (String cpKey : keys) {
             	values.add(classLoaderPreference.get(cpKey, ""));
             }
-        }
-        catch (BackingStoreException e) {
-            // do nothing
+        } catch (BackingStoreException ignored) {
         }
 
-        for (int i = 0; i < values.size(); i++) {
-            details.add(values.get(i));
-        }
+        details.addAll(values);
 
         if (details.size() > 0) {
 
@@ -274,13 +270,11 @@ public class Application {
         // set as EventDispatch thread default class loader
         if (SwingUtilities.isEventDispatchThread()) {
             Thread.currentThread().setContextClassLoader(classLoader.getClassLoader());
-        }
-        else {
+        } else {
             SwingUtilities.invokeLater(new Runnable() {
 
                 public void run() {
-                    Thread.currentThread().setContextClassLoader(
-                            classLoader.getClassLoader());
+                    Thread.currentThread().setContextClassLoader(classLoader.getClassLoader());
                 }
             });
         }

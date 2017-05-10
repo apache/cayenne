@@ -21,7 +21,6 @@ package org.apache.cayenne.pref;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
@@ -53,8 +52,8 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
         this.changedPreferences = new HashMap<>();
         this.removedPreferences = new HashMap<>();
         this.changedBooleanPreferences = new HashMap<>();
-        this.removedNode = new ArrayList<Preferences>();
-        this.addedNode = new ArrayList<Preferences>();
+        this.removedNode = new ArrayList<>();
+        this.addedNode = new ArrayList<>();
     }
 
     public List<Preferences> getAddedNode() {
@@ -93,62 +92,34 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
         }
 
         // update boolean preferences
-        Iterator it = changedBooleanPreferences.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry entry = (Map.Entry) it.next();
-            Preferences pref = (Preferences) entry.getKey();
-            Map<String, Boolean> map = (Map<String, Boolean>) entry.getValue();
-
-            Iterator iterator = map.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry en = (Map.Entry) iterator.next();
-                String key = (String) en.getKey();
-                Boolean value = (Boolean) en.getValue();
-
-                pref.putBoolean(key, value);
+        for (Map.Entry<Preferences, Map<String, Boolean>> entry : changedBooleanPreferences.entrySet()) {
+            Preferences pref = entry.getKey();
+            for (Map.Entry<String, Boolean> en : entry.getValue().entrySet()) {
+                pref.putBoolean(en.getKey(), en.getValue());
             }
         }
 
         // update string preferences
-        Iterator iter = changedPreferences.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
-            Preferences pref = (Preferences) entry.getKey();
-            Map<String, String> map = (Map<String, String>) entry.getValue();
-
-            Iterator iterator = map.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry en = (Map.Entry) iterator.next();
-                String key = (String) en.getKey();
-                String value = (String) en.getValue();
-
-                pref.put(key, value);
+        for (Map.Entry<Preferences, Map<String, String>> entry : changedPreferences.entrySet()) {
+            Preferences pref = entry.getKey();
+            for (Map.Entry<String, String> en : entry.getValue().entrySet()) {
+                pref.put(en.getKey(), en.getValue());
             }
         }
 
         // remove string preferences
-        Iterator iterator = removedPreferences.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry entry = (Map.Entry) iterator.next();
-            Preferences pref = (Preferences) entry.getKey();
-            Map<String, String> map = (Map<String, String>) entry.getValue();
-
-            Iterator itRem = map.entrySet().iterator();
-            while (itRem.hasNext()) {
-                Map.Entry en = (Map.Entry) itRem.next();
-                String key = (String) en.getKey();
-                pref.remove(key);
+        for (Map.Entry<Preferences, Map<String, String>> entry : removedPreferences.entrySet()) {
+            Preferences pref = entry.getKey();
+            for (Map.Entry<String, String> en : entry.getValue().entrySet()) {
+                pref.remove(en.getKey());
             }
         }
 
         // remove preferences node
-        Iterator<Preferences> iteratorNode = removedNode.iterator();
-        while (iteratorNode.hasNext()) {
-            Preferences pref = iteratorNode.next();
+        for (Preferences pref : removedNode) {
             try {
                 pref.removeNode();
-            }
-            catch (BackingStoreException e) {
+            } catch (BackingStoreException e) {
                 logger.warn("Error removing preferences");
             }
         }
@@ -157,16 +128,11 @@ public abstract class CayennePreferenceEditor implements PreferenceEditor {
     }
 
     public void revert() {
-
         // remove added preferences node
-        Iterator<Preferences> iteratorNode = addedNode.iterator();
-        while (iteratorNode.hasNext()) {
-            Preferences pref = iteratorNode.next();
+        for (Preferences pref : addedNode) {
             try {
                 pref.removeNode();
-            }
-            catch (BackingStoreException e) {
-                // do nothing
+            } catch (BackingStoreException ignored) {
             }
         }
 

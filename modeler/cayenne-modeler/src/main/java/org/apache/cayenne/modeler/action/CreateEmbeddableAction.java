@@ -46,7 +46,7 @@ public class CreateEmbeddableAction extends CayenneAction {
 
     @Override
     public String getIconName() {
-        return "icon-new_embeddable.gif";
+        return "icon-new_embeddable.png";
     }
 
     @Override

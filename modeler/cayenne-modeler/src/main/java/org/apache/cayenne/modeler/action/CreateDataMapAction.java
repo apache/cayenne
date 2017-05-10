@@ -45,7 +45,7 @@ public class CreateDataMapAction extends CayenneAction {
     }
 
     public String getIconName() {
-        return "icon-datamap.gif";
+        return "icon-datamap.png";
     }
 
     /** Calls addDataMap() or creates new data map if no data node selected. */

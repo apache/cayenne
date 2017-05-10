@@ -21,7 +21,9 @@ package org.apache.cayenne.modeler.dialog;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 
+import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.swing.components.TopBorder;
 
 import java.awt.*;
 
@@ -30,41 +32,31 @@ import java.awt.*;
  * application. 
  */
 public class LogConsoleView extends JPanel {
-    
+
+    static private final Icon DOCK_ICON = ModelerUtil.buildIcon("icon-down.png");
+    static private final Icon UNDOCK_ICON = ModelerUtil.buildIcon("icon-up.png");
+
     /**
      * Area to be filled with log messages
      */
-    JTextComponent logView;
+    private JTextComponent logView;
     
     /**
      * Item which performs clearing the console output 
      */
-    JMenuItem clearItem;
+    private JButton clearItem;
     
     /**
      * Item which performs copying the console output 
      */
-    JMenuItem copyItem;
+    private JButton copyItem;
     
     /**
      * Item which performs docking the window, i.e. sticking it to parent 
      */
-    JMenuItem dockItem;
-    
-    /**
-     * Scrollpane containing the text area
-     */
-    JScrollPane scroller;
-    
-    /**
-     * PopupMenu to choose item 
-     */
-    JPopupMenu menu;
-    
-    /**
-     * Button which performs showing PopupMenu
-     */
-    JButton menuButton;
+    private JButton dockItem;
+
+    private JToolBar buttonsBar;
     
     /**
      * Constructs a new log console view component
@@ -72,40 +64,42 @@ public class LogConsoleView extends JPanel {
     public LogConsoleView() {
         //log console window must be non-modal
         super();
-        
         init();
     }
     
     /**
-     * Initializes all lays out subcomponents
+     * Initializes and lays out subcomponents
      */
     protected void init() {
-        setLayout(new BorderLayout(5, 5));
-        
-        logView = new JEditorPane("text/html", "");
-        logView.setEditable(false);
-        
-        scroller = new JScrollPane(logView);
-        add(scroller, BorderLayout.CENTER);
-        
-        JToolBar buttonsBar = new JToolBar();
-        buttonsBar.setFloatable(false);
-        
-        menu = new JPopupMenu();
-        copyItem = new JMenuItem("Copy");
-        menu.add(copyItem);
-        clearItem = new JMenuItem("Clear");
-        menu.add(clearItem);
-        dockItem = new JMenuItem("Dock");
-        menu.add(dockItem);
-        
-        menu.setInvoker(this);
+        setLayout(new BorderLayout());
 
-        Icon icon = ModelerUtil.buildIcon("popupmenu.gif");
-        menuButton = new JButton(icon);
-        
-        buttonsBar.add(menuButton);
+        buttonsBar = new JToolBar();
+        buttonsBar.setBorder(BorderFactory.createEmptyBorder());
+        buttonsBar.setFloatable(false);
+
+        copyItem = new CayenneAction.CayenneToolbarButton(null, 0);
+        copyItem.setIcon(ModelerUtil.buildIcon("icon-copy.png"));
+        copyItem.setText("Copy");
+        buttonsBar.add(copyItem);
+
+        clearItem = new CayenneAction.CayenneToolbarButton(null, 0);
+        clearItem.setIcon(ModelerUtil.buildIcon("icon-trash.png"));
+        clearItem.setText("Clear");
+        buttonsBar.add(clearItem);
+
+        dockItem = new CayenneAction.CayenneToolbarButton(null, 0);
+        setDocked(false);
+        buttonsBar.add(dockItem);
+
         add(buttonsBar, BorderLayout.NORTH);
+
+        logView = new JEditorPane("text/html", "");
+        logView.setFont(new JLabel().getFont().deriveFont(12f));
+        logView.setEditable(false);
+
+        JScrollPane scrollPane = new JScrollPane(logView);
+        scrollPane.setBorder(TopBorder.create());
+        add(scrollPane, BorderLayout.CENTER);
         
         //no need to center log window
         setLocation(100, 100);
@@ -114,31 +108,31 @@ public class LogConsoleView extends JPanel {
     /**
      * @return area to be filled with log messages
      */
-    protected JTextComponent getLogView() {
+    JTextComponent getLogView() {
         return logView;
     }
     
-    protected JMenuItem getCopyItem() {
+    JButton getCopyItem() {
         return copyItem;
     }
     
-    protected JMenuItem getClearItem() {
+    JButton getClearItem() {
         return clearItem;
     }
     
-    protected JMenuItem getDockItem() {
+    JButton getDockItem() {
         return dockItem;
     }
-    
-    protected JScrollPane getScroller() {
-        return scroller;
-    }
-    
-    protected AbstractButton getMenuButton() {
-        return menuButton;
-    }
-    
-    protected JPopupMenu getMenu() {
-        return menu;
+
+    void setDocked(boolean isDocked) {
+        if(isDocked) {
+            dockItem.setIcon(UNDOCK_ICON);
+            dockItem.setText("Undock");
+            buttonsBar.setBorder(TopBorder.create());
+        } else {
+            dockItem.setIcon(DOCK_ICON);
+            dockItem.setText("Dock");
+            buttonsBar.setBorder(BorderFactory.createEmptyBorder());
+        }
     }
 }

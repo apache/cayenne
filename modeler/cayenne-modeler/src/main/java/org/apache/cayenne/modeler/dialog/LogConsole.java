@@ -23,15 +23,12 @@ import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.util.Util;
 
-import javax.swing.JToolBar;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
@@ -98,7 +95,7 @@ public class LogConsole extends CayenneController {
         StyleConstants.setForeground(WARN_STYLE, Color.RED.darker());
         
         INFO_STYLE = new SimpleAttributeSet();
-        StyleConstants.setForeground(INFO_STYLE, Color.BLUE);
+        StyleConstants.setForeground(INFO_STYLE, new Color(32, 65, 150));
         
         DEBUG_STYLE = null;
     }
@@ -141,12 +138,6 @@ public class LogConsole extends CayenneController {
     }
     
     protected void initBindings() {
-    	view.getMenuButton().addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-            	view.getMenu().show(view, view.getMenuButton().getX(),view.getMenuButton().getY()+view.getMenuButton().getHeight());
-            }
-        });
-    	
         view.getClearItem().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 clear();
@@ -161,10 +152,7 @@ public class LogConsole extends CayenneController {
         
         view.getDockItem().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                /**
-                 * Log console should be visible
-                 */
-                
+                // Log console should be visible
                 disappear();
                 setConsoleProperty(DOCKED_PROPERTY, !getConsoleProperty(DOCKED_PROPERTY));
                 appear();
@@ -186,22 +174,19 @@ public class LogConsole extends CayenneController {
      */
     private void appear() {
         if (!getConsoleProperty(DOCKED_PROPERTY)) {
-            view.getDockItem().setText("Dock");
+            view.setDocked(false);
             
             if (logWindow == null) {
                 logWindow = new LogConsoleWindow(this);
-            
                 ComponentGeometry geometry = new ComponentGeometry(getClass(), null);
                 geometry.bind(logWindow, 600, 300, 0);
             }
             
             logWindow.setContentPane(view);
-            
             logWindow.validate();
             logWindow.setVisible(true);
-        }
-        else {
-            view.getDockItem().setText("Undock");
+        } else {
+            view.setDocked(true);
             Application.getFrame().setDockComponent(view);
         }
     }
@@ -213,8 +198,7 @@ public class LogConsole extends CayenneController {
         if (!getConsoleProperty(DOCKED_PROPERTY)) {
             logWindow.dispose();
             logWindow = null;
-        }
-        else {
+        } else {
             Application.getFrame().setDockComponent(null);
         }
     }
@@ -225,16 +209,12 @@ public class LogConsole extends CayenneController {
     public void copy() {
         String selectedText = view.getLogView().getSelectedText();
         
-        /**
-         * If nothing is selected, we copy the whole text
-         */
+        // If nothing is selected, we copy the whole text
         if (Util.isEmptyString(selectedText)) {
             Document doc = view.getLogView().getDocument();
-            
             try {
                 selectedText = doc.getText(0, doc.getLength());
-            }
-            catch (BadLocationException e) {
+            } catch (BadLocationException e) {
                 return;
             }
         }
@@ -254,8 +234,7 @@ public class LogConsole extends CayenneController {
         
         if (needShow) {
             appear();
-        }
-        else {
+        } else {
             disappear();
         }
     }
@@ -288,15 +267,14 @@ public class LogConsole extends CayenneController {
      * @param style Message font, color etc.
      */
     public void appendMessage(String level, String message, AttributeSet style) {
-        appendMessage(message, null, style);
+        appendMessage(level, message, null, style);
     }
     
     /**
      * Appends a message and (or) an exception
      * @param style Message font, color etc.
      */
-    public void appendMessage(String level, String message, Throwable ex, 
-        AttributeSet style) {
+    public void appendMessage(String level, String message, Throwable ex, AttributeSet style) {
         
         if (loggingStopped) {
             return;
@@ -310,20 +288,16 @@ public class LogConsole extends CayenneController {
         }
         
         StringBuilder newText = new StringBuilder(FORMAT.format(new Date()))
-            .append(System.getProperty("line.separator"))
-            .append(level.toUpperCase() + ": ");
+                //.append(System.getProperty("line.separator"))
+                .append(" ").append(level.toUpperCase()).append(": ");
         
         if (message != null) {
-            /**
-             * Append the message
-             */
+            // Append the message
             newText.append(message).append(System.getProperty("line.separator"));
         }
         
         if (ex != null) {
-            /**
-             * Append the stack trace
-             */
+            // Append the stack trace
             StringWriter out = new StringWriter();
             PrintWriter printer = new PrintWriter(out);
             
@@ -337,11 +311,9 @@ public class LogConsole extends CayenneController {
             doc.insertString(doc.getLength(), newText.toString(), style);
 
             if (autoScroll) {
-                view.getLogView().setCaretPosition(
-                        doc.getLength() - 1);
+                view.getLogView().setCaretPosition(doc.getLength() - 1);
             }
-        }
-        catch (BadLocationException ignored) {
+        } catch (BadLocationException ignored) {
             //should not happen
         }
         

@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.EventObject;
 import java.util.Iterator;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -66,6 +67,8 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
         this.setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
+        toolBar.setBorder(BorderFactory.createEmptyBorder());
+        toolBar.setFloatable(false);
         ActionManager actionManager = Application.getInstance().getActionManager();
         toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
 

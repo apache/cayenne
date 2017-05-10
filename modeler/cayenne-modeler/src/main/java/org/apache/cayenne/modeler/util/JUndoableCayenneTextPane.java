@@ -41,8 +41,7 @@ public class JUndoableCayenneTextPane extends JCayenneTextPane {
 
         try {
             super.setText(t);
-        }
-        finally {
+        } finally {
             getDocument().addUndoableEditListener(this.undoListener);
         }
     }

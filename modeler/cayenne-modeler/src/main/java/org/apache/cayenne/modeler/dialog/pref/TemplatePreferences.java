@@ -55,16 +55,16 @@ public class TemplatePreferences extends CayenneController {
         if (editor instanceof CayennePreferenceEditor) {
             this.editor = (CayennePreferenceEditor) editor;
         }
-        this.templateEntries = new ArrayList<FSPath>();
+        this.templateEntries = new ArrayList<>();
 
         try {
             String[] keys = getTemplatePreferences().childrenNames();
-            for (int i = 0; i < keys.length; i++) {
+            for (String key : keys) {
                 templateEntries.add((FSPath) application
                         .getCayenneProjectPreferences()
                         .getProjectDetailObject(
                                 FSPath.class,
-                                getTemplatePreferences().node(keys[i])));
+                                getTemplatePreferences().node(key)));
             }
         }
         catch (BackingStoreException e) {

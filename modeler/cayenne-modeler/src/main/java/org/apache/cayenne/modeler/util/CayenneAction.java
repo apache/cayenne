@@ -35,6 +35,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.project.Project;
+import org.apache.cayenne.swing.components.image.FilteredIconFactory;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -184,7 +185,11 @@ public abstract class CayenneAction extends AbstractAction {
      * Factory method that creates a button hooked up to this action.
      */
     public JButton buildButton() {
-        return new CayenneToolbarButton(this);
+        return new CayenneToolbarButton(this, 0);
+    }
+
+    public JButton buildButton(int position) {
+        return new CayenneToolbarButton(this, position);
     }
 
     /**
@@ -222,16 +227,27 @@ public abstract class CayenneAction extends AbstractAction {
     /**
      * On changes in action text, will update toolbar tip instead.
      */
-    final class CayenneToolbarButton extends JButton {
+    public static final class CayenneToolbarButton extends JButton {
+
+        static private final String[] POSITIONS = {"only", "first", "middle", "last"};
 
         protected boolean showingText;
 
         /**
          * Constructor for CayenneMenuItem.
          */
-        public CayenneToolbarButton(Action a) {
+        public CayenneToolbarButton(Action a, int position) {
             super();
             setAction(a);
+            initView(position);
+        }
+
+        private void initView(int position) {
+            setDisabledIcon(FilteredIconFactory.createDisabledIcon(getIcon()));
+            setFocusPainted(false);
+            setFocusable(false);
+            putClientProperty("JButton.buttonType", "segmentedTextured");
+            putClientProperty("JButton.segmentPosition", POSITIONS[position]);
         }
 
         /**
@@ -263,8 +279,7 @@ public abstract class CayenneAction extends AbstractAction {
         public void setText(String text) {
             if (showingText) {
                 super.setText(text);
-            }
-            else {
+            } else {
                 super.setToolTipText(text);
             }
         }

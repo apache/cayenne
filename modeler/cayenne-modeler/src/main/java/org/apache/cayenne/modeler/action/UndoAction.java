@@ -49,7 +49,7 @@ public class UndoAction extends CayenneAction {
     
     @Override
     public String getIconName() {
-        return "icon-undo.gif";
+        return "icon-undo.png";
     }
 
     @Override

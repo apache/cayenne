@@ -85,7 +85,7 @@ public class PasteAction extends CayenneAction implements FlavorListener {
 
     @Override
     public String getIconName() {
-        return "icon-paste.gif";
+        return "icon-paste.png";
     }
 
     @Override

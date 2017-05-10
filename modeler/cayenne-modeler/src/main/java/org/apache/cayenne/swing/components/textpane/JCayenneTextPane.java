@@ -150,7 +150,6 @@ public class JCayenneTextPane extends JPanel {
         setMinimumSize(dimension);
         setPreferredSize(dimension);
         setMinimumSize(dimension);
-        setBackground(new Color(245, 238, 238));
         setBorder(null);
 
         pane = new JTextPaneScrollable(new EditorKit(syntaxConstant)) {
@@ -164,8 +163,8 @@ public class JCayenneTextPane extends JPanel {
         pane.setBorder(new LineNumberedBorder(this));
 
         scrollPane = new JScrollPane(pane);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(115, 115, 115)));
-        this.painter = new UnderlineHighlighterForText.UnderlineHighlightPainter(Color.red);
+        scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        painter = new UnderlineHighlighterForText.UnderlineHighlightPainter(Color.red);
 
         pane.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent evt) {
@@ -320,7 +319,7 @@ public class JCayenneTextPane extends JPanel {
             }
 
             if (imageError) {
-                Image img = ModelerUtil.buildIcon("error.gif").getImage();
+                Image img = ModelerUtil.buildIcon("icon-error.png").getImage();
                 g.drawImage(img, 0, endYPositionToolTip, this);
             }
 

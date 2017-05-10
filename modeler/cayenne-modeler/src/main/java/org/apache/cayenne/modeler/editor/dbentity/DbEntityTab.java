@@ -24,6 +24,7 @@ import java.awt.CardLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.EventObject;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -65,8 +66,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
     static final String PK_DB_GENERATOR = "Database-Generated";
     static final String PK_CUSTOM_SEQUENCE_GENERATOR = "Custom Sequence";
 
-    static final String[] PK_GENERATOR_TYPES = new String[] { PK_DEFAULT_GENERATOR, PK_DB_GENERATOR,
-            PK_CUSTOM_SEQUENCE_GENERATOR };
+    static final String[] PK_GENERATOR_TYPES = { PK_DEFAULT_GENERATOR, PK_DB_GENERATOR, PK_CUSTOM_SEQUENCE_GENERATOR };
 
     protected ProjectController mediator;
 
@@ -78,7 +78,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
     protected JLabel catalogLabel;
     protected JLabel schemaLabel;
 
-    protected JComboBox pkGeneratorType;
+    protected JComboBox<String> pkGeneratorType;
     protected JPanel pkGeneratorDetail;
     protected CardLayout pkGeneratorDetailLayout;
 
@@ -95,20 +95,23 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
     private void initView() {
 
         toolBar = new JToolBar();
+        toolBar.setBorder(BorderFactory.createEmptyBorder());
+        toolBar.setFloatable(false);
         ActionManager actionManager = Application.getInstance().getActionManager();
-        toolBar.add(actionManager.getAction(CreateObjEntityAction.class).buildButton());
-        toolBar.add(actionManager.getAction(DbEntitySyncAction.class).buildButton());
+
+        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(CreateRelationshipAction.class).buildButton(3));
         toolBar.addSeparator();
 
-        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
-        toolBar.add(actionManager.getAction(CreateRelationshipAction.class).buildButton());
+        toolBar.add(actionManager.getAction(CreateObjEntityAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(DbEntitySyncAction.class).buildButton(2));
+        toolBar.add(actionManager.getAction(DbEntityCounterpartAction.class).buildButton(3));
         toolBar.addSeparator();
+
         toolBar.add(actionManager.getAction(ShowGraphEntityAction.class).buildButton());
-        toolBar.add(actionManager.getAction(DbEntityCounterpartAction.class).buildButton());
 
         // create widgets
         name = new TextAdapter(new JTextField()) {
-
             protected void updateModel(String text) {
                 setEntityName(text);
             }
@@ -116,7 +119,6 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
 
         catalogLabel = new JLabel("Catalog:");
         catalog = new TextAdapter(new JTextField()) {
-
             protected void updateModel(String text) throws ValidationException {
                 setCatalog(text);
             }
@@ -124,21 +126,20 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
 
         schemaLabel = new JLabel("Schema:");
         schema = new TextAdapter(new JTextField()) {
-
             protected void updateModel(String text) throws ValidationException {
                 setSchema(text);
             }
         };
-        qualifier = new TextAdapter(new JTextField()) {
 
+        qualifier = new TextAdapter(new JTextField()) {
             protected void updateModel(String qualifier) {
                 setQualifier(qualifier);
             }
         };
 
-        pkGeneratorType = new JComboBox();
+        pkGeneratorType = new JComboBox<>();
         pkGeneratorType.setEditable(false);
-        pkGeneratorType.setModel(new DefaultComboBoxModel(PK_GENERATOR_TYPES));
+        pkGeneratorType.setModel(new DefaultComboBoxModel<>(PK_GENERATOR_TYPES));
 
         pkGeneratorDetailLayout = new CardLayout();
         pkGeneratorDetail = new JPanel(pkGeneratorDetailLayout);
@@ -243,11 +244,11 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
         pkGeneratorDetailLayout.show(pkGeneratorDetail, type);
 
         if(entity.getDataMap().getMappedEntities(entity).isEmpty()) {
-            toolBar.getComponentAtIndex(1).setEnabled(false);
-            toolBar.getComponentAtIndex(7).setEnabled(false);
+            toolBar.getComponentAtIndex(4).setEnabled(false);
+            toolBar.getComponentAtIndex(5).setEnabled(false);
         } else {
-            toolBar.getComponentAtIndex(1).setEnabled(true);
-            toolBar.getComponentAtIndex(7).setEnabled(true);
+            toolBar.getComponentAtIndex(4).setEnabled(true);
+            toolBar.getComponentAtIndex(5).setEnabled(true);
         }
     }
 

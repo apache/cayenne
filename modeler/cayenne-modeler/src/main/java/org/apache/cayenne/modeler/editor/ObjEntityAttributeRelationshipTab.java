@@ -34,7 +34,9 @@ import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.ObjEntityDisplayListener;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
+import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.swing.components.image.FilteredIconFactory;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.Icon;
@@ -53,7 +55,7 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
 
     public ObjEntityAttributePanel attributePanel;
     public ObjEntityRelationshipPanel relationshipPanel;
-    public JButton resolve = new JButton();
+    public JButton resolve = new CayenneAction.CayenneToolbarButton(null, 0);
     private JSplitPane splitPane;
 
     private ProjectController mediator;
@@ -85,8 +87,7 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
                     this.getClass(),
                     "objEntityAttrRelTab/splitPane/divider");
 
-            geometry
-                    .bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, -1);
+            geometry.bindIntProperty(splitPane, JSplitPane.DIVIDER_LOCATION_PROPERTY, -1);
         }
         catch (Exception ex) {
             LoggerFactory.getLogger(getClass()).error("Cannot bind divider property", ex);
@@ -97,17 +98,20 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
 
     private void initToolBar() {
         toolBar = new JToolBar();
+        toolBar.setFloatable(false);
         ActionManager actionManager = Application.getInstance().getActionManager();
 
-        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
-        toolBar.add(actionManager.getAction(CreateRelationshipAction.class).buildButton());
-        toolBar.add(actionManager.getAction(ObjEntitySyncAction.class).buildButton());
-        toolBar.add(actionManager.getAction(ObjEntityCounterpartAction.class).buildButton());
+        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(CreateRelationshipAction.class).buildButton(3));
+        toolBar.addSeparator();
+        toolBar.add(actionManager.getAction(ObjEntitySyncAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(ObjEntityCounterpartAction.class).buildButton(3));
         toolBar.addSeparator();
 
-        Icon ico = ModelerUtil.buildIcon("icon-info.gif");
+        Icon ico = ModelerUtil.buildIcon("icon-edit.png");
         resolve.setToolTipText("Edit");
         resolve.setIcon(ico);
+        resolve.setDisabledIcon(FilteredIconFactory.createDisabledIcon(ico));
         toolBar.add(resolve).setEnabled(false);
 
         cut = actionManager.getAction(CutAttributeRelationshipAction.class);
@@ -117,9 +121,9 @@ public class ObjEntityAttributeRelationshipTab extends JPanel implements ObjEnti
         toolBar.addSeparator();
         toolBar.add(remove.buildButton());
         toolBar.addSeparator();
-        toolBar.add(cut.buildButton());
-        toolBar.add(copy.buildButton());
-        toolBar.add(actionManager.getAction(PasteAction.class).buildButton());
+        toolBar.add(cut.buildButton(1));
+        toolBar.add(copy.buildButton(2));
+        toolBar.add(actionManager.getAction(PasteAction.class).buildButton(3));
 
         add(toolBar, BorderLayout.NORTH);
     }

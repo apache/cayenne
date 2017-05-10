@@ -20,11 +20,14 @@ package org.apache.cayenne.modeler.win;
 
 import com.jgoodies.looks.windows.WindowsLookAndFeel;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
+import javax.swing.BorderFactory;
+import java.awt.Color;
 
 public class WinPlatformInitializer implements PlatformInitializer {
 
@@ -36,8 +39,27 @@ public class WinPlatformInitializer implements PlatformInitializer {
     public void initLookAndFeel() {
         try {
             UIManager.setLookAndFeel(WindowsLookAndFeel.class.getName());
+            // override some default styles and colors
+            overrideUIDefaults();
         } catch (Exception e) {
             logger.warn("Error installing L&F: " + WindowsLookAndFeel.class.getName(), e);
         }
+    }
+
+    private void overrideUIDefaults() {
+        Color darkGrey = new Color(225, 225, 225);
+
+        UIManager.put("Tree.expandedIcon",      ModelerUtil.buildIcon("icon-arrow-open.png"));
+        UIManager.put("Tree.collapsedIcon",     ModelerUtil.buildIcon("icon-arrow-closed.png"));
+        UIManager.put("Tree.paintLines",        Boolean.FALSE);
+        UIManager.put("Tree.drawDashedFocusIndicator",  Boolean.FALSE);
+        UIManager.put("Tree.selectionBorderColor",      UIManager.get("Tree.selectionBackground"));
+        UIManager.put("ScrollPane.border",      BorderFactory.createEmptyBorder());
+        UIManager.put("Table.scrollPaneBorder", BorderFactory.createEmptyBorder());
+        UIManager.put("SplitPane.border",       BorderFactory.createEmptyBorder());
+        UIManager.put("SplitPane.background",   darkGrey);
+        UIManager.put("Separator.background",   darkGrey);
+        UIManager.put("Separator.foreground",   darkGrey);
+        UIManager.put("Separator.opaque",       Boolean.TRUE);
     }
 }

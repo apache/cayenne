@@ -81,7 +81,7 @@ public class CreateRelationshipAction extends CayenneAction {
 
     @Override
     public String getIconName() {
-        return "icon-relationship.gif";
+        return "icon-relationship.png";
     }
 
     /**

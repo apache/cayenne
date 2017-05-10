@@ -23,6 +23,7 @@ import org.apache.cayenne.map.DbAttribute;
 
 import javax.swing.BorderFactory;
 import javax.swing.JTable;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.Component;
 import java.awt.Font;
@@ -35,7 +36,7 @@ public class DbAttributePathComboBoxRenderer extends DefaultTableCellRenderer {
         super.getTableCellRendererComponent(table, value, isSelected,  hasFocus,  row, column);
 
         setText("");
-        setFont(new Font("Verdana", Font.PLAIN , 12));
+        setFont(UIManager.getFont("Label.font"));
 
         if (value instanceof DbAttribute) {
            setText(ModelerUtil.getObjectName(value));

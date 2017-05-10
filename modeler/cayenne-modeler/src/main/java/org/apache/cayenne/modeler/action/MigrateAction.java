@@ -34,6 +34,8 @@ import java.util.Collection;
  */
 public class MigrateAction extends DBWizardAction<DbActionOptionsDialog> {
 
+    private boolean dialogShown;
+
     public MigrateAction(Application application) {
         super(getActionName(), application);
     }
@@ -54,7 +56,12 @@ public class MigrateAction extends DBWizardAction<DbActionOptionsDialog> {
             throw new IllegalStateException("No current DataMap selected.");
         }
 
+        dialogShown = false;
         DbActionOptionsDialog optionsDialog = loaderOptionDialog(connectWizard);
+        if(dialogShown && optionsDialog == null) {
+            return;
+        }
+
         String selectedCatalog = optionsDialog == null ? null : optionsDialog.getSelectedCatalog();
         String selectedSchema = optionsDialog == null ? null : optionsDialog.getSelectedSchema();
 
@@ -72,6 +79,7 @@ public class MigrateAction extends DBWizardAction<DbActionOptionsDialog> {
     @Override
     protected DbActionOptionsDialog createDialog(Collection<String> catalogs, Collection<String> schemas,
                                                  String currentCatalog, String currentSchema) {
+        dialogShown = true;
         return new DbActionOptionsDialog(Application.getFrame(), "Migrate DB Schema: Select Catalog and Schema",
                 catalogs, schemas, currentCatalog, currentSchema);
     }

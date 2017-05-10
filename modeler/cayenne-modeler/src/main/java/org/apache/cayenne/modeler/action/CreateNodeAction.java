@@ -53,7 +53,7 @@ public class CreateNodeAction extends CayenneAction {
 
     @Override
     public String getIconName() {
-        return "icon-node.gif";
+        return "icon-node.png";
     }
 
     @Override

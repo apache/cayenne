@@ -46,9 +46,14 @@ public class FilterAction extends CayenneAction{
 	@Override
 	public void performAction(ActionEvent e) {
 		JButton source = (JButton)e.getSource();
-        if(filterDialog == null)
-        	filterDialog  = new FilterDialog(getApplication().getFrameController().getEditorView().getFilterController());
+        if(filterDialog == null) {
+            filterDialog = new FilterDialog(getApplication().getFrameController().getEditorView().getFilterController());
+        }
 		filterDialog.pack();
 		filterDialog.show(source, 0, source.getHeight());
-	}	
+	}
+
+    public void resetDialog() {
+        filterDialog = null;
+    }
 }

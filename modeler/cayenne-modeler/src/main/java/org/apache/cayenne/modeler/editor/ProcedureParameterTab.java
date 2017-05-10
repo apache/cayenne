@@ -60,15 +60,15 @@ import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneCellEditor;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
+import org.apache.cayenne.swing.components.image.FilteredIconFactory;
 
-/**
- */
 public class ProcedureParameterTab extends JPanel implements ProcedureParameterListener,
         ProcedureDisplayListener, ExistingSelectionProcessor, ActionListener {
 
@@ -81,7 +81,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
     protected JButton moveDown;
 
     /**
-     * By now popup menu items are made similiar to toolbar button. (i.e. all
+     * By now popup menu items are made similar to toolbar button. (i.e. all
      * functionality is here) This should be probably refactored as Action.
      */
     protected JMenuItem removeParameterMenu;
@@ -114,37 +114,33 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
 
         ActionManager actionManager = Application.getInstance().getActionManager();
-        toolBar.add(actionManager
-                .getAction(CreateProcedureParameterAction.class)
-                .buildButton());
-        removeParameterButton = actionManager.getAction(
-                RemoveProcedureParameterAction.class).buildButton();
+        toolBar.add(actionManager.getAction(CreateProcedureParameterAction.class).buildButton(1));
+        removeParameterButton = actionManager.getAction(RemoveProcedureParameterAction.class).buildButton(3);
         toolBar.add(removeParameterButton);
         toolBar.addSeparator();
 
-        Icon up = ModelerUtil.buildIcon("icon-move_up.gif");
-        Icon down = ModelerUtil.buildIcon("icon-move_down.gif");
+        Icon up = ModelerUtil.buildIcon("icon-up.png");
+        Icon down = ModelerUtil.buildIcon("icon-down.png");
 
-        moveUp = new JButton();
+        moveUp = new CayenneAction.CayenneToolbarButton(null, 1);
         moveUp.setIcon(up);
+        moveUp.setDisabledIcon(FilteredIconFactory.createDisabledIcon(up));
         moveUp.setToolTipText("Move Parameter Up");
         toolBar.add(moveUp);
 
-        moveDown = new JButton();
+        moveDown = new CayenneAction.CayenneToolbarButton(null, 3);
         moveDown.setIcon(down);
+        moveDown.setDisabledIcon(FilteredIconFactory.createDisabledIcon(down));
         moveDown.setToolTipText("Move Parameter Down");
         toolBar.add(moveDown);
 
         toolBar.addSeparator();
-        toolBar.add(actionManager
-                .getAction(CutProcedureParameterAction.class)
-                .buildButton());
-        toolBar.add(actionManager
-                .getAction(CopyProcedureParameterAction.class)
-                .buildButton());
-        toolBar.add(actionManager.getAction(PasteAction.class).buildButton());
+        toolBar.add(actionManager.getAction(CutProcedureParameterAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(CopyProcedureParameterAction.class).buildButton(2));
+        toolBar.add(actionManager.getAction(PasteAction.class).buildButton(3));
 
         add(toolBar, BorderLayout.NORTH);
 
@@ -201,8 +197,7 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         int selectedRow = table.getSelectedRow();
         if (selectedRow >= 0) {
             enableRemoveButton = true;
-            ProcedureParameterTableModel model = (ProcedureParameterTableModel) table
-                    .getModel();
+            ProcedureParameterTableModel model = (ProcedureParameterTableModel) table.getModel();
 
             int[] sel = table.getSelectedRows();
             parameters = new ProcedureParameter[sel.length];
@@ -260,12 +255,12 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
                 parameters.length,
                 RemoveProcedureParameterAction.class,
                 CutProcedureParameterAction.class,
-                CopyProcedureParameterAction.class);
+                CopyProcedureParameterAction.class
+        );
 
-        ProcedureParameterTableModel model = (ProcedureParameterTableModel) table
-                .getModel();
+        ProcedureParameterTableModel model = (ProcedureParameterTableModel) table.getModel();
 
-        List listAttrs = model.getObjectList();
+        List<ProcedureParameter> listAttrs = model.getObjectList();
         int[] newSel = new int[parameters.length];
 
         for (int i = 0; i < parameters.length; i++) {
@@ -286,27 +281,25 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         table.setRowMargin(3);
 
         // number column tweaking
-        TableColumn numberColumn = table.getColumnModel().getColumn(
-                ProcedureParameterTableModel.PARAMETER_NUMBER);
+        TableColumn numberColumn = table.getColumnModel()
+                .getColumn(ProcedureParameterTableModel.PARAMETER_NUMBER);
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setHorizontalAlignment(SwingConstants.CENTER);
         numberColumn.setCellRenderer(renderer);
 
-        TableColumn typesColumn = table.getColumnModel().getColumn(
-                ProcedureParameterTableModel.PARAMETER_TYPE);
-        JComboBox typesEditor = Application.getWidgetFactory().createComboBox(
-                TypesMapping.getDatabaseTypes(),
-                true);
+        TableColumn typesColumn = table.getColumnModel()
+                .getColumn(ProcedureParameterTableModel.PARAMETER_TYPE);
+        JComboBox typesEditor = Application.getWidgetFactory()
+                .createComboBox(TypesMapping.getDatabaseTypes(), true);
         AutoCompletion.enable(typesEditor);
-        typesColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(
-                typesEditor));
+        typesColumn.setCellEditor(Application.getWidgetFactory()
+                .createCellEditor(typesEditor));
 
         // direction column tweaking
-        TableColumn directionColumn = table.getColumnModel().getColumn(
-                ProcedureParameterTableModel.PARAMETER_DIRECTION);
-        JComboBox directionEditor = Application.getWidgetFactory().createComboBox(
-                ProcedureParameterTableModel.PARAMETER_DIRECTION_NAMES,
-                false);
+        TableColumn directionColumn = table.getColumnModel()
+                .getColumn(ProcedureParameterTableModel.PARAMETER_DIRECTION);
+        JComboBox directionEditor = Application.getWidgetFactory()
+                .createComboBox(ProcedureParameterTableModel.PARAMETER_DIRECTION_NAMES, false);
         directionEditor.setEditable(false);
         directionColumn.setCellEditor(new CayenneCellEditor(directionEditor));
 
@@ -326,24 +319,21 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
     }
 
     public void procedureParameterRemoved(ProcedureParameterEvent e) {
-        ProcedureParameterTableModel model = (ProcedureParameterTableModel) table
-                .getModel();
+        ProcedureParameterTableModel model = (ProcedureParameterTableModel) table.getModel();
         int ind = model.getObjectList().indexOf(e.getParameter());
         model.removeRow(e.getParameter());
         table.select(ind);
     }
 
     public void actionPerformed(ActionEvent e) {
-        ProcedureParameterTableModel model = (ProcedureParameterTableModel) table
-                .getModel();
+        ProcedureParameterTableModel model = (ProcedureParameterTableModel) table.getModel();
         ProcedureParameter parameter = model.getParameter(table.getSelectedRow());
 
         int index = -1;
 
         if (e.getSource() == moveUp || e.getSource() == moveUpMenu) {
             index = model.moveRowUp(parameter);
-        }
-        else if (e.getSource() == moveDown || e.getSource() == moveDownMenu) {
+        } else if (e.getSource() == moveDown || e.getSource() == moveDownMenu) {
             index = model.moveRowDown(parameter);
         }
 
@@ -352,8 +342,9 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
 
             // note that 'setCallParameters' is donw by copy internally
             parameter.getProcedure().setCallParameters(model.getObjectList());
-            eventController.fireProcedureEvent(new ProcedureEvent(this, parameter
-                    .getProcedure(), MapEvent.CHANGE));
+            eventController.fireProcedureEvent(
+                    new ProcedureEvent(this, parameter.getProcedure(), MapEvent.CHANGE)
+            );
         }
     }
 

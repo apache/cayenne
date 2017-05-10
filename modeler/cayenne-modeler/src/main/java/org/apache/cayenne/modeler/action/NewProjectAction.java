@@ -43,7 +43,7 @@ public class NewProjectAction extends ProjectAction {
     }
 
     public String getIconName() {
-        return "icon-new.gif";
+        return "icon-new.png";
     }
 
     public KeyStroke getAcceleratorKey() {

@@ -29,6 +29,7 @@ import java.util.EventObject;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -130,17 +131,18 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         this.setLayout(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();
+        toolBar.setBorder(BorderFactory.createEmptyBorder());
+        toolBar.setFloatable(false);
         ActionManager actionManager = Application.getInstance().getActionManager();
 
-        toolBar.add(actionManager.getAction(ObjEntitySyncAction.class).buildButton());
-        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton());
-        toolBar
-                .add(actionManager
-                        .getAction(CreateRelationshipAction.class)
-                        .buildButton());
+        toolBar.add(actionManager.getAction(CreateAttributeAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(CreateRelationshipAction.class).buildButton(3));
+        toolBar.addSeparator();
+        toolBar.add(actionManager.getAction(ObjEntitySyncAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(ObjEntityCounterpartAction.class).buildButton(3));
         toolBar.addSeparator();
         toolBar.add(actionManager.getAction(ShowGraphEntityAction.class).buildButton());
-        toolBar.add(actionManager.getAction(ObjEntityCounterpartAction.class).buildButton());
+
         add(toolBar, BorderLayout.NORTH);
 
         // create widgets
@@ -234,11 +236,8 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
 
         clientSeparator = builder.appendSeparator("Java Client");
         serverOnlyLabel = builder.append("Not for Client Use:", serverOnly);
-        clientClassNameLabel = builder.append("Client Java Class:", clientClassName
-                .getComponent());
-        clientSuperClassNameLabel = builder.append(
-                "Client Superclass:",
-                clientSuperClassName.getComponent());
+        clientClassNameLabel = builder.append("Client Java Class:", clientClassName.getComponent());
+        clientSuperClassNameLabel = builder.append("Client Superclass:", clientSuperClassName.getComponent());
 
         add(builder.getPanel(), BorderLayout.CENTER);
     }
@@ -476,7 +475,6 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         dbEntityCombo.setEnabled(!isUsedInheritance);
 
         // toggle visibilty and editability rules
-        
         toggleClientFieldsVisible(map.isClientSupported());
         toggleEnabled(entity.getSuperEntityName() == null, !entity.isServerOnly());
 
