@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -28,13 +29,20 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.pref.PreferenceEditor;
 
 /**
@@ -50,6 +58,9 @@ public class PreferenceDialog extends CayenneController {
 
     private static final String[] preferenceMenus = new String[] {
             GENERAL_KEY, DATA_SOURCES_KEY, CLASS_PATH_KEY, TEMPLATES_KEY
+    };
+    private static final String[] preferenceMenusIcons = new String[] {
+    	"icon-general.png","icon-datasource.png","icon-classpath.png","icon-template.png"
     };
 
     protected PreferenceDialogView view;
@@ -72,20 +83,23 @@ public class PreferenceDialog extends CayenneController {
     }
 
     protected void initBindings() {
-        final JList list = view.getList();
-        list.setListData(preferenceMenus);
-        list.addListSelectionListener(new ListSelectionListener() {
-
-            public void valueChanged(ListSelectionEvent e) {
-                Object selection = list.getSelectedValue();
-                if (selection != null) {
-                    view.getDetailLayout().show(
-                            view.getDetailPanel(),
-                            selection.toString());
-                }
+    	final JTabbedPane pane = view.getPane();
+    	
+    	for(int i=0;i<preferenceMenus.length;i++){
+    		JLabel lbl = new JLabel(preferenceMenus[i]);
+    		lbl.setIcon(ModelerUtil.buildIcon(preferenceMenusIcons[i]));
+    		lbl.setHorizontalTextPosition(SwingConstants.CENTER);
+    		lbl.setVerticalTextPosition(SwingConstants.BOTTOM);
+    		if(i!=0) pane.addTab(null,null,null);
+    		pane.setTabComponentAt(i, lbl);
+    	}
+        pane.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+            	view.getDetailLayout().show(
+                        view.getDetailPanel(),
+                        preferenceMenus[pane.getSelectedIndex()]);
             }
         });
-
         view.getCancelButton().addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -123,6 +137,7 @@ public class PreferenceDialog extends CayenneController {
 
         // this will install needed controller
         view.getDetailLayout().show(view.getDetailPanel(), DATA_SOURCES_KEY);
+        view.getPane().setSelectedIndex(1);
 
         DataSourcePreferences controller = (DataSourcePreferences) detailControllers
                 .get(DATA_SOURCES_KEY);
@@ -135,9 +150,8 @@ public class PreferenceDialog extends CayenneController {
         if (key == null) {
             key = GENERAL_KEY;
         }
-
+        
         configure();
-        view.getList().setSelectedValue(key, true);
         view.setVisible(true);
     }
 
@@ -148,7 +162,6 @@ public class PreferenceDialog extends CayenneController {
         registerPanel(CLASS_PATH_KEY, new ClasspathPreferences(this));
         registerPanel(TEMPLATES_KEY, new TemplatePreferences(this));
         view.getDetailLayout().show(view.getDetailPanel(), GENERAL_KEY);
-        // view.getSplit().setDividerLocation(150);
         view.pack();
 
         // show
