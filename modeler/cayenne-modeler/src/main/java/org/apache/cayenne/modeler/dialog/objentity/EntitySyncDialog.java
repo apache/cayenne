@@ -55,7 +55,7 @@ public class EntitySyncDialog extends JDialog {
 
         CellConstraints cc = new CellConstraints();
         builder.add(removeFKs, cc.xy(1, 1));
-        builder.add(new JLabel("Remove Foreign Keys Mapped as Object Attributes?"), cc
+        builder.add(new JLabel("Remove Object Attributes mapped on Foreign Keys?"), cc
                 .xy(3, 1));
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
