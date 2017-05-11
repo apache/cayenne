@@ -103,7 +103,9 @@ public class DefaultObjectNameGenerator implements ObjectNameGenerator {
 
         List<DbJoin> joins = first.getJoins();
         if (joins.isEmpty()) {
-            throw new IllegalArgumentException("No joins for relationship. Can't generate a name");
+            // In case, when uses EditRelationship button, relationship doesn't exist => it doesn't have joins
+            // and just return targetName
+            return stemmed(last.getTargetEntityName());
         }
 
         DbJoin join1 = joins.get(0);
