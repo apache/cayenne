@@ -24,11 +24,13 @@ import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -161,12 +163,24 @@ public class MergerTokenSelectorController extends CayenneController {
         view.getTokens().setModel(model);
 
         TableColumnModel columnModel = view.getTokens().getColumnModel();
-        
+
         // dropdown for direction column
         JComboBox directionCombo = Application.getWidgetFactory().createComboBox(dirs, false);
         directionCombo.setEditable(false);
         TableColumn directionColumn = columnModel.getColumn(
                 MergerTokenTableModel.COL_DIRECTION);
+
+        directionColumn.setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                                                           boolean isSelected, boolean hasFocus, int row, int column) {
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                setHorizontalTextPosition(SwingConstants.LEFT);
+                setIcon(ModelerUtil.buildIcon("icon-arrow-open.png"));
+                return this;
+            }
+        });
+
         directionColumn.setCellEditor(new DefaultCellEditor(directionCombo));
 
         columnModel.getColumn(MergerTokenTableModel.COL_SELECT).setPreferredWidth(50);
