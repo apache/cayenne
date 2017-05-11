@@ -41,6 +41,7 @@ public class FilteredIconFactory {
     public enum FilterType {
         DISABLE     (new DisabledFilter()),
         SELECTION   (new SelectionFilter()),
+        WHITE       (new ColorFilter(0xFFFFFF)),
         GREEN       (new ColorFilter(0x65A91B)),
         VIOLET      (new ColorFilter(0xAD78DD)),
         BLUE        (new ColorFilter(0x53A3D6)),

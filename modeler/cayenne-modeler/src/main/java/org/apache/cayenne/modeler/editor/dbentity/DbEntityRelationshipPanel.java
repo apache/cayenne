@@ -39,6 +39,7 @@ import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.BoardTableCellRenderer;
+import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -111,7 +112,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
 
         // Create and install a popup
         Icon ico = ModelerUtil.buildIcon("icon-edit.png");
-        resolveMenu = new JMenuItem("Database Mapping", ico);
+        resolveMenu = new CayenneAction.CayenneMenuItem("Database Mapping", ico);
 
         JPopupMenu popup = new JPopupMenu();
         popup.add(resolveMenu);

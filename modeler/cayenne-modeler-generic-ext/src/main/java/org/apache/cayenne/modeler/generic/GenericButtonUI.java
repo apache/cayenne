@@ -19,11 +19,15 @@
 
 package org.apache.cayenne.modeler.generic;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
+import javax.swing.border.Border;
 import javax.swing.plaf.ComponentUI;
 
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -34,6 +38,30 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 public class GenericButtonUI extends com.jgoodies.looks.plastic.PlasticButtonUI {
     private static final GenericButtonUI INSTANCE = new GenericButtonUI();
 
+    private static final Border BORDER = BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(1, 1, 1, 1),
+            BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.GRAY),
+                    BorderFactory.createEmptyBorder(4, 4, 4, 4)
+            )
+    );
+
+    private static final Border DISABLED_BORDER = BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(1, 1, 1, 1),
+            BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                    BorderFactory.createEmptyBorder(4, 4, 4, 4)
+            )
+    );
+
+    private static final Border ACTIVE_BORDER = BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(1, 1, 1, 1),
+            BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(0x333333)),
+                    BorderFactory.createEmptyBorder(4, 4, 4, 4)
+            )
+    );
+
     public GenericButtonUI() {
     }
 
@@ -42,18 +70,49 @@ public class GenericButtonUI extends com.jgoodies.looks.plastic.PlasticButtonUI 
     }
 
     @Override
-    public void installDefaults(AbstractButton b) {
+    public void installDefaults(final AbstractButton b) {
         super.installDefaults(b);
         b.putClientProperty("Plastic.is3D", Boolean.FALSE);
         if(b instanceof CayenneAction.CayenneToolbarButton) {
-            b.setBorder(
-                    new CompoundBorder(
-                            new EmptyBorder(1, 1, 1, 1),
-                            new CompoundBorder(
-                                    LineBorder.createGrayLineBorder(),
-                                    new EmptyBorder(4, 4, 4, 4))
-                    )
-            );
+            b.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    b.getModel().setArmed(true);
+                }
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    b.getModel().setArmed(false);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void update(Graphics g, JComponent c) {
+        if(c instanceof CayenneAction.CayenneToolbarButton) {
+            AbstractButton b = (AbstractButton)c;
+            if(!b.isEnabled()) {
+                b.setBorder(DISABLED_BORDER);
+            } else if(b.getModel().isArmed()) {
+                b.setBorder(ACTIVE_BORDER);
+            } else {
+                b.setBorder(BORDER);
+            }
+        }
+        super.update(g, c);
+    }
+
+    @Override
+    protected void paintButtonPressed(Graphics g, AbstractButton b){
+        if ( b.isContentAreaFilled() ) {
+            Dimension size = b.getSize();
+            g.setColor(getSelectColor());
+            if(b instanceof CayenneAction.CayenneToolbarButton) {
+                // don't paint outer border area
+                g.fillRect(1, 1, size.width - 2, size.height - 2);
+            } else {
+                g.fillRect(0, 0, size.width, size.height);
+            }
         }
     }
 }

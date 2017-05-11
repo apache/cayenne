@@ -23,25 +23,27 @@ import java.io.File;
 
 import javax.swing.Action;
 import javax.swing.Icon;
-import javax.swing.JMenuItem;
+
+import org.apache.cayenne.modeler.util.CayenneAction;
 
 /**
  * A menu item that points to a file.
  * 
  */
-public class FileMenuItem extends JMenuItem {
+public class FileMenuItem extends CayenneAction.CayenneMenuItem {
 
     /**
      * Creates a new instance with the specified fileName.
      */
     public FileMenuItem(String fileName) {
-        setText(fileName);
+        super(fileName);
     }
 
     protected void configurePropertiesFromAction(Action a) {
         // excludes most generic action keys that are not applicable here...
         setIcon(a != null ? (Icon) a.getValue(Action.SMALL_ICON) : null);
-        setEnabled(a != null ? a.isEnabled() : true);
+        setEnabled(a == null || a.isEnabled());
+        updateActiveIcon();
     }
 
     /**

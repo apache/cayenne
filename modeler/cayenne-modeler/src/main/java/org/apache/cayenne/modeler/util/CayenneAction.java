@@ -21,6 +21,8 @@
 package org.apache.cayenne.modeler.util;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -171,7 +173,7 @@ public abstract class CayenneAction extends AbstractAction {
      * Factory method that creates a menu item hooked up to this action.
      */
     public JMenuItem buildMenu() {
-        return new JMenuItem(this);
+        return new CayenneMenuItem(this);
     }
     
     /**
@@ -221,6 +223,42 @@ public abstract class CayenneAction extends AbstractAction {
     public void setEnabled(boolean b) {
         if (!isAlwaysOn()) {
             super.setEnabled(b);
+        }
+    }
+
+    public static class CayenneMenuItem extends JMenuItem {
+
+        public CayenneMenuItem(String title) {
+            super(title);
+        }
+
+        public CayenneMenuItem(String title, Icon icon) {
+            super(title, icon);
+            updateActiveIcon();
+        }
+
+        public CayenneMenuItem(AbstractAction action) {
+            super(action);
+            updateActiveIcon();
+        }
+
+        protected void updateActiveIcon() {
+            final Icon icon = getIcon();
+            final Icon selectedIcon = FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.WHITE);
+            // this wouldn't work on MacOS, as it uses native menu
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    if(isEnabled()) {
+                        setIcon(selectedIcon);
+                    }
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    setIcon(icon);
+                }
+            });
         }
     }
 

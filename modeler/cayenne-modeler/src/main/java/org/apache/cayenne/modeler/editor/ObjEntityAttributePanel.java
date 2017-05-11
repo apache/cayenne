@@ -43,6 +43,7 @@ import org.apache.cayenne.modeler.event.ProjectOnSaveEvent;
 import org.apache.cayenne.modeler.event.ProjectOnSaveListener;
 import org.apache.cayenne.modeler.event.TablePopupHandler;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
+import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.DbAttributePathComboBoxRenderer;
@@ -152,7 +153,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
         // Create and install a popup
         Icon ico = ModelerUtil.buildIcon("icon-edit.png");
-        resolveMenu = new JMenuItem("Database Mapping", ico);
+        resolveMenu = new CayenneAction.CayenneMenuItem("Database Mapping", ico);
 
         JPopupMenu popup = new JPopupMenu();
         popup.add(resolveMenu);
