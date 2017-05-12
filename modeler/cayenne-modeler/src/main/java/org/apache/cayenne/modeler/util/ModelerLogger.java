@@ -142,31 +142,31 @@ public class ModelerLogger implements Logger {
     @Override
     public void debug(String message) {
         consoleLog(LOG_LEVEL_DEBUG, message);
-        log("DEBUG", message, null, LogConsole.WARN_STYLE);
+        log("DEBUG", message, null, LogConsole.DEBUG_STYLE);
     }
 
     @Override
     public void debug(String message, Object object) {
         consoleLog(LOG_LEVEL_DEBUG, message, object);
-        log("DEBUG", message, null, LogConsole.WARN_STYLE, object);
+        log("DEBUG", message, null, LogConsole.DEBUG_STYLE, object);
     }
 
     @Override
     public void debug(String message, Object object, Object secondObject) {
         consoleLog(LOG_LEVEL_DEBUG, message, object, secondObject);
-        log("DEBUG", message, null, LogConsole.WARN_STYLE, object, secondObject);
+        log("DEBUG", message, null, LogConsole.DEBUG_STYLE, object, secondObject);
     }
 
     @Override
     public void debug(String message, Object... objects) {
         consoleLog(LOG_LEVEL_DEBUG, message, objects);
-        log("DEBUG", message, null, LogConsole.WARN_STYLE, objects);
+        log("DEBUG", message, null, LogConsole.DEBUG_STYLE, objects);
     }
 
     @Override
     public void debug(String message, Throwable throwable) {
         consoleLog(LOG_LEVEL_DEBUG, message, throwable);
-        log("DEBUG", message, throwable, LogConsole.WARN_STYLE);
+        log("DEBUG", message, throwable, LogConsole.DEBUG_STYLE);
     }
 
     @Override
@@ -177,31 +177,31 @@ public class ModelerLogger implements Logger {
     @Override
     public void debug(Marker marker, String message) {
         consoleLog(LOG_LEVEL_DEBUG, message);
-        log("DEBUG", message, null, LogConsole.WARN_STYLE);
+        log("DEBUG", message, null, LogConsole.DEBUG_STYLE);
     }
 
     @Override
     public void debug(Marker marker, String message, Object object) {
         consoleLog(LOG_LEVEL_DEBUG, message, object);
-        log("DEBUG", message, null, LogConsole.WARN_STYLE, object);
+        log("DEBUG", message, null, LogConsole.DEBUG_STYLE, object);
     }
 
     @Override
     public void debug(Marker marker, String message, Object object, Object secondObject) {
         consoleLog(LOG_LEVEL_DEBUG, message, object, secondObject);
-        log("DEBUG", message, null, LogConsole.WARN_STYLE, object, secondObject);
+        log("DEBUG", message, null, LogConsole.DEBUG_STYLE, object, secondObject);
     }
 
     @Override
     public void debug(Marker marker, String message, Object... objects) {
         consoleLog(LOG_LEVEL_DEBUG, message, objects);
-        log("DEBUG", message, null, LogConsole.WARN_STYLE, objects);
+        log("DEBUG", message, null, LogConsole.DEBUG_STYLE, objects);
     }
 
     @Override
     public void debug(Marker marker, String message, Throwable throwable) {
         consoleLog(LOG_LEVEL_DEBUG, message, throwable);
-        log("DEBUG", message, throwable, LogConsole.WARN_STYLE);
+        log("DEBUG", message, throwable, LogConsole.DEBUG_STYLE);
     }
 
     @Override

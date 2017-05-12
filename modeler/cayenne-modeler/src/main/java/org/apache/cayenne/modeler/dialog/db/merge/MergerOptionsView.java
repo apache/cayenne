@@ -25,6 +25,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -34,12 +35,15 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 
+import com.jgoodies.forms.factories.Borders;
 import org.apache.cayenne.modeler.Application;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.swing.components.TopBorder;
 
 /**
  * Wizard for altering the database to match the data map.
@@ -59,11 +63,13 @@ public class MergerOptionsView extends JDialog {
         
         // create widgets
         this.generateButton = new JButton("Migrate");
-        this.cancelButton = new JButton("Close");
+        getRootPane().setDefaultButton(generateButton);
+        this.cancelButton = new JButton("Cancel");
         this.saveSqlButton = new JButton("Save SQL");
 
         this.tables = tables;
         this.tabs = new JTabbedPane(SwingConstants.TOP);
+        this.tabs.setFocusable(false);
         this.sql = new JTextArea();
         sql.setEditable(false);
         sql.setLineWrap(true);
@@ -79,9 +85,10 @@ public class MergerOptionsView extends JDialog {
         PanelBuilder builder = new PanelBuilder(new FormLayout(
                 "fill:min(50dlu;pref):grow",
                 "p, 9dlu, p, 3dlu, fill:40dlu:grow"));
-        builder.setDefaultDialogBorder();
         builder.addSeparator("Generated SQL", cc.xywh(1, 3, 1, 1));
         builder.add(sqlTextPanel, cc.xy(1, 5));
+        builder.setBorder(BorderFactory
+                .createCompoundBorder(UIManager.getBorder("ToolBar.border"), Borders.DIALOG_BORDER));
 
         tabs.addTab("Operations", new JScrollPane(
                 tables,
@@ -98,6 +105,7 @@ public class MergerOptionsView extends JDialog {
         buttons.add(Box.createHorizontalStrut(20));
         buttons.add(cancelButton);
         buttons.add(generateButton);
+        buttons.setBorder(TopBorder.create());
 
         Container contentPane = this.getContentPane();
         contentPane.setLayout(new BorderLayout());

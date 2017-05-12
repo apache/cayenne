@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.dialog;
 import org.apache.cayenne.modeler.action.FindAction;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.swing.ImageRendererColumn;
+import org.apache.cayenne.swing.components.TopBorder;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -49,6 +50,7 @@ public class FindDialogView extends JDialog {
         super((Frame) null, "Search results", true);
 
         JPanel panel = new JPanel();
+        panel.setBorder(BorderFactory.createEmptyBorder());
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         DefaultTableModel tableModel = new DefaultTableModel() {
@@ -72,6 +74,7 @@ public class FindDialogView extends JDialog {
 
         JPanel okPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         okButton = new JButton("OK");
+        okPanel.setBorder(TopBorder.create());
         okPanel.add(okButton);
 
         JComponent contentPane = (JComponent) getContentPane();
@@ -79,6 +82,7 @@ public class FindDialogView extends JDialog {
 
         JScrollPane scrollPane = new JScrollPane(table,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
         contentPane.add(scrollPane);
         contentPane.add(okPanel, BorderLayout.SOUTH);
         contentPane.setPreferredSize(new Dimension(400, 325));

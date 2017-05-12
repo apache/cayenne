@@ -63,8 +63,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         // show dialog even on empty DataMap, as custom generation may still take
         // advantage of it
 
-        view = new CodeGeneratorDialog(generatorSelector.getView(), classesSelector
-                .getView());
+        view = new CodeGeneratorDialog(generatorSelector.getView(), classesSelector.getView());
         initBindings();
 
         view.pack();
@@ -82,9 +81,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         builder.bindToAction(view.getCancelButton(), "cancelAction()");
         builder.bindToAction(view.getGenerateButton(), "generateAction()");
         builder.bindToAction(this, "classesSelectedAction()", SELECTED_PROPERTY);
-        builder.bindToAction(
-                generatorSelector,
-                "generatorSelectedAction()",
+        builder.bindToAction(generatorSelector, "generatorSelectedAction()",
                 GeneratorTabController.GENERATOR_PROPERTY);
 
         generatorSelectedAction();
@@ -148,8 +145,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
                 JOptionPane.showMessageDialog(
                         this.getView(),
                         "Class generation finished");
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 logObj.error("Error generating classes", e);
                 JOptionPane.showMessageDialog(
                         this.getView(),

@@ -18,19 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.swing;
 
-import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.cayenne.swing.components.image.FilteredIconFactory;
+
 public class ImageRendererColumn extends DefaultTableCellRenderer {
-
-    private final Color ROLLOVER_BACKGROUND = new Color(223, 223, 223);
-
-    private JLabel lbl = new JLabel();
 
     public ImageRendererColumn() {
         super();
@@ -38,12 +36,14 @@ public class ImageRendererColumn extends DefaultTableCellRenderer {
 
     public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
-        lbl.setOpaque(true);
-        lbl.setText(((JLabel) value).getText());
-        lbl.setIcon(((JLabel) value).getIcon());
-        lbl.setBorder(BorderFactory.createEmptyBorder());
-        lbl.setBackground(isSelected ? ROLLOVER_BACKGROUND : Color.WHITE);
-        lbl.setHorizontalAlignment(JLabel.LEFT);
-        return lbl;
+        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        setText(((JLabel) value).getText());
+        setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
+        Icon icon = ((JLabel) value).getIcon();
+        if(isSelected) {
+            icon = FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.SELECTION);
+        }
+        setIcon(icon);
+        return this;
     }
 }

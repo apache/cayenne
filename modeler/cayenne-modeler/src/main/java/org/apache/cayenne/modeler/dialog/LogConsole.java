@@ -97,7 +97,8 @@ public class LogConsole extends CayenneController {
         INFO_STYLE = new SimpleAttributeSet();
         StyleConstants.setForeground(INFO_STYLE, new Color(32, 65, 150));
         
-        DEBUG_STYLE = null;
+        DEBUG_STYLE = new SimpleAttributeSet();
+        StyleConstants.setForeground(DEBUG_STYLE, Color.GRAY);
     }
     
     /**

@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.dialog.codegen;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.swing.components.TopBorder;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -50,7 +51,9 @@ public class CodeGeneratorDialog extends JDialog {
         super(Application.getFrame());
 
         this.tabs = new JTabbedPane(SwingConstants.TOP);
+        this.tabs.setFocusable(false);
         this.generateButton = new JButton("Generate");
+        getRootPane().setDefaultButton(generateButton);
         this.cancelButton = new JButton("Cancel");
         this.classesCount = new JLabel("No classes selected");
         classesCount.setFont(classesCount.getFont().deriveFont(10f));
@@ -70,6 +73,7 @@ public class CodeGeneratorDialog extends JDialog {
         messages.add(classesCount, BorderLayout.WEST);
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttons.setBorder(TopBorder.create());
         buttons.add(classesCount);
         buttons.add(Box.createHorizontalStrut(50));
         buttons.add(cancelButton);

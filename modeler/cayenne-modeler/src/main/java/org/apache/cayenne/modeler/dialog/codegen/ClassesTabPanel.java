@@ -31,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
 
 /**
  */
@@ -43,6 +44,7 @@ public class ClassesTabPanel extends JPanel {
     public ClassesTabPanel() {
 
         this.table = new JTable();
+        this.table.setRowHeight(22);
 
         // TODO: andrus 04/07/2006 - is there an easy way to stick that checkbox in the
         // table header????
@@ -63,6 +65,7 @@ public class ClassesTabPanel extends JPanel {
 
         // assemble
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        topPanel.setBorder(UIManager.getBorder("ToolBar.border"));
         topPanel.add(checkAll);
         topPanel.add(checkAllLabel);
 
