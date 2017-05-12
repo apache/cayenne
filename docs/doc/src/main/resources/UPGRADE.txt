@@ -52,12 +52,19 @@ UPGRADING TO 4.0.M6
        - method after() replaced by explicit addAfter(), addAllAfter()
        - method before() replaced by insertBefore(), insertAllBefore()
 
-* Per CAY-2258 Injection of List and Map are made type-safe, if you are using following methods:
+* Per CAY-2258 Injection of List and Map are made type-safe, as a result small incompatibilities are introduced.
+  If you are using following methods:
         - bindMap(String bindingName)
         - bindList(String bindingName)
   you should change them to corresponding type-safe versions:
         - bindMap(Class<T> valueType, String bindingName)
         - bindList(Class<T> valueType, String bindingName)
+  Also if you are using DI Keys like Key.get(Map.class, "bindingName") or Key.get(List.class, "bindingName")
+  you should use new corresponding factory methods Key.mapOf(MapValues.class, "bindingName")
+  and Key.listOf(ListValues.class, "bindingName").
+  Additionally new API allows you to bind Lists and Maps without using names:
+        - binder.bindList(SomeUniqueType.class).add(...);
+        - @Inject List<SomeUniqueType> list;
 
 * Per CAY-1873 and CAY-2266 Cache and remote notification configuration was moved from Modeler into
   runtime DI settings. To set custom cache size, you should use custom module like this:

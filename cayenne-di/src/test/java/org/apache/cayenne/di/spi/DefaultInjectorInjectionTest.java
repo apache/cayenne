@@ -19,6 +19,7 @@
 package org.apache.cayenne.di.spi;
 
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1;
@@ -27,6 +28,7 @@ import org.apache.cayenne.di.mock.MockImplementation1Alt2;
 import org.apache.cayenne.di.mock.MockImplementation1_ListConfiguration;
 import org.apache.cayenne.di.mock.MockImplementation1_ListConfigurationMock5;
 import org.apache.cayenne.di.mock.MockImplementation1_MapConfiguration;
+import org.apache.cayenne.di.mock.MockImplementation1_MapWithWildcards;
 import org.apache.cayenne.di.mock.MockImplementation1_WithInjector;
 import org.apache.cayenne.di.mock.MockImplementation2;
 import org.apache.cayenne.di.mock.MockImplementation2Sub1;
@@ -47,10 +49,11 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 public class DefaultInjectorInjectionTest {
 
@@ -79,10 +82,8 @@ public class DefaultInjectorInjectionTest {
 
             public void configure(Binder binder) {
                 binder.bind(MockInterface1.class).to(MockImplementation1.class);
-                binder.bind(Key.get(MockInterface1.class, "one")).to(
-                        MockImplementation1Alt.class);
-                binder.bind(Key.get(MockInterface1.class, "two")).to(
-                        MockImplementation1Alt2.class);
+                binder.bind(Key.get(MockInterface1.class, "one")).to(MockImplementation1Alt.class);
+                binder.bind(Key.get(MockInterface1.class, "two")).to(MockImplementation1Alt2.class);
                 binder.bind(MockInterface2.class).to(MockImplementation2_Named.class);
             }
         };
@@ -138,10 +139,8 @@ public class DefaultInjectorInjectionTest {
 
             public void configure(Binder binder) {
                 binder.bind(MockInterface1.class).to(MockImplementation1.class);
-                binder.bind(Key.get(MockInterface1.class, "one")).to(
-                        MockImplementation1Alt.class);
-                binder.bind(Key.get(MockInterface1.class, "two")).to(
-                        MockImplementation1Alt2.class);
+                binder.bind(Key.get(MockInterface1.class, "one")).to(MockImplementation1Alt.class);
+                binder.bind(Key.get(MockInterface1.class, "two")).to(MockImplementation1Alt2.class);
                 binder.bind(MockInterface4.class).to(MockImplementation4Alt.class);
             }
         };
@@ -160,10 +159,8 @@ public class DefaultInjectorInjectionTest {
 
             public void configure(Binder binder) {
                 binder.bind(MockInterface1.class).to(MockImplementation1.class);
-                binder.bind(Key.get(MockInterface1.class, "one")).to(
-                        MockImplementation1Alt.class);
-                binder.bind(Key.get(MockInterface1.class, "two")).to(
-                        MockImplementation1Alt2.class);
+                binder.bind(Key.get(MockInterface1.class, "one")).to(MockImplementation1Alt.class);
+                binder.bind(Key.get(MockInterface1.class, "two")).to(MockImplementation1Alt2.class);
                 binder.bind(MockInterface3.class).to(MockImplementation3.class);
                 binder.bind(MockInterface4.class).to(MockImplementation4Alt2.class);
             }
@@ -183,8 +180,7 @@ public class DefaultInjectorInjectionTest {
 
             public void configure(Binder binder) {
                 binder.bind(MockInterface1.class).to(MockImplementation1.class);
-                binder.bind(MockInterface2.class).to(
-                        MockImplementation2_ConstructorProvider.class);
+                binder.bind(MockInterface2.class).to(MockImplementation2_ConstructorProvider.class);
             }
         };
 
@@ -199,8 +195,7 @@ public class DefaultInjectorInjectionTest {
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_MapConfiguration.class);
+                binder.bind(MockInterface1.class).to(MockImplementation1_MapConfiguration.class);
 
                 // empty map must be still bound
                 binder.bindMap(Object.class, "xyz");
@@ -215,16 +210,45 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
+    public void mapInjectionDeprecated() {
+        final String bindingName = "xyz";
+        final Object test = "test_map";
+        Module module = new Module() {
+            @Override
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(MockImplementation1_MapConfiguration.class);
+                binder.bindMap(bindingName).put("test", test).put("abc", "def");
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+        // Even with old version of binding we should use new version of key...
+        Map<String, Object> map = injector.getInstance(Key.getMapOf(String.class, Object.class, bindingName));
+        assertNotNull(map);
+        assertEquals(test, map.get("test"));
+
+        try {
+            // Old version of getting by key will fail...
+            injector.getInstance(Key.get(Map.class, bindingName));
+            fail("DI Exception should be thrown");
+        } catch (DIRuntimeException ignored) {
+        }
+
+        // Check that injection is working
+        MockInterface1 interface1 = injector.getInstance(MockInterface1.class);
+        assertThat(interface1, instanceOf(MockImplementation1_MapConfiguration.class));
+        assertEquals(";abc=def;test=test_map", interface1.getName());
+    }
+
+    @Test
     public void testMapInjection() {
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_MapConfiguration.class);
-
-                binder.bindMap(Object.class,"xyz").put("x", "xvalue").put("y", "yvalue").put(
-                        "x",
-                        "xvalue1");
+                binder.bind(MockInterface1.class).to(MockImplementation1_MapConfiguration.class);
+                binder.bindMap(Object.class,"xyz")
+                        .put("x", "xvalue").put("y", "yvalue").put("x", "xvalue1");
             }
         };
 
@@ -236,16 +260,40 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
+    public void mapWithWildcardInjection() {
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(MockImplementation1_MapWithWildcards.class);
+                binder.bindMap(Class.class).put("x", String.class).put("y", Integer.class).put("z", Object.class);
+            }
+        };
+        DefaultInjector injector = new DefaultInjector(module);
+
+        // This is example of how to deal with wildcards:
+        // to handle it nicer we need to use some hacks with anonymous classes:
+        // Key.get(new TypeLiteral<String, Class<?>>(){});
+        Map mapUntyped = injector.getInstance(Key.getMapOf(String.class, Class.class));
+        @SuppressWarnings("unchecked")
+        Map<String, Class<?>> map = (Map<String, Class<?>>)mapUntyped;
+
+        assertNotNull(map);
+        assertEquals(3, map.size());
+        assertEquals(String.class, map.get("x"));
+
+        MockInterface1 service = injector.getInstance(MockInterface1.class);
+        assertNotNull(service);
+        assertEquals("map:3", service.getName());
+    }
+
+    @Test
     public void testMapInjection_Resumed() {
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_MapConfiguration.class);
-
+                binder.bind(MockInterface1.class).to(MockImplementation1_MapConfiguration.class);
                 // bind 1
                 binder.bindMap(Object.class,"xyz").put("x", "xvalue").put("y", "yvalue");
-
                 // second binding attempt to the same map...
                 binder.bindMap(Object.class,"xyz").put("z", "zvalue").put("x", "xvalue1");
             }
@@ -263,9 +311,7 @@ public class DefaultInjectorInjectionTest {
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_ListConfiguration.class);
-
+                binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
                 binder.bindList(Object.class, "xyz").add("xvalue").add("yvalue");
             }
         };
@@ -282,9 +328,7 @@ public class DefaultInjectorInjectionTest {
         Module module = new Module() {
             @Override
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_ListConfiguration.class);
-
+                binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
                 binder.bind(MockInterface5.class).to(MockImplementation5.class);
 
                 binder.bindList(Object.class, "xyz")
@@ -308,8 +352,7 @@ public class DefaultInjectorInjectionTest {
         Module module = new Module() {
             @Override
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_ListConfiguration.class);
+                binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
 
                 Collection<Object> firstList = new ArrayList<>();
                 firstList.add("1value");
@@ -344,9 +387,7 @@ public class DefaultInjectorInjectionTest {
 
             public void configure(Binder binder) {
                 binder.bind(MockInterface5.class).to(MockImplementation5.class);
-
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_ListConfiguration.class);
+                binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
 
                 binder.bindList(Object.class, "xyz").add(MockInterface5.class).add("yvalue");
             }
@@ -364,9 +405,7 @@ public class DefaultInjectorInjectionTest {
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_ListConfiguration.class);
-
+                binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
                 binder.bind(MockInterface5.class).to(MockImplementation5.class);
 
                 binder.bindList(Object.class, "xyz")
@@ -391,9 +430,7 @@ public class DefaultInjectorInjectionTest {
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_ListConfiguration.class);
-
+                binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
                 binder.bindList(Object.class, "xyz").add(MockImplementation5.class).add("yvalue");
             }
         };
@@ -410,8 +447,7 @@ public class DefaultInjectorInjectionTest {
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_ListConfiguration.class);
+                binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
                 binder.bindList(Object.class,"xyz");
             }
         };
@@ -428,8 +464,7 @@ public class DefaultInjectorInjectionTest {
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_ListConfiguration.class);
+                binder.bind(MockInterface1.class).to(MockImplementation1_ListConfiguration.class);
 
                 binder.bindList(Object.class, "xyz").add("xvalue").add("yvalue");
                 binder.bindList(Object.class, "xyz").add("avalue");
@@ -448,10 +483,8 @@ public class DefaultInjectorInjectionTest {
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class)
-                        .to(MockImplementation1_ListConfigurationMock5.class);
-                binder.bind(MockInterface2.class)
-                        .to(MockImplementation2_ListConfiguration.class);
+                binder.bind(MockInterface1.class).to(MockImplementation1_ListConfigurationMock5.class);
+                binder.bind(MockInterface2.class).to(MockImplementation2_ListConfiguration.class);
 
                 // Bind list for MockImplementation2_ListConfiguration
                 binder.bindList(Object.class,"xyz")
