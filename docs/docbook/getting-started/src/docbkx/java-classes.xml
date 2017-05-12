@@ -51,8 +51,9 @@
             should see pairs of classes generated for each mapped entity. You probably also see that
             there's a bunch of red squiggles next to the newly generated Java classes in IDEA.
             This is because our project does not include Cayenne as a Maven dependency yet. Let's
-            fix it now by adding "cayenne-server" artifact in the bottom of the <code>pom.xml</code> file. The
-            resulting POM should look like
+            fix it now by adding "cayenne-server" and "cayenne-java8" artifacts in the bottom of the <code>pom.xml</code> file.
+            Also we should tell Maven compile plugin that our project needs Java 8.
+            The resulting POM should look like
             this:<programlisting language="xml">&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"&gt;
     &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
@@ -79,12 +80,28 @@
             &lt;version>1.7.25&lt;/version>
         &lt;/dependency>
     &lt;/dependencies&gt;
+
+    &lt;build>
+        &lt;plugins>
+            &lt;!-- Tell maven to support Java 8 -->
+            &lt;plugin>
+                &lt;groupId>org.apache.maven.plugins&lt;/groupId>
+                &lt;artifactId>maven-compiler-plugin&lt;/artifactId>
+                &lt;version>3.6.1&lt;/version>
+                &lt;configuration>
+                    &lt;source>1.8&lt;/source>
+                    &lt;target>1.8&lt;/target>
+                &lt;/configuration>
+            &lt;/plugin>
+        &lt;/plugins>
+    &lt;/build>
 &lt;/project&gt;</programlisting></para>
         <para>Your computer must be connected to the internet. Once you edit the <code>pom.xml</code>, IDEA
             will download the needed Cayenne jar file and add it to the project build path. As a
             result, all the errors should disappear. In tutorial for console output we use slf4j-simple logger
-            implementation. Due to use SLF4J logger in Apache Cayenne, you can use your custom logger through bridges
-            (e.g log4j bridge, jcl bridge et. al.)</para>
+            implementation. Due to use SLF4J logger in Apache Cayenne, you can use your custom logger (e.g. log4j
+            or commons-logging) through bridges.
+        </para>
         <para><inlinemediaobject>
                 <imageobject>
                     <imagedata fileref="images/idea-generated-classes.png" scalefit="1" width="100%"/>

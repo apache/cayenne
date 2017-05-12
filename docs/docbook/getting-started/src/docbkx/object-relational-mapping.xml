@@ -42,13 +42,13 @@
         </para>
         <para>Select "datamap" on the left-hand side project tree and click "Create DbEntity" button <inlinemediaobject>
             <imageobject>
-                <imagedata fileref="images/icon-dbentity.gif"/>
+                <imagedata fileref="images/icon-dbentity.png"/>
             </imageobject>
         </inlinemediaobject>
             (or use "Project &gt; Create DbEntity" menu). A new DbEntity is created. In "DbEntity
             Name" field enter "ARTIST". Then click on "Create Attribute" button <inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="images/icon-attribute.gif"/>
+                    <imagedata fileref="images/icon-attribute.png"/>
                 </imageobject>
             </inlinemediaobject> on the entity
             toolbar. This action changes the view to the "Attribute"
@@ -92,7 +92,7 @@
             <listitem>
                 <para>Click on the "Database Mapping" button <inlinemediaobject>
                     <imageobject>
-                        <imagedata fileref="images/icon-info.png"/>
+                        <imagedata fileref="images/icon-edit.png"/>
                     </imageobject>
                 </inlinemediaobject> - relationship
                     configuration dialog is presented. Here you can assign a name to the
@@ -146,7 +146,7 @@
             <listitem>
                 <para>Select "ARTIST" DbEntity and click on "Create ObjEntity" button <inlinemediaobject>
                     <imageobject>
-                        <imagedata fileref="images/icon-objentity.gif"/>
+                        <imagedata fileref="images/icon-new_objentity.png"/>
                     </imageobject>
                 </inlinemediaobject> either on the entity toolbar or on the main toolbar. An ObjEntity called
                     "Artist" is created with a Java class field set to
@@ -169,7 +169,7 @@
                     <para>Click on the "Artist" ObjEntity. Now click on "Sync ObjEntity with DbEntity" button on
                         the toolbar <inlinemediaobject>
                             <imageobject>
-                                <imagedata fileref="images/icon-sync.gif"/>
+                                <imagedata fileref="images/icon-sync.png"/>
                             </imageobject>
                         </inlinemediaobject> - you will see the "paintings" relationship
                         appear.</para>
