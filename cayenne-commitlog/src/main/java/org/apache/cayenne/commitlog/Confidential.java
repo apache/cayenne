@@ -16,14 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.db;
+package org.apache.cayenne.commitlog;
 
-import org.apache.cayenne.lifecycle.audit.Auditable;
-import org.apache.cayenne.lifecycle.db.auto._Auditable2;
+/**
+ * A singleton representing a confidential property value.
+ * 
+ * @since 4.0
+ */
+public class Confidential {
 
-@Auditable(ignoredProperties = "charProperty1")
-public class Auditable2 extends _Auditable2 {
+	private static final Confidential instance = new Confidential();
 
-	private static final long serialVersionUID = 5203324250911707978L;
+	public static Confidential getInstance() {
+		return instance;
+	}
 
+	private Confidential() {
+	}
+
+	@Override
+	public String toString() {
+		return "*******";
+	}
 }

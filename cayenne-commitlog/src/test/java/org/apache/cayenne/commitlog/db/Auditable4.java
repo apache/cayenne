@@ -16,14 +16,14 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.db;
+package org.apache.cayenne.commitlog.db;
 
-import org.apache.cayenne.lifecycle.audit.Auditable;
-import org.apache.cayenne.lifecycle.db.auto._Auditable2;
+import org.apache.cayenne.commitlog.CommitLog;
+import org.apache.cayenne.commitlog.db.auto._Auditable4;
 
-@Auditable(ignoredProperties = "charProperty1")
-public class Auditable2 extends _Auditable2 {
+@CommitLog(ignoreToOneRelationships = true)
+public class Auditable4 extends _Auditable4 {
 
-	private static final long serialVersionUID = 5203324250911707978L;
+	private static final long serialVersionUID = 1L;
 
 }

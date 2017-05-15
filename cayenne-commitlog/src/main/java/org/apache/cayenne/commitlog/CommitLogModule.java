@@ -16,14 +16,28 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.db;
 
-import org.apache.cayenne.lifecycle.audit.Auditable;
-import org.apache.cayenne.lifecycle.db.auto._Auditable2;
+package org.apache.cayenne.commitlog;
 
-@Auditable(ignoredProperties = "charProperty1")
-public class Auditable2 extends _Auditable2 {
+import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.ListBuilder;
+import org.apache.cayenne.di.Module;
+import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
+import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 
-	private static final long serialVersionUID = 5203324250911707978L;
+/**
+ * @since 4.0
+ */
+public class CommitLogModule implements Module{
 
+    public static ListBuilder<CommitLogListener> contributeListeners(Binder binder) {
+        return binder.bindList(CommitLogListener.class);
+    }
+
+    @Override
+    public void configure(Binder binder) {
+        contributeListeners(binder);
+        binder.bind(CommitLogEntityFactory.class).to(IncludeAllCommitLogEntityFactory.class);
+        binder.bind(CommitLogFilter.class).to(CommitLogFilter.class);
+    }
 }

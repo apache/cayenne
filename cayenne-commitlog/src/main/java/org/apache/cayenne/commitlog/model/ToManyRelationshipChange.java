@@ -16,14 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.db;
+package org.apache.cayenne.commitlog.model;
 
-import org.apache.cayenne.lifecycle.audit.Auditable;
-import org.apache.cayenne.lifecycle.db.auto._Auditable2;
+import java.util.Collection;
 
-@Auditable(ignoredProperties = "charProperty1")
-public class Auditable2 extends _Auditable2 {
+import org.apache.cayenne.ObjectId;
 
-	private static final long serialVersionUID = 5203324250911707978L;
+/**
+ * Represents a change in a to-many relationship property to another entity.
+ * 
+ * @since 4.0
+ */
+public interface ToManyRelationshipChange extends PropertyChange {
 
+	Collection<ObjectId> getAdded();
+
+	Collection<ObjectId> getRemoved();
 }

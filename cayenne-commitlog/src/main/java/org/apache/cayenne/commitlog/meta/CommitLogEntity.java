@@ -16,14 +16,19 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.db;
+package org.apache.cayenne.commitlog.meta;
 
-import org.apache.cayenne.lifecycle.audit.Auditable;
-import org.apache.cayenne.lifecycle.db.auto._Auditable2;
+/**
+ * Describes post-commit behavior for a given Cayenne entity.
+ * 
+ * @since 4.0
+ */
+public interface CommitLogEntity {
 
-@Auditable(ignoredProperties = "charProperty1")
-public class Auditable2 extends _Auditable2 {
+	boolean isIncluded();
 
-	private static final long serialVersionUID = 5203324250911707978L;
+	boolean isConfidential(String property);
+
+	boolean isIncluded(String property);
 
 }

@@ -16,14 +16,30 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.db;
+package org.apache.cayenne.commitlog.model;
 
-import org.apache.cayenne.lifecycle.audit.Auditable;
-import org.apache.cayenne.lifecycle.db.auto._Auditable2;
+import java.util.Map;
 
-@Auditable(ignoredProperties = "charProperty1")
-public class Auditable2 extends _Auditable2 {
+import org.apache.cayenne.ObjectId;
 
-	private static final long serialVersionUID = 5203324250911707978L;
+/**
+ * Accumulates changes of a single object with a transaction.
+ * 
+ * @since 4.0
+ */
+public interface ObjectChange {
 
+	ObjectChangeType getType();
+
+	ObjectId getPreCommitId();
+
+	ObjectId getPostCommitId();
+
+	Map<String, ? extends PropertyChange> getChanges();
+
+	Map<String, ? extends AttributeChange> getAttributeChanges();
+
+	Map<String, ? extends ToOneRelationshipChange> getToOneRelationshipChanges();
+
+	Map<String, ? extends ToManyRelationshipChange> getToManyRelationshipChanges();
 }

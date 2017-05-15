@@ -16,14 +16,36 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.db;
+package org.apache.cayenne.commitlog.model;
 
-import org.apache.cayenne.lifecycle.audit.Auditable;
-import org.apache.cayenne.lifecycle.db.auto._Auditable2;
+/**
+ * @since 4.0
+ */
+public class MutableAttributeChange implements AttributeChange {
 
-@Auditable(ignoredProperties = "charProperty1")
-public class Auditable2 extends _Auditable2 {
+	private Object oldValue;
+	private Object newValue;
 
-	private static final long serialVersionUID = 5203324250911707978L;
+	@Override
+	public <T> T accept(PropertyChangeVisitor<T> visitor) {
+		return visitor.visitAttribute(this);
+	}
 
+	public void setOldValue(Object oldValue) {
+		this.oldValue = oldValue;
+	}
+
+	public void setNewValue(Object value) {
+		this.newValue = value;
+	}
+
+	@Override
+	public Object getOldValue() {
+		return oldValue;
+	}
+
+	@Override
+	public Object getNewValue() {
+		return newValue;
+	}
 }

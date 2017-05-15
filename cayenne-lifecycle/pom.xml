@@ -29,7 +29,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-postcommit</artifactId>
+			<artifactId>cayenne-commitlog</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
