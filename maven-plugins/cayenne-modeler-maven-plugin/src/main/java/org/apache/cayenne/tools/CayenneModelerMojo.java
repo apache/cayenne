@@ -21,7 +21,7 @@ package org.apache.cayenne.tools;
 
 import java.io.File;
 
-import org.apache.cayenne.modeler.Main;
+import org.apache.cayenne.modeler.generic.GenericMain;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -70,9 +70,9 @@ public class CayenneModelerMojo extends AbstractMojo {
 		// start the modeler with the provided model file, if it exists.
 		File f = lookupModelFile();
 		if (f != null && f.exists() && !f.isDirectory()) {
-			Main.main(new String[] { f.getAbsolutePath() });
+			GenericMain.main(new String[] { f.getAbsolutePath() });
 		} else {
-			Main.main(new String[] {});
+			GenericMain.main(new String[] {});
 		}
 
 		// Block until the modeler finishes executing.

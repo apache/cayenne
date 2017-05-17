@@ -63,6 +63,12 @@
 			</exclusions>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.cayenne.modeler</groupId>
+			<artifactId>cayenne-modeler-generic-ext</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
         <dependency>
 			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-server</artifactId>
