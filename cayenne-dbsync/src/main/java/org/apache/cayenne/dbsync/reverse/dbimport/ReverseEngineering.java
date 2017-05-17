@@ -216,4 +216,36 @@ public class ReverseEngineering extends SchemaContainer implements Serializable 
     public boolean isUseJava7Types() {
         return useJava7Types;
     }
+
+    public void setDefaultPackage(String defaultPackage) {
+        this.defaultPackage = defaultPackage;
+    }
+
+    public void setForceDataMapCatalog(boolean forceDataMapCatalog) {
+        this.forceDataMapCatalog = forceDataMapCatalog;
+    }
+
+    public void setForceDataMapSchema(boolean forceDataMapSchema) {
+        this.forceDataMapSchema = forceDataMapSchema;
+    }
+
+    public void setMeaningfulPkTables(String meaningfulPkTables) {
+        this.meaningfulPkTables = meaningfulPkTables;
+    }
+
+    public void setNamingStrategy(String namingStrategy) {
+        this.namingStrategy = namingStrategy;
+    }
+
+    public void setStripFromTableNames(String stripFromTableNames) {
+        this.stripFromTableNames = stripFromTableNames;
+    }
+
+    public void setUsePrimitives(boolean usePrimitives) {
+        this.usePrimitives = usePrimitives;
+    }
+
+    public void setUseJava7Types(boolean useJava7Types) {
+        this.useJava7Types = useJava7Types;
+    }
 }

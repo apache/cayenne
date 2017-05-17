@@ -25,7 +25,7 @@ import java.util.LinkedList;
 /**
  * @since 4.0.
  */
-abstract class FilterContainer {
+public abstract class FilterContainer {
 
     private String name;
 
