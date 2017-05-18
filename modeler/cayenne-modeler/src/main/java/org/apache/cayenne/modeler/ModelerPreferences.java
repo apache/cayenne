@@ -97,7 +97,7 @@ public class ModelerPreferences implements PreferenceChangeListener {
             String fileName = filesPrefs.get(Integer.toString(i), "");
             if(!fileName.isEmpty()) {
                 File file = new File(fileName);
-                if(!lastProjectsFiles.contains(file)) {
+                if(!lastProjectsFiles.contains(file) && file.exists()) {
                     lastProjectsFiles.add(file);
                 }
             }
