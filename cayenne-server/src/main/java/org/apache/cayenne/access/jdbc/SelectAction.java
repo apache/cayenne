@@ -91,6 +91,9 @@ public class SelectAction extends BaseSQLAction {
 		final String sql = translator.getSql();
 
 		DbAttributeBinding[] bindings = translator.getBindings();
+
+		logger.logQuery(sql, bindings, System.currentTimeMillis() - t1);
+
 		PreparedStatement statement = connection.prepareStatement(sql);
 		bind(dataNode.getAdapter(), statement, bindings);
 
@@ -98,8 +101,6 @@ public class SelectAction extends BaseSQLAction {
 		if (fetchSize != 0) {
 			statement.setFetchSize(fetchSize);
 		}
-
-		logger.logQuery(sql, bindings, System.currentTimeMillis() - t1);
 
 		ResultSet rs;
 
