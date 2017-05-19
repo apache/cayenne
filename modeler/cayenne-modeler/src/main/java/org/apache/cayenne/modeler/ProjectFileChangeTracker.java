@@ -54,8 +54,9 @@ public class ProjectFileChangeTracker extends Thread {
      */
     protected Map<String, FileInfo> files;
     protected boolean paused;
+    protected boolean isShownChangeDialog;
+    protected boolean isShownRemoveDialog;
     protected ProjectController mediator;
-
     public ProjectFileChangeTracker(ProjectController mediator) {
 
         this.files = new ConcurrentHashMap<>();
@@ -96,6 +97,7 @@ public class ProjectFileChangeTracker extends Thread {
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
+                isShownChangeDialog = true;
                 if (showConfirmation("One or more project files were changed by external program. "
                         + "Do you want to load the changes?")) {
 
@@ -107,10 +109,10 @@ public class ProjectFileChangeTracker extends Thread {
                         Application.getInstance().getActionManager().getAction(OpenProjectAction.class)
                                 .openProject(fileDirectory);
                     }
-
                 } else {
                     mediator.setDirty(true);
                 }
+                isShownChangeDialog = false;
             }
         });
     }
@@ -121,6 +123,7 @@ public class ProjectFileChangeTracker extends Thread {
             SwingUtilities.invokeLater(new Runnable() {
 
                 public void run() {
+                    isShownRemoveDialog = true;
                     FileDeletedDialog dialog = new FileDeletedDialog(Application.getFrame());
                     dialog.show();
 
@@ -131,6 +134,7 @@ public class ProjectFileChangeTracker extends Thread {
                     } else {
                         mediator.setDirty(true);
                     }
+                    isShownRemoveDialog = false;
                 }
             });
         }
@@ -212,9 +216,9 @@ public class ProjectFileChangeTracker extends Thread {
             }
         }
 
-        if (hasDeletions) {
+        if (hasDeletions && !isShownRemoveDialog) {
             doOnRemove();
-        } else if (hasChanges) {
+        } else if (hasChanges && !isShownChangeDialog) {
             doOnChange();
         }
     }
