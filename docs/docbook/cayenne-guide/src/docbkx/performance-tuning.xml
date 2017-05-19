@@ -212,7 +212,7 @@ for(DataRow row : rows) {
             each iteration. This is a common scenario in various data processing jobs - read a batch
             of objects, process them, commit the results, and then repeat. This allows to further
             optimize processing (e.g. by avoiding frequent
-            commits).<programlisting language="java">try(ResultBatchIterator&lt;Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
+            commits).<programlisting language="java">try(ResultBatchIterator&lt;Artist> it = ObjectSelect.query(Artist.class).batchIterator(context, 100)) {
     for(List&lt;Artist> list : it) {
        // do something with each list
        ...
