@@ -163,7 +163,7 @@ class Oracle8LOBBatchAction implements SQLAction {
 			}
 
 			if (isLoggable) {
-				logger.logQuery(selectStr, attributeBindings, 0);
+				logger.logQuery(selectStr, attributeBindings);
 			}
 
 			try (ResultSet result = selectStatement.executeQuery()) {

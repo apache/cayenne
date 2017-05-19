@@ -145,8 +145,6 @@ public class ProcedureTranslator {
 	 * Creates and binds a PreparedStatement to execute query SQL via JDBC.
 	 */
 	public PreparedStatement createStatement() throws Exception {
-		long t1 = System.currentTimeMillis();
-
 		this.callParams = getProcedure().getCallParameters();
 		this.values = new ArrayList<>(callParams.size());
 
@@ -155,7 +153,6 @@ public class ProcedureTranslator {
 
 		if (logger.isLoggable()) {
 			// need to convert OUT/VOID parameters to loggable strings
-			long time = System.currentTimeMillis() - t1;
 			ParameterBinding[] parameterBindings = new ParameterBinding[values.size()];
 			for (int i=0; i<values.size(); i++) {
 				ProcedureParameter procedureParameter = callParams.get(i);
@@ -166,7 +163,7 @@ public class ProcedureTranslator {
 				parameterBindings[i] = new ParameterBinding(value,
 						procedureParameter.getType(), procedureParameter.getPrecision());
 			}
-			logger.logQuery(sqlStr, parameterBindings, time);
+			logger.logQuery(sqlStr, parameterBindings);
 		}
 		CallableStatement stmt = connection.prepareCall(sqlStr);
 		initStatement(stmt);

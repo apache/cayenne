@@ -83,7 +83,7 @@ public class NoopJdbcEventLogger implements JdbcEventLogger {
 	}
 	
 	@Override
-	public void logQuery(String sql, ParameterBinding[] bindings, long translatedIn) {
+	public void logQuery(String sql, ParameterBinding[] bindings) {
 	}
 
 	@Override

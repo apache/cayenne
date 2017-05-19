@@ -76,13 +76,13 @@ public interface JdbcEventLogger {
 	void logGeneratedKey(DbAttribute attribute, Object value);
 
 	/**
-	 * @deprecated since 4.0 use {@link #logQuery(String, ParameterBinding[], long)}.
+	 * @deprecated since 4.0 use {@link #logQuery(String, ParameterBinding[])}.
 	 */
 	@Deprecated
 	void logQuery(String sql, List<?> params);
 
 	/**
-	 * @deprecated since 4.0 use {@link #logQuery(String, ParameterBinding[], long)}.
+	 * @deprecated since 4.0 use {@link #logQuery(String, ParameterBinding[])}.
 	 */
 	@Deprecated
 	void logQuery(String sql, List<DbAttribute> attrs, List<?> params, long time);
@@ -90,7 +90,7 @@ public interface JdbcEventLogger {
 	/**
 	 * @since 4.0
 	 */
-	void logQuery(String sql, ParameterBinding[] bindings, long translatedIn);
+	void logQuery(String sql, ParameterBinding[] bindings);
 
 	/**
 	 * @since 4.0

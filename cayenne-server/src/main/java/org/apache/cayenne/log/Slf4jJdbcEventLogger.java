@@ -291,7 +291,7 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 	}
 
 	@Override
-	public void logQuery(String sql, ParameterBinding[] bindings, long translatedIn) {
+	public void logQuery(String sql, ParameterBinding[] bindings) {
 		if (isLoggable()) {
 
 			StringBuilder buffer = new StringBuilder(sql).append(" ");

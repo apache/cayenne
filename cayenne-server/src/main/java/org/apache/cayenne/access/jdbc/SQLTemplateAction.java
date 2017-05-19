@@ -132,7 +132,7 @@ public class SQLTemplateAction implements SQLAction {
 				query.getPositionalParams());
 
 		if (loggable) {
-			dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), compiled.getBindings(), 0);
+			dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), compiled.getBindings());
 		}
 
 		execute(connection, callback, compiled, counts);
@@ -157,7 +157,7 @@ public class SQLTemplateAction implements SQLAction {
 			SQLStatement compiled = dataNode.getSqlTemplateProcessor().processTemplate(template, nextParameters);
 
 			if (loggable) {
-				dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), compiled.getBindings(), 0);
+				dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), compiled.getBindings());
 			}
 
 			execute(connection, callback, compiled, counts);
