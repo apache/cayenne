@@ -83,6 +83,7 @@ public class DataMapView extends JPanel {
     protected JCheckBox clientSupport;
 
     protected JLabel defaultClientPackageLabel;
+    protected JLabel defaultClientSuperclassLabel;
     protected TextAdapter defaultClientPackage;
     protected TextAdapter defaultClientSuperclass;
     protected JButton updateDefaultClientPackage;
@@ -194,7 +195,7 @@ public class DataMapView extends JPanel {
                 "Client Java Package:",
                 defaultClientPackage.getComponent(),
                 updateDefaultClientPackage);
-        builder.append(
+        defaultClientSuperclassLabel = builder.append(
                 "Custom Superclass:",
                 defaultClientSuperclass.getComponent(),
                 updateDefaultClientSuperclass);
@@ -352,6 +353,7 @@ public class DataMapView extends JPanel {
         updateDefaultClientPackage.setEnabled(enabled);
         defaultClientPackageLabel.setEnabled(enabled);
 
+        defaultClientSuperclassLabel.setEnabled(enabled);
         defaultClientSuperclass.getComponent().setEnabled(enabled);
         updateDefaultClientSuperclass.setEnabled(enabled);
     }
