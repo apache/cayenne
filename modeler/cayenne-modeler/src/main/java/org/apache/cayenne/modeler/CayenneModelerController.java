@@ -166,18 +166,16 @@ public class CayenneModelerController extends CayenneController {
 
     public void projectModifiedAction() {
         String title = (projectController.getProject().getConfigurationResource() == null)
-                ? "[New]"
+                ? "[New Project]"
                 : projectController.getProject().getConfigurationResource().getURL().getPath();
-        frame.setTitle("* - " + ModelerConstants.TITLE + " - " + title);
+        frame.setTitle("* - " + title);
     }
 
     public void projectSavedAction() {
         projectController.setDirty(false);
         projectController.updateProjectControllerPreferences();
         updateStatus("Project saved...");
-        frame.setTitle(ModelerConstants.TITLE
-                + " - "
-                + projectController.getProject().getConfigurationResource().getURL().getPath());
+        frame.setTitle(projectController.getProject().getConfigurationResource().getURL().getPath());
     }
 
     /**
@@ -192,7 +190,7 @@ public class CayenneModelerController extends CayenneController {
         // repaint is needed, since sometimes there is a
         // trace from menu left on the screen
         frame.repaint();
-        frame.setTitle(ModelerConstants.TITLE);
+        frame.setTitle("");
 
         projectController.setProject(null);
 
@@ -219,12 +217,10 @@ public class CayenneModelerController extends CayenneController {
         // do status update AFTER the project is actually opened...
         if (project.getConfigurationResource() == null) {
             updateStatus("New project created...");
-            frame.setTitle(ModelerConstants.TITLE + "- [New]");
+            frame.setTitle("[New Project]");
         } else {
             updateStatus("Project opened...");
-            frame.setTitle(ModelerConstants.TITLE
-                    + " - "
-                    + project.getConfigurationResource().getURL().getPath());
+            frame.setTitle(project.getConfigurationResource().getURL().getPath());
         }
 
         // update preferences

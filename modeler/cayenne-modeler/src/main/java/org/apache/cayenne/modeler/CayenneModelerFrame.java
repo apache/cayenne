@@ -154,7 +154,6 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
     protected WelcomeScreen welcomeScreen;
 
     public CayenneModelerFrame(ActionManager actionManager) {
-        super(ModelerConstants.TITLE);
         this.actionManager = actionManager;
 
         recentFileListeners = new Vector<>();
