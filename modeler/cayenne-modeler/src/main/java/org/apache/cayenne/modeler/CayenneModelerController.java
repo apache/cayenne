@@ -168,7 +168,7 @@ public class CayenneModelerController extends CayenneController {
         String title = (projectController.getProject().getConfigurationResource() == null)
                 ? "[New Project]"
                 : projectController.getProject().getConfigurationResource().getURL().getPath();
-        frame.setTitle(title);
+        frame.setTitle("* - " + title);
     }
 
     public void projectSavedAction() {
@@ -190,6 +190,7 @@ public class CayenneModelerController extends CayenneController {
         // repaint is needed, since sometimes there is a
         // trace from menu left on the screen
         frame.repaint();
+        frame.setTitle("");
 
         projectController.setProject(null);
 
