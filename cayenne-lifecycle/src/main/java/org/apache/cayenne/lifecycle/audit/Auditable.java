@@ -16,14 +16,29 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.db;
+package org.apache.cayenne.lifecycle.audit;
 
-import org.apache.cayenne.lifecycle.audit.Auditable;
-import org.apache.cayenne.lifecycle.db.auto._Auditable2;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@Auditable(ignoredProperties = "charProperty1")
-public class Auditable2 extends _Auditable2 {
+/**
+ * An annotation that adds auditing behavior to DataObjects.
+ * 
+ * @since 3.1
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+public @interface Auditable {
 
-	private static final long serialVersionUID = 5203324250911707978L;
+	/**
+	 * Returns an array of entity properties that should be excluded from audit.
+	 */
+	String[] ignoredProperties() default {};
 
 }

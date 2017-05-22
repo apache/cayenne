@@ -16,14 +16,17 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.db;
 
-import org.apache.cayenne.lifecycle.audit.Auditable;
-import org.apache.cayenne.lifecycle.db.auto._Auditable2;
+package org.apache.cayenne.commitlog;
 
-@Auditable(ignoredProperties = "charProperty1")
-public class Auditable2 extends _Auditable2 {
+import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.unit.util.ModuleProviderChecker;
+import org.junit.Test;
 
-	private static final long serialVersionUID = 5203324250911707978L;
+public class CommitLogModuleProviderTest {
 
+    @Test
+    public void testAutoLoadable() {
+        ModuleProviderChecker.testProviderPresent(CommitLogServerModuleProvider.class, CayenneServerModuleProvider.class);
+    }
 }

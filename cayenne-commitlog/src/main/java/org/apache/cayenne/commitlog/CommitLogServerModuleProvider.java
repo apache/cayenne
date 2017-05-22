@@ -16,14 +16,35 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.db;
 
-import org.apache.cayenne.lifecycle.audit.Auditable;
-import org.apache.cayenne.lifecycle.db.auto._Auditable2;
+package org.apache.cayenne.commitlog;
 
-@Auditable(ignoredProperties = "charProperty1")
-public class Auditable2 extends _Auditable2 {
+import java.util.Collection;
+import java.util.Collections;
 
-	private static final long serialVersionUID = 5203324250911707978L;
+import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.di.Module;
 
+/**
+ * @since 4.0
+ */
+public class CommitLogServerModuleProvider implements CayenneServerModuleProvider {
+
+    @Override
+    public Module module() {
+        return new CommitLogModule();
+    }
+
+    @Override
+    public Class<? extends Module> moduleType() {
+        return CommitLogModule.class;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Collection<Class<? extends Module>> overrides() {
+        Collection modules = Collections.singletonList(ServerModule.class);
+        return modules;
+    }
 }

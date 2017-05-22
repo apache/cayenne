@@ -16,14 +16,38 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.db;
+package org.apache.cayenne.commitlog.model;
 
-import org.apache.cayenne.lifecycle.audit.Auditable;
-import org.apache.cayenne.lifecycle.db.auto._Auditable2;
+import org.apache.cayenne.ObjectId;
 
-@Auditable(ignoredProperties = "charProperty1")
-public class Auditable2 extends _Auditable2 {
+/**
+ * @since 4.0
+ */
+public class MutableToOneRelationshipChange implements ToOneRelationshipChange {
 
-	private static final long serialVersionUID = 5203324250911707978L;
+	private ObjectId oldValue;
+	private ObjectId newValue;
 
+	@Override
+	public <T> T accept(PropertyChangeVisitor<T> visitor) {
+		return visitor.visitToOneRelationship(this);
+	}
+
+	@Override
+	public ObjectId getOldValue() {
+		return oldValue;
+	}
+
+	@Override
+	public ObjectId getNewValue() {
+		return newValue;
+	}
+
+	public void connected(ObjectId o) {
+		this.newValue = o;
+	}
+
+	public void disconnected(ObjectId o) {
+		this.oldValue = o;
+	}
 }

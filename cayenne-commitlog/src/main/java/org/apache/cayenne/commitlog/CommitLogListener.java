@@ -16,14 +16,17 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.db;
+package org.apache.cayenne.commitlog;
 
-import org.apache.cayenne.lifecycle.audit.Auditable;
-import org.apache.cayenne.lifecycle.db.auto._Auditable2;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.commitlog.model.ChangeMap;
 
-@Auditable(ignoredProperties = "charProperty1")
-public class Auditable2 extends _Auditable2 {
+/**
+ * An interface of a listener of post-commit events.
+ * 
+ * @since 4.0
+ */
+public interface CommitLogListener {
 
-	private static final long serialVersionUID = 5203324250911707978L;
-
+	void onPostCommit(ObjectContext originatingContext, ChangeMap changes);
 }

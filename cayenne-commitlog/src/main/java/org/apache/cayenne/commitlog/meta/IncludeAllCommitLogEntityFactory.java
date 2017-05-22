@@ -16,14 +16,36 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.db;
+package org.apache.cayenne.commitlog.meta;
 
-import org.apache.cayenne.lifecycle.audit.Auditable;
-import org.apache.cayenne.lifecycle.db.auto._Auditable2;
+import org.apache.cayenne.ObjectId;
 
-@Auditable(ignoredProperties = "charProperty1")
-public class Auditable2 extends _Auditable2 {
+/**
+ * @since 4.0
+ */
+public class IncludeAllCommitLogEntityFactory implements CommitLogEntityFactory {
 
-	private static final long serialVersionUID = 5203324250911707978L;
+	private static final CommitLogEntity ALLOWED_ENTITY = new CommitLogEntity() {
 
+		@Override
+		public boolean isIncluded(String property) {
+			return true;
+		}
+
+		@Override
+		public boolean isConfidential(String property) {
+			return false;
+		}
+
+		@Override
+		public boolean isIncluded() {
+			return true;
+		}
+	};
+
+	@Override
+	public CommitLogEntity getEntity(ObjectId id) {
+		return ALLOWED_ENTITY;
+
+	}
 }

@@ -7,6 +7,24 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 
 UPGRADING TO 4.0.M6
 
+* Per CAY-2302 postcommit module and all it's internals renamed to commitlog.
+      Most important change is the new @CommitLog annotation which should be used instead of @Auditable,
+      this change is backward incompatible and most likely for you to miss as IDE won't give you a hint.
+      Please keep in mind that new @CommitLog annotation is used only by commitlog module.
+      Deprecated functionality in lifecycle module still depends on @Auditable annotation.
+
+      Here is list of steps you should do in order to update your code:
+      - include cayenne-commitlog module into your project (i.e. add dependency to your pom.xml)
+      - remove cayenne-lifecycle (and cayenne-postcommit if you have it) module from your project
+      - switch usages of @Auditable to @CommitLog
+      - change usages of renamed classes, here is two classes most likely used by your code:
+             PostCommitListener      -> CommitLogListener
+             PostCommitModuleBuilder -> CommitLogModuleBuilder
+      - fix all imports for renamed packages:
+             org.apache.cayenne.lifecycle.postcommit -> org.apache.cayenne.commitlog
+             org.apache.cayenne.lifecycle.changemap  -> org.apache.cayenne.commitlog.model
+      - change CommitLogModuleBuilder method auditableEntitiesOnly() to commitLogAnnotationEntitiesOnly()
+
 * Per CAY-2280 Cayenne migrated from commons-logging to SLF4J.
       Here is options you have to upgrade your project accordingly:
       1) Migrate your logging to SLF4J. Please see https://www.slf4j.org for documentation about
@@ -21,12 +39,12 @@ UPGRADING TO 4.0.M6
       were renamed to Slf4jJdbcEventLogger and FormattedSlf4jJdbcEventLogger respectively.
       Internally they are using now org.apache.cayenne.log.JdbcEventLogger interface as a logger name.
 
-* Per CAY-2278 The org.apache.cayenne.lifecycle.audit package (with the exception of AuditableChild annotation) and the
-       org.apache.cayenne.lifecycle.changeset package where deprecated.
+* Per CAY-2278 The org.apache.cayenne.lifecycle.audit package (with the exception of Auditable and
+       AuditableChild annotations) and the org.apache.cayenne.lifecycle.changeset package where deprecated.
        Weighted graph sorter moved to cayenne-server into org.apache.cayenne.ashwood package.
-       Packages org.apache.cayenne.lifecycle.changemap, org.apache.cayenne.lifecycle.postcommit and Auditable annotation
-       where moved to the new cayenne-postcommit module.
-       Please change your code accordingly.
+       Packages org.apache.cayenne.lifecycle.changemap, org.apache.cayenne.lifecycle.postcommit
+       where moved to the new cayenne-commitlog module.
+       Please change your code accordingly (see also notes above for CAY-2302).
 
 * Per CAY-2277 ClientRuntime created with ClientRuntimeBuilder, direct instantiation of
        ClientRuntime is deprecated. Also whole ClientLocalRuntime class is deprecated, use instead
@@ -43,7 +61,7 @@ UPGRADING TO 4.0.M6
        Also new modules are extracted from the existing one and should be added to your pom.xml if the corresponding
        functionality is used by your project:
        - cayenne-cache-invalidation (was part of cayenne-lifecycle)
-       - cayenne-postcommit (was part of cayenne-lifecycle)
+       - cayenne-commitlog (was part of cayenne-lifecycle)
 
 * Per CAY-2259 InvalidationFunction returns CacheGroupDescriptor instead of simple String with cache group name,
        change your custom functions accordingly.
