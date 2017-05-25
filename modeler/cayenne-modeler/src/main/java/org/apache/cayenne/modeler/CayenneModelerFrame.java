@@ -62,6 +62,7 @@ import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.CreateProcedureAction;
 import org.apache.cayenne.modeler.action.CreateQueryAction;
 import org.apache.cayenne.modeler.action.CutAction;
+import org.apache.cayenne.modeler.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.action.DocumentationAction;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.FindAction;
@@ -229,6 +230,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         projectMenu.addSeparator();
         projectMenu.add(getAction(ObjEntitySyncAction.class).buildMenu());
+        projectMenu.add(getAction(DbEntitySyncAction.class).buildMenu());
         projectMenu.addSeparator();
         projectMenu.add(getAction(RemoveAction.class).buildMenu());
 
