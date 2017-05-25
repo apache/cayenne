@@ -155,7 +155,7 @@
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
-					<!-- must use ${project.build.directory}, as using relative path "target/sources" confuses the plugin -->
+					<!-- must use ${projbuilduild.directory}, as using relative path "target/sources" confuses the plugin -->
 					<sourcepath>${project.build.directory}/sources</sourcepath>
 
 					<!-- this is relative to target/site/apidocs  -->

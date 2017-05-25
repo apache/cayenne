@@ -159,7 +159,7 @@
 	</build>
 
 	<profiles>
-		<!-- SOURCE assembly - the base assembly of a release build -->
+		<!-- SOURCE assembly - the base assembly of a relebuilduild -->
 		<profile>
 			<id>src</id>
 			<build>
