@@ -52,6 +52,7 @@ import org.apache.cayenne.modeler.action.CreateObjEntityAction;
 import org.apache.cayenne.modeler.action.CreateProcedureAction;
 import org.apache.cayenne.modeler.action.CreateQueryAction;
 import org.apache.cayenne.modeler.action.CutAction;
+import org.apache.cayenne.modeler.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.action.LinkDataMapsAction;
 import org.apache.cayenne.modeler.action.ObjEntitySyncAction;
 import org.apache.cayenne.modeler.action.PasteAction;
@@ -90,6 +91,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.MenuElement;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -995,9 +997,8 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         popup.add(buildMenu(CreateQueryAction.class));
         popup.addSeparator();
         popup.add(buildMenu(ObjEntitySyncAction.class));
-        popup.addSeparator();
+        popup.add(buildMenu(DbEntitySyncAction.class));
         popup.add(buildMenu(LinkDataMapsAction.class));
-        popup.addSeparator();
         popup.add(buildMenu(RemoveAction.class));
         popup.addSeparator();
         popup.add(buildMenu(CutAction.class));
@@ -1054,6 +1055,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 if (popup == null) {
                     popup = createJPopupMenu();
                 }
+                popupMenuFilter();
                 popup.show(ProjectTreeView.this, e.getX(), e.getY());
             }
         }
@@ -1119,6 +1121,19 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 e.getDomain(), e.getDataMap(), e.getEmbeddable()
         });
 
+    }
+
+    // Filter all disabled actions in popupMenu, but skip Cut-Copy-Paste block. It should always exist.
+    public void popupMenuFilter() {
+        Action cutAction = mediator.getApplication().getActionManager().getAction(CutAction.class);
+        for (MenuElement element : popup.getSubElements()) {
+            JMenuItem item = (JMenuItem) element;
+            if (!item.getAction().equals(cutAction)) {
+                item.setVisible(item.isEnabled());
+            } else {
+                break;
+            }
+        }
     }
 
     public TreeDragSource getTds() {
