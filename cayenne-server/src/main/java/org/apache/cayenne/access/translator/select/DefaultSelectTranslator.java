@@ -413,23 +413,18 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 
 		for(Property<?> property : query.getColumns()) {
 			int expressionType = property.getExpression().getType();
-			boolean objectProperty = expressionType == Expression.FULL_OBJECT;
-			// evaluate ObjPath with Persistent type as toOne relations and use it as full object
-			if(Persistent.class.isAssignableFrom(property.getType())) {
-				if(expressionType == Expression.OBJ_PATH) {
-					objectProperty = true;
-				} else {
-					// should we warn or throw an error?
-				}
-			}
 
 			// forbid direct selection of toMany relationships columns
-			if((expressionType == Expression.OBJ_PATH || expressionType == Expression.DB_PATH) &&
-					(Collection.class.isAssignableFrom(property.getType()) ||
-							Map.class.isAssignableFrom(property.getType()))) {
+			if((expressionType == Expression.OBJ_PATH || expressionType == Expression.DB_PATH)
+					&& (Collection.class.isAssignableFrom(property.getType())
+							|| Map.class.isAssignableFrom(property.getType()))) {
 				throw new CayenneRuntimeException("Can't directly select toMany relationship columns. " +
 						"Either select it with aggregate functions like count() or with flat() function to select full related objects.");
 			}
+
+			// evaluate ObjPath with Persistent type as toOne relations and use it as full object
+			boolean objectProperty = expressionType == Expression.FULL_OBJECT
+					|| (expressionType == Expression.OBJ_PATH && Persistent.class.isAssignableFrom(property.getType()));
 
 			// Qualifier Translator in case of Object Columns have side effect -
 			// it will create required joins, that we catch with listener above.
@@ -438,8 +433,8 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 			qualifierTranslator.setForceJoinForRelations(objectProperty);
 			StringBuilder builder = qualifierTranslator.appendPart(new StringBuilder());
 
-			// If we want full object, use appendQueryColumns method, to fully process class descriptor
 			if(objectProperty) {
+				// If we want full object, use appendQueryColumns method, to fully process class descriptor
 				List<ColumnDescriptor> classColumns = new ArrayList<>();
 				ObjEntity entity = entityResolver.getObjEntity(property.getType());
 				if(getQueryMetadata().getPageSize() > 0) {
@@ -452,26 +447,26 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 					columns.add(descriptor);
 					groupByColumns.put(descriptor, Collections.<DbAttributeBinding>emptyList());
 				}
-				continue;
-			}
-
-			int type = TypesMapping.getSqlTypeByJava(property.getType());
-
-			String alias = property.getAlias();
-			if(alias != null) {
-				builder.append(" AS ").append(alias);
-			}
-			ColumnDescriptor descriptor = new ColumnDescriptor(builder.toString(), type);
-			descriptor.setDataRowKey(alias);
-			descriptor.setIsExpression(true);
-			columns.add(descriptor);
-
-			if(isAggregate(property)) {
-				haveAggregate = true;
 			} else {
-				groupByColumns.put(descriptor, bindingListener.getBindings());
+				// This property will go as scalar value
+				String alias = property.getAlias();
+				if (alias != null) {
+					builder.append(" AS ").append(alias);
+				}
+
+				int type = getJdbcTypeForProperty(property);
+				ColumnDescriptor descriptor = new ColumnDescriptor(builder.toString(), type, property.getType().getName());
+				descriptor.setDataRowKey(alias);
+				descriptor.setIsExpression(true);
+				columns.add(descriptor);
+
+				if (isAggregate(property)) {
+					haveAggregate = true;
+				} else {
+					groupByColumns.put(descriptor, bindingListener.getBindings());
+				}
+				bindingListener.reset();
 			}
-			bindingListener.reset();
 		}
 
 		setAddBindingListener(null);
@@ -479,6 +474,40 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		joinListener = null;
 
 		return columns;
+	}
+
+	private int getJdbcTypeForProperty(Property<?> property) {
+		int expressionType = property.getExpression().getType();
+		if(expressionType == Expression.OBJ_PATH) {
+			// Scan obj path, stop as soon as DbAttribute found
+			for (PathComponent<ObjAttribute, ObjRelationship> component :
+					getQueryMetadata().getObjEntity().resolvePath(property.getExpression(), getPathAliases())) {
+				if(component.getAttribute() != null) {
+					Iterator<CayenneMapEntry> dbPathIterator = component.getAttribute().getDbPathIterator();
+					while (dbPathIterator.hasNext()) {
+						Object pathPart = dbPathIterator.next();
+						if (pathPart instanceof DbAttribute) {
+							return ((DbAttribute) pathPart).getType();
+						}
+					}
+				}
+			}
+		} else if(expressionType == Expression.DB_PATH) {
+			// Scan db path, stop as soon as DbAttribute found
+			for (PathComponent<DbAttribute, DbRelationship> component :
+					getQueryMetadata().getDbEntity().resolvePath(property.getExpression(), getPathAliases())) {
+				if(component.getAttribute() != null) {
+					return component.getAttribute().getType();
+				}
+			}
+		}
+		// NOTE: If no attribute found or expression have some other type
+	 	// return JDBC type based on Java type of the property.
+		// This can lead to incorrect behavior in case we deal with some custom type
+		// backed by ExtendedType with logic based on correct JDBC type provided (luckily not very common case).
+		// In general we can't map any meaningful type, as we don't know outcome of the expression in the property.
+		// If this ever become a problem correct type can be provided at the query call time, using meta data.
+		return TypesMapping.getSqlTypeByJava(property.getType());
 	}
 
 	private boolean isAggregate(Property<?> property) {

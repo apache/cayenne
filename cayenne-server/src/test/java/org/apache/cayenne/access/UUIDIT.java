@@ -21,6 +21,9 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -62,7 +65,7 @@ public class UUIDIT extends ServerCase {
         test.setUuid(id);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(UuidTestEntity.class);
+        SelectQuery<UuidTestEntity> q = new SelectQuery<>(UuidTestEntity.class);
         UuidTestEntity testRead = (UuidTestEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getUuid());
         assertEquals(id, testRead.getUuid());
@@ -95,5 +98,23 @@ public class UUIDIT extends ServerCase {
         assertNotNull(o1);
         assertEquals(id, o1.getId());
         assertEquals(id, o1.getObjectId().getIdSnapshot().get("ID"));
+    }
+
+    @Test
+    public void testUUIDColumnSelect() throws Exception {
+        UuidTestEntity test = context.newObject(UuidTestEntity.class);
+        UUID id = UUID.randomUUID();
+        test.setUuid(id);
+        context.commitChanges();
+
+        UUID readValue = ObjectSelect.query(UuidTestEntity.class)
+                .column(UuidTestEntity.UUID).selectOne(context);
+
+        assertEquals(id, readValue);
+
+        UUID readValue2 = ObjectSelect.query(UuidTestEntity.class)
+                .column(Property.create(ExpressionFactory.dbPathExp("UUID"), UUID.class)).selectOne(context);
+
+        assertEquals(id, readValue2);
     }
 }

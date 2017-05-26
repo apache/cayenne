@@ -18,7 +18,7 @@
 	</procedure>
 	<procedure name="cayenne_tst_upd_proc">
 		<procedure-parameter name="paintingPrice" type="INTEGER" direction="in"/>
-	</procedure>Ï
+	</procedure>
 	<procedure name="cayenne_tst_upd_proc2">
 	</procedure>
 	<db-entity name="ARTGROUP">
@@ -244,8 +244,8 @@
 	<obj-relationship name="paintingArray" source="ROArtist" target="Painting" deleteRule="Deny" db-relationship-path="paintingArray"/>
 	<obj-relationship name="toArtist" source="ROPainting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
 	<query name="EjbqlQueryTest" type="EJBQLQuery">
-		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<ejbql><![CDATA[select a from Artist a]]></ejbql>
 	</query>
 	<query name="NonSelectingQuery" type="SQLTemplate" root="data-map" root-name="testmap">
@@ -290,13 +290,13 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
 	</query>
 	<query name="SelectTestLower" type="SQLTemplate" root="data-map" root-name="testmap">
-		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="LOWER"/>
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<sql><![CDATA[select * from ARTIST]]></sql>
 	</query>
 	<query name="SelectTestUpper" type="SQLTemplate" root="data-map" root-name="testmap">
-		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<sql><![CDATA[select * from ARTIST]]></sql>
 	</query>
 </data-map>

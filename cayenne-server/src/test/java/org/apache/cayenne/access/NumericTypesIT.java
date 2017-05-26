@@ -24,6 +24,8 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -95,11 +97,11 @@ public class NumericTypesIT extends ServerCase {
 
         LongEntity test = context.newObject(LongEntity.class);
 
-        Long i = new Long(Integer.MAX_VALUE + 10l);
+        Long i = Integer.MAX_VALUE + 10L;
         test.setLongField(i);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(LongEntity.class);
+        SelectQuery<LongEntity> q = new SelectQuery<>(LongEntity.class);
         LongEntity testRead = (LongEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getLongField());
         assertEquals(i, testRead.getLongField());
@@ -117,7 +119,7 @@ public class NumericTypesIT extends ServerCase {
         test.setBigIntegerField(i);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(BigIntegerEntity.class);
+        SelectQuery<BigIntegerEntity> q = new SelectQuery<>(BigIntegerEntity.class);
         BigIntegerEntity testRead = (BigIntegerEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getBigIntegerField());
         assertEquals(i, testRead.getBigIntegerField());
@@ -135,7 +137,7 @@ public class NumericTypesIT extends ServerCase {
         test.setBigDecimalField(i);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(BigDecimalEntity.class);
+        SelectQuery<BigDecimalEntity> q = new SelectQuery<>(BigDecimalEntity.class);
         BigDecimalEntity testRead = (BigDecimalEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getBigDecimalField());
         assertEquals(i, testRead.getBigDecimalField());
@@ -150,7 +152,7 @@ public class NumericTypesIT extends ServerCase {
 
         // test
         Expression qual = ExpressionFactory.matchExp("smallintCol", new Short("9999"));
-        List<?> objects = context.performQuery(new SelectQuery(
+        List<?> objects = context.performQuery(new SelectQuery<>(
                 SmallintTestEntity.class,
                 qual));
         assertEquals(1, objects.size());
@@ -172,8 +174,8 @@ public class NumericTypesIT extends ServerCase {
         createTinyintDataSet();
 
         // test
-        Expression qual = ExpressionFactory.matchExp("tinyintCol", new Byte((byte) 81));
-        List<?> objects = context.performQuery(new SelectQuery(
+        Expression qual = ExpressionFactory.matchExp("tinyintCol", (byte) 81);
+        List<?> objects = context.performQuery(new SelectQuery<>(
                 TinyintTestEntity.class,
                 qual));
         assertEquals(1, objects.size());
@@ -186,7 +188,7 @@ public class NumericTypesIT extends ServerCase {
     public void testTinyintInInsert() throws Exception {
         TinyintTestEntity object = (TinyintTestEntity) (context)
                 .newObject("TinyintTestEntity");
-        object.setTinyintCol(new Byte((byte) 1));
+        object.setTinyintCol((byte) 1);
         context.commitChanges();
     }
 
@@ -202,7 +204,7 @@ public class NumericTypesIT extends ServerCase {
 
         // fetch true...
         Expression trueQ = ExpressionFactory.matchExp("bitColumn", Boolean.TRUE);
-        List<?> trueResult = context1.performQuery(new SelectQuery(
+        List<?> trueResult = context1.performQuery(new SelectQuery<>(
                 BitTestEntity.class,
                 trueQ));
         assertEquals(1, trueResult.size());
@@ -216,7 +218,7 @@ public class NumericTypesIT extends ServerCase {
 
         // fetch false
         Expression falseQ = ExpressionFactory.matchExp("bitColumn", Boolean.FALSE);
-        List<?> falseResult = context1.performQuery(new SelectQuery(
+        List<?> falseResult = context1.performQuery(new SelectQuery<>(
                 BitTestEntity.class,
                 falseQ));
         assertEquals(1, falseResult.size());
@@ -245,7 +247,7 @@ public class NumericTypesIT extends ServerCase {
 
         // fetch true...
         Expression trueQ = ExpressionFactory.matchExp("booleanColumn", Boolean.TRUE);
-        List<?> trueResult = context1.performQuery(new SelectQuery(
+        List<?> trueResult = context1.performQuery(new SelectQuery<>(
                 BooleanTestEntity.class,
                 trueQ));
         assertEquals(1, trueResult.size());
@@ -259,7 +261,7 @@ public class NumericTypesIT extends ServerCase {
 
         // fetch false
         Expression falseQ = ExpressionFactory.matchExp("booleanColumn", Boolean.FALSE);
-        List<?> falseResult = context1.performQuery(new SelectQuery(
+        List<?> falseResult = context1.performQuery(new SelectQuery<>(
                 BooleanTestEntity.class,
                 falseQ));
         assertEquals(1, falseResult.size());
@@ -299,11 +301,30 @@ public class NumericTypesIT extends ServerCase {
         DecimalPKTest1 object = context.newObject(DecimalPKTest1.class);
 
         object.setName("o2");
-        object.setDecimalPK(new Double(1.25));
+        object.setDecimalPK(1.25);
         context.commitChanges();
 
-        ObjectId syntheticId = new ObjectId("DecimalPKTest1", "DECIMAL_PK", new Double(
-                1.25));
+        ObjectId syntheticId = new ObjectId("DecimalPKTest1", "DECIMAL_PK", 1.25);
         assertSame(object, context.getGraphManager().getNode(syntheticId));
+    }
+
+    @Test
+    public void testBigIntegerColumnSelect() {
+        BigIntegerEntity test = context.newObject(BigIntegerEntity.class);
+        BigInteger i = new BigInteger("1234567890");
+        test.setBigIntegerField(i);
+        context.commitChanges();
+
+        BigInteger readValue = ObjectSelect.query(BigIntegerEntity.class)
+                .column(BigIntegerEntity.BIG_INTEGER_FIELD).selectOne(context);
+
+        assertEquals(i, readValue);
+
+        Property<BigInteger> calculated =
+                Property.create(ExpressionFactory.exp("bigIntegerField + 1"), BigInteger.class);
+
+        BigInteger readValue2 = ObjectSelect.query(BigIntegerEntity.class)
+                .column(calculated).selectOne(context);
+        assertEquals(i.add(BigInteger.ONE), readValue2);
     }
 }

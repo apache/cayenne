@@ -161,6 +161,7 @@ public class Property<E> {
     }
 
     /**
+     * This method returns fresh copy of the expression for each call.
      * @return expression that represents this Property
      */
     public Expression getExpression() {

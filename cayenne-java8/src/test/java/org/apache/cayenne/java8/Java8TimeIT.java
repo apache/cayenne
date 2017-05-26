@@ -114,4 +114,25 @@ public class Java8TimeIT extends RuntimeBase {
 
 	}
 
+	@Test
+	public void columnSelectWithJava8Type() {
+		ObjectContext context = runtime.newContext();
+		LocalDateTime localDateTime = LocalDateTime.now();
+
+		LocalDateTimeTestEntity localDateTimeTestEntity = context.newObject(LocalDateTimeTestEntity.class);
+		localDateTimeTestEntity.setTimestamp(localDateTime);
+
+		context.commitChanges();
+
+		LocalDateTime value = ObjectSelect.query(LocalDateTimeTestEntity.class)
+				.column(LocalDateTimeTestEntity.TIMESTAMP)
+				.selectOne(context);
+		assertEquals(localDateTime, value);
+
+		LocalDateTime value2 = ObjectSelect.query(LocalDateTimeTestEntity.class)
+				.min(LocalDateTimeTestEntity.TIMESTAMP)
+				.selectOne(context);
+		assertEquals(localDateTime, value2);
+	}
+
 }

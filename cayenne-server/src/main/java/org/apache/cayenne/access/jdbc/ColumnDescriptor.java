@@ -68,10 +68,17 @@ public class ColumnDescriptor {
      * @since 3.1
      */
     public ColumnDescriptor(String columnName, int jdbcType) {
+        this(columnName, jdbcType, TypesMapping.getJavaBySqlType(jdbcType));
+    }
+
+    /**
+     * @since 4.0
+     */
+    public ColumnDescriptor(String columnName, int jdbcType, String javaClass) {
         this.name = columnName;
         this.dataRowKey = columnName;
         this.jdbcType = jdbcType;
-        this.javaClass = TypesMapping.getJavaBySqlType(jdbcType);
+        this.javaClass = javaClass;
     }
 
     /**
