@@ -44,7 +44,7 @@ import java.util.Set;
 public class DistinctResultIterator<T> implements ResultIterator<T> {
 
     protected ResultIterator<T> delegate;
-    protected Set<Map<String, Object>> fetchedIds;
+    protected Set<Object> fetchedIds;
     protected T nextDataRow;
     protected DbEntity defaultEntity;
     protected boolean compareFullRows;
@@ -144,7 +144,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
         while (delegate.hasNextRow()) {
             T next = delegate.nextRow();
 
-            if (fetchedIds.add((DataRow)next)) {
+            if (fetchedIds.add(next)) {
                 this.nextDataRow = next;
                 break;
             }

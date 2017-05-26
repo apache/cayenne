@@ -23,6 +23,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.testdo.lob.ClobTestRelation;
@@ -59,6 +60,23 @@ public class SelectActionIT extends ServerCase {
 
             assertNotNull(resultRows);
             assertEquals(25, resultRows.size());
+        }
+    }
+
+    @Test
+    public void testColumnSelect_DistinctResultIterator() throws Exception {
+        if (accessStackAdapter.supportsLobs()) {
+
+            insertClobDb();
+
+            List<String> result = ObjectSelect.query(ClobTestEntity.class)
+                    .column(ClobTestEntity.CLOB_COL)
+                    .where(ClobTestEntity.CLOB_VALUE.dot(ClobTestRelation.VALUE).eq(100))
+                    .select(context);
+
+            // this should be 80, but we got only single values and we forcing distinct on them
+            // so here will be only 21 elements that are unique
+            assertEquals(21, result.size());
         }
     }
 
