@@ -35,9 +35,6 @@
     <name>cayenne-gradle-plugin: Cayenne Gradle Plugin</name>
 
     <properties>
-        <groovy.version>2.4.10</groovy.version>
-        <gradle.version>3.5</gradle.version>
-        <gradle-plugins.version>0.9-preview-3</gradle-plugins.version>
         <gradle.executable>./gradlew</gradle.executable>
         <gradle.task>build</gradle.task>
     </properties>

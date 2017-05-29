@@ -157,7 +157,7 @@
                     <td>Name of the model file to open. Here is some simple example:
                         <programlisting language="xml">&lt;plugin>
     &lt;groupId>org.apache.cayenne.plugins&lt;/groupId>
-    &lt;artifactId>maven-cayenne-modeler-plugin&lt;/artifactId>
+    &lt;artifactId>cayenne-modeler-maven-plugin&lt;/artifactId>
     &lt;version>${cayenne.version}&lt;/version>
     &lt;configuration>
         &lt;modelFile>src/main/resources/cayenne.xml&lt;/modelFile>

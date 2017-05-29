@@ -138,7 +138,7 @@
 			<type>test-jar</type>
 		</dependency>
 
-		  <dependency>
+		<dependency>
 			<groupId>org.apache.cayenne.build-tools</groupId>
 			<artifactId>cayenne-test-utilities</artifactId>
 			<version>${project.version}</version>
