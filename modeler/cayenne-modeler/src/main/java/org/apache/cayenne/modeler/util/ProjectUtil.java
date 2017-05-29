@@ -39,12 +39,15 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.util.Util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Provides utility methods to perform various manipulations with project objects.
@@ -438,5 +441,48 @@ public class ProjectUtil {
             }
         }
         return objEntities;
+    }
+
+    public static Collection<ObjRelationship> findObjRelationshipsForDbRelationship(ProjectController mediator,
+                                                                                    DbRelationship relationship) {
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
+        List<ObjRelationship> objRelationships = new ArrayList<>();
+        if (domain != null) {
+            for (DataMap map : domain.getDataMaps()) {
+                for (ObjEntity entity : map.getObjEntities()) {
+                    for (ObjRelationship objRelationship : entity.getRelationships()) {
+                        if (objRelationship.getDbRelationships().contains(relationship)) {
+                            objRelationships.add(objRelationship);
+                        }
+                    }
+                }
+            }
+        }
+        return objRelationships;
+    }
+
+    public static Collection<ObjAttribute> findObjAttributesForDbRelationship(ProjectController mediator,
+                                                                               DbRelationship relationship) {
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
+        List<ObjAttribute> attributes = new ArrayList<>();
+        String[] dbAttrPathByDot;
+        if (domain != null) {
+            for (DataMap map : domain.getDataMaps()) {
+                for (ObjEntity entity : map.getObjEntities()) {
+                    for (ObjAttribute objAttribute : entity.getAttributes()) {
+                        if(objAttribute.getDbAttributePath() != null) {
+                            dbAttrPathByDot = objAttribute.getDbAttributePath()
+                                    .split(Pattern.quote("."));
+                            for (String partOfPath : dbAttrPathByDot) {
+                                if (partOfPath.equals(relationship.getName())) {
+                                    attributes.add(objAttribute);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return attributes;
     }
 }
