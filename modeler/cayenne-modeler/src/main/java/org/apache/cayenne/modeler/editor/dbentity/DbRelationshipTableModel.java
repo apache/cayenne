@@ -33,6 +33,7 @@ import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.dialog.WarningDialogByDbTargetChange;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 
 /**
@@ -134,9 +135,11 @@ public class DbRelationshipTableModel extends CayenneTableModel {
         else if (column == TARGET) {
             DbEntity target = (DbEntity) aValue;
 
-            // clear joins...
-            rel.removeAllJoins();
-            rel.setTargetEntityName(target);
+            if (WarningDialogByDbTargetChange.showWarningDialog(mediator, rel)) {
+                // clear joins...
+                rel.removeAllJoins();
+                rel.setTargetEntityName(target);
+            }
 
             RelationshipEvent e = new RelationshipEvent(eventSource, rel, entity);
             mediator.fireDbRelationshipEvent(e);
@@ -215,8 +218,7 @@ public class DbRelationshipTableModel extends CayenneTableModel {
         DbRelationship rel = getRelationship(row);
         if (rel == null) {
             return false;
-        }
-        else if (col == TO_DEPENDENT_KEY) {
+        } else if (col == TO_DEPENDENT_KEY) {
             return rel.isValidForDepPk();
         }
         return true;
