@@ -43,9 +43,10 @@ public class CgenTaskIT extends BaseTaskIT {
                 "cgen",
                 "-PdataMap=" + getClass().getResource("test_datamap.map.xml").getFile()
         );
-        BuildResult result = runner.build();
 
-        String generatedDirectoryPath = projectDir.getAbsolutePath() + "/org/example/cayenne/persistent/";
+        BuildResult result = runner.forwardOutput().build();
+
+        String generatedDirectoryPath = projectDir.getAbsolutePath() + "/src/main/java/org/example/cayenne/persistent/";
 
         String generatedClassPath = generatedDirectoryPath + "City.java";
         String generatedParentClassPath = generatedDirectoryPath + "auto/_City.java";

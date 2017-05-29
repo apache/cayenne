@@ -22,15 +22,15 @@ plugins {
 }
 
 task customCdbgen(type: cayenne.cdbgen) {
-    map = dataMap
+    map dataMap
 
-    adapter = "org.apache.cayenne.dba.derby.DerbyAdapter"
+    adapter "org.apache.cayenne.dba.derby.DerbyAdapter"
 
     dataSource {
-        username = 'sa'
-        password = ''
-        url = 'jdbc:derby:build/testdb;create=true'
-        driver = 'org.apache.derby.jdbc.EmbeddedDriver'
+        username 'sa'
+        password ''
+        url 'jdbc:derby:build/testdb;create=true'
+        driver 'org.apache.derby.jdbc.EmbeddedDriver'
     }
 
     dropTables true

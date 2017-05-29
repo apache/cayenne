@@ -19,9 +19,9 @@
 
 plugins {
     id 'org.apache.cayenne'
+    id 'java'
 }
 
 cgen {
-    map = dataMap
-    destDir = './'
+    map dataMap
 }

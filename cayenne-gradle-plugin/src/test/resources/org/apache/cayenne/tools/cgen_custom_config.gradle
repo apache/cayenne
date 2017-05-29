@@ -22,10 +22,10 @@ plugins {
 }
 
 cgen {
-    map = dataMap
+    map dataMap
     destDir = './customDirectory'
-    makePairs = false
+    makePairs false
     outputPattern = '*.groovy'
-    excludeEntities = 'Artist'
+    excludeEntities 'Artist'
     overwrite = false
 }

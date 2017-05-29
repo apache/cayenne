@@ -31,7 +31,6 @@ import org.apache.cayenne.map.DataMap;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.InvalidUserDataException;
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
@@ -191,8 +190,7 @@ public class CgenTask extends BaseCayenneTask {
                 public void execute(final JavaPlugin plugin) {
                     SourceSetContainer sourceSets = (SourceSetContainer)getProject().getProperties().get("sourceSets");
 
-                    final FileCollection directories = sourceSets.getByName("main").getJava().getSourceDirectories();
-                    Set<File> sourceDirs = (directories == null ? null : directories.getFiles());
+                    Set<File> sourceDirs = sourceSets.getByName("main").getJava().getSrcDirs();
                     if (sourceDirs != null && !sourceDirs.isEmpty()) {
                         // find java directory, if there is no such dir, take first
                         for(File dir : sourceDirs) {
@@ -240,6 +238,14 @@ public class CgenTask extends BaseCayenneTask {
         this.destDirName = destDir;
     }
 
+    public void destDir(String destDir) {
+        setDestDir(destDir);
+    }
+
+    public void destDir(File destDir) {
+        setDestDir(destDir);
+    }
+
     @Optional
     @InputDirectory
     public File getAdditionalMaps() {
@@ -250,8 +256,8 @@ public class CgenTask extends BaseCayenneTask {
         this.additionalMaps = additionalMaps;
     }
 
-    public boolean getClient() {
-        return client;
+    public void additionalMaps(File additionalMaps) {
+        setAdditionalMaps(additionalMaps);
     }
 
     public boolean isClient() {
@@ -262,12 +268,20 @@ public class CgenTask extends BaseCayenneTask {
         this.client = client;
     }
 
+    public void client(boolean client) {
+        setClient(client);
+    }
+
     public String getEncoding() {
         return encoding;
     }
 
     public void setEncoding(String encoding) {
         this.encoding = encoding;
+    }
+
+    public void encoding(String encoding) {
+        setEncoding(encoding);
     }
 
     public String getExcludeEntities() {
@@ -278,6 +292,10 @@ public class CgenTask extends BaseCayenneTask {
         this.excludeEntities = excludeEntities;
     }
 
+    public void excludeEntities(String excludeEntities) {
+        setExcludeEntities(excludeEntities);
+    }
+
     public String getIncludeEntities() {
         return includeEntities;
     }
@@ -286,8 +304,8 @@ public class CgenTask extends BaseCayenneTask {
         this.includeEntities = includeEntities;
     }
 
-    public boolean getMakePairs() {
-        return makePairs;
+    public void includeEntities(String includeEntities) {
+        setIncludeEntities(includeEntities);
     }
 
     public boolean isMakePairs() {
@@ -298,12 +316,20 @@ public class CgenTask extends BaseCayenneTask {
         this.makePairs = makePairs;
     }
 
+    public void makePairs(boolean makePairs) {
+        setMakePairs(makePairs);
+    }
+
     public String getMode() {
         return mode;
     }
 
     public void setMode(String mode) {
         this.mode = mode;
+    }
+
+    public void mode(String mode) {
+        setMode(mode);
     }
 
     public String getOutputPattern() {
@@ -314,8 +340,8 @@ public class CgenTask extends BaseCayenneTask {
         this.outputPattern = outputPattern;
     }
 
-    public boolean getOverwrite() {
-        return overwrite;
+    public void outputPattern(String outputPattern) {
+        setOutputPattern(outputPattern);
     }
 
     public boolean isOverwrite() {
@@ -326,12 +352,20 @@ public class CgenTask extends BaseCayenneTask {
         this.overwrite = overwrite;
     }
 
+    public void overwrite(boolean overwrite) {
+        setOverwrite(overwrite);
+    }
+
     public String getSuperPkg() {
         return superPkg;
     }
 
     public void setSuperPkg(String superPkg) {
         this.superPkg = superPkg;
+    }
+
+    public void superPkg(String superPkg) {
+        setSuperPkg(superPkg);
     }
 
     public String getSuperTemplate() {
@@ -342,12 +376,20 @@ public class CgenTask extends BaseCayenneTask {
         this.superTemplate = superTemplate;
     }
 
+    public void superTemplate(String superTemplate) {
+        setSuperTemplate(superTemplate);
+    }
+
     public String getTemplate() {
         return template;
     }
 
     public void setTemplate(String template) {
         this.template = template;
+    }
+
+    public void template(String template) {
+        setTemplate(template);
     }
 
     public String getEmbeddableSuperTemplate() {
@@ -358,6 +400,10 @@ public class CgenTask extends BaseCayenneTask {
         this.embeddableSuperTemplate = embeddableSuperTemplate;
     }
 
+    public void embeddableSuperTemplate(String embeddableSuperTemplate) {
+        setEmbeddableSuperTemplate(embeddableSuperTemplate);
+    }
+
     public String getEmbeddableTemplate() {
         return embeddableTemplate;
     }
@@ -366,8 +412,8 @@ public class CgenTask extends BaseCayenneTask {
         this.embeddableTemplate = embeddableTemplate;
     }
 
-    public boolean getUsePkgPath() {
-        return usePkgPath;
+    public void embeddableTemplate(String embeddableTemplate) {
+        setEmbeddableTemplate(embeddableTemplate);
     }
 
     public boolean isUsePkgPath() {
@@ -378,8 +424,8 @@ public class CgenTask extends BaseCayenneTask {
         this.usePkgPath = usePkgPath;
     }
 
-    public boolean getCreatePropertyNames() {
-        return createPropertyNames;
+    public void usePkgPath(boolean usePkgPath) {
+        setUsePkgPath(usePkgPath);
     }
 
     public boolean isCreatePropertyNames() {
@@ -388,6 +434,10 @@ public class CgenTask extends BaseCayenneTask {
 
     public void setCreatePropertyNames(boolean createPropertyNames) {
         this.createPropertyNames = createPropertyNames;
+    }
+
+    public void createPropertyNames(boolean createPropertyNames) {
+        setCreatePropertyNames(createPropertyNames);
     }
 
 }
