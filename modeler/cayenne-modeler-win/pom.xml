@@ -80,7 +80,7 @@
 	</build>
 
 	<profiles>
-		<!-- Avoid assembly of Modeler on norbuilduild -->
+		<!-- Avoid assembly of Modeler on normal build -->
 		<profile>
 			<id>windows</id>
 			<build>
