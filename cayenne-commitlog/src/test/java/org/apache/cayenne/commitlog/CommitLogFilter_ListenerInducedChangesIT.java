@@ -57,7 +57,7 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableServerCas
 	@Override
 	protected ServerRuntimeBuilder configureCayenne() {
 		this.mockListener = mock(CommitLogListener.class);
-		return super.configureCayenne().addModule(CommitLogModule.extend().addListener(mockListener).build());
+		return super.configureCayenne().addModule(CommitLogModule.extend().addListener(mockListener).module());
 	}
 
 	@Before

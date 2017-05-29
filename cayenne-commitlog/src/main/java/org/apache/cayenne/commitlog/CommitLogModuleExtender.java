@@ -97,7 +97,7 @@ public class CommitLogModuleExtender {
      * Creates a DI module that would install {@link CommitLogFilter} and its
      * listeners in Cayenne.
      */
-    public Module build() {
+    public Module module() {
         return new Module() {
 
             @SuppressWarnings({"unchecked"})

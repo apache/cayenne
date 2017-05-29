@@ -37,7 +37,7 @@ public class CommitLogModuleBuilderTest {
 	public void testListener_Object() {
 
 		L listener = new L();
-		Module m = CommitLogModule.extend().addListener(listener).build();
+		Module m = CommitLogModule.extend().addListener(listener).module();
 
 		Injector i = DIBootstrap.createInjector(m);
 		List<CommitLogListener> listeners = i.getInstance(Key.getListOf(CommitLogListener.class));
@@ -48,7 +48,7 @@ public class CommitLogModuleBuilderTest {
 	@Test
 	public void testListener_Class() {
 
-		Module m = CommitLogModule.extend().addListener(L.class).build();
+		Module m = CommitLogModule.extend().addListener(L.class).module();
 
 		Injector i = DIBootstrap.createInjector(m);
 		List<CommitLogListener> listeners = i.getInstance(Key.getListOf(CommitLogListener.class));
