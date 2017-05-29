@@ -151,10 +151,6 @@ public class DbImportConfig extends SchemaContainer {
         return reverseEngineering;
     }
 
-    public boolean getSkipRelationshipsLoading() {
-        return skipRelationshipsLoading;
-    }
-
     public boolean isSkipRelationshipsLoading() {
         return skipRelationshipsLoading;
     }
@@ -163,8 +159,8 @@ public class DbImportConfig extends SchemaContainer {
         this.skipRelationshipsLoading = skipRelationshipsLoading;
     }
 
-    public boolean getSkipPrimaryKeyLoading() {
-        return skipPrimaryKeyLoading;
+    public void skipRelationshipsLoading(boolean skipRelationshipsLoading) {
+        setSkipRelationshipsLoading(skipRelationshipsLoading);
     }
 
     public boolean isSkipPrimaryKeyLoading() {
@@ -175,6 +171,10 @@ public class DbImportConfig extends SchemaContainer {
         this.skipPrimaryKeyLoading = skipPrimaryKeyLoading;
     }
 
+    public void skipPrimaryKeyLoading(boolean skipPrimaryKeyLoading) {
+        setSkipPrimaryKeyLoading(skipPrimaryKeyLoading);
+    }
+
     public String getDefaultPackage() {
         return defaultPackage;
     }
@@ -183,8 +183,8 @@ public class DbImportConfig extends SchemaContainer {
         this.defaultPackage = defaultPackage;
     }
 
-    public boolean getForceDataMapCatalog() {
-        return forceDataMapCatalog;
+    public void defaultPackage(String defaultPackage) {
+        setDefaultPackage(defaultPackage);
     }
 
     public boolean isForceDataMapCatalog() {
@@ -195,8 +195,8 @@ public class DbImportConfig extends SchemaContainer {
         this.forceDataMapCatalog = forceDataMapCatalog;
     }
 
-    public boolean getForceDataMapSchema() {
-        return forceDataMapSchema;
+    public void forceDataMapCatalog(boolean forceDataMapCatalog) {
+        setForceDataMapCatalog(forceDataMapCatalog);
     }
 
     public boolean isForceDataMapSchema() {
@@ -207,12 +207,20 @@ public class DbImportConfig extends SchemaContainer {
         this.forceDataMapSchema = forceDataMapSchema;
     }
 
+    public void forceDataMapSchema(boolean forceDataMapSchema) {
+        setForceDataMapSchema(forceDataMapSchema);
+    }
+
     public String getMeaningfulPkTables() {
         return meaningfulPkTables;
     }
 
     public void setMeaningfulPkTables(String meaningfulPkTables) {
         this.meaningfulPkTables = meaningfulPkTables;
+    }
+
+    public void meaningfulPkTables(String meaningfulPkTables) {
+        setMeaningfulPkTables(meaningfulPkTables);
     }
 
     public String getNamingStrategy() {
@@ -223,6 +231,10 @@ public class DbImportConfig extends SchemaContainer {
         this.namingStrategy = namingStrategy;
     }
 
+    public void namingStrategy(String namingStrategy) {
+        setNamingStrategy(namingStrategy);
+    }
+
     public String getStripFromTableNames() {
         return stripFromTableNames;
     }
@@ -231,8 +243,8 @@ public class DbImportConfig extends SchemaContainer {
         this.stripFromTableNames = stripFromTableNames;
     }
 
-    public boolean getUsePrimitives() {
-        return usePrimitives;
+    public void stripFromTableNames(String stripFromTableNames) {
+        setStripFromTableNames(stripFromTableNames);
     }
 
     public boolean isUsePrimitives() {
@@ -243,8 +255,8 @@ public class DbImportConfig extends SchemaContainer {
         this.usePrimitives = usePrimitives;
     }
 
-    public boolean getUseJava7Types() {
-        return useJava7Types;
+    public void usePrimitives(boolean usePrimitives) {
+        setUsePrimitives(usePrimitives);
     }
 
     public boolean isUseJava7Types() {
@@ -253,6 +265,10 @@ public class DbImportConfig extends SchemaContainer {
 
     public void setUseJava7Types(boolean useJava7Types) {
         this.useJava7Types = useJava7Types;
+    }
+
+    public void useJava7Types(boolean useJava7Types) {
+        setUseJava7Types(useJava7Types);
     }
 
     public Collection<String> getTableTypes() {

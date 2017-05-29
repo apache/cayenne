@@ -37,6 +37,10 @@ public class IncludeTable extends PatternParam {
         super(pattern);
     }
 
+    public void setName(String name) {
+        setPattern(name);
+    }
+
     public void name(String name) {
         setPattern(name);
     }
