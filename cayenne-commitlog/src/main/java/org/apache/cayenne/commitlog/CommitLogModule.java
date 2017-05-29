@@ -26,12 +26,26 @@ import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 
 /**
+ * Auto-loadable module that enables gathering of commit log information for Cayenne stack. To add custom listeners to
+ * receive commit log events, implement {@link CommitLogListener} and register it using {@link CommitLogModule#extend()}.
+ *
  * @since 4.0
  */
-public class CommitLogModule implements Module{
+public class CommitLogModule implements Module {
 
     public static ListBuilder<CommitLogListener> contributeListeners(Binder binder) {
         return binder.bindList(CommitLogListener.class);
+    }
+
+    /**
+     * Starts an extensions module builder to add listeners to {@link CommitLogModule} and/or otherwise customize this
+     * module.
+     *
+     * @return a new builder of {@link CommitLogModule} extensions.
+     * @see CommitLogListener
+     */
+    public static CommitLogModuleExtender extend() {
+        return new CommitLogModuleExtender();
     }
 
     @Override

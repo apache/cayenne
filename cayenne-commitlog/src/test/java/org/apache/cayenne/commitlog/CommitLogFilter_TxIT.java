@@ -18,22 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.commitlog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.commitlog.db.AuditLog;
+import org.apache.cayenne.commitlog.db.Auditable2;
+import org.apache.cayenne.commitlog.model.ChangeMap;
+import org.apache.cayenne.commitlog.model.ObjectChange;
+import org.apache.cayenne.commitlog.unit.AuditableServerCase;
+import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
+import org.apache.cayenne.tx.BaseTransaction;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
-import org.apache.cayenne.commitlog.model.ChangeMap;
-import org.apache.cayenne.commitlog.model.ObjectChange;
-import org.apache.cayenne.commitlog.db.AuditLog;
-import org.apache.cayenne.commitlog.db.Auditable2;
-import org.apache.cayenne.commitlog.unit.AuditableServerCase;
-import org.apache.cayenne.tx.BaseTransaction;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class CommitLogFilter_TxIT extends AuditableServerCase {
 
@@ -58,7 +58,7 @@ public class CommitLogFilter_TxIT extends AuditableServerCase {
 			}
 		};
 		return super.configureCayenne().addModule(
-				CommitLogModuleBuilder.builder().commitLogAnnotationEntitiesOnly().listener(listener).build());
+				CommitLogModule.extend().commitLogAnnotationEntitiesOnly().addListener(listener).build());
 	}
 
 	@Before

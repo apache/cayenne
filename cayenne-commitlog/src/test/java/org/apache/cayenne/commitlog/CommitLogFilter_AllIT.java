@@ -18,36 +18,29 @@
  ****************************************************************/
 package org.apache.cayenne.commitlog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
-import java.sql.SQLException;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
+import org.apache.cayenne.commitlog.db.Auditable1;
+import org.apache.cayenne.commitlog.db.AuditableChild1;
 import org.apache.cayenne.commitlog.model.AttributeChange;
 import org.apache.cayenne.commitlog.model.ChangeMap;
 import org.apache.cayenne.commitlog.model.ObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
 import org.apache.cayenne.commitlog.model.ToManyRelationshipChange;
 import org.apache.cayenne.commitlog.model.ToOneRelationshipChange;
-import org.apache.cayenne.commitlog.db.Auditable1;
-import org.apache.cayenne.commitlog.db.AuditableChild1;
 import org.apache.cayenne.commitlog.unit.AuditableServerCase;
+import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
 import org.apache.cayenne.query.SelectById;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import java.sql.SQLException;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 public class CommitLogFilter_AllIT extends AuditableServerCase {
 
@@ -57,7 +50,7 @@ public class CommitLogFilter_AllIT extends AuditableServerCase {
 	@Override
 	protected ServerRuntimeBuilder configureCayenne() {
 		this.mockListener = mock(CommitLogListener.class);
-		return super.configureCayenne().addModule(CommitLogModuleBuilder.builder().listener(mockListener).build());
+		return super.configureCayenne().addModule(CommitLogModule.extend().addListener(mockListener).build());
 	}
 
 	@Before

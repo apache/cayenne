@@ -18,18 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.commitlog;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.commitlog.model.ChangeMap;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.commitlog.model.ChangeMap;
 import org.junit.Test;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CommitLogModuleBuilderTest {
 
@@ -37,7 +37,7 @@ public class CommitLogModuleBuilderTest {
 	public void testListener_Object() {
 
 		L listener = new L();
-		Module m = CommitLogModuleBuilder.builder().listener(listener).build();
+		Module m = CommitLogModule.extend().addListener(listener).build();
 
 		Injector i = DIBootstrap.createInjector(m);
 		List<CommitLogListener> listeners = i.getInstance(Key.getListOf(CommitLogListener.class));
@@ -48,7 +48,7 @@ public class CommitLogModuleBuilderTest {
 	@Test
 	public void testListener_Class() {
 
-		Module m = CommitLogModuleBuilder.builder().listener(L.class).build();
+		Module m = CommitLogModule.extend().addListener(L.class).build();
 
 		Injector i = DIBootstrap.createInjector(m);
 		List<CommitLogListener> listeners = i.getInstance(Key.getListOf(CommitLogListener.class));
