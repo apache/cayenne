@@ -55,8 +55,10 @@ public class BaseTaskIT {
         List<String> gradleArguments = new ArrayList<>();
         gradleArguments.addAll(Arrays.asList(args));
         gradleArguments.add("--stacktrace");
+        gradleArguments.add("--info");
 
         return GradleRunner.create()
+                .forwardOutput()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .withArguments(gradleArguments);
