@@ -160,7 +160,6 @@ public class DefaultActionManager implements ActionManager {
         DOMAIN_ACTIONS.addAll(Arrays.asList(
                 ImportDataMapAction.class.getName(),
                 CreateDataMapAction.class.getName(),
-                RemoveAction.class.getName(),
                 CreateNodeAction.class.getName(),
                 ReverseEngineeringAction.class.getName(),
                 ImportEOModelAction.class.getName(),
@@ -180,6 +179,7 @@ public class DefaultActionManager implements ActionManager {
                 CreateQueryAction.class.getName(),
                 CreateProcedureAction.class.getName(),
                 MigrateAction.class.getName(),
+                RemoveAction.class.getName(),
                 InferRelationshipsAction.class.getName(),
                 CutAction.class.getName(),
                 CopyAction.class.getName()));
