@@ -37,6 +37,8 @@
 				<include>tutorial-rop-client/**</include>
 			</includes>
 			<excludes>
+				<exclude>**/.gradle/**</exclude>
+				<exclude>**/build/**</exclude>
 				<exclude>**/target/**</exclude>
 				<exclude>**/derby.log</exclude>
 				<exclude>**/.gitignore</exclude>

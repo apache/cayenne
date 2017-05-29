@@ -71,6 +71,7 @@
 		<module>tutorials</module>
 		<module>docs</module>
 		<module>eventbridges</module>
+		<module>cayenne-gradle-plugin</module>
     </modules>
 	<issueManagement>
 		<system>jira</system>

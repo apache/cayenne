@@ -10,3 +10,5 @@ bin/
 .idea
 *.iml
 .factorypath
+build
+.gradle
