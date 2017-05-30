@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import org.apache.cayenne.map.DbEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 class ExportedKeyLoader extends PerEntityLoader {
 
@@ -59,13 +59,13 @@ class ExportedKeyLoader extends PerEntityLoader {
 
         DbEntity pkEntity = map.getDbEntity(key.getPk().getTable());
         if (pkEntity == null) {
-            LOGGER.info("Skip relation: '" + key + "' because table '" + key.getPk().getTable() + "' not found");
+            LOGGER.info("Skip relation: '" + key + "' because table '" + key.getPk().getTable() + "' is not found");
             return;
         }
 
         DbEntity fkEntity = map.getDbEntity(key.getFk().getTable());
         if (fkEntity == null) {
-            LOGGER.info("Skip relation: '" + key + "' because table '" + key.getFk().getTable() + "' not found");
+            LOGGER.info("Skip relation: '" + key + "' because table '" + key.getFk().getTable() + "' is not found");
             return;
         }
 
