@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.lifecycle.cache;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.DataChannelFilterChain;
@@ -42,6 +34,14 @@ import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.Query;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * <p>
  * A {@link DataChannelFilter} that invalidates cache groups.
@@ -51,7 +51,7 @@ import org.apache.cayenne.query.Query;
  * Default rule is based on entities' {@link CacheGroups} annotation.
  * </p>
  * <p>
- *     To add default filter: <pre>
+ * To add default filter: <pre>
  *         ServerRuntime.builder("cayenne-project.xml")
  *              .addModule(CacheInvalidationModuleBuilder.builder().build());
  *     </pre>
@@ -59,33 +59,27 @@ import org.apache.cayenne.query.Query;
  *
  * @see CacheInvalidationModuleExtender
  * @see InvalidationHandler
- *
- * @since 3.1
  * @since 4.0 enhanced to support custom handlers.
  */
 public class CacheInvalidationFilter implements DataChannelFilter {
 
-    @Inject
-    private Provider<QueryCache> cacheProvider;
-
-    @Inject
-    private List<InvalidationHandler> handlers;
-
+    private final Provider<QueryCache> cacheProvider;
+    private final List<InvalidationHandler> handlers;
     private final Map<Class<? extends Persistent>, InvalidationFunction> mappedHandlers;
-
     private final InvalidationFunction skipHandler;
-
     private final ThreadLocal<Set<CacheGroupDescriptor>> groups;
 
-    public CacheInvalidationFilter() {
-        mappedHandlers = new ConcurrentHashMap<>();
-        skipHandler = new InvalidationFunction() {
+    public CacheInvalidationFilter(@Inject Provider<QueryCache> cacheProvider, @Inject List<InvalidationHandler> handlers) {
+        this.mappedHandlers = new ConcurrentHashMap<>();
+        this.skipHandler = new InvalidationFunction() {
             @Override
             public Collection<CacheGroupDescriptor> apply(Persistent p) {
                 return Collections.emptyList();
             }
         };
-        groups = new ThreadLocal<>();
+        this.groups = new ThreadLocal<>();
+        this.cacheProvider = cacheProvider;
+        this.handlers = handlers;
     }
 
     public void init(DataChannel channel) {
@@ -105,7 +99,7 @@ public class CacheInvalidationFilter implements DataChannelFilter {
             if (groupSet != null && !groupSet.isEmpty()) {
                 QueryCache cache = cacheProvider.get();
                 for (CacheGroupDescriptor group : groupSet) {
-                    if(group.getKeyType() != Void.class) {
+                    if (group.getKeyType() != Void.class) {
                         cache.removeGroup(group.getCacheGroupName(), group.getKeyType(), group.getValueType());
                     } else {
                         cache.removeGroup(group.getCacheGroupName());
@@ -129,7 +123,7 @@ public class CacheInvalidationFilter implements DataChannelFilter {
         Persistent p = (Persistent) object;
 
         InvalidationFunction invalidationFunction = mappedHandlers.get(p.getClass());
-        if(invalidationFunction == null) {
+        if (invalidationFunction == null) {
             invalidationFunction = skipHandler;
             for (InvalidationHandler handler : handlers) {
                 InvalidationFunction function = handler.canHandle(p.getClass());

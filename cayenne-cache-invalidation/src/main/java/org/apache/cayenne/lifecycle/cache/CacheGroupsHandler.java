@@ -19,17 +19,18 @@
 
 package org.apache.cayenne.lifecycle.cache;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.apache.cayenne.Persistent;
 
-import static java.util.Arrays.asList;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @since 4.0
  */
 public class CacheGroupsHandler implements InvalidationHandler {
+
+    public CacheGroupsHandler() {
+    }
 
     /**
      * Return invalidation function that returns values

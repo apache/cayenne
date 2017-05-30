@@ -51,9 +51,12 @@ public class CacheInvalidationCacheGroupsHandlerIT extends CacheInvalidationCase
 
     @Override
     protected Module extendInvalidationModule() {
-        return CacheInvalidationModule.extend()
-                .addCacheGroupsHandler()
-                .module();
+        return new Module() {
+            @Override
+            public void configure(Binder binder) {
+                // do nothing module
+            }
+        };
     }
 
     @Override

@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.lifecycle.cache;
 
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
@@ -32,8 +33,8 @@ import java.util.HashSet;
 public class CacheInvalidationModuleExtender {
 
     private Collection<Class<? extends InvalidationHandler>> handlerTypes;
-
     private Collection<InvalidationHandler> handlerInstances;
+    private boolean noCacheGroupsHandler;
 
     CacheInvalidationModuleExtender() {
         this.handlerTypes = new HashSet<>();
@@ -41,11 +42,12 @@ public class CacheInvalidationModuleExtender {
     }
 
     /**
-     * Adds {@link CacheGroupsHandler} that will setup invalidation based on {@link CacheGroups} and {@link CacheGroup}
+     * Disable the default {@link CacheGroupsHandler} that is tied to {@link CacheGroups} and {@link CacheGroup}
      * annotations.
      */
-    public CacheInvalidationModuleExtender addCacheGroupsHandler() {
-        return addHandler(CacheGroupsHandler.class);
+    public CacheInvalidationModuleExtender noCacheGroupsHandler() {
+        noCacheGroupsHandler = true;
+        return this;
     }
 
     public CacheInvalidationModuleExtender addHandler(Class<? extends InvalidationHandler> handlerType) {
@@ -62,6 +64,17 @@ public class CacheInvalidationModuleExtender {
         return new Module() {
             @Override
             public void configure(Binder binder) {
+
+                if (noCacheGroupsHandler) {
+                    // replace CacheGroupsHandler with a dummy no op handler
+                    binder.bind(CacheGroupsHandler.class).toInstance(new CacheGroupsHandler() {
+                        @Override
+                        public InvalidationFunction canHandle(Class<? extends Persistent> type) {
+                            return null;
+                        }
+                    });
+                }
+
                 ListBuilder<InvalidationHandler> handlers = CacheInvalidationModule.contributeInvalidationHandler(binder);
 
                 handlers.addAll(handlerInstances);

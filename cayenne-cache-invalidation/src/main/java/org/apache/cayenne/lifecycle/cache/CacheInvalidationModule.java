@@ -47,7 +47,9 @@ public class CacheInvalidationModule implements Module {
 
     @Override
     public void configure(Binder binder) {
-        contributeInvalidationHandler(binder);
+
+        binder.bind(CacheGroupsHandler.class).to(CacheGroupsHandler.class);
+        contributeInvalidationHandler(binder).add(CacheGroupsHandler.class);
 
         // want the filter to be INSIDE transaction by default
         ServerModule.contributeDomainFilters(binder)
