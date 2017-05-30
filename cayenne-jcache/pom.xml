@@ -118,22 +118,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-            <plugin>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<!--<configuration>
-				    <suppressionsLocation>${project.basedir}/cayenne-checkstyle-suppression.xml</suppressionsLocation>
-                </configuration> -->
-			</plugin>
-			<plugin>
-				<artifactId>maven-pmd-plugin</artifactId>
-			</plugin>
         </plugins>
     </build>
 

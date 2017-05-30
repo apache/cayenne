@@ -51,27 +51,27 @@
 	<url>http://cayenne.apache.org/</url>
 	<modules>
 		<module>build-tools</module>
-		<module>cayenne-di</module>
-		<module>cayenne-server</module>
-		<module>cayenne-client</module>
-		<module>cayenne-cgen</module>
-		<module>cayenne-dbsync</module>
 		<module>cayenne-ant</module>
-		<module>cayenne-project</module>
-		<module>cayenne-lifecycle</module>
+		<module>cayenne-cache-invalidation</module>
+		<module>cayenne-cgen</module>
+		<module>cayenne-client</module>
 		<module>cayenne-commitlog</module>
 		<module>cayenne-crypto</module>
-		<module>cayenne-joda</module>
 		<module>cayenne-dbcp2</module>
+		<module>cayenne-dbsync</module>
+		<module>cayenne-di</module>
+		<module>cayenne-gradle-plugin</module>
 		<module>cayenne-jcache</module>
-		<module>cayenne-cache-invalidation</module>
+		<module>cayenne-joda</module>
+		<module>cayenne-lifecycle</module>
+		<module>cayenne-project</module>
+		<module>cayenne-server</module>
+		<module>eventbridges</module>
 		<module>itests</module>
-		<module>modeler</module>
 		<module>maven-plugins</module>
+		<module>modeler</module>
 		<module>tutorials</module>
 		<module>docs</module>
-		<module>eventbridges</module>
-		<module>cayenne-gradle-plugin</module>
     </modules>
 	<issueManagement>
 		<system>jira</system>
