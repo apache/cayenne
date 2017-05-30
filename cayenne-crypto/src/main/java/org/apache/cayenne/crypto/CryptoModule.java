@@ -73,28 +73,34 @@ public class CryptoModule implements Module {
     private static final char[] DEFAULT_KEY_PASSWORD = "changeit".toCharArray();
     private static final String DEFAULT_COLUMN_MAPPER_PATTERN = "^CRYPTO_";
 
-    public static CryptoModuleBuilder builder() {
-        return new CryptoModuleBuilder();
+    /**
+     * Returns a new extender that helps to build a custom module that provides required configuration for {@link CryptoModule}
+     * as well as custom strategies overriding the defaults defined here.
+     *
+     * @return a new extender that helps to build a custom module that provides required configuration for {@link CryptoModule}.
+     */
+    public static CryptoModuleExtender extend() {
+        return new CryptoModuleExtender();
     }
 
-    public static MapBuilder<String> contributeProperties(Binder binder) {
+    static MapBuilder<String> contributeProperties(Binder binder) {
         return binder.bindMap(String.class, CryptoConstants.PROPERTIES_MAP);
     }
 
-    public static MapBuilder<char[]> contributeCredentials(Binder binder) {
+    static MapBuilder<char[]> contributeCredentials(Binder binder) {
         return binder.bindMap(char[].class, CryptoConstants.CREDENTIALS_MAP);
     }
 
     @SuppressWarnings("unchecked")
-    public static MapBuilder<BytesConverter<?>> contributeDbToByteConverters(Binder binder) {
+    static MapBuilder<BytesConverter<?>> contributeDbToByteConverters(Binder binder) {
         MapBuilder mapBuilder = binder.bindMap(BytesConverter.class, DefaultValueTransformerFactory.DB_TO_BYTE_CONVERTERS_KEY);
-        return (MapBuilder<BytesConverter<?>>)mapBuilder;
+        return (MapBuilder<BytesConverter<?>>) mapBuilder;
     }
 
     @SuppressWarnings("unchecked")
-    public static MapBuilder<BytesConverter<?>> contributeObjectToByteConverters(Binder binder) {
+    static MapBuilder<BytesConverter<?>> contributeObjectToByteConverters(Binder binder) {
         MapBuilder mapBuilder = binder.bindMap(BytesConverter.class, DefaultValueTransformerFactory.OBJECT_TO_BYTE_CONVERTERS_KEY);
-        return (MapBuilder<BytesConverter<?>>)mapBuilder;
+        return (MapBuilder<BytesConverter<?>>) mapBuilder;
     }
 
     @Override

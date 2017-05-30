@@ -37,11 +37,11 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * A builder that allows to customize {@link CryptoModule} module.
+ * A builder of custom extensions and required configuration for {@link CryptoModule} module.
  *
  * @since 4.0
  */
-public class CryptoModuleBuilder {
+public class CryptoModuleExtender {
 
     private Class<? extends ValueTransformerFactory> valueTransformerFactoryType;
     private Class<? extends BytesTransformerFactory> bytesTransformerFactoryType;
@@ -70,61 +70,61 @@ public class CryptoModuleBuilder {
     private boolean useHMAC;
 
     // use CryptoModule.builder() to create the builder...
-    protected CryptoModuleBuilder() {
+    protected CryptoModuleExtender() {
         this.extraDbToBytes = new HashMap<>();
         this.extraObjectToBytes = new HashMap<>();
     }
 
-    public CryptoModuleBuilder cipherAlgorithm(String algorithm) {
+    public CryptoModuleExtender cipherAlgorithm(String algorithm) {
         this.cipherAlgoritm = Objects.requireNonNull(algorithm);
         return this;
     }
 
-    public CryptoModuleBuilder cipherMode(String mode) {
+    public CryptoModuleExtender cipherMode(String mode) {
         this.cipherMode = Objects.requireNonNull(mode);
         return this;
     }
 
-    public CryptoModuleBuilder cipherFactory(Class<? extends CipherFactory> factoryType) {
+    public CryptoModuleExtender cipherFactory(Class<? extends CipherFactory> factoryType) {
         this.cipherFactoryType = Objects.requireNonNull(factoryType);
         return this;
     }
 
-    public CryptoModuleBuilder valueTransformer(Class<? extends ValueTransformerFactory> factoryType) {
+    public CryptoModuleExtender valueTransformer(Class<? extends ValueTransformerFactory> factoryType) {
         this.valueTransformerFactoryType = Objects.requireNonNull(factoryType);
         return this;
     }
 
-    public <T> CryptoModuleBuilder objectToBytesConverter(Class<T> objectType, BytesConverter<T> converter) {
+    public <T> CryptoModuleExtender objectToBytesConverter(Class<T> objectType, BytesConverter<T> converter) {
         extraObjectToBytes.put(objectType.getName(), Objects.requireNonNull(converter));
         return this;
     }
 
-    public CryptoModuleBuilder dbToBytesConverter(int sqlType, BytesConverter<?> converter) {
+    public CryptoModuleExtender dbToBytesConverter(int sqlType, BytesConverter<?> converter) {
         extraDbToBytes.put(sqlType, Objects.requireNonNull(converter));
         return this;
     }
 
-    public CryptoModuleBuilder bytesTransformer(Class<? extends BytesTransformerFactory> factoryType) {
+    public CryptoModuleExtender bytesTransformer(Class<? extends BytesTransformerFactory> factoryType) {
         this.bytesTransformerFactoryType = Objects.requireNonNull(factoryType);
         return this;
     }
 
-    public CryptoModuleBuilder columnMapper(Class<? extends ColumnMapper> columnMapperType) {
+    public CryptoModuleExtender columnMapper(Class<? extends ColumnMapper> columnMapperType) {
         this.columnMapperPattern = null;
         this.columnMapperType = Objects.requireNonNull(columnMapperType);
         this.columnMapper = null;
         return this;
     }
 
-    public CryptoModuleBuilder columnMapper(ColumnMapper columnMapper) {
+    public CryptoModuleExtender columnMapper(ColumnMapper columnMapper) {
         this.columnMapperPattern = null;
         this.columnMapperType = null;
         this.columnMapper = Objects.requireNonNull(columnMapper);
         return this;
     }
 
-    public CryptoModuleBuilder columnMapper(String pattern) {
+    public CryptoModuleExtender columnMapper(String pattern) {
         this.columnMapperPattern = Objects.requireNonNull(pattern);
         this.columnMapperType = null;
         this.columnMapper = null;
@@ -135,7 +135,7 @@ public class CryptoModuleBuilder {
      * @param encryptionKeyAlias The name of the key in the keystore that should be used for
      *                           encryption by default.
      */
-    public CryptoModuleBuilder encryptionKeyAlias(String encryptionKeyAlias) {
+    public CryptoModuleExtender encryptionKeyAlias(String encryptionKeyAlias) {
         this.encryptionKeyAlias = Objects.requireNonNull(encryptionKeyAlias);
         return this;
     }
@@ -150,7 +150,7 @@ public class CryptoModuleBuilder {
      * @param encryptionKeyAlias The name of the key in the keystore that should be used for
      *                           encryption by default.
      */
-    public CryptoModuleBuilder keyStore(File file, char[] passwordForAllKeys, String encryptionKeyAlias) {
+    public CryptoModuleExtender keyStore(File file, char[] passwordForAllKeys, String encryptionKeyAlias) {
         this.encryptionKeyAlias = encryptionKeyAlias;
         this.keyPassword = passwordForAllKeys;
         this.keyStoreUrl = null;
@@ -169,7 +169,7 @@ public class CryptoModuleBuilder {
      * @param encryptionKeyAlias The name of the key in the keystore that should be used for
      *                           encryption by default.
      */
-    public CryptoModuleBuilder keyStore(String url, char[] passwordForAllKeys, String encryptionKeyAlias) {
+    public CryptoModuleExtender keyStore(String url, char[] passwordForAllKeys, String encryptionKeyAlias) {
         this.encryptionKeyAlias = encryptionKeyAlias;
         this.keyPassword = passwordForAllKeys;
         this.keyStoreUrl = null;
@@ -188,7 +188,7 @@ public class CryptoModuleBuilder {
      * @param encryptionKeyAlias The name of the key in the keystore that should be used for
      *                           encryption by default.
      */
-    public CryptoModuleBuilder keyStore(URL url, char[] passwordForAllKeys, String encryptionKeyAlias) {
+    public CryptoModuleExtender keyStore(URL url, char[] passwordForAllKeys, String encryptionKeyAlias) {
         this.encryptionKeyAlias = encryptionKeyAlias;
         this.keyPassword = passwordForAllKeys;
         this.keyStoreUrl = Objects.requireNonNull(url);
@@ -197,19 +197,19 @@ public class CryptoModuleBuilder {
         return this;
     }
 
-    public CryptoModuleBuilder keySource(Class<? extends KeySource> type) {
+    public CryptoModuleExtender keySource(Class<? extends KeySource> type) {
         this.keySourceType = Objects.requireNonNull(type);
         this.keySource = null;
         return this;
     }
 
-    public CryptoModuleBuilder keySource(KeySource keySource) {
+    public CryptoModuleExtender keySource(KeySource keySource) {
         this.keySourceType = null;
         this.keySource = Objects.requireNonNull(keySource);
         return this;
     }
 
-    public CryptoModuleBuilder compress() {
+    public CryptoModuleExtender compress() {
         this.compress = true;
         return this;
     }
@@ -217,7 +217,7 @@ public class CryptoModuleBuilder {
     /**
      * Enable authentication codes
      */
-    public CryptoModuleBuilder useHMAC() {
+    public CryptoModuleExtender useHMAC() {
         this.useHMAC = true;
         return this;
     }
@@ -225,7 +225,7 @@ public class CryptoModuleBuilder {
     /**
      * Produces a module that can be used to start Cayenne runtime.
      */
-    public Module build() {
+    public Module module() {
 
         return new Module() {
 

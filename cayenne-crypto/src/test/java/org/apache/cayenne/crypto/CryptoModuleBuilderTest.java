@@ -38,8 +38,8 @@ public class CryptoModuleBuilderTest {
     public void testBuild_KeySource() {
 
         URL ksUrl = JceksKeySourceTest.class.getResource(JceksKeySourceTest.KS1_JCEKS);
-        Module m = new CryptoModuleBuilder().keyStore(ksUrl, JceksKeySourceTest.TEST_KEY_PASS, "k1")
-                .valueTransformer(DefaultValueTransformerFactory.class).build();
+        Module m = new CryptoModuleExtender().keyStore(ksUrl, JceksKeySourceTest.TEST_KEY_PASS, "k1")
+                .valueTransformer(DefaultValueTransformerFactory.class).module();
 
         Injector injector = DIBootstrap.createInjector(new CryptoModule(), m);
 

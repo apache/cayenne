@@ -62,7 +62,7 @@ public class Runtime_AES128_Base {
     protected Module createCryptoModule(boolean compress, boolean useHMAC) {
         URL keyStoreUrl = JceksKeySourceTest.class.getResource(JceksKeySourceTest.KS1_JCEKS);
 
-        CryptoModuleBuilder builder = CryptoModule
+        CryptoModuleExtender builder = CryptoModule
                 .builder()
                 .keyStore(keyStoreUrl, JceksKeySourceTest.TEST_KEY_PASS, "k3");
 
@@ -73,7 +73,7 @@ public class Runtime_AES128_Base {
             builder.useHMAC();
         }
 
-        return builder.build();
+        return builder.module();
     }
 
 }
