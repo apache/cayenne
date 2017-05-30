@@ -26,6 +26,7 @@ import org.junit.Test;
 
 
 import java.io.File;
+import java.net.URLDecoder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -41,7 +42,7 @@ public class CgenTaskIT extends BaseTaskIT {
         GradleRunner runner = createRunner(
                 "cgen_default_config",
                 "cgen",
-                "-PdataMap=" + getClass().getResource("test_datamap.map.xml").getFile()
+                "-PdataMap=" + URLDecoder.decode(getClass().getResource("test_datamap.map.xml").getFile(), "UTF-8")
         );
 
         BuildResult result = runner.forwardOutput().build();
@@ -64,7 +65,7 @@ public class CgenTaskIT extends BaseTaskIT {
         GradleRunner runner = createRunner(
                 "cgen_custom_config",
                 "cgen",
-                "-PdataMap=" + getClass().getResource("test_datamap.map.xml").getFile()
+                "-PdataMap=" + URLDecoder.decode(getClass().getResource("test_datamap.map.xml").getFile(), "UTF-8")
         );
         BuildResult result = runner.build();
 

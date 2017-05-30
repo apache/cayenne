@@ -20,6 +20,7 @@
 package org.apache.cayenne.tools;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
@@ -57,7 +58,7 @@ public class DbGenerateTaskIT extends BaseTaskIT {
                 "cdbgen_simple",
                 "cdbgen",
                 "-PdbUrl=" + dbUrl,
-                "-PdataMap=" + getClass().getResource("test_datamap.map.xml").getFile(),
+                "-PdataMap=" + URLDecoder.decode(getClass().getResource("test_datamap.map.xml").getFile(), "UTF-8"),
                 "--info"
         );
 
@@ -83,7 +84,7 @@ public class DbGenerateTaskIT extends BaseTaskIT {
         GradleRunner runner = createRunner(
                 "cdbgen_custom",
                 "customCdbgen",
-                "-PdataMap=" + getClass().getResource("test_datamap.map.xml").getFile(),
+                "-PdataMap=" + URLDecoder.decode(getClass().getResource("test_datamap.map.xml").getFile(), "UTF-8"),
                 "--info"
         );
 

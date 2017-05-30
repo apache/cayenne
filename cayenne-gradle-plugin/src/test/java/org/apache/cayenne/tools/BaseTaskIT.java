@@ -21,6 +21,7 @@ package org.apache.cayenne.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -55,17 +56,15 @@ public class BaseTaskIT {
         List<String> gradleArguments = new ArrayList<>();
         gradleArguments.addAll(Arrays.asList(args));
         gradleArguments.add("--stacktrace");
-        gradleArguments.add("--info");
 
         return GradleRunner.create()
-                .forwardOutput()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .withArguments(gradleArguments);
     }
 
     private void prepareBuildScript(String name) throws IOException {
-        String projectFileSrc = getClass().getResource(name + ".gradle").getFile();
+        String projectFileSrc = URLDecoder.decode(getClass().getResource(name + ".gradle").getFile(), "UTF-8");
         Path src = FileSystems.getDefault().getPath(projectFileSrc);
         Path dst = FileSystems.getDefault().getPath(projectDir.getAbsolutePath(), "build.gradle");
         Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING);

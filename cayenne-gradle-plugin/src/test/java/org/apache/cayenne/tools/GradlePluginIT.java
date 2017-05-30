@@ -22,6 +22,7 @@ package org.apache.cayenne.tools;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.Test;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class GradlePluginIT extends BaseTaskIT {
         GradleRunner runner = createRunner(
                 "cgen_default_config",
                 "cgen",
-                "-PdataMap=" + getClass().getResource("test_datamap.map.xml").getFile()
+                "-PdataMap=" + URLDecoder.decode(getClass().getResource("test_datamap.map.xml").getFile(), "UTF-8")
         );
         runner.withGradleVersion(version);
         runner.build();

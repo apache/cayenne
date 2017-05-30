@@ -82,7 +82,6 @@
                                 <argument>clean</argument>
                                 <argument>${gradle.task}</argument>
                                 <argument>-PprojectVersion=${project.version}</argument>
-                                <argument>--info</argument>
                             </arguments>
                         </configuration>
                         <goals>

@@ -71,6 +71,9 @@ public class DbImportIT extends BaseTaskIT {
     @Test
     public void simpleDbTaskSuccess() throws Exception {
         String dbUrl = prepareDerbyDatabase("test_map_db");
+        File dataMap = new File(projectDir.getAbsolutePath() + "/datamap.map.xml");
+        assertFalse(dataMap.exists());
+
         GradleRunner runner = createRunner("dbimport_simple_db", "cdbimport", "--info", "-PdbUrl=" + dbUrl);
 
         BuildResult result = runner.build();
@@ -78,7 +81,6 @@ public class DbImportIT extends BaseTaskIT {
         assertNotNull(result.task(":cdbimport"));
         assertEquals(TaskOutcome.SUCCESS, result.task(":cdbimport").getOutcome());
 
-        File dataMap = new File(projectDir.getAbsolutePath() + "/datamap.map.xml");
         assertTrue(dataMap.exists());
 
         // Check few lines from reverse engineering output
