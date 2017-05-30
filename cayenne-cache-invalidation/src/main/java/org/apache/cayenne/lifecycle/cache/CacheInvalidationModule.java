@@ -26,7 +26,8 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.tx.TransactionFilter;
 
 /**
- * This module is autoloaded, all extensions should be done via {@link CacheInvalidationModuleBuilder}.
+ * This module is autoloaded, all extensions should be done via {@link CacheInvalidationModuleExtender}.
+ *
  * @since 4.0
  */
 public class CacheInvalidationModule implements Module {
@@ -35,11 +36,20 @@ public class CacheInvalidationModule implements Module {
         return binder.bindList(InvalidationHandler.class);
     }
 
+    /**
+     * Returns a new "extender" to customize the defaults provided by this module.
+     *
+     * @return a new "extender" to customize the defaults provided by this module.
+     */
+    public static CacheInvalidationModuleExtender extend() {
+        return new CacheInvalidationModuleExtender();
+    }
+
     @Override
     public void configure(Binder binder) {
         contributeInvalidationHandler(binder);
 
-        // want the filter to be INSIDE transaction
+        // want the filter to be INSIDE transaction by default
         ServerModule.contributeDomainFilters(binder)
                 .insertBefore(CacheInvalidationFilter.class, TransactionFilter.class);
     }

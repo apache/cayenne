@@ -33,13 +33,12 @@ import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
  */
 public class CommitLogModule implements Module {
 
-    public static ListBuilder<CommitLogListener> contributeListeners(Binder binder) {
+    static ListBuilder<CommitLogListener> contributeListeners(Binder binder) {
         return binder.bindList(CommitLogListener.class);
     }
 
     /**
-     * Starts an extensions module builder to add listeners to {@link CommitLogModule} and/or otherwise customize this
-     * module.
+     * Starts an extension module builder to add listeners and/or other customizations for {@link CommitLogModule}.
      *
      * @return a new builder of {@link CommitLogModule} extensions.
      * @see CommitLogListener

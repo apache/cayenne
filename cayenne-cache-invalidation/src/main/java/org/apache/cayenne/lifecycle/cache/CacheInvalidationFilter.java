@@ -57,7 +57,7 @@ import org.apache.cayenne.query.Query;
  *     </pre>
  * </p>
  *
- * @see CacheInvalidationModuleBuilder
+ * @see CacheInvalidationModuleExtender
  * @see InvalidationHandler
  *
  * @since 3.1

@@ -40,7 +40,7 @@ public class CacheInvalidationCustomHandlerIT extends CacheInvalidationCase {
 
     @Override
     protected Module buildInvalidationModule() {
-        return CacheInvalidationModuleBuilder.builder()
+        return CacheInvalidationModuleExtender.builder()
                 .noCacheGroupsHandler()
                 .invalidationHandler(G1InvalidationHandler.class)
                 .build();

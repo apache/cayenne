@@ -19,17 +19,17 @@
 
 package org.apache.cayenne.lifecycle.cache;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 /**
  * @since 4.0
  */
-public class CacheInvalidationModuleBuilder {
+public class CacheInvalidationModuleExtender {
 
     private Collection<Class<? extends InvalidationHandler>> handlerTypes;
 
@@ -37,11 +37,7 @@ public class CacheInvalidationModuleBuilder {
 
     private boolean noCacheGroupsHandler;
 
-    public static CacheInvalidationModuleBuilder builder() {
-        return new CacheInvalidationModuleBuilder();
-    }
-
-    CacheInvalidationModuleBuilder() {
+    CacheInvalidationModuleExtender() {
         this.handlerTypes = new HashSet<>();
         this.handlerInstances = new HashSet<>();
     }
@@ -49,17 +45,17 @@ public class CacheInvalidationModuleBuilder {
     /**
      * Disable {@link CacheGroupsHandler} based on {@link CacheGroups} annotation.
      */
-    public CacheInvalidationModuleBuilder noCacheGroupsHandler() {
+    public CacheInvalidationModuleExtender noCacheGroupsHandler() {
         noCacheGroupsHandler = true;
         return this;
     }
 
-    public CacheInvalidationModuleBuilder invalidationHandler(Class<? extends InvalidationHandler> handlerType) {
+    public CacheInvalidationModuleExtender addInvalidationHandler(Class<? extends InvalidationHandler> handlerType) {
         handlerTypes.add(handlerType);
         return this;
     }
 
-    public CacheInvalidationModuleBuilder invalidationHandler(InvalidationHandler handlerInstance) {
+    public CacheInvalidationModuleExtender addInvalidationHandler(InvalidationHandler handlerInstance) {
         handlerInstances.add(handlerInstance);
         return this;
     }
