@@ -45,15 +45,15 @@ public class CacheInvalidationModuleExtender {
      * annotations.
      */
     public CacheInvalidationModuleExtender addCacheGroupsHandler() {
-        return addInvalidationHandler(CacheGroupsHandler.class);
+        return addHandler(CacheGroupsHandler.class);
     }
 
-    public CacheInvalidationModuleExtender addInvalidationHandler(Class<? extends InvalidationHandler> handlerType) {
+    public CacheInvalidationModuleExtender addHandler(Class<? extends InvalidationHandler> handlerType) {
         handlerTypes.add(handlerType);
         return this;
     }
 
-    public CacheInvalidationModuleExtender addInvalidationHandler(InvalidationHandler handlerInstance) {
+    public CacheInvalidationModuleExtender addHandler(InvalidationHandler handlerInstance) {
         handlerInstances.add(handlerInstance);
         return this;
     }

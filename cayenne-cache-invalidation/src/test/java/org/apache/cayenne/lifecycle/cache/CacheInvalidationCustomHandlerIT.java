@@ -38,9 +38,9 @@ import static org.junit.Assert.assertEquals;
 public class CacheInvalidationCustomHandlerIT extends CacheInvalidationCase {
 
     @Override
-    protected Module buildInvalidationModule() {
+    protected Module extendInvalidationModule() {
         return CacheInvalidationModule.extend()
-                .addInvalidationHandler(G1InvalidationHandler.class)
+                .addHandler(G1InvalidationHandler.class)
                 .module();
     }
 

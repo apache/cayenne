@@ -48,7 +48,7 @@ public abstract class CacheInvalidationCase {
 		this.e2.deleteAll();
 	}
 
-	protected abstract Module buildInvalidationModule();
+	protected abstract Module extendInvalidationModule();
 
 	protected Module buildCustomModule() {
 		return new Module() {
@@ -60,7 +60,7 @@ public abstract class CacheInvalidationCase {
 
 	protected ServerRuntimeBuilder configureCayenne() {
 		return ServerRuntime.builder()
-				.addModule(buildInvalidationModule())
+				.addModule(extendInvalidationModule())
 				.addModule(buildCustomModule())
 				.addConfig("cayenne-lifecycle.xml");
 	}
