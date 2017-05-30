@@ -18,11 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.di.Scope;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -33,139 +31,101 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @since 3.1
  */
-class DefaultListBuilder<T> implements ListBuilder<T> {
+class DefaultListBuilder<T> extends DICollectionBuilder<List<T>, T> implements ListBuilder<T> {
 
     protected static AtomicLong incrementer = new AtomicLong();
-    protected DefaultInjector injector;
-    protected Key<List<T>> bindingKey;
 
     DefaultListBuilder(Key<List<T>> bindingKey, DefaultInjector injector) {
-        this.injector = injector;
-        this.bindingKey = bindingKey;
+        super(bindingKey, injector);
 
         // trigger initialization of the ListProvider right away, as we need to bind an
         // empty list even if the user never calls 'put'
-        getListProvider();
+        findOrCreateListProvider();
     }
 
     @Override
     public ListBuilder<T> add(Class<? extends T> interfaceType) {
 
-        Provider<? extends T> provider = getProvider(interfaceType);
-        getListProvider().add(Key.get(interfaceType), provider);
+        Provider<? extends T> provider = createTypeProvider(interfaceType);
+        findOrCreateListProvider().add(Key.get(interfaceType), provider);
         return this;
     }
 
     @Override
     public ListBuilder<T> addAfter(Class<? extends T> interfaceType, Class<? extends T> afterType) {
 
-        Provider<? extends T> provider = getProvider(interfaceType);
-        getListProvider().addAfter(Key.get(interfaceType), provider, Key.get(afterType));
+        Provider<? extends T> provider = createTypeProvider(interfaceType);
+        findOrCreateListProvider().addAfter(Key.get(interfaceType), provider, Key.get(afterType));
         return this;
     }
 
     @Override
     public ListBuilder<T> insertBefore(Class<? extends T> interfaceType, Class<? extends T> beforeType) {
 
-        Provider<? extends T> provider = getProvider(interfaceType);
-        getListProvider().insertBefore(Key.get(interfaceType), provider, Key.get(beforeType));
+        Provider<? extends T> provider = createTypeProvider(interfaceType);
+        findOrCreateListProvider().insertBefore(Key.get(interfaceType), provider, Key.get(beforeType));
         return this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public ListBuilder<T> add(T value) {
-        Key<? extends T> key = Key.get((Class<? extends T>)value.getClass(),
+        Key<? extends T> key = Key.get((Class<? extends T>) value.getClass(),
                 String.valueOf(incrementer.getAndIncrement()));
-        getListProvider().add(key, createProvider(value));
+        findOrCreateListProvider().add(key, createInstanceProvider(value));
         return this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public ListBuilder<T> addAfter(T value, Class<? extends T> afterType) {
-        Key<? extends T> key = Key.get((Class<? extends T>)value.getClass(),
+        Key<? extends T> key = Key.get((Class<? extends T>) value.getClass(),
                 String.valueOf(incrementer.getAndIncrement()));
-        getListProvider().addAfter(key, createProvider(value), Key.get(afterType));
+        findOrCreateListProvider().addAfter(key, createInstanceProvider(value), Key.get(afterType));
         return this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public ListBuilder<T> insertBefore(T value, Class<? extends T> beforeType) {
-        Key<? extends T> key = Key.get((Class<? extends T>)value.getClass(),
+        Key<? extends T> key = Key.get((Class<? extends T>) value.getClass(),
                 String.valueOf(incrementer.getAndIncrement()));
-        getListProvider().insertBefore(key, createProvider(value), Key.get(beforeType));
+        findOrCreateListProvider().insertBefore(key, createInstanceProvider(value), Key.get(beforeType));
         return this;
     }
 
     @Override
     public ListBuilder<T> addAll(Collection<T> values) {
-        getListProvider().addAll(createProviderMap(values));
+        findOrCreateListProvider().addAll(createProviderMap(values));
         return this;
     }
 
     @Override
     public ListBuilder<T> addAllAfter(Collection<T> values, Class<? extends T> afterType) {
-        getListProvider().addAllAfter(createProviderMap(values), Key.get(afterType));
+        findOrCreateListProvider().addAllAfter(createProviderMap(values), Key.get(afterType));
         return this;
     }
 
     @Override
     public ListBuilder<T> insertAllBefore(Collection<T> values, Class<? extends T> beforeType) {
-        getListProvider().insertAllBefore(createProviderMap(values), Key.get(beforeType));
+        findOrCreateListProvider().insertAllBefore(createProviderMap(values), Key.get(beforeType));
         return this;
-    }
-
-    private <K extends T> Provider<K> getProvider(final Class<K> interfaceType)
-            throws DIRuntimeException {
-
-        // Create deferred provider to prevent caching the intermediate provider from the Injector.
-        // The actual provider may get overridden after list builder is created.
-
-        return new Provider<K>() {
-
-            @Override
-            public K get() throws DIRuntimeException {
-                Key<K> key = Key.get(interfaceType);
-                Binding<K> binding = injector.getBinding(key);
-                Provider<K> resolved = binding == null ? bind(interfaceType) : binding.getScoped();
-                return resolved.get();
-            }
-        };
-    }
-
-    @SuppressWarnings("unchecked")
-    private Provider<T> createProvider(T value) {
-        Provider<T> provider0 = new InstanceProvider<>(value);
-        return new FieldInjectingProvider<>(provider0, injector);
     }
 
     private Map<Key<? extends T>, Provider<? extends T>> createProviderMap(Collection<T> objects) {
         Map<Key<? extends T>, Provider<? extends T>> keyProviderMap = new LinkedHashMap<>();
         for (T object : objects) {
-            Provider<T> provider0 = new InstanceProvider<>(object);
-            Provider<T> provider1 = new FieldInjectingProvider<>(provider0, injector);
-
             @SuppressWarnings("unchecked")
-            Class<? extends T> objectType = (Class<? extends T>)object.getClass();
-            keyProviderMap.put(Key.get(objectType, String.valueOf(incrementer.getAndIncrement())), provider1);
+            Class<? extends T> objectType = (Class<? extends T>) object.getClass();
+            keyProviderMap.put(
+                    Key.get(objectType, String.valueOf(incrementer.getAndIncrement())),
+                    createInstanceProvider(object));
         }
 
         return keyProviderMap;
     }
 
-    private <K extends T> Provider<K> bind(Class<K> interfaceType) {
-        Key<K> key = Key.get(interfaceType);
-
-        Provider<K> provider0 = new ConstructorInjectingProvider<>(interfaceType, injector);
-        Provider<K> provider1 = new FieldInjectingProvider<>(provider0, injector);
-        injector.putBinding(key, provider1);
-
-        return injector.getProvider(key);
-    }
-
-    private ListProvider<T> getListProvider() {
+    private ListProvider<T> findOrCreateListProvider() {
 
         ListProvider<T> provider;
 
@@ -178,10 +138,5 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
         }
 
         return provider;
-    }
-
-    @Override
-    public void in(Scope scope) {
-        injector.changeBindingScope(bindingKey, scope);
     }
 }
