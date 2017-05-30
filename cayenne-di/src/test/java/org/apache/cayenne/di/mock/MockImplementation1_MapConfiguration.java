@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.di.mock;
 
+import org.apache.cayenne.di.Inject;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.cayenne.di.Inject;
 
 public class MockImplementation1_MapConfiguration implements MockInterface1 {
 
@@ -38,7 +38,7 @@ public class MockImplementation1_MapConfiguration implements MockInterface1 {
 
         StringBuilder buffer = new StringBuilder();
 
-        List<String> keys = new ArrayList<String>(configuration.keySet());
+        List<String> keys = new ArrayList<>(configuration.keySet());
         Collections.sort(keys);
 
         for (String key : keys) {

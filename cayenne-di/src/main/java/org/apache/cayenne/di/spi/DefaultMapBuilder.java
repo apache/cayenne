@@ -44,27 +44,21 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
     public MapBuilder<T> put(String key, Class<? extends T> interfaceType)
             throws DIRuntimeException {
 
-        Key<? extends T> bindingKey = Key.get(interfaceType);
-        Binding<? extends T> binding = injector.getBinding(bindingKey);
-
-        if (binding == null) {
-            return putWithBinding(key, interfaceType);
-        }
-
+        Provider<? extends T> provider = getProvider(interfaceType);
         // TODO: andrus 11/15/2009 - report overriding the key??
-        getMapProvider().put(key, binding.getScoped());
+        getMapProvider().put(key, provider);
         return this;
     }
 
-    <K extends T> MapBuilder<T> putWithBinding(String key, Class<K> interfaceType) {
-        Key<K> bindingKey = Key.get(interfaceType);
+    <K extends T> Provider<K> bind(Class<K> interfaceType) {
+
+        Key<K> key = Key.get(interfaceType);
 
         Provider<K> provider0 = new ConstructorInjectingProvider<>(interfaceType, injector);
         Provider<K> provider1 = new FieldInjectingProvider<>(provider0, injector);
-        injector.putBinding(bindingKey, provider1);
+        injector.putBinding(key, provider1);
 
-        getMapProvider().put(key, injector.getProvider(bindingKey));
-        return this;
+        return injector.getProvider(key);
     }
 
     @Override
@@ -110,5 +104,23 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
     @Override
     public void in(Scope scope) {
         injector.changeBindingScope(bindingKey, scope);
+    }
+
+    private <K extends T> Provider<K> getProvider(final Class<K> interfaceType)
+            throws DIRuntimeException {
+
+        // Create deferred provider to prevent caching the intermediate provider from the Injector.
+        // The actual provider may get overridden after list builder is created.
+
+        return new Provider<K>() {
+
+            @Override
+            public K get() throws DIRuntimeException {
+                Key<K> key = Key.get(interfaceType);
+                Binding<K> binding = injector.getBinding(key);
+                Provider<K> resolved = binding == null ? bind(interfaceType) : binding.getScoped();
+                return resolved.get();
+            }
+        };
     }
 }

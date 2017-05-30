@@ -117,15 +117,22 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
         return this;
     }
 
-    private Provider<? extends T> getProvider(Class<? extends T> interfaceType)
+    private <K extends T> Provider<K> getProvider(final Class<K> interfaceType)
             throws DIRuntimeException {
 
-        Key<? extends T> key = Key.get(interfaceType);
-        Binding<? extends T> binding = injector.getBinding(key);
-        if (binding == null) {
-            return addWithBinding(interfaceType);
-        }
-        return binding.getScoped();
+        // Create deferred provider to prevent caching the intermediate provider from the Injector.
+        // The actual provider may get overridden after list builder is created.
+
+        return new Provider<K>() {
+
+            @Override
+            public K get() throws DIRuntimeException {
+                Key<K> key = Key.get(interfaceType);
+                Binding<K> binding = injector.getBinding(key);
+                Provider<K> resolved = binding == null ? bind(interfaceType) : binding.getScoped();
+                return resolved.get();
+            }
+        };
     }
 
     @SuppressWarnings("unchecked")
@@ -148,7 +155,7 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
         return keyProviderMap;
     }
 
-    private <K extends T> Provider<? extends T> addWithBinding(Class<K> interfaceType) {
+    private <K extends T> Provider<K> bind(Class<K> interfaceType) {
         Key<K> key = Key.get(interfaceType);
 
         Provider<K> provider0 = new ConstructorInjectingProvider<>(interfaceType, injector);

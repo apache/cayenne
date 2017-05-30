@@ -61,6 +61,7 @@ CAY-2279 cdbimport: skip PK comparison for VIEWs
 CAY-2281 ObjEntity attribute overrides are never deleted
 CAY-2284 Expression likeIgnoreCase can't handle unicode chars in in-memory evaluation
 CAY-2286 Filter out inherited ObjEntities from sync with DbEntity
+CAY-2326 DI: can't override List/Map elements from another Module
 
 ----------------------------------
 Release: 4.0.M5
