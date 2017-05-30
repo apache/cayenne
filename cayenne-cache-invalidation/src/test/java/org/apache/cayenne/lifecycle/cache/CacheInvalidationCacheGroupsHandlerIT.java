@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.lifecycle.cache;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
@@ -32,6 +30,8 @@ import org.apache.cayenne.lifecycle.unit.CacheInvalidationCase;
 import org.apache.cayenne.query.ObjectSelect;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 
@@ -51,7 +51,7 @@ public class CacheInvalidationCacheGroupsHandlerIT extends CacheInvalidationCase
 
     @Override
     protected Module buildInvalidationModule() {
-        return CacheInvalidationModuleExtender.builder().build();
+        return CacheInvalidationModule.extend().module();
     }
 
     @Override

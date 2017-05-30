@@ -60,7 +60,7 @@ public class CacheInvalidationModuleExtender {
         return this;
     }
 
-    public Module build() {
+    public Module module() {
         return new Module() {
             @Override
             public void configure(Binder binder) {

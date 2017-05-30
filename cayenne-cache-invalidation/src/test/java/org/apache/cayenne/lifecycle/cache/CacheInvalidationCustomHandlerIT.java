@@ -19,17 +19,16 @@
 
 package org.apache.cayenne.lifecycle.cache;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.lifecycle.db.E1;
 import org.apache.cayenne.lifecycle.unit.CacheInvalidationCase;
 import org.apache.cayenne.query.ObjectSelect;
-
 import org.junit.Test;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 
@@ -40,10 +39,10 @@ public class CacheInvalidationCustomHandlerIT extends CacheInvalidationCase {
 
     @Override
     protected Module buildInvalidationModule() {
-        return CacheInvalidationModuleExtender.builder()
+        return CacheInvalidationModule.extend()
                 .noCacheGroupsHandler()
-                .invalidationHandler(G1InvalidationHandler.class)
-                .build();
+                .addInvalidationHandler(G1InvalidationHandler.class)
+                .module();
     }
 
     @Test
