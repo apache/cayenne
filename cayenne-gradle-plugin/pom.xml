@@ -67,6 +67,23 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.9</version>
+                <executions>
+                    <execution>
+                        <id>build-classpath</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>build-classpath</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>build/classpath.txt</outputFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- GRADLE TASKS EXECUTOR -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -81,7 +98,6 @@
                             <arguments>
                                 <argument>clean</argument>
                                 <argument>${gradle.task}</argument>
-                                <argument>-PprojectVersion=${project.version}</argument>
                             </arguments>
                         </configuration>
                         <goals>
@@ -123,12 +139,23 @@
             <artifactId>cayenne-cgen</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.cayenne.build-tools</groupId>
+            <artifactId>cayenne-test-utilities</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 
