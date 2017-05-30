@@ -31,13 +31,19 @@ import java.lang.annotation.Target;
  * annotation allows to group changes in a closely related subtree of objects. Either
  * {@link #value()} or {@link #objectIdRelationship()} must be set to a non-empty String,
  * so that a processor of AuditableChild could find the parent of the annotated object.
- * 
+ *
+ * @{@link org.apache.cayenne.commitlog.CommitLog} annotation.
  * @since 3.1
+ * @deprecated since 4.0. A preferred way to implement Audit functionality is via cayenne-commitlog module and
+ * {@link org.apache.cayenne.commitlog.CommitLog} annotation. Unfortunately cayenne-commitlog does not provide
+ * functionality to group changes for parent and child entities into a single event. So AuditableChild functionality
+ * will have to be manually reimplemented in a custom {@link org.apache.cayenne.commitlog.CommitLogListener}.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+@Deprecated
 public @interface AuditableChild {
 
     /**

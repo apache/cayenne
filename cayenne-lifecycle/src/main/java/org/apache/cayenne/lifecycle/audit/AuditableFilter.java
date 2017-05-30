@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.audit;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.DataChannelFilterChain;
@@ -37,6 +34,9 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 /**
  * A {@link DataChannelFilter} that enables audit of entities annotated with
  * {@link Auditable} and {@link AuditableChild}. Note that this filter relies on
@@ -44,7 +44,7 @@ import org.apache.cayenne.query.Query;
  * analyze ignored properties.
  * 
  * @since 3.1
- * @deprecated since 4.0, use {@link org.apache.cayenne.lifecycle.postcommit.PostCommitFilter}
+ * @deprecated since 4.0, use {@link org.apache.cayenne.commitlog.CommitLogFilter}.
  */
 @Deprecated
 public class AuditableFilter implements DataChannelFilter {

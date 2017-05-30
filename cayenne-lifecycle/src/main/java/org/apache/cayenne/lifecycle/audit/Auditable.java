@@ -27,18 +27,21 @@ import java.lang.annotation.Target;
 
 /**
  * An annotation that adds auditing behavior to DataObjects.
- * 
+ *
  * @since 3.1
+ * @deprecated since 4.0. A preferred way to implement Audit functionality is via cayenne-commitlog module and
+ * {@link org.apache.cayenne.commitlog.CommitLog} annotation.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+@Deprecated
 public @interface Auditable {
 
-	/**
-	 * Returns an array of entity properties that should be excluded from audit.
-	 */
-	String[] ignoredProperties() default {};
+    /**
+     * Returns an array of entity properties that should be excluded from audit.
+     */
+    String[] ignoredProperties() default {};
 
 }
