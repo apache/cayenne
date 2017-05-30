@@ -35,19 +35,17 @@ public class CacheInvalidationModuleExtender {
 
     private Collection<InvalidationHandler> handlerInstances;
 
-    private boolean noCacheGroupsHandler;
-
     CacheInvalidationModuleExtender() {
         this.handlerTypes = new HashSet<>();
         this.handlerInstances = new HashSet<>();
     }
 
     /**
-     * Disable {@link CacheGroupsHandler} based on {@link CacheGroups} annotation.
+     * Adds {@link CacheGroupsHandler} that will setup invalidation based on {@link CacheGroups} and {@link CacheGroup}
+     * annotations.
      */
-    public CacheInvalidationModuleExtender noCacheGroupsHandler() {
-        noCacheGroupsHandler = true;
-        return this;
+    public CacheInvalidationModuleExtender addCacheGroupsHandler() {
+        return addInvalidationHandler(CacheGroupsHandler.class);
     }
 
     public CacheInvalidationModuleExtender addInvalidationHandler(Class<? extends InvalidationHandler> handlerType) {
@@ -66,12 +64,9 @@ public class CacheInvalidationModuleExtender {
             public void configure(Binder binder) {
                 ListBuilder<InvalidationHandler> handlers = CacheInvalidationModule.contributeInvalidationHandler(binder);
 
-                if(!noCacheGroupsHandler) {
-                    handlers.add(CacheGroupsHandler.class);
-                }
                 handlers.addAll(handlerInstances);
 
-                for(Class<? extends InvalidationHandler> handlerType : handlerTypes) {
+                for (Class<? extends InvalidationHandler> handlerType : handlerTypes) {
                     handlers.add(handlerType);
                 }
             }

@@ -51,7 +51,8 @@ public class CacheInvalidationCacheGroupsHandlerIT extends CacheInvalidationCase
 
     @Override
     protected Module buildInvalidationModule() {
-        return CacheInvalidationModule.extend().module();
+        return CacheInvalidationModule.extend()
+                .module();
     }
 
     @Override
