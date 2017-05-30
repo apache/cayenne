@@ -17,13 +17,13 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.lifecycle.cache;
+package org.apache.cayenne.cache.invalidation;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.cayenne.lifecycle.db.E1;
-import org.apache.cayenne.lifecycle.db.E2;
+import org.apache.cayenne.cache.invalidation.db.E1;
+import org.apache.cayenne.cache.invalidation.db.E2;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

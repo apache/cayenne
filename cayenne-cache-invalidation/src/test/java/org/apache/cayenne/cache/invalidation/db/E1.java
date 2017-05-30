@@ -16,20 +16,14 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.cache.invalidation.db;
 
-package org.apache.cayenne.lifecycle.cache;
+import org.apache.cayenne.cache.invalidation.CacheGroups;
+import org.apache.cayenne.cache.invalidation.db.auto._E1;
 
-import org.apache.cayenne.Persistent;
+@CacheGroups({"g1", "g2"})
+public class E1 extends _E1 {
 
-/**
- * A pluggable handler to invalidate cache groups on changes in certain objects.
- * @since 4.0
- */
-public interface InvalidationHandler {
-
-    /**
-     * @return invalidation function or null if there is nothing to invalidate
-     */
-    InvalidationFunction canHandle(Class<? extends Persistent> type);
+    private static final long serialVersionUID = 1L; 
 
 }

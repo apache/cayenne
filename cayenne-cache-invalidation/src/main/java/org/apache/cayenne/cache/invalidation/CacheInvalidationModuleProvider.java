@@ -17,44 +17,34 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.lifecycle.cache;
+package org.apache.cayenne.cache.invalidation;
+
+import java.util.Collection;
+import java.util.Collections;
+
+import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.di.Module;
 
 /**
- * Immutable object describing cache group.
- * Used as a result in {@link InvalidationFunction}.
- *
- * @see CacheGroupDescriptor#CacheGroupDescriptor(String)
- * @see CacheGroupDescriptor#CacheGroupDescriptor(String, Class, Class)
- *
  * @since 4.0
  */
-public class CacheGroupDescriptor {
+public class CacheInvalidationModuleProvider implements CayenneServerModuleProvider {
 
-    private final String cacheGroupName;
-
-    private final Class<?> keyType;
-
-    private final Class<?> valueType;
-
-    public CacheGroupDescriptor(String cacheGroupName) {
-        this(cacheGroupName, Void.class, Void.class);
+    @Override
+    public Module module() {
+        return new CacheInvalidationModule();
     }
 
-    public CacheGroupDescriptor(String cacheGroupName, Class<?> keyType, Class<?> valueType) {
-        this.cacheGroupName = cacheGroupName;
-        this.keyType = keyType;
-        this.valueType = valueType;
+    @Override
+    public Class<? extends Module> moduleType() {
+        return CacheInvalidationModule.class;
     }
 
-    public String getCacheGroupName() {
-        return cacheGroupName;
-    }
-
-    public Class<?> getKeyType() {
-        return keyType;
-    }
-
-    public Class<?> getValueType() {
-        return valueType;
+    @SuppressWarnings("unchecked")
+    @Override
+    public Collection<Class<? extends Module>> overrides() {
+        Collection modules = Collections.singletonList(ServerModule.class);
+        return modules;
     }
 }

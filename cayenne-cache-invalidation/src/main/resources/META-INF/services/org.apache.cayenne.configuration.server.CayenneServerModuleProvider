@@ -17,4 +17,4 @@
 #  under the License.
 ##################################################################
 
-org.apache.cayenne.lifecycle.cache.CacheInvalidationServerModuleProvider
+org.apache.cayenne.cache.invalidation.CacheInvalidationModuleProvider

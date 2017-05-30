@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.lifecycle.cache;
+package org.apache.cayenne.cache.invalidation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

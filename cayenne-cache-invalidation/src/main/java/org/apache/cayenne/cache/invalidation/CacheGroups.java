@@ -16,17 +16,41 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.cache.invalidation;
 
-package org.apache.cayenne.lifecycle.cache;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
-import org.apache.cayenne.unit.util.ModuleProviderChecker;
-import org.junit.Test;
+/**
+ * <p>
+ * A built-in annotation that provides declarative cache management for persistent
+ * objects.
+ * </p>
+ *
+ * @see InvalidationHandler
+ * @see CacheGroup
+ *
+ * @since 3.1
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+public @interface CacheGroups {
 
-public class CayenneCacheInvalidationModuleProviderTest {
+    /**
+     * Defines one or more cache group names associated with the tagged entity.
+     */
+    String[] value() default {};
 
-    @Test
-    public void testAutoLoadable() {
-        ModuleProviderChecker.testProviderPresent(CacheInvalidationServerModuleProvider.class, CayenneServerModuleProvider.class);
-    }
+    /**
+     * Defines one or more typed cache groups associated with the tagged entity.
+     *
+     * @since 4.0
+     */
+    CacheGroup[] groups() default {};
 }

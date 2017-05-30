@@ -17,13 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.lifecycle.cache;
+package org.apache.cayenne.cache.invalidation;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.lifecycle.db.E1;
-import org.apache.cayenne.lifecycle.unit.CacheInvalidationCase;
+import org.apache.cayenne.cache.invalidation.db.E1;
 import org.apache.cayenne.query.ObjectSelect;
 import org.junit.Test;
 

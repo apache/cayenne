@@ -16,41 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.cache;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.apache.cayenne.cache.invalidation;
+
+import org.apache.cayenne.Persistent;
 
 /**
- * <p>
- * A built-in annotation that provides declarative cache management for persistent
- * objects.
- * </p>
- *
- * @see InvalidationHandler
- * @see CacheGroup
- *
- * @since 3.1
+ * A pluggable handler to invalidate cache groups on changes in certain objects.
+ * @since 4.0
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Inherited
-public @interface CacheGroups {
+public interface InvalidationHandler {
 
     /**
-     * Defines one or more cache group names associated with the tagged entity.
+     * @return invalidation function or null if there is nothing to invalidate
      */
-    String[] value() default {};
+    InvalidationFunction canHandle(Class<? extends Persistent> type);
 
-    /**
-     * Defines one or more typed cache groups associated with the tagged entity.
-     *
-     * @since 4.0
-     */
-    CacheGroup[] groups() default {};
 }

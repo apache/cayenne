@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.lifecycle.cache;
+package org.apache.cayenne.cache.invalidation;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Binder;

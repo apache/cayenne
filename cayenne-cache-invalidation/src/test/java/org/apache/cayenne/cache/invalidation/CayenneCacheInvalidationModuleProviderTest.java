@@ -17,20 +17,16 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.lifecycle.cache;
+package org.apache.cayenne.cache.invalidation;
 
-import java.util.Collection;
+import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.unit.util.ModuleProviderChecker;
+import org.junit.Test;
 
-import org.apache.cayenne.Persistent;
+public class CayenneCacheInvalidationModuleProviderTest {
 
-/**
- * @since 4.0
- */
-public interface InvalidationFunction {
-
-    /**
-     * @return collection of cache groups to invalidate for given object
-     */
-    Collection<CacheGroupDescriptor> apply(Persistent persistent);
-
+    @Test
+    public void testAutoLoadable() {
+        ModuleProviderChecker.testProviderPresent(CacheInvalidationModuleProvider.class, CayenneServerModuleProvider.class);
+    }
 }

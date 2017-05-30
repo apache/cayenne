@@ -16,24 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.lifecycle.db;
 
-import org.apache.cayenne.lifecycle.cache.CacheGroup;
-import org.apache.cayenne.lifecycle.cache.CacheGroups;
-import org.apache.cayenne.lifecycle.db.auto._E2;
+package org.apache.cayenne.cache.invalidation;
 
+import org.apache.cayenne.Persistent;
 
-@CacheGroups(
-        value = {"g1", "g2"},
-        groups = {
-            @CacheGroup("g3"),
-            @CacheGroup(value = "g4", keyType = String.class, valueType = Object.class),
-            @CacheGroup(value = "g5", keyType = Integer.class, valueType = Object.class),
-        }
-)
-@CacheGroup("g6")
-public class E2 extends _E2 {
+import java.util.Collection;
 
-    private static final long serialVersionUID = 1L; 
+/**
+ * @since 4.0
+ */
+public interface InvalidationFunction {
+
+    /**
+     * @return collection of cache groups to invalidate for given object
+     */
+    Collection<CacheGroupDescriptor> apply(Persistent persistent);
 
 }
