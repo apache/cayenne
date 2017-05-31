@@ -46,7 +46,7 @@ def getProjectVersion() {
 
 def classpathFile = file('build/classpath.txt')
 if (classpathFile.file) {
-    String[] paths = classpathFile.text.split(':')
+    String[] paths = classpathFile.text.split(';')
     dependencies {
         add 'compile', files(paths)
     }

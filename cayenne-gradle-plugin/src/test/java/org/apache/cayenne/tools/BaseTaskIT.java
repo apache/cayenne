@@ -50,7 +50,7 @@ public class BaseTaskIT {
         projectDir = tempFolder.newFolder();
     }
 
-    protected GradleRunner createRunner(String projectName, String... args) throws IOException {
+    protected GradleRunner createRunner(String projectName, String... args) throws Exception {
         prepareBuildScript(projectName);
 
         List<String> gradleArguments = new ArrayList<>();
@@ -63,9 +63,8 @@ public class BaseTaskIT {
                 .withArguments(gradleArguments);
     }
 
-    private void prepareBuildScript(String name) throws IOException {
-        String projectFileSrc = URLDecoder.decode(getClass().getResource(name + ".gradle").getFile(), "UTF-8");
-        Path src = FileSystems.getDefault().getPath(projectFileSrc);
+    private void prepareBuildScript(String name) throws Exception {
+        Path src = new File(getClass().getResource(name + ".gradle").toURI()).toPath();
         Path dst = FileSystems.getDefault().getPath(projectDir.getAbsolutePath(), "build.gradle");
         Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING);
     }

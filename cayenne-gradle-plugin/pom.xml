@@ -48,7 +48,7 @@
                 </os>
             </activation>
             <properties>
-                <gradle.executable>./gradlew.bat</gradle.executable>
+                <gradle.executable>gradlew.bat</gradle.executable>
             </properties>
         </profile>
         <profile>
@@ -80,6 +80,7 @@
                         </goals>
                         <configuration>
                             <outputFile>build/classpath.txt</outputFile>
+                            <pathSeparator>;</pathSeparator>
                         </configuration>
                     </execution>
                 </executions>

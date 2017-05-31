@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
 public class DbImportIT extends BaseTaskIT {
 
     @Test
-    public void notConfiguredTaskFailure() throws IOException {
+    public void notConfiguredTaskFailure() throws Exception {
         GradleRunner runner = createRunner("dbimport_failure", "cdbimport", "--info");
 
         BuildResult result = runner.buildAndFail();
@@ -55,7 +55,7 @@ public class DbImportIT extends BaseTaskIT {
     }
 
     @Test
-    public void emptyDbTaskSuccess() throws IOException {
+    public void emptyDbTaskSuccess() throws Exception {
         GradleRunner runner = createRunner("dbimport_empty_db", "cdbimport", "--info");
 
         BuildResult result = runner.build();

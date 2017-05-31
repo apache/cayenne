@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 public class DbGenerateTaskIT extends BaseTaskIT {
 
     @Test
-    public void notConfiguredTaskFailure() throws IOException {
+    public void notConfiguredTaskFailure() throws Exception {
         GradleRunner runner = createRunner("cdbgen_failure", "cdbgen", "--info");
 
         BuildResult result = runner.buildAndFail();
@@ -80,7 +80,7 @@ public class DbGenerateTaskIT extends BaseTaskIT {
     }
 
     @Test
-    public void customConfigTaskSuccess() throws IOException {
+    public void customConfigTaskSuccess() throws Exception {
         GradleRunner runner = createRunner(
                 "cdbgen_custom",
                 "customCdbgen",
