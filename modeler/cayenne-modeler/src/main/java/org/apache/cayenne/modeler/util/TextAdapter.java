@@ -29,6 +29,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
@@ -90,7 +91,12 @@ public abstract class TextAdapter {
             textComponent.setInputVerifier(new InputVerifier() {
 
                 public boolean verify(JComponent c) {
-                    updateModel();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateModel();
+                        }
+                    });
                     // release focus after coloring the field...
                     return true;
                 }
