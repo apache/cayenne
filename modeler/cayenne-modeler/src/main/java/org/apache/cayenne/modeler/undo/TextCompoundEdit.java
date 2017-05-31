@@ -76,9 +76,10 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
         treePath = editorView.getProjectTreeView().getSelectionPath();
 
-        DefaultMutableTreeNode newPath = (DefaultMutableTreeNode) treePath.getLastPathComponent();
-
-        targetObject = newPath.getUserObject();
+        if(treePath != null) {
+            DefaultMutableTreeNode newPath = (DefaultMutableTreeNode) treePath.getLastPathComponent();
+            targetObject = newPath.getUserObject();
+        }
 
         if (targetObject instanceof ObjEntity) {
             tabbedPane = editorView.getObjDetailView();
