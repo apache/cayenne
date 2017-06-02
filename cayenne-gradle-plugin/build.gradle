@@ -68,4 +68,11 @@ task versionFile {
     }
 }
 
+// Copy license and notice files
+task licenseFiles(type: Copy) {
+    from '../build-tools/cayenne-legal/src/main/resources/'
+    into "$buildDir/resources/main/"
+}
+
+processResources.dependsOn licenseFiles
 processResources.dependsOn versionFile
