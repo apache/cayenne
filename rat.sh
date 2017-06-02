@@ -42,6 +42,9 @@ fi
 echo "Deleting 'target' dirs..." 1>&2
 ( find $DIR -type d -name target | xargs rm -rf )
 
+echo "Deleting 'build' dirs..." 1>&2
+( find $DIR -type d -name build | xargs rm -rf )
+
 echo "Running rat, this may take a while..." 1>&2
 
 # TODO: read excludes from buildbot config at 'build-tools/rat-excludes'
