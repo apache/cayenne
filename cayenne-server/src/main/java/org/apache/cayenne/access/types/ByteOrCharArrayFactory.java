@@ -119,7 +119,7 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             }
 
             StringBuilder buffer = new StringBuilder();
-            buffer.append("< ");
+            buffer.append("<");
 
             int len = Array.getLength(value);
             boolean trimming = false;
@@ -129,9 +129,6 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             }
 
             for (int i = 0; i < len; i++) {
-                if (i > 0) {
-                    buffer.append(",");
-                }
                 buffer.append(Array.get(value, i));
             }
 
@@ -190,7 +187,7 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             }
 
             StringBuilder buffer = new StringBuilder();
-            buffer.append("< ");
+            buffer.append("<");
 
             int len = Array.getLength(value);
             boolean trimming = false;
@@ -200,9 +197,6 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             }
 
             for (int i = 0; i < len; i++) {
-                if (i > 0) {
-                    buffer.append(",");
-                }
                 buffer.append(Array.get(value, i));
             }
 
@@ -261,7 +255,7 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             }
 
             StringBuilder buffer = new StringBuilder();
-            buffer.append("< ");
+            buffer.append("<");
 
             int len = value.length;
             boolean trimming = false;
@@ -271,9 +265,6 @@ class ByteOrCharArrayFactory implements ExtendedTypeFactory {
             }
 
             for (int i = 0; i < len; i++) {
-                if (i > 0) {
-                    buffer.append(",");
-                }
                 IDUtil.appendFormattedByte(buffer, value[i]);
             }
 

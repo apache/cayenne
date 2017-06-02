@@ -45,7 +45,7 @@ public class ByteArrayType implements ExtendedType<byte[]> {
 	protected boolean usingBlobs;
 
     public static void logBytes(StringBuilder buffer, byte[] bytes) {
-        buffer.append("< ");
+        buffer.append("<");
 
         int len = bytes.length;
         boolean trimming = false;
@@ -55,9 +55,6 @@ public class ByteArrayType implements ExtendedType<byte[]> {
         }
 
         for (int i = 0; i < len; i++) {
-            if (i > 0) {
-                buffer.append(",");
-            }
             IDUtil.appendFormattedByte(buffer, bytes[i]);
         }
 
