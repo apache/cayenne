@@ -49,6 +49,7 @@ public class WinPlatformInitializer implements PlatformInitializer {
     private void overrideUIDefaults() {
         Color darkGrey = new Color(225, 225, 225);
 
+        UIManager.put("TextFieldUI",            WinCustomTextFieldUI.class.getName());
         UIManager.put("Tree.expandedIcon",      ModelerUtil.buildIcon("icon-arrow-open.png"));
         UIManager.put("Tree.collapsedIcon",     ModelerUtil.buildIcon("icon-arrow-closed.png"));
         UIManager.put("Tree.paintLines",        Boolean.FALSE);
