@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -69,12 +68,11 @@ public class DbRelationshipMerger extends AbstractMerger<DbEntity, DbRelationshi
         DbEntity originalDbEntity = getOriginalSourceDbEntity(imported);
         DbEntity targetEntity = getOriginalTargetDbEntity(imported);
 
-        if (targetEntity == null) {
-            return null;
+        if (targetEntity != null) {
+            imported.setTargetEntityName(targetEntity);
         }
 
         imported.setSourceEntity(originalDbEntity);
-        imported.setTargetEntityName(targetEntity);
 
         // manipulate the joins to match the DbAttributes in the model
         for (DbJoin join : imported.getJoins()) {
@@ -121,6 +119,10 @@ public class DbRelationshipMerger extends AbstractMerger<DbEntity, DbRelationshi
      * by name
      */
     private DbAttribute findDbAttribute(DbEntity entity, String caseInsensitiveName) {
+        if (entity == null) {
+            return null;
+        }
+
         for (DbAttribute a : entity.getAttributes()) {
             if (a.getName().equalsIgnoreCase(caseInsensitiveName)) {
                 return a;
