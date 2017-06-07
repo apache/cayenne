@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.win;
 
 import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.basic.BasicTextFieldUI;
 
 import com.jgoodies.looks.windows.WindowsTextFieldUI;
 import org.apache.cayenne.modeler.util.combo.EditorTextField;
@@ -28,7 +29,7 @@ import org.apache.cayenne.modeler.util.combo.EditorTextField;
 /**
  * @since 4.0
  */
-public class WinCustomTextFieldUI extends com.sun.java.swing.plaf.windows.WindowsTextFieldUI {
+public class WinCustomTextFieldUI extends BasicTextFieldUI {
 
     public WinCustomTextFieldUI() {
     }
