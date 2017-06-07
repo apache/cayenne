@@ -17,9 +17,9 @@
 	xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="false"
 	monitoring="off" dynamicConfig="false">
 
-	<defaultCache eternal="false" overflowToDisk="false" timeToIdleSeconds="453" timeToLiveSeconds="453" />
+	<defaultCache eternal="false" overflowToDisk="false" timeToIdleSeconds="453" timeToLiveSeconds="453" maxElementsInMemory="10"/>
 
-	<cache name="cg1" timeToLiveSeconds="201" />
-	<cache name="cg2" timeToLiveSeconds="319" />
+	<cache name="cg1" timeToLiveSeconds="201" maxElementsInMemory="10"/>
+	<cache name="cg2" timeToLiveSeconds="319" maxElementsInMemory="10"/>
 
 </ehcache>

@@ -21,7 +21,7 @@
     <name>cayenne-protostuff: Cayenne Protostuff Extension</name>
 
     <properties>
-        <protostuff.version>1.4.3</protostuff.version>
+        <protostuff.version>1.5.5</protostuff.version>
     </properties>
 
     <dependencyManagement>

@@ -121,7 +121,7 @@ public class BatchActionLockingIT extends ServerCase {
 		Collection<String> nullAttributeNames = Collections.singleton("NAME");
 
 		Map<String, Object> qualifierSnapshot = new HashMap<>();
-		qualifierSnapshot.put("LOCKING_TEST_ID", new Integer(1));
+		qualifierSnapshot.put("LOCKING_TEST_ID", 1);
 
 		DeleteBatchQuery batchQuery = new DeleteBatchQuery(dbEntity, qualifierAttributes, nullAttributeNames, 5);
 		batchQuery.setUsingOptimisticLocking(true);

@@ -33,7 +33,7 @@
 			<dependency>
 				<groupId>joda-time</groupId>
 				<artifactId>joda-time</artifactId>
-				<version>2.7</version>
+				<version>2.9.9</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -73,8 +73,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>mockrunner</groupId>
-			<artifactId>mockrunner</artifactId>
+			<groupId>com.mockrunner</groupId>
+			<artifactId>mockrunner-jdbc</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

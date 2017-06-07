@@ -94,15 +94,10 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class DataDomainProviderTest {
 
@@ -144,7 +139,7 @@ public class DataDomainProviderTest {
 		};
 
 		final EventManager eventManager = new MockEventManager();
-		final TestListener mockListener = mock(TestListener.class);
+		final TestListener mockListener = new TestListener();
 
 		Module testModule = new Module() {
 
@@ -266,12 +261,17 @@ public class DataDomainProviderTest {
 		when(mockObjectId.getEntityName()).thenReturn("mock-entity-name");
 		when(mockPersistent.getObjectId()).thenReturn(mockObjectId);
 		domain.getEntityResolver().getCallbackRegistry().performCallbacks(LifecycleEvent.POST_LOAD, mockPersistent);
-		verify(mockListener).postLoadCallback(mockPersistent);
+
+		assertEquals("Should call postLoadCallback() method", 1, TestListener.counter.get());
 	}
 
 	static class TestListener {
+
+		static private AtomicInteger counter = new AtomicInteger();
+
 		@PostLoad
 		public void postLoadCallback(Object object) {
+			counter.incrementAndGet();
 		}
 	}
 }

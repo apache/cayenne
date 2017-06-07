@@ -46,7 +46,7 @@ public class SQLTemplateResourceManager
 
     protected Map<String, Template> templateCache;
 
-    public void initialize(RuntimeServices rs) throws Exception {
+    public void initialize(RuntimeServices rs) {
         super.rsvc = rs;
         this.templateCache = new LRUMap(100);
     }
@@ -59,7 +59,7 @@ public class SQLTemplateResourceManager
      * Returns a Velocity Resource which is a Template for the given SQL.
      */
     public Resource getResource(String resourceName, int resourceType, String encoding)
-        throws ResourceNotFoundException, ParseErrorException, Exception {
+        throws ResourceNotFoundException, ParseErrorException {
 
         synchronized (templateCache) {
             Template resource = templateCache.get(resourceName);

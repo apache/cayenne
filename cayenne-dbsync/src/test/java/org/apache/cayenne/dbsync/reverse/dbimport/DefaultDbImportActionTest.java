@@ -78,7 +78,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.stub;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -238,7 +237,7 @@ public class DefaultDbImportActionTest {
         doNothing().when(projectSaver).save(any(Project.class));
 
         MapLoader mapLoader = mock(MapLoader.class);
-        stub(mapLoader.loadDataMap(any(InputSource.class))).toReturn(new DataMapBuilder().with(
+        when(mapLoader.loadDataMap(any(InputSource.class))).thenReturn(new DataMapBuilder().with(
                 dbEntity("ARTGROUP").attributes(
                         dbAttr("NAME").typeVarchar(100).mandatory()
                 )).build());
@@ -288,14 +287,14 @@ public class DefaultDbImportActionTest {
         DbAdapter dbAdapter = mock(DbAdapter.class);
 
         DbAdapterFactory adapterFactory = mock(DbAdapterFactory.class);
-        when(adapterFactory.createAdapter(any(DataNodeDescriptor.class), any(DataSource.class))).thenReturn(dbAdapter);
+        when(adapterFactory.createAdapter((DataNodeDescriptor)any(), (DataSource)any())).thenReturn(dbAdapter);
 
         DataSourceFactory dataSourceFactory = mock(DataSourceFactory.class);
         DataSource mock = mock(DataSource.class);
-        when(dataSourceFactory.getDataSource(any(DataNodeDescriptor.class))).thenReturn(mock);
+        when(dataSourceFactory.getDataSource((DataNodeDescriptor)any())).thenReturn(mock);
 
         MergerTokenFactoryProvider mergerTokenFactoryProvider = mock(MergerTokenFactoryProvider.class);
-        when(mergerTokenFactoryProvider.get(any(DbAdapter.class))).thenReturn(new DefaultMergerTokenFactory());
+        when(mergerTokenFactoryProvider.get((DbAdapter)any())).thenReturn(new DefaultMergerTokenFactory());
 
         return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider) {
 

@@ -89,7 +89,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
+			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -109,8 +109,13 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>mockrunner</groupId>
-			<artifactId>mockrunner</artifactId>
+			<groupId>com.mockrunner</groupId>
+			<artifactId>mockrunner-jdbc</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mockrunner</groupId>
+			<artifactId>mockrunner-servlet</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -121,7 +126,6 @@
 		<dependency>
 			<groupId>xmlunit</groupId>
 			<artifactId>xmlunit</artifactId>
-			<version>1.5</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

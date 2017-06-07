@@ -27,7 +27,6 @@
 
     <properties>
         <main.class>org.apache.cayenne.tutorial.Http2Server</main.class>
-        <jetty.version>9.3.10.v20160621</jetty.version>
     </properties>
 
     <dependencies>

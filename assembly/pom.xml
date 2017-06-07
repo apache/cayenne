@@ -295,6 +295,7 @@
 										<descriptor>src/main/resources/assemblies/assembly-mac.xml</descriptor>
 									</descriptors>
 									<finalName>cayenne-${project.version}-macosx</finalName>
+									<attach>false</attach>
 								</configuration>
 							</execution>
 						</executions>
@@ -317,7 +318,7 @@
 									<executable>/bin/chmod</executable>
 									<arguments>
 										<argument>755</argument>
-										<argument>target/cayenne-${project.version}-macosx/CayenneModeler.app/Contents/MacOS/JavaAppLauncher</argument>
+										<argument>target/cayenne-${project.version}-macosx/cayenne-${project.version}-macosx/CayenneModeler.app/Contents/MacOS/JavaAppLauncher</argument>
 									</arguments>
 								</configuration>
 							</execution>
@@ -334,7 +335,7 @@
 									<arguments>
 										<argument>create</argument>
 										<argument>-srcfolder</argument>
-										<argument>target/cayenne-${project.version}-macosx</argument>
+										<argument>target/cayenne-${project.version}-macosx/cayenne-${project.version}-macosx</argument>
 										<argument>-format</argument>
 										<argument>UDZO</argument>
 										<argument>-volname</argument>

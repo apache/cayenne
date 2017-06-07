@@ -23,7 +23,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <jetty.version>9.3.10.v20160621</jetty.version>
+        <jetty.version>9.3.19.v20170502</jetty.version>
     </properties>
 
     <dependencyManagement>

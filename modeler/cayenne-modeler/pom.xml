@@ -93,8 +93,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>mockrunner</groupId>
-			<artifactId>mockrunner</artifactId>
+			<groupId>com.mockrunner</groupId>
+			<artifactId>mockrunner-jdbc</artifactId>
 		</dependency>
 
 		<dependency>
