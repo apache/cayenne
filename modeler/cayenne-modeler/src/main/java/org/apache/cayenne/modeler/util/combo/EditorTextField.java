@@ -114,8 +114,13 @@ public class EditorTextField extends JTextField implements FocusListener {
 
             Color oldColor = g.getColor();
             g.setColor(getBackground());
-            g.fillRect(insets.left, insets.top,
-                    getWidth() - insets.right - insets.left, getHeight() - insets.bottom - insets.top);
+
+            if(Boolean.TRUE.equals(getClientProperty("TextField.fullSizeBackground"))) {
+                g.fillRect(0, 0, getWidth(), getHeight());
+            } else {
+                g.fillRect(insets.left, insets.top,
+                        getWidth() - insets.right - insets.left, getHeight() - insets.bottom - insets.top);
+            }
             g.setColor(oldColor);
 
             rendererPane.paintComponent(g, c, combo, insets.left, insets.top,
