@@ -22,6 +22,7 @@
 <%@ page import="org.apache.cayenne.tutorial.persistent.*" %>
 <%@ page import="org.apache.cayenne.*" %>
 <%@ page import="java.text.*" %>
+<%@ page import="java.time.format.DateTimeFormatter"%>
 
 <% 
     ObjectContext context = BaseContext.getThreadObjectContext();
@@ -56,8 +57,9 @@
     }
 
     String name = artist.getName() == null ? "" : artist.getName();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     String dob = artist.getDateOfBirth() == null
-            ? "" : new SimpleDateFormat("yyyyMMdd").format(artist.getDateOfBirth());
+                            ? "" :artist.getDateOfBirth().format(formatter);
 %>
 <html>
     <head>

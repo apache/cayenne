@@ -18,17 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.tutorial;
 
-import static org.apache.cayenne.exp.ExpressionFactory.exp;
-
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalDate;
 import java.util.List;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.tutorial.persistent.Artist;
 import org.apache.cayenne.tutorial.persistent.Gallery;
 import org.apache.cayenne.tutorial.persistent.Painting;
@@ -80,26 +75,20 @@ public class Main {
 
     static void selectTutorial(ObjectContext context) {
         // SelectQuery examples
-        SelectQuery<Painting> select1 = SelectQuery.query(Painting.class, null);
-        List<Painting> paintings1 = context.select(select1);
+        List<Painting> paintings1 = ObjectSelect.query(Painting.class).select(context);
 
-        Expression qualifier2 = Painting.NAME.likeIgnoreCase("gi%");
-        SelectQuery<Painting> select2 = SelectQuery.query(Painting.class, qualifier2);
-        List<Painting> paintings2 = context.select(select2);
+        List<Painting> paintings2 = ObjectSelect.query(Painting.class)
+                .where(Painting.NAME.likeIgnoreCase("gi%")).select(context);
 
-        Calendar c = new GregorianCalendar();
-        c.set(c.get(Calendar.YEAR) - 100, 0, 1, 0, 0, 0);
-
-        Expression qualifier3 = exp("artist.dateOfBirth < $date", c.getTime());
-        SelectQuery<Painting> select3 = SelectQuery.query(Painting.class, qualifier3);
-        List<Painting> paintings3 = context.select(select3);
+        List<Painting> paintings3 = ObjectSelect.query(Painting.class)
+                .where(Painting.ARTIST.dot(Artist.DATE_OF_BIRTH)
+                        .lt(LocalDate.of(1900,1,1))).select(context);
     }
 
     static void deleteTutorial(ObjectContext context) {
         // Delete object examples
-        Expression qualifier = Artist.NAME.eq("Pablo Picasso");
-        SelectQuery<Artist> selectToDelete = SelectQuery.query(Artist.class, qualifier);
-        Artist picasso = (Artist) Cayenne.objectForQuery(context, selectToDelete);
+        Artist picasso = ObjectSelect.query(Artist.class)
+                .where(Artist.NAME.eq("Pablo Picasso")).selectOne(context);
 
         if (picasso != null) {
             context.deleteObjects(picasso);

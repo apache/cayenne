@@ -50,11 +50,8 @@ INFO: === returned 1 row. - took 18 ms.</screen>
                     ago:</para>
             </listitem>
         </itemizedlist>
-        <programlisting language="java">Calendar c = new GregorianCalendar();
-c.set(c.get(Calendar.YEAR) - 100, 0, 1, 0, 0, 0);
-
-List&lt;Painting> paintings3 = ObjectSelect.query(Painting.class)
-        .where(Painting.ARTIST.dot(Artist.DATE_OF_BIRTH).lt(c.getTime()))
+        <programlisting language="java">List&lt;Painting> paintings3 = ObjectSelect.query(Painting.class)
+        .where(Painting.ARTIST.dot(Artist.DATE_OF_BIRTH).lt(LocalDate.of(1900,1,1)))
         .select(context); </programlisting>
         <screen>INFO: SELECT t0.GALLERY_ID, t0.NAME, t0.ARTIST_ID, t0.ID FROM PAINTING t0 JOIN ARTIST t1 ON (t0.ARTIST_ID = t1.ID)
       WHERE t1.DATE_OF_BIRTH &lt; ? [bind: 1->DATE_OF_BIRTH:'1911-01-01 00:00:00.493'] - prepared in 7 ms.

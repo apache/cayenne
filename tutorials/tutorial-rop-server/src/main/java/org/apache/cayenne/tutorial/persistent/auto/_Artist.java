@@ -1,6 +1,6 @@
 package org.apache.cayenne.tutorial.persistent.auto;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
@@ -19,15 +19,15 @@ public abstract class _Artist extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Date> DATE_OF_BIRTH = Property.create("dateOfBirth", Date.class);
+    public static final Property<LocalDate> DATE_OF_BIRTH = Property.create("dateOfBirth", LocalDate.class);
     public static final Property<String> NAME = Property.create("name", String.class);
     public static final Property<List<Painting>> PAINTINGS = Property.create("paintings", List.class);
 
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         writeProperty("dateOfBirth", dateOfBirth);
     }
-    public Date getDateOfBirth() {
-        return (Date)readProperty("dateOfBirth");
+    public LocalDate getDateOfBirth() {
+        return (LocalDate)readProperty("dateOfBirth");
     }
 
     public void setName(String name) {
