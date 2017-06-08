@@ -34,12 +34,6 @@
 		<jetty.version>9.3.19.v20170502</jetty.version>
 	</properties>
 
-	<modules>
-		<module>tutorial</module>
-		<module>tutorial-rop-server</module>
-		<module>tutorial-rop-client</module>
-	</modules>
-
 	<build>
 		<plugins>
 			<!-- This ensures LICENSE and NOTICE inclusion in all jars -->
