@@ -19,7 +19,7 @@
 package org.apache.cayenne.datasource;
 
 import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -29,8 +29,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.apache.cayenne.datasource.PoolAwareConnection;
-import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
 import org.junit.Before;
 import org.junit.Test;
 
