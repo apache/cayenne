@@ -23,6 +23,9 @@ package org.apache.cayenne.modeler.util;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -118,16 +121,24 @@ public class PanelFactory {
      * Also sets the resizing and selection policies of the table to
      * AUTO_RESIZE_OFF and SINGLE_SELECTION respectively.
      */
-    public static JPanel createTablePanel(JTable table, JButton[] buttons) {
+    public static JPanel createTablePanel(final JTable table, JButton[] buttons) {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout(5, 5));
-
         // Create table with two columns and no rows.
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(table.isEditing()) {
+                    table.getCellEditor().stopCellEditing();
+                }
+            }
+        });
 
         // Panel to add space between table and EAST/WEST borders
-        panel.add(new JScrollPane(table), BorderLayout.CENTER);
+        panel.add(scrollPane, BorderLayout.CENTER);
 
         // Add Add and Remove buttons
         if (buttons != null) {
