@@ -22,14 +22,14 @@
 <%@ page import="org.apache.cayenne.tutorial.persistent.*" %>
 <%@ page import="org.apache.cayenne.*" %>
 <%@ page import="org.apache.cayenne.query.*" %>
+<%@ page import="org.apache.cayenne.exp.*" %>
 <%@ page import="java.util.*" %>
 
-<% 
-    SelectQuery query = new SelectQuery(Artist.class);
-    query.addOrdering(Artist.NAME.getName(), SortOrder.ASCENDING);
-
+<%
     ObjectContext context = BaseContext.getThreadObjectContext();
-    List<Artist> artists = context.performQuery(query);
+    List<Artist> artists = ObjectSelect.query(Artist.class)
+                .orderBy(Artist.NAME.asc())
+                .select(context);
 %>
 <html>
     <head>

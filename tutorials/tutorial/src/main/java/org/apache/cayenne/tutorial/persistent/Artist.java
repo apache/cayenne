@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.tutorial.persistent;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 import org.apache.cayenne.tutorial.persistent.auto._Artist;
 
@@ -36,16 +36,14 @@ public class Artist extends _Artist {
 			setDateOfBirth(null);
 		} else {
 
-			Date date;
+			LocalDate date;
 			try {
-				date = new SimpleDateFormat(DEFAULT_DATE_FORMAT)
-						.parse(yearMonthDay);
-			} catch (ParseException e) {
-				throw new IllegalArgumentException(
-						"A date argument must be in format '"
-								+ DEFAULT_DATE_FORMAT + "': " + yearMonthDay);
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT);
+				date = LocalDate.parse(yearMonthDay, formatter);
+			} catch (DateTimeParseException e) {
+				throw new IllegalArgumentException("A date argument must be in format '"
+						+ DEFAULT_DATE_FORMAT + "': " + yearMonthDay);
 			}
-
 			setDateOfBirth(date);
 		}
 	}
