@@ -1,6 +1,6 @@
 package org.apache.cayenne.tutorial.persistent.client.auto;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.cayenne.PersistentObject;
@@ -15,22 +15,22 @@ import org.apache.cayenne.util.PersistentObjectList;
  */
 public abstract class _Artist extends PersistentObject {
 
-    public static final Property<Date> DATE_OF_BIRTH = Property.create("dateOfBirth", Date.class);
+    public static final Property<LocalDate> DATE_OF_BIRTH = Property.create("dateOfBirth", LocalDate.class);
     public static final Property<String> NAME = Property.create("name", String.class);
     public static final Property<List<Painting>> PAINTINGS = Property.create("paintings", List.class);
 
-    protected Date dateOfBirth;
+    protected LocalDate dateOfBirth;
     protected String name;
     protected List<Painting> paintings;
 
-    public Date getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "dateOfBirth", false);
         }
 
         return dateOfBirth;
     }
-    public void setDateOfBirth(Date dateOfBirth) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "dateOfBirth", false);
         }

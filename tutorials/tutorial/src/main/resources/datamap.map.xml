@@ -20,7 +20,7 @@
 		<db-attribute name="NAME" type="VARCHAR" length="200"/>
 	</db-entity>
 	<obj-entity name="Artist" className="org.apache.cayenne.tutorial.persistent.Artist" dbEntityName="ARTIST">
-		<obj-attribute name="dateOfBirth" type="java.util.Date" db-attribute-path="DATE_OF_BIRTH"/>
+		<obj-attribute name="dateOfBirth" type="java.time.LocalDate" db-attribute-path="DATE_OF_BIRTH"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
 	<obj-entity name="Gallery" className="org.apache.cayenne.tutorial.persistent.Gallery" dbEntityName="GALLERY">
