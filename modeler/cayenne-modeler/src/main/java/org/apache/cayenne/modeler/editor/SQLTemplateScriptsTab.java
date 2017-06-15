@@ -23,18 +23,14 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.event.QueryEvent;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.DbAdapterInfo;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.modeler.util.JUndoableCayenneTextPane;
+import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
+import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
 import org.apache.cayenne.util.Util;
-import org.syntax.jedit.JEditTextArea;
-import org.syntax.jedit.KeywordMap;
-import org.syntax.jedit.tokenmarker.PLSQLTokenMarker;
-import org.syntax.jedit.tokenmarker.SQLTokenMarker;
-import org.syntax.jedit.tokenmarker.Token;
-import org.syntax.jedit.tokenmarker.TokenMarker;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -51,7 +47,6 @@ import javax.swing.text.Document;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -60,53 +55,20 @@ import java.util.Map;
 
 /**
  * A panel for configuring SQL scripts of a SQL template.
- * 
+ *
  */
-public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
+public class SQLTemplateScriptsTab extends JPanel {
 
     private static final String DEFAULT_LABEL = "Default";
-    
-    /**
-     * JEdit marker for SQL Template
-     */
-    static final TokenMarker SQL_TEMPLATE_MARKER;
-    static {
-        KeywordMap map = PLSQLTokenMarker.getKeywordMap();
-        
-        //adding more keywords
-        map.add("FIRST", Token.KEYWORD1);
-        map.add("LIMIT", Token.KEYWORD1);
-        map.add("OFFSET", Token.KEYWORD1);
-        map.add("TOP", Token.KEYWORD1);
-        
-        //adding velocity template highlighing
-        map.add("#bind", Token.KEYWORD2);
-        map.add("#bindEqual", Token.KEYWORD2);
-        map.add("#bindNotEqual", Token.KEYWORD2);
-        map.add("#bindObjectEqual", Token.KEYWORD2);
-        map.add("#bindObjectNotEqual", Token.KEYWORD2);
-        map.add("#chain", Token.KEYWORD2);
-        map.add("#chunk", Token.KEYWORD2);
-        map.add("#end", Token.KEYWORD2);
-        map.add("#result", Token.KEYWORD2);
-        
-        SQL_TEMPLATE_MARKER = new SQLTokenMarker(map);
-    }
 
     protected ProjectController mediator;
 
     protected JList scripts;
-    
-    /**
-     * JEdit text component for highlighing SQL syntax (see CAY-892)
-     */
-    protected JEditTextArea scriptArea;
-    
-    /**
-     * Indication that no update should be fired
-     */
-    private boolean updateDisabled;
-    
+    protected List keys;
+    protected PanelBuilder builder;
+    protected CellConstraints cc;
+    protected JCayenneTextPane textPane;
+    protected List<JCayenneTextPane> panes;
     protected ListSelectionListener scriptRefreshHandler;
 
     public SQLTemplateScriptsTab(ProjectController mediator) {
@@ -129,24 +91,25 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
 
         scripts = new JList();
         scripts.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        scripts.setCellRenderer(new DbAdapterListRenderer(DbAdapterInfo
-                .getStandardAdapterLabels()));
+        scripts.setCellRenderer(new DbAdapterListRenderer(DbAdapterInfo.getStandardAdapterLabels()));
 
-        List keys = new ArrayList(DbAdapterInfo.getStandardAdapters().length + 1);
+        keys = new ArrayList(DbAdapterInfo.getStandardAdapters().length + 1);
         keys.addAll(Arrays.asList(DbAdapterInfo.getStandardAdapters()));
         Collections.sort(keys);
         keys.add(0, DEFAULT_LABEL);
         scripts.setModel(new DefaultComboBoxModel(keys.toArray()));
-        
-        scriptArea = Application.getWidgetFactory().createJEditTextArea();
-
-        scriptArea.setTokenMarker(SQL_TEMPLATE_MARKER);
-        scriptArea.getDocument().addDocumentListener(this);
-        scriptArea.getPainter().setFont(new Font("Verdana", Font.PLAIN, 12));
 
         // assemble
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout(
+        cc = new CellConstraints();
+
+        textPane = new JUndoableCayenneTextPane(new SQLSyntaxConstants());
+        textPane.setName(DEFAULT_LABEL);
+        textPane.getDocument().addDocumentListener(new CustomListener(textPane.getName()));
+
+        panes = new ArrayList<>();
+        panes.add(textPane);
+
+        builder = new PanelBuilder(new FormLayout(
                 "fill:100dlu, 3dlu, fill:100dlu:grow",
                 "3dlu, fill:p:grow"));
 
@@ -155,7 +118,8 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
                 scripts,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1, 2));
-        builder.add(scriptArea, cc.xy(3, 2));
+
+        builder.add(textPane.getPane(), cc.xy(3, 2));
 
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
@@ -174,8 +138,7 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
         scripts.setSelectedIndex(0);
         displayScript();
         scripts.addListSelectionListener(scriptRefreshHandler);
-        
-        scriptArea.setEnabled(true);
+
         setVisible(true);
     }
 
@@ -209,99 +172,118 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
 
         SQLTemplateDescriptor query = getQuery();
         if (query == null) {
-            disableEditor();
             return;
         }
 
         String key = (String) scripts.getSelectedValue();
         if (key == null) {
-            disableEditor();
             return;
         }
 
-        enableEditor();
+        boolean exist = true;
+        for (JCayenneTextPane textPane: panes) {
+            if (textPane.getName().equals(key)) {
+                exist = true;
+                break;
+            } else {
+                exist = false;
+            }
+        }
 
-        String text = (key.equals(DEFAULT_LABEL)) ? query.getSql() : query
+        if (!exist) {
+            JCayenneTextPane textPane = new JUndoableCayenneTextPane(new SQLSyntaxConstants());
+            textPane.setName(key);
+            textPane.getDocument().addDocumentListener(new CustomListener(textPane.getName()));
+            builder.add(textPane.getPane(), cc.xy(3, 2));
+            panes.add(textPane);
+        }
+
+        final String text = (key.equals(DEFAULT_LABEL)) ? query.getSql() : query
                 .getAdapterSql().get(key);
 
-        updateDisabled = true;
-        scriptArea.setText(text);
-        updateDisabled = false;
+        for (final JCayenneTextPane textPane: panes) {
+            if (key.equals(textPane.getName())) {
+                Document document = textPane.getDocument();
+                try {
+                    if(!document.getText(0, document.getLength()).equals(text)) {
+                        document.remove(0, document.getLength());
+                        document.insertString(0, text, null);
+                    }
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+                textPane.getPane().setVisible(true);
+                textPane.getPane().setEditable(true);
+            } else {
+                textPane.getPane().setVisible(false);
+                textPane.getPane().setEditable(false);
+            }
+        }
     }
 
-    void disableEditor() {
-        scriptArea.setText(null);
-        scriptArea.setEnabled(false);
-        scriptArea.setEditable(false);
-        scriptArea.setBackground(getBackground());
-    }
-
-    void enableEditor() {
-        scriptArea.setEnabled(true);
-        scriptArea.setEditable(true);
-        scriptArea.setBackground(Color.WHITE);
-    }
-
-    void setSQL(DocumentEvent e) {
+    void setSQL(DocumentEvent e, String key) {
         Document doc = e.getDocument();
 
         try {
-            setSQL(doc.getText(0, doc.getLength()));
+            String text = doc.getText(0, doc.getLength());
+
+            SQLTemplateDescriptor query = getQuery();
+
+            if (query == null) {
+                return;
+            }
+
+            if (key == null) {
+                return;
+            }
+
+            if (text != null) {
+                text = text.trim();
+                if (text.length() == 0) {
+                    text = null;
+                }
+            }
+
+            // Compare the value before modifying the query - text pane
+            // will call "verify" even if no changes have occured....
+            if (key.equals(DEFAULT_LABEL)) {
+                if (!Util.nullSafeEquals(text, query.getSql())) {
+                    query.setSql(text);
+                    mediator.fireQueryEvent(new QueryEvent(this, query));
+                }
+            } else {
+                if (!Util.nullSafeEquals(text, query.getAdapterSql().get(key))) {
+                    query.getAdapterSql().put(key, text);
+                    mediator.fireQueryEvent(new QueryEvent(this, query));
+                }
+            }
         }
         catch (BadLocationException e1) {
             e1.printStackTrace();
         }
-
     }
 
-    /**
-     * Sets the value of SQL template for the currently selected script.
-     */
-    void setSQL(String text) {
-        SQLTemplateDescriptor query = getQuery();
-        if (query == null) {
-            return;
+    final class CustomListener implements DocumentListener{
+
+        private String key;
+
+        public CustomListener(String key) {
+            this.key = key;
         }
 
-        String key = (String) scripts.getSelectedValue();
-        if (key == null) {
-            return;
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            changedUpdate(e);
         }
 
-        if (text != null) {
-            text = text.trim();
-            if (text.length() == 0) {
-                text = null;
-            }
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            changedUpdate(e);
         }
 
-        // Compare the value before modifying the query - text area
-        // will call "verify" even if no changes have occured....
-        if (key.equals(DEFAULT_LABEL)) {
-            if (!Util.nullSafeEquals(text, query.getSql())) {
-                query.setSql(text);
-                mediator.fireQueryEvent(new QueryEvent(this, query));
-            }
-        }
-        else {
-            if (!Util.nullSafeEquals(text, query.getAdapterSql().get(key))) {
-                query.getAdapterSql().put(key, text);
-                mediator.fireQueryEvent(new QueryEvent(this, query));
-            }
-        }
-    }
-    
-    public void insertUpdate(DocumentEvent e) {
-        changedUpdate(e);
-    }
-
-    public void removeUpdate(DocumentEvent e) {
-        changedUpdate(e);
-    }
-    
-    public void changedUpdate(DocumentEvent e) {
-        if (!updateDisabled) {
-            setSQL(e);
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+            setSQL(e, key);
         }
     }
 
@@ -346,11 +328,11 @@ public class SQLTemplateScriptsTab extends JPanel implements DocumentListener {
             return c;
         }
     }
-    
+
     public int getSelectedIndex() {
         return scripts.getSelectedIndex();
     }
-    
+
     public void setSelectedIndex(int index) {
         scripts.setSelectedIndex(index);
     }
