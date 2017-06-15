@@ -56,7 +56,16 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
 
     void displayScript() {
         EJBQLQueryDescriptor query = getQuery();
-        scriptArea.setText(query.getEjbql());
+        Document document = scriptArea.getDocument();;
+        String text = query.getEjbql();
+        try {
+            if(!document.getText(0, document.getLength()).equals(query.getEjbql())) {
+                document.remove(0, document.getLength());
+                document.insertString(0, text, null);
+            }
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
         updateDisabled = false;
     }
 
@@ -82,7 +91,12 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
             }
 
             public void removeUpdate(DocumentEvent e) {
-                getQuery().setEjbql(scriptArea.getText());
+                try {
+                    String text = scriptArea.getDocument().getText(0,scriptArea.getDocument().getLength());
+                    getQuery().setEjbql(text);
+                } catch (BadLocationException e1) {
+                    e1.printStackTrace();
+                }
                 validateEJBQL();
             }
         });

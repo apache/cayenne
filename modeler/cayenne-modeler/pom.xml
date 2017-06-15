@@ -98,11 +98,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>net.sf.jedit-syntax</groupId>
-			<artifactId>jedit-syntax</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>jgraph</groupId>
 			<artifactId>jgraph</artifactId>
 		</dependency>

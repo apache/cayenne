@@ -26,8 +26,6 @@ import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 
-import org.syntax.jedit.JEditTextArea;
-
 /**
  * Utility class to create standard Swing widgets following default look-and-feel of
  * CayenneModeler.
@@ -66,10 +64,5 @@ public interface WidgetFactory {
      * @param combo JComboBox to be used as editor component
      */
     TableCellEditor createCellEditor(JComboBox<?> combo);
-
-    /**
-     * Creates and returns a JEdit text component with syntax highlighing
-     */
-    JEditTextArea createJEditTextArea();
 
 }

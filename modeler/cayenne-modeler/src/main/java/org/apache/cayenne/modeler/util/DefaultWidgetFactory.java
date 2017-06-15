@@ -22,7 +22,6 @@ import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.undo.JComboBoxUndoListener;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.modeler.util.combo.ComboBoxCellEditor;
-import org.syntax.jedit.JEditTextArea;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
@@ -32,7 +31,6 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.table.TableCellEditor;
 import java.awt.Color;
-import java.awt.Font;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -108,10 +106,4 @@ public class DefaultWidgetFactory implements WidgetFactory {
         return editor;
     }
 
-    /**
-     * Creates and returns a JEdit text component with syntax highlighing
-     */
-    public JEditTextArea createJEditTextArea() {
-        return new JEditTextAreaUndoable();
-    }
 }
