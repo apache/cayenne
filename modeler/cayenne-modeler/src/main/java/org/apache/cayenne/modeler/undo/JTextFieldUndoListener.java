@@ -20,6 +20,8 @@ package org.apache.cayenne.modeler.undo;
 
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.UndoableEditEvent;
@@ -42,6 +44,8 @@ public class JTextFieldUndoListener implements UndoableEditListener {
     private int lastOffset;
     private int lastLength;
 
+    private boolean isKeyEdit;
+
     public JTextFieldUndoListener(TextAdapter adapter) {
         this(adapter.getComponent());
         this.adapter = adapter;
@@ -55,6 +59,13 @@ public class JTextFieldUndoListener implements UndoableEditListener {
             @Override
             public void focusLost(FocusEvent e) {
                 finishCurrentEdit();
+            }
+        });
+
+        this.editor.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                isKeyEdit = true;
             }
         });
     }
@@ -98,10 +109,13 @@ public class JTextFieldUndoListener implements UndoableEditListener {
                 ? new TextCompoundEdit(adapter, this)
                 : new TextCompoundEdit(editor, this);
 
-        compoundEdit.addEdit(anEdit);
+        if (isKeyEdit) {
+            compoundEdit.addEdit(anEdit);
+        } else {
+            return null;
+        }
 
         Application.getInstance().getUndoManager().addEdit(compoundEdit);
-
         return compoundEdit;
     }
 
@@ -109,6 +123,7 @@ public class JTextFieldUndoListener implements UndoableEditListener {
         if (compoundEdit != null) {
             compoundEdit.end();
             compoundEdit = null;
+            isKeyEdit = false;
         }
     }
 }
