@@ -212,7 +212,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
         for (DataMap dataMap : ((DataChannelDescriptor) mediator.getProject().getRootNode()).getDataMaps()) {
             for (Embeddable emb : dataMap.getEmbeddables()) {
-                embeddableNames.add(emb.getClassName());
+                embeddableNames.add(emb.getNameWithPackage());
             }
         }
 

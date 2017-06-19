@@ -729,6 +729,8 @@ public class MapLoader extends DefaultHandler {
 
 	private void processStartEmbeddable(Attributes atts) {
 		embeddable = new Embeddable(atts.getValue("", "className"));
+		String embeddableName = atts.getValue("", "embeddableName");
+		embeddable.setNameWithPackage(embeddableName);
 		dataMap.addEmbeddable(embeddable);
 	}
 

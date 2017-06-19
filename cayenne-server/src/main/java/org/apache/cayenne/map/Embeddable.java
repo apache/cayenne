@@ -46,6 +46,7 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
 	private static final long serialVersionUID = -7163768090567642099L;
 	
 	protected String className;
+	protected String nameWithPackage;
 	protected SortedMap<String, EmbeddableAttribute> attributes;
 	protected DataMap dataMap;
 
@@ -54,7 +55,7 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
 	}
 
 	public Embeddable(String className) {
-		this.attributes = new TreeMap<String, EmbeddableAttribute>();
+		this.attributes = new TreeMap<>();
 		this.className = className;
 	}
 
@@ -165,6 +166,14 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
 		this.className = className;
 	}
 
+	public String getNameWithPackage() {
+		return nameWithPackage;
+	}
+
+	public void setNameWithPackage(String nameWithPackage) {
+		this.nameWithPackage = nameWithPackage;
+	}
+
 	/**
 	 * {@link XMLSerializable} implementation that generates XML for embeddable.
 	 */
@@ -173,6 +182,12 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
 		if (getClassName() != null) {
 			encoder.print(" className=\"");
 			encoder.print(getClassName());
+			encoder.print("\"");
+		}
+
+		if (getNameWithPackage() != null) {
+			encoder.print(" embeddableName=\"");
+			encoder.print(getNameWithPackage());
 			encoder.print("\"");
 		}
 		encoder.println(">");

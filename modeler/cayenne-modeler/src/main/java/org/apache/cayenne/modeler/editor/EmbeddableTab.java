@@ -51,6 +51,7 @@ import com.jgoodies.forms.layout.FormLayout;
 public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
 
     protected ProjectController mediator;
+    protected JTextField nameWithPackage;
     protected TextAdapter className;
 
     public EmbeddableTab(ProjectController mediator) {
@@ -82,12 +83,16 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
             }
         };
 
+        nameWithPackage = new JTextField();
+        nameWithPackage.setEditable(false);
+
         FormLayout layout = new FormLayout(
-                "right:50dlu, 3dlu, fill:150dlu, 3dlu, fill:100",
+                "right:100dlu, 3dlu, fill:200dlu, 3dlu, fill:100",
                 "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
-        builder.append("Class Name:", className.getComponent(), 3);
+        builder.append("Embeddable Name:", className.getComponent(), 3);
+        builder.append("Java Class:", nameWithPackage, 3);
 
         add(builder.getPanel(), BorderLayout.CENTER);
     }
@@ -115,8 +120,7 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
 
         if (newClassName == null) {
             throw new ValidationException("Embeddable name is required.");
-        }
-        else if (embeddable.getDataMap().getEmbeddable(newClassName) == null) {
+        } else if (embeddable.getDataMap().getEmbeddable(newClassName) == null) {
             
             // if newClassName dupliucates in other DataMaps 
             DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
@@ -139,8 +143,12 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
             // completely new name, set new name for embeddable
             EmbeddableEvent e = new EmbeddableEvent(this, embeddable, embeddable
                     .getClassName());
-            String oldName = embeddable.getClassName();
+
             embeddable.setClassName(newClassName);
+
+            String oldName = embeddable.getNameWithPackage();
+            String newName = mediator.getCurrentDataMap().getDefaultPackage() + "." + embeddable.getClassName();
+            embeddable.setNameWithPackage(newName);
 
             mediator.fireEmbeddableEvent(e, mediator.getCurrentDataMap());
 
@@ -155,10 +163,10 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
                     Iterator<ObjAttribute> attrIt = attr.iterator();
                     
                     while (attrIt.hasNext()) {
-                        ObjAttribute atribute = attrIt.next();
-                        if (atribute.getType()==null || atribute.getType().equals(oldName)) {
-                            atribute.setType(newClassName);
-                            AttributeEvent ev = new AttributeEvent(this, atribute, atribute
+                        ObjAttribute attribute = attrIt.next();
+                        if (attribute.getType()==null || attribute.getType().equals(oldName)) {
+                            attribute.setType(newName);
+                            AttributeEvent ev = new AttributeEvent(this, attribute, attribute
                                     .getEntity());
                             mediator.fireObjAttributeEvent(ev);
                         }
@@ -167,8 +175,9 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
                 }
             }
 
-        }
-        else {
+            initFromModel(embeddable);
+
+        } else {
             // there is an embeddable with the same name
             throw new ValidationException("There is another embeddable with name '"
                     + newClassName
@@ -187,5 +196,6 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
 
     private void initFromModel(Embeddable embeddable) {
         className.setText(embeddable.getClassName());
+        nameWithPackage.setText(embeddable.getNameWithPackage());
     }
 }
