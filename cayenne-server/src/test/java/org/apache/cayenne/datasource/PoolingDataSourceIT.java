@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.datasource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -34,9 +34,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
@@ -51,7 +49,7 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 
 		assertTrue(dataSource.getMaxConnections() > 0);
 
-		List<Connection> connections = new ArrayList<Connection>();
+		List<Connection> connections = new ArrayList<>();
 		try {
 
 			for (int i = 0; i < dataSource.getMaxConnections(); i++) {
@@ -90,7 +88,7 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 
 		assertTrue(dataSource.getMaxConnections() > 0);
 
-		List<Connection> connections = new ArrayList<Connection>();
+		List<Connection> connections = new ArrayList<>();
 		try {
 
 			for (int i = 0; i < dataSource.getMaxConnections(); i++) {
@@ -101,7 +99,7 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 			try {
 
 				dataSource.getConnection();
-				fail("Opening more connections than the pool allows succeeeded");
+				fail("Opening more connections than the pool allows succeeded");
 			} catch (SQLException e) {
 				// expected, but check if we waited sufficiently
 
@@ -205,27 +203,12 @@ public class PoolingDataSourceIT extends BasePoolingDataSourceIT {
 		public void run() {
 
 			try {
-				Connection c = dataSource.getConnection();
-				try {
-
-					Statement st = c.createStatement();
-					try {
-
-						ResultSet rs = st.executeQuery("SELECT ARTIST_ID FROM ARTIST");
-
-						try {
+				try(Connection c = dataSource.getConnection()) {
+					try(Statement st = c.createStatement()) {
+						try(ResultSet rs = st.executeQuery("SELECT ARTIST_ID FROM ARTIST")) {
 							rs.next();
-
-						} finally {
-							rs.close();
 						}
-
-					} finally {
-						st.close();
 					}
-
-				} finally {
-					c.close();
 				}
 
 				// increment only after success
