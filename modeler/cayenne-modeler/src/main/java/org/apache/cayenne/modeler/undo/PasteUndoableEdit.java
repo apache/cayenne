@@ -28,6 +28,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -93,69 +94,56 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
         if (content instanceof DataMap) {
             if (where instanceof DataChannelDescriptor) {
                 rAction.removeDataMap((DataMap) content);
-            }
-            else if (where instanceof DataNodeDescriptor) {
+            } else if (where instanceof DataNodeDescriptor) {
                 rAction.removeDataMapFromDataNode(
                         (DataNodeDescriptor) where,
                         (DataMap) content);
             }
-        }
-        else if (where instanceof DataMap) {
+        } else if (where instanceof DataMap) {
             if (content instanceof DbEntity) {
                 rAction.removeDbEntity(map, (DbEntity) content);
-            }
-            else if (content instanceof ObjEntity) {
+            } else if (content instanceof ObjEntity) {
                 rAction.removeObjEntity(map, (ObjEntity) content);
-            }
-            else if (content instanceof Embeddable) {
+            } else if (content instanceof Embeddable) {
                 rAction.removeEmbeddable(map, (Embeddable) content);
-            }
-            else if (content instanceof QueryDescriptor) {
+            } else if (content instanceof QueryDescriptor) {
                 rAction.removeQuery(map, (QueryDescriptor) content);
-            }
-            else if (content instanceof Procedure) {
+            } else if (content instanceof Procedure) {
                 rAction.removeProcedure(map, (Procedure) content);
             }
-        }
-        else if (where instanceof DbEntity) {
+        } else if (where instanceof DbEntity) {
             if (content instanceof DbEntity) {
                 rAction.removeDbEntity(map, (DbEntity) content);
-            }
-            else if (content instanceof DbAttribute) {
+            } else if (content instanceof DbAttribute) {
                 rAttributeAction.removeDbAttributes(
                         map,
                         (DbEntity) where,
                         new DbAttribute[] {
                             (DbAttribute) content
                         });
-            }
-            else if (content instanceof DbRelationship) {
+            } else if (content instanceof DbRelationship) {
                 rRelationShipAction.removeDbRelationships(
                         (DbEntity) where,
                         new DbRelationship[] {
                             (DbRelationship) content
                         });
             }
-        }
-        else if (where instanceof ObjEntity) {
+        } else if (where instanceof ObjEntity) {
             if (content instanceof ObjEntity) {
                 rAction.removeObjEntity(map, (ObjEntity) content);
-            }
-            else if (content instanceof ObjAttribute) {
+            } else if (content instanceof ObjAttribute) {
                 rAttributeAction.removeObjAttributes(
                         (ObjEntity) where,
                         new ObjAttribute[] {
                             (ObjAttribute) content
                         });
-            }
-            else if (content instanceof ObjRelationship) {
+            } else if (content instanceof ObjRelationship) {
                 rRelationShipAction.removeObjRelationships(
                         (ObjEntity) where,
                         new ObjRelationship[] {
                             (ObjRelationship) content
                         });
-            }
-            else if (content instanceof ObjCallbackMethod) {
+            } else if (content instanceof ObjCallbackMethod) {
             		ObjCallbackMethod[] methods = new ObjCallbackMethod[] {
                             (ObjCallbackMethod) content };
             		for(ObjCallbackMethod callbackMethod : methods) {
@@ -164,8 +152,7 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
 	                			callbackMethod.getName());
             		}
             }
-        }
-        else if (where instanceof Procedure) {
+        } else if (where instanceof Procedure) {
             final Procedure procedure = (Procedure) where;
             if (content instanceof ProcedureParameter) {
                 rProcedureParamAction.removeProcedureParameters(
@@ -174,9 +161,13 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
                             (ProcedureParameter) content
                         });
             }
-        }
-        else if (content instanceof Embeddable) {
-            rAction.removeEmbeddable(map, (Embeddable) content);
+        } else if (where instanceof Embeddable) {
+            if (content instanceof Embeddable) {
+                rAction.removeEmbeddable(map, (Embeddable) content);
+            } else if (content instanceof EmbeddableAttribute) {
+                rAttributeAction.removeEmbeddableAttributes((Embeddable) where,
+                        new EmbeddableAttribute[]{(EmbeddableAttribute) content});
+            }
         }
     }
 }
