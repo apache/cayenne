@@ -24,6 +24,8 @@ import java.awt.Color;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Arrays;
 import java.util.EventObject;
 import java.util.LinkedList;
@@ -50,6 +52,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
@@ -181,10 +184,11 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         AutoCompletion.enable(dbEntityCombo);
         AutoCompletion.enable(superEntityCombo);
 
-        readOnly = new JCheckBox();
-        optimisticLocking = new JCheckBox();
-        excludeSuperclassListeners = new JCheckBox();
-        excludeDefaultListeners = new JCheckBox();
+        readOnly = new JCayenneCheckBox();
+
+        optimisticLocking = new JCayenneCheckBox();
+        excludeSuperclassListeners = new JCayenneCheckBox();
+        excludeDefaultListeners = new JCayenneCheckBox();
 
         // borderless clickable button used as a label
         tableLabel = new JButton("Table/View:");
@@ -195,8 +199,8 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
         tableLabel.setBorder(null);
 
 
-        isAbstract = new JCheckBox();
-        serverOnly = new JCheckBox();
+        isAbstract = new JCayenneCheckBox();
+        serverOnly = new JCayenneCheckBox();
         clientClassName = new TextAdapter(new JTextField()) {
 
             @Override
@@ -357,9 +361,10 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
 
  
 
-        readOnly.addActionListener(new ActionListener() {
+        readOnly.addItemListener(new ItemListener() {
 
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
                 ObjEntity entity = mediator.getCurrentObjEntity();
                 if (entity != null) {
                     entity.setReadOnly(readOnly.isSelected());
@@ -368,9 +373,10 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
             }
         });
 
-        optimisticLocking.addActionListener(new ActionListener() {
+        optimisticLocking.addItemListener(new ItemListener() {
 
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
                 ObjEntity entity = mediator.getCurrentObjEntity();
                 if (entity != null) {
                     entity.setDeclaredLockType(optimisticLocking.isSelected()
@@ -381,9 +387,10 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
             }
         });
 
-        excludeSuperclassListeners.addActionListener(new ActionListener() {
+        excludeSuperclassListeners.addItemListener(new ItemListener() {
 
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
                 ObjEntity entity = mediator.getCurrentObjEntity();
                 if (entity != null) {
                     entity.setExcludingSuperclassListeners(excludeSuperclassListeners
@@ -393,9 +400,10 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
             }
         });
 
-        excludeDefaultListeners.addActionListener(new ActionListener() {
+        excludeDefaultListeners.addItemListener(new ItemListener() {
 
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
                 ObjEntity entity = mediator.getCurrentObjEntity();
                 if (entity != null) {
                     entity.setExcludingDefaultListeners(excludeDefaultListeners
@@ -405,9 +413,10 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
             }
         });
 
-        serverOnly.addActionListener(new ActionListener() {
+        serverOnly.addItemListener(new ItemListener() {
 
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
                 ObjEntity entity = mediator.getCurrentObjEntity();
                 if (entity != null) {
                     entity.setServerOnly(serverOnly.isSelected());
@@ -417,9 +426,10 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener,
             }
         });
 
-        isAbstract.addActionListener(new ActionListener() {
+        isAbstract.addItemListener(new ItemListener() {
 
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
                 ObjEntity entity = mediator.getCurrentObjEntity();
                 if (entity != null) {
                     entity.setAbstract(isAbstract.isSelected());

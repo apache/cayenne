@@ -32,6 +32,7 @@ import javax.swing.JTextField;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
@@ -91,7 +92,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
         JLabel returnValueHelp = new JLabel("(first parameter will be used as return value)");
         returnValueHelp.setFont(returnValueHelp.getFont().deriveFont(10));
 
-        this.returnsValue = new JCheckBox();
+        this.returnsValue = new JCayenneCheckBox();
         this.returnsValue.setToolTipText(returnValueHelp.getText());
 
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");

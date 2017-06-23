@@ -20,11 +20,12 @@
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.JCheckBox;
 
+import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.query.QueryMetadata;
@@ -49,7 +50,7 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
         super.initView();
         // create widgets
 
-        dataRows = new JCheckBox();
+        dataRows = new JCayenneCheckBox();
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -79,9 +80,10 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
     protected void initController() {
         super.initController();
 
-        dataRows.addActionListener(new ActionListener() {
+        dataRows.addItemListener(new ItemListener() {
 
-            public void actionPerformed(ActionEvent event) {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
                 Boolean b = dataRows.isSelected() ? Boolean.TRUE : Boolean.FALSE;
                 setQueryProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY, String.valueOf(b));
             }
