@@ -28,6 +28,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -49,8 +50,7 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
     private Object where;
     private Object content;
 
-    public PasteUndoableEdit(DataChannelDescriptor domain, DataMap map, Object where,
-            Object content) {
+    public PasteUndoableEdit(DataChannelDescriptor domain, DataMap map, Object where, Object content) {
         this.domain = domain;
         this.map = map;
         this.where = where;
@@ -70,113 +70,98 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
     @Override
     public void redo() throws CannotRedoException {
         PasteAction action = actionManager.getAction(PasteAction.class);
-
         action.paste(where, content, domain, map);
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        RemoveAttributeAction rAttributeAction = actionManager
-                .getAction(RemoveAttributeAction.class);
-
         RemoveAction rAction = actionManager.getAction(RemoveAction.class);
-
-        RemoveRelationshipAction rRelationShipAction = actionManager
-                .getAction(RemoveRelationshipAction.class);
-
-        RemoveCallbackMethodAction rCallbackMethodAction = actionManager
-                .getAction(RemoveCallbackMethodAction.class);
-
+        RemoveAttributeAction rAttributeAction = actionManager.getAction(RemoveAttributeAction.class);
+        RemoveRelationshipAction rRelationShipAction = actionManager.getAction(RemoveRelationshipAction.class);
+        RemoveCallbackMethodAction rCallbackMethodAction = actionManager.getAction(RemoveCallbackMethodAction.class);
         RemoveProcedureParameterAction rProcedureParamAction = actionManager
                 .getAction(RemoveProcedureParameterAction.class);
 
         if (content instanceof DataMap) {
             if (where instanceof DataChannelDescriptor) {
                 rAction.removeDataMap((DataMap) content);
-            }
-            else if (where instanceof DataNodeDescriptor) {
+            } else if (where instanceof DataNodeDescriptor) {
                 rAction.removeDataMapFromDataNode(
                         (DataNodeDescriptor) where,
                         (DataMap) content);
             }
-        }
-        else if (where instanceof DataMap) {
+        } else if (where instanceof DataMap) {
             if (content instanceof DbEntity) {
                 rAction.removeDbEntity(map, (DbEntity) content);
-            }
-            else if (content instanceof ObjEntity) {
+            } else if (content instanceof ObjEntity) {
                 rAction.removeObjEntity(map, (ObjEntity) content);
-            }
-            else if (content instanceof Embeddable) {
+            } else if (content instanceof Embeddable) {
                 rAction.removeEmbeddable(map, (Embeddable) content);
-            }
-            else if (content instanceof QueryDescriptor) {
+            } else if (content instanceof QueryDescriptor) {
                 rAction.removeQuery(map, (QueryDescriptor) content);
-            }
-            else if (content instanceof Procedure) {
+            } else if (content instanceof Procedure) {
                 rAction.removeProcedure(map, (Procedure) content);
             }
-        }
-        else if (where instanceof DbEntity) {
+        } else if (where instanceof DbEntity) {
             if (content instanceof DbEntity) {
                 rAction.removeDbEntity(map, (DbEntity) content);
-            }
-            else if (content instanceof DbAttribute) {
+            } else if (content instanceof DbAttribute) {
                 rAttributeAction.removeDbAttributes(
                         map,
                         (DbEntity) where,
                         new DbAttribute[] {
-                            (DbAttribute) content
+                                (DbAttribute) content
                         });
-            }
-            else if (content instanceof DbRelationship) {
+            } else if (content instanceof DbRelationship) {
                 rRelationShipAction.removeDbRelationships(
                         (DbEntity) where,
                         new DbRelationship[] {
-                            (DbRelationship) content
+                                (DbRelationship) content
                         });
             }
-        }
-        else if (where instanceof ObjEntity) {
+        } else if (where instanceof ObjEntity) {
             if (content instanceof ObjEntity) {
                 rAction.removeObjEntity(map, (ObjEntity) content);
-            }
-            else if (content instanceof ObjAttribute) {
+            } else if (content instanceof ObjAttribute) {
                 rAttributeAction.removeObjAttributes(
                         (ObjEntity) where,
                         new ObjAttribute[] {
-                            (ObjAttribute) content
+                                (ObjAttribute) content
                         });
-            }
-            else if (content instanceof ObjRelationship) {
+            } else if (content instanceof ObjRelationship) {
                 rRelationShipAction.removeObjRelationships(
                         (ObjEntity) where,
                         new ObjRelationship[] {
-                            (ObjRelationship) content
+                                (ObjRelationship) content
                         });
+            } else if (content instanceof ObjCallbackMethod) {
+                ObjCallbackMethod[] methods = new ObjCallbackMethod[] {
+                        (ObjCallbackMethod) content };
+                for(ObjCallbackMethod callbackMethod : methods) {
+                    rCallbackMethodAction.removeCallbackMethod(
+                            methods[0].getCallbackType(),
+                            callbackMethod.getName());
+                }
             }
-            else if (content instanceof ObjCallbackMethod) {
-            		ObjCallbackMethod[] methods = new ObjCallbackMethod[] {
-                            (ObjCallbackMethod) content };
-            		for(ObjCallbackMethod callbackMethod : methods) {
-	            		rCallbackMethodAction.removeCallbackMethod(
-	                			methods[0].getCallbackType(), 
-	                			callbackMethod.getName());
-            		}
-            }
-        }
-        else if (where instanceof Procedure) {
+        } else if (where instanceof Procedure) {
             final Procedure procedure = (Procedure) where;
             if (content instanceof ProcedureParameter) {
                 rProcedureParamAction.removeProcedureParameters(
                         procedure,
                         new ProcedureParameter[] {
-                            (ProcedureParameter) content
+                                (ProcedureParameter) content
                         });
             }
-        }
-        else if (content instanceof Embeddable) {
-            rAction.removeEmbeddable(map, (Embeddable) content);
+        } else if (where instanceof Embeddable) {
+            if (content instanceof Embeddable) {
+                rAction.removeEmbeddable(map, (Embeddable) content);
+            } else if (content instanceof EmbeddableAttribute) {
+                rAttributeAction.removeEmbeddableAttributes(
+                        (Embeddable) where,
+                        new EmbeddableAttribute[]{
+                            (EmbeddableAttribute) content
+                        });
+            }
         }
     }
 }
