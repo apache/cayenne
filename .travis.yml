@@ -18,6 +18,7 @@
 # How to fix: Change build setting or fix code.
 # https://docs.travis-ci.com/user/ci-environment/#Virtualization-environments
 sudo: required
+group: deprecated-2017Q2
 
 services:
   - docker
