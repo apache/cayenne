@@ -38,7 +38,6 @@ import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -264,8 +263,8 @@ public class ProcedureQueryView extends JPanel {
             labelCase.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent event) {
-                    Object value = labelCase.getModel().getSelectedItem();
-                    setQueryProperty(ProcedureQuery.COLUMN_NAME_CAPITALIZATION_PROPERTY, (String) value);
+                    String value = labelCase.getModel().getSelectedItem().toString();
+                    setQueryProperty(ProcedureQuery.COLUMN_NAME_CAPITALIZATION_PROPERTY, value);
                 }
             });
 
@@ -289,7 +288,7 @@ public class ProcedureQueryView extends JPanel {
             if (query != null && QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
                 DefaultComboBoxModel labelCaseModel = new DefaultComboBoxModel(LABEL_CAPITALIZATION);
 
-                String columnNameCapitalization = query.getProperty(SQLTemplate.COLUMN_NAME_CAPITALIZATION_PROPERTY);
+                String columnNameCapitalization = query.getProperty(ProcedureQuery.COLUMN_NAME_CAPITALIZATION_PROPERTY);
 
                 labelCaseModel.setSelectedItem(columnNameCapitalization != null ?
                         CapsStrategy.valueOf(columnNameCapitalization) : CapsStrategy.DEFAULT);
