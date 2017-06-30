@@ -27,6 +27,5 @@ public class OSXCayenneModelerModule implements Module {
 
     public void configure(Binder binder) {
         binder.bind(PlatformInitializer.class).to(OSXPlatformInitializer.class);
-        binder.bind(WidgetFactory.class).to(OSXWidgetFactory.class);
     }
 }
