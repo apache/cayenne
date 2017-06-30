@@ -26,9 +26,9 @@ package org.apache.cayenne.modeler.util;
  * 
  * @since 1.2
  */
-public class CircularArray extends Object {
+public class CircularArray<T>  {
 
-    private Object array[] = null;
+    private Object[] array = null;
     private int head = 0;
     private int tail = 0;
     private int count = 0;
@@ -116,7 +116,7 @@ public class CircularArray extends Object {
      * @param obj
      *            the object to be checked
      */
-    public boolean contains(Object obj) {
+    public boolean contains(T obj) {
         return indexOf(obj) >= 0;
     }
 
@@ -126,12 +126,13 @@ public class CircularArray extends Object {
      * @param index
      *            the index of the object to be retrieved
      */
-    public Object get(int index) {
+    @SuppressWarnings("unchecked")
+    public T get(int index) {
         rangeCheck(index);
         if (count == 0) {
             return null;
         }
-        return array[convert(index)];
+        return (T)array[convert(index)];
     }
 
     /**
@@ -140,7 +141,7 @@ public class CircularArray extends Object {
      * @param obj
      *            the object that is being searched for
      */
-    public int indexOf(Object obj) {
+    public int indexOf(T obj) {
         for (int i = 0; i < capacity; i++) {
             int index = convert(i);
             if (array[index] == obj) {
@@ -153,11 +154,10 @@ public class CircularArray extends Object {
 
     /**
      * Removes the specified object from the array
-     * 
-     * @param i
-     *            the index of the object to be removed
+     *
+     * @param obj object to be removed
      */
-    public void remove(Object obj) {
+    public void remove(T obj) {
         if (count == 0) {
             return;
         }
@@ -330,18 +330,17 @@ public class CircularArray extends Object {
     /**
      * Converts the array to an Object array.
      */
-    public Object[] toArray() {
+    public T[] toArray() {
         Object[] o = new Object[capacity];
         for (int i = 0; i < capacity; i++) {
             o[i] = array[convert(i)];
         }
-        return o;
+        return (T[])o;
     }
 
     public String internalRep() {
-        Object o = null;
-
-        StringBuffer sb = new StringBuffer();
+        Object o;
+        StringBuilder sb = new StringBuilder();
         sb.append("\n");
         for (int i = 0; i < array.length; i++) {
             sb.append('(').append(i).append(")  ");
@@ -379,9 +378,8 @@ public class CircularArray extends Object {
 
     public String toString() {
         Object[] oa = toArray();
-        Object o = null;
-
-        StringBuffer sb = new StringBuffer();
+        Object o;
+        StringBuilder sb = new StringBuilder();
         sb.append("[");
         for (int i = 0; i < oa.length; i++) {
             o = oa[i];

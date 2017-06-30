@@ -23,6 +23,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
@@ -38,7 +39,6 @@ import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -72,7 +72,7 @@ public class ProcedureQueryView extends JPanel {
 
     protected ProjectController mediator;
     protected TextAdapter name;
-    protected JComboBox queryRoot;
+    protected JComboBox<ConfigurationNode> queryRoot;
     protected SelectPropertiesPanel properties;
 
     public ProcedureQueryView(ProjectController mediator) {
@@ -160,13 +160,13 @@ public class ProcedureQueryView extends JPanel {
         // making it impossible to reference other DataMaps.
 
         DataMap map = mediator.getCurrentDataMap();
-        Object[] roots = map.getProcedures().toArray();
+        ConfigurationNode[] roots = map.getProcedures().toArray(new ConfigurationNode[0]);
 
         if (roots.length > 1) {
             Arrays.sort(roots, Comparators.getDataMapChildrenComparator());
         }
 
-        DefaultComboBoxModel model = new DefaultComboBoxModel(roots);
+        DefaultComboBoxModel<ConfigurationNode> model = new DefaultComboBoxModel<>(roots);
         model.setSelectedItem(query.getRoot());
         queryRoot.setModel(model);
 
@@ -251,7 +251,7 @@ public class ProcedureQueryView extends JPanel {
 
     final class ProcedureQueryPropertiesPanel extends RawQueryPropertiesPanel {
 
-        private JComboBox labelCase;
+        private JComboBox<CapsStrategy> labelCase;
 
         ProcedureQueryPropertiesPanel(ProjectController mediator) {
             super(mediator);
@@ -260,12 +260,11 @@ public class ProcedureQueryView extends JPanel {
         protected PanelBuilder createPanelBuilder() {
             labelCase = Application.getWidgetFactory().createUndoableComboBox();
             labelCase.setRenderer(new LabelCapsRenderer());
-
             labelCase.addActionListener(new ActionListener() {
-
+                @Override
                 public void actionPerformed(ActionEvent event) {
-                    Object value = labelCase.getModel().getSelectedItem();
-                    setQueryProperty(ProcedureQuery.COLUMN_NAME_CAPITALIZATION_PROPERTY, (String) value);
+                    String value = labelCase.getModel().getSelectedItem().toString();
+                    setQueryProperty(ProcedureQuery.COLUMN_NAME_CAPITALIZATION_PROPERTY, value);
                 }
             });
 
@@ -287,10 +286,8 @@ public class ProcedureQueryView extends JPanel {
             super.initFromModel(query);
 
             if (query != null && QueryDescriptor.PROCEDURE_QUERY.equals(query.getType())) {
-                DefaultComboBoxModel labelCaseModel = new DefaultComboBoxModel(LABEL_CAPITALIZATION);
-
-                String columnNameCapitalization = query.getProperty(SQLTemplate.COLUMN_NAME_CAPITALIZATION_PROPERTY);
-
+                DefaultComboBoxModel<CapsStrategy> labelCaseModel = new DefaultComboBoxModel<>(LABEL_CAPITALIZATION);
+                String columnNameCapitalization = query.getProperty(ProcedureQuery.COLUMN_NAME_CAPITALIZATION_PROPERTY);
                 labelCaseModel.setSelectedItem(columnNameCapitalization != null ?
                         CapsStrategy.valueOf(columnNameCapitalization) : CapsStrategy.DEFAULT);
                 labelCase.setModel(labelCaseModel);

@@ -130,12 +130,12 @@ public class ProjectController extends CayenneController {
         /**
          * Paths of multiple selection
          */
-        private Object[] paths;
+        private ConfigurationNode[] paths;
 
         /**
          * Parent path of multiple selection
          */
-        private Object parentPath;
+        private ConfigurationNode parentPath;
 
         /**
          * currently selecte entity listener class
@@ -207,7 +207,7 @@ public class ProjectController extends CayenneController {
     protected Preferences projectControllerPreferences;
 
     protected ControllerState currentState;
-    protected CircularArray controllerStateHistory;
+    protected CircularArray<ControllerState> controllerStateHistory;
     protected int maxHistorySize = 20;
 
     private EntityResolver entityResolver;
@@ -221,7 +221,7 @@ public class ProjectController extends CayenneController {
     public ProjectController(CayenneModelerController parent) {
         super(parent);
         this.listenerList = new EventListenerList();
-        controllerStateHistory = new CircularArray(maxHistorySize);
+        controllerStateHistory = new CircularArray<>(maxHistorySize);
         currentState = new ControllerState();
     }
 
@@ -401,8 +401,9 @@ public class ProjectController extends CayenneController {
     /** Resets all current models to null. */
     private void clearState() {
         // don't clear if we are refiring events for history navigation
-        if (currentState.isRefiring)
+        if (currentState.isRefiring) {
             return;
+        }
 
         currentState = new ControllerState();
     }
@@ -417,16 +418,14 @@ public class ProjectController extends CayenneController {
     private void removeFromHistory(EventObject e) {
 
         int count = controllerStateHistory.size();
-        List<Object> removeList = new ArrayList<>();
+        List<ControllerState> removeList = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
-            ControllerState cs = (ControllerState) controllerStateHistory.get(i);
-
-            EventObject csEvent = cs.event;
-
-            if (csEvent == null) {
+            ControllerState cs = controllerStateHistory.get(i);
+            if (cs == null || cs.event == null) {
                 continue;
             }
+            EventObject csEvent = cs.event;
 
             if (e instanceof EntityEvent && csEvent instanceof EntityDisplayEvent) {
                 if (((EntityEvent) e).getEntity() == ((EntityDisplayEvent) csEvent).getEntity()) {
@@ -459,7 +458,7 @@ public class ProjectController extends CayenneController {
             }
         }
 
-        for (Object o : removeList) {
+        for (ControllerState o : removeList) {
             controllerStateHistory.remove(o);
         }
     }
@@ -535,11 +534,11 @@ public class ProjectController extends CayenneController {
         return currentState.procedureParameters;
     }
 
-    public Object[] getCurrentPaths() {
+    public ConfigurationNode[] getCurrentPaths() {
         return currentState.paths;
     }
 
-    public Object getCurrentParentPath() {
+    public ConfigurationNode getCurrentParentPath() {
         return currentState.parentPath;
     }
 
@@ -1019,30 +1018,31 @@ public class ProjectController extends CayenneController {
 
     public void fireNavigationEvent(EventObject e) {
         Object source = e.getSource();
-        if (source == null)
+        if (source == null) {
             return;
+        }
 
         int size = controllerStateHistory.size();
         if (size == 0)
             return;
 
         int i = controllerStateHistory.indexOf(currentState);
-        ControllerState cs = null;
+        ControllerState cs;
         if (size == 1) {
-            cs = (ControllerState) controllerStateHistory.get(0);
+            cs = controllerStateHistory.get(0);
         } else if (source instanceof NavigateForwardAction) {
             int counter = 0;
             while (true) {
                 if (i < 0) {
                     // a new state got created without it being saved.
                     // just move to the beginning of the list
-                    cs = (ControllerState) controllerStateHistory.get(0);
+                    cs = controllerStateHistory.get(0);
                 } else if (i + 1 < size) {
                     // move forward
-                    cs = (ControllerState) controllerStateHistory.get(i + 1);
+                    cs = controllerStateHistory.get(i + 1);
                 } else {
                     // wrap around
-                    cs = (ControllerState) controllerStateHistory.get(0);
+                    cs = controllerStateHistory.get(0);
                 }
                 if (!cs.isEquivalent(currentState)) {
                     break;
@@ -1061,34 +1061,36 @@ public class ProjectController extends CayenneController {
                 if (i < 0) {
                     // a new state got created without it being saved.
                     try {
-                        cs = (ControllerState) controllerStateHistory.get(size - 2);
+                        cs = controllerStateHistory.get(size - 2);
                     } catch (ArrayIndexOutOfBoundsException ex) {
-                        cs = (ControllerState) controllerStateHistory.get(size - 1);
+                        cs = controllerStateHistory.get(size - 1);
                     }
                 } else if (i - 1 >= 0) {
                     // move to the previous one
-                    cs = (ControllerState) controllerStateHistory.get(i - 1);
+                    cs = controllerStateHistory.get(i - 1);
                 } else {
                     // wrap around
-                    cs = (ControllerState) controllerStateHistory.get(size - 1);
+                    cs = controllerStateHistory.get(size - 1);
                 }
                 if (!cs.isEquivalent(currentState)) {
                     break;
                 }
-                // if it doesn't find it within 5 tries it is probably stuck in
-                // a loop
+                // if it doesn't find it within 5 tries it is probably stuck in a loop
                 if (++counter > 5) {
                     break;
                 }
                 i--;
             }
+        } else {
+            throw new IllegalStateException("Unknown source for navigation event: " + e.getSource());
         }
 
         // reset the current state to the one we just navigated to
         currentState = cs;
         DisplayEvent de = cs.event;
-        if (de == null)
+        if (de == null) {
             return;
+        }
 
         // make sure that isRefiring is turned off prior to exiting this routine
         // this flag is used to tell the controller to not create new states
@@ -1096,8 +1098,7 @@ public class ProjectController extends CayenneController {
         currentState.isRefiring = true;
 
         // the order of the following is checked in most specific to generic
-        // because
-        // of the inheritance heirarchy
+        // because of the inheritance hierarchy
         de.setRefired(true);
         if (de instanceof EntityDisplayEvent) {
             EntityDisplayEvent ede = (EntityDisplayEvent) de;
@@ -1543,21 +1544,21 @@ public class ProjectController extends CayenneController {
     }
 
     /**
-     * @return currently selecte entity listener class
+     * set current entity listener class
      */
     public void setCurrentListenerClass(String listenerClass) {
         currentState.listenerClass = listenerClass;
     }
 
     /**
-     * @return currently selected callback type
+     * set current callback type
      */
     public void setCurrentCallbackType(CallbackType callbackType) {
         currentState.callbackType = callbackType;
     }
 
     /**
-     * @return currently selected callback methods
+     * set current callback methods
      */
     public void setCurrentCallbackMethods(ObjCallbackMethod[] callbackMethods) {
         currentState.callbackMethods = callbackMethods;
@@ -1645,7 +1646,6 @@ public class ProjectController extends CayenneController {
      * Returns currently selected object, null if there are none, List if there
      * are several
      */
-    @SuppressWarnings("unchecked")
     public Object getCurrentObject() {
         if (getCurrentObjEntity() != null) {
             return getCurrentObjEntity();
@@ -1664,24 +1664,23 @@ public class ProjectController extends CayenneController {
         } else if (getCurrentDataChanel() != null) {
             return getCurrentDataChanel();
         } else if (getCurrentPaths() != null) { // multiple objects
-            Object[] paths = getCurrentPaths();
-            List<Object> result = new Vector<Object>();
+            ConfigurationNode[] paths = getCurrentPaths();
 
-            ConfigurationNodeParentGetter parentGetter = getApplication().getInjector().getInstance(
-                    ConfigurationNodeParentGetter.class);
-            Object parent = parentGetter.getParent((ConfigurationNode) paths[0]);
+            ConfigurationNodeParentGetter parentGetter = getApplication().getInjector()
+                    .getInstance(ConfigurationNodeParentGetter.class);
+            Object parent = parentGetter.getParent(paths[0]);
 
-            for (Object path : paths) {
-                result.add(path);
-            }
+            List<ConfigurationNode> result = new ArrayList<>();
+            result.addAll(Arrays.asList(paths));
 
-            /**
+            /*
              * Here we sort the list of objects to minimize the risk that
              * objects will be pasted incorrectly. For instance, ObjEntity
              * should go before Query, to increase chances that Query's root
              * would be set.
              */
-            Collections.sort(result, parent instanceof DataMap ? Comparators.getDataMapChildrenComparator()
+            Collections.sort(result, parent instanceof DataMap
+                    ? Comparators.getDataMapChildrenComparator()
                     : Comparators.getDataDomainChildrenComparator());
 
             return result;
@@ -1829,7 +1828,7 @@ public class ProjectController extends CayenneController {
     
     /**
      * If true, all save buttons become available.
-     * @param enable
+     * @param enable or not save button
      */
     public void enableSave(boolean enable) {
         application.getActionManager().getAction(SaveAction.class).setEnabled(enable);
@@ -1837,29 +1836,29 @@ public class ProjectController extends CayenneController {
     }
 
     /**
-    * Set currently selected ObjAttributes
-    */
+     * Set currently selected ObjAttributes
+     */
     public void setCurrentObjAttributes(ObjAttribute[] attrs) {
-currentState.objAttrs = attrs;
-}
+        currentState.objAttrs = attrs;
+    }
 
     /**
-    * Set currently selected ObjRelationships
-    */
+     * Set currently selected ObjRelationships
+     */
     public void setCurrentObjRelationships(ObjRelationship[] rels) {
-currentState.objRels = rels;
-}
+        currentState.objRels = rels;
+    }
 
     /**
-    * Set currently selected DbAttributes
-    */
+     * Set currently selected DbAttributes
+     */
     public void setCurrentDbAttributes(DbAttribute[] attrs) {
         currentState.dbAttrs = attrs;
     }
 
     /**
-    * Set currently selected DbRelationships
-    */
+     * Set currently selected DbRelationships
+     */
     public void setCurrentDbRelationships(DbRelationship[] rels) {
         currentState.dbRels = rels;
     }

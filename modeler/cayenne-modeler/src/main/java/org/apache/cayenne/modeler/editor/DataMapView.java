@@ -65,7 +65,7 @@ public class DataMapView extends JPanel {
 
     protected TextAdapter name;
     protected JLabel location;
-    protected JComboBox nodeSelector;
+    protected JComboBox<DataNodeDescriptor> nodeSelector;
     protected JCheckBox defaultLockType;
     protected TextAdapter defaultCatalog;
     protected TextAdapter defaultSchema;
@@ -307,12 +307,11 @@ public class DataMapView extends JPanel {
         quoteSQLIdentifiers.setSelected(map.isQuotingSQLIdentifiers());
         // rebuild data node list
 
-        Object nodes[] = ((DataChannelDescriptor) eventController
-                .getProject()
-                .getRootNode()).getNodeDescriptors().toArray();
+        DataNodeDescriptor nodes[] = ((DataChannelDescriptor) eventController.getProject().getRootNode())
+                .getNodeDescriptors().toArray(new DataNodeDescriptor[0]);
 
         // add an empty item to the front
-        Object[] objects = new Object[nodes.length + 1];
+        DataNodeDescriptor[] objects = new DataNodeDescriptor[nodes.length + 1];
         // objects[0] = null;
 
         // now add the entities
@@ -321,11 +320,10 @@ public class DataMapView extends JPanel {
             System.arraycopy(nodes, 0, objects, 1, nodes.length);
         }
 
-        DefaultComboBoxModel model = new DefaultComboBoxModel(objects);
+        DefaultComboBoxModel<DataNodeDescriptor> model = new DefaultComboBoxModel<>(objects);
 
         // find selected node
-        for (int i = 0; i < nodes.length; i++) {
-            DataNodeDescriptor node = (DataNodeDescriptor) nodes[i];
+        for (DataNodeDescriptor node : nodes) {
             if (node.getDataMapNames().contains(map.getName())) {
                 model.setSelectedItem(node);
                 break;

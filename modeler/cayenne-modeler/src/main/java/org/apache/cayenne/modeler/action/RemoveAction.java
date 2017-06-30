@@ -100,9 +100,7 @@ public class RemoveAction extends CayenneAction {
 
     @Override
     public KeyStroke getAcceleratorKey() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit
-                .getDefaultToolkit()
-                .getMenuShortcutKeyMask());
+        return KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
     }
 
     /**
@@ -127,172 +125,122 @@ public class RemoveAction extends CayenneAction {
     public void performAction(ActionEvent e, boolean allowAsking) {
 
         ProjectController mediator = getProjectController();
-
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
         
         if (mediator.getCurrentObjEntity() != null) {
-            if (dialog
-                    .shouldDelete("ObjEntity", mediator.getCurrentObjEntity().getName())) {
-                application.getUndoManager().addEdit(
-                        new RemoveUndoableEdit(mediator.getCurrentDataMap(), mediator
-                                .getCurrentObjEntity()));
-                removeObjEntity(mediator.getCurrentDataMap(), mediator
-                        .getCurrentObjEntity());
+            if (dialog.shouldDelete("ObjEntity", mediator.getCurrentObjEntity().getName())) {
+
+                application.getUndoManager()
+                        .addEdit(new RemoveUndoableEdit(mediator.getCurrentDataMap(), mediator.getCurrentObjEntity()));
+                removeObjEntity(mediator.getCurrentDataMap(), mediator.getCurrentObjEntity());
             }
-        }
-        else if (mediator.getCurrentDbEntity() != null) {
+        } else if (mediator.getCurrentDbEntity() != null) {
             if (dialog.shouldDelete("DbEntity", mediator.getCurrentDbEntity().getName())) {
-                application.getUndoManager().addEdit(
-                        new RemoveUndoableEdit(mediator.getCurrentDataMap(), mediator
-                                .getCurrentDbEntity()));
-                removeDbEntity(mediator.getCurrentDataMap(), mediator
-                        .getCurrentDbEntity());
+
+                application.getUndoManager()
+                        .addEdit(new RemoveUndoableEdit(mediator.getCurrentDataMap(), mediator.getCurrentDbEntity()));
+                removeDbEntity(mediator.getCurrentDataMap(), mediator.getCurrentDbEntity());
             }
-        }
-        else if (mediator.getCurrentQuery() != null) {
+        } else if (mediator.getCurrentQuery() != null) {
             if (dialog.shouldDelete("query", mediator.getCurrentQuery().getName())) {
-                application.getUndoManager().addEdit(
-                        new RemoveUndoableEdit(mediator.getCurrentDataMap(), mediator
-                                .getCurrentQuery()));
+
+                application.getUndoManager()
+                        .addEdit(new RemoveUndoableEdit(mediator.getCurrentDataMap(), mediator.getCurrentQuery()));
                 removeQuery(mediator.getCurrentDataMap(), mediator.getCurrentQuery());
             }
-        }
-        else if (mediator.getCurrentProcedure() != null) {
-            if (dialog
-                    .shouldDelete("procedure", mediator.getCurrentProcedure().getName())) {
+        } else if (mediator.getCurrentProcedure() != null) {
+            if (dialog.shouldDelete("procedure", mediator.getCurrentProcedure().getName())) {
 
-                application.getUndoManager().addEdit(
-                        new RemoveUndoableEdit(mediator.getCurrentDataMap(), mediator
-                                .getCurrentProcedure()));
-
-                removeProcedure(mediator.getCurrentDataMap(), mediator
-                        .getCurrentProcedure());
-
+                application.getUndoManager()
+                        .addEdit(new RemoveUndoableEdit(mediator.getCurrentDataMap(), mediator.getCurrentProcedure()));
+                removeProcedure(mediator.getCurrentDataMap(), mediator.getCurrentProcedure());
             }
-        }
-        else if (mediator.getCurrentEmbeddable() != null) {
-            if (dialog.shouldDelete("embeddable", mediator
-                    .getCurrentEmbeddable()
-                    .getClassName())) {
+        } else if (mediator.getCurrentEmbeddable() != null) {
+            if (dialog.shouldDelete("embeddable", mediator.getCurrentEmbeddable().getClassName())) {
 
-                application.getUndoManager().addEdit(
-                        new RemoveUndoableEdit(mediator.getCurrentDataMap(), mediator
-                                .getCurrentEmbeddable()));
-
-                removeEmbeddable(mediator.getCurrentDataMap(), mediator
-                        .getCurrentEmbeddable());
+                application.getUndoManager()
+                        .addEdit(new RemoveUndoableEdit(mediator.getCurrentDataMap(), mediator.getCurrentEmbeddable()));
+                removeEmbeddable(mediator.getCurrentDataMap(), mediator.getCurrentEmbeddable());
             }
-        }
-        else if (mediator.getCurrentDataMap() != null) {
+        } else if (mediator.getCurrentDataMap() != null) {
             if (dialog.shouldDelete("data map", mediator.getCurrentDataMap().getName())) {
 
                 // In context of Data node just remove from Data Node
                 if (mediator.getCurrentDataNode() != null) {
-                    application.getUndoManager().addEdit(
-                            new RemoveUndoableEdit(application, mediator
-                                    .getCurrentDataNode(), mediator.getCurrentDataMap()));
-
-                    removeDataMapFromDataNode(mediator.getCurrentDataNode(), mediator
-                            .getCurrentDataMap());
-
-                }
-                else {
+                    application.getUndoManager()
+                            .addEdit(new RemoveUndoableEdit(application, mediator.getCurrentDataNode(),
+                                    mediator.getCurrentDataMap()));
+                    removeDataMapFromDataNode(mediator.getCurrentDataNode(), mediator.getCurrentDataMap());
+                } else {
                     // Not under Data Node, remove completely
-                    application.getUndoManager().addEdit(
-                            new RemoveUndoableEdit(application, mediator
-                                    .getCurrentDataMap()));
-
+                    application.getUndoManager()
+                            .addEdit(new RemoveUndoableEdit(application, mediator.getCurrentDataMap()));
                     removeDataMap(mediator.getCurrentDataMap());
-
                 }
             }
-        }
-        else if (mediator.getCurrentDataNode() != null) {
+        } else if (mediator.getCurrentDataNode() != null) {
             if (dialog.shouldDelete("data node", mediator.getCurrentDataNode().getName())) {
-                application
-                        .getUndoManager()
-                        .addEdit(
-                                new RemoveUndoableEdit(application, mediator
-                                        .getCurrentDataNode()));
 
+                application.getUndoManager()
+                        .addEdit(new RemoveUndoableEdit(application, mediator.getCurrentDataNode()));
                 removeDataNode(mediator.getCurrentDataNode());
             }
-        }
-
-        else if (mediator.getCurrentPaths() != null) { // multiple deletion
+        } else if (mediator.getCurrentPaths() != null) { // multiple deletion
             if (dialog.shouldDelete("selected objects")) {
-                Object[] paths = mediator.getCurrentPaths();
-                Object parentPath = mediator.getCurrentParentPath();
+
+                ConfigurationNode[] paths = mediator.getCurrentPaths();
+                ConfigurationNode parentPath = mediator.getCurrentParentPath();
 
                 CompoundEdit compoundEdit = new RemoveCompoundUndoableEdit();
-
-                for (Object path : paths) {
+                for (ConfigurationNode path : paths) {
                     compoundEdit.addEdit(removeLastPathComponent(path, parentPath));
                 }
                 compoundEdit.end();
 
                 application.getUndoManager().addEdit(compoundEdit);
-
             }
         } else if(mediator.getCurrentCallbackMethods().length > 0) {
             removeMethods(mediator, dialog, getProjectController().getCurrentCallbackMethods());
-        }
-        else if(mediator.getCurrentObjRelationships().length > 0) {
+        } else if(mediator.getCurrentObjRelationships().length > 0) {
       		removeObjRelationships(mediator, dialog, getProjectController().getCurrentObjRelationships());
-        }
-        else if(mediator.getCurrentDbRelationships().length > 0) {
+        } else if(mediator.getCurrentDbRelationships().length > 0) {
       		removeDBRelationships(mediator, dialog, getProjectController().getCurrentDbRelationships());
-        }
-        else if(mediator.getCurrentObjAttributes().length > 0) {
+        } else if(mediator.getCurrentObjAttributes().length > 0) {
       		removeObjAttributes(mediator, dialog, getProjectController().getCurrentObjAttributes());
-        }
-        else if(mediator.getCurrentEmbAttributes().length > 0) {
+        } else if(mediator.getCurrentEmbAttributes().length > 0) {
       		removeEmbAttributes(mediator, dialog, getProjectController().getCurrentEmbAttributes());
-        }
-        else if(mediator.getCurrentDbAttributes().length > 0) {
+        } else if(mediator.getCurrentDbAttributes().length > 0) {
         	removeDbAttributes(mediator, dialog, getProjectController().getCurrentDbAttributes());
-        }
-        else if(mediator.getCurrentProcedureParameters().length > 0) {
+        } else if(mediator.getCurrentProcedureParameters().length > 0) {
         	removeProcedureParameters(mediator.getCurrentProcedure(), mediator.getCurrentProcedureParameters());
         }
 
     }
 
-    private void removeProcedureParameters(
-            Procedure procedure,
-            ProcedureParameter[] parameters) {
+    private void removeProcedureParameters(Procedure procedure, ProcedureParameter[] parameters) {
         ProjectController mediator = getProjectController();
-
         for (ProcedureParameter parameter : parameters) {
-
             procedure.removeCallParameter(parameter.getName());
-
-            ProcedureParameterEvent e = new ProcedureParameterEvent(Application
-                    .getFrame(), parameter, MapEvent.REMOVE);
-
+            ProcedureParameterEvent e = new ProcedureParameterEvent(Application.getFrame(), parameter, MapEvent.REMOVE);
             mediator.fireProcedureParameterEvent(e);
         }
     }
     
-    private void removeEmbAttributes(ProjectController mediator,
-			ConfirmRemoveDialog dialog,
-			EmbeddableAttribute[] embAttrs) {
+    private void removeEmbAttributes(ProjectController mediator, ConfirmRemoveDialog dialog,
+                                     EmbeddableAttribute[] embAttrs) {
     	if (embAttrs != null && embAttrs.length > 0) {
-        	if ((embAttrs.length == 1 && dialog.shouldDelete("DbAttribute", embAttrs[0]
-        			.getName()))
+        	if ((embAttrs.length == 1 && dialog.shouldDelete("DbAttribute", embAttrs[0].getName()))
                     || (embAttrs.length > 1 && dialog.shouldDelete("selected DbAttributes"))) {
 
         		Embeddable embeddable = mediator.getCurrentEmbeddable();
 
-                application.getUndoManager().addEdit(
-                		new RemoveAttributeUndoableEdit(
-                                embeddable,
-                                embAttrs));
+                application.getUndoManager()
+                        .addEdit(new RemoveAttributeUndoableEdit(embeddable, embAttrs));
 
                 for (EmbeddableAttribute attrib : embAttrs) {
                     embeddable.removeAttribute(attrib.getName());
-                    EmbeddableAttributeEvent e = new EmbeddableAttributeEvent(Application
-                            .getFrame(), attrib, embeddable, MapEvent.REMOVE);
+                    EmbeddableAttributeEvent e = new EmbeddableAttributeEvent(Application.getFrame(),
+                            attrib, embeddable, MapEvent.REMOVE);
                     mediator.fireEmbeddableAttributeEvent(e);
                 }
 
@@ -304,28 +252,19 @@ public class RemoveAction extends CayenneAction {
 	private void removeObjAttributes(ProjectController mediator,
 			ConfirmRemoveDialog dialog, ObjAttribute[] objAttrs) {
     	if (objAttrs != null && objAttrs.length > 0) {
-        	if ((objAttrs.length == 1 && dialog.shouldDelete("DbAttribute", objAttrs[0]
-        			.getName()))
+        	if ((objAttrs.length == 1 && dialog.shouldDelete("DbAttribute", objAttrs[0].getName()))
                     || (objAttrs.length > 1 && dialog.shouldDelete("selected DbAttributes"))) {
 
         		ObjEntity entity = mediator.getCurrentObjEntity();
 
-                application.getUndoManager().addEdit(
-                        new RemoveAttributeUndoableEdit(
+                application.getUndoManager()
+                        .addEdit(new RemoveAttributeUndoableEdit(
                                 (DataChannelDescriptor)mediator.getProject().getRootNode(),
-                                mediator.getCurrentDataMap(),
-                                entity,
-                                objAttrs));
+                                mediator.getCurrentDataMap(), entity, objAttrs));
 
                 for (ObjAttribute attrib : objAttrs) {
                     entity.removeAttribute(attrib.getName());
-
-                    AttributeEvent e = new AttributeEvent(
-                            Application.getFrame(),
-                            attrib,
-                            entity,
-                            MapEvent.REMOVE);
-
+                    AttributeEvent e = new AttributeEvent(Application.getFrame(), attrib, entity, MapEvent.REMOVE);
                     mediator.fireObjAttributeEvent(e);
                 }
 
@@ -334,32 +273,21 @@ public class RemoveAction extends CayenneAction {
     	}
 	}
 
-	private void removeDbAttributes(ProjectController mediator,
-			ConfirmRemoveDialog dialog,
-			DbAttribute[] dbAttrs) {
+	private void removeDbAttributes(ProjectController mediator, ConfirmRemoveDialog dialog, DbAttribute[] dbAttrs) {
     	if (dbAttrs != null && dbAttrs.length > 0) {
-        	if ((dbAttrs.length == 1 && dialog.shouldDelete("DbAttribute", dbAttrs[0]
-        			.getName()))
+        	if ((dbAttrs.length == 1 && dialog.shouldDelete("DbAttribute", dbAttrs[0].getName()))
                     || (dbAttrs.length > 1 && dialog.shouldDelete("selected DbAttributes"))) {
 
         		DbEntity entity = mediator.getCurrentDbEntity();
 
-                application.getUndoManager().addEdit(
-                		new RemoveAttributeUndoableEdit(
-                				(DataChannelDescriptor)mediator.getProject().getRootNode(),
-                                mediator.getCurrentDataMap(),
-                                entity,
-                                dbAttrs));
+                application.getUndoManager()
+                        .addEdit(new RemoveAttributeUndoableEdit(
+                                (DataChannelDescriptor)mediator.getProject().getRootNode(),
+                                mediator.getCurrentDataMap(), entity, dbAttrs));
 
                 for (DbAttribute attrib : dbAttrs) {
                     entity.removeAttribute(attrib.getName());
-
-                    AttributeEvent e = new AttributeEvent(
-                            Application.getFrame(),
-                            attrib,
-                            entity,
-                            MapEvent.REMOVE);
-
+                    AttributeEvent e = new AttributeEvent(Application.getFrame(), attrib, entity, MapEvent.REMOVE);
                     mediator.fireDbAttributeEvent(e);
                 }
 
@@ -368,53 +296,40 @@ public class RemoveAction extends CayenneAction {
     	}
     }
     
-    private void removeDBRelationships(ProjectController mediator,
-			ConfirmRemoveDialog dialog,
-			DbRelationship[] dbRels) {
+    private void removeDBRelationships(ProjectController mediator, ConfirmRemoveDialog dialog,
+                                       DbRelationship[] dbRels) {
 		if (dbRels != null && dbRels.length > 0) {
-			if ((dbRels.length == 1 && dialog.shouldDelete(
-					"DbRelationship", dbRels[0].getName()))
-					|| (dbRels.length > 1 && dialog
-							.shouldDelete("selected DbRelationships"))) {
+			if ((dbRels.length == 1 && dialog.shouldDelete("DbRelationship", dbRels[0].getName()))
+					|| (dbRels.length > 1 && dialog.shouldDelete("selected DbRelationships"))) {
 				DbEntity entity = mediator.getCurrentDbEntity();
 				
 				for (DbRelationship rel : dbRels) {
 					entity.removeRelationship(rel.getName());
-
-					RelationshipEvent e = new RelationshipEvent(Application.getFrame(),
-							rel, entity, MapEvent.REMOVE);
+					RelationshipEvent e = new RelationshipEvent(Application.getFrame(), rel, entity, MapEvent.REMOVE);
 					mediator.fireDbRelationshipEvent(e);
 				}
 
 				ProjectUtil.cleanObjMappings(mediator.getCurrentDataMap());
-				
-				Application.getInstance().getUndoManager().addEdit(
-						new RemoveRelationshipUndoableEdit(entity, dbRels));
+				Application.getInstance().getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(entity, dbRels));
 			}
 		}
 	}
 
-	private void removeObjRelationships(ProjectController mediator,
-			ConfirmRemoveDialog dialog,
-			ObjRelationship[] rels) {
-		if ((rels.length == 1 && dialog.shouldDelete("ObjRelationship",
-				rels[0].getName()))
-				|| (rels.length > 1 && dialog
-						.shouldDelete("selected ObjRelationships"))) {
+	private void removeObjRelationships(ProjectController mediator, ConfirmRemoveDialog dialog,
+                                        ObjRelationship[] rels) {
+		if ((rels.length == 1 && dialog.shouldDelete("ObjRelationship", rels[0].getName()))
+				|| (rels.length > 1 && dialog.shouldDelete("selected ObjRelationships"))) {
 			ObjEntity entity = mediator.getCurrentObjEntity();
 			for (ObjRelationship rel : rels) {
 				entity.removeRelationship(rel.getName());
-				RelationshipEvent e = new RelationshipEvent(Application.getFrame(),
-						rel, entity, MapEvent.REMOVE);
+				RelationshipEvent e = new RelationshipEvent(Application.getFrame(), rel, entity, MapEvent.REMOVE);
 				mediator.fireObjRelationshipEvent(e);
 			}
-			Application.getInstance().getUndoManager().addEdit(
-					new RemoveRelationshipUndoableEdit(entity, rels));
+			Application.getInstance().getUndoManager().addEdit(new RemoveRelationshipUndoableEdit(entity, rels));
 		}		
 	}
 
-	private void removeMethods(ProjectController mediator,
-			ConfirmRemoveDialog dialog, ObjCallbackMethod[] methods) {
+	private void removeMethods(ProjectController mediator, ConfirmRemoveDialog dialog, ObjCallbackMethod[] methods) {
     	CallbackMap callbackMap = mediator.getCurrentObjEntity().getCallbackMap();
     	CallbackType callbackType = mediator.getCurrentCallbackType();
 
@@ -423,25 +338,21 @@ public class RemoveAction extends CayenneAction {
             for (ObjCallbackMethod callbackMethod : methods) {
             	callbackMap.getCallbackDescriptor(callbackType.getType()).removeCallbackMethod(callbackMethod.getName());
                     
-                CallbackMethodEvent ce = new CallbackMethodEvent(
-                        this,
-                        null,
+                CallbackMethodEvent ce = new CallbackMethodEvent(this, null,
                         callbackMethod.getName(),
                         MapEvent.REMOVE);
                     
                 mediator.fireCallbackMethodEvent(ce);
             }
             
-            Application.getInstance().getUndoManager().addEdit( 
-            		new RemoveCallbackMethodUndoableEdit(callbackType, methods));
+            Application.getInstance().getUndoManager()
+                    .addEdit(new RemoveCallbackMethodUndoableEdit(callbackType, methods));
         }		
 	}
 
 	public void removeDataMap(DataMap map) {
         ProjectController mediator = getProjectController();
-        DataChannelDescriptor domain = (DataChannelDescriptor) mediator
-                .getProject()
-                .getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
         DataMapEvent e = new DataMapEvent(Application.getFrame(), map, MapEvent.REMOVE);
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
@@ -451,11 +362,9 @@ public class RemoveAction extends CayenneAction {
             Collection<URL> unusedResources = getCurrentProject().getUnusedResources();
             unusedResources.add(mapURL);
         }
-        
-        Iterator<DataNodeDescriptor> iterator = domain.getNodeDescriptors().iterator();
-        while(iterator.hasNext()){
-            DataNodeDescriptor node = iterator.next();
-            if(node.getDataMapNames().contains(map.getName())){
+
+        for (DataNodeDescriptor node : domain.getNodeDescriptors()) {
+            if (node.getDataMapNames().contains(map.getName())) {
                 removeDataMapFromDataNode(node, map);
             }
         }
@@ -465,9 +374,7 @@ public class RemoveAction extends CayenneAction {
 
     public void removeDataNode(DataNodeDescriptor node) {
         ProjectController mediator = getProjectController();
-        DataChannelDescriptor domain = (DataChannelDescriptor) mediator
-                .getProject()
-                .getRootNode();
+        DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
         DataNodeEvent e = new DataNodeEvent(Application.getFrame(), node, MapEvent.REMOVE);
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
@@ -507,10 +414,7 @@ public class RemoveAction extends CayenneAction {
     public void removeProcedure(DataMap map, Procedure procedure) {
         ProjectController mediator = getProjectController();
 
-        ProcedureEvent e = new ProcedureEvent(
-                Application.getFrame(),
-                procedure,
-                MapEvent.REMOVE);
+        ProcedureEvent e = new ProcedureEvent(Application.getFrame(), procedure, MapEvent.REMOVE);
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         map.removeProcedure(procedure.getName());
@@ -537,9 +441,7 @@ public class RemoveAction extends CayenneAction {
             if (!QueryDescriptor.EJBQL_QUERY.equals(query.getType())) {
                 Object root = query.getRoot();
 
-                if (root == entity
-                        || (root instanceof String && root.toString().equals(
-                                entity.getName()))) {
+                if (root == entity || (root instanceof String && root.toString().equals(entity.getName()))) {
                     removeQuery(map, query);
                 }
             }
@@ -549,10 +451,7 @@ public class RemoveAction extends CayenneAction {
     public void removeEmbeddable(DataMap map, Embeddable embeddable) {
         ProjectController mediator = getProjectController();
 
-        EmbeddableEvent e = new EmbeddableEvent(
-                Application.getFrame(),
-                embeddable,
-                MapEvent.REMOVE);
+        EmbeddableEvent e = new EmbeddableEvent(Application.getFrame(), embeddable, MapEvent.REMOVE);
         e.setDomain((DataChannelDescriptor) mediator.getProject().getRootNode());
 
         map.removeEmbeddable(embeddable.getClassName());
@@ -592,7 +491,7 @@ public class RemoveAction extends CayenneAction {
     /**
      * Removes an object, depending on its type
      */
-    private UndoableEdit removeLastPathComponent(Object object, Object parentObject) {
+    private UndoableEdit removeLastPathComponent(ConfigurationNode object, ConfigurationNode parentObject) {
 
         UndoableEdit undo = null;
 

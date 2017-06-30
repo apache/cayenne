@@ -30,15 +30,15 @@ public interface CayenneMapEntry {
      * 
      * @return name of this entry.
      */
-    public String getName();
+    String getName();
 
     /**
      * Returns the parent map.
      */
-    public Object getParent();
+    Object getParent();
 
     /**
      * Stores the parent map.
      */
-    public void setParent(Object parent);
+    void setParent(Object parent);
 }

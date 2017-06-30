@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.util.state;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -42,7 +43,7 @@ public abstract class DisplayEventType {
 
     public abstract void saveLastDisplayEvent();
 
-    protected String getObjectName(Object object) {
+    protected String getObjectName(ConfigurationNode object) {
         if (object instanceof CayenneMapEntry) {
             return ((CayenneMapEntry) object).getName();
         } else if (object instanceof DataChannelDescriptor) {

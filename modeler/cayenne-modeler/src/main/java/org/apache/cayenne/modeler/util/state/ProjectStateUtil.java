@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.util.state;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
 
@@ -32,7 +33,7 @@ public final class ProjectStateUtil {
 
     public void saveLastState(ProjectController controller) {
         EventObject displayEvent = controller.getLastDisplayEvent();
-        Object[] multiplyObjects = controller.getCurrentPaths();
+        ConfigurationNode[] multiplyObjects = controller.getCurrentPaths();
 
         if (displayEvent == null && multiplyObjects == null) {
             return;

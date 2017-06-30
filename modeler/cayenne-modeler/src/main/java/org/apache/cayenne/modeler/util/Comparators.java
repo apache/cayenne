@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.util;
 
 import java.util.Comparator;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
@@ -39,20 +40,20 @@ import org.apache.cayenne.query.Query;
  */
 public class Comparators {
 
-    private static final Comparator dataDomainChildrenComparator = new DataDomainChildrenComparator();
+    private static final Comparator<ConfigurationNode> dataDomainChildrenComparator = new DataDomainChildrenComparator();
 
-    private static final Comparator dataMapChildrenComparator = new DataMapChildrenComparator();
+    private static final Comparator<ConfigurationNode> dataMapChildrenComparator = new DataMapChildrenComparator();
 
-    private static final Comparator entityChildrenComparator = new EntityChildrenComparator();
+    private static final Comparator<ConfigurationNode> entityChildrenComparator = new EntityChildrenComparator();
 
-    private static final Comparator namedObjectComparator = new NamedObjectComparator();
+    private static final Comparator<ConfigurationNode> namedObjectComparator = new NamedObjectComparator();
 
     /**
      * Returns a comparator to order DataMap objects of mixed types. Objects of the same
      * type are ordered based on "name" property. Objects of different types are ordered
      * based on the following precedence: DataMap, DataNode.
      */
-    public static Comparator getDataDomainChildrenComparator() {
+    public static Comparator<ConfigurationNode> getDataDomainChildrenComparator() {
         return dataDomainChildrenComparator;
     }
 
@@ -62,7 +63,7 @@ public class Comparators {
      * based on the following precedence: DataMap, ObjEntity, DbEntity, Procedure and
      * Query.
      */
-    public static Comparator getDataMapChildrenComparator() {
+    public static Comparator<ConfigurationNode> getDataMapChildrenComparator() {
         return dataMapChildrenComparator;
     }
 
@@ -72,31 +73,29 @@ public class Comparators {
      * Objects of different types are ordered based on the following precedence:
      * Attribute, Relationship.
      */
-    public static Comparator getEntityChildrenComparator() {
+    public static Comparator<ConfigurationNode> getEntityChildrenComparator() {
         return entityChildrenComparator;
     }
 
     /**
      * Returns a comparator to order java beans according to their "name" property.
      */
-    public static Comparator getNamedObjectComparator() {
+    public static Comparator<ConfigurationNode> getNamedObjectComparator() {
         return namedObjectComparator;
     }
 
-    static class NamedObjectComparator implements Comparator {
+    static class NamedObjectComparator implements Comparator<ConfigurationNode> {
 
-        public int compare(Object o1, Object o2) {
+        public int compare(ConfigurationNode o1, ConfigurationNode o2) {
 
             String name1 = ModelerUtil.getObjectName(o1);
             String name2 = ModelerUtil.getObjectName(o2);
 
             if (name1 == null) {
                 return (name2 != null) ? -1 : 0;
-            }
-            else if (name2 == null) {
+            } else if (name2 == null) {
                 return 1;
-            }
-            else {
+            } else {
                 return name1.compareTo(name2);
             }
         }
@@ -104,24 +103,21 @@ public class Comparators {
 
     final static class DataDomainChildrenComparator extends NamedObjectComparator {
 
-        public int compare(Object o1, Object o2) {
+        public int compare(ConfigurationNode o1, ConfigurationNode o2) {
             int delta = getClassWeight(o1) - getClassWeight(o2);
             if (delta != 0) {
                 return delta;
-            }
-            else {
+            } else {
                 return super.compare(o1, o2);
             }
         }
 
-        private static int getClassWeight(Object o) {
+        private static int getClassWeight(ConfigurationNode o) {
             if (o instanceof DataMap) {
                 return 1;
-            }
-            else if (o instanceof DataNodeDescriptor) {
+            } else if (o instanceof DataNodeDescriptor) {
                 return 2;
-            }
-            else {
+            } else {
                 // this should trap nulls among other things
                 return Integer.MAX_VALUE;
             }
@@ -130,36 +126,29 @@ public class Comparators {
 
     final static class DataMapChildrenComparator extends NamedObjectComparator {
 
-        public int compare(Object o1, Object o2) {
+        public int compare(ConfigurationNode o1, ConfigurationNode o2) {
             int delta = getClassWeight(o1) - getClassWeight(o2);
             if (delta != 0) {
                 return delta;
-            }
-            else {
+            } else {
                 return super.compare(o1, o2);
             }
         }
 
-        private static int getClassWeight(Object o) {
+        private static int getClassWeight(ConfigurationNode o) {
             if (o instanceof DataMap) {
                 return 1;
-            }
-            else if (o instanceof ObjEntity) {
+            } else if (o instanceof ObjEntity) {
                 return 2;
-            }
-            else if (o instanceof Embeddable) {
+            } else if (o instanceof Embeddable) {
                 return 3;
-            }
-            else if (o instanceof DbEntity) {
+            } else if (o instanceof DbEntity) {
                 return 4;
-            }
-            else if (o instanceof Procedure) {
+            } else if (o instanceof Procedure) {
                 return 5;
-            }
-            else if (o instanceof Query) {
+            } else if (o instanceof Query) {
                 return 6;
-            }
-            else {
+            } else {
                 // this should trap nulls among other things
                 return Integer.MAX_VALUE;
             }
@@ -168,27 +157,23 @@ public class Comparators {
 
     final static class EntityChildrenComparator extends NamedObjectComparator {
 
-        public int compare(Object o1, Object o2) {
+        public int compare(ConfigurationNode o1, ConfigurationNode o2) {
             int delta = getClassWeight(o1) - getClassWeight(o2);
             if (delta != 0) {
                 return delta;
-            }
-            else {
+            } else {
                 return super.compare(o1, o2);
             }
         }
 
-        private static int getClassWeight(Object o) {
+        private static int getClassWeight(ConfigurationNode o) {
             if (o instanceof Entity) {
                 return 1;
-            }
-            else if (o instanceof Attribute) {
+            } else if (o instanceof Attribute) {
                 return 2;
-            }
-            else if (o instanceof Relationship) {
+            } else if (o instanceof Relationship) {
                 return 3;
-            }
-            else {
+            } else {
                 // this should trap nulls among other things
                 return Integer.MAX_VALUE;
             }

@@ -65,12 +65,12 @@ class MultipleObjectsDisplayEventType extends DisplayEventType {
         preferences.setEvent(MultipleObjectsDisplayEvent.class.getSimpleName());
         preferences.setParentObject(getObjectName(controller.getCurrentParentPath()));
 
-        Object[] multipleObjects = controller.getCurrentPaths();
+        ConfigurationNode[] multipleObjects = controller.getCurrentPaths();
         if (multipleObjects == null) {
             preferences.setMultipleObjects("");
         } else {
             StringBuilder sb = new StringBuilder();
-            for (Object object : multipleObjects) {
+            for (ConfigurationNode object : multipleObjects) {
                 String objectName = getObjectName(object);
                 if (!objectName.isEmpty()) {
                     sb.append(objectName).append(",");
@@ -81,7 +81,7 @@ class MultipleObjectsDisplayEventType extends DisplayEventType {
     }
 
     protected ConfigurationNode[] getLastMultipleObjects(DataChannelDescriptor dataChannel) {
-        List<ConfigurationNode> configurationNodeList = new ArrayList<ConfigurationNode>();
+        List<ConfigurationNode> configurationNodeList = new ArrayList<>();
         ConfigurationNode[] nodes = new ConfigurationNode[0];
 
         String multipleObjects = preferences.getMultipleObjects();
@@ -100,7 +100,7 @@ class MultipleObjectsDisplayEventType extends DisplayEventType {
     }
 
     protected ConfigurationNode[] getLastMultipleObjects(DataNodeDescriptor dataNode) {
-        List<ConfigurationNode> configurationNodeList = new ArrayList<ConfigurationNode>();
+        List<ConfigurationNode> configurationNodeList = new ArrayList<>();
         ConfigurationNode[] nodes = new ConfigurationNode[0];
 
         String multipleObjects = preferences.getMultipleObjects();
@@ -118,7 +118,7 @@ class MultipleObjectsDisplayEventType extends DisplayEventType {
     }
 
     protected ConfigurationNode[] getLastMultipleObjects(DataMap dataMap) {
-        List<ConfigurationNode> configurationNodeList = new ArrayList<ConfigurationNode>();
+        List<ConfigurationNode> configurationNodeList = new ArrayList<>();
         ConfigurationNode[] nodes = new ConfigurationNode[0];
 
         String multipleObjects = preferences.getMultipleObjects();

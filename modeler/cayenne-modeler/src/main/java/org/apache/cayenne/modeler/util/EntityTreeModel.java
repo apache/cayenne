@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.util;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
@@ -26,6 +27,7 @@ import org.apache.cayenne.map.Relationship;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,7 +42,7 @@ import java.util.Vector;
  */
 public class EntityTreeModel implements TreeModel {
     protected Entity root;
-    protected Map<Object, Object[]> sortedChildren;
+    protected Map<Object, ConfigurationNode[]> sortedChildren;
 
     /**
      * Filter for checking attributes and relationships
@@ -79,7 +81,7 @@ public class EntityTreeModel implements TreeModel {
 
         // wonder if linear search will be faster, considering that
         // this comparator uses reflection?
-        return Arrays.binarySearch(sortedChildren(node), child, Comparators.getNamedObjectComparator());
+        return Arrays.binarySearch(sortedChildren(node), (ConfigurationNode)child, Comparators.getNamedObjectComparator());
     }
 
     public void addTreeModelListener(TreeModelListener listener) {
@@ -90,40 +92,39 @@ public class EntityTreeModel implements TreeModel {
         // do nothing...
     }
 
-    private Object[] sortedChildren(Object node) {
+    private ConfigurationNode[] sortedChildren(Object node) {
         Entity entity = entityForNonLeafNode(node);
 
         // may happen in incomplete relationships
         if (entity == null) {
-            return new Object[0];
+            return new ConfigurationNode[0];
         }
 
-        Object key = node;
-        Object[] sortedForNode = sortedChildren.get(key);
+        ConfigurationNode[] sortedForNode = sortedChildren.get(node);
 
         if (sortedForNode == null) {
             Collection<? extends Attribute> attributes = entity.getAttributes();
             Collection<? extends Relationship> relationships = entity.getRelationships();
 
-            List<Object> nodes = new Vector<Object>();
+            List<ConfigurationNode> nodes = new ArrayList<>();
 
             // combine two collections in an array
             for (Attribute attr : attributes) {
                 if (filter == null || filter.attributeMatch(node, attr)) {
-                    nodes.add(attr);
+                    nodes.add((ConfigurationNode)attr);
                 }
             }
 
             for (Relationship rel : relationships) {
                 if (filter == null || filter.relationshipMatch(node, rel)) {
-                    nodes.add(rel);
+                    nodes.add((ConfigurationNode)rel);
                 }
             }
 
-            sortedForNode = nodes.toArray();
+            sortedForNode = nodes.toArray(new ConfigurationNode[0]);
 
             Arrays.sort(sortedForNode, Comparators.getEntityChildrenComparator());
-            sortedChildren.put(key, sortedForNode);
+            sortedChildren.put(node, sortedForNode);
         }
 
         return sortedForNode;
