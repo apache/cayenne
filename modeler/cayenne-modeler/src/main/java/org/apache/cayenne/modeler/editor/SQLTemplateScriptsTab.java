@@ -31,6 +31,8 @@ import org.apache.cayenne.modeler.util.JUndoableCayenneTextPane;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
 import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
 import org.apache.cayenne.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -60,11 +62,12 @@ import java.util.Map;
 public class SQLTemplateScriptsTab extends JPanel {
 
     private static final String DEFAULT_LABEL = "Default";
+    private static final Logger logger = LoggerFactory.getLogger(SQLTemplateScriptsTab.class);
 
     protected ProjectController mediator;
 
-    protected JList scripts;
-    protected List keys;
+    protected JList<String> scripts;
+    protected List<String> keys;
     protected PanelBuilder builder;
     protected CellConstraints cc;
     protected JCayenneTextPane textPane;
@@ -89,15 +92,15 @@ public class SQLTemplateScriptsTab extends JPanel {
             }
         };
 
-        scripts = new JList();
+        scripts = new JList<>();
         scripts.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         scripts.setCellRenderer(new DbAdapterListRenderer(DbAdapterInfo.getStandardAdapterLabels()));
 
-        keys = new ArrayList(DbAdapterInfo.getStandardAdapters().length + 1);
+        keys = new ArrayList<>(DbAdapterInfo.getStandardAdapters().length + 1);
         keys.addAll(Arrays.asList(DbAdapterInfo.getStandardAdapters()));
         Collections.sort(keys);
         keys.add(0, DEFAULT_LABEL);
-        scripts.setModel(new DefaultComboBoxModel(keys.toArray()));
+        scripts.setModel(new DefaultComboBoxModel<>(keys.toArray(new String[0])));
 
         // assemble
         cc = new CellConstraints();
@@ -174,18 +177,16 @@ public class SQLTemplateScriptsTab extends JPanel {
             return;
         }
 
-        String key = (String) scripts.getSelectedValue();
+        String key = scripts.getSelectedValue();
         if (key == null) {
             return;
         }
 
-        boolean exist = true;
+        boolean exist = false;
         for (JCayenneTextPane textPane: panes) {
             if (textPane.getName().equals(key)) {
                 exist = true;
                 break;
-            } else {
-                exist = false;
             }
         }
 
@@ -202,15 +203,7 @@ public class SQLTemplateScriptsTab extends JPanel {
 
         for (final JCayenneTextPane textPane: panes) {
             if (key.equals(textPane.getName())) {
-                Document document = textPane.getDocument();
-                try {
-                    if(!document.getText(0, document.getLength()).equals(text)) {
-                        document.remove(0, document.getLength());
-                        document.insertString(0, text, null);
-                    }
-                } catch (BadLocationException e) {
-                    e.printStackTrace();
-                }
+                textPane.setDocumentTextDirect(text);
                 textPane.getPane().setVisible(true);
                 textPane.getPane().setEditable(true);
             } else {
@@ -221,44 +214,43 @@ public class SQLTemplateScriptsTab extends JPanel {
     }
 
     void setSQL(DocumentEvent e, String key) {
+        if (key == null) {
+            return;
+        }
+
+        SQLTemplateDescriptor query = getQuery();
+        if (query == null) {
+            return;
+        }
+
         Document doc = e.getDocument();
+        String text = null;
 
         try {
-            String text = doc.getText(0, doc.getLength());
+            text = doc.getText(0, doc.getLength());
+        } catch (BadLocationException ex) {
+            logger.warn("Error reading document", ex);
+        }
 
-            SQLTemplateDescriptor query = getQuery();
-
-            if (query == null) {
-                return;
-            }
-
-            if (key == null) {
-                return;
-            }
-
-            if (text != null) {
-                text = text.trim();
-                if (text.length() == 0) {
-                    text = null;
-                }
-            }
-
-            // Compare the value before modifying the query - text pane
-            // will call "verify" even if no changes have occured....
-            if (key.equals(DEFAULT_LABEL)) {
-                if (!Util.nullSafeEquals(text, query.getSql())) {
-                    query.setSql(text);
-                    mediator.fireQueryEvent(new QueryEvent(this, query));
-                }
-            } else {
-                if (!Util.nullSafeEquals(text, query.getAdapterSql().get(key))) {
-                    query.getAdapterSql().put(key, text);
-                    mediator.fireQueryEvent(new QueryEvent(this, query));
-                }
+        if (text != null) {
+            text = text.trim();
+            if (text.length() == 0) {
+                text = null;
             }
         }
-        catch (BadLocationException e1) {
-            e1.printStackTrace();
+
+        // Compare the value before modifying the query - text pane
+        // will call "verify" even if no changes have occured....
+        if (key.equals(DEFAULT_LABEL)) {
+            if (!Util.nullSafeEquals(text, query.getSql())) {
+                query.setSql(text);
+                mediator.fireQueryEvent(new QueryEvent(this, query));
+            }
+        } else {
+            if (!Util.nullSafeEquals(text, query.getAdapterSql().get(key))) {
+                query.getAdapterSql().put(key, text);
+                mediator.fireQueryEvent(new QueryEvent(this, query));
+            }
         }
     }
 

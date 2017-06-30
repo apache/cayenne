@@ -331,6 +331,28 @@ public class JCayenneTextPane extends JPanel {
         return pane.getDocument();
     }
 
+    public void setDocumentTextDirect(String text) {
+        Document document = getDocument();
+        try {
+            if(!document.getText(0, document.getLength()).equals(text)) {
+                document.remove(0, document.getLength());
+                document.insertString(0, text, null);
+            }
+        } catch (BadLocationException ex) {
+            logObj.warn("Error reading document", ex);
+        }
+    }
+
+    public String getDocumentTextDirect() {
+        Document document = getDocument();
+        try {
+            return document.getText(0, document.getLength());
+        } catch (BadLocationException ex) {
+            logObj.warn("Error reading document", ex);
+            return null;
+        }
+    }
+
     class JTextPaneScrollable extends JTextPane {
 
         JTextPaneScrollable(EditorKit editorKit) {

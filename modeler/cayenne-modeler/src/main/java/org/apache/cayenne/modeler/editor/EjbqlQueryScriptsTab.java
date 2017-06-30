@@ -41,8 +41,12 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
 import org.apache.cayenne.swing.components.textpane.syntax.EJBQLSyntaxConstant;
 import org.apache.cayenne.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
+
+    private static final Logger logger = LoggerFactory.getLogger(EjbqlQueryScriptsTab.class);
 
     protected ProjectController mediator;
     protected JCayenneTextPane scriptArea;
@@ -55,17 +59,7 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
     }
 
     void displayScript() {
-        EJBQLQueryDescriptor query = getQuery();
-        Document document = scriptArea.getDocument();;
-        String text = query.getEjbql();
-        try {
-            if(!document.getText(0, document.getLength()).equals(query.getEjbql())) {
-                document.remove(0, document.getLength());
-                document.insertString(0, text, null);
-            }
-        } catch (BadLocationException e) {
-            e.printStackTrace();
-        }
+        scriptArea.setDocumentTextDirect(getQuery().getEjbql());
         updateDisabled = false;
     }
 
@@ -82,21 +76,16 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
                 try {
                     String text = scriptArea.getDocument().getText(e.getOffset(), 1);
                     if (text.equals(" ") || text.equals("\n") || text.equals("\t")) {
-                        getQuery().setEjbql(scriptArea.getText());
+                        getQuery().setEjbql(scriptArea.getDocumentTextDirect());
                         validateEJBQL();
                     }
-                } catch (BadLocationException e1) {
-                    e1.printStackTrace();
+                } catch (BadLocationException ex) {
+                    logger.warn("Error reading document", ex);
                 }
             }
 
             public void removeUpdate(DocumentEvent e) {
-                try {
-                    String text = scriptArea.getDocument().getText(0,scriptArea.getDocument().getLength());
-                    getQuery().setEjbql(text);
-                } catch (BadLocationException e1) {
-                    e1.printStackTrace();
-                }
+                getQuery().setEjbql(scriptArea.getDocumentTextDirect());
                 validateEJBQL();
             }
         });
@@ -173,8 +162,8 @@ public class EjbqlQueryScriptsTab extends JPanel implements DocumentListener {
         Document doc = e.getDocument();
         try {
             setEJBQL(doc.getText(0, doc.getLength()));
-        } catch (BadLocationException e1) {
-            e1.printStackTrace();
+        } catch (BadLocationException ex) {
+            logger.warn("Error reading document", ex);
         }
     }
 
