@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.graph.action;
 
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -80,12 +81,23 @@ public class SaveAsImageAction extends CayenneAction {
 				path += "." + ext;
 			}
 
-			try {
+			File file = new File(path);
 
+			try {
 				JGraph graph = dataDomainGraphTab.getGraph();
 				BufferedImage img = graph.getImage(null, 0);
 
-				try (OutputStream out = new FileOutputStream(path);) {
+				if (file.exists()) {
+					int response = JOptionPane.showConfirmDialog(null,
+							"Do you want to replace the existing file?",
+							"Confirm", JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE);
+					if (response != JOptionPane.YES_OPTION) {
+						return;
+					}
+				}
+
+				try (OutputStream out = new FileOutputStream(file)) {
 					ImageIO.write(img, ext, out);
 					out.flush();
 				}
