@@ -17,10 +17,10 @@ CAY-2329 Update project dependencies
 
 Bug Fixes:
 
+CAY-2312 Modeler: Undo does not work for checkboxes
 CAY-2318 Modeler: Query. Exception after Undo clicking
 CAY-2319 Modeler: Embeddable > Attributes. Undo does not cancel pasted objects
 CAY-2323 Modeler: Graph. No warning while saving the image with existing name
-
 
 ----------------------------------
 Release: 4.0.B1
