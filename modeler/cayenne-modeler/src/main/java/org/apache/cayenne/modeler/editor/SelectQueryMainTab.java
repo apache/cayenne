@@ -24,6 +24,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -43,6 +45,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
@@ -108,7 +111,7 @@ public class SelectQueryMainTab extends JPanel {
             }
         };
 
-        distinct = new JCheckBox();
+        distinct = new JCayenneCheckBox();
 
         properties = new ObjectQueryPropertiesPanel(mediator);
 
@@ -142,9 +145,10 @@ public class SelectQueryMainTab extends JPanel {
         queryRoot.addFocusListener(rootHandler);
         queryRoot.getEditor().getEditorComponent().addFocusListener(rootHandler);
 
-        distinct.addActionListener(new ActionListener() {
+        distinct.addItemListener(new ItemListener() {
 
-            public void actionPerformed(ActionEvent event) {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
                 QueryDescriptor query = getQuery();
                 if (query != null) {
                     query.setProperty(SelectQuery.DISTINCT_PROPERTY, Boolean.toString(distinct.isSelected()));

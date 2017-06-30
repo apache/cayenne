@@ -27,6 +27,7 @@ import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.LinkDataMapAction;
 import org.apache.cayenne.modeler.dialog.datamap.CatalogUpdateController;
@@ -54,6 +55,8 @@ import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Arrays;
 
 /**
@@ -125,7 +128,7 @@ public class DataMapView extends JPanel {
             }
         };
 
-        quoteSQLIdentifiers = new JCheckBox();
+        quoteSQLIdentifiers = new JCayenneCheckBox();
 
         updateDefaultPackage = new JButton("Update...");
         defaultPackage = new TextAdapter(new JTextField()) {
@@ -144,9 +147,9 @@ public class DataMapView extends JPanel {
         };
 
         updateDefaultLockType = new JButton("Update...");
-        defaultLockType = new JCheckBox();
+        defaultLockType = new JCayenneCheckBox();
 
-        clientSupport = new JCheckBox();
+        clientSupport = new JCayenneCheckBox();
         updateDefaultClientPackage = new JButton("Update...");
         defaultClientPackage = new TextAdapter(new JTextField()) {
 
@@ -222,25 +225,28 @@ public class DataMapView extends JPanel {
             }
         });
 
-        quoteSQLIdentifiers.addActionListener(new ActionListener() {
+        quoteSQLIdentifiers.addItemListener(new ItemListener() {
 
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
                 setQuoteSQLIdentifiers(quoteSQLIdentifiers.isSelected());
             }
         });
 
-        defaultLockType.addActionListener(new ActionListener() {
+        defaultLockType.addItemListener(new ItemListener() {
 
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
                 setDefaultLockType(defaultLockType.isSelected()
                         ? ObjEntity.LOCK_TYPE_OPTIMISTIC
                         : ObjEntity.LOCK_TYPE_NONE);
             }
         });
 
-        clientSupport.addActionListener(new ActionListener() {
+        clientSupport.addItemListener(new ItemListener() {
 
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
                 setClientSupport(clientSupport.isSelected());
             }
         });

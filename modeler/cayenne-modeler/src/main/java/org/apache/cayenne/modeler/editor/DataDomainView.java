@@ -26,6 +26,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DomainEvent;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.DomainDisplayListener;
@@ -38,8 +39,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
@@ -74,8 +75,8 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
             }
         };
 
-        this.objectValidation = new JCheckBox();
-        this.sharedCache = new JCheckBox();
+        this.objectValidation = new JCayenneCheckBox();
+        this.sharedCache = new JCayenneCheckBox();
 
         // assemble
         CellConstraints cc = new CellConstraints();
@@ -103,10 +104,11 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
     protected void initController() {
         projectController.addDomainDisplayListener(this);
 
-        // add action listener to checkboxes
-        objectValidation.addActionListener(new ActionListener() {
+        // add item listener to checkboxes
+        objectValidation.addItemListener(new ItemListener() {
 
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
                 String value = objectValidation.isSelected() ? "true" : "false";
                 setDomainProperty(
                         DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
@@ -115,9 +117,10 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
             }
         });
 
-        sharedCache.addActionListener(new ActionListener() {
+        sharedCache.addItemListener(new ItemListener() {
 
-            public void actionPerformed(ActionEvent e) {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
                 String value = sharedCache.isSelected() ? "true" : "false";
                 setDomainProperty(
                         DataDomain.SHARED_CACHE_ENABLED_PROPERTY,

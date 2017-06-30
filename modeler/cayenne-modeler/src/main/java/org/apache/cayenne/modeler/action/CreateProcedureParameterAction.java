@@ -30,6 +30,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.undo.CreateProcedureParameterUndoableEdit;
 
 import java.awt.event.ActionEvent;
 
@@ -67,18 +68,26 @@ public class CreateProcedureParameterAction extends CayenneAction {
      */
     @Override
     public void performAction(ActionEvent e) {
+        ProjectController mediator = getProjectController();
+
         if (getProjectController().getCurrentProcedure() != null) {
-            createProcedureParameter();
+            Procedure procedure = getProjectController().getCurrentProcedure();
+            ProcedureParameter parameter = new ProcedureParameter();
+            parameter.setName(NameBuilder.builder(parameter, procedure).name());
+
+            createProcedureParameter(procedure, parameter);
+
+            application.getUndoManager().addEdit(
+                    new CreateProcedureParameterUndoableEdit(
+                            (DataChannelDescriptor) mediator.getProject().getRootNode(), mediator.getCurrentDataMap(),
+                            procedure, parameter
+                    )
+            );
         }
     }
 
-    public void createProcedureParameter() {
-        Procedure procedure = getProjectController().getCurrentProcedure();
-
-        ProcedureParameter parameter = new ProcedureParameter();
-        parameter.setName(NameBuilder.builder(parameter, procedure).name());
+    public void createProcedureParameter(Procedure procedure, ProcedureParameter parameter) {
         procedure.addCallParameter(parameter);
-
         ProjectController mediator = getProjectController();
         fireProcedureParameterEvent(this, mediator, procedure, parameter);
     }

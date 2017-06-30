@@ -22,6 +22,8 @@ package org.apache.cayenne.modeler.editor;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +35,7 @@ import javax.swing.JComboBox;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
@@ -59,9 +62,10 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
     protected void initController() {
         super.initController();
-        dataObjects.addActionListener(new ActionListener() {
+        dataObjects.addItemListener(new ItemListener() {
 
-            public void actionPerformed(ActionEvent event) {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
                 setFetchingDataObjects(dataObjects.isSelected());
             }
         });
@@ -106,7 +110,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
         // create widgets
 
-        dataObjects = new JCheckBox();
+        dataObjects = new JCayenneCheckBox();
 
         entities = Application.getWidgetFactory().createUndoableComboBox();
         entities.setRenderer(CellRenderers.listRendererWithIcons());
