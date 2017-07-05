@@ -1,6 +1,10 @@
 package org.apache.cayenne.crypto.db.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 /**
@@ -9,7 +13,7 @@ import org.apache.cayenne.exp.Property;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Table5 extends CayenneDataObject {
+public abstract class _Table5 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -19,28 +23,102 @@ public abstract class _Table5 extends CayenneDataObject {
     public static final Property<Integer> CRYPTO_INT3 = Property.create("cryptoInt3", Integer.class);
     public static final Property<Integer> CRYPTO_INT4 = Property.create("cryptoInt4", Integer.class);
 
+    protected int cryptoInt1;
+    protected int cryptoInt3;
+    protected int cryptoInt4;
+
+
     public void setCryptoInt1(int cryptoInt1) {
-        writeProperty("cryptoInt1", cryptoInt1);
+        beforePropertyWrite("cryptoInt1", this.cryptoInt1, cryptoInt1);
+        this.cryptoInt1 = cryptoInt1;
     }
+
     public int getCryptoInt1() {
-        Object value = readProperty("cryptoInt1");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("cryptoInt1");
+        return cryptoInt1;
     }
 
     public void setCryptoInt3(int cryptoInt3) {
-        writeProperty("cryptoInt3", cryptoInt3);
+        beforePropertyWrite("cryptoInt3", this.cryptoInt3, cryptoInt3);
+        this.cryptoInt3 = cryptoInt3;
     }
+
     public int getCryptoInt3() {
-        Object value = readProperty("cryptoInt3");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("cryptoInt3");
+        return cryptoInt3;
     }
 
     public void setCryptoInt4(int cryptoInt4) {
-        writeProperty("cryptoInt4", cryptoInt4);
+        beforePropertyWrite("cryptoInt4", this.cryptoInt4, cryptoInt4);
+        this.cryptoInt4 = cryptoInt4;
     }
+
     public int getCryptoInt4() {
-        Object value = readProperty("cryptoInt4");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("cryptoInt4");
+        return cryptoInt4;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "cryptoInt1":
+                return this.cryptoInt1;
+            case "cryptoInt3":
+                return this.cryptoInt3;
+            case "cryptoInt4":
+                return this.cryptoInt4;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "cryptoInt1":
+                this.cryptoInt1 = val == null ? 0 : (Integer)val;
+                break;
+            case "cryptoInt3":
+                this.cryptoInt3 = val == null ? 0 : (Integer)val;
+                break;
+            case "cryptoInt4":
+                this.cryptoInt4 = val == null ? 0 : (Integer)val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeInt(cryptoInt1);
+        out.writeInt(cryptoInt3);
+        out.writeInt(cryptoInt4);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        cryptoInt1 = in.readInt();
+        cryptoInt3 = in.readInt();
+        cryptoInt4 = in.readInt();
     }
 
 }

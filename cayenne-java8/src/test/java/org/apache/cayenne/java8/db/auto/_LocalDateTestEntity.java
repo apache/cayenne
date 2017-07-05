@@ -1,8 +1,11 @@
 package org.apache.cayenne.java8.db.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.LocalDate;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 /**
@@ -11,7 +14,7 @@ import org.apache.cayenne.exp.Property;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _LocalDateTestEntity extends CayenneDataObject {
+public abstract class _LocalDateTestEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -19,11 +22,66 @@ public abstract class _LocalDateTestEntity extends CayenneDataObject {
 
     public static final Property<LocalDate> DATE = Property.create("date", LocalDate.class);
 
+    protected LocalDate date;
+
+
     public void setDate(LocalDate date) {
-        writeProperty("date", date);
+        beforePropertyWrite("date", this.date, date);
+        this.date = date;
     }
+
     public LocalDate getDate() {
-        return (LocalDate)readProperty("date");
+        beforePropertyRead("date");
+        return date;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "date":
+                return this.date;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "date":
+                this.date = (LocalDate)val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(date);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        date = (LocalDate)in.readObject();
     }
 
 }

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
@@ -133,7 +133,7 @@ public class DataContextPrefetchExtrasIT extends ServerCase {
 
         List<?> objects = context.performQuery(q);
         assertEquals(1, objects.size());
-        CayenneDataObject fk1 = (CayenneDataObject) objects.get(0);
+        BaseDataObject fk1 = (BaseDataObject) objects.get(0);
 
         Object toOnePrefetch = fk1.readNestedProperty("toCompoundPk");
         assertNotNull(toOnePrefetch);
@@ -159,17 +159,17 @@ public class DataContextPrefetchExtrasIT extends ServerCase {
 
         List<?> pks = context.performQuery(q);
         assertEquals(1, pks.size());
-        CayenneDataObject pk1 = (CayenneDataObject) pks.get(0);
+        BaseDataObject pk1 = (BaseDataObject) pks.get(0);
 
         List<?> toMany = (List<?>) pk1.readPropertyDirectly("compoundFkArray");
         assertNotNull(toMany);
         assertFalse(((ValueHolder) toMany).isFault());
         assertEquals(2, toMany.size());
 
-        CayenneDataObject fk1 = (CayenneDataObject) toMany.get(0);
+        BaseDataObject fk1 = (BaseDataObject) toMany.get(0);
         assertEquals(PersistenceState.COMMITTED, fk1.getPersistenceState());
 
-        CayenneDataObject fk2 = (CayenneDataObject) toMany.get(1);
+        BaseDataObject fk2 = (BaseDataObject) toMany.get(1);
         assertEquals(PersistenceState.COMMITTED, fk2.getPersistenceState());
     }
 }

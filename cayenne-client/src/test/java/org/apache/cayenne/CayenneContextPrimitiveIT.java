@@ -19,6 +19,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -103,5 +104,33 @@ public class CayenneContextPrimitiveIT extends ClientCase {
 
         assertFalse(tTablePrimitives.getBoolean("BOOLEAN_COLUMN"));
         assertEquals(8, tTablePrimitives.getInt("INT_COLUMN"));
+    }
+
+    @Test
+    public void testCommitEmptyChangesPrimitives() throws Exception {
+
+        ClientTablePrimitives object = context.newObject(ClientTablePrimitives.class);
+
+        context.commitChanges();
+
+        assertFalse(tTablePrimitives.getBoolean("BOOLEAN_COLUMN"));
+        assertEquals(0, tTablePrimitives.getInt("INT_COLUMN"));
+
+        object.setBooleanColumn(true);
+        object.setIntColumn(8);
+        context.commitChanges();
+
+        assertTrue(tTablePrimitives.getBoolean("BOOLEAN_COLUMN"));
+        assertEquals(8, tTablePrimitives.getInt("INT_COLUMN"));
+    }
+
+    @Test
+    public void testSelectEmptyPrimitives() throws Exception {
+        tTablePrimitives.insert(1, accessStackAdapter.supportsBoolean() ? true : 1, null);
+
+        ClientTablePrimitives object = ObjectSelect.query(ClientTablePrimitives.class).selectFirst(context);
+
+        assertTrue(object.isBooleanColumn());
+        assertEquals(0, object.getIntColumn());
     }
 }

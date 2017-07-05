@@ -1,5 +1,8 @@
 package org.apache.cayenne.testdo.testmap.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 
 import org.apache.cayenne.exp.Property;
@@ -27,25 +30,42 @@ public abstract class _Painting extends ArtDataObject {
     public static final Property<Gallery> TO_GALLERY = Property.create("toGallery", Gallery.class);
     public static final Property<PaintingInfo> TO_PAINTING_INFO = Property.create("toPaintingInfo", PaintingInfo.class);
 
+    protected BigDecimal estimatedPrice;
+    protected String paintingDescription;
+    protected String paintingTitle;
+
+    protected Object toArtist;
+    protected Object toGallery;
+    protected Object toPaintingInfo;
+
     public void setEstimatedPrice(BigDecimal estimatedPrice) {
-        writeProperty("estimatedPrice", estimatedPrice);
+        beforePropertyWrite("estimatedPrice", this.estimatedPrice, estimatedPrice);
+        this.estimatedPrice = estimatedPrice;
     }
+
     public BigDecimal getEstimatedPrice() {
-        return (BigDecimal)readProperty("estimatedPrice");
+        beforePropertyRead("estimatedPrice");
+        return estimatedPrice;
     }
 
     public void setPaintingDescription(String paintingDescription) {
-        writeProperty("paintingDescription", paintingDescription);
+        beforePropertyWrite("paintingDescription", this.paintingDescription, paintingDescription);
+        this.paintingDescription = paintingDescription;
     }
+
     public String getPaintingDescription() {
-        return (String)readProperty("paintingDescription");
+        beforePropertyRead("paintingDescription");
+        return paintingDescription;
     }
 
     public void setPaintingTitle(String paintingTitle) {
-        writeProperty("paintingTitle", paintingTitle);
+        beforePropertyWrite("paintingTitle", this.paintingTitle, paintingTitle);
+        this.paintingTitle = paintingTitle;
     }
+
     public String getPaintingTitle() {
-        return (String)readProperty("paintingTitle");
+        beforePropertyRead("paintingTitle");
+        return paintingTitle;
     }
 
     public void setToArtist(Artist toArtist) {
@@ -56,7 +76,6 @@ public abstract class _Painting extends ArtDataObject {
         return (Artist)readProperty("toArtist");
     }
 
-
     public void setToGallery(Gallery toGallery) {
         setToOneTarget("toGallery", toGallery, true);
     }
@@ -64,7 +83,6 @@ public abstract class _Painting extends ArtDataObject {
     public Gallery getToGallery() {
         return (Gallery)readProperty("toGallery");
     }
-
 
     public void setToPaintingInfo(PaintingInfo toPaintingInfo) {
         setToOneTarget("toPaintingInfo", toPaintingInfo, true);
@@ -74,5 +92,88 @@ public abstract class _Painting extends ArtDataObject {
         return (PaintingInfo)readProperty("toPaintingInfo");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "estimatedPrice":
+                return this.estimatedPrice;
+            case "paintingDescription":
+                return this.paintingDescription;
+            case "paintingTitle":
+                return this.paintingTitle;
+            case "toArtist":
+                return this.toArtist;
+            case "toGallery":
+                return this.toGallery;
+            case "toPaintingInfo":
+                return this.toPaintingInfo;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "estimatedPrice":
+                this.estimatedPrice = (BigDecimal)val;
+                break;
+            case "paintingDescription":
+                this.paintingDescription = (String)val;
+                break;
+            case "paintingTitle":
+                this.paintingTitle = (String)val;
+                break;
+            case "toArtist":
+                this.toArtist = val;
+                break;
+            case "toGallery":
+                this.toGallery = val;
+                break;
+            case "toPaintingInfo":
+                this.toPaintingInfo = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(estimatedPrice);
+        out.writeObject(paintingDescription);
+        out.writeObject(paintingTitle);
+        out.writeObject(toArtist);
+        out.writeObject(toGallery);
+        out.writeObject(toPaintingInfo);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        estimatedPrice = (BigDecimal)in.readObject();
+        paintingDescription = (String)in.readObject();
+        paintingTitle = (String)in.readObject();
+        toArtist = in.readObject();
+        toGallery = in.readObject();
+        toPaintingInfo = in.readObject();
+    }
 
 }

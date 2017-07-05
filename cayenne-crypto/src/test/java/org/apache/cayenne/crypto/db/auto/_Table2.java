@@ -1,6 +1,10 @@
 package org.apache.cayenne.crypto.db.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 /**
@@ -9,7 +13,7 @@ import org.apache.cayenne.exp.Property;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Table2 extends CayenneDataObject {
+public abstract class _Table2 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -18,18 +22,84 @@ public abstract class _Table2 extends CayenneDataObject {
     public static final Property<byte[]> CRYPTO_BYTES = Property.create("cryptoBytes", byte[].class);
     public static final Property<byte[]> PLAIN_BYTES = Property.create("plainBytes", byte[].class);
 
+    protected byte[] cryptoBytes;
+    protected byte[] plainBytes;
+
+
     public void setCryptoBytes(byte[] cryptoBytes) {
-        writeProperty("cryptoBytes", cryptoBytes);
+        beforePropertyWrite("cryptoBytes", this.cryptoBytes, cryptoBytes);
+        this.cryptoBytes = cryptoBytes;
     }
+
     public byte[] getCryptoBytes() {
-        return (byte[])readProperty("cryptoBytes");
+        beforePropertyRead("cryptoBytes");
+        return cryptoBytes;
     }
 
     public void setPlainBytes(byte[] plainBytes) {
-        writeProperty("plainBytes", plainBytes);
+        beforePropertyWrite("plainBytes", this.plainBytes, plainBytes);
+        this.plainBytes = plainBytes;
     }
+
     public byte[] getPlainBytes() {
-        return (byte[])readProperty("plainBytes");
+        beforePropertyRead("plainBytes");
+        return plainBytes;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "cryptoBytes":
+                return this.cryptoBytes;
+            case "plainBytes":
+                return this.plainBytes;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "cryptoBytes":
+                this.cryptoBytes = (byte[])val;
+                break;
+            case "plainBytes":
+                this.plainBytes = (byte[])val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(cryptoBytes);
+        out.writeObject(plainBytes);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        cryptoBytes = (byte[])in.readObject();
+        plainBytes = (byte[])in.readObject();
     }
 
 }

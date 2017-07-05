@@ -116,7 +116,7 @@ public class CayenneGeneratorTaskTest {
 		// check results
 		File a = new File(mapDir, convertPath("org/apache/cayenne/testdo/testmap/Artist.java"));
 		assertTrue(a.isFile());
-		assertContents(a, "Artist", "org.apache.cayenne.testdo.testmap", "CayenneDataObject");
+		assertContents(a, "Artist", "org.apache.cayenne.testdo.testmap", "BaseDataObject");
 
 		File _a = new File(mapDir, convertPath("org/apache/cayenne/testdo/testmap/_Artist.java"));
 		assertFalse(_a.exists());
@@ -141,7 +141,7 @@ public class CayenneGeneratorTaskTest {
 		// check results
 		File a = new File(mapDir, convertPath("Artist.java"));
 		assertTrue(a.exists());
-		assertContents(a, "Artist", "org.apache.cayenne.testdo.testmap", "CayenneDataObject");
+		assertContents(a, "Artist", "org.apache.cayenne.testdo.testmap", "BaseDataObject");
 
 		File _a = new File(mapDir, convertPath("_Artist.java"));
 		assertFalse(_a.exists());
@@ -176,7 +176,7 @@ public class CayenneGeneratorTaskTest {
 
 		File _a = new File(mapDir, convertPath("org/apache/cayenne/testdo/testmap/auto/_Artist.java"));
 		assertTrue(_a.exists());
-		assertContents(_a, "_Artist", "org.apache.cayenne.testdo.testmap", "CayenneDataObject");
+		assertContents(_a, "_Artist", "org.apache.cayenne.testdo.testmap", "BaseDataObject");
 	}
 
 	/** Test pairs generation in the same directory. */
@@ -202,7 +202,7 @@ public class CayenneGeneratorTaskTest {
 
 		File _a = new File(mapDir, convertPath("_Artist.java"));
 		assertTrue(_a.exists());
-		assertContents(_a, "_Artist", "org.apache.cayenne.testdo.testmap", "CayenneDataObject");
+		assertContents(_a, "_Artist", "org.apache.cayenne.testdo.testmap", "BaseDataObject");
 
 		File pkga = new File(mapDir, convertPath("org/apache/cayenne/testdo/testmap/Artist.java"));
 		assertFalse(pkga.exists());
@@ -235,7 +235,7 @@ public class CayenneGeneratorTaskTest {
 
 		File _a = new File(mapDir, convertPath("org/apache/cayenne/testdo/testmap/superart/_Artist.java"));
 		assertTrue(_a.exists());
-		assertContents(_a, "_Artist", "org.apache.cayenne.testdo.testmap.superart", "CayenneDataObject");
+		assertContents(_a, "_Artist", "org.apache.cayenne.testdo.testmap.superart", "BaseDataObject");
 	}
 
 	@Test
@@ -261,7 +261,7 @@ public class CayenneGeneratorTaskTest {
 
 		File _a = new File(mapDir, convertPath("org/apache/cayenne/testdo/embeddable/auto/_EmbedEntity1.java"));
 		assertTrue(_a.exists());
-		assertContents(_a, "_EmbedEntity1", "org.apache.cayenne.testdo.embeddable.auto", "CayenneDataObject");
+		assertContents(_a, "_EmbedEntity1", "org.apache.cayenne.testdo.embeddable.auto", "BaseDataObject");
 
 		// check embeddable results
 		File e = new File(mapDir, convertPath("org/apache/cayenne/testdo/embeddable/Embeddable1.java"));

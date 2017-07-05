@@ -1,6 +1,10 @@
 package org.apache.cayenne.crypto.db.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 /**
@@ -9,7 +13,7 @@ import org.apache.cayenne.exp.Property;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Table4 extends CayenneDataObject {
+public abstract class _Table4 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -18,19 +22,84 @@ public abstract class _Table4 extends CayenneDataObject {
     public static final Property<Integer> PLAIN_INT = Property.create("plainInt", Integer.class);
     public static final Property<String> PLAIN_STRING = Property.create("plainString", String.class);
 
+    protected int plainInt;
+    protected String plainString;
+
+
     public void setPlainInt(int plainInt) {
-        writeProperty("plainInt", plainInt);
+        beforePropertyWrite("plainInt", this.plainInt, plainInt);
+        this.plainInt = plainInt;
     }
+
     public int getPlainInt() {
-        Object value = readProperty("plainInt");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("plainInt");
+        return plainInt;
     }
 
     public void setPlainString(String plainString) {
-        writeProperty("plainString", plainString);
+        beforePropertyWrite("plainString", this.plainString, plainString);
+        this.plainString = plainString;
     }
+
     public String getPlainString() {
-        return (String)readProperty("plainString");
+        beforePropertyRead("plainString");
+        return plainString;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "plainInt":
+                return this.plainInt;
+            case "plainString":
+                return this.plainString;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "plainInt":
+                this.plainInt = val == null ? 0 : (Integer)val;
+                break;
+            case "plainString":
+                this.plainString = (String)val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeInt(plainInt);
+        out.writeObject(plainString);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        plainInt = in.readInt();
+        plainString = (String)in.readObject();
     }
 
 }

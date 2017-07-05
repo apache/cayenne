@@ -5,6 +5,14 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
 
+UPGRADING TO 4.1.M1
+
+* Per CAY-2330 Field-based data objects are introduced and enabled by default.
+      Your existing code will continue to work, but in order to get benefits from this feature you should
+      regenerate code via Modeler ("Tools" -> "Generate Classes") or cgen tools in Maven/Ant/Gradle plugins.
+      Also note that serialization format of old data objects have changed, make sure you don't use serialization
+      form to store your objects.
+
 UPGRADING TO 4.0.B1
 
 * Per CAY-2302 postcommit module and all it's internals renamed to commitlog.

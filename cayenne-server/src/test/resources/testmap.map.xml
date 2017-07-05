@@ -109,7 +109,7 @@
 		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
 		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
 	</obj-entity>
-	<obj-entity name="CompoundPaintingLongNames" className="org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames" clientClassName="test.client.CompoundPaintingLongNames" dbEntityName="PAINTING" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	<obj-entity name="CompoundPaintingLongNames" className="org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames" clientClassName="test.client.CompoundPaintingLongNames" dbEntityName="PAINTING" clientSuperClassName="org.apache.cayenne.PersistentObject">
 		<obj-attribute name="artistLongName" type="java.lang.String" db-attribute-path="toArtist.ARTIST_NAME"/>
 		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
 		<obj-attribute name="galleryLongName" type="java.lang.String" db-attribute-path="toGallery.GALLERY_NAME"/>

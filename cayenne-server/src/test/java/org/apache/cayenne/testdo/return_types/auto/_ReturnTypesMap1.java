@@ -1,5 +1,8 @@
 package org.apache.cayenne.testdo.return_types.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -39,144 +42,408 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
     public static final Property<Byte> TINYINT_COLUMN = Property.create("tinyintColumn", Byte.class);
     public static final Property<String> VARCHAR_COLUMN = Property.create("varcharColumn", String.class);
 
+    protected Long bigintColumn;
+    protected Boolean bitColumn;
+    protected Boolean booleanColumn;
+    protected String charColumn;
+    protected Date dateColumn;
+    protected BigDecimal decimalColumn;
+    protected Double doubleColumn;
+    protected Float floatColumn;
+    protected Integer integerColumn;
+    protected String longnvarcharColumn;
+    protected String longvarcharColumn;
+    protected String ncharColumn;
+    protected BigDecimal numericColumn;
+    protected String nvarcharColumn;
+    protected Float realColumn;
+    protected Short smallintColumn;
+    protected Date timeColumn;
+    protected Date timestampColumn;
+    protected Byte tinyintColumn;
+    protected String varcharColumn;
+
+
     public void setBigintColumn(Long bigintColumn) {
-        writeProperty("bigintColumn", bigintColumn);
+        beforePropertyWrite("bigintColumn", this.bigintColumn, bigintColumn);
+        this.bigintColumn = bigintColumn;
     }
+
     public Long getBigintColumn() {
-        return (Long)readProperty("bigintColumn");
+        beforePropertyRead("bigintColumn");
+        return bigintColumn;
     }
 
     public void setBitColumn(Boolean bitColumn) {
-        writeProperty("bitColumn", bitColumn);
+        beforePropertyWrite("bitColumn", this.bitColumn, bitColumn);
+        this.bitColumn = bitColumn;
     }
+
     public Boolean getBitColumn() {
-        return (Boolean)readProperty("bitColumn");
+        beforePropertyRead("bitColumn");
+        return bitColumn;
     }
 
     public void setBooleanColumn(Boolean booleanColumn) {
-        writeProperty("booleanColumn", booleanColumn);
+        beforePropertyWrite("booleanColumn", this.booleanColumn, booleanColumn);
+        this.booleanColumn = booleanColumn;
     }
+
     public Boolean getBooleanColumn() {
-        return (Boolean)readProperty("booleanColumn");
+        beforePropertyRead("booleanColumn");
+        return booleanColumn;
     }
 
     public void setCharColumn(String charColumn) {
-        writeProperty("charColumn", charColumn);
+        beforePropertyWrite("charColumn", this.charColumn, charColumn);
+        this.charColumn = charColumn;
     }
+
     public String getCharColumn() {
-        return (String)readProperty("charColumn");
+        beforePropertyRead("charColumn");
+        return charColumn;
     }
 
     public void setDateColumn(Date dateColumn) {
-        writeProperty("dateColumn", dateColumn);
+        beforePropertyWrite("dateColumn", this.dateColumn, dateColumn);
+        this.dateColumn = dateColumn;
     }
+
     public Date getDateColumn() {
-        return (Date)readProperty("dateColumn");
+        beforePropertyRead("dateColumn");
+        return dateColumn;
     }
 
     public void setDecimalColumn(BigDecimal decimalColumn) {
-        writeProperty("decimalColumn", decimalColumn);
+        beforePropertyWrite("decimalColumn", this.decimalColumn, decimalColumn);
+        this.decimalColumn = decimalColumn;
     }
+
     public BigDecimal getDecimalColumn() {
-        return (BigDecimal)readProperty("decimalColumn");
+        beforePropertyRead("decimalColumn");
+        return decimalColumn;
     }
 
     public void setDoubleColumn(Double doubleColumn) {
-        writeProperty("doubleColumn", doubleColumn);
+        beforePropertyWrite("doubleColumn", this.doubleColumn, doubleColumn);
+        this.doubleColumn = doubleColumn;
     }
+
     public Double getDoubleColumn() {
-        return (Double)readProperty("doubleColumn");
+        beforePropertyRead("doubleColumn");
+        return doubleColumn;
     }
 
     public void setFloatColumn(Float floatColumn) {
-        writeProperty("floatColumn", floatColumn);
+        beforePropertyWrite("floatColumn", this.floatColumn, floatColumn);
+        this.floatColumn = floatColumn;
     }
+
     public Float getFloatColumn() {
-        return (Float)readProperty("floatColumn");
+        beforePropertyRead("floatColumn");
+        return floatColumn;
     }
 
     public void setIntegerColumn(Integer integerColumn) {
-        writeProperty("integerColumn", integerColumn);
+        beforePropertyWrite("integerColumn", this.integerColumn, integerColumn);
+        this.integerColumn = integerColumn;
     }
+
     public Integer getIntegerColumn() {
-        return (Integer)readProperty("integerColumn");
+        beforePropertyRead("integerColumn");
+        return integerColumn;
     }
 
     public void setLongnvarcharColumn(String longnvarcharColumn) {
-        writeProperty("longnvarcharColumn", longnvarcharColumn);
+        beforePropertyWrite("longnvarcharColumn", this.longnvarcharColumn, longnvarcharColumn);
+        this.longnvarcharColumn = longnvarcharColumn;
     }
+
     public String getLongnvarcharColumn() {
-        return (String)readProperty("longnvarcharColumn");
+        beforePropertyRead("longnvarcharColumn");
+        return longnvarcharColumn;
     }
 
     public void setLongvarcharColumn(String longvarcharColumn) {
-        writeProperty("longvarcharColumn", longvarcharColumn);
+        beforePropertyWrite("longvarcharColumn", this.longvarcharColumn, longvarcharColumn);
+        this.longvarcharColumn = longvarcharColumn;
     }
+
     public String getLongvarcharColumn() {
-        return (String)readProperty("longvarcharColumn");
+        beforePropertyRead("longvarcharColumn");
+        return longvarcharColumn;
     }
 
     public void setNcharColumn(String ncharColumn) {
-        writeProperty("ncharColumn", ncharColumn);
+        beforePropertyWrite("ncharColumn", this.ncharColumn, ncharColumn);
+        this.ncharColumn = ncharColumn;
     }
+
     public String getNcharColumn() {
-        return (String)readProperty("ncharColumn");
+        beforePropertyRead("ncharColumn");
+        return ncharColumn;
     }
 
     public void setNumericColumn(BigDecimal numericColumn) {
-        writeProperty("numericColumn", numericColumn);
+        beforePropertyWrite("numericColumn", this.numericColumn, numericColumn);
+        this.numericColumn = numericColumn;
     }
+
     public BigDecimal getNumericColumn() {
-        return (BigDecimal)readProperty("numericColumn");
+        beforePropertyRead("numericColumn");
+        return numericColumn;
     }
 
     public void setNvarcharColumn(String nvarcharColumn) {
-        writeProperty("nvarcharColumn", nvarcharColumn);
+        beforePropertyWrite("nvarcharColumn", this.nvarcharColumn, nvarcharColumn);
+        this.nvarcharColumn = nvarcharColumn;
     }
+
     public String getNvarcharColumn() {
-        return (String)readProperty("nvarcharColumn");
+        beforePropertyRead("nvarcharColumn");
+        return nvarcharColumn;
     }
 
     public void setRealColumn(Float realColumn) {
-        writeProperty("realColumn", realColumn);
+        beforePropertyWrite("realColumn", this.realColumn, realColumn);
+        this.realColumn = realColumn;
     }
+
     public Float getRealColumn() {
-        return (Float)readProperty("realColumn");
+        beforePropertyRead("realColumn");
+        return realColumn;
     }
 
     public void setSmallintColumn(Short smallintColumn) {
-        writeProperty("smallintColumn", smallintColumn);
+        beforePropertyWrite("smallintColumn", this.smallintColumn, smallintColumn);
+        this.smallintColumn = smallintColumn;
     }
+
     public Short getSmallintColumn() {
-        return (Short)readProperty("smallintColumn");
+        beforePropertyRead("smallintColumn");
+        return smallintColumn;
     }
 
     public void setTimeColumn(Date timeColumn) {
-        writeProperty("timeColumn", timeColumn);
+        beforePropertyWrite("timeColumn", this.timeColumn, timeColumn);
+        this.timeColumn = timeColumn;
     }
+
     public Date getTimeColumn() {
-        return (Date)readProperty("timeColumn");
+        beforePropertyRead("timeColumn");
+        return timeColumn;
     }
 
     public void setTimestampColumn(Date timestampColumn) {
-        writeProperty("timestampColumn", timestampColumn);
+        beforePropertyWrite("timestampColumn", this.timestampColumn, timestampColumn);
+        this.timestampColumn = timestampColumn;
     }
+
     public Date getTimestampColumn() {
-        return (Date)readProperty("timestampColumn");
+        beforePropertyRead("timestampColumn");
+        return timestampColumn;
     }
 
     public void setTinyintColumn(Byte tinyintColumn) {
-        writeProperty("tinyintColumn", tinyintColumn);
+        beforePropertyWrite("tinyintColumn", this.tinyintColumn, tinyintColumn);
+        this.tinyintColumn = tinyintColumn;
     }
+
     public Byte getTinyintColumn() {
-        return (Byte)readProperty("tinyintColumn");
+        beforePropertyRead("tinyintColumn");
+        return tinyintColumn;
     }
 
     public void setVarcharColumn(String varcharColumn) {
-        writeProperty("varcharColumn", varcharColumn);
+        beforePropertyWrite("varcharColumn", this.varcharColumn, varcharColumn);
+        this.varcharColumn = varcharColumn;
     }
+
     public String getVarcharColumn() {
-        return (String)readProperty("varcharColumn");
+        beforePropertyRead("varcharColumn");
+        return varcharColumn;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "bigintColumn":
+                return this.bigintColumn;
+            case "bitColumn":
+                return this.bitColumn;
+            case "booleanColumn":
+                return this.booleanColumn;
+            case "charColumn":
+                return this.charColumn;
+            case "dateColumn":
+                return this.dateColumn;
+            case "decimalColumn":
+                return this.decimalColumn;
+            case "doubleColumn":
+                return this.doubleColumn;
+            case "floatColumn":
+                return this.floatColumn;
+            case "integerColumn":
+                return this.integerColumn;
+            case "longnvarcharColumn":
+                return this.longnvarcharColumn;
+            case "longvarcharColumn":
+                return this.longvarcharColumn;
+            case "ncharColumn":
+                return this.ncharColumn;
+            case "numericColumn":
+                return this.numericColumn;
+            case "nvarcharColumn":
+                return this.nvarcharColumn;
+            case "realColumn":
+                return this.realColumn;
+            case "smallintColumn":
+                return this.smallintColumn;
+            case "timeColumn":
+                return this.timeColumn;
+            case "timestampColumn":
+                return this.timestampColumn;
+            case "tinyintColumn":
+                return this.tinyintColumn;
+            case "varcharColumn":
+                return this.varcharColumn;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "bigintColumn":
+                this.bigintColumn = (Long)val;
+                break;
+            case "bitColumn":
+                this.bitColumn = (Boolean)val;
+                break;
+            case "booleanColumn":
+                this.booleanColumn = (Boolean)val;
+                break;
+            case "charColumn":
+                this.charColumn = (String)val;
+                break;
+            case "dateColumn":
+                this.dateColumn = (Date)val;
+                break;
+            case "decimalColumn":
+                this.decimalColumn = (BigDecimal)val;
+                break;
+            case "doubleColumn":
+                this.doubleColumn = (Double)val;
+                break;
+            case "floatColumn":
+                this.floatColumn = (Float)val;
+                break;
+            case "integerColumn":
+                this.integerColumn = (Integer)val;
+                break;
+            case "longnvarcharColumn":
+                this.longnvarcharColumn = (String)val;
+                break;
+            case "longvarcharColumn":
+                this.longvarcharColumn = (String)val;
+                break;
+            case "ncharColumn":
+                this.ncharColumn = (String)val;
+                break;
+            case "numericColumn":
+                this.numericColumn = (BigDecimal)val;
+                break;
+            case "nvarcharColumn":
+                this.nvarcharColumn = (String)val;
+                break;
+            case "realColumn":
+                this.realColumn = (Float)val;
+                break;
+            case "smallintColumn":
+                this.smallintColumn = (Short)val;
+                break;
+            case "timeColumn":
+                this.timeColumn = (Date)val;
+                break;
+            case "timestampColumn":
+                this.timestampColumn = (Date)val;
+                break;
+            case "tinyintColumn":
+                this.tinyintColumn = (Byte)val;
+                break;
+            case "varcharColumn":
+                this.varcharColumn = (String)val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(bigintColumn);
+        out.writeObject(bitColumn);
+        out.writeObject(booleanColumn);
+        out.writeObject(charColumn);
+        out.writeObject(dateColumn);
+        out.writeObject(decimalColumn);
+        out.writeObject(doubleColumn);
+        out.writeObject(floatColumn);
+        out.writeObject(integerColumn);
+        out.writeObject(longnvarcharColumn);
+        out.writeObject(longvarcharColumn);
+        out.writeObject(ncharColumn);
+        out.writeObject(numericColumn);
+        out.writeObject(nvarcharColumn);
+        out.writeObject(realColumn);
+        out.writeObject(smallintColumn);
+        out.writeObject(timeColumn);
+        out.writeObject(timestampColumn);
+        out.writeObject(tinyintColumn);
+        out.writeObject(varcharColumn);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        bigintColumn = (Long)in.readObject();
+        bitColumn = (Boolean)in.readObject();
+        booleanColumn = (Boolean)in.readObject();
+        charColumn = (String)in.readObject();
+        dateColumn = (Date)in.readObject();
+        decimalColumn = (BigDecimal)in.readObject();
+        doubleColumn = (Double)in.readObject();
+        floatColumn = (Float)in.readObject();
+        integerColumn = (Integer)in.readObject();
+        longnvarcharColumn = (String)in.readObject();
+        longvarcharColumn = (String)in.readObject();
+        ncharColumn = (String)in.readObject();
+        numericColumn = (BigDecimal)in.readObject();
+        nvarcharColumn = (String)in.readObject();
+        realColumn = (Float)in.readObject();
+        smallintColumn = (Short)in.readObject();
+        timeColumn = (Date)in.readObject();
+        timestampColumn = (Date)in.readObject();
+        tinyintColumn = (Byte)in.readObject();
+        varcharColumn = (String)in.readObject();
     }
 
 }
