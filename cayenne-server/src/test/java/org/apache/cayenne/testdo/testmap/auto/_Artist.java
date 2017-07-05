@@ -44,7 +44,7 @@ public abstract class _Artist extends BaseDataObject {
 
     public String getArtistName() {
         beforePropertyRead("artistName");
-        return artistName;
+        return this.artistName;
     }
 
     public void setDateOfBirth(Date dateOfBirth) {
@@ -54,7 +54,7 @@ public abstract class _Artist extends BaseDataObject {
 
     public Date getDateOfBirth() {
         beforePropertyRead("dateOfBirth");
-        return dateOfBirth;
+        return this.dateOfBirth;
     }
 
     public void addToArtistExhibitArray(ArtistExhibit obj) {
@@ -156,21 +156,21 @@ public abstract class _Artist extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(artistName);
-        out.writeObject(dateOfBirth);
-        out.writeObject(artistExhibitArray);
-        out.writeObject(groupArray);
-        out.writeObject(paintingArray);
+        out.writeObject(this.artistName);
+        out.writeObject(this.dateOfBirth);
+        out.writeObject(this.artistExhibitArray);
+        out.writeObject(this.groupArray);
+        out.writeObject(this.paintingArray);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        artistName = (String)in.readObject();
-        dateOfBirth = (Date)in.readObject();
-        artistExhibitArray = in.readObject();
-        groupArray = in.readObject();
-        paintingArray = in.readObject();
+        this.artistName = (String)in.readObject();
+        this.dateOfBirth = (Date)in.readObject();
+        this.artistExhibitArray = in.readObject();
+        this.groupArray = in.readObject();
+        this.paintingArray = in.readObject();
     }
 
 }

@@ -102,10 +102,11 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 ###################
 #foreach( $attr in ${object.DeclaredAttributes} )
 #set ( $type = "$importUtils.formatJavaType(${attr.Type}, false)")
-protected $type ${attr.Name};
+    protected $type ${attr.Name};
 #end
+
 #foreach( $rel in ${object.DeclaredRelationships} )
-protected Object ${rel.Name};
+    protected Object ${rel.Name};
 #end
 
 #########################################################
@@ -117,11 +118,7 @@ protected Object ${rel.Name};
 ## setter
 #if ("true" != "${object.isReadOnly()}")
     public void set${stringUtils.capitalized($attr.Name)}($importUtils.formatJavaType(${attr.Type}) $name) {
-        if(objectContext != null) {
-            objectContext.prepareForAccess(this, "${attr.Type}", false);
-            objectContext.propertyChanged(this, "${attr.Type}", this.$name, $name);
-        }
-
+        beforePropertyWrite("${attr.Name}", this.$name, $name);
         this.$name = $name;
     }
 
@@ -133,11 +130,8 @@ protected Object ${rel.Name};
 #else
     public $importUtils.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
 #end
-        if(objectContext != null) {
-            objectContext.prepareForAccess(this, "${attr.Name}", false);
-        }
-
-        return $stringUtils.formatVariableName(${attr.Name});
+        beforePropertyRead("${attr.Name}");
+        return this.$stringUtils.formatVariableName(${attr.Name});
     }
 
 #end
@@ -183,7 +177,6 @@ protected Object ${rel.Name};
 ## Create callback methods ##
 #############################
 #foreach($cbname in ${entityUtils.callbackNames})
-    @Override
     protected void ${cbname}() {
         //TODO: implement ${cbname}
     }
@@ -248,51 +241,38 @@ protected Object ${rel.Name};
         readSerialized(in);
     }
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        out.writeInt(persistenceState);
-        out.writeObject(objectId);
-
-        if(persistenceState == PersistenceState.COMMITTED
-                || persistenceState == PersistenceState.HOLLOW) {
-            return;
-        }
-
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
 #foreach( $attr in ${object.DeclaredAttributes} )
 #set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
 #set ( $type = "$importUtils.formatJavaType(${attr.Type})")
 #if($importUtils.isPrimitive($type))
-        out.write${stringUtils.capitalized($type)}($name);
+        out.write${stringUtils.capitalized($type)}(this.$name);
 #else
-        out.writeObject(${name});
+        out.writeObject(this.${name});
 #end
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
-        out.writeObject(${stringUtils.formatVariableName($rel.Name)});
+        out.writeObject(this.${stringUtils.formatVariableName($rel.Name)});
 #end
     }
 
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        this.persistenceState = in.readInt();
-        this.objectId = (ObjectId) in.readObject();
-
-        if(persistenceState == PersistenceState.COMMITTED
-                || persistenceState == PersistenceState.HOLLOW) {
-            persistenceState = PersistenceState.HOLLOW;
-            return;
-        }
-
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
 #foreach( $attr in ${object.DeclaredAttributes} )
 #set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
 #set ( $type = "$importUtils.formatJavaType(${attr.Type})")
 #if($importUtils.isPrimitive($type))
-        $name = in.read${stringUtils.capitalized($type)}();
+        this.$name = in.read${stringUtils.capitalized($type)}();
 #else
-        $name = ($type)in.readObject();
+        this.$name = ($type)in.readObject();
 #end
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
 #set ( $name = "${stringUtils.formatVariableName($rel.Name)}")
-        $name = in.readObject();
+        this.$name = in.readObject();
 #end
     }
 }

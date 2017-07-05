@@ -31,7 +31,7 @@ public abstract class _SubPainting extends BaseDataObject {
 
     public String getPaintingTitle() {
         beforePropertyRead("paintingTitle");
-        return paintingTitle;
+        return this.paintingTitle;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _SubPainting extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(paintingTitle);
+        out.writeObject(this.paintingTitle);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        paintingTitle = (String)in.readObject();
+        this.paintingTitle = (String)in.readObject();
     }
 
 }

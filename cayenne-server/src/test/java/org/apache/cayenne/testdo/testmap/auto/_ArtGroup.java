@@ -40,7 +40,7 @@ public abstract class _ArtGroup extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToArtistArray(Artist obj) {
@@ -132,19 +132,19 @@ public abstract class _ArtGroup extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(artistArray);
-        out.writeObject(childGroupsArray);
-        out.writeObject(toParentGroup);
+        out.writeObject(this.name);
+        out.writeObject(this.artistArray);
+        out.writeObject(this.childGroupsArray);
+        out.writeObject(this.toParentGroup);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        artistArray = in.readObject();
-        childGroupsArray = in.readObject();
-        toParentGroup = in.readObject();
+        this.name = (String)in.readObject();
+        this.artistArray = in.readObject();
+        this.childGroupsArray = in.readObject();
+        this.toParentGroup = in.readObject();
     }
 
 }

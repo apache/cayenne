@@ -45,7 +45,7 @@ public abstract class _Painting extends ArtDataObject {
 
     public BigDecimal getEstimatedPrice() {
         beforePropertyRead("estimatedPrice");
-        return estimatedPrice;
+        return this.estimatedPrice;
     }
 
     public void setPaintingDescription(String paintingDescription) {
@@ -55,7 +55,7 @@ public abstract class _Painting extends ArtDataObject {
 
     public String getPaintingDescription() {
         beforePropertyRead("paintingDescription");
-        return paintingDescription;
+        return this.paintingDescription;
     }
 
     public void setPaintingTitle(String paintingTitle) {
@@ -65,7 +65,7 @@ public abstract class _Painting extends ArtDataObject {
 
     public String getPaintingTitle() {
         beforePropertyRead("paintingTitle");
-        return paintingTitle;
+        return this.paintingTitle;
     }
 
     public void setToArtist(Artist toArtist) {
@@ -157,23 +157,23 @@ public abstract class _Painting extends ArtDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(estimatedPrice);
-        out.writeObject(paintingDescription);
-        out.writeObject(paintingTitle);
-        out.writeObject(toArtist);
-        out.writeObject(toGallery);
-        out.writeObject(toPaintingInfo);
+        out.writeObject(this.estimatedPrice);
+        out.writeObject(this.paintingDescription);
+        out.writeObject(this.paintingTitle);
+        out.writeObject(this.toArtist);
+        out.writeObject(this.toGallery);
+        out.writeObject(this.toPaintingInfo);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        estimatedPrice = (BigDecimal)in.readObject();
-        paintingDescription = (String)in.readObject();
-        paintingTitle = (String)in.readObject();
-        toArtist = in.readObject();
-        toGallery = in.readObject();
-        toPaintingInfo = in.readObject();
+        this.estimatedPrice = (BigDecimal)in.readObject();
+        this.paintingDescription = (String)in.readObject();
+        this.paintingTitle = (String)in.readObject();
+        this.toArtist = in.readObject();
+        this.toGallery = in.readObject();
+        this.toPaintingInfo = in.readObject();
     }
 
 }

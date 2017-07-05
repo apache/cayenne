@@ -32,12 +32,12 @@ public abstract class _ROPainting extends BaseDataObject {
 
     public BigDecimal getEstimatedPrice() {
         beforePropertyRead("estimatedPrice");
-        return estimatedPrice;
+        return this.estimatedPrice;
     }
 
     public String getPaintingTitle() {
         beforePropertyRead("paintingTitle");
-        return paintingTitle;
+        return this.paintingTitle;
     }
 
     public Artist getToArtist() {
@@ -94,17 +94,17 @@ public abstract class _ROPainting extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(estimatedPrice);
-        out.writeObject(paintingTitle);
-        out.writeObject(toArtist);
+        out.writeObject(this.estimatedPrice);
+        out.writeObject(this.paintingTitle);
+        out.writeObject(this.toArtist);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        estimatedPrice = (BigDecimal)in.readObject();
-        paintingTitle = (String)in.readObject();
-        toArtist = in.readObject();
+        this.estimatedPrice = (BigDecimal)in.readObject();
+        this.paintingTitle = (String)in.readObject();
+        this.toArtist = in.readObject();
     }
 
 }

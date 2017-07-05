@@ -34,7 +34,7 @@ public abstract class _ArtistCallback extends BaseDataObject {
 
     public String getArtistName() {
         beforePropertyRead("artistName");
-        return artistName;
+        return this.artistName;
     }
 
     public void setDateOfBirth(Date dateOfBirth) {
@@ -44,7 +44,7 @@ public abstract class _ArtistCallback extends BaseDataObject {
 
     public Date getDateOfBirth() {
         beforePropertyRead("dateOfBirth");
-        return dateOfBirth;
+        return this.dateOfBirth;
     }
 
 protected abstract void prePersistEntityObjEntity();
@@ -106,15 +106,15 @@ protected abstract void postLoadEntityObjEntity();
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(artistName);
-        out.writeObject(dateOfBirth);
+        out.writeObject(this.artistName);
+        out.writeObject(this.dateOfBirth);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        artistName = (String)in.readObject();
-        dateOfBirth = (Date)in.readObject();
+        this.artistName = (String)in.readObject();
+        this.dateOfBirth = (Date)in.readObject();
     }
 
 }

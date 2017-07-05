@@ -33,7 +33,7 @@ public abstract class _MeaningfulGeneratedColumnTestEntity extends BaseDataObjec
 
     public Integer getGeneratedColumn() {
         beforePropertyRead("generatedColumn");
-        return generatedColumn;
+        return this.generatedColumn;
     }
 
     public void setName(String name) {
@@ -43,7 +43,7 @@ public abstract class _MeaningfulGeneratedColumnTestEntity extends BaseDataObjec
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     @Override
@@ -91,15 +91,15 @@ public abstract class _MeaningfulGeneratedColumnTestEntity extends BaseDataObjec
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(generatedColumn);
-        out.writeObject(name);
+        out.writeObject(this.generatedColumn);
+        out.writeObject(this.name);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        generatedColumn = (Integer)in.readObject();
-        name = (String)in.readObject();
+        this.generatedColumn = (Integer)in.readObject();
+        this.name = (String)in.readObject();
     }
 
 }

@@ -49,7 +49,7 @@ public abstract class _CompoundPainting extends BaseDataObject {
 
     public String getArtistName() {
         beforePropertyRead("artistName");
-        return artistName;
+        return this.artistName;
     }
 
     public void setEstimatedPrice(BigDecimal estimatedPrice) {
@@ -59,7 +59,7 @@ public abstract class _CompoundPainting extends BaseDataObject {
 
     public BigDecimal getEstimatedPrice() {
         beforePropertyRead("estimatedPrice");
-        return estimatedPrice;
+        return this.estimatedPrice;
     }
 
     public void setGalleryName(String galleryName) {
@@ -69,7 +69,7 @@ public abstract class _CompoundPainting extends BaseDataObject {
 
     public String getGalleryName() {
         beforePropertyRead("galleryName");
-        return galleryName;
+        return this.galleryName;
     }
 
     public void setPaintingTitle(String paintingTitle) {
@@ -79,7 +79,7 @@ public abstract class _CompoundPainting extends BaseDataObject {
 
     public String getPaintingTitle() {
         beforePropertyRead("paintingTitle");
-        return paintingTitle;
+        return this.paintingTitle;
     }
 
     public void setTextReview(String textReview) {
@@ -89,7 +89,7 @@ public abstract class _CompoundPainting extends BaseDataObject {
 
     public String getTextReview() {
         beforePropertyRead("textReview");
-        return textReview;
+        return this.textReview;
     }
 
     public void setToArtist(Artist toArtist) {
@@ -191,27 +191,27 @@ public abstract class _CompoundPainting extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(artistName);
-        out.writeObject(estimatedPrice);
-        out.writeObject(galleryName);
-        out.writeObject(paintingTitle);
-        out.writeObject(textReview);
-        out.writeObject(toArtist);
-        out.writeObject(toGallery);
-        out.writeObject(toPaintingInfo);
+        out.writeObject(this.artistName);
+        out.writeObject(this.estimatedPrice);
+        out.writeObject(this.galleryName);
+        out.writeObject(this.paintingTitle);
+        out.writeObject(this.textReview);
+        out.writeObject(this.toArtist);
+        out.writeObject(this.toGallery);
+        out.writeObject(this.toPaintingInfo);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        artistName = (String)in.readObject();
-        estimatedPrice = (BigDecimal)in.readObject();
-        galleryName = (String)in.readObject();
-        paintingTitle = (String)in.readObject();
-        textReview = (String)in.readObject();
-        toArtist = in.readObject();
-        toGallery = in.readObject();
-        toPaintingInfo = in.readObject();
+        this.artistName = (String)in.readObject();
+        this.estimatedPrice = (BigDecimal)in.readObject();
+        this.galleryName = (String)in.readObject();
+        this.paintingTitle = (String)in.readObject();
+        this.textReview = (String)in.readObject();
+        this.toArtist = in.readObject();
+        this.toGallery = in.readObject();
+        this.toPaintingInfo = in.readObject();
     }
 
 }

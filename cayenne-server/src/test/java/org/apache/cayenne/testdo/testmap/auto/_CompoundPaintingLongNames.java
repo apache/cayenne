@@ -54,7 +54,7 @@ public abstract class _CompoundPaintingLongNames extends BaseDataObject {
 
     public String getArtistLongName() {
         beforePropertyRead("artistLongName");
-        return artistLongName;
+        return this.artistLongName;
     }
 
     public void setEstimatedPrice(BigDecimal estimatedPrice) {
@@ -64,7 +64,7 @@ public abstract class _CompoundPaintingLongNames extends BaseDataObject {
 
     public BigDecimal getEstimatedPrice() {
         beforePropertyRead("estimatedPrice");
-        return estimatedPrice;
+        return this.estimatedPrice;
     }
 
     public void setGalleryLongName(String galleryLongName) {
@@ -74,7 +74,7 @@ public abstract class _CompoundPaintingLongNames extends BaseDataObject {
 
     public String getGalleryLongName() {
         beforePropertyRead("galleryLongName");
-        return galleryLongName;
+        return this.galleryLongName;
     }
 
     public void setPaintingDescription(String paintingDescription) {
@@ -84,7 +84,7 @@ public abstract class _CompoundPaintingLongNames extends BaseDataObject {
 
     public String getPaintingDescription() {
         beforePropertyRead("paintingDescription");
-        return paintingDescription;
+        return this.paintingDescription;
     }
 
     public void setPaintingTitle(String paintingTitle) {
@@ -94,7 +94,7 @@ public abstract class _CompoundPaintingLongNames extends BaseDataObject {
 
     public String getPaintingTitle() {
         beforePropertyRead("paintingTitle");
-        return paintingTitle;
+        return this.paintingTitle;
     }
 
     public void setTextLongReview(String textLongReview) {
@@ -104,7 +104,7 @@ public abstract class _CompoundPaintingLongNames extends BaseDataObject {
 
     public String getTextLongReview() {
         beforePropertyRead("textLongReview");
-        return textLongReview;
+        return this.textLongReview;
     }
 
     public void setToArtist(Artist toArtist) {
@@ -224,31 +224,31 @@ public abstract class _CompoundPaintingLongNames extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(artistLongName);
-        out.writeObject(estimatedPrice);
-        out.writeObject(galleryLongName);
-        out.writeObject(paintingDescription);
-        out.writeObject(paintingTitle);
-        out.writeObject(textLongReview);
-        out.writeObject(toArtist);
-        out.writeObject(toArtist1);
-        out.writeObject(toGallery);
-        out.writeObject(toPaintingInfo);
+        out.writeObject(this.artistLongName);
+        out.writeObject(this.estimatedPrice);
+        out.writeObject(this.galleryLongName);
+        out.writeObject(this.paintingDescription);
+        out.writeObject(this.paintingTitle);
+        out.writeObject(this.textLongReview);
+        out.writeObject(this.toArtist);
+        out.writeObject(this.toArtist1);
+        out.writeObject(this.toGallery);
+        out.writeObject(this.toPaintingInfo);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        artistLongName = (String)in.readObject();
-        estimatedPrice = (BigDecimal)in.readObject();
-        galleryLongName = (String)in.readObject();
-        paintingDescription = (String)in.readObject();
-        paintingTitle = (String)in.readObject();
-        textLongReview = (String)in.readObject();
-        toArtist = in.readObject();
-        toArtist1 = in.readObject();
-        toGallery = in.readObject();
-        toPaintingInfo = in.readObject();
+        this.artistLongName = (String)in.readObject();
+        this.estimatedPrice = (BigDecimal)in.readObject();
+        this.galleryLongName = (String)in.readObject();
+        this.paintingDescription = (String)in.readObject();
+        this.paintingTitle = (String)in.readObject();
+        this.textLongReview = (String)in.readObject();
+        this.toArtist = in.readObject();
+        this.toArtist1 = in.readObject();
+        this.toGallery = in.readObject();
+        this.toPaintingInfo = in.readObject();
     }
 
 }

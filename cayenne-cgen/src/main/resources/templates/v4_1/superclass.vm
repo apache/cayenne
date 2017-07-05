@@ -139,7 +139,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
     public $importUtils.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
 #end
         beforePropertyRead("${attr.Name}");
-        return $stringUtils.formatVariableName(${attr.Name});
+        return this.$stringUtils.formatVariableName(${attr.Name});
     }
 
 #end
@@ -185,7 +185,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
 ## Create callback methods ##
 #############################
 #foreach($cbname in ${entityUtils.callbackNames})
-protected abstract void ${cbname}();
+    protected abstract void ${cbname}();
 
 #end
 ###########################################################
@@ -261,13 +261,13 @@ protected abstract void ${cbname}();
 #set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
 #set ( $type = "$importUtils.formatJavaType(${attr.Type})")
 #if($importUtils.isPrimitive($type))
-        out.write${stringUtils.capitalized($type)}($name);
+        out.write${stringUtils.capitalized($type)}(this.$name);
 #else
-        out.writeObject(${name});
+        out.writeObject(this.${name});
 #end
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
-        out.writeObject(${stringUtils.formatVariableName($rel.Name)});
+        out.writeObject(this.${stringUtils.formatVariableName($rel.Name)});
 #end
     }
 
@@ -278,14 +278,14 @@ protected abstract void ${cbname}();
 #set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
 #set ( $type = "$importUtils.formatJavaType(${attr.Type})")
 #if($importUtils.isPrimitive($type))
-        $name = in.read${stringUtils.capitalized($type)}();
+        this.$name = in.read${stringUtils.capitalized($type)}();
 #else
-        $name = ($type)in.readObject();
+        this.$name = ($type)in.readObject();
 #end
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
 #set ( $name = "${stringUtils.formatVariableName($rel.Name)}")
-        $name = in.readObject();
+        this.$name = in.readObject();
 #end
     }
 

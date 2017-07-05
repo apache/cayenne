@@ -41,7 +41,7 @@ public abstract class _Exhibit extends BaseDataObject {
 
     public Date getClosingDate() {
         beforePropertyRead("closingDate");
-        return closingDate;
+        return this.closingDate;
     }
 
     public void setOpeningDate(Date openingDate) {
@@ -51,7 +51,7 @@ public abstract class _Exhibit extends BaseDataObject {
 
     public Date getOpeningDate() {
         beforePropertyRead("openingDate");
-        return openingDate;
+        return this.openingDate;
     }
 
     public void addToArtistExhibitArray(ArtistExhibit obj) {
@@ -130,19 +130,19 @@ public abstract class _Exhibit extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(closingDate);
-        out.writeObject(openingDate);
-        out.writeObject(artistExhibitArray);
-        out.writeObject(toGallery);
+        out.writeObject(this.closingDate);
+        out.writeObject(this.openingDate);
+        out.writeObject(this.artistExhibitArray);
+        out.writeObject(this.toGallery);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        closingDate = (Date)in.readObject();
-        openingDate = (Date)in.readObject();
-        artistExhibitArray = in.readObject();
-        toGallery = in.readObject();
+        this.closingDate = (Date)in.readObject();
+        this.openingDate = (Date)in.readObject();
+        this.artistExhibitArray = in.readObject();
+        this.toGallery = in.readObject();
     }
 
 }

@@ -36,7 +36,7 @@ public abstract class _PaintingInfo extends BaseDataObject {
 
     public byte[] getImageBlob() {
         beforePropertyRead("imageBlob");
-        return imageBlob;
+        return this.imageBlob;
     }
 
     public void setTextReview(String textReview) {
@@ -46,7 +46,7 @@ public abstract class _PaintingInfo extends BaseDataObject {
 
     public String getTextReview() {
         beforePropertyRead("textReview");
-        return textReview;
+        return this.textReview;
     }
 
     public void setPainting(Painting painting) {
@@ -107,17 +107,17 @@ public abstract class _PaintingInfo extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(imageBlob);
-        out.writeObject(textReview);
-        out.writeObject(painting);
+        out.writeObject(this.imageBlob);
+        out.writeObject(this.textReview);
+        out.writeObject(this.painting);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        imageBlob = (byte[])in.readObject();
-        textReview = (String)in.readObject();
-        painting = in.readObject();
+        this.imageBlob = (byte[])in.readObject();
+        this.textReview = (String)in.readObject();
+        this.painting = in.readObject();
     }
 
 }

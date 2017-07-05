@@ -33,12 +33,12 @@ public abstract class _ROArtist extends BaseDataObject {
 
     public String getArtistName() {
         beforePropertyRead("artistName");
-        return artistName;
+        return this.artistName;
     }
 
     public Date getDateOfBirth() {
         beforePropertyRead("dateOfBirth");
-        return dateOfBirth;
+        return this.dateOfBirth;
     }
 
     public void addToPaintingArray(Painting obj) {
@@ -104,17 +104,17 @@ public abstract class _ROArtist extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(artistName);
-        out.writeObject(dateOfBirth);
-        out.writeObject(paintingArray);
+        out.writeObject(this.artistName);
+        out.writeObject(this.dateOfBirth);
+        out.writeObject(this.paintingArray);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        artistName = (String)in.readObject();
-        dateOfBirth = (Date)in.readObject();
-        paintingArray = in.readObject();
+        this.artistName = (String)in.readObject();
+        this.dateOfBirth = (Date)in.readObject();
+        this.paintingArray = in.readObject();
     }
 
 }

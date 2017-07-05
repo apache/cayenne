@@ -36,7 +36,7 @@ public abstract class _RWCompoundPainting extends BaseDataObject {
 
     public BigDecimal getEstimatedPrice() {
         beforePropertyRead("estimatedPrice");
-        return estimatedPrice;
+        return this.estimatedPrice;
     }
 
     public void setPaintingTitle(String paintingTitle) {
@@ -46,7 +46,7 @@ public abstract class _RWCompoundPainting extends BaseDataObject {
 
     public String getPaintingTitle() {
         beforePropertyRead("paintingTitle");
-        return paintingTitle;
+        return this.paintingTitle;
     }
 
     public void setTextReview(String textReview) {
@@ -56,7 +56,7 @@ public abstract class _RWCompoundPainting extends BaseDataObject {
 
     public String getTextReview() {
         beforePropertyRead("textReview");
-        return textReview;
+        return this.textReview;
     }
 
     @Override
@@ -109,17 +109,17 @@ public abstract class _RWCompoundPainting extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(estimatedPrice);
-        out.writeObject(paintingTitle);
-        out.writeObject(textReview);
+        out.writeObject(this.estimatedPrice);
+        out.writeObject(this.paintingTitle);
+        out.writeObject(this.textReview);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        estimatedPrice = (BigDecimal)in.readObject();
-        paintingTitle = (String)in.readObject();
-        textReview = (String)in.readObject();
+        this.estimatedPrice = (BigDecimal)in.readObject();
+        this.paintingTitle = (String)in.readObject();
+        this.textReview = (String)in.readObject();
     }
 
 }

@@ -38,7 +38,7 @@ public abstract class _Gallery extends BaseDataObject {
 
     public String getGalleryName() {
         beforePropertyRead("galleryName");
-        return galleryName;
+        return this.galleryName;
     }
 
     public void addToExhibitArray(Exhibit obj) {
@@ -117,17 +117,17 @@ public abstract class _Gallery extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(galleryName);
-        out.writeObject(exhibitArray);
-        out.writeObject(paintingArray);
+        out.writeObject(this.galleryName);
+        out.writeObject(this.exhibitArray);
+        out.writeObject(this.paintingArray);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        galleryName = (String)in.readObject();
-        exhibitArray = in.readObject();
-        paintingArray = in.readObject();
+        this.galleryName = (String)in.readObject();
+        this.exhibitArray = in.readObject();
+        this.paintingArray = in.readObject();
     }
 
 }
