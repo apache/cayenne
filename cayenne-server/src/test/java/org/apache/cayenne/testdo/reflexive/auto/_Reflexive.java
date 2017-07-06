@@ -37,7 +37,7 @@ public abstract class _Reflexive extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToChildren(Reflexive obj) {
@@ -111,17 +111,17 @@ public abstract class _Reflexive extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(children);
-        out.writeObject(toParent);
+        out.writeObject(this.name);
+        out.writeObject(this.children);
+        out.writeObject(this.toParent);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        children = in.readObject();
-        toParent = in.readObject();
+        this.name = (String)in.readObject();
+        this.children = in.readObject();
+        this.toParent = in.readObject();
     }
 
 }

@@ -37,7 +37,7 @@ public abstract class _BaseEntity extends BaseDataObject {
 
     public String getEntityType() {
         beforePropertyRead("entityType");
-        return entityType;
+        return this.entityType;
     }
 
     public void setToDirectToSubEntity(DirectToSubEntity toDirectToSubEntity) {
@@ -106,17 +106,17 @@ public abstract class _BaseEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(entityType);
-        out.writeObject(toDirectToSubEntity);
-        out.writeObject(toRelatedEntity);
+        out.writeObject(this.entityType);
+        out.writeObject(this.toDirectToSubEntity);
+        out.writeObject(this.toRelatedEntity);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        entityType = (String)in.readObject();
-        toDirectToSubEntity = in.readObject();
-        toRelatedEntity = in.readObject();
+        this.entityType = (String)in.readObject();
+        this.toDirectToSubEntity = in.readObject();
+        this.toRelatedEntity = in.readObject();
     }
 
 }

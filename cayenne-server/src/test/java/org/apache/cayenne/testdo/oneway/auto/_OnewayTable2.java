@@ -34,7 +34,7 @@ public abstract class _OnewayTable2 extends BaseDataObject {
 
     public Integer getId() {
         beforePropertyRead("id");
-        return id;
+        return this.id;
     }
 
     public void setToOneOneWayDb(OnewayTable1 toOneOneWayDb) {
@@ -90,15 +90,15 @@ public abstract class _OnewayTable2 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(id);
-        out.writeObject(toOneOneWayDb);
+        out.writeObject(this.id);
+        out.writeObject(this.toOneOneWayDb);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        id = (Integer)in.readObject();
-        toOneOneWayDb = in.readObject();
+        this.id = (Integer)in.readObject();
+        this.toOneOneWayDb = in.readObject();
     }
 
 }

@@ -38,7 +38,7 @@ public abstract class _IvImpl extends IvBase {
 
     public String getAttr1() {
         beforePropertyRead("attr1");
-        return attr1;
+        return this.attr1;
     }
 
     public void setAttr2(String attr2) {
@@ -48,7 +48,7 @@ public abstract class _IvImpl extends IvBase {
 
     public String getAttr2() {
         beforePropertyRead("attr2");
-        return attr2;
+        return this.attr2;
     }
 
     public void setOther1(IvOther other1) {
@@ -122,19 +122,19 @@ public abstract class _IvImpl extends IvBase {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(attr1);
-        out.writeObject(attr2);
-        out.writeObject(other1);
-        out.writeObject(other2);
+        out.writeObject(this.attr1);
+        out.writeObject(this.attr2);
+        out.writeObject(this.other1);
+        out.writeObject(this.other2);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        attr1 = (String)in.readObject();
-        attr2 = (String)in.readObject();
-        other1 = in.readObject();
-        other2 = in.readObject();
+        this.attr1 = (String)in.readObject();
+        this.attr2 = (String)in.readObject();
+        this.other1 = in.readObject();
+        this.other2 = in.readObject();
     }
 
 }

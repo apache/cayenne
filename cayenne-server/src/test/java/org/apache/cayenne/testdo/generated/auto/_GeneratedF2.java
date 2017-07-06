@@ -79,13 +79,13 @@ public abstract class _GeneratedF2 extends CayenneDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(f1);
+        out.writeObject(this.f1);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        f1 = in.readObject();
+        this.f1 = in.readObject();
     }
 
 }

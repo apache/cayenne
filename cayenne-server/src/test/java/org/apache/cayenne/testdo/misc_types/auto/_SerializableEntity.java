@@ -32,7 +32,7 @@ public abstract class _SerializableEntity extends BaseDataObject {
 
     public MockSerializable getSerializableField() {
         beforePropertyRead("serializableField");
-        return serializableField;
+        return this.serializableField;
     }
 
     @Override
@@ -75,13 +75,13 @@ public abstract class _SerializableEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(serializableField);
+        out.writeObject(this.serializableField);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        serializableField = (MockSerializable)in.readObject();
+        this.serializableField = (MockSerializable)in.readObject();
     }
 
 }

@@ -31,7 +31,7 @@ public abstract class _LongEntity extends BaseDataObject {
 
     public Long getLongField() {
         beforePropertyRead("longField");
-        return longField;
+        return this.longField;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _LongEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(longField);
+        out.writeObject(this.longField);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        longField = (Long)in.readObject();
+        this.longField = (Long)in.readObject();
     }
 
 }

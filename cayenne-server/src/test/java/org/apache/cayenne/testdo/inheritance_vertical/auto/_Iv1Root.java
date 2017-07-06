@@ -33,7 +33,7 @@ public abstract class _Iv1Root extends BaseDataObject {
 
     public String getDiscriminator() {
         beforePropertyRead("discriminator");
-        return discriminator;
+        return this.discriminator;
     }
 
     public void setName(String name) {
@@ -43,7 +43,7 @@ public abstract class _Iv1Root extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     @Override
@@ -91,15 +91,15 @@ public abstract class _Iv1Root extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(discriminator);
-        out.writeObject(name);
+        out.writeObject(this.discriminator);
+        out.writeObject(this.name);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        discriminator = (String)in.readObject();
-        name = (String)in.readObject();
+        this.discriminator = (String)in.readObject();
+        this.name = (String)in.readObject();
     }
 
 }

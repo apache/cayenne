@@ -79,13 +79,13 @@ public abstract class _DeleteRuleFlatB extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(untitledRel);
+        out.writeObject(this.untitledRel);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        untitledRel = in.readObject();
+        this.untitledRel = in.readObject();
     }
 
 }

@@ -31,7 +31,7 @@ public abstract class _GeneratedColumnTest2 extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _GeneratedColumnTest2 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
+        out.writeObject(this.name);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
+        this.name = (String)in.readObject();
     }
 
 }

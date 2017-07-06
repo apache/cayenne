@@ -38,7 +38,7 @@ public abstract class _Department extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToEmployees(Employee obj) {
@@ -112,17 +112,17 @@ public abstract class _Department extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(employees);
-        out.writeObject(toManager);
+        out.writeObject(this.name);
+        out.writeObject(this.employees);
+        out.writeObject(this.toManager);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        employees = in.readObject();
-        toManager = in.readObject();
+        this.name = (String)in.readObject();
+        this.employees = in.readObject();
+        this.toManager = in.readObject();
     }
 
 }

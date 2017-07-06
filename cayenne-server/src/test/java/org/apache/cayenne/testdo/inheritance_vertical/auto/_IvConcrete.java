@@ -37,7 +37,7 @@ public abstract class _IvConcrete extends IvAbstract {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToChildren(IvConcrete obj) {
@@ -111,17 +111,17 @@ public abstract class _IvConcrete extends IvAbstract {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(children);
-        out.writeObject(parent);
+        out.writeObject(this.name);
+        out.writeObject(this.children);
+        out.writeObject(this.parent);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        children = in.readObject();
-        parent = in.readObject();
+        this.name = (String)in.readObject();
+        this.children = in.readObject();
+        this.parent = in.readObject();
     }
 
 }

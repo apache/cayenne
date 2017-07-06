@@ -28,7 +28,7 @@ public abstract class _IvSub3 extends IvRoot {
         return (IvRoot)readProperty("ivRoot");
     }
 
-protected abstract void onPrePersist();
+    protected abstract void onPrePersist();
 
     @Override
     public Object readPropertyDirectly(String propName) {
@@ -70,13 +70,13 @@ protected abstract void onPrePersist();
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(ivRoot);
+        out.writeObject(this.ivRoot);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        ivRoot = in.readObject();
+        this.ivRoot = in.readObject();
     }
 
 }

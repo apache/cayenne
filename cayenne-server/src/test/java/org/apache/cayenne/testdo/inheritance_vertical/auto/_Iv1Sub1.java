@@ -31,7 +31,7 @@ public abstract class _Iv1Sub1 extends Iv1Root {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _Iv1Sub1 extends Iv1Root {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
+        out.writeObject(this.name);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
+        this.name = (String)in.readObject();
     }
 
 }

@@ -33,7 +33,7 @@ public abstract class _ReturnTypesMapLobs1 extends CayenneDataObject {
 
     public String getClobColumn() {
         beforePropertyRead("clobColumn");
-        return clobColumn;
+        return this.clobColumn;
     }
 
     public void setNclobColumn(String nclobColumn) {
@@ -43,7 +43,7 @@ public abstract class _ReturnTypesMapLobs1 extends CayenneDataObject {
 
     public String getNclobColumn() {
         beforePropertyRead("nclobColumn");
-        return nclobColumn;
+        return this.nclobColumn;
     }
 
     @Override
@@ -91,15 +91,15 @@ public abstract class _ReturnTypesMapLobs1 extends CayenneDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(clobColumn);
-        out.writeObject(nclobColumn);
+        out.writeObject(this.clobColumn);
+        out.writeObject(this.nclobColumn);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        clobColumn = (String)in.readObject();
-        nclobColumn = (String)in.readObject();
+        this.clobColumn = (String)in.readObject();
+        this.nclobColumn = (String)in.readObject();
     }
 
 }

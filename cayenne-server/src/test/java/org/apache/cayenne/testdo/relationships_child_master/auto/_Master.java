@@ -35,7 +35,7 @@ public abstract class _Master extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToChildren(Child obj) {
@@ -96,15 +96,15 @@ public abstract class _Master extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(children);
+        out.writeObject(this.name);
+        out.writeObject(this.children);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        children = in.readObject();
+        this.name = (String)in.readObject();
+        this.children = in.readObject();
     }
 
 }

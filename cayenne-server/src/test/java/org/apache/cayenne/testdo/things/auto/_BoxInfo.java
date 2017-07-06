@@ -34,7 +34,7 @@ public abstract class _BoxInfo extends CayenneDataObject {
 
     public String getColor() {
         beforePropertyRead("color");
-        return color;
+        return this.color;
     }
 
     public void setBox(Box box) {
@@ -90,15 +90,15 @@ public abstract class _BoxInfo extends CayenneDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(color);
-        out.writeObject(box);
+        out.writeObject(this.color);
+        out.writeObject(this.box);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        color = (String)in.readObject();
-        box = in.readObject();
+        this.color = (String)in.readObject();
+        this.box = in.readObject();
     }
 
 }

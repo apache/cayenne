@@ -35,7 +35,7 @@ public abstract class _User extends BaseDataObject {
 
     public byte[] getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToUserTeams(Team obj) {
@@ -96,15 +96,15 @@ public abstract class _User extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(userTeams);
+        out.writeObject(this.name);
+        out.writeObject(this.userTeams);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (byte[])in.readObject();
-        userTeams = in.readObject();
+        this.name = (byte[])in.readObject();
+        this.userTeams = in.readObject();
     }
 
 }

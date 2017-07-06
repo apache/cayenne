@@ -35,7 +35,7 @@ public abstract class _ClientCompany extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToRepresentatives(CustomerRepresentative obj) {
@@ -96,15 +96,15 @@ public abstract class _ClientCompany extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(representatives);
+        out.writeObject(this.name);
+        out.writeObject(this.representatives);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        representatives = in.readObject();
+        this.name = (String)in.readObject();
+        this.representatives = in.readObject();
     }
 
 }

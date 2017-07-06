@@ -41,7 +41,7 @@ public abstract class _RelationshipHelper extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToFksOfDifferentType(FkOfDifferentType obj) {
@@ -138,19 +138,19 @@ public abstract class _RelationshipHelper extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(fksOfDifferentType);
-        out.writeObject(meanigfulFKs);
-        out.writeObject(reflexiveAndToOneArray);
+        out.writeObject(this.name);
+        out.writeObject(this.fksOfDifferentType);
+        out.writeObject(this.meanigfulFKs);
+        out.writeObject(this.reflexiveAndToOneArray);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        fksOfDifferentType = in.readObject();
-        meanigfulFKs = in.readObject();
-        reflexiveAndToOneArray = in.readObject();
+        this.name = (String)in.readObject();
+        this.fksOfDifferentType = in.readObject();
+        this.meanigfulFKs = in.readObject();
+        this.reflexiveAndToOneArray = in.readObject();
     }
 
 }

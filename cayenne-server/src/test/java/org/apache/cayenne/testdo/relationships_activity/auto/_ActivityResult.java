@@ -38,7 +38,7 @@ public abstract class _ActivityResult extends BaseDataObject {
 
     public Date getAppointDate() {
         beforePropertyRead("appointDate");
-        return appointDate;
+        return this.appointDate;
     }
 
     public void setAppointNo(int appointNo) {
@@ -48,7 +48,7 @@ public abstract class _ActivityResult extends BaseDataObject {
 
     public int getAppointNo() {
         beforePropertyRead("appointNo");
-        return appointNo;
+        return this.appointNo;
     }
 
     public void setField(String field) {
@@ -58,7 +58,7 @@ public abstract class _ActivityResult extends BaseDataObject {
 
     public String getField() {
         beforePropertyRead("field");
-        return field;
+        return this.field;
     }
 
     @Override
@@ -90,7 +90,7 @@ public abstract class _ActivityResult extends BaseDataObject {
                 this.appointDate = (Date)val;
                 break;
             case "appointNo":
-                this.appointNo = (Integer)val;
+                this.appointNo = val == null ? 0 : (Integer)val;
                 break;
             case "field":
                 this.field = (String)val;
@@ -111,17 +111,17 @@ public abstract class _ActivityResult extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(appointDate);
-        out.writeInt(appointNo);
-        out.writeObject(field);
+        out.writeObject(this.appointDate);
+        out.writeInt(this.appointNo);
+        out.writeObject(this.field);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        appointDate = (Date)in.readObject();
-        appointNo = in.readInt();
-        field = (String)in.readObject();
+        this.appointDate = (Date)in.readObject();
+        this.appointNo = in.readInt();
+        this.field = (String)in.readObject();
     }
 
 }

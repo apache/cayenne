@@ -31,7 +31,7 @@ public abstract class _NClobTestEntity extends BaseDataObject {
 
     public String getNclobCol() {
         beforePropertyRead("nclobCol");
-        return nclobCol;
+        return this.nclobCol;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _NClobTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(nclobCol);
+        out.writeObject(this.nclobCol);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        nclobCol = (String)in.readObject();
+        this.nclobCol = (String)in.readObject();
     }
 
 }

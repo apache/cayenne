@@ -37,7 +37,7 @@ public abstract class _ArraysEntity extends BaseDataObject {
 
     public byte[] getByteArray() {
         beforePropertyRead("byteArray");
-        return byteArray;
+        return this.byteArray;
     }
 
     public void setByteWrapperArray(Byte[] byteWrapperArray) {
@@ -47,7 +47,7 @@ public abstract class _ArraysEntity extends BaseDataObject {
 
     public Byte[] getByteWrapperArray() {
         beforePropertyRead("byteWrapperArray");
-        return byteWrapperArray;
+        return this.byteWrapperArray;
     }
 
     public void setCharArray(char[] charArray) {
@@ -57,7 +57,7 @@ public abstract class _ArraysEntity extends BaseDataObject {
 
     public char[] getCharArray() {
         beforePropertyRead("charArray");
-        return charArray;
+        return this.charArray;
     }
 
     public void setCharWrapperArray(Character[] charWrapperArray) {
@@ -67,7 +67,7 @@ public abstract class _ArraysEntity extends BaseDataObject {
 
     public Character[] getCharWrapperArray() {
         beforePropertyRead("charWrapperArray");
-        return charWrapperArray;
+        return this.charWrapperArray;
     }
 
     @Override
@@ -125,19 +125,19 @@ public abstract class _ArraysEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(byteArray);
-        out.writeObject(byteWrapperArray);
-        out.writeObject(charArray);
-        out.writeObject(charWrapperArray);
+        out.writeObject(this.byteArray);
+        out.writeObject(this.byteWrapperArray);
+        out.writeObject(this.charArray);
+        out.writeObject(this.charWrapperArray);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        byteArray = (byte[])in.readObject();
-        byteWrapperArray = (Byte[])in.readObject();
-        charArray = (char[])in.readObject();
-        charWrapperArray = (Character[])in.readObject();
+        this.byteArray = (byte[])in.readObject();
+        this.byteWrapperArray = (Byte[])in.readObject();
+        this.charArray = (char[])in.readObject();
+        this.charWrapperArray = (Character[])in.readObject();
     }
 
 }

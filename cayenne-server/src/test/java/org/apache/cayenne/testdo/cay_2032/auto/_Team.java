@@ -79,13 +79,13 @@ public abstract class _Team extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(teamUsers);
+        out.writeObject(this.teamUsers);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        teamUsers = in.readObject();
+        this.teamUsers = in.readObject();
     }
 
 }

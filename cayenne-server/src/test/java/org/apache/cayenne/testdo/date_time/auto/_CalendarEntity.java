@@ -32,7 +32,7 @@ public abstract class _CalendarEntity extends BaseDataObject {
 
     public Calendar getCalendarField() {
         beforePropertyRead("calendarField");
-        return calendarField;
+        return this.calendarField;
     }
 
     @Override
@@ -75,13 +75,13 @@ public abstract class _CalendarEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(calendarField);
+        out.writeObject(this.calendarField);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        calendarField = (Calendar)in.readObject();
+        this.calendarField = (Calendar)in.readObject();
     }
 
 }

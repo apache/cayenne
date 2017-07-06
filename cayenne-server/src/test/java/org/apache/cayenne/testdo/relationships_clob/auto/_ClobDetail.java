@@ -34,7 +34,7 @@ public abstract class _ClobDetail extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void setMaster(ClobMaster master) {
@@ -90,15 +90,15 @@ public abstract class _ClobDetail extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(master);
+        out.writeObject(this.name);
+        out.writeObject(this.master);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        master = in.readObject();
+        this.name = (String)in.readObject();
+        this.master = in.readObject();
     }
 
 }

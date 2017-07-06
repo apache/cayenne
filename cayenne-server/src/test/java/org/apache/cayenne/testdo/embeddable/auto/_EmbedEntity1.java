@@ -36,7 +36,7 @@ public abstract class _EmbedEntity1 extends BaseDataObject {
 
     public Embeddable1 getEmbedded1() {
         beforePropertyRead("embedded1");
-        return embedded1;
+        return this.embedded1;
     }
 
     public void setEmbedded2(Embeddable1 embedded2) {
@@ -46,7 +46,7 @@ public abstract class _EmbedEntity1 extends BaseDataObject {
 
     public Embeddable1 getEmbedded2() {
         beforePropertyRead("embedded2");
-        return embedded2;
+        return this.embedded2;
     }
 
     public void setName(String name) {
@@ -56,7 +56,7 @@ public abstract class _EmbedEntity1 extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     @Override
@@ -109,17 +109,17 @@ public abstract class _EmbedEntity1 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(embedded1);
-        out.writeObject(embedded2);
-        out.writeObject(name);
+        out.writeObject(this.embedded1);
+        out.writeObject(this.embedded2);
+        out.writeObject(this.name);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        embedded1 = (Embeddable1)in.readObject();
-        embedded2 = (Embeddable1)in.readObject();
-        name = (String)in.readObject();
+        this.embedded1 = (Embeddable1)in.readObject();
+        this.embedded2 = (Embeddable1)in.readObject();
+        this.name = (String)in.readObject();
     }
 
 }

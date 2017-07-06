@@ -73,13 +73,13 @@ public abstract class _FkOfDifferentType extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(relationshipHelper);
+        out.writeObject(this.relationshipHelper);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        relationshipHelper = in.readObject();
+        this.relationshipHelper = in.readObject();
     }
 
 }

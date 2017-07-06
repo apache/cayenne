@@ -33,7 +33,7 @@ public abstract class _IvBaseWithLock extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void setType(String type) {
@@ -43,7 +43,7 @@ public abstract class _IvBaseWithLock extends BaseDataObject {
 
     public String getType() {
         beforePropertyRead("type");
-        return type;
+        return this.type;
     }
 
     @Override
@@ -91,15 +91,15 @@ public abstract class _IvBaseWithLock extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(type);
+        out.writeObject(this.name);
+        out.writeObject(this.type);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        type = (String)in.readObject();
+        this.name = (String)in.readObject();
+        this.type = (String)in.readObject();
     }
 
 }

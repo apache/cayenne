@@ -73,13 +73,13 @@ public abstract class _ToOneFK2 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(toOneToFK);
+        out.writeObject(this.toOneToFK);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        toOneToFK = in.readObject();
+        this.toOneToFK = in.readObject();
     }
 
 }

@@ -39,7 +39,7 @@ public abstract class _Role extends BaseDataObject {
 
     public long getId() {
         beforePropertyRead("id");
-        return id;
+        return this.id;
     }
 
     public void setName(String name) {
@@ -49,7 +49,7 @@ public abstract class _Role extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void setType(int type) {
@@ -59,7 +59,7 @@ public abstract class _Role extends BaseDataObject {
 
     public int getType() {
         beforePropertyRead("type");
-        return type;
+        return this.type;
     }
 
     public void addToRoleGroups(Group obj) {
@@ -75,9 +75,9 @@ public abstract class _Role extends BaseDataObject {
         return (List<Group>)readProperty("roleGroups");
     }
 
-protected abstract void onPostPersist();
+    protected abstract void onPostPersist();
 
-protected abstract void onPostUpdate();
+    protected abstract void onPostUpdate();
 
     @Override
     public Object readPropertyDirectly(String propName) {
@@ -107,13 +107,13 @@ protected abstract void onPostUpdate();
 
         switch (propName) {
             case "id":
-                this.id = (Long)val;
+                this.id = val == null ? 0 : (Long)val;
                 break;
             case "name":
                 this.name = (String)val;
                 break;
             case "type":
-                this.type = (Integer)val;
+                this.type = val == null ? 0 : (Integer)val;
                 break;
             case "roleGroups":
                 this.roleGroups = val;
@@ -134,19 +134,19 @@ protected abstract void onPostUpdate();
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeLong(id);
-        out.writeObject(name);
-        out.writeInt(type);
-        out.writeObject(roleGroups);
+        out.writeLong(this.id);
+        out.writeObject(this.name);
+        out.writeInt(this.type);
+        out.writeObject(this.roleGroups);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        id = in.readLong();
-        name = (String)in.readObject();
-        type = in.readInt();
-        roleGroups = in.readObject();
+        this.id = in.readLong();
+        this.name = (String)in.readObject();
+        this.type = in.readInt();
+        this.roleGroups = in.readObject();
     }
 
 }

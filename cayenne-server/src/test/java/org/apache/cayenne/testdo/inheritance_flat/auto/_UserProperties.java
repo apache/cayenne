@@ -36,7 +36,7 @@ public abstract class _UserProperties extends BaseDataObject {
 
     public Long getId() {
         beforePropertyRead("id");
-        return id;
+        return this.id;
     }
 
     public void setNickname(String nickname) {
@@ -46,7 +46,7 @@ public abstract class _UserProperties extends BaseDataObject {
 
     public String getNickname() {
         beforePropertyRead("nickname");
-        return nickname;
+        return this.nickname;
     }
 
     public void setUser(User user) {
@@ -107,17 +107,17 @@ public abstract class _UserProperties extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(id);
-        out.writeObject(nickname);
-        out.writeObject(user);
+        out.writeObject(this.id);
+        out.writeObject(this.nickname);
+        out.writeObject(this.user);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        id = (Long)in.readObject();
-        nickname = (String)in.readObject();
-        user = in.readObject();
+        this.id = (Long)in.readObject();
+        this.nickname = (String)in.readObject();
+        this.user = in.readObject();
     }
 
 }

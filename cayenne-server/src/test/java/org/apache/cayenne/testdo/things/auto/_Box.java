@@ -44,7 +44,7 @@ public abstract class _Box extends CayenneDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void setBag(Bag bag) {
@@ -141,21 +141,21 @@ public abstract class _Box extends CayenneDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(bag);
-        out.writeObject(balls);
-        out.writeObject(boxInfo);
-        out.writeObject(things);
+        out.writeObject(this.name);
+        out.writeObject(this.bag);
+        out.writeObject(this.balls);
+        out.writeObject(this.boxInfo);
+        out.writeObject(this.things);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        bag = in.readObject();
-        balls = in.readObject();
-        boxInfo = in.readObject();
-        things = in.readObject();
+        this.name = (String)in.readObject();
+        this.bag = in.readObject();
+        this.balls = in.readObject();
+        this.boxInfo = in.readObject();
+        this.things = in.readObject();
     }
 
 }

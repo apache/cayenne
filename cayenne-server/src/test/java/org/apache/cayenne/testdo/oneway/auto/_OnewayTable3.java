@@ -79,13 +79,13 @@ public abstract class _OnewayTable3 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(toManyOneWayDb);
+        out.writeObject(this.toManyOneWayDb);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        toManyOneWayDb = in.readObject();
+        this.toManyOneWayDb = in.readObject();
     }
 
 }

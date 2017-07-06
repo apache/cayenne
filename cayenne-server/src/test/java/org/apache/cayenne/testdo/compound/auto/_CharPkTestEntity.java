@@ -37,7 +37,7 @@ public abstract class _CharPkTestEntity extends BaseDataObject {
 
     public String getOtherCol() {
         beforePropertyRead("otherCol");
-        return otherCol;
+        return this.otherCol;
     }
 
     public void setPkCol(String pkCol) {
@@ -47,7 +47,7 @@ public abstract class _CharPkTestEntity extends BaseDataObject {
 
     public String getPkCol() {
         beforePropertyRead("pkCol");
-        return pkCol;
+        return this.pkCol;
     }
 
     public void addToCharFKs(CharFkTestEntity obj) {
@@ -113,17 +113,17 @@ public abstract class _CharPkTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(otherCol);
-        out.writeObject(pkCol);
-        out.writeObject(charFKs);
+        out.writeObject(this.otherCol);
+        out.writeObject(this.pkCol);
+        out.writeObject(this.charFKs);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        otherCol = (String)in.readObject();
-        pkCol = (String)in.readObject();
-        charFKs = in.readObject();
+        this.otherCol = (String)in.readObject();
+        this.pkCol = (String)in.readObject();
+        this.charFKs = in.readObject();
     }
 
 }

@@ -73,13 +73,13 @@ public abstract class _CollectionToManyTarget extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(collectionToMany);
+        out.writeObject(this.collectionToMany);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        collectionToMany = in.readObject();
+        this.collectionToMany = in.readObject();
     }
 
 }

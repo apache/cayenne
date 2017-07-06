@@ -38,7 +38,7 @@ public abstract class _RelLockingTestEntity extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToLockingHelpers(LockingHelper obj) {
@@ -112,17 +112,17 @@ public abstract class _RelLockingTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(lockingHelpers);
-        out.writeObject(toSimpleLockingTest);
+        out.writeObject(this.name);
+        out.writeObject(this.lockingHelpers);
+        out.writeObject(this.toSimpleLockingTest);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        lockingHelpers = in.readObject();
-        toSimpleLockingTest = in.readObject();
+        this.name = (String)in.readObject();
+        this.lockingHelpers = in.readObject();
+        this.toSimpleLockingTest = in.readObject();
     }
 
 }

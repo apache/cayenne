@@ -34,7 +34,7 @@ public abstract class _MeaningfulPKDep extends BaseDataObject {
 
     public String getDescr() {
         beforePropertyRead("descr");
-        return descr;
+        return this.descr;
     }
 
     public void setToMeaningfulPK(MeaningfulPKTest1 toMeaningfulPK) {
@@ -90,15 +90,15 @@ public abstract class _MeaningfulPKDep extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(descr);
-        out.writeObject(toMeaningfulPK);
+        out.writeObject(this.descr);
+        out.writeObject(this.toMeaningfulPK);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        descr = (String)in.readObject();
-        toMeaningfulPK = in.readObject();
+        this.descr = (String)in.readObject();
+        this.toMeaningfulPK = in.readObject();
     }
 
 }

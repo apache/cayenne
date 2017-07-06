@@ -36,7 +36,7 @@ public abstract class _GroupProperties extends BaseDataObject {
 
     public String getDescription() {
         beforePropertyRead("description");
-        return description;
+        return this.description;
     }
 
     public void setId(Long id) {
@@ -46,7 +46,7 @@ public abstract class _GroupProperties extends BaseDataObject {
 
     public Long getId() {
         beforePropertyRead("id");
-        return id;
+        return this.id;
     }
 
     public void setGroup(Group group) {
@@ -107,17 +107,17 @@ public abstract class _GroupProperties extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(description);
-        out.writeObject(id);
-        out.writeObject(group);
+        out.writeObject(this.description);
+        out.writeObject(this.id);
+        out.writeObject(this.group);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        description = (String)in.readObject();
-        id = (Long)in.readObject();
-        group = in.readObject();
+        this.description = (String)in.readObject();
+        this.id = (Long)in.readObject();
+        this.group = in.readObject();
     }
 
 }

@@ -37,7 +37,7 @@ public abstract class _ClobMaster extends BaseDataObject {
 
     public String getClobColumn() {
         beforePropertyRead("clobColumn");
-        return clobColumn;
+        return this.clobColumn;
     }
 
     public void setName(String name) {
@@ -47,7 +47,7 @@ public abstract class _ClobMaster extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToDetails(ClobDetail obj) {
@@ -113,17 +113,17 @@ public abstract class _ClobMaster extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(clobColumn);
-        out.writeObject(name);
-        out.writeObject(details);
+        out.writeObject(this.clobColumn);
+        out.writeObject(this.name);
+        out.writeObject(this.details);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        clobColumn = (String)in.readObject();
-        name = (String)in.readObject();
-        details = in.readObject();
+        this.clobColumn = (String)in.readObject();
+        this.name = (String)in.readObject();
+        this.details = in.readObject();
     }
 
 }

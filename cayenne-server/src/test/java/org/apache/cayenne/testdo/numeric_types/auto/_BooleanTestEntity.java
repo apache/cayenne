@@ -31,7 +31,7 @@ public abstract class _BooleanTestEntity extends BaseDataObject {
 
     public Boolean getBooleanColumn() {
         beforePropertyRead("booleanColumn");
-        return booleanColumn;
+        return this.booleanColumn;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _BooleanTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(booleanColumn);
+        out.writeObject(this.booleanColumn);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        booleanColumn = (Boolean)in.readObject();
+        this.booleanColumn = (Boolean)in.readObject();
     }
 
 }

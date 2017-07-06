@@ -38,7 +38,7 @@ public abstract class _Activity extends BaseDataObject {
 
     public Date getAppointmentDate() {
         beforePropertyRead("appointmentDate");
-        return appointmentDate;
+        return this.appointmentDate;
     }
 
     public void setAppointmentNo(int appointmentNo) {
@@ -48,7 +48,7 @@ public abstract class _Activity extends BaseDataObject {
 
     public int getAppointmentNo() {
         beforePropertyRead("appointmentNo");
-        return appointmentNo;
+        return this.appointmentNo;
     }
 
     public void addToResults(ActivityResult obj) {
@@ -93,7 +93,7 @@ public abstract class _Activity extends BaseDataObject {
                 this.appointmentDate = (Date)val;
                 break;
             case "appointmentNo":
-                this.appointmentNo = (Integer)val;
+                this.appointmentNo = val == null ? 0 : (Integer)val;
                 break;
             case "results":
                 this.results = val;
@@ -114,17 +114,17 @@ public abstract class _Activity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(appointmentDate);
-        out.writeInt(appointmentNo);
-        out.writeObject(results);
+        out.writeObject(this.appointmentDate);
+        out.writeInt(this.appointmentNo);
+        out.writeObject(this.results);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        appointmentDate = (Date)in.readObject();
-        appointmentNo = in.readInt();
-        results = in.readObject();
+        this.appointmentDate = (Date)in.readObject();
+        this.appointmentNo = in.readInt();
+        this.results = in.readObject();
     }
 
 }

@@ -34,7 +34,7 @@ public abstract class _MeaningfulFK extends BaseDataObject {
 
     public Integer getRelationshipHelperID() {
         beforePropertyRead("relationshipHelperID");
-        return relationshipHelperID;
+        return this.relationshipHelperID;
     }
 
     public void setToRelationshipHelper(RelationshipHelper toRelationshipHelper) {
@@ -90,15 +90,15 @@ public abstract class _MeaningfulFK extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(relationshipHelperID);
-        out.writeObject(toRelationshipHelper);
+        out.writeObject(this.relationshipHelperID);
+        out.writeObject(this.toRelationshipHelper);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        relationshipHelperID = (Integer)in.readObject();
-        toRelationshipHelper = in.readObject();
+        this.relationshipHelperID = (Integer)in.readObject();
+        this.toRelationshipHelper = in.readObject();
     }
 
 }

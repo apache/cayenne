@@ -38,7 +38,7 @@ public abstract class _IvOther extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     @SuppressWarnings("unchecked")
@@ -101,17 +101,17 @@ public abstract class _IvOther extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(impls);
-        out.writeObject(implsWithLock);
+        out.writeObject(this.name);
+        out.writeObject(this.impls);
+        out.writeObject(this.implsWithLock);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        impls = in.readObject();
-        implsWithLock = in.readObject();
+        this.name = (String)in.readObject();
+        this.impls = in.readObject();
+        this.implsWithLock = in.readObject();
     }
 
 }

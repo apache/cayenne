@@ -33,7 +33,7 @@ public abstract class _SimpleLockingTestEntity extends BaseDataObject {
 
     public String getDescription() {
         beforePropertyRead("description");
-        return description;
+        return this.description;
     }
 
     public void setName(String name) {
@@ -43,7 +43,7 @@ public abstract class _SimpleLockingTestEntity extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     @Override
@@ -91,15 +91,15 @@ public abstract class _SimpleLockingTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(description);
-        out.writeObject(name);
+        out.writeObject(this.description);
+        out.writeObject(this.name);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        description = (String)in.readObject();
-        name = (String)in.readObject();
+        this.description = (String)in.readObject();
+        this.name = (String)in.readObject();
     }
 
 }

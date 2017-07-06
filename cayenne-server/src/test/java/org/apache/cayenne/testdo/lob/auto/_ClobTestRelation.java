@@ -36,7 +36,7 @@ public abstract class _ClobTestRelation extends BaseDataObject {
 
     public Integer getId() {
         beforePropertyRead("id");
-        return id;
+        return this.id;
     }
 
     public void setValue(Integer value) {
@@ -46,7 +46,7 @@ public abstract class _ClobTestRelation extends BaseDataObject {
 
     public Integer getValue() {
         beforePropertyRead("value");
-        return value;
+        return this.value;
     }
 
     public void setClobId(ClobTestEntity clobId) {
@@ -107,17 +107,17 @@ public abstract class _ClobTestRelation extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(id);
-        out.writeObject(value);
-        out.writeObject(clobId);
+        out.writeObject(this.id);
+        out.writeObject(this.value);
+        out.writeObject(this.clobId);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        id = (Integer)in.readObject();
-        value = (Integer)in.readObject();
-        clobId = in.readObject();
+        this.id = (Integer)in.readObject();
+        this.value = (Integer)in.readObject();
+        this.clobId = in.readObject();
     }
 
 }

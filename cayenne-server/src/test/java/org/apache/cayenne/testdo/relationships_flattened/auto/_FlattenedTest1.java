@@ -46,7 +46,7 @@ public abstract class _FlattenedTest1 extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToFt2Array(FlattenedTest2 obj) {
@@ -163,23 +163,23 @@ public abstract class _FlattenedTest1 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(ft2Array);
-        out.writeObject(ft3Array);
-        out.writeObject(ft3OverComplex);
-        out.writeObject(ft4ArrayFor1);
-        out.writeObject(ft5Array);
+        out.writeObject(this.name);
+        out.writeObject(this.ft2Array);
+        out.writeObject(this.ft3Array);
+        out.writeObject(this.ft3OverComplex);
+        out.writeObject(this.ft4ArrayFor1);
+        out.writeObject(this.ft5Array);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        ft2Array = in.readObject();
-        ft3Array = in.readObject();
-        ft3OverComplex = in.readObject();
-        ft4ArrayFor1 = in.readObject();
-        ft5Array = in.readObject();
+        this.name = (String)in.readObject();
+        this.ft2Array = in.readObject();
+        this.ft3Array = in.readObject();
+        this.ft3OverComplex = in.readObject();
+        this.ft4ArrayFor1 = in.readObject();
+        this.ft5Array = in.readObject();
     }
 
 }

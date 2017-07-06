@@ -34,7 +34,7 @@ public abstract class _IvImplWithLock extends IvBaseWithLock {
 
     public String getAttr1() {
         beforePropertyRead("attr1");
-        return attr1;
+        return this.attr1;
     }
 
     public void setOther1(IvOther other1) {
@@ -90,15 +90,15 @@ public abstract class _IvImplWithLock extends IvBaseWithLock {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(attr1);
-        out.writeObject(other1);
+        out.writeObject(this.attr1);
+        out.writeObject(this.other1);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        attr1 = (String)in.readObject();
-        other1 = in.readObject();
+        this.attr1 = (String)in.readObject();
+        this.other1 = in.readObject();
     }
 
 }

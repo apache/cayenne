@@ -35,7 +35,7 @@ public abstract class _GeneratedColumnCompMaster extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToToDetail(GeneratedColumnCompKey obj) {
@@ -96,15 +96,15 @@ public abstract class _GeneratedColumnCompMaster extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(toDetail);
+        out.writeObject(this.name);
+        out.writeObject(this.toDetail);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        toDetail = in.readObject();
+        this.name = (String)in.readObject();
+        this.toDetail = in.readObject();
     }
 
 }

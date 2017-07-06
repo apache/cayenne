@@ -34,7 +34,7 @@ public abstract class _CharFkTestEntity extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void setToCharPK(CharPkTestEntity toCharPK) {
@@ -90,15 +90,15 @@ public abstract class _CharFkTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(toCharPK);
+        out.writeObject(this.name);
+        out.writeObject(this.toCharPK);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        toCharPK = in.readObject();
+        this.name = (String)in.readObject();
+        this.toCharPK = in.readObject();
     }
 
 }

@@ -33,7 +33,7 @@ public abstract class _IvSub2 extends IvRoot {
 
     public String getSub2Attr() {
         beforePropertyRead("sub2Attr");
-        return sub2Attr;
+        return this.sub2Attr;
     }
 
     public void setSub2Name(String sub2Name) {
@@ -43,7 +43,7 @@ public abstract class _IvSub2 extends IvRoot {
 
     public String getSub2Name() {
         beforePropertyRead("sub2Name");
-        return sub2Name;
+        return this.sub2Name;
     }
 
     @Override
@@ -91,15 +91,15 @@ public abstract class _IvSub2 extends IvRoot {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(sub2Attr);
-        out.writeObject(sub2Name);
+        out.writeObject(this.sub2Attr);
+        out.writeObject(this.sub2Name);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        sub2Attr = (String)in.readObject();
-        sub2Name = (String)in.readObject();
+        this.sub2Attr = (String)in.readObject();
+        this.sub2Name = (String)in.readObject();
     }
 
 }

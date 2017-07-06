@@ -100,15 +100,15 @@ public abstract class _DeleteRuleTest2 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(deleteRuleTest3Array);
-        out.writeObject(test1Array);
+        out.writeObject(this.deleteRuleTest3Array);
+        out.writeObject(this.test1Array);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        deleteRuleTest3Array = in.readObject();
-        test1Array = in.readObject();
+        this.deleteRuleTest3Array = in.readObject();
+        this.test1Array = in.readObject();
     }
 
 }

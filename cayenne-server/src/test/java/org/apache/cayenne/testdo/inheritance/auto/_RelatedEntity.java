@@ -100,15 +100,15 @@ public abstract class _RelatedEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(baseEntities);
-        out.writeObject(subEntities);
+        out.writeObject(this.baseEntities);
+        out.writeObject(this.subEntities);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        baseEntities = in.readObject();
-        subEntities = in.readObject();
+        this.baseEntities = in.readObject();
+        this.subEntities = in.readObject();
     }
 
 }

@@ -35,7 +35,7 @@ public abstract class _Customer extends BaseDataObject {
 
     public String getLongvarcharCol() {
         beforePropertyRead("longvarcharCol");
-        return longvarcharCol;
+        return this.longvarcharCol;
     }
 
     public void addToOrder(Product obj) {
@@ -96,15 +96,15 @@ public abstract class _Customer extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(longvarcharCol);
-        out.writeObject(order);
+        out.writeObject(this.longvarcharCol);
+        out.writeObject(this.order);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        longvarcharCol = (String)in.readObject();
-        order = in.readObject();
+        this.longvarcharCol = (String)in.readObject();
+        this.order = in.readObject();
     }
 
 }

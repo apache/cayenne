@@ -37,7 +37,7 @@ public abstract class _MixedPersistenceStrategy extends BaseDataObject {
 
     public String getDescription() {
         beforePropertyRead("description");
-        return description;
+        return this.description;
     }
 
     public void setName(String name) {
@@ -47,7 +47,7 @@ public abstract class _MixedPersistenceStrategy extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToDetails(MixedPersistenceStrategy2 obj) {
@@ -113,17 +113,17 @@ public abstract class _MixedPersistenceStrategy extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(description);
-        out.writeObject(name);
-        out.writeObject(details);
+        out.writeObject(this.description);
+        out.writeObject(this.name);
+        out.writeObject(this.details);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        description = (String)in.readObject();
-        name = (String)in.readObject();
-        details = in.readObject();
+        this.description = (String)in.readObject();
+        this.name = (String)in.readObject();
+        this.details = in.readObject();
     }
 
 }

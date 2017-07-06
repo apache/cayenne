@@ -33,7 +33,7 @@ public abstract class _DecimalPKTest1 extends BaseDataObject {
 
     public Double getDecimalPK() {
         beforePropertyRead("decimalPK");
-        return decimalPK;
+        return this.decimalPK;
     }
 
     public void setName(String name) {
@@ -43,7 +43,7 @@ public abstract class _DecimalPKTest1 extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     @Override
@@ -91,15 +91,15 @@ public abstract class _DecimalPKTest1 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(decimalPK);
-        out.writeObject(name);
+        out.writeObject(this.decimalPK);
+        out.writeObject(this.name);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        decimalPK = (Double)in.readObject();
-        name = (String)in.readObject();
+        this.decimalPK = (Double)in.readObject();
+        this.name = (String)in.readObject();
     }
 
 }

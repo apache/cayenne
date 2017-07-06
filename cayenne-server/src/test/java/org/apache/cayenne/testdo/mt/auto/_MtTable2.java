@@ -37,7 +37,7 @@ public abstract class _MtTable2 extends BaseDataObject {
 
     public String getGlobalAttribute() {
         beforePropertyRead("globalAttribute");
-        return globalAttribute;
+        return this.globalAttribute;
     }
 
     public void setTable1(MtTable1 table1) {
@@ -106,17 +106,17 @@ public abstract class _MtTable2 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(globalAttribute);
-        out.writeObject(table1);
-        out.writeObject(table3);
+        out.writeObject(this.globalAttribute);
+        out.writeObject(this.table1);
+        out.writeObject(this.table3);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        globalAttribute = (String)in.readObject();
-        table1 = in.readObject();
-        table3 = in.readObject();
+        this.globalAttribute = (String)in.readObject();
+        this.table1 = in.readObject();
+        this.table3 = in.readObject();
     }
 
 }

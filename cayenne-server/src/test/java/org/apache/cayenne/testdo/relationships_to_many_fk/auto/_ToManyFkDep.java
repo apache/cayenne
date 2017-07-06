@@ -40,7 +40,7 @@ public abstract class _ToManyFkDep extends BaseDataObject {
 
     public Integer getDepId() {
         beforePropertyRead("depId");
-        return depId;
+        return this.depId;
     }
 
     public void setName(String name) {
@@ -50,7 +50,7 @@ public abstract class _ToManyFkDep extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void setRoot(ToManyFkRoot root) {
@@ -124,19 +124,19 @@ public abstract class _ToManyFkDep extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(depId);
-        out.writeObject(name);
-        out.writeObject(root);
-        out.writeObject(root2);
+        out.writeObject(this.depId);
+        out.writeObject(this.name);
+        out.writeObject(this.root);
+        out.writeObject(this.root2);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        depId = (Integer)in.readObject();
-        name = (String)in.readObject();
-        root = in.readObject();
-        root2 = in.readObject();
+        this.depId = (Integer)in.readObject();
+        this.name = (String)in.readObject();
+        this.root = in.readObject();
+        this.root2 = in.readObject();
     }
 
 }

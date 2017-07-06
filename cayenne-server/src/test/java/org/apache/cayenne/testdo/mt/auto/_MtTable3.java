@@ -39,7 +39,7 @@ public abstract class _MtTable3 extends BaseDataObject {
 
     public byte[] getBinaryColumn() {
         beforePropertyRead("binaryColumn");
-        return binaryColumn;
+        return this.binaryColumn;
     }
 
     public void setCharColumn(String charColumn) {
@@ -49,7 +49,7 @@ public abstract class _MtTable3 extends BaseDataObject {
 
     public String getCharColumn() {
         beforePropertyRead("charColumn");
-        return charColumn;
+        return this.charColumn;
     }
 
     public void setIntColumn(Integer intColumn) {
@@ -59,7 +59,7 @@ public abstract class _MtTable3 extends BaseDataObject {
 
     public Integer getIntColumn() {
         beforePropertyRead("intColumn");
-        return intColumn;
+        return this.intColumn;
     }
 
     public void addToTable2Array(MtTable2 obj) {
@@ -130,19 +130,19 @@ public abstract class _MtTable3 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(binaryColumn);
-        out.writeObject(charColumn);
-        out.writeObject(intColumn);
-        out.writeObject(table2Array);
+        out.writeObject(this.binaryColumn);
+        out.writeObject(this.charColumn);
+        out.writeObject(this.intColumn);
+        out.writeObject(this.table2Array);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        binaryColumn = (byte[])in.readObject();
-        charColumn = (String)in.readObject();
-        intColumn = (Integer)in.readObject();
-        table2Array = in.readObject();
+        this.binaryColumn = (byte[])in.readObject();
+        this.charColumn = (String)in.readObject();
+        this.intColumn = (Integer)in.readObject();
+        this.table2Array = in.readObject();
     }
 
 }

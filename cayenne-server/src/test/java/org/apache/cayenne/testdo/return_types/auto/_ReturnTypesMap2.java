@@ -37,7 +37,7 @@ public abstract class _ReturnTypesMap2 extends CayenneDataObject {
 
     public byte[] getBinaryColumn() {
         beforePropertyRead("binaryColumn");
-        return binaryColumn;
+        return this.binaryColumn;
     }
 
     public void setBlobColumn(byte[] blobColumn) {
@@ -47,7 +47,7 @@ public abstract class _ReturnTypesMap2 extends CayenneDataObject {
 
     public byte[] getBlobColumn() {
         beforePropertyRead("blobColumn");
-        return blobColumn;
+        return this.blobColumn;
     }
 
     public void setLongvarbinaryColumn(byte[] longvarbinaryColumn) {
@@ -57,7 +57,7 @@ public abstract class _ReturnTypesMap2 extends CayenneDataObject {
 
     public byte[] getLongvarbinaryColumn() {
         beforePropertyRead("longvarbinaryColumn");
-        return longvarbinaryColumn;
+        return this.longvarbinaryColumn;
     }
 
     public void setVarbinaryColumn(byte[] varbinaryColumn) {
@@ -67,7 +67,7 @@ public abstract class _ReturnTypesMap2 extends CayenneDataObject {
 
     public byte[] getVarbinaryColumn() {
         beforePropertyRead("varbinaryColumn");
-        return varbinaryColumn;
+        return this.varbinaryColumn;
     }
 
     @Override
@@ -125,19 +125,19 @@ public abstract class _ReturnTypesMap2 extends CayenneDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(binaryColumn);
-        out.writeObject(blobColumn);
-        out.writeObject(longvarbinaryColumn);
-        out.writeObject(varbinaryColumn);
+        out.writeObject(this.binaryColumn);
+        out.writeObject(this.blobColumn);
+        out.writeObject(this.longvarbinaryColumn);
+        out.writeObject(this.varbinaryColumn);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        binaryColumn = (byte[])in.readObject();
-        blobColumn = (byte[])in.readObject();
-        longvarbinaryColumn = (byte[])in.readObject();
-        varbinaryColumn = (byte[])in.readObject();
+        this.binaryColumn = (byte[])in.readObject();
+        this.blobColumn = (byte[])in.readObject();
+        this.longvarbinaryColumn = (byte[])in.readObject();
+        this.varbinaryColumn = (byte[])in.readObject();
     }
 
 }

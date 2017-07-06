@@ -31,7 +31,7 @@ public abstract class _CharacterEntity extends BaseDataObject {
 
     public Character getCharacterField() {
         beforePropertyRead("characterField");
-        return characterField;
+        return this.characterField;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _CharacterEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(characterField);
+        out.writeObject(this.characterField);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        characterField = (Character)in.readObject();
+        this.characterField = (Character)in.readObject();
     }
 
 }

@@ -31,7 +31,7 @@ public abstract class _Iv2Root extends BaseDataObject {
 
     public String getDiscriminator() {
         beforePropertyRead("discriminator");
-        return discriminator;
+        return this.discriminator;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _Iv2Root extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(discriminator);
+        out.writeObject(this.discriminator);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        discriminator = (String)in.readObject();
+        this.discriminator = (String)in.readObject();
     }
 
 }

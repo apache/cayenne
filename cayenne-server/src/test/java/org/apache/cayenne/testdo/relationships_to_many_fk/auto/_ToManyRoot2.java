@@ -35,7 +35,7 @@ public abstract class _ToManyRoot2 extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToDeps(ToManyFkDep obj) {
@@ -96,15 +96,15 @@ public abstract class _ToManyRoot2 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(deps);
+        out.writeObject(this.name);
+        out.writeObject(this.deps);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        deps = in.readObject();
+        this.name = (String)in.readObject();
+        this.deps = in.readObject();
     }
 
 }

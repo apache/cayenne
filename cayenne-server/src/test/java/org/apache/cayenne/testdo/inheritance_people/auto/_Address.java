@@ -34,7 +34,7 @@ public abstract class _Address extends BaseDataObject {
 
     public String getCity() {
         beforePropertyRead("city");
-        return city;
+        return this.city;
     }
 
     public void setToEmployee(Employee toEmployee) {
@@ -90,15 +90,15 @@ public abstract class _Address extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(city);
-        out.writeObject(toEmployee);
+        out.writeObject(this.city);
+        out.writeObject(this.toEmployee);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        city = (String)in.readObject();
-        toEmployee = in.readObject();
+        this.city = (String)in.readObject();
+        this.toEmployee = in.readObject();
     }
 
 }

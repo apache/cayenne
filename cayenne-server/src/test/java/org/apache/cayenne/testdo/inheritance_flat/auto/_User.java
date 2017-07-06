@@ -73,13 +73,13 @@ public abstract class _User extends Role {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(userProperties);
+        out.writeObject(this.userProperties);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        userProperties = in.readObject();
+        this.userProperties = in.readObject();
     }
 
 }

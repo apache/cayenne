@@ -34,7 +34,7 @@ public abstract class _BinaryPKTest2 extends BaseDataObject {
 
     public String getDetailName() {
         beforePropertyRead("detailName");
-        return detailName;
+        return this.detailName;
     }
 
     public void setToBinaryPKMaster(BinaryPKTest1 toBinaryPKMaster) {
@@ -90,15 +90,15 @@ public abstract class _BinaryPKTest2 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(detailName);
-        out.writeObject(toBinaryPKMaster);
+        out.writeObject(this.detailName);
+        out.writeObject(this.toBinaryPKMaster);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        detailName = (String)in.readObject();
-        toBinaryPKMaster = in.readObject();
+        this.detailName = (String)in.readObject();
+        this.toBinaryPKMaster = in.readObject();
     }
 
 }

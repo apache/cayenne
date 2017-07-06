@@ -32,7 +32,7 @@ public abstract class _ExtendedTypeEntity extends BaseDataObject {
 
     public StringET1 getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     @Override
@@ -75,13 +75,13 @@ public abstract class _ExtendedTypeEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
+        out.writeObject(this.name);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (StringET1)in.readObject();
+        this.name = (StringET1)in.readObject();
     }
 
 }

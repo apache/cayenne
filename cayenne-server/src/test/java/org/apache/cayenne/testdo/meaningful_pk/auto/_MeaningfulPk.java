@@ -31,7 +31,7 @@ public abstract class _MeaningfulPk extends BaseDataObject {
 
     public String getPk() {
         beforePropertyRead("pk");
-        return pk;
+        return this.pk;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _MeaningfulPk extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(pk);
+        out.writeObject(this.pk);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        pk = (String)in.readObject();
+        this.pk = (String)in.readObject();
     }
 
 }

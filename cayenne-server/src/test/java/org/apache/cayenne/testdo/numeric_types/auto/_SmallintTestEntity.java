@@ -31,7 +31,7 @@ public abstract class _SmallintTestEntity extends BaseDataObject {
 
     public Short getSmallintCol() {
         beforePropertyRead("smallintCol");
-        return smallintCol;
+        return this.smallintCol;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _SmallintTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(smallintCol);
+        out.writeObject(this.smallintCol);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        smallintCol = (Short)in.readObject();
+        this.smallintCol = (Short)in.readObject();
     }
 
 }

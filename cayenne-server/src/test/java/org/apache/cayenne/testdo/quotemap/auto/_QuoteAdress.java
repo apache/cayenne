@@ -36,7 +36,7 @@ public abstract class _QuoteAdress extends BaseDataObject {
 
     public String getCity() {
         beforePropertyRead("city");
-        return city;
+        return this.city;
     }
 
     public void setGroup(String group) {
@@ -46,7 +46,7 @@ public abstract class _QuoteAdress extends BaseDataObject {
 
     public String getGroup() {
         beforePropertyRead("group");
-        return group;
+        return this.group;
     }
 
     public void setPerson_Rel(Quote_Person person_Rel) {
@@ -107,17 +107,17 @@ public abstract class _QuoteAdress extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(city);
-        out.writeObject(group);
-        out.writeObject(person_Rel);
+        out.writeObject(this.city);
+        out.writeObject(this.group);
+        out.writeObject(this.person_Rel);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        city = (String)in.readObject();
-        group = (String)in.readObject();
-        person_Rel = in.readObject();
+        this.city = (String)in.readObject();
+        this.group = (String)in.readObject();
+        this.person_Rel = in.readObject();
     }
 
 }

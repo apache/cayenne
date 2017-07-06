@@ -31,7 +31,7 @@ public abstract class _MtTable1Subclass2 extends MtTable1 {
 
     public String getSubclass2Attribute1() {
         beforePropertyRead("subclass2Attribute1");
-        return subclass2Attribute1;
+        return this.subclass2Attribute1;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _MtTable1Subclass2 extends MtTable1 {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(subclass2Attribute1);
+        out.writeObject(this.subclass2Attribute1);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        subclass2Attribute1 = (String)in.readObject();
+        this.subclass2Attribute1 = (String)in.readObject();
     }
 
 }

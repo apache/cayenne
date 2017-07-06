@@ -71,7 +71,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public Long getBigintColumn() {
         beforePropertyRead("bigintColumn");
-        return bigintColumn;
+        return this.bigintColumn;
     }
 
     public void setBitColumn(Boolean bitColumn) {
@@ -81,7 +81,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public Boolean getBitColumn() {
         beforePropertyRead("bitColumn");
-        return bitColumn;
+        return this.bitColumn;
     }
 
     public void setBooleanColumn(Boolean booleanColumn) {
@@ -91,7 +91,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public Boolean getBooleanColumn() {
         beforePropertyRead("booleanColumn");
-        return booleanColumn;
+        return this.booleanColumn;
     }
 
     public void setCharColumn(String charColumn) {
@@ -101,7 +101,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public String getCharColumn() {
         beforePropertyRead("charColumn");
-        return charColumn;
+        return this.charColumn;
     }
 
     public void setDateColumn(Date dateColumn) {
@@ -111,7 +111,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public Date getDateColumn() {
         beforePropertyRead("dateColumn");
-        return dateColumn;
+        return this.dateColumn;
     }
 
     public void setDecimalColumn(BigDecimal decimalColumn) {
@@ -121,7 +121,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public BigDecimal getDecimalColumn() {
         beforePropertyRead("decimalColumn");
-        return decimalColumn;
+        return this.decimalColumn;
     }
 
     public void setDoubleColumn(Double doubleColumn) {
@@ -131,7 +131,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public Double getDoubleColumn() {
         beforePropertyRead("doubleColumn");
-        return doubleColumn;
+        return this.doubleColumn;
     }
 
     public void setFloatColumn(Float floatColumn) {
@@ -141,7 +141,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public Float getFloatColumn() {
         beforePropertyRead("floatColumn");
-        return floatColumn;
+        return this.floatColumn;
     }
 
     public void setIntegerColumn(Integer integerColumn) {
@@ -151,7 +151,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public Integer getIntegerColumn() {
         beforePropertyRead("integerColumn");
-        return integerColumn;
+        return this.integerColumn;
     }
 
     public void setLongnvarcharColumn(String longnvarcharColumn) {
@@ -161,7 +161,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public String getLongnvarcharColumn() {
         beforePropertyRead("longnvarcharColumn");
-        return longnvarcharColumn;
+        return this.longnvarcharColumn;
     }
 
     public void setLongvarcharColumn(String longvarcharColumn) {
@@ -171,7 +171,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public String getLongvarcharColumn() {
         beforePropertyRead("longvarcharColumn");
-        return longvarcharColumn;
+        return this.longvarcharColumn;
     }
 
     public void setNcharColumn(String ncharColumn) {
@@ -181,7 +181,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public String getNcharColumn() {
         beforePropertyRead("ncharColumn");
-        return ncharColumn;
+        return this.ncharColumn;
     }
 
     public void setNumericColumn(BigDecimal numericColumn) {
@@ -191,7 +191,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public BigDecimal getNumericColumn() {
         beforePropertyRead("numericColumn");
-        return numericColumn;
+        return this.numericColumn;
     }
 
     public void setNvarcharColumn(String nvarcharColumn) {
@@ -201,7 +201,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public String getNvarcharColumn() {
         beforePropertyRead("nvarcharColumn");
-        return nvarcharColumn;
+        return this.nvarcharColumn;
     }
 
     public void setRealColumn(Float realColumn) {
@@ -211,7 +211,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public Float getRealColumn() {
         beforePropertyRead("realColumn");
-        return realColumn;
+        return this.realColumn;
     }
 
     public void setSmallintColumn(Short smallintColumn) {
@@ -221,7 +221,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public Short getSmallintColumn() {
         beforePropertyRead("smallintColumn");
-        return smallintColumn;
+        return this.smallintColumn;
     }
 
     public void setTimeColumn(Date timeColumn) {
@@ -231,7 +231,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public Date getTimeColumn() {
         beforePropertyRead("timeColumn");
-        return timeColumn;
+        return this.timeColumn;
     }
 
     public void setTimestampColumn(Date timestampColumn) {
@@ -241,7 +241,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public Date getTimestampColumn() {
         beforePropertyRead("timestampColumn");
-        return timestampColumn;
+        return this.timestampColumn;
     }
 
     public void setTinyintColumn(Byte tinyintColumn) {
@@ -251,7 +251,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public Byte getTinyintColumn() {
         beforePropertyRead("tinyintColumn");
-        return tinyintColumn;
+        return this.tinyintColumn;
     }
 
     public void setVarcharColumn(String varcharColumn) {
@@ -261,7 +261,7 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
 
     public String getVarcharColumn() {
         beforePropertyRead("varcharColumn");
-        return varcharColumn;
+        return this.varcharColumn;
     }
 
     @Override
@@ -399,51 +399,51 @@ public abstract class _ReturnTypesMap1 extends CayenneDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(bigintColumn);
-        out.writeObject(bitColumn);
-        out.writeObject(booleanColumn);
-        out.writeObject(charColumn);
-        out.writeObject(dateColumn);
-        out.writeObject(decimalColumn);
-        out.writeObject(doubleColumn);
-        out.writeObject(floatColumn);
-        out.writeObject(integerColumn);
-        out.writeObject(longnvarcharColumn);
-        out.writeObject(longvarcharColumn);
-        out.writeObject(ncharColumn);
-        out.writeObject(numericColumn);
-        out.writeObject(nvarcharColumn);
-        out.writeObject(realColumn);
-        out.writeObject(smallintColumn);
-        out.writeObject(timeColumn);
-        out.writeObject(timestampColumn);
-        out.writeObject(tinyintColumn);
-        out.writeObject(varcharColumn);
+        out.writeObject(this.bigintColumn);
+        out.writeObject(this.bitColumn);
+        out.writeObject(this.booleanColumn);
+        out.writeObject(this.charColumn);
+        out.writeObject(this.dateColumn);
+        out.writeObject(this.decimalColumn);
+        out.writeObject(this.doubleColumn);
+        out.writeObject(this.floatColumn);
+        out.writeObject(this.integerColumn);
+        out.writeObject(this.longnvarcharColumn);
+        out.writeObject(this.longvarcharColumn);
+        out.writeObject(this.ncharColumn);
+        out.writeObject(this.numericColumn);
+        out.writeObject(this.nvarcharColumn);
+        out.writeObject(this.realColumn);
+        out.writeObject(this.smallintColumn);
+        out.writeObject(this.timeColumn);
+        out.writeObject(this.timestampColumn);
+        out.writeObject(this.tinyintColumn);
+        out.writeObject(this.varcharColumn);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        bigintColumn = (Long)in.readObject();
-        bitColumn = (Boolean)in.readObject();
-        booleanColumn = (Boolean)in.readObject();
-        charColumn = (String)in.readObject();
-        dateColumn = (Date)in.readObject();
-        decimalColumn = (BigDecimal)in.readObject();
-        doubleColumn = (Double)in.readObject();
-        floatColumn = (Float)in.readObject();
-        integerColumn = (Integer)in.readObject();
-        longnvarcharColumn = (String)in.readObject();
-        longvarcharColumn = (String)in.readObject();
-        ncharColumn = (String)in.readObject();
-        numericColumn = (BigDecimal)in.readObject();
-        nvarcharColumn = (String)in.readObject();
-        realColumn = (Float)in.readObject();
-        smallintColumn = (Short)in.readObject();
-        timeColumn = (Date)in.readObject();
-        timestampColumn = (Date)in.readObject();
-        tinyintColumn = (Byte)in.readObject();
-        varcharColumn = (String)in.readObject();
+        this.bigintColumn = (Long)in.readObject();
+        this.bitColumn = (Boolean)in.readObject();
+        this.booleanColumn = (Boolean)in.readObject();
+        this.charColumn = (String)in.readObject();
+        this.dateColumn = (Date)in.readObject();
+        this.decimalColumn = (BigDecimal)in.readObject();
+        this.doubleColumn = (Double)in.readObject();
+        this.floatColumn = (Float)in.readObject();
+        this.integerColumn = (Integer)in.readObject();
+        this.longnvarcharColumn = (String)in.readObject();
+        this.longvarcharColumn = (String)in.readObject();
+        this.ncharColumn = (String)in.readObject();
+        this.numericColumn = (BigDecimal)in.readObject();
+        this.nvarcharColumn = (String)in.readObject();
+        this.realColumn = (Float)in.readObject();
+        this.smallintColumn = (Short)in.readObject();
+        this.timeColumn = (Date)in.readObject();
+        this.timestampColumn = (Date)in.readObject();
+        this.tinyintColumn = (Byte)in.readObject();
+        this.varcharColumn = (String)in.readObject();
     }
 
 }

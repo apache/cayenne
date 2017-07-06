@@ -43,7 +43,7 @@ public abstract class _Quote_Person extends BaseDataObject {
 
     public Date getDAte() {
         beforePropertyRead("dAte");
-        return dAte;
+        return this.dAte;
     }
 
     public void setFULL_name(String fULL_name) {
@@ -53,7 +53,7 @@ public abstract class _Quote_Person extends BaseDataObject {
 
     public String getFULL_name() {
         beforePropertyRead("fULL_name");
-        return fULL_name;
+        return this.fULL_name;
     }
 
     public void setGroup(String group) {
@@ -63,7 +63,7 @@ public abstract class _Quote_Person extends BaseDataObject {
 
     public String getGroup() {
         beforePropertyRead("group");
-        return group;
+        return this.group;
     }
 
     public void setName(String name) {
@@ -73,7 +73,7 @@ public abstract class _Quote_Person extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void setSalary(Integer salary) {
@@ -83,7 +83,7 @@ public abstract class _Quote_Person extends BaseDataObject {
 
     public Integer getSalary() {
         beforePropertyRead("salary");
-        return salary;
+        return this.salary;
     }
 
     public void setAddress_Rel(QuoteAdress address_Rel) {
@@ -159,23 +159,23 @@ public abstract class _Quote_Person extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(dAte);
-        out.writeObject(fULL_name);
-        out.writeObject(group);
-        out.writeObject(name);
-        out.writeObject(salary);
-        out.writeObject(address_Rel);
+        out.writeObject(this.dAte);
+        out.writeObject(this.fULL_name);
+        out.writeObject(this.group);
+        out.writeObject(this.name);
+        out.writeObject(this.salary);
+        out.writeObject(this.address_Rel);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        dAte = (Date)in.readObject();
-        fULL_name = (String)in.readObject();
-        group = (String)in.readObject();
-        name = (String)in.readObject();
-        salary = (Integer)in.readObject();
-        address_Rel = in.readObject();
+        this.dAte = (Date)in.readObject();
+        this.fULL_name = (String)in.readObject();
+        this.group = (String)in.readObject();
+        this.name = (String)in.readObject();
+        this.salary = (Integer)in.readObject();
+        this.address_Rel = in.readObject();
     }
 
 }

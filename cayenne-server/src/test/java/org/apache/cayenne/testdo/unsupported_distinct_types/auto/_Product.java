@@ -40,7 +40,7 @@ public abstract class _Product extends BaseDataObject {
 
     public String getLongvarcharCol() {
         beforePropertyRead("longvarcharCol");
-        return longvarcharCol;
+        return this.longvarcharCol;
     }
 
     public void addToBase(Product obj) {
@@ -137,19 +137,19 @@ public abstract class _Product extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(longvarcharCol);
-        out.writeObject(base);
-        out.writeObject(contained);
-        out.writeObject(orderBy);
+        out.writeObject(this.longvarcharCol);
+        out.writeObject(this.base);
+        out.writeObject(this.contained);
+        out.writeObject(this.orderBy);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        longvarcharCol = (String)in.readObject();
-        base = in.readObject();
-        contained = in.readObject();
-        orderBy = in.readObject();
+        this.longvarcharCol = (String)in.readObject();
+        this.base = in.readObject();
+        this.contained = in.readObject();
+        this.orderBy = in.readObject();
     }
 
 }

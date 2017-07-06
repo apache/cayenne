@@ -34,7 +34,7 @@ public abstract class _CustomerRepresentative extends AbstractPerson {
 
     public String getClientContactType() {
         beforePropertyRead("clientContactType");
-        return clientContactType;
+        return this.clientContactType;
     }
 
     public void setToClientCompany(ClientCompany toClientCompany) {
@@ -90,15 +90,15 @@ public abstract class _CustomerRepresentative extends AbstractPerson {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(clientContactType);
-        out.writeObject(toClientCompany);
+        out.writeObject(this.clientContactType);
+        out.writeObject(this.toClientCompany);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        clientContactType = (String)in.readObject();
-        toClientCompany = in.readObject();
+        this.clientContactType = (String)in.readObject();
+        this.toClientCompany = in.readObject();
     }
 
 }

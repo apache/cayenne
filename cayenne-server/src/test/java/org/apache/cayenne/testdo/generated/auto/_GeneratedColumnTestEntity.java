@@ -34,7 +34,7 @@ public abstract class _GeneratedColumnTestEntity extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void setToDep(GeneratedColumnDep toDep) {
@@ -90,15 +90,15 @@ public abstract class _GeneratedColumnTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(toDep);
+        out.writeObject(this.name);
+        out.writeObject(this.toDep);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        toDep = in.readObject();
+        this.name = (String)in.readObject();
+        this.toDep = in.readObject();
     }
 
 }

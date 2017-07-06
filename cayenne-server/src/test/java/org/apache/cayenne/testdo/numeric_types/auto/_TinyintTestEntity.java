@@ -31,7 +31,7 @@ public abstract class _TinyintTestEntity extends BaseDataObject {
 
     public Byte getTinyintCol() {
         beforePropertyRead("tinyintCol");
-        return tinyintCol;
+        return this.tinyintCol;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _TinyintTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(tinyintCol);
+        out.writeObject(this.tinyintCol);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        tinyintCol = (Byte)in.readObject();
+        this.tinyintCol = (Byte)in.readObject();
     }
 
 }

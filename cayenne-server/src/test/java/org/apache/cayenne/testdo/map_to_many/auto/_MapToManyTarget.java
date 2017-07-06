@@ -34,7 +34,7 @@ public abstract class _MapToManyTarget extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void setMapToMany(MapToMany mapToMany) {
@@ -90,15 +90,15 @@ public abstract class _MapToManyTarget extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(mapToMany);
+        out.writeObject(this.name);
+        out.writeObject(this.mapToMany);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        mapToMany = in.readObject();
+        this.name = (String)in.readObject();
+        this.mapToMany = in.readObject();
     }
 
 }

@@ -34,7 +34,7 @@ public abstract class _CompoundFkTestEntity extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void setToCompoundPk(CompoundPkTestEntity toCompoundPk) {
@@ -90,15 +90,15 @@ public abstract class _CompoundFkTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(toCompoundPk);
+        out.writeObject(this.name);
+        out.writeObject(this.toCompoundPk);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        toCompoundPk = in.readObject();
+        this.name = (String)in.readObject();
+        this.toCompoundPk = in.readObject();
     }
 
 }

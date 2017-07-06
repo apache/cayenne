@@ -34,7 +34,7 @@ public abstract class _PersonNotes extends BaseDataObject {
 
     public String getNotes() {
         beforePropertyRead("notes");
-        return notes;
+        return this.notes;
     }
 
     public void setPerson(AbstractPerson person) {
@@ -90,15 +90,15 @@ public abstract class _PersonNotes extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(notes);
-        out.writeObject(person);
+        out.writeObject(this.notes);
+        out.writeObject(this.person);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        notes = (String)in.readObject();
-        person = in.readObject();
+        this.notes = (String)in.readObject();
+        this.person = in.readObject();
     }
 
 }

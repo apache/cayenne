@@ -79,13 +79,13 @@ public abstract class _MtTable5 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(table4s);
+        out.writeObject(this.table4s);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        table4s = in.readObject();
+        this.table4s = in.readObject();
     }
 
 }

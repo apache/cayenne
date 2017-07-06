@@ -40,7 +40,7 @@ public abstract class _CompoundPkTestEntity extends BaseDataObject {
 
     public String getKey1() {
         beforePropertyRead("key1");
-        return key1;
+        return this.key1;
     }
 
     public void setKey2(String key2) {
@@ -50,7 +50,7 @@ public abstract class _CompoundPkTestEntity extends BaseDataObject {
 
     public String getKey2() {
         beforePropertyRead("key2");
-        return key2;
+        return this.key2;
     }
 
     public void setName(String name) {
@@ -60,7 +60,7 @@ public abstract class _CompoundPkTestEntity extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToCompoundFkArray(CompoundFkTestEntity obj) {
@@ -131,19 +131,19 @@ public abstract class _CompoundPkTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(key1);
-        out.writeObject(key2);
-        out.writeObject(name);
-        out.writeObject(compoundFkArray);
+        out.writeObject(this.key1);
+        out.writeObject(this.key2);
+        out.writeObject(this.name);
+        out.writeObject(this.compoundFkArray);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        key1 = (String)in.readObject();
-        key2 = (String)in.readObject();
-        name = (String)in.readObject();
-        compoundFkArray = in.readObject();
+        this.key1 = (String)in.readObject();
+        this.key2 = (String)in.readObject();
+        this.name = (String)in.readObject();
+        this.compoundFkArray = in.readObject();
     }
 
 }

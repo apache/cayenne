@@ -40,7 +40,7 @@ public abstract class _Thing extends CayenneDataObject {
 
     public Integer getVolume() {
         beforePropertyRead("volume");
-        return volume;
+        return this.volume;
     }
 
     public void setWeight(Integer weight) {
@@ -50,7 +50,7 @@ public abstract class _Thing extends CayenneDataObject {
 
     public Integer getWeight() {
         beforePropertyRead("weight");
-        return weight;
+        return this.weight;
     }
 
     public void setBall(Ball ball) {
@@ -121,19 +121,19 @@ public abstract class _Thing extends CayenneDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(volume);
-        out.writeObject(weight);
-        out.writeObject(ball);
-        out.writeObject(box);
+        out.writeObject(this.volume);
+        out.writeObject(this.weight);
+        out.writeObject(this.ball);
+        out.writeObject(this.box);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        volume = (Integer)in.readObject();
-        weight = (Integer)in.readObject();
-        ball = in.readObject();
-        box = in.readObject();
+        this.volume = (Integer)in.readObject();
+        this.weight = (Integer)in.readObject();
+        this.ball = in.readObject();
+        this.box = in.readObject();
     }
 
 }

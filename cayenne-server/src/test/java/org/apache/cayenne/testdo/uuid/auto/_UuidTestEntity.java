@@ -32,7 +32,7 @@ public abstract class _UuidTestEntity extends BaseDataObject {
 
     public UUID getUuid() {
         beforePropertyRead("uuid");
-        return uuid;
+        return this.uuid;
     }
 
     @Override
@@ -75,13 +75,13 @@ public abstract class _UuidTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(uuid);
+        out.writeObject(this.uuid);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        uuid = (UUID)in.readObject();
+        this.uuid = (UUID)in.readObject();
     }
 
 }

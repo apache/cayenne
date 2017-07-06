@@ -37,7 +37,7 @@ public abstract class _Qualified1 extends BaseDataObject {
 
     public Boolean getDeleted() {
         beforePropertyRead("deleted");
-        return deleted;
+        return this.deleted;
     }
 
     public void setName(String name) {
@@ -47,7 +47,7 @@ public abstract class _Qualified1 extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToQualified2s(Qualified2 obj) {
@@ -113,17 +113,17 @@ public abstract class _Qualified1 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(deleted);
-        out.writeObject(name);
-        out.writeObject(qualified2s);
+        out.writeObject(this.deleted);
+        out.writeObject(this.name);
+        out.writeObject(this.qualified2s);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        deleted = (Boolean)in.readObject();
-        name = (String)in.readObject();
-        qualified2s = in.readObject();
+        this.deleted = (Boolean)in.readObject();
+        this.name = (String)in.readObject();
+        this.qualified2s = in.readObject();
     }
 
 }

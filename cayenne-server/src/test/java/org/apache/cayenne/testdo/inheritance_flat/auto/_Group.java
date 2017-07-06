@@ -95,15 +95,15 @@ public abstract class _Group extends User {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(groupMembers);
-        out.writeObject(groupProperties);
+        out.writeObject(this.groupMembers);
+        out.writeObject(this.groupProperties);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        groupMembers = in.readObject();
-        groupProperties = in.readObject();
+        this.groupMembers = in.readObject();
+        this.groupProperties = in.readObject();
     }
 
 }

@@ -79,13 +79,13 @@ public abstract class _Manager extends Employee {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(managedDepartments);
+        out.writeObject(this.managedDepartments);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        managedDepartments = in.readObject();
+        this.managedDepartments = in.readObject();
     }
 
 }

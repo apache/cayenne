@@ -73,13 +73,13 @@ public abstract class _SetToManyTarget extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(setToMany);
+        out.writeObject(this.setToMany);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        setToMany = in.readObject();
+        this.setToMany = in.readObject();
     }
 
 }

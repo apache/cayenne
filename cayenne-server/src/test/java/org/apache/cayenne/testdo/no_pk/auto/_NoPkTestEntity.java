@@ -30,7 +30,7 @@ public abstract class _NoPkTestEntity extends BaseDataObject {
 
     public Integer getAttribute1() {
         beforePropertyRead("attribute1");
-        return attribute1;
+        return this.attribute1;
     }
 
     @Override
@@ -73,13 +73,13 @@ public abstract class _NoPkTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(attribute1);
+        out.writeObject(this.attribute1);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        attribute1 = (Integer)in.readObject();
+        this.attribute1 = (Integer)in.readObject();
     }
 
 }

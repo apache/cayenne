@@ -35,7 +35,7 @@ public abstract class _ClobTestEntity extends BaseDataObject {
 
     public String getClobCol() {
         beforePropertyRead("clobCol");
-        return clobCol;
+        return this.clobCol;
     }
 
     public void addToClobValue(ClobTestRelation obj) {
@@ -96,15 +96,15 @@ public abstract class _ClobTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(clobCol);
-        out.writeObject(clobValue);
+        out.writeObject(this.clobCol);
+        out.writeObject(this.clobValue);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        clobCol = (String)in.readObject();
-        clobValue = in.readObject();
+        this.clobCol = (String)in.readObject();
+        this.clobValue = in.readObject();
     }
 
 }

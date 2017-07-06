@@ -47,19 +47,19 @@ public abstract class _ArtistCallback extends BaseDataObject {
         return this.dateOfBirth;
     }
 
-protected abstract void prePersistEntityObjEntity();
+    protected abstract void prePersistEntityObjEntity();
 
-protected abstract void preRemoveEntityObjEntity();
+    protected abstract void preRemoveEntityObjEntity();
 
-protected abstract void preUpdateEntityObjEntity();
+    protected abstract void preUpdateEntityObjEntity();
 
-protected abstract void postPersistEntityObjEntity();
+    protected abstract void postPersistEntityObjEntity();
 
-protected abstract void postRemoveEntityObjEntity();
+    protected abstract void postRemoveEntityObjEntity();
 
-protected abstract void postUpdateEntityObjEntity();
+    protected abstract void postUpdateEntityObjEntity();
 
-protected abstract void postLoadEntityObjEntity();
+    protected abstract void postLoadEntityObjEntity();
 
     @Override
     public Object readPropertyDirectly(String propName) {

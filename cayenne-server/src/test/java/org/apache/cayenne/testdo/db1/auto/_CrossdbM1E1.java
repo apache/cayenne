@@ -38,7 +38,7 @@ public abstract class _CrossdbM1E1 extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToFlattened(CrossdbM2E1 obj) {
@@ -117,17 +117,17 @@ public abstract class _CrossdbM1E1 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(flattened);
-        out.writeObject(listOfM2E2);
+        out.writeObject(this.name);
+        out.writeObject(this.flattened);
+        out.writeObject(this.listOfM2E2);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        flattened = in.readObject();
-        listOfM2E2 = in.readObject();
+        this.name = (String)in.readObject();
+        this.flattened = in.readObject();
+        this.listOfM2E2 = in.readObject();
     }
 
 }

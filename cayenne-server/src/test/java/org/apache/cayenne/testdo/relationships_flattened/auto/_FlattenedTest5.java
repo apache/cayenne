@@ -34,7 +34,7 @@ public abstract class _FlattenedTest5 extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void setToFT1(FlattenedTest1 toFT1) {
@@ -90,15 +90,15 @@ public abstract class _FlattenedTest5 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(toFT1);
+        out.writeObject(this.name);
+        out.writeObject(this.toFT1);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        toFT1 = in.readObject();
+        this.name = (String)in.readObject();
+        this.toFT1 = in.readObject();
     }
 
 }

@@ -99,15 +99,15 @@ public abstract class _FlattenedCircular extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(side1s);
-        out.writeObject(side2s);
+        out.writeObject(this.side1s);
+        out.writeObject(this.side2s);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        side1s = in.readObject();
-        side2s = in.readObject();
+        this.side1s = in.readObject();
+        this.side2s = in.readObject();
     }
 
 }

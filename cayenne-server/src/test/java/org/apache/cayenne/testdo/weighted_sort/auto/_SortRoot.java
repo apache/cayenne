@@ -79,13 +79,13 @@ public abstract class _SortRoot extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(deps);
+        out.writeObject(this.deps);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        deps = in.readObject();
+        this.deps = in.readObject();
     }
 
 }

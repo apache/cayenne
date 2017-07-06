@@ -33,7 +33,7 @@ public abstract class _SoftDelete extends BaseDataObject {
 
     public Boolean getDeleted() {
         beforePropertyRead("deleted");
-        return deleted;
+        return this.deleted;
     }
 
     public void setName(String name) {
@@ -43,10 +43,10 @@ public abstract class _SoftDelete extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
-protected abstract void onPrePersist();
+    protected abstract void onPrePersist();
 
     @Override
     public Object readPropertyDirectly(String propName) {
@@ -93,15 +93,15 @@ protected abstract void onPrePersist();
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(deleted);
-        out.writeObject(name);
+        out.writeObject(this.deleted);
+        out.writeObject(this.name);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        deleted = (Boolean)in.readObject();
-        name = (String)in.readObject();
+        this.deleted = (Boolean)in.readObject();
+        this.name = (String)in.readObject();
     }
 
 }

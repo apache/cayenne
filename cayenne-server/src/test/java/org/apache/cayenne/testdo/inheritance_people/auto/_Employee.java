@@ -38,7 +38,7 @@ public abstract class _Employee extends AbstractPerson {
 
     public Float getSalary() {
         beforePropertyRead("salary");
-        return salary;
+        return this.salary;
     }
 
     public void addToAddresses(Address obj) {
@@ -112,17 +112,17 @@ public abstract class _Employee extends AbstractPerson {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(salary);
-        out.writeObject(addresses);
-        out.writeObject(toDepartment);
+        out.writeObject(this.salary);
+        out.writeObject(this.addresses);
+        out.writeObject(this.toDepartment);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        salary = (Float)in.readObject();
-        addresses = in.readObject();
-        toDepartment = in.readObject();
+        this.salary = (Float)in.readObject();
+        this.addresses = in.readObject();
+        this.toDepartment = in.readObject();
     }
 
 }

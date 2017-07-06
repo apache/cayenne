@@ -32,7 +32,7 @@ public abstract class _EnumEntity extends BaseDataObject {
 
     public Enum1 getEnumAttribute() {
         beforePropertyRead("enumAttribute");
-        return enumAttribute;
+        return this.enumAttribute;
     }
 
     @Override
@@ -75,13 +75,13 @@ public abstract class _EnumEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(enumAttribute);
+        out.writeObject(this.enumAttribute);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        enumAttribute = (Enum1)in.readObject();
+        this.enumAttribute = (Enum1)in.readObject();
     }
 
 }

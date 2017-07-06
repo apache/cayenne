@@ -73,13 +73,13 @@ public abstract class _TooneMaster extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(toDependent);
+        out.writeObject(this.toDependent);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        toDependent = in.readObject();
+        this.toDependent = in.readObject();
     }
 
 }

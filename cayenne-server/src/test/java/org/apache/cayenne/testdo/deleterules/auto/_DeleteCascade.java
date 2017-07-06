@@ -34,7 +34,7 @@ public abstract class _DeleteCascade extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void setCascade(DeleteRule cascade) {
@@ -90,15 +90,15 @@ public abstract class _DeleteCascade extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(cascade);
+        out.writeObject(this.name);
+        out.writeObject(this.cascade);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        cascade = in.readObject();
+        this.name = (String)in.readObject();
+        this.cascade = in.readObject();
     }
 
 }

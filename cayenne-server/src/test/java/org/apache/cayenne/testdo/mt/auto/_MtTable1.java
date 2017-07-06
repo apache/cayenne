@@ -37,7 +37,7 @@ public abstract class _MtTable1 extends BaseDataObject {
 
     public String getGlobalAttribute1() {
         beforePropertyRead("globalAttribute1");
-        return globalAttribute1;
+        return this.globalAttribute1;
     }
 
     public void setServerAttribute1(String serverAttribute1) {
@@ -47,7 +47,7 @@ public abstract class _MtTable1 extends BaseDataObject {
 
     public String getServerAttribute1() {
         beforePropertyRead("serverAttribute1");
-        return serverAttribute1;
+        return this.serverAttribute1;
     }
 
     public void addToTable2Array(MtTable2 obj) {
@@ -113,17 +113,17 @@ public abstract class _MtTable1 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(globalAttribute1);
-        out.writeObject(serverAttribute1);
-        out.writeObject(table2Array);
+        out.writeObject(this.globalAttribute1);
+        out.writeObject(this.serverAttribute1);
+        out.writeObject(this.table2Array);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        globalAttribute1 = (String)in.readObject();
-        serverAttribute1 = (String)in.readObject();
-        table2Array = in.readObject();
+        this.globalAttribute1 = (String)in.readObject();
+        this.serverAttribute1 = (String)in.readObject();
+        this.table2Array = in.readObject();
     }
 
 }

@@ -31,7 +31,7 @@ public abstract class _BitNumberTestEntity extends BaseDataObject {
 
     public Integer getBitColumn() {
         beforePropertyRead("bitColumn");
-        return bitColumn;
+        return this.bitColumn;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _BitNumberTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(bitColumn);
+        out.writeObject(this.bitColumn);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        bitColumn = (Integer)in.readObject();
+        this.bitColumn = (Integer)in.readObject();
     }
 
 }

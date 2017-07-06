@@ -73,13 +73,13 @@ public abstract class _Iv2Sub1 extends Iv2Root {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(x);
+        out.writeObject(this.x);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        x = in.readObject();
+        this.x = in.readObject();
     }
 
 }

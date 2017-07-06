@@ -34,7 +34,7 @@ public abstract class _DeleteNullify extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void setNullify(DeleteRule nullify) {
@@ -90,15 +90,15 @@ public abstract class _DeleteNullify extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(nullify);
+        out.writeObject(this.name);
+        out.writeObject(this.nullify);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        nullify = in.readObject();
+        this.name = (String)in.readObject();
+        this.nullify = in.readObject();
     }
 
 }

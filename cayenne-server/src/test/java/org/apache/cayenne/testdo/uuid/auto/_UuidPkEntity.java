@@ -32,7 +32,7 @@ public abstract class _UuidPkEntity extends BaseDataObject {
 
     public UUID getId() {
         beforePropertyRead("id");
-        return id;
+        return this.id;
     }
 
     @Override
@@ -75,13 +75,13 @@ public abstract class _UuidPkEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(id);
+        out.writeObject(this.id);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        id = (UUID)in.readObject();
+        this.id = (UUID)in.readObject();
     }
 
 }

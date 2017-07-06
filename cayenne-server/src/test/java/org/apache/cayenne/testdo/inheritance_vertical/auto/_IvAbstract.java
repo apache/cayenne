@@ -31,7 +31,7 @@ public abstract class _IvAbstract extends BaseDataObject {
 
     public String getType() {
         beforePropertyRead("type");
-        return type;
+        return this.type;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _IvAbstract extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(type);
+        out.writeObject(this.type);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        type = (String)in.readObject();
+        this.type = (String)in.readObject();
     }
 
 }

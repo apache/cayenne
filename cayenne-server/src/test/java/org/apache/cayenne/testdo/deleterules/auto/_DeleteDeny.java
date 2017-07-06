@@ -34,7 +34,7 @@ public abstract class _DeleteDeny extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void setDeny(DeleteRule deny) {
@@ -90,15 +90,15 @@ public abstract class _DeleteDeny extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(deny);
+        out.writeObject(this.name);
+        out.writeObject(this.deny);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        deny = in.readObject();
+        this.name = (String)in.readObject();
+        this.deny = in.readObject();
     }
 
 }

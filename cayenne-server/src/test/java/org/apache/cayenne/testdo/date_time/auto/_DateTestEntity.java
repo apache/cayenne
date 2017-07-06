@@ -36,7 +36,7 @@ public abstract class _DateTestEntity extends BaseDataObject {
 
     public Date getDateColumn() {
         beforePropertyRead("dateColumn");
-        return dateColumn;
+        return this.dateColumn;
     }
 
     public void setTimeColumn(Date timeColumn) {
@@ -46,7 +46,7 @@ public abstract class _DateTestEntity extends BaseDataObject {
 
     public Date getTimeColumn() {
         beforePropertyRead("timeColumn");
-        return timeColumn;
+        return this.timeColumn;
     }
 
     public void setTimestampColumn(Date timestampColumn) {
@@ -56,7 +56,7 @@ public abstract class _DateTestEntity extends BaseDataObject {
 
     public Date getTimestampColumn() {
         beforePropertyRead("timestampColumn");
-        return timestampColumn;
+        return this.timestampColumn;
     }
 
     @Override
@@ -109,17 +109,17 @@ public abstract class _DateTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(dateColumn);
-        out.writeObject(timeColumn);
-        out.writeObject(timestampColumn);
+        out.writeObject(this.dateColumn);
+        out.writeObject(this.timeColumn);
+        out.writeObject(this.timestampColumn);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        dateColumn = (Date)in.readObject();
-        timeColumn = (Date)in.readObject();
-        timestampColumn = (Date)in.readObject();
+        this.dateColumn = (Date)in.readObject();
+        this.timeColumn = (Date)in.readObject();
+        this.timestampColumn = (Date)in.readObject();
     }
 
 }

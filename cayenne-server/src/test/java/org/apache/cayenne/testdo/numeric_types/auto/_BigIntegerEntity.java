@@ -32,7 +32,7 @@ public abstract class _BigIntegerEntity extends BaseDataObject {
 
     public BigInteger getBigIntegerField() {
         beforePropertyRead("bigIntegerField");
-        return bigIntegerField;
+        return this.bigIntegerField;
     }
 
     @Override
@@ -75,13 +75,13 @@ public abstract class _BigIntegerEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(bigIntegerField);
+        out.writeObject(this.bigIntegerField);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        bigIntegerField = (BigInteger)in.readObject();
+        this.bigIntegerField = (BigInteger)in.readObject();
     }
 
 }

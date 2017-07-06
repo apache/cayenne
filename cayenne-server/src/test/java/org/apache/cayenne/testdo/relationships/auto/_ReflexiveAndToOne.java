@@ -40,7 +40,7 @@ public abstract class _ReflexiveAndToOne extends BaseDataObject {
 
     public String getName() {
         beforePropertyRead("name");
-        return name;
+        return this.name;
     }
 
     public void addToChildren(ReflexiveAndToOne obj) {
@@ -127,19 +127,19 @@ public abstract class _ReflexiveAndToOne extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(name);
-        out.writeObject(children);
-        out.writeObject(toHelper);
-        out.writeObject(toParent);
+        out.writeObject(this.name);
+        out.writeObject(this.children);
+        out.writeObject(this.toHelper);
+        out.writeObject(this.toParent);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        name = (String)in.readObject();
-        children = in.readObject();
-        toHelper = in.readObject();
-        toParent = in.readObject();
+        this.name = (String)in.readObject();
+        this.children = in.readObject();
+        this.toHelper = in.readObject();
+        this.toParent = in.readObject();
     }
 
 }

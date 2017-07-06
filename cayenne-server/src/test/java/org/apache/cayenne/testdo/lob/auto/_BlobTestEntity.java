@@ -31,7 +31,7 @@ public abstract class _BlobTestEntity extends BaseDataObject {
 
     public byte[] getBlobCol() {
         beforePropertyRead("blobCol");
-        return blobCol;
+        return this.blobCol;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _BlobTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(blobCol);
+        out.writeObject(this.blobCol);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        blobCol = (byte[])in.readObject();
+        this.blobCol = (byte[])in.readObject();
     }
 
 }

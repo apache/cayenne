@@ -73,13 +73,13 @@ public abstract class _Child extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(master);
+        out.writeObject(this.master);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        master = in.readObject();
+        this.master = in.readObject();
     }
 
 }

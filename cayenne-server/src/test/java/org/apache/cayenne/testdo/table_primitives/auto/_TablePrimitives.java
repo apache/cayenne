@@ -33,7 +33,7 @@ public abstract class _TablePrimitives extends BaseDataObject {
 
 	public boolean isBooleanColumn() {
         beforePropertyRead("booleanColumn");
-        return booleanColumn;
+        return this.booleanColumn;
     }
 
     public void setIntColumn(int intColumn) {
@@ -43,7 +43,7 @@ public abstract class _TablePrimitives extends BaseDataObject {
 
     public int getIntColumn() {
         beforePropertyRead("intColumn");
-        return intColumn;
+        return this.intColumn;
     }
 
     @Override
@@ -91,15 +91,15 @@ public abstract class _TablePrimitives extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeBoolean(booleanColumn);
-        out.writeInt(intColumn);
+        out.writeBoolean(this.booleanColumn);
+        out.writeInt(this.intColumn);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        booleanColumn = in.readBoolean();
-        intColumn = in.readInt();
+        this.booleanColumn = in.readBoolean();
+        this.intColumn = in.readInt();
     }
 
 }

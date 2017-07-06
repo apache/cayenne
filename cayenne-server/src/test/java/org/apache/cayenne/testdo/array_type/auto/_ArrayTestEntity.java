@@ -31,7 +31,7 @@ public abstract class _ArrayTestEntity extends BaseDataObject {
 
     public Double[] getDoubleArray() {
         beforePropertyRead("doubleArray");
-        return doubleArray;
+        return this.doubleArray;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _ArrayTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(doubleArray);
+        out.writeObject(this.doubleArray);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        doubleArray = (Double[])in.readObject();
+        this.doubleArray = (Double[])in.readObject();
     }
 
 }

@@ -73,13 +73,13 @@ public abstract class _IdMapToManyTarget extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(mapToMany);
+        out.writeObject(this.mapToMany);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        mapToMany = in.readObject();
+        this.mapToMany = in.readObject();
     }
 
 }

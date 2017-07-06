@@ -73,13 +73,13 @@ public abstract class _SortDep extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(root);
+        out.writeObject(this.root);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        root = in.readObject();
+        this.root = in.readObject();
     }
 
 }
