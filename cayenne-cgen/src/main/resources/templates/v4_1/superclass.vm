@@ -110,11 +110,11 @@ public abstract class ${superClassName} extends ${baseClassName} {
 ###################
 #foreach( $attr in ${object.DeclaredAttributes} )
 #set ( $type = "$importUtils.formatJavaType(${attr.Type})")
-    protected $type ${attr.Name};
+    protected $type $stringUtils.formatVariableName(${attr.Name});
 #end
 
 #foreach( $rel in ${object.DeclaredRelationships} )
-    protected Object ${rel.Name};
+    protected Object $stringUtils.formatVariableName(${rel.Name});
 #end
 
 #########################################################

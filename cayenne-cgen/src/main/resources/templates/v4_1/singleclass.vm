@@ -102,11 +102,11 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 ###################
 #foreach( $attr in ${object.DeclaredAttributes} )
 #set ( $type = "$importUtils.formatJavaType(${attr.Type}, false)")
-    protected $type ${attr.Name};
+    protected $type $stringUtils.formatVariableName(${attr.Name});
 #end
 
 #foreach( $rel in ${object.DeclaredRelationships} )
-    protected Object ${rel.Name};
+    protected Object $stringUtils.formatVariableName(${rel.Name});
 #end
 
 #########################################################
