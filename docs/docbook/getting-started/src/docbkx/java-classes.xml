@@ -107,8 +107,8 @@
                     <imagedata fileref="images/idea-generated-classes.png" scalefit="1" width="100%"/>
                 </imageobject>
             </inlinemediaobject></para>
-        <para>Now let's check the entity class pairs. Each one is made of a superclass (e.g. Artist)
-            and a subclass (e.g. Artist). You <emphasis role="bold">should not</emphasis> modify the
+        <para>Now let's check the entity class pairs. Each one is made of a superclass (e.g. <code>_Artist</code>)
+            and a subclass (e.g. <code>Artist</code>). You <emphasis role="bold">should not</emphasis> modify the
             superclasses whose names start with "_" (underscore), as they will be replaced on
             subsequent generator runs. Instead all custom logic should be placed in the subclasses
             in "<code>org.example.cayenne.persistent</code>" package - those will never be overwritten by the

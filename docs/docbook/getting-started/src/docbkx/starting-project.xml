@@ -89,7 +89,7 @@
                 <imageobject>
                     <imagedata fileref="images/icon-node.png"/>
                 </imageobject>
-            </inlinemediaobject> on the toolbar (or select "Project &gt; Create DataNode" from the menu.
+            </inlinemediaobject> on the toolbar (or select "Project &gt; Create DataNode" from the menu).
         </para>
         <para>A new DataNode is displayed. Now you need to specify JDBC connection parameters. For
             an in-memory Derby database you can enter the following settings: <itemizedlist>
