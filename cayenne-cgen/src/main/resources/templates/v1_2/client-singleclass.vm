@@ -33,8 +33,8 @@
 ##    basePackageName
 ##
 ##
-${importUtils.setPackage($superPackageName)}##
-${importUtils.addReservedType("${$superPackageName}.${superClassName}")}##
+${importUtils.setPackage($subPackageName)}##
+${importUtils.addReservedType("${$subPackageName}.${subClassName}")}##
 ${importUtils.addType("${basePackageName}.${baseClassName}")}##
 #if((${object.DeclaredAttributes} && !${object.DeclaredAttributes.isEmpty()}) || (${object.DeclaredRelationships} && !${object.DeclaredRelationships.isEmpty()}))
 ${importUtils.addType('org.apache.cayenne.exp.Property')}##
@@ -62,7 +62,9 @@ ${importUtils.generate()}
  * avoid changing this class manually, since it will be overwritten next time code is
  * regenerated. If you need to make any customizations, put them in a subclass.
  */
-public abstract class ${superClassName} extends ${baseClassName} {
+public#if("true" == "${object.getIsAbstract()}") abstract#end class ${subClassName} extends ${baseClassName} {
+
+    private static final long serialVersionUID = 1L;
 
 ## Create ivars names
 #if( $createPropertyNames )
@@ -240,6 +242,9 @@ public abstract class ${superClassName} extends ${baseClassName} {
 ##callback methods
 #foreach( $cbname in ${entityUtils.callbackNames})
 
-    protected abstract void ${cbname}();
+    protected void ${cbname}() {
+        //TODO: Implement ${cbname}
+    }
 #end
+
 }

@@ -8,6 +8,17 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
+Release: 4.0.B2
+Date:
+----------------------------------
+
+Bug Fixes:
+
+CAY-2319 Modeler: Embeddable > Attributes. Undo does not cancel pasted objects
+CAY-2323 Modeler: Graph. No warning while saving the image with existing name
+CAY-2331 cgen: broken templates for data map
+
+----------------------------------
 Release: 4.0.B1
 Date: June 12, 2017
 ----------------------------------
