@@ -16,34 +16,49 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.configuration.xml;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.project.compatibility.DocumentProvider;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
+import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-import java.io.InputStream;
-
 /**
- * @since 3.1
- * @since 4.1 moved from org.apache.cayenne.configuration package
+ * @since 4.1
  */
-public class XMLDataMapLoader implements DataMapLoader {
-
-    private static final String DATA_MAP_LOCATION_SUFFIX = ".map.xml";
+public class CompatibilityDataMapLoader extends XMLDataMapLoader {
 
     @Inject
-    protected HandlerFactory handlerFactory;
+    DocumentProvider documentProvider;
 
-    DataMap map;
+    @Override
+    public DataMap load(Resource configurationResource) throws CayenneRuntimeException {
+        Document document = documentProvider.getDocument(configurationResource.getURL());
+        if(document == null) {
+            return super.load(configurationResource);
+        }
 
-    public synchronized DataMap load(Resource configurationResource) throws CayenneRuntimeException {
-        try(InputStream in = configurationResource.getURL().openStream()) {
+        try {
+            DOMSource source = new DOMSource(document);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            TransformerFactory transFactory = TransformerFactory.newInstance();
+            transFactory.newTransformer().transform(source, new StreamResult(baos));
+            InputSource isource = new InputSource(source.getSystemId());
+            isource.setByteStream(new ByteArrayInputStream(baos.toByteArray()));
+
             XMLReader parser = Util.createXmlReader();
             LoaderContext loaderContext = new LoaderContext(parser, handlerFactory);
             loaderContext.addDataMapListener(new DataMapLoaderListener() {
@@ -56,7 +71,7 @@ public class XMLDataMapLoader implements DataMapLoader {
 
             parser.setContentHandler(rootHandler);
             parser.setErrorHandler(rootHandler);
-            parser.parse(new InputSource(in));
+            parser.parse(isource);
         } catch (Exception e) {
             throw new CayenneRuntimeException("Error loading configuration from %s", e, configurationResource.getURL());
         }
@@ -70,33 +85,5 @@ public class XMLDataMapLoader implements DataMapLoader {
             map.setName(mapNameFromLocation(configurationResource.getURL().getFile()));
         }
         return map;
-    }
-
-    /**
-     * Helper method to guess the map name from its location.
-     */
-    protected String mapNameFromLocation(String location) {
-        if (location == null) {
-            return "Untitled";
-        }
-
-        int lastSlash = location.lastIndexOf('/');
-        if (lastSlash < 0) {
-            lastSlash = location.lastIndexOf('\\');
-        }
-
-        if (lastSlash >= 0 && lastSlash + 1 < location.length()) {
-            location = location.substring(lastSlash + 1);
-        }
-
-        if (location.endsWith(DATA_MAP_LOCATION_SUFFIX)) {
-            location = location.substring(0, location.length() - DATA_MAP_LOCATION_SUFFIX.length());
-        }
-
-        return location;
-    }
-
-    public void setHandlerFactory(HandlerFactory handlerFactory) {
-        this.handlerFactory = handlerFactory;
     }
 }

@@ -30,6 +30,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
+import org.apache.cayenne.util.Util;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -114,26 +115,25 @@ public class DefaultUpgradeServiceTest {
         upgradeService = mock(DefaultUpgradeService.class);
         when(upgradeService.upgradeDOM(any(Resource.class), ArgumentMatchers.<UpgradeHandler>anyList()))
                 .thenCallRealMethod();
-        when(upgradeService.readDocument(any(Resource.class)))
-                .thenCallRealMethod();
         when(upgradeService.getAdditionalDatamapResources(any(UpgradeUnit.class)))
                 .thenCallRealMethod();
 
         upgradeService.upgradeDOM(resource, handlers);
 
         // one for project and two for data maps
-        verify(upgradeService, times(3)).saveDocument(any(UpgradeUnit.class));
+//        verify(upgradeService, times(3)).saveDocument(any(UpgradeUnit.class));
         for(UpgradeHandler handler : handlers) {
+            verify(handler).getVersion();
             verify(handler).processProjectDom(any(UpgradeUnit.class));
             // two data maps
             verify(handler, times(2)).processDataMapDom(any(UpgradeUnit.class));
+            verifyNoMoreInteractions(handler);
         }
     }
 
     @Test
     public void readDocument() throws Exception {
-        Document document = upgradeService
-                .readDocument(new URLResource(getClass().getResource("../cayenne-PROJECT1.xml")));
+        Document document = Util.readDocument(getClass().getResource("../cayenne-PROJECT1.xml"));
         assertEquals("10", document.getDocumentElement().getAttribute("project-version"));
     }
 

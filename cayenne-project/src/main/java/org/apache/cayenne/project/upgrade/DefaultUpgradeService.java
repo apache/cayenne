@@ -19,18 +19,15 @@
 
 package org.apache.cayenne.project.upgrade;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -127,7 +124,7 @@ public class DefaultUpgradeService implements UpgradeService {
         return metaData;
     }
 
-    List<UpgradeHandler> getHandlersForVersion(String version) {
+    protected List<UpgradeHandler> getHandlersForVersion(String version) {
         boolean found = MIN_SUPPORTED_VERSION.equals(version);
         List<UpgradeHandler> handlerList = new ArrayList<>();
 
@@ -150,41 +147,50 @@ public class DefaultUpgradeService implements UpgradeService {
     public Resource upgradeProject(Resource resource) {
         List<UpgradeHandler> handlerList = getHandlersForVersion(loadProjectVersion(resource));
 
-        resource = upgradeDOM(resource, handlerList);
-        upgradeModel(resource, handlerList);
+        List<UpgradeUnit> upgradeUnits = upgradeDOM(resource, handlerList);
+        saveDOM(upgradeUnits);
+
+        resource = upgradeUnits.get(0).getResource();
+
+        ConfigurationTree<DataChannelDescriptor> configurationTree = upgradeModel(resource, handlerList);
+        saveModel(configurationTree);
 
         return resource;
     }
 
-    Resource upgradeDOM(Resource resource, List<UpgradeHandler> handlerList) {
+    protected List<UpgradeUnit> upgradeDOM(Resource resource, List<UpgradeHandler> handlerList) {
+        List<UpgradeUnit> allUnits = new ArrayList<>();
+
         // Load DOM for all resources
-        Document projectDocument = readDocument(resource);
+        Document projectDocument = Util.readDocument(resource.getURL());
         UpgradeUnit projectUnit = new UpgradeUnit(resource, projectDocument);
+        allUnits.add(projectUnit);
 
         List<Resource> dataMapResources = getAdditionalDatamapResources(projectUnit);
-        List<UpgradeUnit> upgradeUnits = new ArrayList<>(dataMapResources.size());
+        List<UpgradeUnit> dataMapUnits = new ArrayList<>(dataMapResources.size());
         for (Resource dataMapResource : dataMapResources) {
-            upgradeUnits.add(new UpgradeUnit(dataMapResource, readDocument(dataMapResource)));
+            dataMapUnits.add(new UpgradeUnit(dataMapResource, Util.readDocument(dataMapResource.getURL())));
         }
+        allUnits.addAll(dataMapUnits);
 
         // Update DOM
         for(UpgradeHandler handler : handlerList) {
             handler.processProjectDom(projectUnit);
-            for(UpgradeUnit dataMapUnit : upgradeUnits) {
+            for(UpgradeUnit dataMapUnit : dataMapUnits) {
                 handler.processDataMapDom(dataMapUnit);
             }
         }
 
-        // Save modified DOM back to original files
-        saveDocument(projectUnit);
-        for(UpgradeUnit dataMapUnit : upgradeUnits) {
-            saveDocument(dataMapUnit);
-        }
-
-        return projectUnit.getResource();
+        return allUnits;
     }
 
-    void upgradeModel(Resource resource, List<UpgradeHandler> handlerList) {
+    protected void saveDOM(Collection<UpgradeUnit> upgradeUnits) {
+        for(UpgradeUnit unit : upgradeUnits) {
+            saveDocument(unit);
+        }
+    }
+
+    protected ConfigurationTree<DataChannelDescriptor> upgradeModel(Resource resource, List<UpgradeHandler> handlerList) {
         // Load Model back from the update XML
         ConfigurationTree<DataChannelDescriptor> configurationTree = loader.load(resource);
 
@@ -193,6 +199,10 @@ public class DefaultUpgradeService implements UpgradeService {
             handler.processModel(configurationTree.getRootNode());
         }
 
+        return configurationTree;
+    }
+
+    protected void saveModel(ConfigurationTree<DataChannelDescriptor> configurationTree) {
         // Save project once again via project saver, this will normalize XML to minimize final diff
         Project project = new Project(configurationTree);
         projectSaver.save(project);
@@ -225,21 +235,6 @@ public class DefaultUpgradeService implements UpgradeService {
             transformer.transform(input, output);
         } catch (Exception ex) {
             ex.printStackTrace();
-        }
-    }
-
-    protected Document readDocument(Resource resource) {
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        documentBuilderFactory.setNamespaceAware(false);
-        try {
-            DocumentBuilder domBuilder = documentBuilderFactory.newDocumentBuilder();
-            try (InputStream inputStream = resource.getURL().openStream()) {
-                return domBuilder.parse(inputStream);
-            } catch (IOException | SAXException e) {
-                throw new ConfigurationException("Error loading configuration from %s", e, resource);
-            }
-        } catch (ParserConfigurationException e) {
-            throw new ConfigurationException(e);
         }
     }
 

@@ -66,6 +66,7 @@
 		<module>cayenne-joda</module>
 		<module>cayenne-lifecycle</module>
 		<module>cayenne-project</module>
+		<module>cayenne-project-compatibility</module>
 		<module>cayenne-server</module>
 		<module>eventbridges</module>
 		<module>itests</module>

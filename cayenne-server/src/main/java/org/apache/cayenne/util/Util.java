@@ -20,6 +20,7 @@
 package org.apache.cayenne.util;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -30,9 +31,12 @@ import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -42,6 +46,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -272,6 +277,26 @@ public class Util {
 		reader.setFeature("http://xml.org/sax/features/namespaces", true);
 
 		return reader;
+	}
+
+	/**
+	 * @since 4.1
+	 * @param url to read
+	 * @return org.w3c.dom.Document from the given URL
+	 */
+	public static Document readDocument(URL url) {
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		documentBuilderFactory.setNamespaceAware(false);
+		try {
+			DocumentBuilder domBuilder = documentBuilderFactory.newDocumentBuilder();
+			try (InputStream inputStream = url.openStream()) {
+				return domBuilder.parse(inputStream);
+			} catch (IOException | SAXException e) {
+				throw new ConfigurationException("Error loading configuration from %s", e, url);
+			}
+		} catch (ParserConfigurationException e) {
+			throw new ConfigurationException(e);
+		}
 	}
 
 	/**
