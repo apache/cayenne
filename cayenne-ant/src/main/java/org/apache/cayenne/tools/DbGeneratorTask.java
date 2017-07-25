@@ -75,7 +75,7 @@ public class DbGeneratorTask extends CayenneTask {
 			Thread.currentThread().setContextClassLoader(DbGeneratorTask.class.getClassLoader());
 
 			// Load the data map and run the db generator.
-			DataMap dataMap = loadDataMap();
+			DataMap dataMap = loadDataMap(injector);
 
 			// load driver taking custom CLASSPATH into account...
 			DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).newInstance(), url,

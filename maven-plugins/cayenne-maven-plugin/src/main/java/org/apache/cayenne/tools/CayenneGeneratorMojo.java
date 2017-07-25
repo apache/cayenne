@@ -20,6 +20,9 @@
 package org.apache.cayenne.tools;
 
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
+import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
@@ -30,6 +33,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -181,6 +185,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
     @Parameter(defaultValue = "false")
     private boolean createPropertyNames;
 
+    private transient Injector injector;
+
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		// Create the destination directory if necessary.
 		// TODO: (KJM 11/2/06) The destDir really should be added as a
@@ -189,8 +195,10 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			destDir.mkdirs();
 		}
 
+		injector = DIBootstrap.createInjector(new ToolsModule(LoggerFactory.getLogger(CayenneGeneratorMojo.class)));
+
 		Logger logger = new MavenLogger(this);
-		CayenneGeneratorMapLoaderAction loaderAction = new CayenneGeneratorMapLoaderAction();
+		CayenneGeneratorMapLoaderAction loaderAction = new CayenneGeneratorMapLoaderAction(injector);
 		loaderAction.setMainDataMapFile(map);
 
 		CayenneGeneratorEntityFilterAction filterAction = new CayenneGeneratorEntityFilterAction();
@@ -255,6 +263,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		} else {
 			action = new ClassGenerationAction();
 		}
+
+		injector.injectMembers(action);
 
 		action.setDestDir(destDir);
 		action.setEncoding(encoding);

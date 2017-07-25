@@ -20,19 +20,20 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
+import java.net.URL;
 
 import javax.sql.DataSource;
 
+import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.MapLoader;
+import org.apache.cayenne.resource.URLResource;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
-import org.xml.sax.InputSource;
 
 /**
  * Base task for all Cayenne ant tasks, providing support for common
@@ -142,9 +143,9 @@ public abstract class CayenneTask extends Task {
     }
 
     /** Loads and returns DataMap based on <code>map</code> attribute. */
-    protected DataMap loadDataMap() throws Exception {
-        InputSource in = new InputSource(map.getCanonicalPath());
-        return new MapLoader().loadDataMap(in);
+    protected DataMap loadDataMap(Injector injector) throws Exception {
+        DataMapLoader loader = injector.getInstance(DataMapLoader.class);
+        return loader.load(new URLResource(new URL(map.getCanonicalPath())));
     }
 
     protected DbAdapter getAdapter(Injector injector, DataSource dataSource)

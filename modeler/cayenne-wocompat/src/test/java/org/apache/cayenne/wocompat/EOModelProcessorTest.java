@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.wocompat;
 
+import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -65,8 +66,7 @@ public class EOModelProcessorTest {
 
     @Test
     public void testLoadModelWithDependencies() throws Exception {
-        URL url = getClass().getClassLoader().getResource(
-                "wotests/cross-model-relationships.eomodeld/");
+        URL url = getClass().getClassLoader().getResource("wotests/cross-model-relationships.eomodeld/");
         assertNotNull(url);
 
         DataMap map = processor.loadEOModel(url);
@@ -74,7 +74,7 @@ public class EOModelProcessorTest {
         ObjEntity entity = map.getObjEntity("CrossModelRelTest");
         assertNotNull(entity);
 
-        ObjAttribute a1 = (ObjAttribute) entity.getAttribute("testAttribute");
+        ObjAttribute a1 = entity.getAttribute("testAttribute");
         assertNotNull(a1);
 
         DbAttribute da1 = a1.getDbAttribute();
@@ -115,11 +115,8 @@ public class EOModelProcessorTest {
         // - Db loaded as two-way, obj - as one-way
 
         ObjEntity exhibitEntity = map.getObjEntity("Exhibit");
-        ObjRelationship toTypeObject = (ObjRelationship) exhibitEntity
-                .getRelationship("toExhibitType");
-        DbRelationship toTypeDB = (DbRelationship) exhibitEntity
-                .getDbEntity()
-                .getRelationship("toExhibitType");
+        ObjRelationship toTypeObject = exhibitEntity.getRelationship("toExhibitType");
+        DbRelationship toTypeDB = exhibitEntity.getDbEntity().getRelationship("toExhibitType");
         assertNotNull(toTypeObject);
         assertNotNull(toTypeDB);
         assertNull(toTypeObject.getReverseRelationship());
@@ -144,11 +141,11 @@ public class EOModelProcessorTest {
         ObjEntity customTypes = map.getObjEntity("CustomTypes");
         assertNotNull(customTypes);
 
-        ObjAttribute pk = (ObjAttribute) customTypes.getAttribute("pk");
+        ObjAttribute pk = customTypes.getAttribute("pk");
         assertNotNull(pk);
         assertEquals("CustomType1", pk.getType());
 
-        ObjAttribute other = (ObjAttribute) customTypes.getAttribute("other");
+        ObjAttribute other = customTypes.getAttribute("other");
         assertNotNull(other);
         assertEquals("CustomType2", other.getType());
     }
@@ -168,7 +165,7 @@ public class EOModelProcessorTest {
         assertSame(artistDE, artistDE1);
 
         // check attributes
-        ObjAttribute a1 = (ObjAttribute) artistE.getAttribute("artistName");
+        ObjAttribute a1 = artistE.getAttribute("artistName");
         assertNotNull(a1);
 
         DbAttribute da1 = a1.getDbAttribute();
@@ -176,25 +173,23 @@ public class EOModelProcessorTest {
         assertSame(da1, artistDE.getAttribute("ARTIST_NAME"));
 
         // check ObjRelationships
-        ObjRelationship rel = (ObjRelationship) artistE
-                .getRelationship("artistExhibitArray");
+        ObjRelationship rel = artistE.getRelationship("artistExhibitArray");
         assertNotNull(rel);
         assertEquals(1, rel.getDbRelationships().size());
 
         // check DbRelationships
-        DbRelationship drel = (DbRelationship) artistDE
-                .getRelationship("artistExhibitArray");
+        DbRelationship drel = artistDE.getRelationship("artistExhibitArray");
         assertNotNull(drel);
         assertSame(drel, rel.getDbRelationships().get(0));
 
         // flattened relationships
-        ObjRelationship frel = (ObjRelationship) artistE.getRelationship("exhibitArray");
+        ObjRelationship frel = artistE.getRelationship("exhibitArray");
         assertNotNull(frel);
         assertEquals(2, frel.getDbRelationships().size());
 
         // storing data map may uncover some inconsistencies
         PrintWriter mockupWriter = new NullPrintWriter();
-        map.encodeAsXML(new XMLEncoder(mockupWriter));
+        map.encodeAsXML(new XMLEncoder(mockupWriter), new EmptyConfigurationNodeVisitor());
     }
 
     class NullPrintWriter extends PrintWriter {

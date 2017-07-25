@@ -21,6 +21,7 @@ package org.apache.cayenne.tools;
 
 import groovy.lang.Closure;
 import org.apache.cayenne.access.DbGenerator;
+import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -31,7 +32,7 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.MapLoader;
+import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.tools.model.DataSourceConfig;
 import org.apache.cayenne.util.Util;
 import org.gradle.api.GradleException;
@@ -40,7 +41,6 @@ import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
-import org.xml.sax.InputSource;
 
 import java.io.File;
 import javax.sql.DataSource;
@@ -94,8 +94,10 @@ public class DbGenerateTask extends BaseCayenneTask {
                         "[dropTables: {}, dropPK: {}, createTables: {}, createPK: {}, createFK: {}]",
                 dropTables, dropPK, createTables, createPK, createFK);
 
+        Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(getLogger()));
+
         try {
-            DbGenerator generator = createGenerator(loadDataMap());
+            DbGenerator generator = createGenerator(loadDataMap(injector));
             generator.runGenerator(createDataSource());
         } catch (Exception ex) {
             Throwable th = Util.unwindException(ex);
@@ -136,10 +138,9 @@ public class DbGenerateTask extends BaseCayenneTask {
                 .build();
     }
 
-    DataMap loadDataMap() throws Exception {
+    DataMap loadDataMap(Injector injector) throws Exception {
         File dataMapFile = getDataMapFile();
-        InputSource inputSource = new InputSource(dataMapFile.getCanonicalPath());
-        return new MapLoader().loadDataMap(inputSource);
+        return injector.getInstance(DataMapLoader.class).load(new URLResource(dataMapFile.toURI().toURL()));
     }
 
     // setters and getters that will be used by .gradle scripts

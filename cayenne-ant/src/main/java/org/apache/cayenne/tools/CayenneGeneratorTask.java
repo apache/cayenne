@@ -20,6 +20,9 @@ package org.apache.cayenne.tools;
 
 import foundrylogic.vpp.VPPConfig;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
+import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
@@ -27,6 +30,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
 import org.apache.velocity.VelocityContext;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -102,8 +106,10 @@ public class CayenneGeneratorTask extends CayenneTask {
     public void execute() throws BuildException {
         validateAttributes();
 
+        Injector injector = DIBootstrap.createInjector(new ToolsModule(LoggerFactory.getLogger(CayenneGeneratorTask.class)));
+
         AntLogger logger = new AntLogger(this);
-        CayenneGeneratorMapLoaderAction loadAction = new CayenneGeneratorMapLoaderAction();
+        CayenneGeneratorMapLoaderAction loadAction = new CayenneGeneratorMapLoaderAction(injector);
 
         loadAction.setMainDataMapFile(map);
         loadAction.setAdditionalDataMapFiles(additionalMaps);

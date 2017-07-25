@@ -46,8 +46,8 @@ public class ClassGenerationActionTest {
 
 	@Before
 	public void setUp() throws Exception {
-		this.writers = new ArrayList<StringWriter>(3);
-		this.action = new ClassGenerationAction() {
+		writers = new ArrayList<>(3);
+		action = new ClassGenerationAction() {
 
 			@Override
 			protected Writer openWriter(TemplateType templateType) throws Exception {
@@ -56,6 +56,7 @@ public class ClassGenerationActionTest {
 				return writer;
 			}
 		};
+
 	}
 
 	@After
@@ -247,7 +248,7 @@ public class ClassGenerationActionTest {
 
 		action.execute(artifact);
 
-		List<String> strings = new ArrayList<String>(writers.size());
+		List<String> strings = new ArrayList<>(writers.size());
 		for (StringWriter writer : writers) {
 			strings.add(writer.toString());
 		}

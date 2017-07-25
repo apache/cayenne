@@ -20,6 +20,7 @@
 package org.apache.cayenne.tools;
 
 import org.apache.cayenne.access.DbGenerator;
+import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -29,8 +30,8 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
+import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.apache.maven.plugin.AbstractMojo;
@@ -39,7 +40,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.xml.sax.InputSource;
 
 import java.io.File;
 import java.sql.Driver;
@@ -140,7 +140,7 @@ public class DbGeneratorMojo extends AbstractMojo {
                     objectFactory.newInstance(DbAdapter.class, adapter);
 
             // Load the data map and run the db generator.
-            DataMap dataMap = loadDataMap();
+            DataMap dataMap = loadDataMap(injector);
             DbGenerator generator = new DbGenerator(adapterInst, dataMap, NoopJdbcEventLogger.getInstance());
             generator.setShouldCreateFKConstraints(createFK);
             generator.setShouldCreatePKSupport(createPK);
@@ -165,9 +165,8 @@ public class DbGeneratorMojo extends AbstractMojo {
     }
 
     /** Loads and returns DataMap based on <code>map</code> attribute. */
-    private DataMap loadDataMap() throws Exception {
-        InputSource in = new InputSource(map.getCanonicalPath());
-        return new MapLoader().loadDataMap(in);
+    private DataMap loadDataMap(Injector injector) throws Exception {
+        return injector.getInstance(DataMapLoader.class).load(new URLResource(map.toURI().toURL()));
     }
 
     @Deprecated

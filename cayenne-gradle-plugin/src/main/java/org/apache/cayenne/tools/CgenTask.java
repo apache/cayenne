@@ -25,6 +25,9 @@ import java.util.Set;
 
 import groovy.lang.Reference;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
+import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
@@ -39,6 +42,7 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskAction;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 4.0
@@ -109,7 +113,10 @@ public class CgenTask extends BaseCayenneTask {
     @TaskAction
     public void generate() {
         File dataMapFile = getDataMapFile();
-        CayenneGeneratorMapLoaderAction loaderAction = new CayenneGeneratorMapLoaderAction();
+
+        Injector injector = DIBootstrap.createInjector(new ToolsModule(LoggerFactory.getLogger(CgenTask.class)));
+
+        CayenneGeneratorMapLoaderAction loaderAction = new CayenneGeneratorMapLoaderAction(injector);
         loaderAction.setMainDataMapFile(dataMapFile);
 
         CayenneGeneratorEntityFilterAction filterAction = new CayenneGeneratorEntityFilterAction();
