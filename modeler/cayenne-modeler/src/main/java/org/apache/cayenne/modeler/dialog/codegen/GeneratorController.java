@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
@@ -203,7 +203,7 @@ public abstract class GeneratorController extends CayenneController {
                 }
 
                 generators.add(generator);
-            } catch (CayenneException exception) {
+            } catch (CayenneRuntimeException exception) {
                 JOptionPane.showMessageDialog(this.getView(), exception.getUnlabeledMessage());
                 return null;
             }

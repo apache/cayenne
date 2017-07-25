@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.action.ActionManager;
@@ -79,6 +80,9 @@ public class Application {
 
     @Inject
     protected Injector injector;
+
+    @Inject
+    protected DataChannelMetaData metaData;
 
     private String newProjectTemporaryName;
 
@@ -278,6 +282,10 @@ public class Application {
                 }
             });
         }
+    }
+
+    public DataChannelMetaData getMetaData() {
+        return metaData;
     }
 
     protected void initPreferences() {

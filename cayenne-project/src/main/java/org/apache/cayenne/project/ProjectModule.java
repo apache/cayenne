@@ -43,7 +43,7 @@ public class ProjectModule implements Module {
     /**
      * @since 4.1
      */
-    public static ListBuilder<ProjectExtension> contributeExtension(Binder binder) {
+    public static ListBuilder<ProjectExtension> contributeExtensions(Binder binder) {
         return binder.bindList(ProjectExtension.class);
     }
 
@@ -68,6 +68,6 @@ public class ProjectModule implements Module {
                 .add(UpgradeHandler_V9.class)
                 .add(UpgradeHandler_V10.class);
 
-        contributeExtension(binder);
+        contributeExtensions(binder);
     }
 }

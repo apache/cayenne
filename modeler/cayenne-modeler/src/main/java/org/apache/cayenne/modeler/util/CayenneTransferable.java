@@ -27,6 +27,8 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.List;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -59,18 +61,18 @@ public class CayenneTransferable implements Transferable {
         
         if (flavor == CAYENNE_FLAVOR) {
             return data;
-        }
-        else {
+        } else {
             StringWriter out = new StringWriter();
             XMLEncoder encoder = new XMLEncoder(new PrintWriter(out), "\t");
+            ConfigurationNodeVisitor visitor = new EmptyConfigurationNodeVisitor();
+
             encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
             
             if (data instanceof XMLSerializable) {
-                ((XMLSerializable) data).encodeAsXML(encoder);
-            }
-            else if (data instanceof List) {
+                ((XMLSerializable) data).encodeAsXML(encoder, visitor);
+            } else if (data instanceof List) {
                 for (Object o : (List) data) {
-                    ((XMLSerializable) o).encodeAsXML(encoder);
+                    ((XMLSerializable) o).encodeAsXML(encoder, visitor);
                 }
             }
             

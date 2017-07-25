@@ -26,6 +26,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -111,7 +112,7 @@ public class CopyAction extends CayenneAction {
      * Prints an object in XML format to an output stream
      */
     protected void print(XMLEncoder encoder, XMLSerializable object) {
-        object.encodeAsXML(encoder);
+        object.encodeAsXML(encoder, new EmptyConfigurationNodeVisitor());
     }
 
     /**

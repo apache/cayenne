@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.graph;
 import java.util.HashMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -67,7 +68,8 @@ public class GraphMap extends HashMap<GraphType, GraphBuilder> implements XMLSer
         this.selectedType = selectedType;
     }
 
-    public void encodeAsXML(XMLEncoder encoder) {
+    @Override
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
         encoder.print("<graphs");
 //        if (selectedType != null) {
 //            encoder.print(" selected=\"" + selectedType + "\"");
@@ -76,7 +78,7 @@ public class GraphMap extends HashMap<GraphType, GraphBuilder> implements XMLSer
         encoder.indent(1);
         
         for (GraphBuilder builder : values()) {
-            builder.encodeAsXML(encoder);
+            builder.encodeAsXML(encoder, delegate);
         }
         
         encoder.indent(-1);

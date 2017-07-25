@@ -24,6 +24,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
@@ -33,10 +36,8 @@ import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
-import org.apache.cayenne.project.upgrade.ProjectUpgrader;
-import org.apache.cayenne.project.upgrade.UpgradeHandler;
 import org.apache.cayenne.project.upgrade.UpgradeMetaData;
-import org.apache.cayenne.project.upgrade.UpgradeType;
+import org.apache.cayenne.project.upgrade.UpgradeService;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.swing.control.FileMenuItem;
@@ -46,6 +47,19 @@ import org.slf4j.LoggerFactory;
 public class OpenProjectAction extends ProjectAction {
 
     private static Logger logObj = LoggerFactory.getLogger(OpenProjectAction.class);
+
+    private static final Map<String, String> PROJECT_TO_MODELER_VERSION;
+    static {
+        // Correspondence between project version and latest Modeler version that can upgrade it.
+        // Modeler v4.1 can handle versions from 3.1 and 4.0 (including intermediate versions) modeler.
+        Map<String, String> map = new HashMap<>();
+        map.put("1.0",      "v3.0");
+        map.put("1.1",      "v3.0");
+        map.put("1.2",      "v3.0");
+        map.put("2.0",      "v3.0");
+        map.put("3.0.0.1",  "v3.1");
+        PROJECT_TO_MODELER_VERSION = Collections.unmodifiableMap(map);
+    }
 
     private ProjectOpener fileChooser;
 
@@ -113,7 +127,7 @@ public class OpenProjectAction extends ProjectAction {
                         Application.getFrame(),
                         "Can't open project - file \"" + file.getPath() + "\" does not exist",
                         "Can't Open Project",
-                        JOptionPane.OK_OPTION);
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -123,55 +137,39 @@ public class OpenProjectAction extends ProjectAction {
             URL url = file.toURI().toURL();
             Resource rootSource = new URLResource(url);
 
-            ProjectUpgrader upgrader = getApplication().getInjector().getInstance(ProjectUpgrader.class);
-            UpgradeHandler handler = upgrader.getUpgradeHandler(rootSource);
-            UpgradeMetaData md = handler.getUpgradeMetaData();
+            UpgradeService upgradeService = getApplication().getInjector().getInstance(UpgradeService.class);
+            UpgradeMetaData metaData = upgradeService.getUpgradeType(rootSource);
+            switch (metaData.getUpgradeType()) {
+                case INTERMEDIATE_UPGRADE_NEEDED:
+                    String modelerVersion = PROJECT_TO_MODELER_VERSION.get(metaData.getProjectVersion());
+                    if(modelerVersion == null) {
+                        modelerVersion = "";
+                    }
+                    JOptionPane.showMessageDialog(Application.getFrame(),
+                                    "Open the project in the older Modeler " + modelerVersion
+                                            + " to do an intermediate upgrade\nbefore you can upgrade to latest version.",
+                                    "Can't Upgrade Project", JOptionPane.ERROR_MESSAGE);
+                    closeProject(false);
+                    return;
 
-            if (UpgradeType.DOWNGRADE_NEEDED == md.getUpgradeType()) {
-                JOptionPane
-                        .showMessageDialog(
-                                Application.getFrame(),
-                                "Can't open project - it was created using a newer version of the Modeler",
-                                "Can't Open Project",
-                                JOptionPane.OK_OPTION);
-                closeProject(false);
-            } else if (UpgradeType.INTERMEDIATE_UPGRADE_NEEDED == md.getUpgradeType()) {
-                JOptionPane
-                        .showMessageDialog(Application.getFrame(),
-                        // TODO: andrus 05/02/2010 - this message shows intermediate
-                                // version of the project XML, not the Modeler code
-                                // version that
-                                // can be used for upgrade
-                                "Can't upgrade project. Open the project in the Modeler v."
-                                        + md.getIntermediateUpgradeVersion()
-                                        + " to do an intermediate upgrade before you can upgrade to v."
-                                        + md.getSupportedVersion(),
-                                "Can't Upgrade Project",
-                                JOptionPane.OK_OPTION);
-                closeProject(false);
-            } else if (UpgradeType.UPGRADE_NEEDED == md.getUpgradeType()) {
-                if (processUpgrades()) {
-                    // perform upgrade
-                    logObj.info("Will upgrade project " + url.getPath());
-                    Resource upgraded = handler.performUpgrade();
-                    if (upgraded != null) {
-                        Project project = openProjectResourse(upgraded, controller);
+                case DOWNGRADE_NEEDED:
+                    JOptionPane.showMessageDialog(Application.getFrame(),
+                                    "Can't open project - it was created using a newer version of the Modeler",
+                                    "Can't Open Project", JOptionPane.ERROR_MESSAGE);
+                    closeProject(false);
+                    return;
 
-                        getProjectController().getFileChangeTracker().pauseWatching();
-                        getProjectController().getFileChangeTracker().reconfigure();
-
-                        // need to update project file name if it has changed
-                        if (!file.getAbsolutePath().equals(project.getConfigurationResource().getURL().getPath())) {
-                            File projectFile = new File(project.getConfigurationResource().getURL().toURI());
-                            controller.changePathInLastProjListAction(file, projectFile);
-                        }
+                case UPGRADE_NEEDED:
+                    if (processUpgrades()) {
+                        rootSource = upgradeService.upgradeProject(rootSource);
                     } else {
                         closeProject(false);
+                        return;
                     }
-                }
-            } else {
-                openProjectResourse(rootSource, controller);
+                    break;
             }
+
+            openProjectResourse(rootSource, controller);
         } catch (Exception ex) {
             logObj.warn("Error loading project file.", ex);
             ErrorDebugDialog.guiWarning(ex, "Error loading project");

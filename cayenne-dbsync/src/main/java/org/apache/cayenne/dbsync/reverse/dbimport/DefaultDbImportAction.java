@@ -19,6 +19,7 @@
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import org.apache.cayenne.configuration.ConfigurationTree;
+import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
@@ -41,7 +42,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
@@ -52,7 +52,6 @@ import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 import org.slf4j.Logger;
-import org.xml.sax.InputSource;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -76,14 +75,14 @@ public class DefaultDbImportAction implements DbImportAction {
     private final Logger logger;
     private final DataSourceFactory dataSourceFactory;
     private final DbAdapterFactory adapterFactory;
-    private final MapLoader mapLoader;
+    private final DataMapLoader mapLoader;
     private final MergerTokenFactoryProvider mergerTokenFactoryProvider;
 
     public DefaultDbImportAction(@Inject Logger logger,
                                  @Inject ProjectSaver projectSaver,
                                  @Inject DataSourceFactory dataSourceFactory,
                                  @Inject DbAdapterFactory adapterFactory,
-                                 @Inject MapLoader mapLoader,
+                                 @Inject DataMapLoader mapLoader,
                                  @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider) {
         this.logger = logger;
         this.projectSaver = projectSaver;
@@ -240,9 +239,10 @@ public class DefaultDbImportAction implements DbImportAction {
 
         File file = configuration.getTargetDataMap();
         if (file != null && file.exists() && file.canRead()) {
-            DataMap dataMap = mapLoader.loadDataMap(new InputSource(file.getCanonicalPath()));
+            URLResource configurationResource = new URLResource(file.toURI().toURL());
+            DataMap dataMap = mapLoader.load(configurationResource);
             dataMap.setNamespace(new EntityResolver(Collections.singleton(dataMap)));
-            dataMap.setConfigurationSource(new URLResource(file.toURI().toURL()));
+            dataMap.setConfigurationSource(configurationResource);
 
             return dataMap;
         }

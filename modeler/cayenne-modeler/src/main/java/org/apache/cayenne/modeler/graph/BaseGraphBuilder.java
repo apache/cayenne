@@ -39,6 +39,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.border.LineBorder;
 import javax.swing.event.UndoableEditEvent;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
@@ -547,7 +548,8 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         return rel.getSourceEntity().getName() + "." + rel.getName();
     }
 
-    public void encodeAsXML(XMLEncoder encoder) {
+    @Override
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
         encoder.print("<graph type=\"");
         encoder.print(getType().toString());
         encoder.print("\" scale=\"");

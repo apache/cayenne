@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.db.load;
 
+import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
@@ -40,7 +40,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
                                  @Inject ProjectSaver projectSaver,
                                  @Inject DataSourceFactory dataSourceFactory,
                                  @Inject DbAdapterFactory adapterFactory,
-                                 @Inject MapLoader mapLoader,
+                                 @Inject DataMapLoader mapLoader,
                                  @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider) {
         super(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider);
     }

@@ -19,9 +19,11 @@
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
@@ -45,21 +47,22 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.project.FileProjectSaver;
 import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.extension.ProjectExtension;
+import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
-import org.xml.sax.InputSource;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -129,7 +132,7 @@ public class DefaultDbImportActionTest {
         };
 
         final boolean[] haveWeTriedToSave = {false};
-        DefaultDbImportAction action = buildDbImportAction(new FileProjectSaver() {
+        DefaultDbImportAction action = buildDbImportAction(new FileProjectSaver(Collections.<ProjectExtension>emptyList()) {
             @Override
             public void save(Project project) {
                 haveWeTriedToSave[0] = true;
@@ -175,7 +178,7 @@ public class DefaultDbImportActionTest {
 
         final boolean[] haveWeTriedToSave = {false};
         DefaultDbImportAction action = buildDbImportAction(
-            new FileProjectSaver() {
+            new FileProjectSaver(Collections.<ProjectExtension>emptyList()) {
                 @Override
                 public void save(Project project) {
                     haveWeTriedToSave[0] = true;
@@ -192,9 +195,9 @@ public class DefaultDbImportActionTest {
                 }
             },
 
-            new MapLoader() {
+            new DataMapLoader() {
                 @Override
-                public synchronized DataMap loadDataMap(InputSource src) throws CayenneRuntimeException {
+                public DataMap load(Resource configurationResource) throws CayenneRuntimeException {
                     return new DataMapBuilder().with(
                             dbEntity("ARTGROUP").attributes(
                                     dbAttr("GROUP_ID").typeInt().primaryKey(),
@@ -236,8 +239,8 @@ public class DefaultDbImportActionTest {
         FileProjectSaver projectSaver = mock(FileProjectSaver.class);
         doNothing().when(projectSaver).save(any(Project.class));
 
-        MapLoader mapLoader = mock(MapLoader.class);
-        when(mapLoader.loadDataMap(any(InputSource.class))).thenReturn(new DataMapBuilder().with(
+        DataMapLoader mapLoader = mock(DataMapLoader.class);
+        when(mapLoader.load(any(Resource.class))).thenReturn(new DataMapBuilder().with(
                 dbEntity("ARTGROUP").attributes(
                         dbAttr("NAME").typeVarchar(100).mandatory()
                 )).build());
@@ -248,7 +251,7 @@ public class DefaultDbImportActionTest {
 
         // no changes - we still
         verify(projectSaver, never()).save(any(Project.class));
-        verify(mapLoader, times(1)).loadDataMap(any(InputSource.class));
+        verify(mapLoader, times(1)).load(any(Resource.class));
     }
 
     @Test
@@ -261,8 +264,8 @@ public class DefaultDbImportActionTest {
         FileProjectSaver projectSaver = mock(FileProjectSaver.class);
         doNothing().when(projectSaver).save(any(Project.class));
 
-        MapLoader mapLoader = mock(MapLoader.class);
-        when(mapLoader.loadDataMap(any(InputSource.class))).thenReturn(null);
+        DataMapLoader mapLoader = mock(DataMapLoader.class);
+        when(mapLoader.load(any(Resource.class))).thenReturn(null);
 
         DefaultDbImportAction action = buildDbImportAction(projectSaver, mapLoader, dbLoader);
 
@@ -274,10 +277,10 @@ public class DefaultDbImportActionTest {
         }
 
         verify(projectSaver, never()).save(any(Project.class));
-        verify(mapLoader, never()).loadDataMap(any(InputSource.class));
+        verify(mapLoader, never()).load(any(Resource.class));
     }
 
-    private DefaultDbImportAction buildDbImportAction(FileProjectSaver projectSaver, MapLoader mapLoader, final DbLoader dbLoader)
+    private DefaultDbImportAction buildDbImportAction(FileProjectSaver projectSaver, DataMapLoader mapLoader, final DbLoader dbLoader)
             throws Exception {
 
         Logger log = mock(Logger.class);

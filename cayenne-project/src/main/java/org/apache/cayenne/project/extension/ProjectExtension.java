@@ -27,11 +27,10 @@ package org.apache.cayenne.project.extension;
  *     ClientRuntime so they can safely store big chunks of data.
  * </p>
  * <p>
- *     Extensions can be contributed by {@link org.apache.cayenne.project.ProjectModule#contributeExtension(org.apache.cayenne.di.Binder)}.
+ *     Extensions can be contributed by {@link org.apache.cayenne.project.ProjectModule#contributeExtensions(org.apache.cayenne.di.Binder)}.
  *     {@link org.apache.cayenne.project.ProjectModule} currently used by Modeler and cli tools, e.g. cdbimport and cgen.
  * </p>
  *
- * @see org.apache.cayenne.project.extension.info.InfoExtension as reference implementation
  * @since 4.1
  */
 public interface ProjectExtension {

@@ -22,23 +22,22 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.resource.URLResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -76,12 +75,8 @@ public class ImportDataMapAction extends CayenneAction {
 
         try {
             URL url = dataMapFile.toURI().toURL();
-
-            try (InputStream in = url.openStream();) {
-                InputSource inSrc = new InputSource(in);
-                inSrc.setSystemId(dataMapFile.getAbsolutePath());
-                newMap = new MapLoader().loadDataMap(inSrc);
-            }
+            DataMapLoader loader = application.getInjector().getInstance(DataMapLoader.class);
+            newMap = loader.load(new URLResource(url));
 
             ConfigurationNode root = getProjectController().getProject().getRootNode();
             newMap.setName(NameBuilder
