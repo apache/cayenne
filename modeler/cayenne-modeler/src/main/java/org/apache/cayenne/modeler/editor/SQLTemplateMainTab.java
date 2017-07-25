@@ -31,6 +31,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
@@ -67,6 +68,7 @@ public class SQLTemplateMainTab extends JPanel {
 
     protected ProjectController mediator;
     protected TextAdapter name;
+    protected TextAdapter comment;
     protected SelectPropertiesPanel properties;
 
     public SQLTemplateMainTab(ProjectController mediator) {
@@ -78,9 +80,16 @@ public class SQLTemplateMainTab extends JPanel {
     private void initView() {
         // create widgets
         name = new TextAdapter(new JTextField()) {
-
+            @Override
             protected void updateModel(String text) {
                 setQueryName(text);
+            }
+        };
+
+        comment = new TextAdapter(new JTextField()) {
+            @Override
+            protected void updateModel(String text) {
+                setQueryComment(text);
             }
         };
 
@@ -90,13 +99,15 @@ public class SQLTemplateMainTab extends JPanel {
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
                 "right:max(80dlu;pref), 3dlu, fill:max(200dlu;pref)",
-                "p, 3dlu, p");
+                "p, 3dlu, p, 3dlu, p");
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
 
         builder.addSeparator("SQLTemplate Settings", cc.xywh(1, 1, 3, 1));
         builder.addLabel("Query Name:", cc.xy(1, 3));
         builder.add(name.getComponent(), cc.xy(3, 3));
+        builder.addLabel("Comment:", cc.xy(1, 5));
+        builder.add(comment.getComponent(), cc.xy(3, 5));
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.NORTH);
@@ -117,6 +128,7 @@ public class SQLTemplateMainTab extends JPanel {
 
         name.setText(query.getName());
         properties.initFromModel(query);
+        comment.setText(getQueryComment(query));
 
         setVisible(true);
     }
@@ -181,6 +193,19 @@ public class SQLTemplateMainTab extends JPanel {
 
             mediator.fireQueryEvent(new QueryEvent(this, template));
         }
+    }
+
+    private void setQueryComment(String text) {
+        QueryDescriptor query = getQuery();
+        if (query == null) {
+            return;
+        }
+        ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), query, ObjectInfo.COMMENT, text);
+        mediator.fireQueryEvent(new QueryEvent(this, query));
+    }
+
+    private String getQueryComment(QueryDescriptor queryDescriptor) {
+        return ObjectInfo.getFromMetaData(mediator.getApplication().getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
     }
 
     final class LabelCapsRenderer extends DefaultListCellRenderer {

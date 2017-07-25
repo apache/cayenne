@@ -42,6 +42,7 @@ import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -52,6 +53,7 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
 
     protected ProjectController mediator;
     protected TextAdapter className;
+    protected TextAdapter comment;
 
     public EmbeddableTab(ProjectController mediator) {
         this.mediator = mediator;
@@ -75,10 +77,16 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
         add(toolBar, BorderLayout.NORTH);
 
         className = new TextAdapter(new JTextField()) {
-
             @Override
             protected void updateModel(String text) {
                 setClassName(text);
+            }
+        };
+
+        comment = new TextAdapter(new JTextField()) {
+            @Override
+            protected void updateModel(String text) {
+                setComment(text);
             }
         };
 
@@ -88,14 +96,9 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
         builder.append("Class Name:", className.getComponent(), 3);
+        builder.append("Comment:", comment.getComponent(), 3);
 
         add(builder.getPanel(), BorderLayout.CENTER);
-    }
-
-    public void processExistingSelection(EventObject e) {
-        EmbeddableDisplayEvent ede = new EmbeddableDisplayEvent(this, mediator
-                .getCurrentEmbeddable(), mediator.getCurrentDataMap(), (DataChannelDescriptor)mediator.getProject().getRootNode());
-        mediator.fireEmbeddableDisplayEvent(ede);
     }
 
     void setClassName(String newClassName) {
@@ -187,5 +190,21 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
 
     private void initFromModel(Embeddable embeddable) {
         className.setText(embeddable.getClassName());
+        comment.setText(getComment(embeddable));
+    }
+
+    void setComment(String comment) {
+        Embeddable embeddable = mediator.getCurrentEmbeddable();
+
+        if (embeddable == null) {
+            return;
+        }
+
+        ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), embeddable, ObjectInfo.COMMENT, comment);
+        mediator.fireEmbeddableEvent(new EmbeddableEvent(this, embeddable), mediator.getCurrentDataMap());
+    }
+
+    String getComment(Embeddable embeddable) {
+        return ObjectInfo.getFromMetaData(mediator.getApplication().getMetaData(), embeddable, ObjectInfo.COMMENT);
     }
 }

@@ -25,7 +25,6 @@ import java.awt.event.ItemListener;
 import java.util.EventObject;
 
 import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -38,6 +37,7 @@ import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
 import org.apache.cayenne.modeler.event.ProcedureDisplayListener;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -45,9 +45,7 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
 /**
- * A panel for editing stored procedure general settings, such as name, schema,
- * etc.
- * 
+ * A panel for editing stored procedure general settings, such as name, schema, etc.
  */
 public class ProcedureTab extends JPanel implements ProcedureDisplayListener, ExistingSelectionProcessor {
 
@@ -55,6 +53,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
     protected TextAdapter name;
     protected TextAdapter schema;
     protected TextAdapter catalog;
+    protected TextAdapter comment;
     protected JCheckBox returnsValue;
     protected boolean ignoreChange;
 
@@ -69,31 +68,35 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
         // create widgets
 
         this.name = new TextAdapter(new JTextField()) {
-
+            @Override
             protected void updateModel(String text) {
                 setProcedureName(text);
             }
         };
 
         this.schema = new TextAdapter(new JTextField()) {
-
+            @Override
             protected void updateModel(String text) {
                 setSchema(text);
             }
         };
 
         this.catalog = new TextAdapter(new JTextField()) {
-
+            @Override
             protected void updateModel(String text) {
                 setCatalog(text);
             }
         };
 
-        JLabel returnValueHelp = new JLabel("(first parameter will be used as return value)");
-        returnValueHelp.setFont(returnValueHelp.getFont().deriveFont(10));
+        this.comment = new TextAdapter(new JTextField()) {
+            @Override
+            protected void updateModel(String text) {
+                setComment(text);
+            }
+        };
 
         this.returnsValue = new JCayenneCheckBox();
-        this.returnsValue.setToolTipText(returnValueHelp.getText());
+        this.returnsValue.setToolTipText("first parameter will be used as return value");
 
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:200dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
@@ -104,6 +107,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
         builder.append("Catalog:", catalog.getComponent());
         builder.append("Schema:", schema.getComponent());
         builder.append("Returns Value:", returnsValue);
+        builder.append("Comment:", comment.getComponent());
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);
@@ -142,6 +146,7 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
         name.setText(procedure.getName());
         schema.setText(procedure.getSchema());
         catalog.setText(procedure.getCatalog());
+        comment.setText(getComment(procedure));
 
         ignoreChange = true;
         returnsValue.setSelected(procedure.isReturningValue());
@@ -196,5 +201,20 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
             procedure.setCatalog(text);
             eventController.fireProcedureEvent(new ProcedureEvent(this, procedure));
         }
+    }
+
+    void setComment(String comment) {
+        Procedure procedure = eventController.getCurrentProcedure();
+
+        if (procedure == null) {
+            return;
+        }
+
+        ObjectInfo.putToMetaData(eventController.getApplication().getMetaData(), procedure, ObjectInfo.COMMENT, comment);
+        eventController.fireProcedureEvent(new ProcedureEvent(this, procedure));
+    }
+
+    String getComment(Procedure procedure) {
+        return ObjectInfo.getFromMetaData(eventController.getApplication().getMetaData(), procedure, ObjectInfo.COMMENT);
     }
 }

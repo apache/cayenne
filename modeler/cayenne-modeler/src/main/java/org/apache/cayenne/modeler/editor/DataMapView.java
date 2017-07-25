@@ -42,6 +42,7 @@ import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -75,6 +76,8 @@ public class DataMapView extends JPanel {
     protected TextAdapter defaultPackage;
     protected TextAdapter defaultSuperclass;
     protected JCheckBox quoteSQLIdentifiers;
+
+    protected TextAdapter comment;
 
     protected JButton updateDefaultCatalog;
     protected JButton updateDefaultSchema;
@@ -130,6 +133,13 @@ public class DataMapView extends JPanel {
 
         quoteSQLIdentifiers = new JCayenneCheckBox();
 
+        comment = new TextAdapter(new JTextField()) {
+            @Override
+            protected void updateModel(String text) throws ValidationException {
+                updateComment(text);
+            }
+        };
+
         updateDefaultPackage = new JButton("Update...");
         defaultPackage = new TextAdapter(new JTextField()) {
 
@@ -178,6 +188,7 @@ public class DataMapView extends JPanel {
         builder.append("File:", location, 3);
         builder.append("DataNode:", nodeSelector, 2);
         builder.append("Quote SQL Identifiers:", quoteSQLIdentifiers, 3);
+        builder.append("Comment:", comment.getComponent(), 2);
 
         builder.appendSeparator("Entity Defaults");
         builder.append("DB Catalog:", defaultCatalog.getComponent(), updateDefaultCatalog);
@@ -307,10 +318,10 @@ public class DataMapView extends JPanel {
      */
     private void initFromModel(DataMap map) {
         name.setText(map.getName());
-        String locationText = map.getLocation();
-        location.setText((locationText != null) ? locationText : "(no file)");
-
+        location.setText((map.getLocation() != null) ? map.getLocation() : "(no file)");
         quoteSQLIdentifiers.setSelected(map.isQuotingSQLIdentifiers());
+        comment.setText(getComment(map));
+
         // rebuild data node list
 
         DataNodeDescriptor nodes[] = ((DataChannelDescriptor) eventController.getProject().getRootNode())
@@ -318,7 +329,6 @@ public class DataMapView extends JPanel {
 
         // add an empty item to the front
         DataNodeDescriptor[] objects = new DataNodeDescriptor[nodes.length + 1];
-        // objects[0] = null;
 
         // now add the entities
         if (nodes.length > 0) {
@@ -666,5 +676,19 @@ public class DataMapView extends JPanel {
         if (dataMap.getObjEntities().size() > 0) {
             new LockingUpdateController(eventController, dataMap).startup();
         }
+    }
+
+    void updateComment(String comment) {
+        DataMap dataMap = eventController.getCurrentDataMap();
+        if (dataMap == null) {
+            return;
+        }
+
+        ObjectInfo.putToMetaData(eventController.getApplication().getMetaData(), dataMap, ObjectInfo.COMMENT, comment);
+        eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
+    }
+
+    private String getComment(DataMap dataMap) {
+        return ObjectInfo.getFromMetaData(eventController.getApplication().getMetaData(), dataMap, ObjectInfo.COMMENT);
     }
 }

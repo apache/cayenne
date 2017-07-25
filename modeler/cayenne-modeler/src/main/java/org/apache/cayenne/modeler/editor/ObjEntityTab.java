@@ -70,6 +70,8 @@ import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
+import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 import org.apache.commons.collections.CollectionUtils;
@@ -97,8 +99,6 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
     protected JButton tableLabel;
     protected JCheckBox readOnly;
     protected JCheckBox optimisticLocking;
-    protected JCheckBox excludeSuperclassListeners;
-    protected JCheckBox excludeDefaultListeners;
 
     protected JComponent clientSeparator;
     protected JLabel isAbstractLabel;
@@ -108,6 +108,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
     protected JCheckBox serverOnly;
     protected JCheckBox isAbstract;
+    protected TextAdapter comment;
     protected TextAdapter clientClassName;
     protected TextAdapter clientSuperClassName;
 
@@ -170,8 +171,6 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
         readOnly = new JCayenneCheckBox();
 
         optimisticLocking = new JCayenneCheckBox();
-        excludeSuperclassListeners = new JCayenneCheckBox();
-        excludeDefaultListeners = new JCayenneCheckBox();
 
         // borderless clickable button used as a label
         tableLabel = new JButton("Table/View:");
@@ -184,6 +183,13 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
         isAbstract = new JCayenneCheckBox();
         serverOnly = new JCayenneCheckBox();
+
+        comment = new TextAdapter(new JTextField()) {
+            @Override
+            protected void updateModel(String text) throws ValidationException {
+                setComment(text);
+            }
+        };
         clientClassName = new TextAdapter(new JTextField()) {
             @Override
             protected void updateModel(String text) {
@@ -207,6 +213,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
         builder.append("Inheritance:", superEntityCombo);
         builder.append(tableLabel, dbEntityCombo);
         isAbstractLabel = builder.append("Abstract class:", isAbstract);
+        builder.append("Comment:", comment.getComponent());
         builder.appendSeparator();
 
         builder.append("Java Class:", className.getComponent());
@@ -215,9 +222,6 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
         builder.append("Qualifier:", qualifier.getComponent());
         builder.append("Read-Only:", readOnly);
         builder.append("Optimistic Locking:", optimisticLocking);
-        // add callback-related stuff
-        builder.append("Exclude superclass listeners:", excludeSuperclassListeners);
-        builder.append("Exclude default listeners:", excludeDefaultListeners);
 
         clientSeparator = builder.appendSeparator("Java Client");
         serverOnlyLabel = builder.append("Not for Client Use:", serverOnly);
@@ -349,32 +353,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
             }
         });
 
-        excludeSuperclassListeners.addItemListener(new ItemListener() {
-
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                ObjEntity entity = mediator.getCurrentObjEntity();
-                if (entity != null) {
-                    entity.setExcludingSuperclassListeners(excludeSuperclassListeners.isSelected());
-                    mediator.fireObjEntityEvent(new EntityEvent(this, entity));
-                }
-            }
-        });
-
-        excludeDefaultListeners.addItemListener(new ItemListener() {
-
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                ObjEntity entity = mediator.getCurrentObjEntity();
-                if (entity != null) {
-                    entity.setExcludingDefaultListeners(excludeDefaultListeners.isSelected());
-                    mediator.fireObjEntityEvent(new EntityEvent(this, entity));
-                }
-            }
-        });
-
         serverOnly.addItemListener(new ItemListener() {
-
             @Override
             public void itemStateChanged(ItemEvent e) {
                 ObjEntity entity = mediator.getCurrentObjEntity();
@@ -415,6 +394,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
         readOnly.setSelected(entity.isReadOnly());
 
         isAbstract.setSelected(entity.isAbstract());
+        comment.setText(getComment(entity));
         serverOnly.setSelected(entity.isServerOnly());
         clientClassName.setText(entity.getClientClassName());
         clientSuperClassName.setText(entity.getClientSuperClassName());
@@ -425,8 +405,6 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
         // lock if superclass is not already locked,
         // otherwise we must keep this checked in but not editable.
         optimisticLocking.setSelected(entity.getDeclaredLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC);
-        excludeSuperclassListeners.setSelected(entity.isExcludingSuperclassListeners());
-        excludeDefaultListeners.setSelected(entity.isExcludingDefaultListeners());
 
         // init DbEntities
         EntityResolver resolver = mediator.getEntityResolver();
@@ -636,6 +614,20 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
         }
 
         return result;
+    }
+
+    private void setComment(String value) {
+        ObjEntity entity = mediator.getCurrentObjEntity();
+        if (entity == null) {
+            return;
+        }
+
+        ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), entity, ObjectInfo.COMMENT, value);
+        mediator.fireObjEntityEvent(new EntityEvent(this, entity));
+    }
+
+    private String getComment(ObjEntity entity) {
+        return ObjectInfo.getFromMetaData(mediator.getApplication().getMetaData(), entity, ObjectInfo.COMMENT);
     }
 
 }

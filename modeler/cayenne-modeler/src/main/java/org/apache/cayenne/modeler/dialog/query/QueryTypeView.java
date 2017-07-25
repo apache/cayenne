@@ -50,7 +50,7 @@ public class QueryTypeView extends JDialog {
         // create widgets
         ButtonGroup buttonGroup = new ButtonGroup();
         objectSelect = new JRadioButton("Object Select Query");
-        sqlSelect = new JRadioButton("Raw SQL");
+        sqlSelect = new JRadioButton("SQLTemplate Query");
         procedureSelect = new JRadioButton("Stored Procedure Query");
         ejbqlSelect = new JRadioButton("EJBQL Query");
         objectSelect.setSelected(true);

@@ -93,7 +93,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
     /**
      * Combo to edit 'target' field
      */
-    protected JComboBox targetCombo;
+    protected JComboBox<DbEntity> targetCombo;
 
     public DbEntityRelationshipPanel(ProjectController mediator, DbEntityAttributeRelationshipTab parentPanel) {
         this.mediator = mediator;
@@ -165,10 +165,9 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
     }
 
     public void tableChanged(TableModelEvent e) {
-        DbRelationship rel = null;
         if (table.getSelectedRow() >= 0) {
             DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
-            rel = model.getRelationship(table.getSelectedRow());
+            DbRelationship rel = model.getRelationship(table.getSelectedRow());
             enabledResolve = (rel.getTargetEntity() != null);
             resolveMenu.setEnabled(enabledResolve);
         }
@@ -232,7 +231,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
                 .setCellRenderer(new CheckBoxCellRenderer());
 
         targetCombo.setRenderer(CellRenderers.entityListRendererWithIcons(entity.getDataMap()));
-        targetCombo.setModel(createComboModel(entity));
+        targetCombo.setModel(createComboModel());
         col.setCellEditor(Application.getWidgetFactory().createCellEditor(targetCombo));
 
         tablePreferences.bind(
@@ -274,8 +273,9 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
 
     public void dbRelationshipRemoved(RelationshipEvent e) {
         DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
-        int ind = model.getObjectList().indexOf(e.getRelationship());
-        model.removeRelationship(e.getRelationship());
+        DbRelationship relationship = (DbRelationship) e.getRelationship();
+        int ind = model.getObjectList().indexOf(relationship);
+        model.removeRelationship(relationship);
         table.select(ind);
     }
 
@@ -284,15 +284,13 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
      * relationships were deleted.
      */
     private void reloadEntityList(EntityEvent e) {
-        if (e.getSource() == this)
+        if (e.getSource() == this
+            || mediator.getCurrentDbEntity() == e.getEntity()  // If current model added/removed, do nothing.
+            || mediator.getCurrentDbEntity() == null) { // If this is just loading new currentDbEntity, do nothing
             return;
-        // If current model added/removed, do nothing.
-        if (mediator.getCurrentDbEntity() == e.getEntity())
-            return;
-        // If this is just loading new currentDbEntity, do nothing
-        if (mediator.getCurrentDbEntity() == null)
-            return;
-        targetCombo.setModel(createComboModel(e.getEntity()));
+        }
+
+        targetCombo.setModel(createComboModel());
 
         DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
         model.fireTableDataChanged();
@@ -301,14 +299,10 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
     /**
      * Creates a list of DbEntities.
      */
-    private ComboBoxModel createComboModel(Entity entity) {
+    private ComboBoxModel<DbEntity> createComboModel() {
         EntityResolver resolver = mediator.getEntityResolver();
-        Object[] objects = resolver.getDbEntities().toArray();
-        return new DefaultComboBoxModel(objects);
-    }
-
-    public boolean isEnabledResolve() {
-        return enabledResolve;
+        DbEntity[] objects = resolver.getDbEntities().toArray(new DbEntity[0]);
+        return new DefaultComboBoxModel<>(objects);
     }
 
     public ActionListener getResolver() {

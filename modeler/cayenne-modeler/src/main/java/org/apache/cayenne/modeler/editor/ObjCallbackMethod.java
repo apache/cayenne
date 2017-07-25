@@ -38,10 +38,7 @@ public class ObjCallbackMethod implements XMLSerializable,
 	@Override
 	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
 
-        encoder.print("<" + encodeCallbackTypeForXML(callbackType));
-        encoder.print(" name=\"" + getName());
-
-        encoder.println("\"/>");
+        encoder.start( encodeCallbackTypeForXML(callbackType)).attribute( name, getName()).end();
 	}
 
 	private String encodeCallbackTypeForXML(CallbackType type) {

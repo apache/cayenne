@@ -37,13 +37,12 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;
+import org.apache.cayenne.project.extension.info.ObjectInfo;
 
 /**
- * Model for DbEntity attributes. Allows adding/removing attributes, modifying types and
- * names.
- * 
+ * Model for DbEntity attributes. Allows adding/removing attributes, modifying types and names.
  */
-public class DbAttributeTableModel extends CayenneTableModel {
+public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
 
     // Columns
     private static final int DB_ATTRIBUTE_NAME = 0;
@@ -52,13 +51,13 @@ public class DbAttributeTableModel extends CayenneTableModel {
     private static final int DB_ATTRIBUTE_MANDATORY = 3;
     private static final int DB_ATTRIBUTE_MAX = 4;
     private static final int DB_ATTRIBUTE_SCALE = 5;
+    private static final int DB_ATTRIBUTE_COMMENT = 6;
 
     protected DbEntity entity;
 
     public DbAttributeTableModel(DbEntity entity, ProjectController mediator,
             Object eventSource) {
-        this(entity, mediator, eventSource, new ArrayList<DbAttribute>(entity
-                .getAttributes()));
+        this(entity, mediator, eventSource, new ArrayList<>(entity.getAttributes()));
         this.entity = entity;
     }
 
@@ -91,7 +90,7 @@ public class DbAttributeTableModel extends CayenneTableModel {
      * Returns the number of columns in the table.
      */
     public int getColumnCount() {
-        return 6;
+        return 7;
     }
 
     public DbAttribute getAttribute(int row) {
@@ -114,6 +113,8 @@ public class DbAttributeTableModel extends CayenneTableModel {
                 return "Mandatory";
             case DB_ATTRIBUTE_MAX:
                 return "Max Length";
+            case DB_ATTRIBUTE_COMMENT:
+                return "Comment";
             default:
                 return "";
         }
@@ -150,6 +151,8 @@ public class DbAttributeTableModel extends CayenneTableModel {
                 return isMandatory(attr);
             case DB_ATTRIBUTE_MAX:
                 return getMaxLength(attr);
+            case DB_ATTRIBUTE_COMMENT:
+                return getComment(attr);
             default:
                 return "";
         }
@@ -167,7 +170,7 @@ public class DbAttributeTableModel extends CayenneTableModel {
             case DB_ATTRIBUTE_NAME:
                 e.setOldName(attr.getName());
                 attr.setName((String) newVal);
-                ((DbEntity) attr.getEntity()).dbAttributeChanged(e);
+                attr.getEntity().dbAttributeChanged(e);
                 
                 fireTableCellUpdated(row, col);
                 break;
@@ -187,6 +190,9 @@ public class DbAttributeTableModel extends CayenneTableModel {
                 break;
             case DB_ATTRIBUTE_MAX:
                 setMaxLength((String) newVal, attr);
+                break;
+            case DB_ATTRIBUTE_COMMENT:
+                setComment((String) newVal, attr);
                 break;
         }
 
@@ -217,21 +223,22 @@ public class DbAttributeTableModel extends CayenneTableModel {
         return (attr.isMandatory()) ? Boolean.TRUE : Boolean.FALSE;
     }
 
+    public String getComment(DbAttribute attr) {
+        return ObjectInfo.getFromMetaData(mediator.getApplication().getMetaData(), attr, ObjectInfo.COMMENT);
+    }
+
     public void setMaxLength(String newVal, DbAttribute attr) {
         if (newVal == null || newVal.trim().length() <= 0) {
             attr.setMaxLength(-1);
-        }
-        else {
+        } else {
             try {
                 attr.setMaxLength(Integer.parseInt(newVal));
-            }
-            catch (NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(
                         null,
                         "Invalid Max Length (" + newVal + "), only numbers are allowed",
                         "Invalid Maximum Length",
                         JOptionPane.ERROR_MESSAGE);
-                return;
             }
         }
     }
@@ -243,12 +250,10 @@ public class DbAttributeTableModel extends CayenneTableModel {
     public void setScale(String newVal, DbAttribute attr) {
         if (newVal == null || newVal.trim().length() <= 0) {
             attr.setScale(-1);
-        }
-        else {
+        } else {
             try {
                 attr.setScale(Integer.parseInt(newVal));
-            }
-            catch (NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(
                         null,
                         "Invalid precision (" + newVal + "), only numbers are allowed.",
@@ -260,7 +265,7 @@ public class DbAttributeTableModel extends CayenneTableModel {
 
     public boolean setPrimaryKey(Boolean newVal, DbAttribute attr, int row) {
 
-        boolean flag = newVal.booleanValue();
+        boolean flag = newVal;
 
         // when PK is unset, we need to fix some derived flags
         if (!flag) {
@@ -285,9 +290,8 @@ public class DbAttributeTableModel extends CayenneTableModel {
                 if (relationships.size() > 0) {
                     String message = (relationships.size() == 1)
                             ? "Fix \"To Dep PK\" relationship using this attribute?"
-                            : "Fix "
-                                    + relationships.size()
-                                    + " \"To Dep PK\" relationships using this attribute?";
+                            : "Fix " + relationships.size()
+                                     + " \"To Dep PK\" relationships using this attribute?";
 
                     int answer = JOptionPane.showConfirmDialog(
                             Application.getFrame(),
@@ -314,19 +318,22 @@ public class DbAttributeTableModel extends CayenneTableModel {
     }
 
     public void setMandatory(Boolean newVal, DbAttribute attr) {
-        attr.setMandatory(newVal.booleanValue());
+        attr.setMandatory(newVal);
     }
 
     public void setGenerated(Boolean newVal, DbAttribute attr) {
-        attr.setGenerated(newVal.booleanValue());
+        attr.setGenerated(newVal);
+    }
+
+    public void setComment(String newVal, DbAttribute attr) {
+        ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), attr, ObjectInfo.COMMENT, newVal);
     }
 
     public boolean isCellEditable(int row, int col) {
         DbAttribute attrib = getAttribute(row);
         if (null == attrib) {
             return false;
-        }
-        else if (col == mandatoryColumnInd()) {
+        } else if (col == mandatoryColumnInd()) {
             if (attrib.isPrimaryKey()) {
                 return false;
             }
@@ -336,7 +343,7 @@ public class DbAttributeTableModel extends CayenneTableModel {
 
     @Override
     public boolean isColumnSortable(int sortCol) {
-        return true;
+        return sortCol != DB_ATTRIBUTE_COMMENT;
     }
 
     @Override
@@ -351,20 +358,17 @@ public class DbAttributeTableModel extends CayenneTableModel {
                     public int compare(DbAttribute o1, DbAttribute o2) {
                         if ((o1 == null && o2 == null) || o1 == o2) {
                             return 0;
-                        }
-                        else if (o1 == null && o2 != null) {
+                        } else if (o1 == null) {
                             return -1;
-                        }
-                        else if (o1 != null && o2 == null) {
+                        } else if (o2 == null) {
                             return 1;
                         }
                         
                         String attrType1 = getAttributeType(o1);
                         String attrType2 = getAttributeType(o2);
                         
-                        return (attrType1 == null) ? -1 : (attrType2 == null)
-                                ? 1
-                                : attrType1.compareTo(attrType2);
+                        return (attrType1 == null) ? -1
+                                : (attrType2 == null) ? 1 : attrType1.compareTo(attrType2);
                     }
 
                 });

@@ -140,7 +140,7 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
     public void dbAttributeRemoved(AttributeEvent e) {
         DbAttributeTableModel model = (DbAttributeTableModel) table.getModel();
         int ind = model.getObjectList().indexOf(e.getAttribute());
-        model.removeRow(e.getAttribute());
+        model.removeRow((DbAttribute) e.getAttribute());
         table.select(ind);
     }
 

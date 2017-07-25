@@ -25,6 +25,7 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -41,6 +42,7 @@ import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.CellEditorForAttributeTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.ProjectUtil;
+import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
 
 import java.util.ArrayList;
@@ -64,7 +66,8 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
     public static final int DB_ATTRIBUTE = 3;
     public static final int DB_ATTRIBUTE_TYPE = 4;
     public static final int LOCKING = 5;
-    public static final int COLUMN_COUNT = 6;
+    public static final int COMMENT = 6;
+    public static final int COLUMN_COUNT = 7;
 
     private ObjEntity entity;
     private DbEntity dbEntity;
@@ -163,6 +166,8 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
                 return "DB Type";
             case LOCKING:
                 return "Used for Locking";
+            case COMMENT:
+                return "Comment";
             default:
                 return "";
         }
@@ -170,29 +175,25 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
 
     public Object getValueAt(int row, int column) {
         ObjAttributeWrapper attribute = getAttribute(row);
-        if (column == INHERITED) {
-            return attribute.isInherited();
-        }
-        else if (column == OBJ_ATTRIBUTE) {
-            return attribute.getName();
-        }
-        else if (column == OBJ_ATTRIBUTE_TYPE) {
-            return attribute.getType();
-        }
-        else if (column == LOCKING) {
-            return attribute.isUsedForLocking() ? Boolean.TRUE : Boolean.FALSE;
-        }
-        else {
-            DbAttribute dbAttribute = attribute.getDbAttribute();
-            if (column == DB_ATTRIBUTE) {
+        DbAttribute dbAttribute = attribute.getDbAttribute();
+
+        switch (column) {
+            case INHERITED:
+                return attribute.isInherited();
+            case OBJ_ATTRIBUTE:
+                return attribute.getName();
+            case OBJ_ATTRIBUTE_TYPE:
+                return attribute.getType();
+            case LOCKING:
+                return attribute.isUsedForLocking() ? Boolean.TRUE : Boolean.FALSE;
+            case DB_ATTRIBUTE:
                 return getDBAttribute(attribute, dbAttribute);
-            }
-            else if (column == DB_ATTRIBUTE_TYPE) {
+            case DB_ATTRIBUTE_TYPE:
                 return getDBAttributeType(attribute, dbAttribute);
-            }
-            else {
+            case COMMENT:
+                return getComment(attribute.getValue());
+            default:
                 return null;
-            }
         }
     }
 
@@ -365,21 +366,29 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
         attribute.resetEdits();
         AttributeEvent event = new AttributeEvent(eventSource, attribute.getValue(), entity);
 
-        if (column == OBJ_ATTRIBUTE) {
-            event.setOldName(attribute.getName());
-            setObjAttribute(attribute, value);
-            fireTableCellUpdated(row, column);
-        } else if (column == OBJ_ATTRIBUTE_TYPE) {
-            setObjAttributeType(attribute, value);
-            fireTableCellUpdated(row, column);
-        } else if (column == LOCKING) {
-            setColumnLocking(attribute, value);
-            fireTableCellUpdated(row, column);
-        } else {
-            if (column == DB_ATTRIBUTE) {
+        switch (column) {
+            case OBJ_ATTRIBUTE:
+                event.setOldName(attribute.getName());
+                setObjAttribute(attribute, value);
+                fireTableCellUpdated(row, column);
+                break;
+            case OBJ_ATTRIBUTE_TYPE:
+                setObjAttributeType(attribute, value);
+                fireTableCellUpdated(row, column);
+                break;
+            case LOCKING:
+                setColumnLocking(attribute, value);
+                fireTableCellUpdated(row, column);
+                break;
+            case DB_ATTRIBUTE:
                 setDbAttribute(attribute, value);
-            }
-            fireTableRowsUpdated(row, row);
+                fireTableRowsUpdated(row, row);
+                break;
+            case COMMENT:
+                setComment((String)value, attribute.getValue());
+            default:
+                fireTableRowsUpdated(row, row);
+                break;
         }
         mediator.fireObjAttributeEvent(event);
     }
@@ -490,6 +499,13 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
         }
     }
 
+    private String getComment(ObjAttribute attr) {
+        return ObjectInfo.getFromMetaData(mediator.getApplication().getMetaData(), attr, ObjectInfo.COMMENT);
+    }
+
+    private void setComment(String newVal, ObjAttribute attr) {
+        ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), attr, ObjectInfo.COMMENT, newVal);
+    }
 
     @Override
     public boolean isColumnSortable(int sortCol) {

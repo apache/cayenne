@@ -20,11 +20,13 @@
 package org.apache.cayenne.modeler.editor.dbentity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.swing.JOptionPane;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
@@ -35,25 +37,28 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.WarningDialogByDbTargetChange;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
+import org.apache.cayenne.modeler.util.ProjectUtil;
+import org.apache.cayenne.project.extension.info.ObjectInfo;
 
 /**
  * Table model for DbRelationship table.
  * 
  */
-public class DbRelationshipTableModel extends CayenneTableModel {
+public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> {
 
     // Columns
     static final int NAME = 0;
     static final int TARGET = 1;
     static final int TO_DEPENDENT_KEY = 2;
     static final int CARDINALITY = 3;
+    static final int COMMENTS = 4;
 
     protected DbEntity entity;
 
     public DbRelationshipTableModel(DbEntity entity, ProjectController mediator,
             Object eventSource) {
 
-        super(mediator, eventSource, new ArrayList(entity.getRelationships()));
+        super(mediator, eventSource, new ArrayList<>(entity.getRelationships()));
         this.entity = entity;
     }
 
@@ -65,7 +70,7 @@ public class DbRelationshipTableModel extends CayenneTableModel {
     }
 
     public int getColumnCount() {
-        return 4;
+        return 5;
     }
 
     public String getColumnName(int col) {
@@ -78,6 +83,8 @@ public class DbRelationshipTableModel extends CayenneTableModel {
                 return "To Dep PK";
             case CARDINALITY:
                 return "To Many";
+            case COMMENTS:
+                return "Comment";
             default:
                 return null;
         }
@@ -96,8 +103,7 @@ public class DbRelationshipTableModel extends CayenneTableModel {
     }
 
     public DbRelationship getRelationship(int row) {
-        return (row >= 0 && row < objectList.size()) ? (DbRelationship) objectList
-                .get(row) : null;
+        return (row >= 0 && row < objectList.size()) ? objectList.get(row) : null;
     }
 
     public Object getValueAt(int row, int col) {
@@ -115,9 +121,19 @@ public class DbRelationshipTableModel extends CayenneTableModel {
                 return rel.isToDependentPK() ? Boolean.TRUE : Boolean.FALSE;
             case CARDINALITY:
                 return rel.isToMany() ? Boolean.TRUE : Boolean.FALSE;
+            case COMMENTS:
+                return getComment(rel);
             default:
                 return null;
         }
+    }
+
+    private String getComment(DbRelationship rel) {
+        return ObjectInfo.getFromMetaData(mediator.getApplication().getMetaData(), rel, ObjectInfo.COMMENT);
+    }
+
+    private void setComment(String newVal, DbRelationship rel) {
+        ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(), rel, ObjectInfo.COMMENT, newVal);
     }
 
     public void setUpdatedValueAt(Object aValue, int row, int column) {
@@ -125,14 +141,12 @@ public class DbRelationshipTableModel extends CayenneTableModel {
         DbRelationship rel = getRelationship(row);
         // If name column
         if (column == NAME) {
-            RelationshipEvent e = new RelationshipEvent(eventSource, rel, entity, rel
-                    .getName());
+            RelationshipEvent e = new RelationshipEvent(eventSource, rel, entity, rel.getName());
             rel.setName((String) aValue);
             mediator.fireDbRelationshipEvent(e);
             fireTableCellUpdated(row, column);
-        }
-        // If target column
-        else if (column == TARGET) {
+        } else if (column == TARGET) {
+            // If target column
             DbEntity target = (DbEntity) aValue;
 
             if (WarningDialogByDbTargetChange.showWarningDialog(mediator, rel)) {
@@ -141,11 +155,9 @@ public class DbRelationshipTableModel extends CayenneTableModel {
                 rel.setTargetEntityName(target);
             }
 
-            RelationshipEvent e = new RelationshipEvent(eventSource, rel, entity);
-            mediator.fireDbRelationshipEvent(e);
-        }
-        else if (column == TO_DEPENDENT_KEY) {
-            boolean flag = ((Boolean) aValue).booleanValue();
+            mediator.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
+        } else if (column == TO_DEPENDENT_KEY) {
+            boolean flag = (Boolean) aValue;
 
             // make sure reverse relationship "to-dep-pk" is unset.
             if (flag) {
@@ -166,16 +178,15 @@ public class DbRelationshipTableModel extends CayenneTableModel {
             }
 
             rel.setToDependentPK(flag);
-            RelationshipEvent e = new RelationshipEvent(eventSource, rel, entity);
-            mediator.fireDbRelationshipEvent(e);
-        }
-        else if (column == CARDINALITY) {
-            Boolean temp = (Boolean) aValue;
-            rel.setToMany(temp.booleanValue());
-            RelationshipEvent e = new RelationshipEvent(eventSource, rel, entity);
-            mediator.fireDbRelationshipEvent(e);
+            mediator.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
+        } else if (column == CARDINALITY) {
+            rel.setToMany((Boolean) aValue);
+            mediator.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
 
             updateDependentObjRelationships(rel);
+        } else if(column == COMMENTS) {
+            setComment((String) aValue, rel);
+            mediator.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
         }
         fireTableRowsUpdated(row, row);
     }
@@ -184,33 +195,18 @@ public class DbRelationshipTableModel extends CayenneTableModel {
      * Relationship just needs to be removed from the model. It is already removed from
      * the DataMap.
      */
-    void removeRelationship(Relationship rel) {
+    void removeRelationship(DbRelationship rel) {
         objectList.remove(rel);
         fireTableDataChanged();
     }
 
     void updateDependentObjRelationships(DbRelationship relationship) {
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) mediator
-                .getProject()
-                .getRootNode();
-        if (domain != null) {
-
-            for (DataMap map : domain.getDataMaps()) {
-                for (ObjEntity entity : map.getObjEntities()) {
-                    for (ObjRelationship objRelationship : entity.getRelationships()) {
-
-                        for (DbRelationship dbRelationship : objRelationship
-                                .getDbRelationships()) {
-                            if (dbRelationship == relationship) {
-                                objRelationship.recalculateToManyValue();
-                                objRelationship.recalculateReadOnlyValue();
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+        Collection<ObjRelationship> objRelationshipsForDbRelationship = ProjectUtil
+                .findObjRelationshipsForDbRelationship(mediator, relationship);
+        for(ObjRelationship objRelationship : objRelationshipsForDbRelationship) {
+            objRelationship.recalculateToManyValue();
+            objRelationship.recalculateReadOnlyValue();
         }
     }
 
