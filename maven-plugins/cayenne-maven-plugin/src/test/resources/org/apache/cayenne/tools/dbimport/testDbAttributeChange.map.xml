@@ -17,10 +17,10 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+          project-version="10">
 
     <db-entity name="parent" schema="SCHEMA_01">
         <db-attribute name="COL2" type="CHAR" length="25"/>
@@ -50,7 +50,7 @@
         <obj-attribute name="col5" type="java.util.Date" db-attribute-path="COL5"/>
     </obj-entity>
 
-    <db-relationship name="parent" source="CHILD" target="parent" toMany="false">
+    <db-relationship name="parent" source="CHILD" target="parent">
         <db-attribute-pair source="parent_id" target="ID"/>
     </db-relationship>
     <db-relationship name="children" source="parent" target="CHILD" toMany="true">

@@ -17,10 +17,10 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-	 project-version="9">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
 	 <property name="defaultSchema" value="SCHEMA_01"/>
 	 <db-entity name="TABLE1" schema="SCHEMA_01">
     		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
@@ -40,7 +40,7 @@
      <db-relationship name="table2s" source="TABLE1" target="TABLE2" toMany="true">
         <db-attribute-pair source="ID" target="TABLE1_ID"/>
      </db-relationship>
-     <db-relationship name="table1" source="TABLE2" target="TABLE1" toMany="false">
+     <db-relationship name="table1" source="TABLE2" target="TABLE1">
         <db-attribute-pair source="TABLE1_ID" target="ID"/>
      </db-relationship>
      <obj-relationship name="table2s" source="Table1" target="Table2" deleteRule="Deny" db-relationship-path="table2s"/>

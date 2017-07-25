@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap ../../main/resources/org/apache/cayenne/schema/3.0/modelMap.xsd"
+	xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
 	project-version="1.1">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.cgen2"/>
 	<db-entity name="MYARTGROUP">

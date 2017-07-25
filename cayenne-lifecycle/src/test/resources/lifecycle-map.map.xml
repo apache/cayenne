@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-	 project-version="9">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.lifecycle.db"/>
 	<db-entity name="AUDITABLE1">
 		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
@@ -84,18 +84,12 @@
 		<obj-attribute name="charProperty2" type="java.lang.String" db-attribute-path="CHAR_PROPERTY2"/>
 		<obj-attribute name="uuid" type="java.lang.String" db-attribute-path="UUID"/>
 	</obj-entity>
-	<obj-entity name="E1" className="org.apache.cayenne.lifecycle.db.E1" dbEntityName="E1">
-	</obj-entity>
-	<obj-entity name="E2" className="org.apache.cayenne.lifecycle.db.E2" dbEntityName="E2">
-	</obj-entity>
-	<obj-entity name="E3" className="org.apache.cayenne.lifecycle.db.E3" dbEntityName="E3">
-	</obj-entity>
-	<obj-entity name="E4" className="org.apache.cayenne.lifecycle.db.E4" dbEntityName="E4">
-	</obj-entity>
-	<obj-entity name="SortDep" className="org.apache.cayenne.lifecycle.db.SortDep" dbEntityName="SORT_DEP">
-	</obj-entity>
-	<obj-entity name="SortRoot" className="org.apache.cayenne.lifecycle.db.SortRoot" dbEntityName="SORT_ROOT">
-	</obj-entity>
+	<obj-entity name="E1" className="org.apache.cayenne.lifecycle.db.E1" dbEntityName="E1"/>
+	<obj-entity name="E2" className="org.apache.cayenne.lifecycle.db.E2" dbEntityName="E2"/>
+	<obj-entity name="E3" className="org.apache.cayenne.lifecycle.db.E3" dbEntityName="E3"/>
+	<obj-entity name="E4" className="org.apache.cayenne.lifecycle.db.E4" dbEntityName="E4"/>
+	<obj-entity name="SortDep" className="org.apache.cayenne.lifecycle.db.SortDep" dbEntityName="SORT_DEP"/>
+	<obj-entity name="SortRoot" className="org.apache.cayenne.lifecycle.db.SortRoot" dbEntityName="SORT_ROOT"/>
 	<obj-entity name="UuidRoot1" className="org.apache.cayenne.lifecycle.db.UuidRoot1" dbEntityName="UUID_ROOT1">
 		<obj-attribute name="uuid" type="java.lang.String" db-attribute-path="UUID"/>
 	</obj-entity>
@@ -108,28 +102,28 @@
 	<db-relationship name="children" source="AUDITABLE2" target="AUDITABLE_CHILD3" toMany="true">
 		<db-attribute-pair source="ID" target="AUDITABLE2_ID"/>
 	</db-relationship>
-	<db-relationship name="parent" source="AUDITABLE_CHILD1" target="AUDITABLE1" toMany="false">
+	<db-relationship name="parent" source="AUDITABLE_CHILD1" target="AUDITABLE1">
 		<db-attribute-pair source="AUDITABLE1_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="parent" source="AUDITABLE_CHILD2" target="AUDITABLE1" toMany="false">
+	<db-relationship name="parent" source="AUDITABLE_CHILD2" target="AUDITABLE1">
 		<db-attribute-pair source="AUDITABLE1_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="parent" source="AUDITABLE_CHILD3" target="AUDITABLE2" toMany="false">
+	<db-relationship name="parent" source="AUDITABLE_CHILD3" target="AUDITABLE2">
 		<db-attribute-pair source="AUDITABLE2_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="e34s" source="E3" target="E34" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="ID" target="E3_ID"/>
 	</db-relationship>
-	<db-relationship name="e3" source="E34" target="E3" toMany="false">
+	<db-relationship name="e3" source="E34" target="E3">
 		<db-attribute-pair source="E3_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="e4" source="E34" target="E4" toMany="false">
+	<db-relationship name="e4" source="E34" target="E4">
 		<db-attribute-pair source="E4_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="e34s" source="E4" target="E34" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="ID" target="E4_ID"/>
 	</db-relationship>
-	<db-relationship name="root" source="SORT_DEP" target="SORT_ROOT" toMany="false">
+	<db-relationship name="root" source="SORT_DEP" target="SORT_ROOT">
 		<db-attribute-pair source="ROOT_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="deps" source="SORT_ROOT" target="SORT_DEP" toMany="true">

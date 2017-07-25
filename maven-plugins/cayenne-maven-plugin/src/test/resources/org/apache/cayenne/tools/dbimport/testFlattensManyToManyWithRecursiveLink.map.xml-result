@@ -17,10 +17,10 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+          project-version="10">
     <property name="defaultPackage" value="org.not.my.home"/>
     <db-entity name="A" schema="APP">
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
@@ -37,10 +37,10 @@
     <db-relationship name="aAArray1" source="A" target="A_A" toDependentPK="true" toMany="true">
         <db-attribute-pair source="ID" target="A2_ID"/>
     </db-relationship>
-    <db-relationship name="toA" source="A_A" target="A" toMany="false">
+    <db-relationship name="toA" source="A_A" target="A">
         <db-attribute-pair source="A1_ID" target="ID"/>
     </db-relationship>
-    <db-relationship name="toA1" source="A_A" target="A" toMany="false">
+    <db-relationship name="toA1" source="A_A" target="A">
         <db-attribute-pair source="A2_ID" target="ID"/>
     </db-relationship>
     <obj-relationship name="aArray" source="A" target="A" db-relationship-path="aAArray.toA1"/>

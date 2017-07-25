@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<domain project-version="9">
+<domain xmlns="http://cayenne.apache.org/schema/10/domain"
+	 project-version="10">
 	<map name="protostuff"/>
-
 	<node name="datanode"
-		  factory="org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory"
-		  schema-update-strategy="org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy"
-	>
+		 factory="org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory"
+		 schema-update-strategy="org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy">
 		<map-ref name="protostuff"/>
 		<data-source>
 			<driver value="org.hsqldb.jdbcDriver"/>

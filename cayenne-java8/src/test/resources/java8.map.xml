@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-	 project-version="9">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.java8.db"/>
-	<db-entity name="LOCAL_DATE_TEST">
-		<db-attribute name="Date" type="DATE"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
 	<db-entity name="LOCAL_DATETIME_TEST">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="Timestamp" type="TIMESTAMP"/>
+	</db-entity>
+	<db-entity name="LOCAL_DATE_TEST">
+		<db-attribute name="Date" type="DATE"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="LOCAL_TIME_TEST">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>

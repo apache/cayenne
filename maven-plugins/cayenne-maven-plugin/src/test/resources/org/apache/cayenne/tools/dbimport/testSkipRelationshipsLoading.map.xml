@@ -17,10 +17,10 @@
   specific language governing permissions and limitations
   under the License.
   -->
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-	 project-version="9">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
     <property name="defaultPackage" value="com.my.home"/>
     <db-entity name="A" schema="APP">
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
@@ -41,10 +41,10 @@
     <db-relationship name="aBArray" source="A" target="A_B" toMany="true">
         <db-attribute-pair source="ID" target="A_ID"/>
     </db-relationship>
-    <db-relationship name="toA" source="A_B" target="A" toMany="false">
+    <db-relationship name="toA" source="A_B" target="A">
         <db-attribute-pair source="A_ID" target="ID"/>
     </db-relationship>
-    <db-relationship name="toB" source="A_B" target="B" toMany="false">
+    <db-relationship name="toB" source="A_B" target="B">
         <db-attribute-pair source="B_ID" target="ID"/>
     </db-relationship>
     <db-relationship name="aBArray" source="B" target="A_B" toMany="true">

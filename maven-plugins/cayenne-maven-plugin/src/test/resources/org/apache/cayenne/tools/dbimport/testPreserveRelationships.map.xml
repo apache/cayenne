@@ -17,10 +17,10 @@
   specific language governing permissions and limitations
   under the License.
   -->
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-	 project-version="9">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
     <db-entity name="CHILD" schema="APP">
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
         <db-attribute name="PARENT_ID" type="INTEGER" length="10"/>
@@ -33,10 +33,10 @@
     </obj-entity>
     <obj-entity name="Parent" className="Parent" dbEntityName="PARENT">
     </obj-entity>
-    <db-relationship name="toParent" source="CHILD" target="PARENT" toMany="false">
+    <db-relationship name="toParent" source="CHILD" target="PARENT">
         <db-attribute-pair source="PARENT_ID" target="ID"/>
     </db-relationship>
-    <db-relationship name="toParent" source="PARENT" target="CHILD" toMany="false">
+    <db-relationship name="toParent" source="PARENT" target="CHILD">
         <db-attribute-pair source="ID" target="PARENT_ID"/>
     </db-relationship>
     <obj-relationship name="toParent" source="Child" target="Parent" deleteRule="Nullify" db-relationship-path="toParent"/>

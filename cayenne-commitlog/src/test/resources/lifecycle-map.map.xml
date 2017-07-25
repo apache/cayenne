@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ~   Licensed to the Apache Software Foundation (ASF) under one
-  ~  or more contributor license agreements.  See the NOTICE file
-  ~  distributed with this work for additional information
-  ~  regarding copyright ownership.  The ASF licenses this file
-  ~  to you under the Apache License, Version 2.0 (the
-  ~  "License"); you may not use this file except in compliance
-  ~  with the License.  You may obtain a copy of the License at
-  ~
-  ~    http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~  Unless required by applicable law or agreed to in writing,
-  ~  software distributed under the License is distributed on an
-  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  ~  KIND, either express or implied.  See the License for the
-  ~  specific language governing permissions and limitations
-  ~  under the License.
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-	 project-version="9">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.commitlog.db"/>
 	<db-entity name="AUDITABLE1">
 		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
@@ -99,14 +80,10 @@
 		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
 		<obj-attribute name="charProperty2" type="java.lang.String" db-attribute-path="CHAR_PROPERTY2"/>
 	</obj-entity>
-	<obj-entity name="E1" className="org.apache.cayenne.commitlog.db.E1" dbEntityName="E1">
-	</obj-entity>
-	<obj-entity name="E2" className="org.apache.cayenne.commitlog.db.E2" dbEntityName="E2">
-	</obj-entity>
-	<obj-entity name="E3" className="org.apache.cayenne.commitlog.db.E3" dbEntityName="E3">
-	</obj-entity>
-	<obj-entity name="E4" className="org.apache.cayenne.commitlog.db.E4" dbEntityName="E4">
-	</obj-entity>
+	<obj-entity name="E1" className="org.apache.cayenne.commitlog.db.E1" dbEntityName="E1"/>
+	<obj-entity name="E2" className="org.apache.cayenne.commitlog.db.E2" dbEntityName="E2"/>
+	<obj-entity name="E3" className="org.apache.cayenne.commitlog.db.E3" dbEntityName="E3"/>
+	<obj-entity name="E4" className="org.apache.cayenne.commitlog.db.E4" dbEntityName="E4"/>
 	<db-relationship name="children1" source="AUDITABLE1" target="AUDITABLE_CHILD1" toMany="true">
 		<db-attribute-pair source="ID" target="AUDITABLE1_ID"/>
 	</db-relationship>
@@ -116,22 +93,22 @@
 	<db-relationship name="auditable4s" source="AUDITABLE3" target="AUDITABLE4" toMany="true">
 		<db-attribute-pair source="ID" target="AUDITABLE3_ID"/>
 	</db-relationship>
-	<db-relationship name="auditable3" source="AUDITABLE4" target="AUDITABLE3" toMany="false">
+	<db-relationship name="auditable3" source="AUDITABLE4" target="AUDITABLE3">
 		<db-attribute-pair source="AUDITABLE3_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="parent" source="AUDITABLE_CHILD1" target="AUDITABLE1" toMany="false">
+	<db-relationship name="parent" source="AUDITABLE_CHILD1" target="AUDITABLE1">
 		<db-attribute-pair source="AUDITABLE1_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="parent" source="AUDITABLE_CHILD3" target="AUDITABLE2" toMany="false">
+	<db-relationship name="parent" source="AUDITABLE_CHILD3" target="AUDITABLE2">
 		<db-attribute-pair source="AUDITABLE2_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="e34s" source="E3" target="E34" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="ID" target="E3_ID"/>
 	</db-relationship>
-	<db-relationship name="e3" source="E34" target="E3" toMany="false">
+	<db-relationship name="e3" source="E34" target="E3">
 		<db-attribute-pair source="E3_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="e4" source="E34" target="E4" toMany="false">
+	<db-relationship name="e4" source="E34" target="E4">
 		<db-attribute-pair source="E4_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="e34s" source="E4" target="E34" toDependentPK="true" toMany="true">

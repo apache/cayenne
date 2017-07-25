@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/3.0/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/3.0/modelMap http://cayenne.apache.org/schema/3.0/modelMap.xsd"
-	 project-version="6">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.testmap"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
 	<property name="clientSupported" value="true"/>
@@ -19,8 +19,7 @@
 	<procedure name="cayenne_tst_upd_proc">
 		<procedure-parameter name="paintingPrice" type="INTEGER" direction="in"/>
 	</procedure>
-	<procedure name="cayenne_tst_upd_proc2">
-	</procedure>
+	<procedure name="cayenne_tst_upd_proc2"/>
 	<db-entity name="ARRAYS_ENTITY">
 		<db-attribute name="BYTE_ARRAY" type="VARBINARY" length="200"/>
 		<db-attribute name="BYTE_WRAPPER_ARRAY" type="VARBINARY" length="200"/>
@@ -290,18 +289,9 @@
 		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
 		<obj-attribute name="dateOfBirth" type="java.util.Date" db-attribute-path="DATE_OF_BIRTH"/>
 	</obj-entity>
-	<obj-entity name="ArtistCallbackTest" className="org.apache.cayenne.testdo.testmap.ArtistCallbackTest" clientClassName="org.apache.cayenne.testdo.testmap.client.ArtistCallbackTest" dbEntityName="ARTIST_CT" exclude-superclass-listeners="true" exclude-default-listeners="true">
+	<obj-entity name="ArtistCallbackTest" className="org.apache.cayenne.testdo.testmap.ArtistCallbackTest" clientClassName="org.apache.cayenne.testdo.testmap.client.ArtistCallbackTest" dbEntityName="ARTIST_CT">
 		<obj-attribute name="artistName" type="java.lang.String"/>
 		<obj-attribute name="dateOfBirth" type="java.util.Date"/>
-		<entity-listener class="org.apache.cayenne.testdo.testmap.EntityListenerObjEntity">
-			<post-add method-name="prePersistEntityListener"/>
-			<post-persist method-name="postPersistEntityListener"/>
-			<pre-update method-name="preUpdateEntityListener"/>
-			<post-update method-name="postUpdateEntityListener"/>
-			<pre-remove method-name="preRemoveEntityListener"/>
-			<post-remove method-name="postRemoveEntityListener"/>
-			<post-load method-name="postLoadEntityListener"/>
-		</entity-listener>
 		<post-add method-name="prePersistEntityObjEntity"/>
 		<post-persist method-name="postPersistEntityObjEntity"/>
 		<pre-update method-name="preUpdateEntityObjEntity"/>
@@ -310,8 +300,7 @@
 		<post-remove method-name="postRemoveEntityObjEntity"/>
 		<post-load method-name="postLoadEntityObjEntity"/>
 	</obj-entity>
-	<obj-entity name="ArtistExhibit" className="org.apache.cayenne.testdo.testmap.ArtistExhibit" clientClassName="org.apache.cayenne.testdo.testmap.client.ArtistExhibit" dbEntityName="ARTIST_EXHIBIT">
-	</obj-entity>
+	<obj-entity name="ArtistExhibit" className="org.apache.cayenne.testdo.testmap.ArtistExhibit" clientClassName="org.apache.cayenne.testdo.testmap.client.ArtistExhibit" dbEntityName="ARTIST_EXHIBIT"/>
 	<obj-entity name="BigDecimalEntity" className="org.apache.cayenne.testdo.numeric_types.BigDecimalEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.BigDecimalEntity" dbEntityName="BIGDECIMAL_ENTITY">
 		<obj-attribute name="bigDecimalField" type="java.math.BigDecimal" db-attribute-path="BIGDECIMAL_FIELD"/>
 	</obj-entity>
@@ -412,10 +401,8 @@
 	<obj-entity name="GeneratedColumnTestEntity" className="org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedColumnTestEntity" dbEntityName="GENERATED_COLUMN_TEST">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="GeneratedF1" className="org.apache.cayenne.testdo.generated.GeneratedF1" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedF1" dbEntityName="GENERATED_F1" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
-	</obj-entity>
-	<obj-entity name="GeneratedF2" className="org.apache.cayenne.testdo.generated.GeneratedF2" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedF2" dbEntityName="GENERATED_F2" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
-	</obj-entity>
+	<obj-entity name="GeneratedF1" className="org.apache.cayenne.testdo.generated.GeneratedF1" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedF1" dbEntityName="GENERATED_F1" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject"/>
+	<obj-entity name="GeneratedF2" className="org.apache.cayenne.testdo.generated.GeneratedF2" clientClassName="org.apache.cayenne.testdo.testmap.client.GeneratedF2" dbEntityName="GENERATED_F2" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject"/>
 	<obj-entity name="LongEntity" className="org.apache.cayenne.testdo.numeric_types.LongEntity" clientClassName="org.apache.cayenne.testdo.testmap.client.LongEntity" dbEntityName="LONG_ENTITY">
 		<obj-attribute name="longField" type="java.lang.Long" db-attribute-path="LONG_FIELD"/>
 	</obj-entity>
@@ -517,7 +504,7 @@
 	<db-relationship name="toChildGroups" source="ARTGROUP" target="ARTGROUP" toMany="true">
 		<db-attribute-pair source="GROUP_ID" target="PARENT_GROUP_ID"/>
 	</db-relationship>
-	<db-relationship name="toParentGroup" source="ARTGROUP" target="ARTGROUP" toMany="false">
+	<db-relationship name="toParentGroup" source="ARTGROUP" target="ARTGROUP">
 		<db-attribute-pair source="PARENT_GROUP_ID" target="GROUP_ID"/>
 	</db-relationship>
 	<db-relationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
@@ -529,25 +516,25 @@
 	<db-relationship name="paintingArray" source="ARTIST" target="PAINTING" toMany="true">
 		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
 	</db-relationship>
-	<db-relationship name="toArtist" source="ARTIST_EXHIBIT" target="ARTIST" toMany="false">
+	<db-relationship name="toArtist" source="ARTIST_EXHIBIT" target="ARTIST">
 		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
 	</db-relationship>
-	<db-relationship name="toExhibit" source="ARTIST_EXHIBIT" target="EXHIBIT" toMany="false">
+	<db-relationship name="toExhibit" source="ARTIST_EXHIBIT" target="EXHIBIT">
 		<db-attribute-pair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
 	</db-relationship>
-	<db-relationship name="toArtist" source="ARTIST_GROUP" target="ARTIST" toMany="false">
+	<db-relationship name="toArtist" source="ARTIST_GROUP" target="ARTIST">
 		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
 	</db-relationship>
-	<db-relationship name="toGroup" source="ARTIST_GROUP" target="ARTGROUP" toMany="false">
+	<db-relationship name="toGroup" source="ARTIST_GROUP" target="ARTGROUP">
 		<db-attribute-pair source="GROUP_ID" target="GROUP_ID"/>
 	</db-relationship>
 	<db-relationship name="binaryPKDetails" source="BINARY_PK_TEST1" target="BINARY_PK_TEST2" toMany="true">
 		<db-attribute-pair source="BIN_ID" target="FK_ID"/>
 	</db-relationship>
-	<db-relationship name="toBinaryPKMaster" source="BINARY_PK_TEST2" target="BINARY_PK_TEST1" toMany="false">
+	<db-relationship name="toBinaryPKMaster" source="BINARY_PK_TEST2" target="BINARY_PK_TEST1">
 		<db-attribute-pair source="FK_ID" target="BIN_ID"/>
 	</db-relationship>
-	<db-relationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST" toMany="false">
+	<db-relationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST">
 		<db-attribute-pair source="FK_COL" target="PK_COL"/>
 	</db-relationship>
 	<db-relationship name="charFKs" source="CHAR_PK_TEST" target="CHAR_FK_TEST" toMany="true">
@@ -556,10 +543,10 @@
 	<db-relationship name="clob" source="CLOB_TEST" target="CLOB_TEST_RELATION" toMany="true">
 		<db-attribute-pair source="CLOB_TEST_ID" target="ID_CLOB"/>
 	</db-relationship>
-	<db-relationship name="CLOB_REL" source="CLOB_TEST_RELATION" target="CLOB_TEST" toMany="false">
+	<db-relationship name="CLOB_REL" source="CLOB_TEST_RELATION" target="CLOB_TEST">
 		<db-attribute-pair source="ID_CLOB" target="CLOB_TEST_ID"/>
 	</db-relationship>
-	<db-relationship name="toCompoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST" toMany="false">
+	<db-relationship name="toCompoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST">
 		<db-attribute-pair source="F_KEY1" target="KEY1"/>
 		<db-attribute-pair source="F_KEY2" target="KEY2"/>
 	</db-relationship>
@@ -570,7 +557,7 @@
 	<db-relationship name="artistExhibitArray" source="EXHIBIT" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
 	</db-relationship>
-	<db-relationship name="toGallery" source="EXHIBIT" target="GALLERY" toMany="false">
+	<db-relationship name="toGallery" source="EXHIBIT" target="GALLERY">
 		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
 	</db-relationship>
 	<db-relationship name="exhibitArray" source="GALLERY" target="EXHIBIT" toMany="true">
@@ -579,16 +566,16 @@
 	<db-relationship name="paintingArray" source="GALLERY" target="PAINTING" toMany="true">
 		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
 	</db-relationship>
-	<db-relationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M" toMany="false">
+	<db-relationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M">
 		<db-attribute-pair source="PROPAGATED_PK" target="ID"/>
 	</db-relationship>
 	<db-relationship name="toDetail" source="GENERATED_COLUMN_COMP_M" target="GENERATED_COLUMN_COMP_KEY" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="ID" target="PROPAGATED_PK"/>
 	</db-relationship>
-	<db-relationship name="toMaster" source="GENERATED_COLUMN_DEP" target="GENERATED_COLUMN_TEST" toMany="false">
+	<db-relationship name="toMaster" source="GENERATED_COLUMN_DEP" target="GENERATED_COLUMN_TEST">
 		<db-attribute-pair source="GENERATED_COLUMN_FK" target="GENERATED_COLUMN"/>
 	</db-relationship>
-	<db-relationship name="toDep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP" toDependentPK="true" toMany="false">
+	<db-relationship name="toDep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP" toDependentPK="true">
 		<db-attribute-pair source="GENERATED_COLUMN" target="GENERATED_COLUMN_FK"/>
 	</db-relationship>
 	<db-relationship name="join" source="GENERATED_F1" target="GENERATED_JOIN" toMany="true">
@@ -597,13 +584,13 @@
 	<db-relationship name="join" source="GENERATED_F2" target="GENERATED_JOIN" toMany="true">
 		<db-attribute-pair source="ID" target="ID2"/>
 	</db-relationship>
-	<db-relationship name="f1" source="GENERATED_JOIN" target="GENERATED_F1" toMany="false">
+	<db-relationship name="f1" source="GENERATED_JOIN" target="GENERATED_F1">
 		<db-attribute-pair source="ID1" target="ID"/>
 	</db-relationship>
-	<db-relationship name="f2" source="GENERATED_JOIN" target="GENERATED_F2" toMany="false">
+	<db-relationship name="f2" source="GENERATED_JOIN" target="GENERATED_F2">
 		<db-attribute-pair source="ID2" target="ID"/>
 	</db-relationship>
-	<db-relationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1" toMany="false">
+	<db-relationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1">
 		<db-attribute-pair source="MASTER_PK" target="PK_ATTRIBUTE"/>
 	</db-relationship>
 	<db-relationship name="meaningfulPKDepArray" source="MEANINGFUL_PK_TEST1" target="MEANINGFUL_PK_DEP" toMany="true">
@@ -612,22 +599,22 @@
 	<db-relationship name="details" source="MIXED_PERSISTENCE_STRATEGY" target="MIXED_PERSISTENCE_STRATEGY2" toMany="true">
 		<db-attribute-pair source="ID" target="MASTER_ID"/>
 	</db-relationship>
-	<db-relationship name="master" source="MIXED_PERSISTENCE_STRATEGY2" target="MIXED_PERSISTENCE_STRATEGY" toMany="false">
+	<db-relationship name="master" source="MIXED_PERSISTENCE_STRATEGY2" target="MIXED_PERSISTENCE_STRATEGY">
 		<db-attribute-pair source="MASTER_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="toArtist" source="PAINTING" target="ARTIST" toMany="false">
+	<db-relationship name="toArtist" source="PAINTING" target="ARTIST">
 		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
 	</db-relationship>
-	<db-relationship name="toGallery" source="PAINTING" target="GALLERY" toMany="false">
+	<db-relationship name="toGallery" source="PAINTING" target="GALLERY">
 		<db-attribute-pair source="GALLERY_ID" target="GALLERY_ID"/>
 	</db-relationship>
-	<db-relationship name="toPaintingInfo" source="PAINTING" target="PAINTING_INFO" toDependentPK="true" toMany="false">
+	<db-relationship name="toPaintingInfo" source="PAINTING" target="PAINTING_INFO" toDependentPK="true">
 		<db-attribute-pair source="PAINTING_ID" target="PAINTING_ID"/>
 	</db-relationship>
-	<db-relationship name="toArtist" source="PAINTING1" target="ARTIST" toMany="false">
+	<db-relationship name="toArtist" source="PAINTING1" target="ARTIST">
 		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
 	</db-relationship>
-	<db-relationship name="painting" source="PAINTING_INFO" target="PAINTING" toMany="false">
+	<db-relationship name="painting" source="PAINTING_INFO" target="PAINTING">
 		<db-attribute-pair source="PAINTING_ID" target="PAINTING_ID"/>
 	</db-relationship>
 	<obj-relationship name="artistArray" source="ArtGroup" target="Artist" deleteRule="Nullify" db-relationship-path="artistGroupArray.toArtist"/>
@@ -671,8 +658,8 @@
 	<obj-relationship name="paintingArray" source="ROArtist" target="Painting" deleteRule="Deny" db-relationship-path="paintingArray"/>
 	<obj-relationship name="toArtist" source="ROPainting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
 	<query name="EjbqlQueryTest" type="EJBQLQuery">
-		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<ejbql><![CDATA[select a from Artist a]]></ejbql>
 	</query>
 	<query name="NonSelectingQuery" type="SQLTemplate" root="data-map" root-name="testmap-client">
@@ -698,8 +685,7 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
 		<qualifier><![CDATA[artistName like $name]]></qualifier>
 	</query>
-	<query name="ProcedureQuery" type="ProcedureQuery" root="procedure" root-name="cayenne_tst_select_proc" result-entity="Artist">
-	</query>
+	<query name="ProcedureQuery" type="ProcedureQuery" root="procedure" root-name="cayenne_tst_select_proc" result-entity="Artist"/>
 	<query name="QueryWithLocalCache" type="SelectQuery" root="obj-entity" root-name="Artist">
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
 	</query>
@@ -717,28 +703,28 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="SHARED_CACHE"/>
 	</query>
 	<query name="SelectDateTest" type="SQLTemplate" root="data-map" root-name="testmap-client">
-		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<sql><![CDATA[SELECT * FROM DATE_TEST]]></sql>
 	</query>
 	<query name="SelectReturnTypesMap1" type="SQLTemplate" root="data-map" root-name="testmap-client">
-		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<sql><![CDATA[SELECT * FROM TYPES_MAPPING_TEST1]]></sql>
 	</query>
 	<query name="SelectReturnTypesMap2" type="SQLTemplate" root="data-map" root-name="testmap-client">
-		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<sql><![CDATA[SELECT * FROM TYPES_MAPPING_TEST2]]></sql>
 	</query>
 	<query name="SelectTestLower" type="SQLTemplate" root="data-map" root-name="testmap-client">
-		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="LOWER"/>
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<sql><![CDATA[select * from ARTIST]]></sql>
 	</query>
 	<query name="SelectTestUpper" type="SQLTemplate" root="data-map" root-name="testmap-client">
-		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<property name="cayenne.SQLTemplate.columnNameCapitalization" value="UPPER"/>
+		<property name="cayenne.GenericSelectQuery.fetchingDataRows" value="true"/>
 		<sql><![CDATA[select * from ARTIST]]></sql>
 	</query>
 </data-map>
