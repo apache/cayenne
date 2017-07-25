@@ -19,10 +19,12 @@
 package org.apache.cayenne.project;
 
 import java.io.PrintWriter;
+import java.util.Collection;
 
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.project.extension.SaverDelegate;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
@@ -32,17 +34,20 @@ class ConfigurationSaver extends BaseConfigurationNodeVisitor<Void> {
 
     private PrintWriter printWriter;
     private String version;
+    private SaverDelegate delegate;
 
-    ConfigurationSaver(PrintWriter printWriter, String version) {
+    ConfigurationSaver(PrintWriter printWriter, String version, SaverDelegate delegate) {
         this.printWriter = printWriter;
         this.version = version;
+        this.delegate = delegate;
     }
 
     @Override
     public Void visitDataChannelDescriptor(DataChannelDescriptor node) {
         XMLEncoder encoder = new XMLEncoder(printWriter, "\t", version);
         printXMLHeader(encoder);
-        node.encodeAsXML(encoder);
+        delegate.setXMLEncoder(encoder);
+        node.encodeAsXML(encoder, delegate);
         return null;
     }
 
@@ -50,7 +55,8 @@ class ConfigurationSaver extends BaseConfigurationNodeVisitor<Void> {
     public Void visitDataMap(DataMap node) {
         XMLEncoder encoder = new XMLEncoder(printWriter, "\t", version);
         printXMLHeader(encoder);
-        node.encodeAsXML(encoder);
+        delegate.setXMLEncoder(encoder);
+        node.encodeAsXML(encoder, delegate);
         return null;
     }
 

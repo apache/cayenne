@@ -23,6 +23,8 @@ import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.project.extension.ProjectExtension;
+import org.apache.cayenne.project.extension.SaverDelegate;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
@@ -38,6 +40,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * A ProjectSaver saving project configuration to the file system.
@@ -53,16 +56,24 @@ public class FileProjectSaver implements ProjectSaver {
 	protected ConfigurationNodeVisitor<Collection<ConfigurationNode>> saveableNodesGetter;
 	protected String fileEncoding;
 
-	public FileProjectSaver() {
+	protected Collection<SaverDelegate> saverDelegates;
+
+	public FileProjectSaver(@Inject List<ProjectExtension> extensions) {
 		resourceGetter = new ConfigurationSourceGetter();
 		saveableNodesGetter = new SaveableNodesGetter();
 
 		// this is not configurable yet... probably doesn't have to be
 		fileEncoding = "UTF-8";
+
+		saverDelegates = new ArrayList<>(extensions.size());
+		for(ProjectExtension extension : extensions) {
+			SaverDelegate delegate = extension.createSaverDelegate();
+			saverDelegates.add(delegate);
+		}
 	}
 
 	public String getSupportedVersion() {
-		return "9";
+		return String.valueOf(Project.VERSION);
 	}
 
 	public void save(Project project) {
@@ -169,7 +180,7 @@ public class FileProjectSaver implements ProjectSaver {
 		for (SaveUnit unit : units) {
 
 			String name = unit.targetFile.getName();
-			if (name == null || name.length() < 3) {
+			if (name.length() < 3) {
 				name = "cayenne-project";
 			}
 
@@ -185,8 +196,8 @@ public class FileProjectSaver implements ProjectSaver {
 				unit.targetTempFile.delete();
 			}
 
-			try (PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(
-					unit.targetTempFile), fileEncoding));) {
+			try (PrintWriter printWriter = new PrintWriter(new OutputStreamWriter(
+					new FileOutputStream(unit.targetTempFile), fileEncoding))) {
 				saveToTempFile(unit, printWriter);
 			} catch (UnsupportedEncodingException e) {
 				throw new CayenneRuntimeException("Unsupported encoding '%s' (%s)", e, fileEncoding, e.getMessage());
@@ -198,7 +209,9 @@ public class FileProjectSaver implements ProjectSaver {
 	}
 
 	void saveToTempFile(SaveUnit unit, PrintWriter printWriter) {
-		unit.node.acceptVisitor(new ConfigurationSaver(printWriter, getSupportedVersion()));
+		unit.node.acceptVisitor(
+				new ConfigurationSaver(printWriter, getSupportedVersion(), new CompoundSaverDelegate(saverDelegates))
+		);
 	}
 
 	void saveCommit(Collection<SaveUnit> units) {

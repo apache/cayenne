@@ -16,34 +16,30 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project;
 
-import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.map.DataMap;
+package org.apache.cayenne.project.extension;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 
 /**
- * @since 3.1
+ * Delegate that handles loading process for extension specific parts of XML document.
+ *
+ * @since 4.1
  */
-class SaveableNodesGetter extends BaseConfigurationNodeVisitor<Collection<ConfigurationNode>> {
+public interface LoaderDelegate {
 
-    @Override
-    public Collection<ConfigurationNode> visitDataChannelDescriptor(DataChannelDescriptor descriptor) {
+    /**
+     * @return target namespace that this extension is using
+     */
+    String getTargetNamespace();
 
-        Collection<ConfigurationNode> nodes = new ArrayList<>();
-        nodes.add(descriptor);
-        nodes.addAll(descriptor.getDataMaps());
+    /**
+     * Create handler that will handle parsing process further.
+     *
+     * @param parent parent handler
+     * @param tag current tag that in question
+     * @return new handler that will process tag or null if there is no interest in tag
+     */
+    NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent, String tag);
 
-        return nodes;
-    }
-
-    @Override
-    public Collection<ConfigurationNode> visitDataMap(DataMap dataMap) {
-        return Collections.<ConfigurationNode> singletonList(dataMap);
-    }
 }

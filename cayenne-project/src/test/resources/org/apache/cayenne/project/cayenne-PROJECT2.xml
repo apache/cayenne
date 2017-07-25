@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<domain name="DefaultDomain" project-version="6">
-
-	<map name="testProjectMap2_1" />
-	<map name="testProjectMap2_2" />
-
-	<node name="testProjectNode2" adapter="org.example.test.Adapter"
-		factory="org.apache.cayenne.configuration.XMLPoolingDataSourceFactory">
-		<map-ref name="testProjectMap2_1" />
+<domain xmlns="http://cayenne.apache.org/schema/10/domain"
+	 project-version="10">
+	<map name="testProjectMap2_1"/>
+	<map name="testProjectMap2_2"/>
+	<node name="testProjectNode2"
+		 adapter="org.example.test.Adapter"
+		 factory="org.apache.cayenne.configuration.XMLPoolingDataSourceFactory">
+		<map-ref name="testProjectMap2_1"/>
 		<data-source>
 			<driver value="xyzDriver"/>
 			<url value="xyzUrl"/>

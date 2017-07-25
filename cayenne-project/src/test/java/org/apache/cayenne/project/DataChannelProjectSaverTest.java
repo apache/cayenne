@@ -23,8 +23,12 @@ import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
-import org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader;
-import org.apache.cayenne.configuration.XMLDataMapLoader;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
+import org.apache.cayenne.configuration.xml.HandlerFactory;
+import org.apache.cayenne.configuration.xml.NoopDataChannelMetaData;
+import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
@@ -33,6 +37,7 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
+import org.apache.cayenne.project.extension.ProjectExtension;
 import org.apache.cayenne.project.unit.Project2Case;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
@@ -41,6 +46,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -51,7 +57,7 @@ public class DataChannelProjectSaverTest extends Project2Case {
     @Test
     public void testSaveAs() throws Exception {
 
-        FileProjectSaver saver = new FileProjectSaver();
+        FileProjectSaver saver = new FileProjectSaver(Collections.<ProjectExtension>emptyList());
 
         Module testModule = new Module() {
 
@@ -61,11 +67,11 @@ public class DataChannelProjectSaverTest extends Project2Case {
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
 
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
-                binder.bind(DataChannelDescriptorLoader.class).to(
-                        XMLDataChannelDescriptorLoader.class);
+                binder.bind(DataChannelDescriptorLoader.class).to(XMLDataChannelDescriptorLoader.class);
                 binder.bind(ProjectLoader.class).to(DataChannelProjectLoader.class);
-                binder.bind(ConfigurationNameMapper.class).to(
-                        DefaultConfigurationNameMapper.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+                binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
+                binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
             }
         };
 
@@ -100,7 +106,7 @@ public class DataChannelProjectSaverTest extends Project2Case {
     @Test
     public void testSaveAs_RecoverFromSaveError() throws Exception {
 
-        FileProjectSaver saver = new FileProjectSaver() {
+        FileProjectSaver saver = new FileProjectSaver(Collections.<ProjectExtension>emptyList()) {
 
             @Override
             void saveToTempFile(SaveUnit unit, PrintWriter printWriter) {
@@ -115,11 +121,11 @@ public class DataChannelProjectSaverTest extends Project2Case {
                 binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
-                binder.bind(DataChannelDescriptorLoader.class).to(
-                        XMLDataChannelDescriptorLoader.class);
+                binder.bind(DataChannelDescriptorLoader.class).to(XMLDataChannelDescriptorLoader.class);
                 binder.bind(ProjectLoader.class).to(DataChannelProjectLoader.class);
-                binder.bind(ConfigurationNameMapper.class).to(
-                        DefaultConfigurationNameMapper.class);
+                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+                binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
+                binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
             }
         };
 

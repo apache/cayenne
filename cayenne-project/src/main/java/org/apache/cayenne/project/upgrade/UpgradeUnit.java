@@ -16,28 +16,39 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project.upgrade.v6;
 
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.project.upgrade.ProjectUpgrader;
-import org.apache.cayenne.project.upgrade.UpgradeHandler;
+package org.apache.cayenne.project.upgrade;
+
 import org.apache.cayenne.resource.Resource;
+import org.w3c.dom.Document;
 
 /**
- * A ProjectUpgrader that handles project upgrades to version 6.
- * 
- * @since 3.1
+ * @since 4.1
  */
-public class ProjectUpgrader_V6 implements ProjectUpgrader {
+public class UpgradeUnit {
 
-    @Inject
-    protected Injector injector;
+    private Resource resource;
 
-    public UpgradeHandler getUpgradeHandler(Resource projectSource) {
-        UpgradeHandler_V6 handler = new UpgradeHandler_V6(projectSource);
-        injector.injectMembers(handler);
-        return handler;
+    private Document document;
+
+    public UpgradeUnit(Resource resource, Document document) {
+        this.resource = resource;
+        this.document = document;
     }
 
+    public Document getDocument() {
+        return document;
+    }
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setDocument(Document document) {
+        this.document = document;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
+    }
 }

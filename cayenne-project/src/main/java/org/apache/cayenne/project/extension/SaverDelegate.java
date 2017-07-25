@@ -16,19 +16,30 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project.upgrade;
 
-import org.apache.cayenne.resource.Resource;
+package org.apache.cayenne.project.extension;
+
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.util.XMLEncoder;
 
 /**
- * Defines API of an upgrade handler for Cayenne projects.
- * 
- * @since 3.1
+ * Delegate that handles saving XML of extension.
+ * {@link BaseSaverDelegate} should be used as a base class for custom delegates.
+ *
+ * @since 4.1
  */
-public interface ProjectUpgrader {
+public interface SaverDelegate extends ConfigurationNodeVisitor<Void> {
 
     /**
-     * Returns an upgrade handler to process upgrades of a given project.
+     * @param encoder provided by caller
      */
-    UpgradeHandler getUpgradeHandler(Resource projectSource);
+    void setXMLEncoder(XMLEncoder encoder);
+
+    /**
+     * @param parentDelegate parent delegate, provided by caller
+     */
+    void setParentDelegate(SaverDelegate parentDelegate);
+
+    SaverDelegate getParentDelegate();
+
 }

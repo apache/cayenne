@@ -16,34 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project;
 
-import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.map.DataMap;
+package org.apache.cayenne.project.upgrade;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.cayenne.resource.Resource;
 
 /**
- * @since 3.1
+ * @since 4.1
  */
-class SaveableNodesGetter extends BaseConfigurationNodeVisitor<Collection<ConfigurationNode>> {
+public interface UpgradeService {
 
-    @Override
-    public Collection<ConfigurationNode> visitDataChannelDescriptor(DataChannelDescriptor descriptor) {
+    UpgradeMetaData getUpgradeType(Resource resource);
 
-        Collection<ConfigurationNode> nodes = new ArrayList<>();
-        nodes.add(descriptor);
-        nodes.addAll(descriptor.getDataMaps());
+    Resource upgradeProject(Resource resource);
 
-        return nodes;
-    }
-
-    @Override
-    public Collection<ConfigurationNode> visitDataMap(DataMap dataMap) {
-        return Collections.<ConfigurationNode> singletonList(dataMap);
-    }
 }

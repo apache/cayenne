@@ -28,6 +28,7 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.project.extension.ProjectExtension;
 import org.apache.cayenne.project.unit.Project2Case;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.Before;
@@ -41,6 +42,7 @@ import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -59,7 +61,7 @@ public class FileProjectSaverTest extends Project2Case {
             }
         };
 
-        saver = new FileProjectSaver();
+        saver = new FileProjectSaver(Collections.<ProjectExtension>emptyList());
         Injector injector = DIBootstrap.createInjector(testModule);
         injector.injectMembers(saver);
     }

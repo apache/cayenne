@@ -36,6 +36,14 @@ import org.apache.cayenne.resource.Resource;
  */
 public class Project {
 
+	/**
+	 * Current version of Cayenne project.
+	 * Used by different parsers and savers of project's XML files.
+	 *
+	 * @since 4.1
+	 */
+	static public final int VERSION = 10;
+
 	protected boolean modified;
 
 	protected ConfigurationTree<?> configurationTree;
@@ -45,7 +53,7 @@ public class Project {
 	public Project(ConfigurationTree<?> configurationTree) {
 		this.configurationTree = configurationTree;
 		this.configurationSourceGetter = new ConfigurationSourceGetter();
-		this.unusedResources = new HashSet<URL>();
+		this.unusedResources = new HashSet<>();
 	}
 
 	public ConfigurationTree<?> getConfigurationTree() {

@@ -1,0 +1,81 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+
+package org.apache.cayenne.project.upgrade.handlers;
+
+import java.io.File;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.project.upgrade.UpgradeUnit;
+import org.apache.cayenne.util.Util;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+/**
+ * @since 4.1
+ */
+public class UpgradeHandler_V9 implements UpgradeHandler {
+
+    @Override
+    public String getVersion() {
+        return "9";
+    }
+
+    @Override
+    public void processProjectDom(UpgradeUnit upgradeUnit) {
+        Element domain = upgradeUnit.getDocument().getDocumentElement();
+        domain.setAttribute("project-version", getVersion());
+    }
+
+    @Override
+    public void processDataMapDom(UpgradeUnit upgradeUnit) {
+        Document document = upgradeUnit.getDocument();
+        Element dataMap = document.getDocumentElement();
+        dataMap.setAttribute("xmlns","http://cayenne.apache.org/schema/9/modelMap");
+        dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/9/modelMap " +
+                "http://cayenne.apache.org/schema/9/modelMap.xsd");
+        dataMap.setAttribute("project-version", getVersion());
+
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        try {
+            Node reNode = (Node) xpath.evaluate("/data-map/reverse-engineering-config", document, XPathConstants.NODE);
+
+            if (reNode != null) {
+                String reFileName = ((Element) reNode).getAttribute("name") + ".xml";
+                String directoryPath = Util.toFile(upgradeUnit.getResource().getURL()).getParent();
+
+                File file = new File(directoryPath + "/" + reFileName);
+                if (file.exists()) {
+                    file.delete();
+                }
+                dataMap.removeChild(reNode);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public void processModel(DataChannelDescriptor dataChannelDescriptor) {
+    }
+}
