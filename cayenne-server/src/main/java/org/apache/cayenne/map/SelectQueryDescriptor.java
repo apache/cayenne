@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -26,7 +27,6 @@ import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @since 4.0
@@ -153,59 +153,45 @@ public class SelectQueryDescriptor extends QueryDescriptor {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<query name=\"");
-        encoder.print(getName());
-        encoder.print("\" type=\"");
-        encoder.print(type);
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        encoder.start("query")
+                .attribute("name", getName())
+                .attribute("type", type);
 
         String rootString = null;
         String rootType = null;
 
         if (root instanceof String) {
-            rootType = MapLoader.OBJ_ENTITY_ROOT;
+            rootType = QueryDescriptor.OBJ_ENTITY_ROOT;
             rootString = root.toString();
         } else if (root instanceof ObjEntity) {
-            rootType = MapLoader.OBJ_ENTITY_ROOT;
+            rootType = QueryDescriptor.OBJ_ENTITY_ROOT;
             rootString = ((ObjEntity) root).getName();
         } else if (root instanceof DbEntity) {
-            rootType = MapLoader.DB_ENTITY_ROOT;
+            rootType = QueryDescriptor.DB_ENTITY_ROOT;
             rootString = ((DbEntity) root).getName();
         } else if (root instanceof Procedure) {
-            rootType = MapLoader.PROCEDURE_ROOT;
+            rootType = QueryDescriptor.PROCEDURE_ROOT;
             rootString = ((Procedure) root).getName();
         } else if (root instanceof Class<?>) {
-            rootType = MapLoader.JAVA_CLASS_ROOT;
+            rootType = QueryDescriptor.JAVA_CLASS_ROOT;
             rootString = ((Class<?>) root).getName();
         }
 
         if (rootType != null) {
-            encoder.print("\" root=\"");
-            encoder.print(rootType);
-            encoder.print("\" root-name=\"");
-            encoder.print(rootString);
+            encoder.attribute("root", rootType).attribute("root-name", rootString);
         }
-
-        encoder.println("\">");
-
-        encoder.indent(1);
 
         // print properties
         encodeProperties(encoder);
 
         // encode qualifier
         if (qualifier != null) {
-            encoder.print("<qualifier>");
-            qualifier.encodeAsXML(encoder);
-            encoder.println("</qualifier>");
+            encoder.start("qualifier").nested(qualifier, delegate).end();
         }
 
         // encode orderings
-        if (orderings != null && !orderings.isEmpty()) {
-            for (Ordering ordering : orderings) {
-                ordering.encodeAsXML(encoder);
-            }
-        }
+        encoder.nested(orderings, delegate);
 
         PrefetchTreeNode prefetchTree = new PrefetchTreeNode();
 
@@ -215,9 +201,9 @@ public class SelectQueryDescriptor extends QueryDescriptor {
             node.setPhantom(false);
         }
 
-        prefetchTree.encodeAsXML(encoder);
+        encoder.nested(prefetchTree, delegate);
 
-        encoder.indent(-1);
-        encoder.println("</query>");
+        delegate.visitQuery(this);
+        encoder.end();
     }
 }

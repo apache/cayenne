@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.ConfigurationNode;
@@ -120,7 +119,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * The namespace in which the data map XML file will be created. This is
 	 * also the URI to locate a copy of the schema document.
 	 */
-	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/9/modelMap";
+	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/10/modelMap";
 
 	protected String name;
 	protected String location;
@@ -147,8 +146,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	private SortedMap<String, SQLResult> results;
 
 	/**
-	 * @deprecated since 4.0 unused as listeners are no longer tied to a
-	 *             DataMap.
+	 * @deprecated since 4.0 unused as listeners are no longer tied to a DataMap.
 	 */
 	private List<EntityListener> defaultEntityListeners;
 
@@ -177,13 +175,13 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	}
 
 	public DataMap(String mapName, Map<String, Object> properties) {
-		embeddablesMap = new TreeMap<String, Embeddable>();
-		objEntityMap = new TreeMap<String, ObjEntity>();
-		dbEntityMap = new TreeMap<String, DbEntity>();
-		procedureMap = new TreeMap<String, Procedure>();
+		embeddablesMap = new TreeMap<>();
+		objEntityMap = new TreeMap<>();
+		dbEntityMap = new TreeMap<>();
+		procedureMap = new TreeMap<>();
 		queryDescriptorMap = new TreeMap<>();
 		defaultEntityListeners = new ArrayList<>(3);
-		results = new TreeMap<String, SQLResult>();
+		results = new TreeMap<>();
 		setName(mapName);
 		initWithProperties(properties);
 	}
@@ -265,8 +263,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 				: ObjEntity.LOCK_TYPE_NONE;
 
 		this.defaultPackage = (packageName != null) ? packageName.toString() : null;
-		this.quotingSQLIdentifiers = (quoteSqlIdentifier != null) ? "true".equalsIgnoreCase(quoteSqlIdentifier
-				.toString()) : false;
+		this.quotingSQLIdentifiers = (quoteSqlIdentifier != null) ? "true".equalsIgnoreCase(quoteSqlIdentifier.toString()) : false;
 		this.defaultSchema = (schema != null) ? schema.toString() : null;
 		this.defaultCatalog = (catalog != null) ? catalog.toString() : null;
 		this.defaultSuperclass = (superclass != null) ? superclass.toString() : null;
@@ -310,96 +307,58 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * 
 	 * @since 1.1
 	 */
-	public void encodeAsXML(XMLEncoder encoder) {
-		encoder.println("<data-map xmlns=\"http://cayenne.apache.org/schema/9/modelMap\"");
+	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+		encoder.start("data-map")
+				.attribute("xmlns", SCHEMA_XSD)
+				.attribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance", true)
+				.attribute("xsi:schemaLocation", SCHEMA_XSD + " " + SCHEMA_XSD + ".xsd", true)
+				.projectVersion()
+				// properties
+				.property(DEFAULT_LOCK_TYPE_PROPERTY, defaultLockType)
+				.property(DEFAULT_PACKAGE_PROPERTY, defaultPackage)
+				.property(DEFAULT_CATALOG_PROPERTY, defaultCatalog)
+				.property(DEFAULT_SCHEMA_PROPERTY, defaultSchema)
+				.property(DEFAULT_SUPERCLASS_PROPERTY, defaultSuperclass)
+				.property(DEFAULT_QUOTE_SQL_IDENTIFIERS_PROPERTY, quotingSQLIdentifiers)
+				.property(CLIENT_SUPPORTED_PROPERTY, clientSupported)
+				.property(DEFAULT_CLIENT_PACKAGE_PROPERTY, defaultClientPackage)
+				.property(DEFAULT_CLIENT_SUPERCLASS_PROPERTY, defaultClientSuperclass)
+				// elements
+				.nested(getEmbeddableMap(), delegate)
+				.nested(getProcedureMap(), delegate)
+				.nested(getDbEntityMap(), delegate)
+				.nested(getObjEntityMap(), delegate);
 
-		encoder.indent(1);
-		encoder.println(" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
-		encoder.println(" xsi:schemaLocation=\"" + SCHEMA_XSD + " " + SCHEMA_XSD + ".xsd\"");
+		// and finally relationships
+		encodeDbRelationshipsAsXML(encoder, delegate);
+		encodeObjRelationshipsAsXML(encoder, delegate);
 
-		encoder.printProjectVersion();
-		encoder.println(">");
+		// descriptors at the end just to keep logic from older versions
+		encoder.nested(getQueryDescriptors(), delegate);
 
-		// properties
-		if (defaultLockType == ObjEntity.LOCK_TYPE_OPTIMISTIC) {
-			encoder.printProperty(DEFAULT_LOCK_TYPE_PROPERTY, "optimistic");
-		}
-
-		if (!Util.isEmptyString(defaultPackage)) {
-			encoder.printProperty(DEFAULT_PACKAGE_PROPERTY, defaultPackage);
-		}
-
-		if (!Util.isEmptyString(defaultCatalog)) {
-			encoder.printProperty(DEFAULT_CATALOG_PROPERTY, defaultCatalog);
-		}
-
-		if (!Util.isEmptyString(defaultSchema)) {
-			encoder.printProperty(DEFAULT_SCHEMA_PROPERTY, defaultSchema);
-		}
-
-		if (!Util.isEmptyString(defaultSuperclass)) {
-			encoder.printProperty(DEFAULT_SUPERCLASS_PROPERTY, defaultSuperclass);
-		}
-
-		if (quotingSQLIdentifiers) {
-			encoder.printProperty(DEFAULT_QUOTE_SQL_IDENTIFIERS_PROPERTY, quotingSQLIdentifiers);
-		}
-
-		if (clientSupported) {
-			encoder.printProperty(CLIENT_SUPPORTED_PROPERTY, "true");
-		}
-
-		if (!Util.isEmptyString(defaultClientPackage)) {
-			encoder.printProperty(DEFAULT_CLIENT_PACKAGE_PROPERTY, defaultClientPackage);
-		}
-
-		if (!Util.isEmptyString(defaultClientSuperclass)) {
-			encoder.printProperty(DEFAULT_CLIENT_SUPERCLASS_PROPERTY, defaultClientSuperclass);
-		}
-
-		// embeddables
-		encoder.print(getEmbeddableMap());
-
-		// procedures
-		encoder.print(getProcedureMap());
-
-		// DbEntities
-		for (DbEntity dbe : getDbEntityMap().values()) {
-			dbe.encodeAsXML(encoder);
-		}
-
-		// others...
-		encoder.print(getObjEntityMap());
-		encodeDBRelationshipsAsXML(getDbEntityMap(), encoder);
-		encodeOBJRelationshipsAsXML(getObjEntityMap(), encoder);
-
-		for (QueryDescriptor query : getQueryDescriptors()) {
-			query.encodeAsXML(encoder);
-		}
-
-		encoder.indent(-1);
-		encoder.println("</data-map>");
+		delegate.visitDataMap(this);
+		encoder.end();
 	}
 
 	// stores relationships for the map of entities
-	private final void encodeDBRelationshipsAsXML(Map<String, DbEntity> entityMap, XMLEncoder encoder) {
-		for (Entity entity : entityMap.values()) {
+	private void encodeDbRelationshipsAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+		for (Entity entity : getDbEntityMap().values()) {
 			for (Relationship relationship : entity.getRelationships()) {
 				// filter out synthetic
 				if (!relationship.isRuntime()) {
-					relationship.encodeAsXML(encoder);
+					relationship.encodeAsXML(encoder, delegate);
 				}
 			}
 		}
 	}
 
 	// stores relationships for the map of entities
-	private final void encodeOBJRelationshipsAsXML(Map<String, ObjEntity> entityMap, XMLEncoder encoder) {
-		for (ObjEntity entity : entityMap.values()) {
+	private void encodeObjRelationshipsAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+		for (ObjEntity entity : getObjEntityMap().values()) {
 			for (Relationship relationship : entity.getDeclaredRelationships()) {
 				// filter out synthetic
 				if (!relationship.isRuntime()) {
-					relationship.encodeAsXML(encoder);
+					relationship.encodeAsXML(encoder, delegate);
 				}
 			}
 		}

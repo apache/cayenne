@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
-    <property name="defaultPackage" value="org.apache.cayenne.testdo.meaningful_pk"/>
-    <property name="clientSupported" value="true"/>
-    <property name="defaultClientPackage" value="org.apache.cayenne.testdo.meaningful_pk"/>
-    <db-entity name="MEANINGFUL_PK">
-        <db-attribute name="PK" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="100"/>
-    </db-entity>
-    <db-entity name="MEANINGFUL_PK_DEP">
-        <db-attribute name="DESCR" type="VARCHAR" length="50"/>
-        <db-attribute name="MASTER_PK" type="INTEGER"/>
-        <db-attribute name="PK_ATTRIBUTE" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <db-entity name="MEANINGFUL_PK_TEST1">
-        <db-attribute name="DESCR" type="VARCHAR" length="50"/>
-        <db-attribute name="PK_ATTRIBUTE" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <obj-entity name="MeaningfulPk" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk" clientClassName="org.apache.cayenne.testdo.meaningful_pk.ClientMeaningfulPk" dbEntityName="MEANINGFUL_PK">
-        <obj-attribute name="pk" type="java.lang.String" db-attribute-path="PK"/>
-    </obj-entity>
-    <obj-entity name="MeaningfulPKDep" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep" dbEntityName="MEANINGFUL_PK_DEP">
-        <obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
-    </obj-entity>
-    <obj-entity name="MeaningfulPKTest1" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1" dbEntityName="MEANINGFUL_PK_TEST1">
-        <obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
-        <obj-attribute name="pkAttribute" type="java.lang.Integer" db-attribute-path="PK_ATTRIBUTE"/>
-    </obj-entity>
-    <db-relationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1" toMany="false">
-        <db-attribute-pair source="MASTER_PK" target="PK_ATTRIBUTE"/>
-    </db-relationship>
-    <db-relationship name="meaningfulPKDepArray" source="MEANINGFUL_PK_TEST1" target="MEANINGFUL_PK_DEP" toMany="true">
-        <db-attribute-pair source="PK_ATTRIBUTE" target="MASTER_PK"/>
-    </db-relationship>
-    <obj-relationship name="toMeaningfulPK" source="MeaningfulPKDep" target="MeaningfulPKTest1" db-relationship-path="toMeaningfulPK"/>
-    <obj-relationship name="meaningfulPKDepArray" source="MeaningfulPKTest1" target="MeaningfulPKDep" db-relationship-path="meaningfulPKDepArray"/>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.meaningful_pk"/>
+	<property name="clientSupported" value="true"/>
+	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.meaningful_pk"/>
+	<db-entity name="MEANINGFUL_PK">
+		<db-attribute name="PK" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="100"/>
+	</db-entity>
+	<db-entity name="MEANINGFUL_PK_DEP">
+		<db-attribute name="DESCR" type="VARCHAR" length="50"/>
+		<db-attribute name="MASTER_PK" type="INTEGER"/>
+		<db-attribute name="PK_ATTRIBUTE" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MEANINGFUL_PK_TEST1">
+		<db-attribute name="DESCR" type="VARCHAR" length="50"/>
+		<db-attribute name="PK_ATTRIBUTE" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="MeaningfulPKDep" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep" dbEntityName="MEANINGFUL_PK_DEP">
+		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
+	</obj-entity>
+	<obj-entity name="MeaningfulPKTest1" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1" dbEntityName="MEANINGFUL_PK_TEST1">
+		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
+		<obj-attribute name="pkAttribute" type="java.lang.Integer" db-attribute-path="PK_ATTRIBUTE"/>
+	</obj-entity>
+	<obj-entity name="MeaningfulPk" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk" clientClassName="org.apache.cayenne.testdo.meaningful_pk.ClientMeaningfulPk" dbEntityName="MEANINGFUL_PK">
+		<obj-attribute name="pk" type="java.lang.String" db-attribute-path="PK"/>
+	</obj-entity>
+	<db-relationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1">
+		<db-attribute-pair source="MASTER_PK" target="PK_ATTRIBUTE"/>
+	</db-relationship>
+	<db-relationship name="meaningfulPKDepArray" source="MEANINGFUL_PK_TEST1" target="MEANINGFUL_PK_DEP" toMany="true">
+		<db-attribute-pair source="PK_ATTRIBUTE" target="MASTER_PK"/>
+	</db-relationship>
+	<obj-relationship name="toMeaningfulPK" source="MeaningfulPKDep" target="MeaningfulPKTest1" db-relationship-path="toMeaningfulPK"/>
+	<obj-relationship name="meaningfulPKDepArray" source="MeaningfulPKTest1" target="MeaningfulPKDep" db-relationship-path="meaningfulPKDepArray"/>
 </data-map>

@@ -168,18 +168,12 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
 	/**
 	 * {@link XMLSerializable} implementation that generates XML for embeddable.
 	 */
-	public void encodeAsXML(XMLEncoder encoder) {
-		encoder.print("<embeddable");
-		if (getClassName() != null) {
-			encoder.print(" className=\"");
-			encoder.print(getClassName());
-			encoder.print("\"");
-		}
-		encoder.println(">");
-
-		encoder.indent(1);
-		encoder.print(attributes);
-		encoder.indent(-1);
-		encoder.println("</embeddable>");
+	@Override
+	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+		encoder.start("embeddable")
+				.attribute("className", getClassName())
+				.nested(attributes, delegate);
+		delegate.visitEmbeddable(this);
+		encoder.end();
 	}
 }

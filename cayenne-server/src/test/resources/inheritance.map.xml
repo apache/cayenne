@@ -1,46 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
-    <property name="defaultPackage" value="org.apache.cayenne.testdo.inheritance"/>
-    <db-entity name="BASE_ENTITY">
-        <db-attribute name="BASE_ENTITY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="DIRECT_TO_SUB_ENTITY_ID" type="INTEGER"/>
-        <db-attribute name="ENTITY_TYPE" type="VARCHAR" length="255"/>
-        <db-attribute name="RELATED_ENTITY_ID" type="INTEGER" isMandatory="true"/>
-    </db-entity>
-    <db-entity name="DIRECT_TO_SUB_ENTITY">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <db-entity name="RELATED_ENTITY">
-        <db-attribute name="RELATED_ENTITY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <obj-entity name="BaseEntity" className="org.apache.cayenne.testdo.inheritance.BaseEntity" dbEntityName="BASE_ENTITY">
-        <obj-attribute name="entityType" type="java.lang.String" db-attribute-path="ENTITY_TYPE"/>
-    </obj-entity>
-    <obj-entity name="DirectToSubEntity" className="org.apache.cayenne.testdo.inheritance.DirectToSubEntity" dbEntityName="DIRECT_TO_SUB_ENTITY">
-    </obj-entity>
-    <obj-entity name="RelatedEntity" className="org.apache.cayenne.testdo.inheritance.RelatedEntity" dbEntityName="RELATED_ENTITY">
-    </obj-entity>
-    <obj-entity name="SubEntity" superEntityName="BaseEntity" className="org.apache.cayenne.testdo.inheritance.SubEntity">
-        <qualifier><![CDATA[entityType = "sub"]]></qualifier>
-    </obj-entity>
-    <db-relationship name="directToSubEntities" source="BASE_ENTITY" target="DIRECT_TO_SUB_ENTITY" toMany="false">
-        <db-attribute-pair source="DIRECT_TO_SUB_ENTITY_ID" target="ID"/>
-    </db-relationship>
-    <db-relationship name="relatedEntities" source="BASE_ENTITY" target="RELATED_ENTITY" toMany="false">
-        <db-attribute-pair source="RELATED_ENTITY_ID" target="RELATED_ENTITY_ID"/>
-    </db-relationship>
-    <db-relationship name="subEntity" source="DIRECT_TO_SUB_ENTITY" target="BASE_ENTITY" toMany="true">
-        <db-attribute-pair source="ID" target="DIRECT_TO_SUB_ENTITY_ID"/>
-    </db-relationship>
-    <db-relationship name="entities" source="RELATED_ENTITY" target="BASE_ENTITY" toMany="true">
-        <db-attribute-pair source="RELATED_ENTITY_ID" target="RELATED_ENTITY_ID"/>
-    </db-relationship>
-    <obj-relationship name="toDirectToSubEntity" source="BaseEntity" target="DirectToSubEntity" deleteRule="Nullify" db-relationship-path="directToSubEntities"/>
-    <obj-relationship name="toRelatedEntity" source="BaseEntity" target="RelatedEntity" deleteRule="Nullify" db-relationship-path="relatedEntities"/>
-    <obj-relationship name="subEntities" source="DirectToSubEntity" target="SubEntity" db-relationship-path="subEntity"/>
-    <obj-relationship name="baseEntities" source="RelatedEntity" target="BaseEntity" db-relationship-path="entities"/>
-    <obj-relationship name="subEntities" source="RelatedEntity" target="SubEntity" db-relationship-path="entities"/>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.inheritance"/>
+	<db-entity name="BASE_ENTITY">
+		<db-attribute name="BASE_ENTITY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="DIRECT_TO_SUB_ENTITY_ID" type="INTEGER"/>
+		<db-attribute name="ENTITY_TYPE" type="VARCHAR" length="255"/>
+		<db-attribute name="RELATED_ENTITY_ID" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="DIRECT_TO_SUB_ENTITY">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="RELATED_ENTITY">
+		<db-attribute name="RELATED_ENTITY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="BaseEntity" className="org.apache.cayenne.testdo.inheritance.BaseEntity" dbEntityName="BASE_ENTITY">
+		<obj-attribute name="entityType" type="java.lang.String" db-attribute-path="ENTITY_TYPE"/>
+	</obj-entity>
+	<obj-entity name="DirectToSubEntity" className="org.apache.cayenne.testdo.inheritance.DirectToSubEntity" dbEntityName="DIRECT_TO_SUB_ENTITY"/>
+	<obj-entity name="RelatedEntity" className="org.apache.cayenne.testdo.inheritance.RelatedEntity" dbEntityName="RELATED_ENTITY"/>
+	<obj-entity name="SubEntity" superEntityName="BaseEntity" className="org.apache.cayenne.testdo.inheritance.SubEntity">
+		<qualifier><![CDATA[entityType = "sub"]]></qualifier>
+	</obj-entity>
+	<db-relationship name="directToSubEntities" source="BASE_ENTITY" target="DIRECT_TO_SUB_ENTITY">
+		<db-attribute-pair source="DIRECT_TO_SUB_ENTITY_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="relatedEntities" source="BASE_ENTITY" target="RELATED_ENTITY">
+		<db-attribute-pair source="RELATED_ENTITY_ID" target="RELATED_ENTITY_ID"/>
+	</db-relationship>
+	<db-relationship name="subEntity" source="DIRECT_TO_SUB_ENTITY" target="BASE_ENTITY" toMany="true">
+		<db-attribute-pair source="ID" target="DIRECT_TO_SUB_ENTITY_ID"/>
+	</db-relationship>
+	<db-relationship name="entities" source="RELATED_ENTITY" target="BASE_ENTITY" toMany="true">
+		<db-attribute-pair source="RELATED_ENTITY_ID" target="RELATED_ENTITY_ID"/>
+	</db-relationship>
+	<obj-relationship name="toDirectToSubEntity" source="BaseEntity" target="DirectToSubEntity" deleteRule="Nullify" db-relationship-path="directToSubEntities"/>
+	<obj-relationship name="toRelatedEntity" source="BaseEntity" target="RelatedEntity" deleteRule="Nullify" db-relationship-path="relatedEntities"/>
+	<obj-relationship name="subEntities" source="DirectToSubEntity" target="SubEntity" db-relationship-path="subEntity"/>
+	<obj-relationship name="baseEntities" source="RelatedEntity" target="BaseEntity" db-relationship-path="entities"/>
+	<obj-relationship name="subEntities" source="RelatedEntity" target="SubEntity" db-relationship-path="entities"/>
 </data-map>

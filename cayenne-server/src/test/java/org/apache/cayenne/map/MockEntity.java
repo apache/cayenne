@@ -22,6 +22,7 @@ package org.apache.cayenne.map;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.util.XMLEncoder;
@@ -56,7 +57,8 @@ public class MockEntity extends Entity {
         return null;
     }
 
-    public void encodeAsXML(XMLEncoder encoder) {
+    @Override
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
     }
 
 }

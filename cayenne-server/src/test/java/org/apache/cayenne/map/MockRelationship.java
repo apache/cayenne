@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 
 public class MockRelationship extends Relationship {
@@ -36,7 +37,8 @@ public class MockRelationship extends Relationship {
         return null;
     }
 
-    public void encodeAsXML(XMLEncoder encoder) {
+    @Override
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
     }
 
     @Override

@@ -47,7 +47,7 @@ public class QueryDescriptorLoaderTest {
         DbEntity entity = new DbEntity("DB1");
         map.addDbEntity(entity);
 
-        builder.setRoot(map, MapLoader.DB_ENTITY_ROOT, "DB1");
+        builder.setRoot(map, QueryDescriptor.DB_ENTITY_ROOT, "DB1");
         assertSame(entity, builder.getRoot());
     }
 
@@ -57,7 +57,7 @@ public class QueryDescriptorLoaderTest {
         ObjEntity entity = new ObjEntity("OBJ1");
         map.addObjEntity(entity);
 
-        builder.setRoot(map, MapLoader.OBJ_ENTITY_ROOT, "OBJ1");
+        builder.setRoot(map, QueryDescriptor.OBJ_ENTITY_ROOT, "OBJ1");
         assertSame(entity, builder.getRoot());
     }
 
@@ -65,7 +65,7 @@ public class QueryDescriptorLoaderTest {
     public void testSetRootDataMap() throws Exception {
         DataMap map = new DataMap("map");
 
-        builder.setRoot(map, MapLoader.DATA_MAP_ROOT, null);
+        builder.setRoot(map, QueryDescriptor.DATA_MAP_ROOT, null);
         assertSame(map, builder.getRoot());
     }
 }

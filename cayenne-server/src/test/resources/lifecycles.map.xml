@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
-    <property name="defaultPackage" value="org.apache.cayenne.testdo.lifecycles"/>
-    <property name="clientSupported" value="true"/>
-    <property name="defaultClientPackage" value="org.apache.cayenne.testdo.lifecycles"/>
-    <db-entity name="LIFECYCLES">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
-    </db-entity>
-    <obj-entity name="Lifecycles" className="org.apache.cayenne.testdo.lifecycles.Lifecycles" clientClassName="org.apache.cayenne.testdo.lifecycles.ClientLifecycles" dbEntityName="LIFECYCLES">
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.lifecycles"/>
+	<property name="clientSupported" value="true"/>
+	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.lifecycles"/>
+	<db-entity name="LIFECYCLES">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
+	<obj-entity name="Lifecycles" className="org.apache.cayenne.testdo.lifecycles.Lifecycles" clientClassName="org.apache.cayenne.testdo.lifecycles.ClientLifecycles" dbEntityName="LIFECYCLES">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
 </data-map>

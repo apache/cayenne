@@ -22,7 +22,6 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -90,34 +89,16 @@ public class Procedure implements ConfigurationNode, CayenneMapEntry, XMLSeriali
      * 
      * @since 1.1
      */
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<procedure name=\"");
-        encoder.print(Util.encodeXmlAttribute(getName()));
-        encoder.print('\"');
-
-        if (getSchema() != null && getSchema().trim().length() > 0) {
-            encoder.print(" schema=\"");
-            encoder.print(getSchema().trim());
-            encoder.print('\"');
-        }
-
-        if (getCatalog() != null && getCatalog().trim().length() > 0) {
-            encoder.print(" catalog=\"");
-            encoder.print(getCatalog().trim());
-            encoder.print('\"');
-        }
-
-        if (isReturningValue()) {
-            encoder.print(" returningValue=\"true\"");
-        }
-
-        encoder.println('>');
-
-        encoder.indent(1);
-        encoder.print(getCallParameters());
-        encoder.indent(-1);
-
-        encoder.println("</procedure>");
+    @Override
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        encoder.start("procedure")
+                .attribute("name", getName())
+                .attribute("schema", getSchema())
+                .attribute("catalog", getCatalog())
+                .attribute("returningValue", isReturningValue())
+                .nested(getCallParameters(), delegate);
+        delegate.visitProcedure(this);
+        encoder.end();
     }
 
     /**

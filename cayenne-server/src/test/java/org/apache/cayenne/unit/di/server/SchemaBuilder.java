@@ -28,6 +28,8 @@ import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslatorFactory;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCache;
+import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
+import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
@@ -35,15 +37,14 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.testdo.extended_type.StringET1ExtendedType;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
 
-import java.io.InputStream;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -113,10 +114,11 @@ public class SchemaBuilder {
 		DataMap[] maps = new DataMap[MAPS_REQUIRING_SCHEMA_SETUP.length];
 
 		for (int i = 0; i < maps.length; i++) {
-			InputStream stream = getClass().getClassLoader().getResourceAsStream(MAPS_REQUIRING_SCHEMA_SETUP[i]);
-			InputSource in = new InputSource(stream);
-			in.setSystemId(MAPS_REQUIRING_SCHEMA_SETUP[i]);
-			maps[i] = new MapLoader().loadDataMap(in);
+			URL mapURL = getClass().getClassLoader().getResource(MAPS_REQUIRING_SCHEMA_SETUP[i]);
+			XMLDataMapLoader loader = new XMLDataMapLoader();
+			loader.setHandlerFactory(new DefaultHandlerFactory());
+			maps[i] = loader.load(new URLResource(mapURL));
+
 		}
 
 		this.domain = new DataDomain("temp");

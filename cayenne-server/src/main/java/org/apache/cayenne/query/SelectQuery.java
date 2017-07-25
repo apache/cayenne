@@ -24,14 +24,15 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -48,7 +49,7 @@ import java.util.Map;
  * other parameters that serve as runtime hints to Cayenne on how to optimize
  * the fetch and result processing.
  */
-public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery, XMLSerializable, Select<T> {
+public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery, Select<T> {
 
 	private static final long serialVersionUID = 5486418811888197559L;
 
@@ -431,73 +432,6 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 		this.distinct = (distinct != null) ? "true".equalsIgnoreCase(distinct.toString()) : DISTINCT_DEFAULT;
 
 		metaData.initWithProperties(properties);
-	}
-
-	/**
-	 * Prints itself as XML to the provided PrintWriter.
-	 * 
-	 * @since 1.1
-	 */
-	public void encodeAsXML(XMLEncoder encoder) {
-		encoder.print("<query name=\"");
-		encoder.print(getName());
-		encoder.print("\" factory=\"");
-		encoder.print("org.apache.cayenne.map.SelectQueryBuilder");
-
-		String rootString = null;
-		String rootType = null;
-
-		if (root instanceof String) {
-			rootType = MapLoader.OBJ_ENTITY_ROOT;
-			rootString = root.toString();
-		} else if (root instanceof ObjEntity) {
-			rootType = MapLoader.OBJ_ENTITY_ROOT;
-			rootString = ((ObjEntity) root).getName();
-		} else if (root instanceof DbEntity) {
-			rootType = MapLoader.DB_ENTITY_ROOT;
-			rootString = ((DbEntity) root).getName();
-		} else if (root instanceof Procedure) {
-			rootType = MapLoader.PROCEDURE_ROOT;
-			rootString = ((Procedure) root).getName();
-		} else if (root instanceof Class<?>) {
-			rootType = MapLoader.JAVA_CLASS_ROOT;
-			rootString = ((Class<?>) root).getName();
-		}
-
-		if (rootType != null) {
-			encoder.print("\" root=\"");
-			encoder.print(rootType);
-			encoder.print("\" root-name=\"");
-			encoder.print(rootString);
-		}
-
-		encoder.println("\">");
-
-		encoder.indent(1);
-
-		// print properties
-		if (distinct != DISTINCT_DEFAULT) {
-			encoder.printProperty(DISTINCT_PROPERTY, distinct);
-		}
-
-		metaData.encodeAsXML(encoder);
-
-		// encode qualifier
-		if (qualifier != null) {
-			encoder.print("<qualifier>");
-			qualifier.encodeAsXML(encoder);
-			encoder.println("</qualifier>");
-		}
-
-		// encode orderings
-		if (orderings != null && !orderings.isEmpty()) {
-			for (Ordering ordering : orderings) {
-				ordering.encodeAsXML(encoder);
-			}
-		}
-
-		encoder.indent(-1);
-		encoder.println("</query>");
 	}
 
 	/**

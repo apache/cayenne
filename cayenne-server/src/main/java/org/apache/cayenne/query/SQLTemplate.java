@@ -20,12 +20,13 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.access.QueryEngine;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -69,7 +70,7 @@ import java.util.TreeSet;
  * 
  * @since 1.1
  */
-public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XMLSerializable {
+public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 
 	private static final long serialVersionUID = -3073521388289663641L;
 
@@ -195,92 +196,6 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery, XM
 	@Override
 	public SQLAction createSQLAction(SQLActionVisitor visitor) {
 		return visitor.sqlAction(this);
-	}
-
-	/**
-	 * Prints itself as XML to the provided PrintWriter.
-	 * 
-	 * @since 1.1
-	 */
-	@Override
-	public void encodeAsXML(XMLEncoder encoder) {
-		encoder.print("<query name=\"");
-		encoder.print(getName());
-		encoder.print("\" factory=\"");
-		encoder.print("org.apache.cayenne.map.SQLTemplateBuilder");
-
-		String rootString = null;
-		String rootType = null;
-
-		if (root instanceof String) {
-			rootType = MapLoader.OBJ_ENTITY_ROOT;
-			rootString = root.toString();
-		} else if (root instanceof ObjEntity) {
-			rootType = MapLoader.OBJ_ENTITY_ROOT;
-			rootString = ((ObjEntity) root).getName();
-		} else if (root instanceof DbEntity) {
-			rootType = MapLoader.DB_ENTITY_ROOT;
-			rootString = ((DbEntity) root).getName();
-		} else if (root instanceof Procedure) {
-			rootType = MapLoader.PROCEDURE_ROOT;
-			rootString = ((Procedure) root).getName();
-		} else if (root instanceof Class<?>) {
-			rootType = MapLoader.JAVA_CLASS_ROOT;
-			rootString = ((Class<?>) root).getName();
-		} else if (root instanceof DataMap) {
-			rootType = MapLoader.DATA_MAP_ROOT;
-			rootString = ((DataMap) root).getName();
-		}
-
-		if (rootType != null) {
-			encoder.print("\" root=\"");
-			encoder.print(rootType);
-			encoder.print("\" root-name=\"");
-			encoder.print(rootString);
-		}
-
-		encoder.println("\">");
-
-		encoder.indent(1);
-
-		metaData.encodeAsXML(encoder);
-
-		if (getColumnNamesCapitalization() != CapsStrategy.DEFAULT) {
-			encoder.printProperty(COLUMN_NAME_CAPITALIZATION_PROPERTY, getColumnNamesCapitalization().name());
-		}
-
-		// encode default SQL
-		if (defaultTemplate != null) {
-			encoder.print("<sql><![CDATA[");
-			encoder.print(defaultTemplate);
-			encoder.println("]]></sql>");
-		}
-
-		// encode adapter SQL
-		if (templates != null && !templates.isEmpty()) {
-
-			// sorting entries by adapter name
-			TreeSet<String> keys = new TreeSet<String>(templates.keySet());
-			for (String key : keys) {
-				String value = templates.get(key);
-
-				if (key != null && value != null) {
-					String sql = value.trim();
-					if (sql.length() > 0) {
-						encoder.print("<sql adapter-class=\"");
-						encoder.print(key);
-						encoder.print("\"><![CDATA[");
-						encoder.print(sql);
-						encoder.println("]]></sql>");
-					}
-				}
-			}
-		}
-
-		// TODO: support parameter encoding
-
-		encoder.indent(-1);
-		encoder.println("</query>");
 	}
 
 	/**

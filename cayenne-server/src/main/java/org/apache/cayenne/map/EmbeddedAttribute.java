@@ -19,6 +19,7 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -55,33 +56,19 @@ public class EmbeddedAttribute extends ObjAttribute {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<embedded-attribute name=\"" + getName() + '\"');
-        if (getType() != null) {
-            encoder.print(" type=\"");
-            encoder.print(getType());
-            encoder.print('\"');
-        }
-
-        if (attributeOverrides.isEmpty()) {
-            encoder.println("/>");
-            return;
-        }
-
-        encoder.println('>');
-
-        encoder.indent(1);
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        encoder.start("embedded-attribute")
+                .attribute("name", getName())
+                .attribute("type", getType());
 
         for (Map.Entry<String, String> e : attributeOverrides.entrySet()) {
-            encoder.print("<embeddable-attribute-override name=\"");
-            encoder.print(e.getKey());
-            encoder.print("\" db-attribute-path=\"");
-            encoder.print(e.getValue());
-            encoder.println("\"/>");
+            encoder.start("embeddable-attribute-override")
+                    .attribute("name", e.getKey())
+                    .attribute("db-attribute-path", e.getValue())
+                    .end();
         }
 
-        encoder.indent(-1);
-        encoder.println("</embedded-attribute>");
+        encoder.end();
     }
 
     public Map<String, String> getAttributeOverrides() {

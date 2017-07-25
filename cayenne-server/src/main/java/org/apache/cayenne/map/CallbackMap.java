@@ -106,11 +106,7 @@ public class CallbackMap implements Serializable {
             XMLEncoder encoder) {
 
         for (String methodName : descriptor.getCallbackMethods()) {
-            encoder.print("<");
-            encoder.print(stringCallbackName);
-            encoder.print(" method-name=\"");
-            encoder.print(methodName);
-            encoder.println("\"/>");
+            encoder.start(stringCallbackName).attribute("method-name", methodName).end();
         }
     }
 }

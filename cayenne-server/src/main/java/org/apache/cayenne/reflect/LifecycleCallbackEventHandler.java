@@ -35,24 +35,12 @@ import java.util.Map;
  */
 class LifecycleCallbackEventHandler {
 
-    private EntityResolver resolver;
     private Map<String, Collection<AbstractCallback>> listeners;
     private Collection<AbstractCallback> defaultListeners;
 
     LifecycleCallbackEventHandler(EntityResolver resolver) {
-        this.resolver = resolver;
         this.listeners = new HashMap<>();
         this.defaultListeners = new ArrayList<>();
-    }
-
-    private boolean excludingDefaultListeners(String entityName) {
-        ObjEntity entity = resolver.getObjEntity(entityName);
-        return entity != null && entity.isExcludingDefaultListeners();
-    }
-
-    private boolean excludingSuperclassListeners(String entityName) {
-        ObjEntity entity = resolver.getObjEntity(entityName);
-        return entity != null && entity.isExcludingSuperclassListeners();
     }
 
     boolean isEmpty() {
@@ -140,8 +128,7 @@ class LifecycleCallbackEventHandler {
     void performCallbacks(Persistent object) {
 
         // default listeners are invoked first
-        if (!defaultListeners.isEmpty()
-                && !excludingDefaultListeners(object.getObjectId().getEntityName())) {
+        if (!defaultListeners.isEmpty()) {
             for (AbstractCallback listener : defaultListeners) {
                 listener.performCallback(object);
             }
@@ -171,9 +158,7 @@ class LifecycleCallbackEventHandler {
         }
 
         // recursively perform super callbacks first
-        if (!excludingSuperclassListeners(object.getObjectId().getEntityName())) {
-            performCallbacks(object, callbackEntityClass.getSuperclass());
-        }
+        performCallbacks(object, callbackEntityClass.getSuperclass());
 
         // perform callbacks on provided class
         String key = callbackEntityClass.getName();

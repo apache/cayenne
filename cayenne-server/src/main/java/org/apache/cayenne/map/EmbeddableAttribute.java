@@ -22,7 +22,6 @@ import java.io.Serializable;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -55,23 +54,14 @@ public class EmbeddableAttribute implements ConfigurationNode, XMLSerializable,
         return visitor.visitEmbeddableAttribute(this);
     }
 
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<embeddable-attribute name=\"" + getName() + '\"');
-
-        if (getType() != null) {
-            encoder.print(" type=\"");
-            encoder.print(getType());
-            encoder.print('\"');
-        }
-
-        // If this obj attribute is mapped to db attribute
-        if (dbAttributeName != null) {
-            encoder.print(" db-attribute-name=\"");
-            encoder.print(Util.encodeXmlAttribute(dbAttributeName));
-            encoder.print('\"');
-        }
-
-        encoder.println("/>");
+    @Override
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        encoder.start("embeddable-attribute")
+                .attribute("name", getName())
+                .attribute("type", getType())
+                .attribute("db-attribute-name", dbAttributeName);
+        delegate.visitEmbeddableAttribute(this);
+        encoder.end();
     }
 
     public String getDbAttributeName() {

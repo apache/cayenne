@@ -71,8 +71,12 @@ import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.configuration.XMLDataChannelDescriptorLoader;
-import org.apache.cayenne.configuration.XMLDataMapLoader;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
+import org.apache.cayenne.configuration.xml.HandlerFactory;
+import org.apache.cayenne.configuration.xml.NoopDataChannelMetaData;
+import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.firebird.FirebirdSniffer;
@@ -403,5 +407,8 @@ public class ServerModule implements Module {
         binder.bind(RowReaderFactory.class).to(DefaultRowReaderFactory.class);
 
         binder.bind(SQLTemplateProcessor.class).to(VelocitySQLTemplateProcessor.class);
+
+        binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
+        binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
     }
 }

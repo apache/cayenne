@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.parser.ASTDbPath;
@@ -431,22 +433,12 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 * @since 1.1
 	 */
 	@Override
-	public void encodeAsXML(XMLEncoder encoder) {
-		encoder.print("<ordering");
-
-		if (isDescending()) {
-			encoder.print(" descending=\"true\"");
-		}
-
-		if (isCaseInsensitive()) {
-			encoder.print(" ignore-case=\"true\"");
-		}
-
-		encoder.print(">");
-		if (getSortSpec() != null) {
-			getSortSpec().encodeAsXML(encoder);
-		}
-		encoder.println("</ordering>");
+	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+		encoder.start("ordering")
+				.attribute("descending", isDescending())
+				.attribute("ignore-case", isCaseInsensitive())
+				.nested(getSortSpec(), delegate)
+				.end();
 	}
 
 	@Override
@@ -454,7 +446,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 		StringWriter buffer = new StringWriter();
 		PrintWriter pw = new PrintWriter(buffer);
 		XMLEncoder encoder = new XMLEncoder(pw);
-		encodeAsXML(encoder);
+		encodeAsXML(encoder, new EmptyConfigurationNodeVisitor());
 		pw.close();
 		buffer.flush();
 		return buffer.toString();

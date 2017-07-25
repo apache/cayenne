@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -41,7 +42,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  * @since 1.1
  */
-class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable {
+class BaseQueryMetadata implements QueryMetadata, Serializable {
 
 	private static final long serialVersionUID = 5129792493303459115L;
 
@@ -192,41 +193,6 @@ class BaseQueryMetadata implements QueryMetadata, XMLSerializable, Serializable 
 			}
 		} else if (cacheGroups instanceof String[]) {
 			this.cacheGroup = ((String[]) cacheGroups)[0];
-		}
-	}
-
-	public void encodeAsXML(XMLEncoder encoder) {
-
-		if (fetchingDataRows != QueryMetadata.FETCHING_DATA_ROWS_DEFAULT) {
-			encoder.printProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY, fetchingDataRows);
-		}
-
-		if (fetchOffset != QueryMetadata.FETCH_OFFSET_DEFAULT) {
-			encoder.printProperty(QueryMetadata.FETCH_OFFSET_PROPERTY, fetchOffset);
-		}
-
-		if (fetchLimit != QueryMetadata.FETCH_LIMIT_DEFAULT) {
-			encoder.printProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, fetchLimit);
-		}
-
-		if (pageSize != QueryMetadata.PAGE_SIZE_DEFAULT) {
-			encoder.printProperty(QueryMetadata.PAGE_SIZE_PROPERTY, pageSize);
-		}
-
-		if (cacheStrategy != null && QueryCacheStrategy.getDefaultStrategy() != cacheStrategy) {
-			encoder.printProperty(QueryMetadata.CACHE_STRATEGY_PROPERTY, cacheStrategy.name());
-		}
-
-		if (statementFetchSize != QueryMetadata.STATEMENT_FETCH_SIZE_DEFAULT) {
-			encoder.printProperty(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY, statementFetchSize);
-		}
-
-		if (prefetchTree != null) {
-			prefetchTree.encodeAsXML(encoder);
-		}
-
-		if (cacheGroup != null) {
-			encoder.printProperty(QueryMetadata.CACHE_GROUPS_PROPERTY, cacheGroup);
 		}
 	}
 

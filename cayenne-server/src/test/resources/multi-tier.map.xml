@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-	 project-version="9">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.mt"/>
 	<property name="clientSupported" value="true"/>
 	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.mt"/>
@@ -54,23 +54,21 @@
 		<obj-attribute name="charColumn" type="java.lang.String" db-attribute-path="CHAR_COLUMN"/>
 		<obj-attribute name="intColumn" type="java.lang.Integer" db-attribute-path="INT_COLUMN"/>
 	</obj-entity>
-	<obj-entity name="MtTable4" className="org.apache.cayenne.testdo.mt.MtTable4" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable4" dbEntityName="MT_TABLE4">
-	</obj-entity>
-	<obj-entity name="MtTable5" className="org.apache.cayenne.testdo.mt.MtTable5" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable5" dbEntityName="MT_TABLE5">
-	</obj-entity>
-	<db-relationship name="toTable4" source="MT_JOIN45" target="MT_TABLE4" toMany="false">
+	<obj-entity name="MtTable4" className="org.apache.cayenne.testdo.mt.MtTable4" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable4" dbEntityName="MT_TABLE4"/>
+	<obj-entity name="MtTable5" className="org.apache.cayenne.testdo.mt.MtTable5" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable5" dbEntityName="MT_TABLE5"/>
+	<db-relationship name="toTable4" source="MT_JOIN45" target="MT_TABLE4">
 		<db-attribute-pair source="TABLE4_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="toTable5" source="MT_JOIN45" target="MT_TABLE5" toMany="false">
+	<db-relationship name="toTable5" source="MT_JOIN45" target="MT_TABLE5">
 		<db-attribute-pair source="TABLE5_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="table2Array" source="MT_TABLE1" target="MT_TABLE2" toMany="true">
 		<db-attribute-pair source="TABLE1_ID" target="TABLE1_ID"/>
 	</db-relationship>
-	<db-relationship name="table1" source="MT_TABLE2" target="MT_TABLE1" toMany="false">
+	<db-relationship name="table1" source="MT_TABLE2" target="MT_TABLE1">
 		<db-attribute-pair source="TABLE1_ID" target="TABLE1_ID"/>
 	</db-relationship>
-	<db-relationship name="table3" source="MT_TABLE2" target="MT_TABLE3" toMany="false">
+	<db-relationship name="table3" source="MT_TABLE2" target="MT_TABLE3">
 		<db-attribute-pair source="TABLE3_ID" target="TABLE3_ID"/>
 	</db-relationship>
 	<db-relationship name="table2Array" source="MT_TABLE3" target="MT_TABLE2" toMany="true">
@@ -88,8 +86,7 @@
 	<obj-relationship name="table2Array" source="MtTable3" target="MtTable2" deleteRule="Deny" db-relationship-path="table2Array"/>
 	<obj-relationship name="table5s" source="MtTable4" target="MtTable5" db-relationship-path="joins.toTable5"/>
 	<obj-relationship name="table4s" source="MtTable5" target="MtTable4" db-relationship-path="joins.toTable4"/>
-	<query name="AllMtTable1" type="SelectQuery" root="obj-entity" root-name="MtTable1">
-	</query>
+	<query name="AllMtTable1" type="SelectQuery" root="obj-entity" root-name="MtTable1"/>
 	<query name="MtQueryWithLocalCache" type="SelectQuery" root="obj-entity" root-name="MtTable1">
 		<property name="cayenne.GenericSelectQuery.cacheStrategy" value="LOCAL_CACHE"/>
 	</query>

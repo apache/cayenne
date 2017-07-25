@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.map.Attribute;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
@@ -35,7 +35,7 @@ public class MockAttribute extends Attribute {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder) {
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
     }
 
 }

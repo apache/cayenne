@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
-    <property name="defaultPackage" value="org.apache.cayenne.testdo.soft_delete"/>
-    <db-entity name="SOFT_DELETE">
-        <db-attribute name="DELETED" type="BOOLEAN"/>
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="NAME" type="VARCHAR" length="100"/>
-        <qualifier><![CDATA[DELETED = false]]></qualifier>
-    </db-entity>
-    <obj-entity name="SoftDelete" className="org.apache.cayenne.testdo.soft_delete.SoftDelete" dbEntityName="SOFT_DELETE">
-        <obj-attribute name="deleted" type="java.lang.Boolean" db-attribute-path="DELETED"/>
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-        <post-add method-name="onPrePersist"/>
-    </obj-entity>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.soft_delete"/>
+	<db-entity name="SOFT_DELETE">
+		<db-attribute name="DELETED" type="BOOLEAN"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+		<qualifier><![CDATA[DELETED = false]]></qualifier>
+	</db-entity>
+	<obj-entity name="SoftDelete" className="org.apache.cayenne.testdo.soft_delete.SoftDelete" dbEntityName="SOFT_DELETE">
+		<obj-attribute name="deleted" type="java.lang.Boolean" db-attribute-path="DELETED"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+		<post-add method-name="onPrePersist"/>
+	</obj-entity>
 </data-map>

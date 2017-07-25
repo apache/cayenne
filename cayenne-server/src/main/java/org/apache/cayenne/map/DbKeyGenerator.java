@@ -22,6 +22,7 @@ package org.apache.cayenne.map;
 
 import java.io.Serializable;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -77,32 +78,22 @@ public class DbKeyGenerator implements CayenneMapEntry, XMLSerializable, Seriali
      * 
      * @since 1.1
      */
-    public void encodeAsXML(XMLEncoder encoder) {
+    @Override
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
         if (getGeneratorType() == null) {
             return;
         }
 
-        encoder.println("<db-key-generator>");
-        encoder.indent(1);
-
-        encoder.print("<db-generator-type>");
-        encoder.print(getGeneratorType());
-        encoder.println("</db-generator-type>");
+        encoder.start("db-key-generator")
+                .start("db-generator-type").cdata(getGeneratorType()).end();
 
         if (getGeneratorName() != null) {
-            encoder.print("<db-generator-name>");
-            encoder.print(getGeneratorName());
-            encoder.println("</db-generator-name>");
+            encoder.start("db-generator-name").cdata(getGeneratorName()).end();
         }
-
         if (getKeyCacheSize() != null) {
-            encoder.print("<db-key-cache-size>");
-            encoder.print(String.valueOf(getKeyCacheSize()));
-            encoder.println("</db-key-cache-size>");
+            encoder.start("db-key-cache-size").cdata(String.valueOf(getKeyCacheSize())).end();
         }
-
-        encoder.indent(-1);
-        encoder.println("</db-key-generator>");
+        encoder.end();
     }
 
     public DbEntity getDbEntity() {
@@ -117,8 +108,8 @@ public class DbKeyGenerator implements CayenneMapEntry, XMLSerializable, Seriali
         this.generatorType = generatorType;
         if (this.generatorType != null) {
             this.generatorType = this.generatorType.trim().toUpperCase();
-            if (!(ORACLE_TYPE.equals(this.generatorType) || NAMED_SEQUENCE_TABLE_TYPE
-                    .equals(this.generatorType)))
+            if (!(ORACLE_TYPE.equals(this.generatorType)
+                    || NAMED_SEQUENCE_TABLE_TYPE.equals(this.generatorType)))
                 this.generatorType = null;
         }
     }

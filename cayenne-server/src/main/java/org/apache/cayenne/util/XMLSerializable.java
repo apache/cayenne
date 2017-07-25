@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.util;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+
 /**
  * Interface for Cayenne objects that can be saved to XML.
  * 
@@ -30,5 +32,5 @@ public interface XMLSerializable {
      * 
      * @since 1.1
      */
-    public void encodeAsXML(XMLEncoder encoder);
+    void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate);
 }

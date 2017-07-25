@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
-    <property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_to_many_fk"/>
-    <db-entity name="TO_MANY_FKDEP">
-        <db-attribute name="DEP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="NAME" type="VARCHAR" length="200"/>
-        <db-attribute name="OTHER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <db-entity name="TO_MANY_FKROOT">
-        <db-attribute name="FK_ID" type="INTEGER"/>
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="NAME" type="VARCHAR" length="100"/>
-    </db-entity>
-    <db-entity name="TO_MANY_ROOT2">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="NAME" type="VARCHAR" length="100"/>
-    </db-entity>
-    <obj-entity name="ToManyFkDep" className="org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkDep" dbEntityName="TO_MANY_FKDEP">
-        <obj-attribute name="depId" type="java.lang.Integer" db-attribute-path="DEP_ID"/>
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
-    <obj-entity name="ToManyFkRoot" className="org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkRoot" dbEntityName="TO_MANY_FKROOT">
-        <obj-attribute name="depId" type="java.lang.Integer" db-attribute-path="FK_ID"/>
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
-    <obj-entity name="ToManyRoot2" className="org.apache.cayenne.testdo.relationships_to_many_fk.ToManyRoot2" dbEntityName="TO_MANY_ROOT2">
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
-    <db-relationship name="root" source="TO_MANY_FKDEP" target="TO_MANY_FKROOT" toMany="false">
-        <db-attribute-pair source="DEP_ID" target="FK_ID"/>
-    </db-relationship>
-    <db-relationship name="root2" source="TO_MANY_FKDEP" target="TO_MANY_ROOT2" toMany="false">
-        <db-attribute-pair source="OTHER_ID" target="ID"/>
-    </db-relationship>
-    <db-relationship name="deps" source="TO_MANY_FKROOT" target="TO_MANY_FKDEP" toMany="true">
-        <db-attribute-pair source="FK_ID" target="DEP_ID"/>
-    </db-relationship>
-    <db-relationship name="deps" source="TO_MANY_ROOT2" target="TO_MANY_FKDEP" toDependentPK="true" toMany="true">
-        <db-attribute-pair source="ID" target="OTHER_ID"/>
-    </db-relationship>
-    <obj-relationship name="root" source="ToManyFkDep" target="ToManyFkRoot" db-relationship-path="root"/>
-    <obj-relationship name="root2" source="ToManyFkDep" target="ToManyRoot2" db-relationship-path="root2"/>
-    <obj-relationship name="deps" source="ToManyFkRoot" target="ToManyFkDep" db-relationship-path="deps"/>
-    <obj-relationship name="deps" source="ToManyRoot2" target="ToManyFkDep" db-relationship-path="deps"/>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_to_many_fk"/>
+	<db-entity name="TO_MANY_FKDEP">
+		<db-attribute name="DEP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+		<db-attribute name="OTHER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="TO_MANY_FKROOT">
+		<db-attribute name="FK_ID" type="INTEGER"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="TO_MANY_ROOT2">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<obj-entity name="ToManyFkDep" className="org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkDep" dbEntityName="TO_MANY_FKDEP">
+		<obj-attribute name="depId" type="java.lang.Integer" db-attribute-path="DEP_ID"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="ToManyFkRoot" className="org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkRoot" dbEntityName="TO_MANY_FKROOT">
+		<obj-attribute name="depId" type="java.lang.Integer" db-attribute-path="FK_ID"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="ToManyRoot2" className="org.apache.cayenne.testdo.relationships_to_many_fk.ToManyRoot2" dbEntityName="TO_MANY_ROOT2">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<db-relationship name="root" source="TO_MANY_FKDEP" target="TO_MANY_FKROOT">
+		<db-attribute-pair source="DEP_ID" target="FK_ID"/>
+	</db-relationship>
+	<db-relationship name="root2" source="TO_MANY_FKDEP" target="TO_MANY_ROOT2">
+		<db-attribute-pair source="OTHER_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="deps" source="TO_MANY_FKROOT" target="TO_MANY_FKDEP" toMany="true">
+		<db-attribute-pair source="FK_ID" target="DEP_ID"/>
+	</db-relationship>
+	<db-relationship name="deps" source="TO_MANY_ROOT2" target="TO_MANY_FKDEP" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="ID" target="OTHER_ID"/>
+	</db-relationship>
+	<obj-relationship name="root" source="ToManyFkDep" target="ToManyFkRoot" db-relationship-path="root"/>
+	<obj-relationship name="root2" source="ToManyFkDep" target="ToManyRoot2" db-relationship-path="root2"/>
+	<obj-relationship name="deps" source="ToManyFkRoot" target="ToManyFkDep" db-relationship-path="deps"/>
+	<obj-relationship name="deps" source="ToManyRoot2" target="ToManyFkDep" db-relationship-path="deps"/>
 </data-map>

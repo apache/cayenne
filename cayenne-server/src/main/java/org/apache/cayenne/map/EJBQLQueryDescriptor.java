@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -59,25 +60,17 @@ public class EJBQLQueryDescriptor extends QueryDescriptor {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<query name=\"");
-        encoder.print(getName());
-        encoder.print("\" type=\"");
-        encoder.print(type);
-        encoder.println("\">");
-
-        encoder.indent(1);
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        encoder.start("query").attribute("name", getName()).attribute("type", type);
 
         // print properties
         encodeProperties(encoder);
 
         if (ejbql != null) {
-            encoder.print("<ejbql><![CDATA[");
-            encoder.print(ejbql);
-            encoder.println("]]></ejbql>");
+            encoder.start("ejbql").cdata(ejbql, true).end();
         }
 
-        encoder.indent(-1);
-        encoder.println("</query>");
+        delegate.visitQuery(this);
+        encoder.end();
     }
 }

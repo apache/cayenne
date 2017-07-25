@@ -20,6 +20,7 @@ package org.apache.cayenne.map;
 
 import java.io.Serializable;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -63,7 +64,8 @@ public class EntityListener implements Serializable, XMLSerializable {
         return callbacks;
     }
 
-    public void encodeAsXML(XMLEncoder encoder) {
+    @Override
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
         encoder.print("<entity-listener class=\"");
         encoder.print(className);
         encoder.println("\">");

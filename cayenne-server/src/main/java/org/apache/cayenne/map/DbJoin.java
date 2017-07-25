@@ -22,6 +22,7 @@ package org.apache.cayenne.map;
 import java.io.Serializable;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -95,23 +96,12 @@ public class DbJoin implements XMLSerializable, Serializable {
     /**
      * Prints itself as XML to the provided XMLEncoder.
      */
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<db-attribute-pair");
-
-        // sanity check
-        if (getSourceName() != null) {
-            encoder.print(" source=\"");
-            encoder.print(getSourceName());
-            encoder.print("\"");
-        }
-
-        if (getTargetName() != null) {
-            encoder.print(" target=\"");
-            encoder.print(getTargetName());
-            encoder.print("\"");
-        }
-
-        encoder.println("/>");
+    @Override
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        encoder.start("db-attribute-pair")
+                .attribute("source", getSourceName())
+                .attribute("target", getTargetName())
+                .end();
     }
 
     public DbRelationship getRelationship() {

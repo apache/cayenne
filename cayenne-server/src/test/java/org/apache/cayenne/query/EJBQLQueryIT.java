@@ -20,11 +20,13 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -307,28 +309,16 @@ public class EJBQLQueryIT extends ServerCase {
         XMLEncoder e = new XMLEncoder(new PrintWriter(w));
 
         String separator = System.getProperty("line.separator");
+        String s = "<query name=\"" + name + "\" type=\"EJBQLQuery\">" + separator +
+                "<ejbql><![CDATA[" + ejbql + "]]></ejbql>" + separator +
+                "</query>" + separator;
 
-        StringBuffer s = new StringBuffer("<query name=\"");
-        s.append(name);
-        s.append("\" factory=\"");
-        s.append("org.apache.cayenne.map.EjbqlBuilder");
-        s.append("\">");
-        s.append(separator);
+        EJBQLQueryDescriptor descriptor = new EJBQLQueryDescriptor();
+        descriptor.setEjbql(ejbql);
+        descriptor.setName(name);
+        descriptor.encodeAsXML(e, new EmptyConfigurationNodeVisitor());
 
-        EJBQLQuery query = new EJBQLQuery(ejbql);
-
-        if (query.getEjbqlStatement() != null) {
-            s.append("<ejbql><![CDATA[");
-            s.append(query.getEjbqlStatement());
-            s.append("]]></ejbql>");
-        }
-        s.append(separator);
-        s.append("</query>");
-        s.append(separator);
-        query.setName(name);
-        query.encodeAsXML(e);
-
-        assertEquals(w.getBuffer().toString(), s.toString());
+        assertEquals(w.getBuffer().toString(), s);
     }
 
     @Test

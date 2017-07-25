@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
-    <property name="defaultPackage" value="org.apache.cayenne.testdo.reflexive"/>
-    <property name="clientSupported" value="true"/>
-    <property name="defaultClientPackage" value="org.apache.cayenne.testdo.reflexive"/>
-    <db-entity name="REFLEXIVE">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="200"/>
-        <db-attribute name="PARENT_ID" type="INTEGER"/>
-    </db-entity>
-    <obj-entity name="Reflexive" className="org.apache.cayenne.testdo.reflexive.Reflexive" clientClassName="org.apache.cayenne.testdo.reflexive.ClientReflexive" dbEntityName="REFLEXIVE">
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
-    <db-relationship name="children" source="REFLEXIVE" target="REFLEXIVE" toMany="true">
-        <db-attribute-pair source="ID" target="PARENT_ID"/>
-    </db-relationship>
-    <db-relationship name="toParent" source="REFLEXIVE" target="REFLEXIVE" toMany="false">
-        <db-attribute-pair source="PARENT_ID" target="ID"/>
-    </db-relationship>
-    <obj-relationship name="children" source="Reflexive" target="Reflexive" db-relationship-path="children"/>
-    <obj-relationship name="toParent" source="Reflexive" target="Reflexive" db-relationship-path="toParent"/>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.reflexive"/>
+	<property name="clientSupported" value="true"/>
+	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.reflexive"/>
+	<db-entity name="REFLEXIVE">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="200"/>
+		<db-attribute name="PARENT_ID" type="INTEGER"/>
+	</db-entity>
+	<obj-entity name="Reflexive" className="org.apache.cayenne.testdo.reflexive.Reflexive" clientClassName="org.apache.cayenne.testdo.reflexive.ClientReflexive" dbEntityName="REFLEXIVE">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<db-relationship name="children" source="REFLEXIVE" target="REFLEXIVE" toMany="true">
+		<db-attribute-pair source="ID" target="PARENT_ID"/>
+	</db-relationship>
+	<db-relationship name="toParent" source="REFLEXIVE" target="REFLEXIVE">
+		<db-attribute-pair source="PARENT_ID" target="ID"/>
+	</db-relationship>
+	<obj-relationship name="children" source="Reflexive" target="Reflexive" db-relationship-path="children"/>
+	<obj-relationship name="toParent" source="Reflexive" target="Reflexive" db-relationship-path="toParent"/>
 </data-map>

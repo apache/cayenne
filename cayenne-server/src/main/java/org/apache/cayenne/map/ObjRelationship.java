@@ -104,51 +104,43 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
      * 
      * @since 1.1
      */
-    public void encodeAsXML(XMLEncoder encoder) {
-        ObjEntity source = (ObjEntity) getSourceEntity();
+    @Override
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        ObjEntity source = getSourceEntity();
         if (source == null) {
             return;
         }
 
-        encoder.print("<obj-relationship name=\"" + getName());
-        encoder.print("\" source=\"" + source.getName());
+        encoder.start("obj-relationship")
+                .attribute("name", getName())
+                .attribute("source", source.getName());
 
         // looking up a target entity ensures that bogus names are not saved...
-        // whether
-        // this is good or bad is debatable, as users may want to point to
-        // non-existent
-        // entities on purpose.
-        ObjEntity target = (ObjEntity) getTargetEntity();
+        // whether this is good or bad is debatable, as users may want to point to
+        // non-existent entities on purpose.
+        ObjEntity target = getTargetEntity();
         if (target != null) {
-            encoder.print("\" target=\"" + target.getName());
+            encoder.attribute("target", target.getName());
         }
 
         if (getCollectionType() != null && !DEFAULT_COLLECTION_TYPE.equals(getCollectionType())) {
-            encoder.print("\" collection-type=\"" + getCollectionType());
+            encoder.attribute("collection-type", getCollectionType());
         }
 
-        if (getMapKey() != null) {
-            encoder.print("\" map-key=\"" + getMapKey());
-        }
-
-        if (isUsedForLocking()) {
-            encoder.print("\" lock=\"true");
-        }
+        encoder.attribute("lock", isUsedForLocking())
+                .attribute("map-key", getMapKey());
 
         String deleteRule = DeleteRule.deleteRuleName(getDeleteRule());
-        if (getDeleteRule() != DeleteRule.NO_ACTION && deleteRule != null) {
-            encoder.print("\" deleteRule=\"" + deleteRule);
+        if (deleteRule != null && getDeleteRule() != DeleteRule.NO_ACTION) {
+            encoder.attribute("deleteRule", deleteRule);
         }
 
         // quietly get rid of invalid path... this is not the best way of doing
-        // things,
-        // but it is consistent across map package
-        String path = getValidRelationshipPath();
-        if (path != null) {
-            encoder.print("\" db-relationship-path=\"" + path);
-        }
+        // things, but it is consistent across map package
+        encoder.attribute("db-relationship-path", getValidRelationshipPath());
 
-        encoder.println("\"/>");
+        delegate.visitObjRelationship(this);
+        encoder.end();
     }
 
     /**
@@ -563,8 +555,9 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
     /**
      * Sets relationship path, but does not trigger its conversion to
      * List<DbRelationship> For internal purposes, primarily datamap loading
+     * @since 4.1 this method is public as it is used by new XML loaders
      */
-    void setDeferredDbRelationshipPath(String relationshipPath) {
+    public void setDeferredDbRelationshipPath(String relationshipPath) {
         if (!Util.nullSafeEquals(getDbRelationshipPath(), relationshipPath)) {
             deferredPath = relationshipPath;
         }

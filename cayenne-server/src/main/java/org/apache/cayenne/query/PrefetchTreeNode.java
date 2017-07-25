@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -96,7 +97,8 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 		this.semantics = UNDEFINED_SEMANTICS;
 	}
 
-	public void encodeAsXML(XMLEncoder encoder) {
+	@Override
+	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
 		traverse(new XMLEncoderOperation(encoder));
 	}
 
@@ -218,7 +220,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 	 */
 	public void traverse(PrefetchProcessor processor) {
 
-		boolean result = false;
+		boolean result;
 
 		if (isPhantom()) {
 			result = processor.startPhantomPrefetch(this);
@@ -500,31 +502,33 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 		}
 
 		public boolean startDisjointPrefetch(PrefetchTreeNode node) {
-			encoder.print("<prefetch type=\"disjoint\">");
-			encoder.print(node.getPath());
-			encoder.println("</prefetch>");
+			encoder.start("prefetch")
+					.attribute("type", "disjoint")
+					.cdata(node.getPath(), true)
+					.end();
 			return true;
 		}
 
 		public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
-			encoder.print("<prefetch type=\"disjointById\">");
-			encoder.print(node.getPath());
-			encoder.println("</prefetch>");
+			encoder.start("prefetch")
+					.attribute("type", "disjointById")
+					.cdata(node.getPath(), true)
+					.end();
 			return true;
 		}
 
 		public boolean startJointPrefetch(PrefetchTreeNode node) {
-			encoder.print("<prefetch type=\"joint\">");
-			encoder.print(node.getPath());
-			encoder.println("</prefetch>");
+			encoder.start("prefetch")
+					.attribute("type", "joint")
+					.cdata(node.getPath(), true)
+					.end();
 			return true;
 		}
 
 		public boolean startUnknownPrefetch(PrefetchTreeNode node) {
-			encoder.print("<prefetch>");
-			encoder.print(node.getPath());
-			encoder.println("</prefetch>");
-
+			encoder.start("prefetch")
+					.cdata(node.getPath(), true)
+					.end();
 			return true;
 		}
 

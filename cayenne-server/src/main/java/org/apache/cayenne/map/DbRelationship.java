@@ -74,30 +74,22 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
      * 
      * @since 1.1
      */
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<db-relationship name=\"");
-        encoder.print(Util.encodeXmlAttribute(getName()));
-        encoder.print("\" source=\"");
-        encoder.print(Util.encodeXmlAttribute(getSourceEntity().getName()));
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        encoder.start("db-relationship")
+                .attribute("name", getName())
+                .attribute("source", getSourceEntity().getName());
 
         if (getTargetEntityName() != null && getTargetEntity() != null) {
-            encoder.print("\" target=\"");
-            encoder.print(Util.encodeXmlAttribute(getTargetEntityName()));
+            encoder.attribute("target", getTargetEntityName());
         }
 
-        if (isToDependentPK() && isValidForDepPk()) {
-            encoder.print("\" toDependentPK=\"true");
-        }
+        encoder.attribute("toDependentPK", isToDependentPK() && isValidForDepPk());
+        encoder.attribute("toMany", isToMany());
 
-        encoder.print("\" toMany=\"");
-        encoder.print(isToMany());
-        encoder.println("\">");
+        encoder.nested(getJoins(), delegate);
 
-        encoder.indent(1);
-        encoder.print(getJoins());
-        encoder.indent(-1);
-
-        encoder.println("</db-relationship>");
+        delegate.visitDbRelationship(this);
+        encoder.end();
     }
 
     /**

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
-    <property name="defaultPackage" value="org.apache.cayenne.testdo.lifecycle_callbacks_order"/>
-    <property name="clientSupported" value="true"/>
-    <property name="defaultClientPackage" value="org.apache.cayenne.testdo.lifecycle_callbacks_order"/>
-    <db-entity name="LIFECYCLE">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="NAME" type="VARCHAR" length="100"/>
-    </db-entity>
-    <obj-entity name="Lifecycle" className="org.apache.cayenne.testdo.lifecycle_callbacks_order.Lifecycle" dbEntityName="LIFECYCLE">
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.lifecycle_callbacks_order"/>
+	<property name="clientSupported" value="true"/>
+	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.lifecycle_callbacks_order"/>
+	<db-entity name="LIFECYCLE">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<obj-entity name="Lifecycle" className="org.apache.cayenne.testdo.lifecycle_callbacks_order.Lifecycle" dbEntityName="LIFECYCLE">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
 </data-map>

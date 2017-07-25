@@ -21,6 +21,7 @@ package org.apache.cayenne.conn;
 
 import java.io.Serializable;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.PasswordEncoding;
 import org.apache.cayenne.configuration.PlainTextPasswordEncoder;
 import org.apache.cayenne.di.DIRuntimeException;
@@ -134,58 +135,46 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 	/**
 	 * @since 3.1
 	 */
-	public void encodeAsXML(XMLEncoder encoder) {
-		encoder.println("<data-source>");
-		encoder.indent(1);
+	@Override
+	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+		encoder.start("data-source");
 
-		encoder.print("<driver");
-		encoder.printAttribute("value", jdbcDriver);
-		encoder.println("/>");
+		encoder.start("driver").attribute("value", jdbcDriver).end();
+		encoder.start("url").attribute("value", dataSourceUrl).end();
 
-		encoder.print("<url");
-		encoder.printAttribute("value", dataSourceUrl);
-		encoder.println("/>");
+		encoder.start("connectionPool")
+				.attribute("min", minConnections)
+				.attribute("max", String.valueOf(maxConnections))
+				.end();
 
-		encoder.print("<connectionPool");
-		encoder.printAttribute("min", String.valueOf(minConnections));
-		encoder.printAttribute("max", String.valueOf(maxConnections));
-		encoder.println("/>");
-
-		encoder.print("<login");
-		encoder.printAttribute("userName", userName);
+		encoder.start("login").attribute("userName", userName);
 
 		if (DataSourceInfo.PASSWORD_LOCATION_MODEL.equals(passwordLocation)) {
-
 			PasswordEncoding passwordEncoder = getPasswordEncoder();
-
 			if (passwordEncoder != null) {
 				String passwordEncoded = passwordEncoder.encodePassword(password, passwordEncoderKey);
-				encoder.printAttribute("password", passwordEncoded);
+				encoder.attribute("password", passwordEncoded);
 			}
 		}
 
 		if (!PlainTextPasswordEncoder.class.getName().equals(passwordEncoderClass)) {
-			encoder.printAttribute("encoderClass", passwordEncoderClass);
+			encoder.attribute("encoderClass", passwordEncoderClass);
 		}
 
-		encoder.printAttribute("encoderKey", passwordEncoderKey);
+		encoder.attribute("encoderKey", passwordEncoderKey);
 
 		if (!DataSourceInfo.PASSWORD_LOCATION_MODEL.equals(passwordLocation)) {
-			encoder.printAttribute("passwordLocation", passwordLocation);
+			encoder.attribute("passwordLocation", passwordLocation);
 		}
 
 		// TODO: this is very not nice... we need to clean up the whole
-		// DataSourceInfo
-		// to avoid returning arbitrary labels...
+		// DataSourceInfo to avoid returning arbitrary labels...
 		String passwordSource = getPasswordSource();
 		if (!"Not Applicable".equals(passwordSource)) {
-			encoder.printAttribute("passwordSource", passwordSource);
+			encoder.attribute("passwordSource", passwordSource);
 		}
 
-		encoder.println("/>");
-
-		encoder.indent(-1);
-		encoder.println("</data-source>");
+		encoder.end().end();
 	}
 
 	public DataSourceInfo cloneInfo() {

@@ -21,6 +21,7 @@ package org.apache.cayenne.map;
 
 import java.io.Serializable;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLEncoder;
@@ -54,7 +55,8 @@ public abstract class Attribute implements CayenneMapEntry, XMLSerializable, Ser
         return new ToStringBuilder(this).append("name", getName()).toString();
     }
 
-    public abstract void encodeAsXML(XMLEncoder encoder);
+    @Override
+    public abstract void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate);
 
     /**
      * Returns parent entity that holds this attribute.

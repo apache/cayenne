@@ -16,36 +16,48 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project.upgrade.v6;
 
-import java.io.InputStream;
-import java.net.URL;
+package org.apache.cayenne.configuration.xml;
 
-import org.apache.cayenne.CayenneRuntimeException;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.MapLoader;
-import org.apache.cayenne.resource.Resource;
-import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 /**
- * @since 3.1
+ * @since 4.1
  */
-class XMLDataMapLoader_V3_0_0_1 {
+public class LoaderContext {
 
-	public DataMap load(Resource configurationResource) throws CayenneRuntimeException {
+    Collection<DataMapLoaderListener> dataMapListeners;
 
-		MapLoader mapLoader = new MapLoader();
-		URL url = configurationResource.getURL();
+    private XMLReader xmlReader;
 
-		DataMap map;
+    private HandlerFactory factory;
 
-		try (InputStream in = url.openStream();) {
+    public LoaderContext(XMLReader reader, HandlerFactory factory) {
+        this.xmlReader = reader;
+        this.factory = factory;
+        dataMapListeners = new ArrayList<>();
+    }
 
-			map = mapLoader.loadDataMap(new InputSource(in));
-		} catch (Exception e) {
-			throw new CayenneRuntimeException("Error loading configuration from %s", e, url);
-		}
+    public HandlerFactory getFactory() {
+        return factory;
+    }
 
-		return map;
-	}
+    public XMLReader getXmlReader() {
+        return xmlReader;
+    }
+
+    public void addDataMapListener(DataMapLoaderListener dataMapLoaderListener) {
+        dataMapListeners.add(dataMapLoaderListener);
+    }
+
+    public void dataMapLoaded(DataMap dataMap) {
+        for(DataMapLoaderListener listener : dataMapListeners) {
+            listener.onDataMapLoaded(dataMap);
+        }
+    }
+
 }

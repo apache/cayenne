@@ -127,11 +127,6 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 	}
 
 	@Override
-	public void encodeAsXML(XMLEncoder encoder) {
-		query.encodeAsXML(encoder);
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		return query.equals(obj);
 	}

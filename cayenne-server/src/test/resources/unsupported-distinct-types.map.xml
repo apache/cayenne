@@ -1,36 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-	 project-version="9">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.unsupported_distinct_types"/>
 	<db-entity name="COMPOSITION">
 		<db-attribute name="BASE_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="CONTAINED_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
-	<db-entity name="ORDERS">
-		<db-attribute name="CUSTOMER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="PRODUCT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
 	<db-entity name="CUSTOMER">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="LONGVARCHAR_COL" type="LONGVARCHAR"/>
+	</db-entity>
+	<db-entity name="ORDERS">
+		<db-attribute name="CUSTOMER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="PRODUCT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="PRODUCT">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="LONGVARCHAR_COL" type="LONGVARCHAR"/>
 	</db-entity>
-	<obj-entity name="Product" className="org.apache.cayenne.testdo.unsupported_distinct_types.Product" dbEntityName="PRODUCT">
-		<obj-attribute name="longvarcharCol" type="java.lang.String" db-attribute-path="LONGVARCHAR_COL"/>
-	</obj-entity>
 	<obj-entity name="Customer" className="org.apache.cayenne.testdo.unsupported_distinct_types.Customer" dbEntityName="CUSTOMER">
 		<obj-attribute name="longvarcharCol" type="java.lang.String" db-attribute-path="LONGVARCHAR_COL"/>
 	</obj-entity>
-	<db-relationship name="base" source="COMPOSITION" target="PRODUCT" toMany="false">
+	<obj-entity name="Product" className="org.apache.cayenne.testdo.unsupported_distinct_types.Product" dbEntityName="PRODUCT">
+		<obj-attribute name="longvarcharCol" type="java.lang.String" db-attribute-path="LONGVARCHAR_COL"/>
+	</obj-entity>
+	<db-relationship name="base" source="COMPOSITION" target="PRODUCT">
 		<db-attribute-pair source="BASE_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="contained" source="COMPOSITION" target="PRODUCT" toMany="false">
+	<db-relationship name="contained" source="COMPOSITION" target="PRODUCT">
 		<db-attribute-pair source="CONTAINED_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="orderBy" source="CUSTOMER" target="ORDERS" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="ID" target="CUSTOMER_ID"/>
+	</db-relationship>
+	<db-relationship name="order" source="ORDERS" target="PRODUCT">
+		<db-attribute-pair source="PRODUCT_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="orderBy" source="ORDERS" target="CUSTOMER">
+		<db-attribute-pair source="CUSTOMER_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="base" source="PRODUCT" target="COMPOSITION" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="ID" target="BASE_ID"/>
@@ -38,20 +47,11 @@
 	<db-relationship name="contained" source="PRODUCT" target="COMPOSITION" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="ID" target="CONTAINED_ID"/>
 	</db-relationship>
-	<db-relationship name="order" source="ORDERS" target="PRODUCT" toMany="false">
-		<db-attribute-pair source="PRODUCT_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="orderBy" source="ORDERS" target="CUSTOMER" toMany="false">
-		<db-attribute-pair source="CUSTOMER_ID" target="ID"/>
-	</db-relationship>
 	<db-relationship name="order" source="PRODUCT" target="ORDERS" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="ID" target="PRODUCT_ID"/>
 	</db-relationship>
-	<db-relationship name="orderBy" source="CUSTOMER" target="ORDERS" toDependentPK="true" toMany="true">
-		<db-attribute-pair source="ID" target="CUSTOMER_ID"/>
-	</db-relationship>
+	<obj-relationship name="order" source="Customer" target="Product" deleteRule="Deny" db-relationship-path="orderBy.order"/>
 	<obj-relationship name="base" source="Product" target="Product" deleteRule="Deny" db-relationship-path="contained.base"/>
 	<obj-relationship name="contained" source="Product" target="Product" deleteRule="Deny" db-relationship-path="base.contained"/>
 	<obj-relationship name="orderBy" source="Product" target="Customer" deleteRule="Deny" db-relationship-path="order.orderBy"/>
-	<obj-relationship name="order" source="Customer" target="Product" deleteRule="Deny" db-relationship-path="orderBy.order"/>
 </data-map>

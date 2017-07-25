@@ -34,7 +34,6 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.collections.Transformer;
 
@@ -114,40 +113,30 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<db-entity name=\"");
-        encoder.print(Util.encodeXmlAttribute(getName()));
-        encoder.print('\"');
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        encoder.start("db-entity").attribute("name", getName());
 
         if (getSchema() != null && getSchema().trim().length() > 0) {
-            encoder.print(" schema=\"");
-            encoder.print(Util.encodeXmlAttribute(getSchema().trim()));
-            encoder.print('\"');
+            encoder.attribute("schema", getSchema().trim());
         }
-
         if (getCatalog() != null && getCatalog().trim().length() > 0) {
-            encoder.print(" catalog=\"");
-            encoder.print(Util.encodeXmlAttribute(getCatalog().trim()));
-            encoder.print('\"');
+            encoder.attribute("catalog", getCatalog().trim());
         }
 
-        encoder.println('>');
-
-        encoder.indent(1);
-        encoder.print(getAttributeMap());
+        encoder.nested(getAttributeMap(), delegate);
 
         if (getPrimaryKeyGenerator() != null) {
-            getPrimaryKeyGenerator().encodeAsXML(encoder);
+            getPrimaryKeyGenerator().encodeAsXML(encoder, delegate);
         }
 
         if (getQualifier() != null) {
-            encoder.print("<qualifier>");
-            getQualifier().encodeAsXML(encoder);
-            encoder.println("</qualifier>");
+            encoder.start("qualifier");
+            getQualifier().encodeAsXML(encoder, delegate);
+            encoder.end();
         }
 
-        encoder.indent(-1);
-        encoder.println("</db-entity>");
+        delegate.visitDbEntity(this);
+        encoder.end();
     }
 
     /**

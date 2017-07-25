@@ -20,7 +20,11 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionException;
@@ -89,7 +93,7 @@ public class ObjRelationshipIT extends ServerCase {
         r.setCollectionType("java.util.Map");
         r.setMapKey("bla");
 
-        r.encodeAsXML(encoder);
+        r.encodeAsXML(encoder, new EmptyConfigurationNodeVisitor());
         out.close();
 
         String lineBreak = System.getProperty("line.separator");

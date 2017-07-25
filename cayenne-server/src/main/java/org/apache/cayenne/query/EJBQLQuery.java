@@ -19,6 +19,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
@@ -36,7 +37,7 @@ import java.util.Map;
  * 
  * @since 3.0
  */
-public class EJBQLQuery extends CacheableQuery implements XMLSerializable {
+public class EJBQLQuery extends CacheableQuery {
 
     @Deprecated
     protected String name;
@@ -222,28 +223,6 @@ public class EJBQLQuery extends CacheableQuery implements XMLSerializable {
 
     public void setFetchOffset(int fetchOffset) {
         metadata.setFetchOffset(fetchOffset);
-    }
-
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<query name=\"");
-        encoder.print(getName());
-        encoder.print("\" factory=\"");
-        encoder.print("org.apache.cayenne.map.EjbqlBuilder");
-
-        encoder.println("\">");
-
-        encoder.indent(1);
-
-        metadata.encodeAsXML(encoder);
-
-        if (ejbqlStatement != null) {
-            encoder.print("<ejbql><![CDATA[");
-            encoder.print(ejbqlStatement);
-            encoder.println("]]></ejbql>");
-        }
-
-        encoder.indent(-1);
-        encoder.println("</query>");
     }
 
     public void setEjbqlStatement(String text) {

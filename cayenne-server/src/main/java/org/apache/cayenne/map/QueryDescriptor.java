@@ -42,6 +42,31 @@ public class QueryDescriptor implements Serializable, ConfigurationNode, XMLSeri
     public static final String PROCEDURE_QUERY = "ProcedureQuery";
 
     /**
+     * @since 4.1
+     */
+    public static final String OBJ_ENTITY_ROOT = "obj-entity";
+
+    /**
+     * @since 4.1
+     */
+    public static final String DB_ENTITY_ROOT = "db-entity";
+
+    /**
+     * @since 4.1
+     */
+    public static final String PROCEDURE_ROOT = "procedure";
+
+    /**
+     * @since 4.1
+     */
+    public static final String DATA_MAP_ROOT = "data-map";
+
+    /**
+     * @since 4.1
+     */
+    public static final String JAVA_CLASS_ROOT = "java-class";
+
+    /**
      * Creates new SelectQuery query descriptor.
      */
     public static SelectQueryDescriptor selectQueryDescriptor() {
@@ -189,47 +214,36 @@ public class QueryDescriptor implements Serializable, ConfigurationNode, XMLSeri
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<query name=\"");
-        encoder.print(getName());
-        encoder.print("\" type=\"");
-        encoder.print(type);
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        encoder.start("query").attribute("name", getName()).attribute("type", type);
 
         String rootString = null;
         String rootType = null;
 
         if (root instanceof String) {
-            rootType = MapLoader.OBJ_ENTITY_ROOT;
+            rootType = OBJ_ENTITY_ROOT;
             rootString = root.toString();
         } else if (root instanceof ObjEntity) {
-            rootType = MapLoader.OBJ_ENTITY_ROOT;
+            rootType = OBJ_ENTITY_ROOT;
             rootString = ((ObjEntity) root).getName();
         } else if (root instanceof DbEntity) {
-            rootType = MapLoader.DB_ENTITY_ROOT;
+            rootType = DB_ENTITY_ROOT;
             rootString = ((DbEntity) root).getName();
         } else if (root instanceof Procedure) {
-            rootType = MapLoader.PROCEDURE_ROOT;
+            rootType = PROCEDURE_ROOT;
             rootString = ((Procedure) root).getName();
         } else if (root instanceof Class<?>) {
-            rootType = MapLoader.JAVA_CLASS_ROOT;
+            rootType = JAVA_CLASS_ROOT;
             rootString = ((Class<?>) root).getName();
         }
 
         if (rootType != null) {
-            encoder.print("\" root=\"");
-            encoder.print(rootType);
-            encoder.print("\" root-name=\"");
-            encoder.print(rootString);
+            encoder.attribute("root", rootType).attribute("root-name", rootString);
         }
-
-        encoder.println("\">");
-
-        encoder.indent(1);
-
         encodeProperties(encoder);
 
-        encoder.indent(-1);
-        encoder.println("</query>");
+        delegate.visitQuery(this);
+        encoder.end();
     }
 
     void encodeProperties(XMLEncoder encoder) {
@@ -238,7 +252,7 @@ public class QueryDescriptor implements Serializable, ConfigurationNode, XMLSeri
             if(value == null || value.isEmpty()) {
                 continue;
             }
-            encoder.printProperty(property.getKey(), value);
+            encoder.property(property.getKey(), value);
         }
     }
 }

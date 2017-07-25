@@ -1,57 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
-    <property name="defaultPackage" value="org.apache.cayenne.testdo.map_to_many"/>
-    <property name="clientSupported" value="true"/>
-    <property name="defaultClientPackage" value="org.apache.cayenne.testdo.map_to_many"/>
-
-    <db-entity name="ID_MAP_TO_MANY">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <db-entity name="ID_MAP_TO_MANY_TARGET">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="MAP_TO_MANY_ID" type="INTEGER"/>
-    </db-entity>
-
-    <db-entity name="MAP_TO_MANY">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <db-entity name="MAP_TO_MANY_TARGET">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="MAP_TO_MANY_ID" type="INTEGER"/>
-        <db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
-    </db-entity>
-
-    <obj-entity name="IdMapToMany" className="org.apache.cayenne.testdo.map_to_many.IdMapToMany" clientClassName="org.apache.cayenne.testdo.map_to_many.ClientIdMapToMany" dbEntityName="ID_MAP_TO_MANY">
-    </obj-entity>
-    <obj-entity name="IdMapToManyTarget" className="org.apache.cayenne.testdo.map_to_many.IdMapToManyTarget" clientClassName="org.apache.cayenne.testdo.map_to_many.ClientIdMapToManyTarget" dbEntityName="ID_MAP_TO_MANY_TARGET">
-    </obj-entity>
-
-    <obj-entity name="MapToMany" className="org.apache.cayenne.testdo.map_to_many.MapToMany" dbEntityName="MAP_TO_MANY">
-    </obj-entity>
-    <obj-entity name="MapToManyTarget" className="org.apache.cayenne.testdo.map_to_many.MapToManyTarget" dbEntityName="MAP_TO_MANY_TARGET">
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
-
-    <db-relationship name="targets" source="ID_MAP_TO_MANY" target="ID_MAP_TO_MANY_TARGET" toMany="true">
-        <db-attribute-pair source="ID" target="MAP_TO_MANY_ID"/>
-    </db-relationship>
-    <db-relationship name="mapToMany" source="ID_MAP_TO_MANY_TARGET" target="ID_MAP_TO_MANY" toMany="false">
-        <db-attribute-pair source="MAP_TO_MANY_ID" target="ID"/>
-    </db-relationship>
-
-    <db-relationship name="targets" source="MAP_TO_MANY" target="MAP_TO_MANY_TARGET" toMany="true">
-        <db-attribute-pair source="ID" target="MAP_TO_MANY_ID"/>
-    </db-relationship>
-    <db-relationship name="mapToMany" source="MAP_TO_MANY_TARGET" target="MAP_TO_MANY" toMany="false">
-        <db-attribute-pair source="MAP_TO_MANY_ID" target="ID"/>
-    </db-relationship>
-
-    <obj-relationship name="targets" source="IdMapToMany" target="IdMapToManyTarget" collection-type="java.util.Map" db-relationship-path="targets"/>
-    <obj-relationship name="mapToMany" source="IdMapToManyTarget" target="IdMapToMany" db-relationship-path="mapToMany"/>
-
-    <obj-relationship name="targets" source="MapToMany" target="MapToManyTarget" collection-type="java.util.Map" map-key="name" db-relationship-path="targets"/>
-    <obj-relationship name="mapToMany" source="MapToManyTarget" target="MapToMany" db-relationship-path="mapToMany"/>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.map_to_many"/>
+	<property name="clientSupported" value="true"/>
+	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.map_to_many"/>
+	<db-entity name="ID_MAP_TO_MANY">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="ID_MAP_TO_MANY_TARGET">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="MAP_TO_MANY_ID" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="MAP_TO_MANY">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="MAP_TO_MANY_TARGET">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="MAP_TO_MANY_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+	</db-entity>
+	<obj-entity name="IdMapToMany" className="org.apache.cayenne.testdo.map_to_many.IdMapToMany" clientClassName="org.apache.cayenne.testdo.map_to_many.ClientIdMapToMany" dbEntityName="ID_MAP_TO_MANY"/>
+	<obj-entity name="IdMapToManyTarget" className="org.apache.cayenne.testdo.map_to_many.IdMapToManyTarget" clientClassName="org.apache.cayenne.testdo.map_to_many.ClientIdMapToManyTarget" dbEntityName="ID_MAP_TO_MANY_TARGET"/>
+	<obj-entity name="MapToMany" className="org.apache.cayenne.testdo.map_to_many.MapToMany" dbEntityName="MAP_TO_MANY"/>
+	<obj-entity name="MapToManyTarget" className="org.apache.cayenne.testdo.map_to_many.MapToManyTarget" dbEntityName="MAP_TO_MANY_TARGET">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<db-relationship name="targets" source="ID_MAP_TO_MANY" target="ID_MAP_TO_MANY_TARGET" toMany="true">
+		<db-attribute-pair source="ID" target="MAP_TO_MANY_ID"/>
+	</db-relationship>
+	<db-relationship name="mapToMany" source="ID_MAP_TO_MANY_TARGET" target="ID_MAP_TO_MANY">
+		<db-attribute-pair source="MAP_TO_MANY_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="targets" source="MAP_TO_MANY" target="MAP_TO_MANY_TARGET" toMany="true">
+		<db-attribute-pair source="ID" target="MAP_TO_MANY_ID"/>
+	</db-relationship>
+	<db-relationship name="mapToMany" source="MAP_TO_MANY_TARGET" target="MAP_TO_MANY">
+		<db-attribute-pair source="MAP_TO_MANY_ID" target="ID"/>
+	</db-relationship>
+	<obj-relationship name="targets" source="IdMapToMany" target="IdMapToManyTarget" collection-type="java.util.Map" db-relationship-path="targets"/>
+	<obj-relationship name="mapToMany" source="IdMapToManyTarget" target="IdMapToMany" db-relationship-path="mapToMany"/>
+	<obj-relationship name="targets" source="MapToMany" target="MapToManyTarget" collection-type="java.util.Map" map-key="name" db-relationship-path="targets"/>
+	<obj-relationship name="mapToMany" source="MapToManyTarget" target="MapToMany" db-relationship-path="mapToMany"/>
 </data-map>

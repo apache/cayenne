@@ -24,7 +24,6 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.DbAttributeListener;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
@@ -99,49 +98,40 @@ public class DbAttribute extends Attribute implements ConfigurationNode {
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder) {
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
 
-        encoder.print("<db-attribute name=\"");
-        encoder.print(Util.encodeXmlAttribute(getName()));
-        encoder.print('\"');
+        encoder.start("db-attribute").attribute("name", getName());
 
         String type = TypesMapping.getSqlNameByType(getType());
-        if (type != null) {
-            encoder.print(" type=\"" + type + '\"');
-        }
+        encoder.attribute("type", type);
 
         if (isPrimaryKey()) {
-            encoder.print(" isPrimaryKey=\"true\"");
+            encoder.attribute("isPrimaryKey", true);
 
             // only allow generated if an attribute is a PK.
             if (isGenerated()) {
-                encoder.print(" isGenerated=\"true\"");
+                encoder.attribute("isGenerated", true);
             }
         }
 
         if (isMandatory()) {
-            encoder.print(" isMandatory=\"true\"");
+            encoder.attribute("isMandatory", true);
         }
 
         if (getMaxLength() > 0) {
-            encoder.print(" length=\"");
-            encoder.print(getMaxLength());
-            encoder.print('\"');
+            encoder.attribute("length", getMaxLength());
         }
 
         if (getScale() > 0) {
-            encoder.print(" scale=\"");
-            encoder.print(getScale());
-            encoder.print('\"');
+            encoder.attribute("scale", getScale());
         }
 
         if (getAttributePrecision() > 0) {
-            encoder.print(" attributePrecision=\"");
-            encoder.print(getAttributePrecision());
-            encoder.print('\"');
+            encoder.attribute("attributePrecision", getAttributePrecision());
         }
 
-        encoder.println("/>");
+        delegate.visitDbAttribute(this);
+        encoder.end();
     }
 
     public String getAliasedName(String alias) {

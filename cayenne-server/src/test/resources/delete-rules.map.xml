@@ -1,64 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
-    <property name="defaultPackage" value="org.apache.cayenne.testdo.deleterules"/>
-    <property name="clientSupported" value="true"/>
-    <property name="defaultClientPackage" value="org.apache.cayenne.testdo.deleterules"/>
-    <db-entity name="DELETE_CASCADE">
-        <db-attribute name="DELETE_CASCADE_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="DELETE_RULE_ID" type="INTEGER"/>
-        <db-attribute name="NAME" type="VARCHAR" length="200"/>
-    </db-entity>
-    <db-entity name="DELETE_DENY">
-        <db-attribute name="DELETE_DENY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="DELETE_RULE_ID" type="INTEGER"/>
-        <db-attribute name="NAME" type="VARCHAR" length="200"/>
-    </db-entity>
-    <db-entity name="DELETE_NULLIFY">
-        <db-attribute name="DELETE_NULLIFY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="DELETE_RULE_ID" type="INTEGER"/>
-        <db-attribute name="NAME" type="VARCHAR" length="200"/>
-    </db-entity>
-    <db-entity name="DELETE_RULE">
-        <db-attribute name="DELETE_RULE_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="NAME" type="VARCHAR" length="200"/>
-    </db-entity>
-    <obj-entity name="DeleteCascade" className="org.apache.cayenne.testdo.deleterules.DeleteCascade" clientClassName="org.apache.cayenne.testdo.deleterules.ClientDeleteCascade" dbEntityName="DELETE_CASCADE">
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
-    <obj-entity name="DeleteDeny" className="org.apache.cayenne.testdo.deleterules.DeleteDeny" clientClassName="org.apache.cayenne.testdo.deleterules.ClientDeleteDeny" dbEntityName="DELETE_DENY">
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
-    <obj-entity name="DeleteNullify" className="org.apache.cayenne.testdo.deleterules.DeleteNullify" clientClassName="org.apache.cayenne.testdo.deleterules.ClientDeleteNullify" dbEntityName="DELETE_NULLIFY">
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
-    <obj-entity name="DeleteRule" className="org.apache.cayenne.testdo.deleterules.DeleteRule" clientClassName="org.apache.cayenne.testdo.deleterules.ClientDeleteRule" dbEntityName="DELETE_RULE">
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
-    <db-relationship name="cascade" source="DELETE_CASCADE" target="DELETE_RULE" toMany="false">
-        <db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
-    </db-relationship>
-    <db-relationship name="deny" source="DELETE_DENY" target="DELETE_RULE" toMany="false">
-        <db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
-    </db-relationship>
-    <db-relationship name="nullify" source="DELETE_NULLIFY" target="DELETE_RULE" toMany="false">
-        <db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
-    </db-relationship>
-    <db-relationship name="fromCascade" source="DELETE_RULE" target="DELETE_CASCADE" toMany="true">
-        <db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
-    </db-relationship>
-    <db-relationship name="fromDeny" source="DELETE_RULE" target="DELETE_DENY" toMany="true">
-        <db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
-    </db-relationship>
-    <db-relationship name="fromNullify" source="DELETE_RULE" target="DELETE_NULLIFY" toMany="true">
-        <db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
-    </db-relationship>
-    <obj-relationship name="cascade" source="DeleteCascade" target="DeleteRule" deleteRule="Cascade" db-relationship-path="cascade"/>
-    <obj-relationship name="deny" source="DeleteDeny" target="DeleteRule" deleteRule="Deny" db-relationship-path="deny"/>
-    <obj-relationship name="nullify" source="DeleteNullify" target="DeleteRule" deleteRule="Nullify" db-relationship-path="nullify"/>
-    <obj-relationship name="fromCascade" source="DeleteRule" target="DeleteCascade" db-relationship-path="fromCascade"/>
-    <obj-relationship name="fromDeny" source="DeleteRule" target="DeleteDeny" db-relationship-path="fromDeny"/>
-    <obj-relationship name="fromNullify" source="DeleteRule" target="DeleteNullify" db-relationship-path="fromNullify"/>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.deleterules"/>
+	<property name="clientSupported" value="true"/>
+	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.deleterules"/>
+	<db-entity name="DELETE_CASCADE">
+		<db-attribute name="DELETE_CASCADE_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="DELETE_RULE_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="DELETE_DENY">
+		<db-attribute name="DELETE_DENY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="DELETE_RULE_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="DELETE_NULLIFY">
+		<db-attribute name="DELETE_NULLIFY_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="DELETE_RULE_ID" type="INTEGER"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="DELETE_RULE">
+		<db-attribute name="DELETE_RULE_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<obj-entity name="DeleteCascade" className="org.apache.cayenne.testdo.deleterules.DeleteCascade" clientClassName="org.apache.cayenne.testdo.deleterules.ClientDeleteCascade" dbEntityName="DELETE_CASCADE">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="DeleteDeny" className="org.apache.cayenne.testdo.deleterules.DeleteDeny" clientClassName="org.apache.cayenne.testdo.deleterules.ClientDeleteDeny" dbEntityName="DELETE_DENY">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="DeleteNullify" className="org.apache.cayenne.testdo.deleterules.DeleteNullify" clientClassName="org.apache.cayenne.testdo.deleterules.ClientDeleteNullify" dbEntityName="DELETE_NULLIFY">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="DeleteRule" className="org.apache.cayenne.testdo.deleterules.DeleteRule" clientClassName="org.apache.cayenne.testdo.deleterules.ClientDeleteRule" dbEntityName="DELETE_RULE">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<db-relationship name="cascade" source="DELETE_CASCADE" target="DELETE_RULE">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="deny" source="DELETE_DENY" target="DELETE_RULE">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="nullify" source="DELETE_NULLIFY" target="DELETE_RULE">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="fromCascade" source="DELETE_RULE" target="DELETE_CASCADE" toMany="true">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="fromDeny" source="DELETE_RULE" target="DELETE_DENY" toMany="true">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<db-relationship name="fromNullify" source="DELETE_RULE" target="DELETE_NULLIFY" toMany="true">
+		<db-attribute-pair source="DELETE_RULE_ID" target="DELETE_RULE_ID"/>
+	</db-relationship>
+	<obj-relationship name="cascade" source="DeleteCascade" target="DeleteRule" deleteRule="Cascade" db-relationship-path="cascade"/>
+	<obj-relationship name="deny" source="DeleteDeny" target="DeleteRule" deleteRule="Deny" db-relationship-path="deny"/>
+	<obj-relationship name="nullify" source="DeleteNullify" target="DeleteRule" deleteRule="Nullify" db-relationship-path="nullify"/>
+	<obj-relationship name="fromCascade" source="DeleteRule" target="DeleteCascade" db-relationship-path="fromCascade"/>
+	<obj-relationship name="fromDeny" source="DeleteRule" target="DeleteDeny" db-relationship-path="fromDeny"/>
+	<obj-relationship name="fromNullify" source="DeleteRule" target="DeleteNullify" db-relationship-path="fromNullify"/>
 </data-map>

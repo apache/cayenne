@@ -1,64 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
-    <property name="defaultPackage" value="org.apache.cayenne.testdo.compound"/>
-    <property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
-    <property name="clientSupported" value="true"/>
-    <property name="defaultClientPackage" value="test.client"/>
-    <property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
-    <db-entity name="CHAR_FK_TEST">
-        <db-attribute name="FK_COL" type="CHAR" length="10"/>
-        <db-attribute name="NAME" type="VARCHAR" length="100"/>
-        <db-attribute name="PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <db-entity name="CHAR_PK_TEST">
-        <db-attribute name="OTHER_COL" type="CHAR" length="10"/>
-        <db-attribute name="PK_COL" type="CHAR" isPrimaryKey="true" isMandatory="true" length="10"/>
-    </db-entity>
-    <db-entity name="COMPOUND_FK_TEST">
-        <db-attribute name="F_KEY1" type="VARCHAR" length="20"/>
-        <db-attribute name="F_KEY2" type="VARCHAR" length="20"/>
-        <db-attribute name="NAME" type="VARCHAR" length="255"/>
-        <db-attribute name="PKEY" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <db-entity name="COMPOUND_PK_TEST">
-        <db-attribute name="KEY1" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="20"/>
-        <db-attribute name="KEY2" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="20"/>
-        <db-attribute name="NAME" type="VARCHAR" length="255"/>
-    </db-entity>
-    <obj-entity name="CharFkTestEntity" className="org.apache.cayenne.testdo.compound.CharFkTestEntity" dbEntityName="CHAR_FK_TEST">
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
-    <obj-entity name="CharPkTestEntity" className="org.apache.cayenne.testdo.compound.CharPkTestEntity" dbEntityName="CHAR_PK_TEST">
-        <obj-attribute name="otherCol" type="java.lang.String" db-attribute-path="OTHER_COL"/>
-        <obj-attribute name="pkCol" type="java.lang.String" db-attribute-path="PK_COL"/>
-    </obj-entity>
-    <obj-entity name="CompoundFkTestEntity" className="org.apache.cayenne.testdo.compound.CompoundFkTestEntity" dbEntityName="COMPOUND_FK_TEST">
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
-    <obj-entity name="CompoundPkTestEntity" className="org.apache.cayenne.testdo.compound.CompoundPkTestEntity" dbEntityName="COMPOUND_PK_TEST">
-        <obj-attribute name="key1" type="java.lang.String" db-attribute-path="KEY1"/>
-        <obj-attribute name="key2" type="java.lang.String" db-attribute-path="KEY2"/>
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
-    <db-relationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST" toMany="false">
-        <db-attribute-pair source="FK_COL" target="PK_COL"/>
-    </db-relationship>
-    <db-relationship name="charFKs" source="CHAR_PK_TEST" target="CHAR_FK_TEST" toMany="true">
-        <db-attribute-pair source="PK_COL" target="FK_COL"/>
-    </db-relationship>
-    <db-relationship name="toCompoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST" toMany="false">
-        <db-attribute-pair source="F_KEY1" target="KEY1"/>
-        <db-attribute-pair source="F_KEY2" target="KEY2"/>
-    </db-relationship>
-    <db-relationship name="compoundFkArray" source="COMPOUND_PK_TEST" target="COMPOUND_FK_TEST" toMany="true">
-        <db-attribute-pair source="KEY1" target="F_KEY1"/>
-        <db-attribute-pair source="KEY2" target="F_KEY2"/>
-    </db-relationship>
-    <obj-relationship name="toCharPK" source="CharFkTestEntity" target="CharPkTestEntity" db-relationship-path="toCharPK"/>
-    <obj-relationship name="charFKs" source="CharPkTestEntity" target="CharFkTestEntity" db-relationship-path="charFKs"/>
-    <obj-relationship name="toCompoundPk" source="CompoundFkTestEntity" target="CompoundPkTestEntity" db-relationship-path="toCompoundPk"/>
-    <obj-relationship name="compoundFkArray" source="CompoundPkTestEntity" target="CompoundFkTestEntity" db-relationship-path="compoundFkArray"/>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.compound"/>
+	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
+	<property name="clientSupported" value="true"/>
+	<property name="defaultClientPackage" value="test.client"/>
+	<property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
+	<db-entity name="CHAR_FK_TEST">
+		<db-attribute name="FK_COL" type="CHAR" length="10"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+		<db-attribute name="PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="CHAR_PK_TEST">
+		<db-attribute name="OTHER_COL" type="CHAR" length="10"/>
+		<db-attribute name="PK_COL" type="CHAR" isPrimaryKey="true" isMandatory="true" length="10"/>
+	</db-entity>
+	<db-entity name="COMPOUND_FK_TEST">
+		<db-attribute name="F_KEY1" type="VARCHAR" length="20"/>
+		<db-attribute name="F_KEY2" type="VARCHAR" length="20"/>
+		<db-attribute name="NAME" type="VARCHAR" length="255"/>
+		<db-attribute name="PKEY" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="COMPOUND_PK_TEST">
+		<db-attribute name="KEY1" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="20"/>
+		<db-attribute name="KEY2" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="20"/>
+		<db-attribute name="NAME" type="VARCHAR" length="255"/>
+	</db-entity>
+	<obj-entity name="CharFkTestEntity" className="org.apache.cayenne.testdo.compound.CharFkTestEntity" dbEntityName="CHAR_FK_TEST">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="CharPkTestEntity" className="org.apache.cayenne.testdo.compound.CharPkTestEntity" dbEntityName="CHAR_PK_TEST">
+		<obj-attribute name="otherCol" type="java.lang.String" db-attribute-path="OTHER_COL"/>
+		<obj-attribute name="pkCol" type="java.lang.String" db-attribute-path="PK_COL"/>
+	</obj-entity>
+	<obj-entity name="CompoundFkTestEntity" className="org.apache.cayenne.testdo.compound.CompoundFkTestEntity" dbEntityName="COMPOUND_FK_TEST">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="CompoundPkTestEntity" className="org.apache.cayenne.testdo.compound.CompoundPkTestEntity" dbEntityName="COMPOUND_PK_TEST">
+		<obj-attribute name="key1" type="java.lang.String" db-attribute-path="KEY1"/>
+		<obj-attribute name="key2" type="java.lang.String" db-attribute-path="KEY2"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<db-relationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST">
+		<db-attribute-pair source="FK_COL" target="PK_COL"/>
+	</db-relationship>
+	<db-relationship name="charFKs" source="CHAR_PK_TEST" target="CHAR_FK_TEST" toMany="true">
+		<db-attribute-pair source="PK_COL" target="FK_COL"/>
+	</db-relationship>
+	<db-relationship name="toCompoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST">
+		<db-attribute-pair source="F_KEY1" target="KEY1"/>
+		<db-attribute-pair source="F_KEY2" target="KEY2"/>
+	</db-relationship>
+	<db-relationship name="compoundFkArray" source="COMPOUND_PK_TEST" target="COMPOUND_FK_TEST" toMany="true">
+		<db-attribute-pair source="KEY1" target="F_KEY1"/>
+		<db-attribute-pair source="KEY2" target="F_KEY2"/>
+	</db-relationship>
+	<obj-relationship name="toCharPK" source="CharFkTestEntity" target="CharPkTestEntity" db-relationship-path="toCharPK"/>
+	<obj-relationship name="charFKs" source="CharPkTestEntity" target="CharFkTestEntity" db-relationship-path="charFKs"/>
+	<obj-relationship name="toCompoundPk" source="CompoundFkTestEntity" target="CompoundPkTestEntity" db-relationship-path="toCompoundPk"/>
+	<obj-relationship name="compoundFkArray" source="CompoundPkTestEntity" target="CompoundFkTestEntity" db-relationship-path="compoundFkArray"/>
 </data-map>

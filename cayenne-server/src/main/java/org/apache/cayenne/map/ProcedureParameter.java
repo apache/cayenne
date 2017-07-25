@@ -25,7 +25,6 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -85,8 +84,7 @@ public class ProcedureParameter implements ConfigurationNode, CayenneMapEntry,
 
     public void setParent(Object parent) {
         if (parent != null && !(parent instanceof Procedure)) {
-            throw new IllegalArgumentException("Expected null or Procedure, got: "
-                    + parent);
+            throw new IllegalArgumentException("Expected null or Procedure, got: " + parent);
         }
 
         setProcedure((Procedure) parent);
@@ -97,40 +95,25 @@ public class ProcedureParameter implements ConfigurationNode, CayenneMapEntry,
      * 
      * @since 1.1
      */
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<procedure-parameter name=\""
-                + Util.encodeXmlAttribute(getName())
-                + '\"');
-
-        String type = TypesMapping.getSqlNameByType(getType());
-        if (type != null) {
-            encoder.print(" type=\"" + type + '\"');
-        }
-
-        if (getMaxLength() > 0) {
-            encoder.print(" length=\"");
-            encoder.print(getMaxLength());
-            encoder.print('\"');
-        }
-
-        if (getPrecision() > 0) {
-            encoder.print(" precision=\"");
-            encoder.print(getPrecision());
-            encoder.print('\"');
-        }
+    @Override
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        encoder.start("procedure-parameter")
+                .attribute("name", getName())
+                .attribute("type", TypesMapping.getSqlNameByType(getType()))
+                .attribute("length", getMaxLength() > 0 ? getMaxLength() : 0)
+                .attribute("precision", getPrecision() > 0 ? getPrecision() : 0);
 
         int direction = getDirection();
         if (direction == ProcedureParameter.IN_PARAMETER) {
-            encoder.print(" direction=\"in\"");
-        }
-        else if (direction == ProcedureParameter.IN_OUT_PARAMETER) {
-            encoder.print(" direction=\"in_out\"");
-        }
-        else if (direction == ProcedureParameter.OUT_PARAMETER) {
-            encoder.print(" direction=\"out\"");
+            encoder.attribute("direction", "in");
+        } else if (direction == ProcedureParameter.IN_OUT_PARAMETER) {
+            encoder.attribute("direction", "in_out");
+        } else if (direction == ProcedureParameter.OUT_PARAMETER) {
+            encoder.attribute("direction", "out");
         }
 
-        encoder.println("/>");
+        delegate.visitProcedureParameter(this);
+        encoder.end();
     }
 
     /**

@@ -1,71 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
-    <property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_delete_rules"/>
-    <db-entity name="DELETE_RULE_FLATA">
-        <db-attribute name="FLATA_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <db-entity name="DELETE_RULE_FLATB">
-        <db-attribute name="FLATB_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <db-entity name="DELETE_RULE_JOIN">
-        <db-attribute name="FLATA_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="FLATB_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <db-entity name="DELETE_RULE_TEST1">
-        <db-attribute name="DEL_RULE_TEST1_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="TEST2_ID" type="INTEGER" isMandatory="true"/>
-    </db-entity>
-    <db-entity name="DELETE_RULE_TEST2">
-        <db-attribute name="DEL_RULE_TEST2_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <db-entity name="DELETE_RULE_TEST3">
-        <db-attribute name="DELETE_RULE_TEST_3_FK" type="INTEGER"/>
-        <db-attribute name="DELETE_RULE_TEST_3_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-    </db-entity>
-    <obj-entity name="DeleteRuleFlatA" className="org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleFlatA" dbEntityName="DELETE_RULE_FLATA">
-    </obj-entity>
-    <obj-entity name="DeleteRuleFlatB" className="org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleFlatB" dbEntityName="DELETE_RULE_FLATB">
-    </obj-entity>
-    <obj-entity name="DeleteRuleTest1" className="org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest1" dbEntityName="DELETE_RULE_TEST1">
-    </obj-entity>
-    <obj-entity name="DeleteRuleTest2" className="org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest2" dbEntityName="DELETE_RULE_TEST2">
-    </obj-entity>
-    <obj-entity name="DeleteRuleTest3" className="org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest3" dbEntityName="DELETE_RULE_TEST3">
-    </obj-entity>
-    <db-relationship name="joins" source="DELETE_RULE_FLATA" target="DELETE_RULE_JOIN" toDependentPK="true" toMany="true">
-        <db-attribute-pair source="FLATA_ID" target="FLATA_ID"/>
-    </db-relationship>
-    <db-relationship name="joins" source="DELETE_RULE_FLATB" target="DELETE_RULE_JOIN" toDependentPK="true" toMany="true">
-        <db-attribute-pair source="FLATB_ID" target="FLATB_ID"/>
-    </db-relationship>
-    <db-relationship name="toFlatA" source="DELETE_RULE_JOIN" target="DELETE_RULE_FLATA" toMany="false">
-        <db-attribute-pair source="FLATA_ID" target="FLATA_ID"/>
-    </db-relationship>
-    <db-relationship name="toFlatB" source="DELETE_RULE_JOIN" target="DELETE_RULE_FLATB" toMany="false">
-        <db-attribute-pair source="FLATB_ID" target="FLATB_ID"/>
-    </db-relationship>
-    <db-relationship name="deleteRuleTest3Array" source="DELETE_RULE_TEST1" target="DELETE_RULE_TEST3" toMany="true">
-        <db-attribute-pair source="DEL_RULE_TEST1_ID" target="DELETE_RULE_TEST_3_FK"/>
-    </db-relationship>
-    <db-relationship name="test2" source="DELETE_RULE_TEST1" target="DELETE_RULE_TEST2" toMany="false">
-        <db-attribute-pair source="TEST2_ID" target="DEL_RULE_TEST2_ID"/>
-    </db-relationship>
-    <db-relationship name="deleteRuleTest3Array" source="DELETE_RULE_TEST2" target="DELETE_RULE_TEST3" toMany="true">
-        <db-attribute-pair source="DEL_RULE_TEST2_ID" target="DELETE_RULE_TEST_3_FK"/>
-    </db-relationship>
-    <db-relationship name="test1Array" source="DELETE_RULE_TEST2" target="DELETE_RULE_TEST1" toMany="true">
-        <db-attribute-pair source="DEL_RULE_TEST2_ID" target="TEST2_ID"/>
-    </db-relationship>
-    <db-relationship name="toDeleteRuleTest2" source="DELETE_RULE_TEST3" target="DELETE_RULE_TEST2" toMany="false">
-        <db-attribute-pair source="DELETE_RULE_TEST_3_FK" target="DEL_RULE_TEST2_ID"/>
-    </db-relationship>
-    <obj-relationship name="flatB" source="DeleteRuleFlatA" target="DeleteRuleFlatB" db-relationship-path="joins.toFlatB"/>
-    <obj-relationship name="untitledRel" source="DeleteRuleFlatB" target="DeleteRuleFlatA" db-relationship-path="joins.toFlatA"/>
-    <obj-relationship name="test2" source="DeleteRuleTest1" target="DeleteRuleTest2" deleteRule="Deny" db-relationship-path="test2"/>
-    <obj-relationship name="deleteRuleTest3Array" source="DeleteRuleTest2" target="DeleteRuleTest3" db-relationship-path="deleteRuleTest3Array"/>
-    <obj-relationship name="test1Array" source="DeleteRuleTest2" target="DeleteRuleTest1" deleteRule="Nullify" db-relationship-path="test1Array"/>
-    <obj-relationship name="toDeleteRuleTest2" source="DeleteRuleTest3" target="DeleteRuleTest2" db-relationship-path="toDeleteRuleTest2"/>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_delete_rules"/>
+	<db-entity name="DELETE_RULE_FLATA">
+		<db-attribute name="FLATA_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="DELETE_RULE_FLATB">
+		<db-attribute name="FLATB_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="DELETE_RULE_JOIN">
+		<db-attribute name="FLATA_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="FLATB_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="DELETE_RULE_TEST1">
+		<db-attribute name="DEL_RULE_TEST1_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="TEST2_ID" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="DELETE_RULE_TEST2">
+		<db-attribute name="DEL_RULE_TEST2_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="DELETE_RULE_TEST3">
+		<db-attribute name="DELETE_RULE_TEST_3_FK" type="INTEGER"/>
+		<db-attribute name="DELETE_RULE_TEST_3_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="DeleteRuleFlatA" className="org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleFlatA" dbEntityName="DELETE_RULE_FLATA"/>
+	<obj-entity name="DeleteRuleFlatB" className="org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleFlatB" dbEntityName="DELETE_RULE_FLATB"/>
+	<obj-entity name="DeleteRuleTest1" className="org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest1" dbEntityName="DELETE_RULE_TEST1"/>
+	<obj-entity name="DeleteRuleTest2" className="org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest2" dbEntityName="DELETE_RULE_TEST2"/>
+	<obj-entity name="DeleteRuleTest3" className="org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest3" dbEntityName="DELETE_RULE_TEST3"/>
+	<db-relationship name="joins" source="DELETE_RULE_FLATA" target="DELETE_RULE_JOIN" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="FLATA_ID" target="FLATA_ID"/>
+	</db-relationship>
+	<db-relationship name="joins" source="DELETE_RULE_FLATB" target="DELETE_RULE_JOIN" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="FLATB_ID" target="FLATB_ID"/>
+	</db-relationship>
+	<db-relationship name="toFlatA" source="DELETE_RULE_JOIN" target="DELETE_RULE_FLATA">
+		<db-attribute-pair source="FLATA_ID" target="FLATA_ID"/>
+	</db-relationship>
+	<db-relationship name="toFlatB" source="DELETE_RULE_JOIN" target="DELETE_RULE_FLATB">
+		<db-attribute-pair source="FLATB_ID" target="FLATB_ID"/>
+	</db-relationship>
+	<db-relationship name="deleteRuleTest3Array" source="DELETE_RULE_TEST1" target="DELETE_RULE_TEST3" toMany="true">
+		<db-attribute-pair source="DEL_RULE_TEST1_ID" target="DELETE_RULE_TEST_3_FK"/>
+	</db-relationship>
+	<db-relationship name="test2" source="DELETE_RULE_TEST1" target="DELETE_RULE_TEST2">
+		<db-attribute-pair source="TEST2_ID" target="DEL_RULE_TEST2_ID"/>
+	</db-relationship>
+	<db-relationship name="deleteRuleTest3Array" source="DELETE_RULE_TEST2" target="DELETE_RULE_TEST3" toMany="true">
+		<db-attribute-pair source="DEL_RULE_TEST2_ID" target="DELETE_RULE_TEST_3_FK"/>
+	</db-relationship>
+	<db-relationship name="test1Array" source="DELETE_RULE_TEST2" target="DELETE_RULE_TEST1" toMany="true">
+		<db-attribute-pair source="DEL_RULE_TEST2_ID" target="TEST2_ID"/>
+	</db-relationship>
+	<db-relationship name="toDeleteRuleTest2" source="DELETE_RULE_TEST3" target="DELETE_RULE_TEST2">
+		<db-attribute-pair source="DELETE_RULE_TEST_3_FK" target="DEL_RULE_TEST2_ID"/>
+	</db-relationship>
+	<obj-relationship name="flatB" source="DeleteRuleFlatA" target="DeleteRuleFlatB" db-relationship-path="joins.toFlatB"/>
+	<obj-relationship name="untitledRel" source="DeleteRuleFlatB" target="DeleteRuleFlatA" db-relationship-path="joins.toFlatA"/>
+	<obj-relationship name="test2" source="DeleteRuleTest1" target="DeleteRuleTest2" deleteRule="Deny" db-relationship-path="test2"/>
+	<obj-relationship name="deleteRuleTest3Array" source="DeleteRuleTest2" target="DeleteRuleTest3" db-relationship-path="deleteRuleTest3Array"/>
+	<obj-relationship name="test1Array" source="DeleteRuleTest2" target="DeleteRuleTest1" deleteRule="Nullify" db-relationship-path="test1Array"/>
+	<obj-relationship name="toDeleteRuleTest2" source="DeleteRuleTest3" target="DeleteRuleTest2" db-relationship-path="toDeleteRuleTest2"/>
 </data-map>

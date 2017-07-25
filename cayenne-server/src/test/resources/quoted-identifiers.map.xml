@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-	 project-version="9">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.quotemap"/>
 	<property name="quoteSqlIdentifiers" value="true"/>
 	<db-entity name="QUOTED_ADDRESS">
@@ -30,10 +30,10 @@
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 		<obj-attribute name="salary" type="java.lang.Integer" db-attribute-path="salary"/>
 	</obj-entity>
-	<db-relationship name="personRel" source="QUOTED_ADDRESS" target="quote Person" toMany="false">
+	<db-relationship name="personRel" source="QUOTED_ADDRESS" target="quote Person">
 		<db-attribute-pair source="ADDRESS ID" target="address_id"/>
 	</db-relationship>
-	<db-relationship name="addressRel" source="quote Person" target="QUOTED_ADDRESS" toMany="false">
+	<db-relationship name="addressRel" source="quote Person" target="QUOTED_ADDRESS">
 		<db-attribute-pair source="address_id" target="ADDRESS ID"/>
 	</db-relationship>
 	<obj-relationship name="person_Rel" source="QuoteAdress" target="Quote_Person" deleteRule="Nullify" db-relationship-path="personRel"/>

@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.util.ConversionUtil;
 import org.apache.cayenne.util.HashCodeBuilder;
@@ -679,14 +680,15 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * 
 	 * @since 1.1
 	 */
-	public void encodeAsXML(XMLEncoder encoder) {
-		encoder.print("<![CDATA[");
+	@Override
+	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+		StringBuilder sb = new StringBuilder();
 		try {
-			appendAsString(encoder.getPrintWriter());
+			appendAsString(sb);
 		} catch (IOException e) {
 			throw new CayenneRuntimeException("Unexpected IO exception appending to PrintWriter", e);
 		}
-		encoder.print("]]>");
+		encoder.cdata(sb.toString(), true);
 	}
 
 	/**

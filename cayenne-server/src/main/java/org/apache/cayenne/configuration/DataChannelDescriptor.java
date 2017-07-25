@@ -40,6 +40,11 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 
 	private static final long serialVersionUID = 6567527544207035602L;
 
+	/**
+	 * The namespace in which the data map XML file will be created.
+	 */
+	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/10/domain";
+
 	protected String name;
 	protected Map<String, String> properties;
 	protected Collection<DataMap> dataMaps;
@@ -53,58 +58,41 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 		nodeDescriptors = new ArrayList<>(3);
 	}
 
-	public void encodeAsXML(XMLEncoder encoder) {
+	@Override
+	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
 
-		encoder.print("<domain");
-		encoder.printProjectVersion();
-		encoder.println(">");
-
-		encoder.indent(1);
-		boolean breakNeeded = false;
+		encoder.start("domain")
+				.attribute("xmlns", SCHEMA_XSD)
+				.attribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance", true)
+				.attribute("xsi:schemaLocation", SCHEMA_XSD + " " + SCHEMA_XSD + ".xsd", true)
+				.projectVersion();
 
 		if (!properties.isEmpty()) {
-			breakNeeded = true;
-
 			List<String> keys = new ArrayList<>(properties.keySet());
 			Collections.sort(keys);
 
 			for (String key : keys) {
-				encoder.printProperty(key, properties.get(key));
+				encoder.property(key, properties.get(key));
 			}
 		}
 
 		if (!dataMaps.isEmpty()) {
-			if (breakNeeded) {
-				encoder.println();
-			} else {
-				breakNeeded = true;
-			}
-
 			List<DataMap> maps = new ArrayList<>(this.dataMaps);
 			Collections.sort(maps);
 
 			for (DataMap dataMap : maps) {
-
-				encoder.print("<map");
-				encoder.printAttribute("name", dataMap.getName().trim());
-				encoder.println("/>");
+				encoder.start("map").attribute("name", dataMap.getName().trim()).end();
 			}
 		}
 
 		if (!nodeDescriptors.isEmpty()) {
-			if (breakNeeded) {
-				encoder.println();
-			} else {
-				breakNeeded = true;
-			}
-
 			List<DataNodeDescriptor> nodes = new ArrayList<>(nodeDescriptors);
 			Collections.sort(nodes);
-			encoder.print(nodes);
+			encoder.nested(nodes, delegate);
 		}
 
-		encoder.indent(-1);
-		encoder.println("</domain>");
+		delegate.visitDataChannelDescriptor(this);
+		encoder.end();
 	}
 
 	public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {

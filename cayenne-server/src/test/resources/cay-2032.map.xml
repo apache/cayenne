@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-	 project-version="9">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.cay_2032"/>
 	<db-entity name="TEAM">
 		<db-attribute name="team_id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -15,8 +15,7 @@
 		<db-attribute name="team_id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="user_id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
-	<obj-entity name="Team" className="org.apache.cayenne.testdo.cay_2032.Team" dbEntityName="TEAM">
-	</obj-entity>
+	<obj-entity name="Team" className="org.apache.cayenne.testdo.cay_2032.Team" dbEntityName="TEAM"/>
 	<obj-entity name="User" className="org.apache.cayenne.testdo.cay_2032.User" dbEntityName="USERS">
 		<obj-attribute name="name" type="byte[]" db-attribute-path="name"/>
 	</obj-entity>
@@ -26,10 +25,10 @@
 	<db-relationship name="userHasTeam" source="USERS" target="USER_HAS_TEAM" toMany="true">
 		<db-attribute-pair source="user_id" target="user_id"/>
 	</db-relationship>
-	<db-relationship name="team" source="USER_HAS_TEAM" target="TEAM" toMany="false">
+	<db-relationship name="team" source="USER_HAS_TEAM" target="TEAM">
 		<db-attribute-pair source="team_id" target="team_id"/>
 	</db-relationship>
-	<db-relationship name="user" source="USER_HAS_TEAM" target="USERS" toMany="false">
+	<db-relationship name="user" source="USER_HAS_TEAM" target="USERS">
 		<db-attribute-pair source="user_id" target="user_id"/>
 	</db-relationship>
 	<obj-relationship name="teamUsers" source="Team" target="User" deleteRule="Deny" db-relationship-path="userHasTeam.user"/>

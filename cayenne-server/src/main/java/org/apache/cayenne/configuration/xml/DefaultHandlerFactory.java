@@ -16,27 +16,29 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project.upgrade.v8;
 
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.project.upgrade.ProjectUpgrader;
-import org.apache.cayenne.project.upgrade.UpgradeHandler;
-import org.apache.cayenne.resource.Resource;
+package org.apache.cayenne.configuration.xml;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.Attributes;
 
 /**
- * A ProjectUpgrader that handles project upgrades from version 4.0.M3 and 7
- * to version 8.
+ * @since 4.1
  */
-public class ProjectUpgrader_V8 implements ProjectUpgrader {
+public class DefaultHandlerFactory implements HandlerFactory {
 
-    @Inject
-    protected Injector injector;
+    private static Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
     @Override
-    public UpgradeHandler getUpgradeHandler(Resource projectSource) {
-        UpgradeHandler_V8 handler = new UpgradeHandler_V8(projectSource);
-        injector.injectMembers(handler);
-        return handler;
+    public NamespaceAwareNestedTagHandler createHandler(String namespace, String localName, NamespaceAwareNestedTagHandler parent) {
+        return new NamespaceAwareNestedTagHandler(parent, namespace) {
+            @Override
+            protected boolean processElement(String namespaceURI, String localName, Attributes attributes) {
+                logger.debug("Skipping unknown tag <{}:{}>", namespaceURI, localName);
+                return true;
+            }
+        };
     }
+
 }

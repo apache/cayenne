@@ -20,9 +20,10 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -54,7 +55,7 @@ import java.util.Map;
  * {@link org.apache.cayenne.access.DataContext#performGenericQuery(Query)}.
  * </p>
  */
-public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery, XMLSerializable {
+public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery {
 
     public static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.ProcedureQuery.columnNameCapitalization";
 
@@ -223,53 +224,6 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery,
                 : null;
 
         metaData.initWithProperties(properties);
-    }
-
-    /**
-     * Prints itself as XML to the provided PrintWriter.
-     * 
-     * @since 1.1
-     */
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<query name=\"");
-        encoder.print(getName());
-        encoder.print("\" factory=\"");
-        encoder.print("org.apache.cayenne.map.ProcedureQueryBuilder");
-
-        encoder.print("\" root=\"");
-        encoder.print(MapLoader.PROCEDURE_ROOT);
-
-        String rootString = null;
-
-        if (root instanceof String) {
-            rootString = root.toString();
-        }
-        else if (root instanceof Procedure) {
-            rootString = ((Procedure) root).getName();
-        }
-
-        if (rootString != null) {
-            encoder.print("\" root-name=\"");
-            encoder.print(rootString);
-        }
-
-        if (resultEntityName != null) {
-            encoder.print("\" result-entity=\"");
-            encoder.print(resultEntityName);
-        }
-
-        encoder.println("\">");
-        encoder.indent(1);
-
-        metaData.encodeAsXML(encoder);
-        if (getColumnNamesCapitalization() != CapsStrategy.DEFAULT) {
-            encoder.printProperty(
-                    COLUMN_NAME_CAPITALIZATION_PROPERTY,
-                    getColumnNamesCapitalization().name());
-        }
-
-        encoder.indent(-1);
-        encoder.println("</query>");
     }
 
     /**

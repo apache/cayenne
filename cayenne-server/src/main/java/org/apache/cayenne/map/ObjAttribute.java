@@ -24,7 +24,6 @@ import java.util.Iterator;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -100,28 +99,15 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<obj-attribute name=\"" + getName() + '\"');
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        encoder.start("obj-attribute")
+                .attribute("name", getName())
+                .attribute("type", getType())
+                .attribute("lock", isUsedForLocking())
+                .attribute("db-attribute-path", getDbAttributePath());
 
-        if (getType() != null) {
-            encoder.print(" type=\"");
-            encoder.print(Util.encodeXmlAttribute(getType()));
-            encoder.print('\"');
-        }
-
-        if (isUsedForLocking()) {
-            encoder.print(" lock=\"true\"");
-        }
-
-        // If this obj attribute is mapped to db attribute
-        if (/*getDbAttribute() != null
-                || (((ObjEntity) getEntity()).isAbstract() && */!Util.isEmptyString(getDbAttributePath())) {
-            encoder.print(" db-attribute-path=\"");
-            encoder.print(Util.encodeXmlAttribute(getDbAttributePath()));
-            encoder.print('\"');
-        }
-
-        encoder.println("/>");
+        delegate.visitObjAttribute(this);
+        encoder.end();
     }
 
     /**

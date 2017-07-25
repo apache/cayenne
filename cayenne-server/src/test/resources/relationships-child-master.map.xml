@@ -1,29 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-          project-version="9">
-    <property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_child_master"/>
-    <db-entity name="CHILD">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="MASTER_ID" type="INTEGER"/>
-    </db-entity>
-    <db-entity name="MASTER">
-        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-        <db-attribute name="NAME" type="VARCHAR" length="100"/>
-    </db-entity>
-    <obj-entity name="Child" className="org.apache.cayenne.testdo.relationships_child_master.Child" dbEntityName="CHILD">
-    </obj-entity>
-    <obj-entity name="Master" className="org.apache.cayenne.testdo.relationships_child_master.Master" dbEntityName="MASTER">
-        <obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
-    </obj-entity>
-    <db-relationship name="master" source="CHILD" target="MASTER" toMany="false">
-        <db-attribute-pair source="MASTER_ID" target="ID"/>
-    </db-relationship>
-    <db-relationship name="children" source="MASTER" target="CHILD" toMany="true">
-        <db-attribute-pair source="ID" target="MASTER_ID"/>
-    </db-relationship>
-    <obj-relationship name="master" source="Child" target="Master" deleteRule="Nullify" db-relationship-path="master"/>
-    <obj-relationship name="children" source="Master" target="Child" deleteRule="Deny" db-relationship-path="children"/>
-
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_child_master"/>
+	<db-entity name="CHILD">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="MASTER_ID" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="MASTER">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<obj-entity name="Child" className="org.apache.cayenne.testdo.relationships_child_master.Child" dbEntityName="CHILD"/>
+	<obj-entity name="Master" className="org.apache.cayenne.testdo.relationships_child_master.Master" dbEntityName="MASTER">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<db-relationship name="master" source="CHILD" target="MASTER">
+		<db-attribute-pair source="MASTER_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="children" source="MASTER" target="CHILD" toMany="true">
+		<db-attribute-pair source="ID" target="MASTER_ID"/>
+	</db-relationship>
+	<obj-relationship name="master" source="Child" target="Master" deleteRule="Nullify" db-relationship-path="master"/>
+	<obj-relationship name="children" source="Master" target="Child" deleteRule="Deny" db-relationship-path="children"/>
 </data-map>

@@ -16,9 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.configuration.xml;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.ConfigurationTree;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
@@ -36,10 +42,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class XMLDataChannelDescriptorLoaderTest {
 
@@ -54,6 +57,9 @@ public class XMLDataChannelDescriptorLoaderTest {
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
                 binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
                 binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+                binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
+                binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
+
             }
         };
 

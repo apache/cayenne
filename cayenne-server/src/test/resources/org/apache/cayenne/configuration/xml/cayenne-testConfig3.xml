@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<domain project-version="6">
+<domain project-version="10">
 	<map name="testConfigMap3_1" location="testConfigMap3_1.map.xml" />
 	<map name="testConfigMap3_2" location="testConfigMap3_2.map.xml" />
 

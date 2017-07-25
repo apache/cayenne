@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -65,41 +66,26 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder) {
-        encoder.print("<query name=\"");
-        encoder.print(getName());
-        encoder.print("\" type=\"");
-        encoder.print(type);
-
-        encoder.print("\" root=\"");
-        encoder.print(MapLoader.PROCEDURE_ROOT);
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        encoder.start("query")
+                .attribute("name", getName())
+                .attribute("type", getType())
+                .attribute("root", QueryDescriptor.PROCEDURE_ROOT);
 
         String rootString = null;
-
         if (root instanceof String) {
             rootString = root.toString();
-        }
-        else if (root instanceof Procedure) {
+        } else if (root instanceof Procedure) {
             rootString = ((Procedure) root).getName();
         }
 
-        if (rootString != null) {
-            encoder.print("\" root-name=\"");
-            encoder.print(rootString);
-        }
-
-        if (resultEntityName != null) {
-            encoder.print("\" result-entity=\"");
-            encoder.print(resultEntityName);
-        }
-
-        encoder.println("\">");
-        encoder.indent(1);
+        encoder.attribute("root-name", rootString)
+                .attribute("result-entity", resultEntityName);
 
         // print properties
         encodeProperties(encoder);
 
-        encoder.indent(-1);
-        encoder.println("</query>");
+        delegate.visitQuery(this);
+        encoder.end();
     }
 }
