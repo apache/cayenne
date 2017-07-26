@@ -5,6 +5,16 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
 
+UPGRADING TO 4.1.M1
+
+* Per CAY-2335 ServerRuntime by default will fail to load projects in case of version mismatch.
+      You have two options:
+      - update project via opening it in Cayenne Modeler
+      - if you are unable to do so you can use new cayenne-project-compatibility module,
+      to enable it simply add it as a dependency in Maven (or any other build system you use), however
+      this module can support only versions created by Cayenne 3.1 or later.
+
+
 UPGRADING TO 4.0.B1
 
 * Per CAY-2302 postcommit module and all it's internals renamed to commitlog.
