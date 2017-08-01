@@ -28,6 +28,7 @@ import org.apache.cayenne.project.extension.SaverDelegate;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.XMLEncoder;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -56,7 +57,8 @@ public class FileProjectSaver implements ProjectSaver {
 	protected ConfigurationNodeVisitor<Collection<ConfigurationNode>> saveableNodesGetter;
 	protected String fileEncoding;
 
-	protected Collection<SaverDelegate> saverDelegates;
+	protected Collection<ProjectExtension> extensions;
+	protected SaverDelegate delegate;
 
 	public FileProjectSaver(@Inject List<ProjectExtension> extensions) {
 		resourceGetter = new ConfigurationSourceGetter();
@@ -65,21 +67,25 @@ public class FileProjectSaver implements ProjectSaver {
 		// this is not configurable yet... probably doesn't have to be
 		fileEncoding = "UTF-8";
 
-		saverDelegates = new ArrayList<>(extensions.size());
+		this.extensions = extensions;
+		Collection<SaverDelegate> delegates = new ArrayList<>(extensions.size());
 		for(ProjectExtension extension : extensions) {
-			SaverDelegate delegate = extension.createSaverDelegate();
-			saverDelegates.add(delegate);
+			delegates.add(extension.createSaverDelegate());
 		}
+		delegate = new CompoundSaverDelegate(delegates);
 	}
 
+	@Override
 	public String getSupportedVersion() {
 		return String.valueOf(Project.VERSION);
 	}
 
+	@Override
 	public void save(Project project) {
 		save(project, project.getConfigurationResource(), true);
 	}
 
+	@Override
 	public void saveAs(Project project, Resource baseDirectory) {
 		if (baseDirectory == null) {
 			throw new NullPointerException("Null 'baseDirectory'");
@@ -91,8 +97,21 @@ public class FileProjectSaver implements ProjectSaver {
 		Collection<ConfigurationNode> nodes = project.getRootNode().acceptVisitor(saveableNodesGetter);
 		Collection<SaveUnit> units = new ArrayList<>(nodes.size());
 
-		for (ConfigurationNode node : nodes) {
-			units.add(createSaveUnit(node, baseResource));
+		for(ConfigurationNode node : nodes) {
+			String targetLocation = nameMapper.configurationLocation(node);
+			Resource targetResource = baseResource.getRelativeResource(targetLocation);
+			units.add(createSaveUnit(node, targetResource, null));
+
+			for(ProjectExtension extension : extensions) {
+				ConfigurationNodeVisitor<String> namingDelegate = extension.createNamingDelegate();
+				SaverDelegate unitSaverDelegate = extension.createSaverDelegate();
+				String fileName = node.acceptVisitor(namingDelegate);
+				if(fileName != null) {
+					// not null means that this should go to a separate file
+					targetResource = baseResource.getRelativeResource(fileName);
+					units.add(createSaveUnit(node, targetResource, unitSaverDelegate));
+				}
+			}
 		}
 
 		checkAccess(units);
@@ -123,10 +142,11 @@ public class FileProjectSaver implements ProjectSaver {
 		project.getUnusedResources().clear();
 	}
 
-	SaveUnit createSaveUnit(ConfigurationNode node, Resource baseResource) {
+	SaveUnit createSaveUnit(ConfigurationNode node, Resource baseResource, SaverDelegate delegate) {
 
 		SaveUnit unit = new SaveUnit();
 		unit.node = node;
+		unit.delegate = delegate;
 		unit.sourceConfiguration = node.acceptVisitor(resourceGetter);
 
 		String targetLocation = nameMapper.configurationLocation(node);
@@ -209,9 +229,17 @@ public class FileProjectSaver implements ProjectSaver {
 	}
 
 	void saveToTempFile(SaveUnit unit, PrintWriter printWriter) {
-		unit.node.acceptVisitor(
-				new ConfigurationSaver(printWriter, getSupportedVersion(), new CompoundSaverDelegate(saverDelegates))
-		);
+		ConfigurationNodeVisitor<?> visitor;
+		if(unit.delegate == null) {
+			visitor = new ConfigurationSaver(printWriter, getSupportedVersion(), delegate);
+		} else {
+			XMLEncoder encoder = new XMLEncoder(printWriter, "\t", getSupportedVersion());
+			encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+			unit.delegate.setXMLEncoder(encoder);
+			visitor = unit.delegate;
+		}
+
+		unit.node.acceptVisitor(visitor);
 	}
 
 	void saveCommit(Collection<SaveUnit> units) {
@@ -330,6 +358,7 @@ public class FileProjectSaver implements ProjectSaver {
 	class SaveUnit {
 
 		private ConfigurationNode node;
+		private SaverDelegate delegate;
 
 		// source can be an abstract resource, but target is always a file...
 		private Resource sourceConfiguration;

@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.project.extension;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+
 /**
  * <p>DataMap XML file extension mechanics.</p>
  * <p>
@@ -44,5 +46,8 @@ public interface ProjectExtension {
      * @return delegate that handle saving phase of XML processing
      */
     SaverDelegate createSaverDelegate();
+
+
+    ConfigurationNodeVisitor<String> createNamingDelegate();
 
 }

@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.project.extension;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -33,105 +34,79 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.util.XMLEncoder;
 
 /**
- * Base saver delegate that handles common setters/getters, as well as provides empty stub for all methods.
- *
  * @since 4.1
  */
-public class BaseSaverDelegate implements SaverDelegate {
-
-    protected XMLEncoder encoder;
-
-    protected SaverDelegate parentDelegate;
+public class BaseNamingDelegate implements ConfigurationNodeVisitor<String> {
 
     @Override
-    public Void visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
+    public String visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
         return null;
     }
 
     @Override
-    public Void visitDataNodeDescriptor(DataNodeDescriptor nodeDescriptor) {
+    public String visitDataNodeDescriptor(DataNodeDescriptor nodeDescriptor) {
         return null;
     }
 
     @Override
-    public Void visitDataMap(DataMap dataMap) {
+    public String visitDataMap(DataMap dataMap) {
         return null;
     }
 
     @Override
-    public Void visitObjEntity(ObjEntity entity) {
+    public String visitObjEntity(ObjEntity entity) {
         return null;
     }
 
     @Override
-    public Void visitDbEntity(DbEntity entity) {
+    public String visitDbEntity(DbEntity entity) {
         return null;
     }
 
     @Override
-    public Void visitEmbeddable(Embeddable embeddable) {
+    public String visitEmbeddable(Embeddable embeddable) {
         return null;
     }
 
     @Override
-    public Void visitEmbeddableAttribute(EmbeddableAttribute attribute) {
+    public String visitEmbeddableAttribute(EmbeddableAttribute attribute) {
         return null;
     }
 
     @Override
-    public Void visitObjAttribute(ObjAttribute attribute) {
+    public String visitObjAttribute(ObjAttribute attribute) {
         return null;
     }
 
     @Override
-    public Void visitDbAttribute(DbAttribute attribute) {
+    public String visitDbAttribute(DbAttribute attribute) {
         return null;
     }
 
     @Override
-    public Void visitObjRelationship(ObjRelationship relationship) {
+    public String visitObjRelationship(ObjRelationship relationship) {
         return null;
     }
 
     @Override
-    public Void visitDbRelationship(DbRelationship relationship) {
+    public String visitDbRelationship(DbRelationship relationship) {
         return null;
     }
 
     @Override
-    public Void visitProcedure(Procedure procedure) {
+    public String visitProcedure(Procedure procedure) {
         return null;
     }
 
     @Override
-    public Void visitProcedureParameter(ProcedureParameter parameter) {
+    public String visitProcedureParameter(ProcedureParameter parameter) {
         return null;
     }
 
     @Override
-    public Void visitQuery(QueryDescriptor query) {
+    public String visitQuery(QueryDescriptor query) {
         return null;
-    }
-
-    @Override
-    public void setXMLEncoder(XMLEncoder encoder) {
-        this.encoder = encoder;
-    }
-
-    @Override
-    public void setParentDelegate(SaverDelegate parentDelegate) {
-        this.parentDelegate = parentDelegate;
-    }
-
-    @Override
-    public SaverDelegate getParentDelegate() {
-        return parentDelegate;
-    }
-
-    protected boolean isStandalone() {
-        return parentDelegate == null;
     }
 }

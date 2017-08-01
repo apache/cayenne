@@ -45,6 +45,7 @@ public class XMLDataMapLoader implements DataMapLoader {
     public synchronized DataMap load(Resource configurationResource) throws CayenneRuntimeException {
         try(InputStream in = configurationResource.getURL().openStream()) {
             XMLReader parser = Util.createXmlReader();
+            parser.setFeature("http://apache.org/xml/features/xinclude", true);
             LoaderContext loaderContext = new LoaderContext(parser, handlerFactory);
             loaderContext.addDataMapListener(new DataMapLoaderListener() {
                 @Override
@@ -56,7 +57,9 @@ public class XMLDataMapLoader implements DataMapLoader {
 
             parser.setContentHandler(rootHandler);
             parser.setErrorHandler(rootHandler);
-            parser.parse(new InputSource(in));
+            InputSource input = new InputSource(in);
+            input.setSystemId(configurationResource.getURL().toString());
+            parser.parse(input);
         } catch (Exception e) {
             throw new CayenneRuntimeException("Error loading configuration from %s", e, configurationResource.getURL());
         }

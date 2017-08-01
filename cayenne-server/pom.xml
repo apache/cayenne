@@ -112,6 +112,13 @@
 			<groupId>com.mockrunner</groupId>
 			<artifactId>mockrunner-jdbc</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<!-- this one have old Xerces dependency that clashes with JDK's one -->
+					<groupId>nekohtml</groupId>
+					<artifactId>nekohtml</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.mockrunner</groupId>
