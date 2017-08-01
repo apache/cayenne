@@ -19,6 +19,15 @@
 
 package org.apache.cayenne.query;
 
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
 import org.apache.cayenne.exp.Expression;
@@ -30,15 +39,6 @@ import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 import org.apache.commons.collections.ComparatorUtils;
-
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Defines object sorting criteria, used either for in-memory sorting of object
@@ -460,4 +460,40 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	public SortOrder getSortOrder() {
 		return sortOrder;
 	}
+	
+	
+	 /**
+	  * Returns Orderings with this Ordering followed by the provided
+	  * next Ordering.
+	  * 
+	  * @param nextOrdering the next Ordering to chain to this
+	  * @return a new Orderings with both Ordering
+	  */
+	 public Orderings then(Ordering nextOrdering) {
+	 	return new Orderings(this, nextOrdering);
+	 }
+
+	 /**
+	  * Returns Orderings with this Ordering followed by the provided
+	  * list of next Orderings.
+	  * 
+	  * @param nextOrderings the next Orderings to chain to this
+	  * @return an array of sort orderings
+	  */
+	 public Orderings then(Orderings nextOrderings) {
+	 	Orderings newOrderings = new Orderings(this);
+	 	
+	 	return newOrderings.then(nextOrderings);
+	 }
+	 
+	 /**
+	  * @see Orderings#then(Orderings)
+	  * @param nextOrderings
+	  * @return
+	  */
+	 public Orderings then(List<Ordering> nextOrderings) {
+	 	Orderings newOrderings = new Orderings(this);
+	 	
+	 	return newOrderings.then(nextOrderings);
+	 }
 }
