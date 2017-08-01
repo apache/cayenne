@@ -18,18 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.exp.parser.ASTPath;
-import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.SortOrder;
-import org.apache.cayenne.reflect.PropertyUtils;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.query.Orderings;
+import org.apache.cayenne.query.PrefetchTreeNode;
+import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.reflect.PropertyUtils;
 
 /**
  * <p>
@@ -91,7 +92,8 @@ public class Property<E> {
      * @see Property#create(String, Class)
      * @deprecated use factory method Property.create("propertyName", PropertyType.class)
      */
-    public Property(final String name) {
+    @Deprecated
+	public Property(final String name) {
         this(name, null);
     }
 
@@ -525,11 +527,9 @@ public class Property<E> {
     /**
      * @return Ascending sort orderings on this property.
      */
-    public List<Ordering> ascs() {
-        List<Ordering> result = new ArrayList<>(1);
-        result.add(asc());
-        return result;
-    }
+	public Orderings ascs() {
+		return new Orderings(asc());
+	}
 
     /**
      * @return Ascending case insensitive sort orderings on this property.
@@ -541,11 +541,9 @@ public class Property<E> {
     /**
      * @return Ascending case insensitive sort orderings on this property.
      */
-    public List<Ordering> ascInsensitives() {
-        List<Ordering> result = new ArrayList<>(1);
-        result.add(ascInsensitive());
-        return result;
-    }
+	public Orderings ascInsensitives() {
+		return new Orderings(ascInsensitive());
+	}
 
     /**
      * @return Descending sort orderings on this property.
@@ -557,10 +555,8 @@ public class Property<E> {
     /**
      * @return Descending sort orderings on this property.
      */
-    public List<Ordering> descs() {
-        List<Ordering> result = new ArrayList<>(1);
-        result.add(desc());
-        return result;
+    public Orderings descs() {
+        return new Orderings(desc());
     }
 
     /**
@@ -573,10 +569,8 @@ public class Property<E> {
     /**
      * @return Descending case insensitive sort orderings on this property.
      */
-    public List<Ordering> descInsensitives() {
-        List<Ordering> result = new ArrayList<>(1);
-        result.add(descInsensitive());
-        return result;
+    public Orderings descInsensitives() {
+        return new Orderings(descInsensitive());
     }
 
     /**
