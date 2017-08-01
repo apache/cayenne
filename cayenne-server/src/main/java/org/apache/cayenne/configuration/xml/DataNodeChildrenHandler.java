@@ -27,7 +27,7 @@ import org.xml.sax.ContentHandler;
 /**
  * @since 4.1
  */
-final class DataNodeChildrenHandler extends SAXNestedTagHandler {
+final class DataNodeChildrenHandler extends NamespaceAwareNestedTagHandler {
 
     static final String DATA_SOURCE_TAG = "data-source";
     static final String MAP_REF_TAG = "map-ref";
@@ -37,7 +37,7 @@ final class DataNodeChildrenHandler extends SAXNestedTagHandler {
 
     private DataSourceInfo dataSourceDescriptor;
 
-    DataNodeChildrenHandler(XMLDataChannelDescriptorLoader xmlDataChannelDescriptorLoader, SAXNestedTagHandler parentHandler, DataNodeDescriptor nodeDescriptor) {
+    DataNodeChildrenHandler(XMLDataChannelDescriptorLoader xmlDataChannelDescriptorLoader, NamespaceAwareNestedTagHandler parentHandler, DataNodeDescriptor nodeDescriptor) {
         super(parentHandler);
         this.xmlDataChannelDescriptorLoader = xmlDataChannelDescriptorLoader;
         this.nodeDescriptor = nodeDescriptor;

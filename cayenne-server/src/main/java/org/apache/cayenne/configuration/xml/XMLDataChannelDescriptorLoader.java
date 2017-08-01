@@ -141,6 +141,8 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 			InputSource input = new InputSource(in);
 			input.setSystemId(configurationURL.toString());
 			parser.parse(input);
+
+            loaderContext.dataChannelLoaded(descriptor);
 		} catch (Exception e) {
 			throw new ConfigurationException("Error loading configuration from %s", e, configurationURL);
 		}

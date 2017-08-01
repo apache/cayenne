@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<domain project-version="10">
+<domain xmlns="http://cayenne.apache.org/schema/10/domain"
+	project-version="10">
 	<map name="lifecycle-map"/>
 
 	<node name="lifecycle-db"

@@ -142,15 +142,12 @@ public class FileProjectSaver implements ProjectSaver {
 		project.getUnusedResources().clear();
 	}
 
-	SaveUnit createSaveUnit(ConfigurationNode node, Resource baseResource, SaverDelegate delegate) {
+	SaveUnit createSaveUnit(ConfigurationNode node, Resource targetResource, SaverDelegate delegate) {
 
 		SaveUnit unit = new SaveUnit();
 		unit.node = node;
 		unit.delegate = delegate;
 		unit.sourceConfiguration = node.acceptVisitor(resourceGetter);
-
-		String targetLocation = nameMapper.configurationLocation(node);
-		Resource targetResource = baseResource.getRelativeResource(targetLocation);
 
 		if (unit.sourceConfiguration == null) {
 			unit.sourceConfiguration = targetResource;
@@ -267,7 +264,9 @@ public class FileProjectSaver implements ProjectSaver {
 
 			unit.targetTempFile = null;
 			try {
-				unit.node.acceptVisitor(new ConfigurationSourceSetter(new URLResource(targetFile.toURI().toURL())));
+				if(unit.delegate == null) {
+					unit.node.acceptVisitor(new ConfigurationSourceSetter(new URLResource(targetFile.toURI().toURL())));
+				}
 			} catch (MalformedURLException e) {
 				throw new CayenneRuntimeException("Malformed URL for file '%s'", e, targetFile.getAbsolutePath());
 			}

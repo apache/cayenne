@@ -32,7 +32,7 @@ import org.xml.sax.ContentHandler;
 /**
  * @since 4.1
  */
-final class DataChannelChildrenHandler extends SAXNestedTagHandler {
+final class DataChannelChildrenHandler extends NamespaceAwareNestedTagHandler {
 
     private static Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 

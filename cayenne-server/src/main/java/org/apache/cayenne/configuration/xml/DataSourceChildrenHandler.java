@@ -33,7 +33,7 @@ import org.xml.sax.Attributes;
 /**
  * @since 4.1
  */
-class DataSourceChildrenHandler extends SAXNestedTagHandler {
+class DataSourceChildrenHandler extends NamespaceAwareNestedTagHandler {
 
     private static Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 

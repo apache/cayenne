@@ -31,7 +31,7 @@ import org.xml.sax.SAXException;
 /**
  * @since 4.1
  */
-final class DataChannelHandler extends SAXNestedTagHandler {
+final class DataChannelHandler extends NamespaceAwareNestedTagHandler {
 
     private static Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
@@ -44,6 +44,7 @@ final class DataChannelHandler extends SAXNestedTagHandler {
         super(loaderContext);
         this.xmlDataChannelDescriptorLoader = xmlDataChannelDescriptorLoader;
         this.descriptor = dataChannelDescriptor;
+        setTargetNamespace(DataChannelDescriptor.SCHEMA_XSD);
     }
 
     @Override
@@ -53,7 +54,7 @@ final class DataChannelHandler extends SAXNestedTagHandler {
                 validateVersion(attributes);
                 return true;
         }
-        return super.processElement(namespaceURI, localName, attributes);
+        return false;
     }
 
     protected void validateVersion(Attributes attributes) {
