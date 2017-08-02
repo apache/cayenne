@@ -61,6 +61,8 @@ public class SybaseAdapter extends JdbcAdapter {
                          @Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator,
                          @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
         super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator, valueObjectTypeRegistry);
+        
+		this.setSupportsGeneratedKeys(true);
     }
 
     @Override

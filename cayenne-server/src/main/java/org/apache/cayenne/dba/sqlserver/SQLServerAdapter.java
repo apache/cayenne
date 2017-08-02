@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
+import java.util.List;
+
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.access.translator.select.QueryAssembler;
@@ -36,8 +38,6 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
-
-import java.util.List;
 
 /**
  * <p>
@@ -88,9 +88,6 @@ public class SQLServerAdapter extends SybaseAdapter {
 							@Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
 		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator, valueObjectTypeRegistry);
 
-		// TODO: i wonder if Sybase supports generated keys...
-		// in this case we need to move this to the super.
-		this.setSupportsGeneratedKeys(true);
 		this.setSupportsBatchUpdates(true);
 	}
 
