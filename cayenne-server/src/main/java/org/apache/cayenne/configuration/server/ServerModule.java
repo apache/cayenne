@@ -77,6 +77,7 @@ import org.apache.cayenne.configuration.xml.HandlerFactory;
 import org.apache.cayenne.configuration.xml.NoopDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
+import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.firebird.FirebirdSniffer;
@@ -116,6 +117,7 @@ import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionFilter;
 import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.velocity.VelocitySQLTemplateProcessor;
+import org.xml.sax.XMLReader;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -410,5 +412,6 @@ public class ServerModule implements Module {
 
         binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
         binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
+        binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
     }
 }

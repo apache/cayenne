@@ -49,6 +49,7 @@ import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V9;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.Test;
+import org.xml.sax.XMLReader;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -80,6 +81,8 @@ public class CompatibilityDataChannelDescriptorLoaderIT {
                         .add(UpgradeHandler_V10.class);
 
                 binder.bind(ProjectSaver.class).toInstance(mock(ProjectSaver.class));
+
+                binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
             }
         });
 

@@ -35,6 +35,7 @@ import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
+import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.firebird.FirebirdSniffer;
@@ -63,6 +64,7 @@ import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.slf4j.Logger;
+import org.xml.sax.XMLReader;
 
 /**
  * A DI module to bootstrap DI container for Cayenne Ant tasks and Maven
@@ -117,6 +119,7 @@ public class ToolsModule implements Module {
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
         binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);
+        binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(true)).withoutScope();
 
         ProjectModule.contributeExtensions(binder);
     }

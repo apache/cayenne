@@ -28,6 +28,7 @@ import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslatorFactory;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCache;
+import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.dba.DbAdapter;
@@ -93,6 +94,9 @@ public class SchemaBuilder {
 	private DataDomain domain;
 	private JdbcEventLogger jdbcEventLogger;
 
+	@Inject
+	DataMapLoader loader;
+
 	public SchemaBuilder(@Inject ServerCaseDataSourceFactory dataSourceFactory, @Inject UnitDbAdapter unitDbAdapter,
 			@Inject DbAdapter dbAdapter, @Inject JdbcEventLogger jdbcEventLogger) {
 		this.dataSourceFactory = dataSourceFactory;
@@ -115,10 +119,7 @@ public class SchemaBuilder {
 
 		for (int i = 0; i < maps.length; i++) {
 			URL mapURL = getClass().getClassLoader().getResource(MAPS_REQUIRING_SCHEMA_SETUP[i]);
-			XMLDataMapLoader loader = new XMLDataMapLoader();
-			loader.setHandlerFactory(new DefaultHandlerFactory());
 			maps[i] = loader.load(new URLResource(mapURL));
-
 		}
 
 		this.domain = new DataDomain("temp");

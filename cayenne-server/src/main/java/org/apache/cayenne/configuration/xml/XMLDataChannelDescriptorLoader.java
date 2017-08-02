@@ -26,6 +26,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
@@ -98,6 +99,9 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 	}
 
 	@Inject
+	protected Provider<XMLReader> xmlReaderProvider;
+
+	@Inject
 	protected DataMapLoader dataMapLoader;
 
 	@Inject
@@ -125,8 +129,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 		descriptor.setName(nameMapper.configurationNodeName(DataChannelDescriptor.class, configurationResource));
 
 		try(InputStream in = configurationURL.openStream()) {
-			XMLReader parser = Util.createXmlReader();
-			parser.setFeature("http://apache.org/xml/features/xinclude", true);
+			XMLReader parser = xmlReaderProvider.get();
 			LoaderContext loaderContext = new LoaderContext(parser, handlerFactory);
 			loaderContext.addDataMapListener(new DataMapLoaderListener() {
 				@Override

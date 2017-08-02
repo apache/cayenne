@@ -38,6 +38,7 @@ import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.Before;
 import org.junit.Test;
+import org.xml.sax.XMLReader;
 
 import static org.junit.Assert.*;
 
@@ -58,6 +59,7 @@ public class XMLDataMapLoaderTest {
                 binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
                 binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
                 binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
+                binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
             }
         };
 

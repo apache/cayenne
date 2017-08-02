@@ -29,6 +29,7 @@ import org.apache.cayenne.configuration.xml.HandlerFactory;
 import org.apache.cayenne.configuration.xml.NoopDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
+import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
@@ -40,6 +41,7 @@ import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.Test;
+import org.xml.sax.XMLReader;
 
 import java.net.URL;
 
@@ -66,6 +68,7 @@ public class DataChannelProjectLoaderTest {
                 binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
                 binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
                 binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
+                binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
             }
         };
 

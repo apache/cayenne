@@ -37,6 +37,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.Before;
 import org.junit.Test;
+import org.xml.sax.XMLReader;
 
 import java.net.URL;
 import java.util.Collection;
@@ -59,7 +60,7 @@ public class XMLDataChannelDescriptorLoaderTest {
                 binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
                 binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
                 binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
-
+                binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
             }
         };
 
