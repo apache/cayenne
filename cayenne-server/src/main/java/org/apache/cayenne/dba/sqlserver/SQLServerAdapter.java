@@ -32,7 +32,6 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
@@ -118,22 +117,6 @@ public class SQLServerAdapter extends SybaseAdapter {
 				SQLServerAdapter.TRIM_FUNCTION);
 		translator.setCaseInsensitive(caseInsensitiveCollations);
 		return translator;
-	}
-
-	/**
-	 * Overrides super implementation to correctly set up identity columns.
-	 * 
-	 * @since 1.2
-	 */
-	@Override
-	public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-
-		super.createTableAppendColumn(sqlBuffer, column);
-
-		if (column.isGenerated()) {
-			// current limitation - we don't allow to set identity parameters...
-			sqlBuffer.append(" IDENTITY (1, 1)");
-		}
 	}
 
 }

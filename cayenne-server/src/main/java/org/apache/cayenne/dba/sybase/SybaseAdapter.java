@@ -44,6 +44,7 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -150,6 +151,23 @@ public class SybaseAdapter extends JdbcAdapter {
             statement.setNull(binding.getStatementPosition(), Types.VARCHAR);
         } else {
             super.bindParameter(statement, binding);
+        }
+    }
+
+    /**
+     * Overrides super implementation to correctly set up identity columns.
+     *
+     * @since 1.2
+     * @since 4.1 moved from SQLServerAdapter to SybaseAdapter as it supports this too
+     */
+    @Override
+    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+
+        super.createTableAppendColumn(sqlBuffer, column);
+
+        if (column.isGenerated()) {
+            // current limitation - we don't allow to set identity parameters...
+            sqlBuffer.append(" IDENTITY (1, 1)");
         }
     }
 }
