@@ -11,7 +11,7 @@ import java.util.List;
   * <p>Example:</p>
   * <pre>Person.COMPANY_NAME.asc().then(Person.FIRST_NAME.desc)</pre>
   * 
-  * @since 4.0
+  * @since 4.1
   */
 public class Orderings extends ArrayList<Ordering> {
 	 
@@ -63,8 +63,8 @@ public class Orderings extends ArrayList<Ordering> {
 	 
 	 /**
 	 * @see Orderings#then(Orderings)
-	 * @param nextOrderings
-	 * @return
+	 * @param nextOrderings the sort ordering to add
+	 * @return this
 	 */
 	 public Orderings then(List<Ordering> nextOrderings) {
 	 	addAll(nextOrderings);

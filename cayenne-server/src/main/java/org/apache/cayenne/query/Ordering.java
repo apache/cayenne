@@ -468,6 +468,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	  * 
 	  * @param nextOrdering the next Ordering to chain to this
 	  * @return a new Orderings with both Ordering
+	  * @since 4.1
 	  */
 	 public Orderings then(Ordering nextOrdering) {
 	 	return new Orderings(this, nextOrdering);
@@ -479,6 +480,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	  * 
 	  * @param nextOrderings the next Orderings to chain to this
 	  * @return an array of sort orderings
+	  * @since 4.1
 	  */
 	 public Orderings then(Orderings nextOrderings) {
 	 	Orderings newOrderings = new Orderings(this);
@@ -488,8 +490,9 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 
 	 /**
 	  * @see Orderings#then(Orderings)
-	  * @param nextOrderings
-	  * @return
+	  * @param nextOrderings the next Orderings to chain to this
+	  * @return an array of sort orderings
+	  * @since 4.1
 	  */
 	 public Orderings then(List<Ordering> nextOrderings) {
 	 	Orderings newOrderings = new Orderings(this);
