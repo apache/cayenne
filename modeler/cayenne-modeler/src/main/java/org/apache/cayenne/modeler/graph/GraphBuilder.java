@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.graph;
 
-import java.io.Serializable;
-
 import javax.swing.event.UndoableEditListener;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -30,9 +28,10 @@ import org.jgraph.JGraph;
 import org.jgraph.graph.DefaultGraphCell;
 
 /**
- * Interface for building graphs which represent some prespective of a domain
+ * Interface for building graphs which represent some perspective of a domain
  */
-public interface GraphBuilder extends Serializable, XMLSerializable, UndoableEditListener {
+public interface GraphBuilder extends XMLSerializable, UndoableEditListener {
+
     double ZOOM_FACTOR = 1.3;
     
     /**

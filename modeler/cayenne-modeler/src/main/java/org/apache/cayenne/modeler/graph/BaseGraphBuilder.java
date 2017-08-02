@@ -57,6 +57,7 @@ import org.apache.cayenne.modeler.graph.action.EntityDisplayAction;
 import org.apache.cayenne.modeler.graph.action.RemoveEntityAction;
 import org.apache.cayenne.util.XMLEncoder;
 import org.jgraph.JGraph;
+import org.jgraph.graph.AttributeMap;
 import org.jgraph.graph.DefaultCellViewFactory;
 import org.jgraph.graph.DefaultEdge;
 import org.jgraph.graph.DefaultGraphCell;
@@ -73,7 +74,7 @@ import com.jgraph.layout.organic.JGraphOrganicLayout;
  */
 abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
 
-    static final Font EDGE_FONT = new Font("Verdana", 0, 10);
+    static final Font EDGE_FONT = new Font("Verdana", Font.PLAIN, 10);
 
     /**
      * Graph
@@ -113,6 +114,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
 
     boolean undoEventsDisabled;
 
+    @Override
     public void buildGraph(ProjectController mediator, DataChannelDescriptor domain, boolean doLayout) {
         if (graph != null) {
             // graph already built, exiting silently
@@ -130,7 +132,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         graph.setGraphLayoutCache(view);
 
         graph.addMouseListener(new MouseAdapter() {
-
+            @Override
             public void mouseReleased(MouseEvent e) {
                 if (e.isPopupTrigger()) {
                     Object selected = graph.getSelectionCell();
@@ -145,7 +147,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         });
 
         graph.addMouseWheelListener(new MouseWheelListener() {
-
+            @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
                 // limit scale
                 double scale = graph.getScale() / Math.pow(ZOOM_FACTOR, e.getWheelRotation());
@@ -163,7 +165,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
          * an array for entities that are not connected to anyone. We add them
          * separately so that layout doesn't touch them
          */
-        List<DefaultGraphCell> isolatedObjects = new ArrayList<DefaultGraphCell>();
+        List<DefaultGraphCell> isolatedObjects = new ArrayList<>();
 
         /*
          * 1. Add all entities
@@ -213,14 +215,11 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
 
             // JGraphSimpleLayout layout = new JGraphSimpleLayout(JGraphSimpleLayout.TYPE_TILT, 4000, 2000);
             layout.run(facade);
-            Map nested = facade.createNestedMap(true, true); // Obtain a map of
-                                                             // the
-                                                             // resulting
-                                                             // attribute
-                                                             // changes from the
-                                                             // facade
+            // Obtain a map of the resulting attribute changes from the facade
+            Map nested = facade.createNestedMap(true, true);
 
-            edit(nested); // Apply the results to the actual graph
+            // Apply the results to the actual graph
+            edit(nested);
         }
 
         /*
@@ -275,6 +274,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         return cell;
     }
 
+    @Override
     public DefaultGraphCell getEntityCell(String entityName) {
         return entityCells.get(entityName);
     }
@@ -343,6 +343,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         popup.show(graph, p.x, p.y);
     }
 
+    @Override
     public Entity getSelectedEntity() {
         return selectedEntity;
     }
@@ -373,7 +374,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
             GraphConstants.setValue(cell.getAttributes(), getCellMetadata(e));
             GraphConstants.setResize(cell.getAttributes(), true);
 
-            Map nested = new HashMap();
+            Map<DefaultGraphCell, AttributeMap> nested = new HashMap<>();
             nested.put(cell, cell.getAttributes());
 
             edit(nested);
@@ -386,7 +387,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
             if (edge != null) {
                 updateRelationshipLabels(edge, rel, rel.getReverseRelationship());
 
-                Map nested = new HashMap();
+                Map<DefaultEdge, AttributeMap> nested = new HashMap<>();
                 nested.put(edge, edge.getAttributes());
                 edit(nested);
             } else {
@@ -399,7 +400,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         final DefaultGraphCell cell = entityCells.get(e.getName());
         if (cell != null) {
             runWithUndoDisabled(new Runnable() {
-
+                @Override
                 public void run() {
                     graph.getGraphLayoutCache().remove(new Object[] { cell }, true, true);
                 }
@@ -412,7 +413,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         final DefaultEdge edge = relCells.get(getQualifiedName(rel));
         if (edge != null) {
             runWithUndoDisabled(new Runnable() {
-
+                @Override
                 public void run() {
                     graph.getGraphLayoutCache().remove(new Object[] { edge });
                 }
@@ -482,21 +483,27 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
                 reverse == null ? "" : reverse.getName() + " " + getRelationshipLabel(reverse) };
         GraphConstants.setExtraLabels(edge.getAttributes(), labels);
 
-        Point2D[] labelPositions = { new Point2D.Double(GraphConstants.PERMILLE * (0.1 + 0.2 * Math.random()), 10),
-                new Point2D.Double(GraphConstants.PERMILLE * (0.9 - 0.2 * Math.random()), -10) };
+        Point2D[] labelPositions = {
+                new Point2D.Double(GraphConstants.PERMILLE * (0.1 + 0.2 * Math.random()), 10),
+                new Point2D.Double(GraphConstants.PERMILLE * (0.9 - 0.2 * Math.random()), -10)
+        };
         GraphConstants.setExtraLabelPositions(edge.getAttributes(), labelPositions);
     }
 
+    @Override
     public JGraph getGraph() {
         return graph;
     }
 
+    @Override
     public void dataMapAdded(DataMapEvent e) {
     }
 
+    @Override
     public void dataMapChanged(DataMapEvent e) {
     }
 
+    @Override
     public void dataMapRemoved(DataMapEvent e) {
         for (Entity entity : getEntities(e.getDataMap())) {
             removeEntityCell(entity);
@@ -513,10 +520,12 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         this.domain = domain;
     }
 
+    @Override
     public DataChannelDescriptor getDataDomain() {
         return domain;
     }
 
+    @Override
     public void destroy() {
         mediator.removeDataMapListener(this);
     }
@@ -550,34 +559,23 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.print("<graph type=\"");
-        encoder.print(getType().toString());
-        encoder.print("\" scale=\"");
-        encoder.print(String.valueOf(graph.getScale()));
-        encoder.println("\">");
-        encoder.indent(1);
+        encoder.start("graph")
+                .attribute("type", getType().toString())
+                .attribute("scale", String.valueOf(graph.getScale()));
 
         for (Entry<String, DefaultGraphCell> entry : entityCells.entrySet()) {
-            encoder.print("<entity name=\"");
-            encoder.print(entry.getKey());
-            encoder.print("\" ");
+            Rectangle2D rect = graph.getCellBounds(entry.getValue());
 
-            DefaultGraphCell cell = entry.getValue();
-            Rectangle2D rect = graph.getCellBounds(cell);
-            encodeRecangle(encoder, rect);
-            encoder.println("/>");
+            encoder.start("entity")
+                    .attribute("name", entry.getKey())
+                    .attribute("x", String.valueOf(Math.round(100 * rect.getX()) / 100.0))
+                    .attribute("y", String.valueOf(Math.round(100 * rect.getY()) / 100.0))
+                    .attribute("width", String.valueOf(rect.getWidth()))
+                    .attribute("height", String.valueOf(rect.getHeight()))
+                    .end();
         }
 
-        encoder.indent(-1);
-        encoder.println("</graph>");
-    }
-
-    private void encodeRecangle(XMLEncoder encoder, Rectangle2D rect) {
-        encoder.print("x=\"");
-        encoder.print(rect.getX() + "\" y=\"");
-        encoder.print(rect.getY() + "\" width=\"");
-        encoder.print(rect.getWidth() + "\" height=\"");
-        encoder.print(rect.getHeight() + "\" ");
+        encoder.end();
     }
 
     private void edit(final Map map) {
@@ -607,6 +605,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         }
     }
 
+    @Override
     public void undoableEditHappened(UndoableEditEvent e) {
         if (!undoEventsDisabled) {
             // graph has been modified

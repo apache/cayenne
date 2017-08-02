@@ -88,7 +88,6 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
     }
 
     private void initView() {
-        graphRegistry = new GraphRegistry();
         needRebuild = true;
         mediator.addDomainDisplayListener(this);
 
@@ -177,7 +176,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
             dialog.setVisible(true);
 
             if (pane.getValue().equals(JOptionPane.YES_OPTION)) {
-                graphRegistry.getGraphMap(domain).remove(getSelectedType());
+                getGraphRegistry().getGraphMap(domain).remove(getSelectedType());
                 itemStateChanged(null);
             }
         }
@@ -193,10 +192,12 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
     }
 
     GraphRegistry getGraphRegistry() {
-
+        graphRegistry = mediator.getApplication().getMetaData().get(domain, GraphRegistry.class);
         if (graphRegistry == null) {
-            this.graphRegistry = new GraphRegistry();
+            graphRegistry = new GraphRegistry();
+            mediator.getApplication().getMetaData().add(domain, graphRegistry);
         }
+
         return graphRegistry;
     }
 }

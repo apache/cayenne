@@ -31,9 +31,11 @@ import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.map.event.ObjRelationshipListener;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.ProjectController;
+import org.jgraph.graph.AttributeMap;
 import org.jgraph.graph.DefaultEdge;
 import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.GraphConstants;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.util.Collection;
@@ -70,14 +72,9 @@ class ObjGraphBuilder extends BaseGraphBuilder implements ObjEntityListener,
             return false;
         }
 
-        // TODO: andrus 05/30/2010 - reindexing all DataMaps every time may be VERY slow
-        // on large projects
-        EntityResolver resolver = new EntityResolver(((DataChannelDescriptor) mediator
-                .getProject()
-                .getRootNode()).getDataMaps());
-
-        EntityInheritanceTree inheritanceTree = resolver.lookupInheritanceTree(entity
-                .getName());
+        // TODO: andrus 05/30/2010 - reindexing all DataMaps every time may be VERY slow on large projects
+        EntityResolver resolver = new EntityResolver(domain.getDataMaps());
+        EntityInheritanceTree inheritanceTree = resolver.getInheritanceTree(entity.getName());
         return inheritanceTree == null || inheritanceTree.getChildren().isEmpty();
     }
 
@@ -166,7 +163,7 @@ class ObjGraphBuilder extends BaseGraphBuilder implements ObjEntityListener,
                 inheritanceEdge.setTarget(entityCells.get(
                         entity.getSuperEntity().getName()).getChildAt(0));
 
-                Map nested = new HashMap();
+                Map<DefaultEdge, AttributeMap> nested = new HashMap<>();
                 nested.put(inheritanceEdge, inheritanceEdge.getAttributes());
 
                 graph.getGraphLayoutCache().edit(nested);

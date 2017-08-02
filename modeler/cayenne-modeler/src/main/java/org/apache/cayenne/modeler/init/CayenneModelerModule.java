@@ -26,6 +26,7 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.DefaultActionManager;
+import org.apache.cayenne.modeler.graph.extension.GraphExtension;
 import org.apache.cayenne.modeler.init.platform.GenericPlatformInitializer;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.util.DefaultWidgetFactory;
@@ -48,6 +49,8 @@ public class CayenneModelerModule implements Module {
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
         binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);
 
-        ProjectModule.contributeExtensions(binder).add(InfoExtension.class);
+        ProjectModule.contributeExtensions(binder)
+                .add(InfoExtension.class)
+                .add(GraphExtension.class);
     }
 }

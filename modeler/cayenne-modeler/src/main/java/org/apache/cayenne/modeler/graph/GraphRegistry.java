@@ -79,6 +79,10 @@ public class GraphRegistry implements DomainListener {
         return map;
     }
 
+    public void addGraphMap(DataChannelDescriptor domain, GraphMap map) {
+        graphMaps.put(domain, map);
+    }
+
     public void domainChanged(DomainEvent e) {
     }
 
