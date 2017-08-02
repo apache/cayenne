@@ -24,6 +24,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.graph.GraphRegistry;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.extension.BaseNamingDelegate;
 import org.apache.cayenne.project.extension.LoaderDelegate;
@@ -36,6 +37,8 @@ import org.apache.cayenne.project.extension.SaverDelegate;
 public class GraphExtension implements ProjectExtension {
 
     static final String NAMESPACE = "http://cayenne.apache.org/schema/" + Project.VERSION + "/graph";
+
+    static final String GRAPH_SUFFIX = ".graph.xml";
 
     @Inject
     protected Provider<Application> applicationProvider;
@@ -55,7 +58,13 @@ public class GraphExtension implements ProjectExtension {
         return new BaseNamingDelegate() {
             @Override
             public String visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
-                return channelDescriptor.getName() + ".graph.xml";
+                // if there is no registry, than there is no need to save anything
+                GraphRegistry registry = applicationProvider.get().getMetaData()
+                        .get(channelDescriptor, GraphRegistry.class);
+                if (registry == null) {
+                    return null;
+                }
+                return channelDescriptor.getName() + GRAPH_SUFFIX;
             }
         };
     }

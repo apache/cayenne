@@ -38,6 +38,11 @@ class GraphSaverDelegate extends BaseSaverDelegate {
 
     @Override
     public Void visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
+        GraphRegistry registry = metaData.get(channelDescriptor, GraphRegistry.class);
+        if (registry == null) {
+            return null;
+        }
+
         if(isStandalone()) {
             printGraphs(channelDescriptor);
         } else {
@@ -49,10 +54,6 @@ class GraphSaverDelegate extends BaseSaverDelegate {
 
     private void printGraphs(DataChannelDescriptor channelDescriptor) {
         GraphRegistry registry = metaData.get(channelDescriptor, GraphRegistry.class);
-        if (registry == null) {
-            return;
-        }
-
         GraphMap map = registry.getGraphMap(channelDescriptor);
         encoder.start("graphs")
                 .attribute("xmlns", GraphExtension.NAMESPACE)
@@ -64,7 +65,7 @@ class GraphSaverDelegate extends BaseSaverDelegate {
     private void printInclude(DataChannelDescriptor channelDescriptor) {
         encoder.start("xi:include")
                 .attribute("xmlns:xi", "http://www.w3.org/2001/XInclude")
-                .attribute("href", channelDescriptor.getName() + ".graph.xml")
+                .attribute("href", channelDescriptor.getName() + GraphExtension.GRAPH_SUFFIX)
                 .end();
     }
 
