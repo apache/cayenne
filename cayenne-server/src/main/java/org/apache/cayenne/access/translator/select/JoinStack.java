@@ -19,6 +19,7 @@
 package org.apache.cayenne.access.translator.select;
 
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -26,14 +27,12 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.SimpleNode;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.commons.collections.Transformer;
 
 /**
  * Encapsulates join reuse/split logic used in SelectQuery processing. All
@@ -187,7 +186,7 @@ public class JoinStack {
 	 * to concatenated Db-paths to root entity and rejecting all original
 	 * Db-paths
 	 */
-	class JoinedDbEntityQualifierTransformer implements Transformer {
+	class JoinedDbEntityQualifierTransformer implements Function<Object, Object> {
 
 		StringBuilder pathToRoot;
 
@@ -211,7 +210,7 @@ public class JoinStack {
 			}
 		}
 
-		public Object transform(Object input) {
+		public Object apply(Object input) {
 			if (input instanceof ASTObjPath) {
 				return new ASTDbPath(pathToRoot.toString() + ((SimpleNode) input).getOperand(0));
 			}

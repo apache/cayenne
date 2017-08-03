@@ -20,8 +20,9 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.util.function.Function;
+
 import org.apache.cayenne.exp.Expression;
-import org.apache.commons.collections.Transformer;
 
 /**
  * "Not In" expression.
@@ -83,7 +84,7 @@ public class ASTNotIn extends ConditionNode {
     }
     
     @Override
-    protected Object transformExpression(Transformer transformer) {
+    protected Object transformExpression(Function<Object, Object> transformer) {
         Object transformed = super.transformExpression(transformer);
         
         // transform empty ASTNotIn to ASTTrue

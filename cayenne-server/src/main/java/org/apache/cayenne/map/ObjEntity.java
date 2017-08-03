@@ -32,7 +32,6 @@ import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
-import org.apache.commons.collections.Transformer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +44,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.function.Function;
 
 /**
  * ObjEntity is a mapping descriptor for a DataObject Java class. It contains
@@ -1104,7 +1104,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         return res;
     }
 
-    final class DBPathConverter implements Transformer {
+    final class DBPathConverter implements Function<Object, Object> {
 
         // TODO: make it a public method - resolveDBPathComponents or
         // something...
@@ -1143,7 +1143,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
             return buf.toString();
         }
 
-        public Object transform(Object input) {
+        public Object apply(Object input) {
 
             if (!(input instanceof Expression)) {
                 return input;

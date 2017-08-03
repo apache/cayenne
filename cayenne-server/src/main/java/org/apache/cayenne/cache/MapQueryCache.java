@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 
 /**
  * A default implementation of the {@link QueryCache} interface that stores data in a
@@ -152,7 +152,8 @@ public class MapQueryCache implements QueryCache, Serializable {
         if(map != null) {
             return map;
         }
-        map = new LRUMap(maxSize);
+
+        map = new ConcurrentLinkedHashMap.Builder<String, List<?>>().maximumWeightedCapacity(maxSize).build();
         cacheGroups.put(cacheName, map);
         return map;
     }

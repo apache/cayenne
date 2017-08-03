@@ -20,8 +20,10 @@
 package org.apache.cayenne.access.translator.select;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
@@ -42,8 +44,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.collections.Transformer;
 
 /**
  * Translates query qualifier to SQL. Used as a helper class by query
@@ -572,7 +572,7 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 		if (list instanceof List) {
 			it = ((List<?>) list).iterator();
 		} else if (list instanceof Object[]) {
-			it = IteratorUtils.arrayIterator((Object[]) list);
+			it = Arrays.asList((Object[]) list).iterator();
 		} else {
 			String className = (list != null) ? list.getClass().getName() : "<null>";
 			throw new IllegalArgumentException("Unsupported type for the list expressions: " + className);
@@ -676,9 +676,9 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 	 * qualifiers annotation This is done by changing all Obj-paths to Db-paths
 	 * and rejecting all original Db-paths
 	 */
-	class DbEntityQualifierTransformer implements Transformer {
+	class DbEntityQualifierTransformer implements Function<Object, Object> {
 
-		public Object transform(Object input) {
+		public Object apply(Object input) {
 			if (input instanceof ASTObjPath) {
 				return new ASTDbPath(((SimpleNode) input).getOperand(0));
 			}

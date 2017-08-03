@@ -19,11 +19,11 @@
 package org.apache.cayenne.query;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.commons.collections.Factory;
 
 /**
  * Represents a single row of values in a BatchQuery.
@@ -60,8 +60,8 @@ public abstract class BatchQueryRow {
 
         // if a value is a Factory, resolve it here...
         // slight chance that a normal value will implement Factory interface???
-        if (value instanceof Factory) {
-            value = ((Factory) value).create();
+        if (value instanceof Supplier) {
+            value = ((Supplier) value).get();
             valueMap.put(attribute.getName(), value);
 
             // update replacement id

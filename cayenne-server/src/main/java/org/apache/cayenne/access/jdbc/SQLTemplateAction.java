@@ -25,7 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -51,7 +50,6 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.collections.IteratorUtils;
 
 /**
  * Implements a strategy for execution of SQLTemplates.
@@ -138,8 +136,9 @@ public class SQLTemplateAction implements SQLAction {
 		execute(connection, callback, compiled, counts);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void runWithNamedParametersBatch(Connection connection, OperationObserver callback, String template,
-			Collection<Number> counts, boolean loggable) throws Exception {
+											 Collection<Number> counts, boolean loggable) throws Exception {
 
 		int size = query.parametersSize();
 
@@ -148,14 +147,17 @@ public class SQLTemplateAction implements SQLAction {
 		int batchSize = (size > 0) ? size : 1;
 
 		// for now supporting deprecated batch parameters...
-		@SuppressWarnings("unchecked")
-		Iterator<Map<String, ?>> it = (size > 0) ? query.parametersIterator()
-				: IteratorUtils.singletonIterator(Collections.emptyMap());
+		Iterator<Map<String, ?>> it;
+		if(size == 0) {
+			Iterator empty = Collections.singleton(Collections.emptyMap()).iterator();
+			it = empty;
+		} else {
+			it = query.parametersIterator();
+		}
+
 		for (int i = 0; i < batchSize; i++) {
 			Map<String, ?> nextParameters = it.next();
-
 			SQLStatement compiled = dataNode.getSqlTemplateProcessor().processTemplate(template, nextParameters);
-
 			if (loggable) {
 				dataNode.getJdbcEventLogger().logQuery(compiled.getSql(), compiled.getBindings());
 			}

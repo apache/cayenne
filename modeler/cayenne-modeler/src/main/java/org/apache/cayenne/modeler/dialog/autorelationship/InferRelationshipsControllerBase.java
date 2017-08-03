@@ -25,7 +25,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.commons.collections.Predicate;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class InferRelationshipsControllerBase extends CayenneController {
 
@@ -233,18 +233,17 @@ public class InferRelationshipsControllerBase extends CayenneController {
         return selected;
     }
 
-    public boolean updateSelection(Predicate predicate) {
+    public boolean updateSelection(Predicate<InferredRelationship> predicate) {
         boolean modified = false;
 
         for (InferredRelationship entity : inferredRelationships) {
-            boolean select = predicate.evaluate(entity);
+            boolean select = predicate.test(entity);
 
             if (select) {
                 if (selectedEntities.add(entity)) {
                     modified = true;
                 }
-            }
-            else {
+            } else {
                 if (selectedEntities.remove(entity)) {
                     modified = true;
                 }
@@ -259,7 +258,7 @@ public class InferRelationshipsControllerBase extends CayenneController {
     }
 
     public boolean isSelected() {
-        return currentEntity != null ? selectedEntities.contains(currentEntity) : false;
+        return currentEntity != null && selectedEntities.contains(currentEntity);
     }
 
     public void setSelected(boolean selectedFlag) {

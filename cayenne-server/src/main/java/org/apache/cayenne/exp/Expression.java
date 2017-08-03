@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
@@ -38,7 +39,6 @@ import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
-import org.apache.commons.collections.Transformer;
 
 /**
  * Superclass of Cayenne expressions that defines basic API for expressions use.
@@ -622,7 +622,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * 
 	 * @since 1.1
 	 */
-	public Expression transform(Transformer transformer) {
+	public Expression transform(Function<Object, Object> transformer) {
 		Object transformed = transformExpression(transformer);
 
 		if (transformed == PRUNED_NODE || transformed == null) {
@@ -641,7 +641,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * @return null, Expression.PRUNED_NODE or transformed expression.
 	 * @since 1.2
 	 */
-	protected Object transformExpression(Transformer transformer) {
+	protected Object transformExpression(Function<Object, Object> transformer) {
 		Expression copy = shallowCopy();
 		int count = getOperandCount();
 		for (int i = 0, j = 0; i < count; i++) {
@@ -651,7 +651,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 			if (operand instanceof Expression) {
 				transformedChild = ((Expression) operand).transformExpression(transformer);
 			} else if (transformer != null) {
-				transformedChild = transformer.transform(operand);
+				transformedChild = transformer.apply(operand);
 			} else {
 				transformedChild = operand;
 			}
@@ -672,7 +672,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		}
 
 		// all the children are processed, only now transform this copy
-		return (transformer != null) ? (Expression) transformer.transform(copy) : copy;
+		return (transformer != null) ? (Expression) transformer.apply(copy) : copy;
 	}
 
 	/**
@@ -793,7 +793,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		return toEJBQL(null, rootId);
 	}
 
-	final class NamedParamTransformer implements Transformer {
+	final class NamedParamTransformer implements Function<Object, Object> {
 
 		private Map<String, ?> parameters;
 		private boolean pruneMissing;
@@ -804,7 +804,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		}
 
 		@Override
-		public Object transform(Object object) {
+		public Object apply(Object object) {
 			if (!(object instanceof ExpressionParameter)) {
 
 				// normally Object[] is an ASTList child
@@ -815,7 +815,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 					Object[] target = new Object[len];
 
 					for (int i = 0; i < len; i++) {
-						target[i] = transform(source[i]);
+						target[i] = apply(source[i]);
 					}
 
 					return target;

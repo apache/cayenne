@@ -27,32 +27,17 @@ import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
-import org.apache.commons.collections.Predicate;
 
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 
 public class ClientModeController extends StandardModeController {
 
-    protected Predicate checkPredicate;
-
     public ClientModeController(CodeGeneratorControllerBase parent) {
         super(parent);
-
-        this.checkPredicate = new Predicate() {
-
-            public boolean evaluate(Object object) {
-                if (object instanceof ObjEntity) {
-                    ObjEntity entity = (ObjEntity) object;
-                    return entity.isClientAllowed()
-                            && getParentController().getProblem(entity.getName()) == null;
-                }
-
-                return false;
-            }
-        };
     }
 
     public void validateEntity(ValidationResult validationBuffer, ObjEntity entity) {
@@ -116,9 +101,5 @@ public class ClientModeController extends StandardModeController {
     @Override
     protected ClassGenerationAction newGenerator() {
         return new ClientClassGenerationAction();
-    }
-
-    public Predicate getDefaultEntityFilter() {
-        return checkPredicate;
     }
 }

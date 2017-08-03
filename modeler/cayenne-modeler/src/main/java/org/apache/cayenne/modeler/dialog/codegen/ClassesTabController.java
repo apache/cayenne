@@ -28,8 +28,6 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ImageRendererColumn;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.PredicateUtils;
 
 public class ClassesTabController extends CayenneController {
 
@@ -115,11 +113,7 @@ public class ClassesTabController extends CayenneController {
      * change.
      */
     public void checkAllAction() {
-
-        Predicate predicate = view.getCheckAll().isSelected() ? PredicateUtils
-                .truePredicate() : PredicateUtils.falsePredicate();
-
-        if (getParentController().updateSelection(predicate)) {
+        if (getParentController().updateSelection(view.getCheckAll().isSelected() ? o -> true : o -> false)) {
             tableBinding.updateView();
         }
     }

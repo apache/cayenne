@@ -34,12 +34,12 @@ import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.collections.set.ListOrderedSet;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -131,8 +131,7 @@ public class DataMapUtils {
 	 * @return List of parameter names.
 	 */
 	private Set parseQualifier(String qualifierString) {
-		@SuppressWarnings("unchecked")
-		Set<String> result = (Set<String>)new ListOrderedSet();
+		Set<String> result = new LinkedHashSet<>();
 		Pattern pattern = Pattern.compile("\\$[\\w]+");
 		Matcher matcher = pattern.matcher(qualifierString);
 		while (matcher.find()) {

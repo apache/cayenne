@@ -24,8 +24,6 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.PredicateUtils;
 
 public class InferRelationshipsTabController extends CayenneController {
 
@@ -115,8 +113,7 @@ public class InferRelationshipsTabController extends CayenneController {
 
         if (selectedCount == 0) {
             view.getCheckAll().setSelected(false);
-        }
-        else if (selectedCount == getParentController().getEntities().size()) {
+        } else if (selectedCount == getParentController().getEntities().size()) {
             view.getCheckAll().setSelected(true);
         }
     }
@@ -126,11 +123,7 @@ public class InferRelationshipsTabController extends CayenneController {
      * change.
      */
     public void checkAllAction() {
-
-        Predicate predicate = view.getCheckAll().isSelected() ? PredicateUtils
-                .truePredicate() : PredicateUtils.falsePredicate();
-
-        if (getParentController().updateSelection(predicate)) {
+        if (getParentController().updateSelection(view.getCheckAll().isSelected() ? o -> true : o -> false)) {
             tableBinding.updateView();
         }
     }

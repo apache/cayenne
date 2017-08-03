@@ -20,15 +20,15 @@ package org.apache.cayenne.pref;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.apache.cayenne.modeler.ModelerPreferences;
 import org.apache.cayenne.modeler.util.CayenneUserDir;
-import org.apache.commons.collections.ExtendedProperties;
 
 public class UpgradeCayennePreference extends PreferenceDecorator {
 
@@ -45,6 +45,8 @@ public class UpgradeCayennePreference extends PreferenceDecorator {
     public static final String EDITOR_LOGFILE_ENABLED_OLD = "Editor.logfileEnabled";
     public static final String EDITOR_LOGFILE_OLD = "Editor.logfile";
 
+    public static final String DELIMITER = ",";
+
     public UpgradeCayennePreference(Preference delegate) {
         super(delegate);
     }
@@ -56,48 +58,40 @@ public class UpgradeCayennePreference extends PreferenceDecorator {
 
                 File prefsFile = new File(preferencesDirectory(), PREFERENCES_NAME_OLD);
                 if (prefsFile.exists()) {
-                    ExtendedProperties ep = new ExtendedProperties();
+                    Properties ep = new Properties();
                     try {
                         ep.load(new FileInputStream(prefsFile));
 
-                        Preferences prefEditor = Preferences.userRoot().node(
-                                CAYENNE_PREFERENCES_PATH).node(EDITOR);
+                        Preferences prefEditor = Preferences.userRoot().node(CAYENNE_PREFERENCES_PATH).node(EDITOR);
 
-                        prefEditor.putBoolean(
-                                ModelerPreferences.EDITOR_LOGFILE_ENABLED,
-                                ep.getBoolean(EDITOR_LOGFILE_ENABLED_OLD));
-                        prefEditor.put(ModelerPreferences.EDITOR_LOGFILE, ep
-                                .getString(EDITOR_LOGFILE_OLD));
+                        prefEditor.putBoolean(ModelerPreferences.EDITOR_LOGFILE_ENABLED,
+                                Boolean.valueOf(ep.getProperty(EDITOR_LOGFILE_ENABLED_OLD)));
+                        prefEditor.put(ModelerPreferences.EDITOR_LOGFILE,
+                                ep.getProperty(EDITOR_LOGFILE_OLD));
 
                         Preferences frefLastProjFiles = prefEditor.node(LAST_PROJ_FILES);
 
-                        Vector arr = ep.getVector(LAST_PROJ_FILES_OLD);
-
+                        List<String> arr = getVector(ep.getProperty(LAST_PROJ_FILES_OLD));
                         while (arr.size() > ModelerPreferences.LAST_PROJ_FILES_SIZE) {
                             arr.remove(arr.size() - 1);
                         }
 
                         frefLastProjFiles.clear();
-                        int size = arr.size();
 
-                        for (int i = 0; i < size; i++) {
-                            frefLastProjFiles.put(String.valueOf(i), arr
-                                    .get(i)
-                                    .toString());
+                        for (int i = 0; i < arr.size(); i++) {
+                            frefLastProjFiles.put(String.valueOf(i), arr.get(i));
                         }
-                    }
-                    catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    catch (IOException e) {
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }
+        } catch (BackingStoreException ignored) {
         }
-        catch (BackingStoreException e) {
-            // do nothing
-        }
+    }
+
+    private List<String> getVector(String value) {
+        return Arrays.asList(value.split(DELIMITER));
     }
 
     /**

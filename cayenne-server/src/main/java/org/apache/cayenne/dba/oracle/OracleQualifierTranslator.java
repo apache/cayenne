@@ -29,10 +29,10 @@ import org.apache.cayenne.exp.parser.ASTNegate;
 import org.apache.cayenne.exp.parser.ASTNotIn;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.exp.parser.Node;
-import org.apache.commons.collections.Transformer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Oracle qualifier translator. In particular, trims INs with more than 1000
@@ -53,7 +53,7 @@ public class OracleQualifierTranslator extends TrimmingQualifierTranslator {
 		rootNode.traverse(this);
 	}
 
-	public static class INTrimmer implements Transformer {
+	public static class INTrimmer implements Function<Object, Object> {
 
 		public Expression trimmedInExpression(Expression exp, int maxInSize) {
 			Expression list = (Expression) exp.getOperand(1);
@@ -89,7 +89,7 @@ public class OracleQualifierTranslator extends TrimmingQualifierTranslator {
 			return res;
 		}
 
-		public Object transform(Object input) {
+		public Object apply(Object input) {
 			if (input instanceof ASTIn || input instanceof ASTNotIn) {
 				return trimmedInExpression((Expression) input, 1000);
 			}

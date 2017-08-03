@@ -24,8 +24,6 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A DbRelationship is a descriptor of a database inter-table relationship based
@@ -118,7 +117,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
             return Collections.emptyList();
         }
 
-        return CollectionUtils.collect(joins, JoinTransformers.targetExtractor);
+        return joins.stream().map(DbJoin::getTarget).collect(Collectors.toList());
     }
 
     /**
@@ -132,7 +131,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
             return Collections.emptyList();
         }
 
-        return CollectionUtils.collect(joins, JoinTransformers.sourceExtractor);
+        return joins.stream().map(DbJoin::getSource).collect(Collectors.toList());
     }
 
     /**
@@ -484,23 +483,6 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
         }
 
         return false;
-    }
-
-    static final class JoinTransformers {
-
-        static final Transformer targetExtractor = new Transformer() {
-
-            public Object transform(Object input) {
-                return (input instanceof DbJoin) ? ((DbJoin) input).getTarget() : input;
-            }
-        };
-
-        static final Transformer sourceExtractor = new Transformer() {
-
-            public Object transform(Object input) {
-                return (input instanceof DbJoin) ? ((DbJoin) input).getSource() : input;
-            }
-        };
     }
 
     // a join used for comparison

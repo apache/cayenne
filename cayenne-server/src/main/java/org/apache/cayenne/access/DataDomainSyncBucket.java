@@ -35,7 +35,6 @@ import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyException;
 import org.apache.cayenne.reflect.ToManyMapProperty;
-import org.apache.commons.collections.Factory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,6 +42,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * A superclass of batch query wrappers.
@@ -274,7 +274,7 @@ abstract class DataDomainSyncBucket {
     }
 
     // a factory for extracting PKs generated on commit.
-    final static class PropagatedValueFactory implements Factory {
+    final static class PropagatedValueFactory implements Supplier {
 
         ObjectId masterID;
         String masterKey;
@@ -284,7 +284,7 @@ abstract class DataDomainSyncBucket {
             this.masterKey = masterKey;
         }
 
-        public Object create() {
+        public Object get() {
             Object value = masterID.getIdSnapshot().get(masterKey);
             if (value == null) {
                 throw new CayenneRuntimeException("Can't extract a master key. "

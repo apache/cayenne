@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.commons.collections.comparators.ReverseComparator;
 
 /**
  * EntitySorter that takes into account entity "weights", and otherwise delegating to
@@ -72,7 +71,7 @@ public class WeightedAshwoodEntitySorter extends AshwoodEntitySorter {
     protected Comparator<DbEntity> getDbEntityComparator(boolean dependantFirst) {
         Comparator<DbEntity> c = weightedDbEntityComparator;
         if (dependantFirst) {
-            c = new ReverseComparator(c);
+            c = c.reversed();
         }
         return c;
     }
@@ -82,7 +81,7 @@ public class WeightedAshwoodEntitySorter extends AshwoodEntitySorter {
     protected Comparator<ObjEntity> getObjEntityComparator(boolean dependantFirst) {
         Comparator<ObjEntity> c = weightedObjEntityComparator;
         if (dependantFirst) {
-            c = new ReverseComparator(c);
+            c = c.reversed();
         }
         return c;
     }

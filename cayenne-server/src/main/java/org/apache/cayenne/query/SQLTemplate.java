@@ -30,8 +30,6 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
-import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.collections.Transformer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +40,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * A query that executes unchanged (except for template preprocessing) "raw" SQL
@@ -76,12 +76,8 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 
 	public static final String COLUMN_NAME_CAPITALIZATION_PROPERTY = "cayenne.SQLTemplate.columnNameCapitalization";
 
-	private static final Transformer nullMapTransformer = new Transformer() {
-
-		public Object transform(Object input) {
-			return (input != null) ? input : Collections.EMPTY_MAP;
-		}
-	};
+	private static final Function<Map<String, ?>, Map<String, ?>> nullMapTransformer = input ->
+			(input != null) ? input : Collections.emptyMap();
 
 	protected String defaultTemplate;
 	protected Map<String, String> templates;
@@ -222,8 +218,9 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	 */
 	@SuppressWarnings("unchecked")
 	public Iterator<Map<String, ?>> parametersIterator() {
-		return (parameters == null || parameters.length == 0) ? IteratorUtils.emptyIterator() : IteratorUtils
-				.transformedIterator(IteratorUtils.arrayIterator(parameters), nullMapTransformer);
+		return (parameters == null || parameters.length == 0)
+				? Collections.emptyIterator()
+				: Stream.of(parameters).map(nullMapTransformer).iterator();
 	}
 
 	/**

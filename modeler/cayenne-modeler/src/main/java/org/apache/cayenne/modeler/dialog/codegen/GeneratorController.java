@@ -41,7 +41,6 @@ import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
-import org.apache.commons.collections.Predicate;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -54,6 +53,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.prefs.Preferences;
 
 /**
@@ -479,44 +479,26 @@ public abstract class GeneratorController extends CayenneController {
         final Embeddable selectedEmbeddable = Application.getInstance().getFrameController().getProjectController()
                 .getCurrentEmbeddable();
 
-        // select a single entity
         if (selectedEntity != null) {
+            // select a single entity
             final boolean hasProblem = getParentController().getProblem(selectedEntity.getName()) != null;
-
-            return new Predicate() {
-
-                public boolean evaluate(Object object) {
-                    return !hasProblem && object == selectedEntity;
-                }
-            };
-        }
-        // select a single embeddable
-        else if (selectedEmbeddable != null) {
+            return object -> !hasProblem && object == selectedEntity;
+        } else if (selectedEmbeddable != null) {
+            // select a single embeddable
             final boolean hasProblem = getParentController().getProblem(selectedEmbeddable.getClassName()) != null;
-
-            return new Predicate() {
-
-                public boolean evaluate(Object object) {
-                    return !hasProblem && object == selectedEmbeddable;
+            return object -> !hasProblem && object == selectedEmbeddable;
+        } else {
+            // select all entities
+            return object -> {
+                if (object instanceof ObjEntity) {
+                    return getParentController().getProblem(((ObjEntity) object).getName()) == null;
                 }
-            };
-        }
-        // select all entities
-        else {
 
-            return new Predicate() {
-
-                public boolean evaluate(Object object) {
-                    if (object instanceof ObjEntity) {
-                        return getParentController().getProblem(((ObjEntity) object).getName()) == null;
-                    }
-
-                    if (object instanceof Embeddable) {
-                        return getParentController().getProblem(((Embeddable) object).getClassName()) == null;
-                    }
-
-                    return false;
+                if (object instanceof Embeddable) {
+                    return getParentController().getProblem(((Embeddable) object).getClassName()) == null;
                 }
+
+                return false;
             };
         }
     }
