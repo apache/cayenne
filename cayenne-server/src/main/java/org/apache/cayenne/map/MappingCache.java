@@ -26,7 +26,7 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.commons.collections.collection.CompositeCollection;
+import org.apache.cayenne.util.commons.CompositeCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -206,7 +206,7 @@ class MappingCache implements MappingNamespace {
             return maps.iterator().next().getDbEntities();
         }
 
-        CompositeCollection c = new CompositeCollection();
+        CompositeCollection<DbEntity> c = new CompositeCollection<>();
         for (DataMap map : maps) {
             c.addComposited(map.getDbEntities());
         }
@@ -228,7 +228,7 @@ class MappingCache implements MappingNamespace {
             return maps.iterator().next().getProcedures();
         }
         
-        CompositeCollection c = new CompositeCollection();
+        CompositeCollection<Procedure> c = new CompositeCollection<>();
         for (DataMap map : maps) {
             c.addComposited(map.getProcedures());
         }
@@ -250,7 +250,7 @@ class MappingCache implements MappingNamespace {
             return maps.iterator().next().getQueryDescriptors();
         }
 
-        CompositeCollection c = new CompositeCollection();
+        CompositeCollection<QueryDescriptor> c = new CompositeCollection<>();
         for (DataMap map : maps) {
             c.addComposited(map.getQueryDescriptors());
         }
@@ -272,7 +272,7 @@ class MappingCache implements MappingNamespace {
             return maps.iterator().next().getObjEntities();
         }
         
-        CompositeCollection c = new CompositeCollection();
+        CompositeCollection<ObjEntity> c = new CompositeCollection<>();
         for (DataMap map : maps) {
             c.addComposited(map.getObjEntities());
         }
@@ -294,7 +294,7 @@ class MappingCache implements MappingNamespace {
             return maps.iterator().next().getEmbeddables();
         }
         
-        CompositeCollection c = new CompositeCollection();
+        CompositeCollection<Embeddable> c = new CompositeCollection<>();
         for (DataMap map : maps) {
             c.addComposited(map.getEmbeddables());
         }
@@ -317,7 +317,7 @@ class MappingCache implements MappingNamespace {
             return maps.iterator().next().getResults();
         }
         
-        CompositeCollection c = new CompositeCollection();
+        CompositeCollection<SQLResult> c = new CompositeCollection<>();
         for (DataMap map : maps) {
             c.addComposited(map.getResults());
         }

@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.cayenne.util.HashCodeBuilder;
-import org.apache.commons.collections.map.ReferenceMap;
+import org.apache.cayenne.util.WeakValueMap;
 
 /**
  * This class encapsulates the String that is used to identify the <em>subject</em> that
@@ -41,9 +41,7 @@ public class EventSubject implements Serializable {
 
     // a Map that will allow the values to be GC'ed
     @SuppressWarnings("unchecked")
-    private static Map<String, EventSubject> _registeredSubjects = new ReferenceMap(
-            ReferenceMap.HARD,
-            ReferenceMap.WEAK);
+    private static Map<String, EventSubject> _registeredSubjects = new WeakValueMap<>();
 
     // Subject identifier in the form "com.foo.bar/SubjectName"
     private String _fullyQualifiedSubjectName;
