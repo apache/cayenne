@@ -60,8 +60,8 @@
 package org.apache.cayenne.ashwood.graph;
 
 import java.util.NoSuchElementException;
+import java.util.function.Predicate;
 
-import org.apache.commons.collections.Predicate;
 
 /**
  * @since 3.1
@@ -69,25 +69,25 @@ import org.apache.commons.collections.Predicate;
 public class FilterArcIterator<E, V> implements ArcIterator<E, V> {
 
     private ArcIterator<E, V> iterator;
-    private Predicate acceptOrigin, acceptDestination;
-    private Predicate acceptArc;
+    private Predicate<E> acceptOrigin, acceptDestination;
+    private Predicate<V> acceptArc;
 
     private E nextOrigin, nextDst;
     private V nextArc;
     private boolean nextObjectSet = false;
 
-    public FilterArcIterator(ArcIterator<E, V> iterator, Predicate acceptOrigin,
-            Predicate acceptDestination, Predicate acceptArc) {
+    public FilterArcIterator(ArcIterator<E, V> iterator, Predicate<E> acceptOrigin,
+            Predicate<E> acceptDestination, Predicate<V> acceptArc) {
 
         this.iterator = iterator;
         this.acceptOrigin = acceptOrigin;
         this.acceptDestination = acceptDestination;
         this.acceptArc = acceptArc;
         nextOrigin = iterator.getOrigin();
-        if (!acceptOrigin.evaluate(nextOrigin))
+        if (!acceptOrigin.test(nextOrigin))
             nextOrigin = null;
         nextDst = iterator.getDestination();
-        if (!acceptDestination.evaluate(nextDst))
+        if (!acceptDestination.test(nextDst))
             nextDst = null;
     }
 
@@ -128,9 +128,9 @@ public class FilterArcIterator<E, V> implements ArcIterator<E, V> {
             V arc = iterator.next();
             E origin = iterator.getOrigin();
             E dst = iterator.getDestination();
-            if (acceptOrigin.evaluate(origin)
-                    && acceptArc.evaluate(arc)
-                    && acceptDestination.evaluate(dst)) {
+            if (acceptOrigin.test(origin)
+                    && acceptArc.test(arc)
+                    && acceptDestination.test(dst)) {
                 nextArc = arc;
                 nextOrigin = origin;
                 nextDst = dst;

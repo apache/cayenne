@@ -25,14 +25,15 @@ import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.di.Provider;
-import org.apache.commons.collections.ExtendedProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo> {
 
@@ -52,11 +53,16 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
 
     public ServerCaseDataSourceInfoProvider() throws IOException {
 
-        File file = connectionPropertiesFile();
-        ExtendedProperties properties = file.exists() ? new ExtendedProperties(file.getAbsolutePath())
-                : new ExtendedProperties();
+        Map<String, String> propertiesMap = new HashMap<>();
 
-        this.connectionProperties = new ConnectionProperties(properties);
+        File file = connectionPropertiesFile();
+        if(file.exists()) {
+            Properties properties = new Properties();
+            properties.load(new FileReader(file));
+            properties.forEach((k, v) -> propertiesMap.put(k.toString(), v.toString()));
+        }
+
+        this.connectionProperties = new ConnectionProperties(propertiesMap);
         logger.info("Loaded  " + connectionProperties.size() + " DataSource configurations from properties file");
 
         this.inMemoryDataSources = new HashMap<>();

@@ -33,7 +33,6 @@ import java.util.Map;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.wocompat.parser.Parser;
-import org.apache.commons.collections.IteratorUtils;
 
 /**
  * Helper class used by EOModelProcessor. EOModelHelper loads an EOModel from
@@ -252,7 +251,7 @@ public class EOModelHelper {
 	 * @since 1.1
 	 */
 	public List modelNamesAsList() {
-		return new ArrayList(entityClassIndex.keySet());
+		return new ArrayList<>(entityClassIndex.keySet());
 	}
 
 	public Map getPrototypeAttributeMapFor(String aPrototypeAttributeName) {
@@ -262,7 +261,7 @@ public class EOModelHelper {
 
 			// no prototypes
 			if (eoPrototypesEntityMap == null) {
-				prototypeValues = Collections.EMPTY_MAP;
+				prototypeValues = Collections.emptyMap();
 			} else {
 				List eoPrototypeAttributes = (List) eoPrototypesEntityMap.get("attributes");
 
@@ -310,7 +309,7 @@ public class EOModelHelper {
 	public Iterator queryNames(String entityName) {
 		Map queryPlist = (Map) entityQueryIndex.get(entityName);
 		if (queryPlist == null || queryPlist.isEmpty()) {
-			return IteratorUtils.EMPTY_ITERATOR;
+			return Collections.emptyIterator();
 		}
 
 		return queryPlist.keySet().iterator();

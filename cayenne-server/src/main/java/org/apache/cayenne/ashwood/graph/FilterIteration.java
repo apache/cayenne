@@ -60,10 +60,8 @@
 package org.apache.cayenne.ashwood.graph;
 
 import java.util.Iterator;
-
-import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.functors.TruePredicate;
+import java.util.function.Predicate;
+import java.util.stream.StreamSupport;
 
 /**
  * @since 3.1
@@ -71,22 +69,23 @@ import org.apache.commons.collections.functors.TruePredicate;
 public class FilterIteration<E, V> implements DigraphIteration<E, V> {
 
     private DigraphIteration<E, V> digraph;
-    private Predicate acceptVertex;
-    private Predicate acceptArc;
+    private Predicate<E> acceptVertex;
+    private Predicate<V> acceptArc;
 
-    public FilterIteration(DigraphIteration<E, V> digraph, Predicate acceptVertex,
-            Predicate acceptArc) {
+    public FilterIteration(DigraphIteration<E, V> digraph, Predicate<E> acceptVertex,
+            Predicate<V> acceptArc) {
         this.digraph = digraph;
         this.acceptVertex = acceptVertex;
         this.acceptArc = acceptArc;
     }
 
     public Iterator<E> vertexIterator() {
-        return IteratorUtils.filteredIterator(digraph.vertexIterator(), acceptVertex);
+        Iterable<E> iterable = () -> digraph.vertexIterator();
+        return StreamSupport.stream(iterable.spliterator(), false).filter(acceptVertex).iterator();
     }
 
     public ArcIterator<E, V> arcIterator() {
-        return new FilterArcIterator<E, V>(
+        return new FilterArcIterator<>(
                 digraph.arcIterator(),
                 acceptVertex,
                 acceptVertex,
@@ -94,22 +93,22 @@ public class FilterIteration<E, V> implements DigraphIteration<E, V> {
     }
 
     public ArcIterator<E, V> outgoingIterator(E vertex) {
-        if (!acceptVertex.evaluate(vertex))
+        if (!acceptVertex.test(vertex))
             return EmptyIterator.instance();
-        return new FilterArcIterator<E, V>(
+        return new FilterArcIterator<>(
                 digraph.outgoingIterator(vertex),
-                TruePredicate.INSTANCE,
+                v -> true,
                 acceptVertex,
                 acceptArc);
     }
 
     public ArcIterator<E, V> incomingIterator(E vertex) {
-        if (!acceptVertex.evaluate(vertex))
+        if (!acceptVertex.test(vertex))
             return EmptyIterator.instance();
-        return new FilterArcIterator<E, V>(
+        return new FilterArcIterator<>(
                 digraph.incomingIterator(vertex),
                 acceptVertex,
-                TruePredicate.INSTANCE,
+                v -> true,
                 acceptArc);
     }
 }

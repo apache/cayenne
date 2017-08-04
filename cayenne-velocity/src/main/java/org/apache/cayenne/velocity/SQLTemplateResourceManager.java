@@ -23,8 +23,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Map;
 
+import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 import org.apache.commons.collections.ExtendedProperties;
-import org.apache.commons.collections.map.LRUMap;
 import org.apache.velocity.Template;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
@@ -48,7 +48,7 @@ public class SQLTemplateResourceManager
 
     public void initialize(RuntimeServices rs) {
         super.rsvc = rs;
-        this.templateCache = new LRUMap(100);
+        this.templateCache = new ConcurrentLinkedHashMap.Builder<String, Template>().maximumWeightedCapacity(100).build();
     }
 
     public void clearCache() {

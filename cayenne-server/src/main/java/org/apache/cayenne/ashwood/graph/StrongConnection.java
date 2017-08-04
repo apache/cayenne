@@ -59,11 +59,7 @@
  */
 package org.apache.cayenne.ashwood.graph;
 
-import org.apache.commons.collections.ArrayStack;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.functors.TruePredicate;
-
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,6 +68,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * @since 3.1
@@ -85,17 +82,16 @@ public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 	private DepthFirstSearch<E> reverseDfs;
 	private Set<E> seen = new HashSet<E>();
 	private Iterator<E> vertexIterator;
-	private ArrayStack dfsStack;
+	private ArrayDeque<E> dfsStack;
 	private DFSSeenVerticesPredicate reverseDFSFilter;
 
 	public StrongConnection(DigraphIteration<E, V> digraph) {
 
-		this.dfsStack = new ArrayStack();
+		this.dfsStack = new ArrayDeque<>();
 		this.reverseDFSFilter = new DFSSeenVerticesPredicate();
 		this.digraph = digraph;
-		this.filteredDigraph = new FilterIteration<>(digraph, new NotSeenPredicate(), TruePredicate.INSTANCE);
-		this.reverseDigraph = new FilterIteration<>(new ReversedIteration<>(digraph), reverseDFSFilter,
-				TruePredicate.INSTANCE);
+		this.filteredDigraph = new FilterIteration<>(digraph, new NotSeenPredicate(), arc -> true);
+		this.reverseDigraph = new FilterIteration<>(new ReversedIteration<>(digraph), reverseDFSFilter, arc -> true);
 		this.vertexIterator = filteredDigraph.vertexIterator();
 
 		runDirectDFS();
@@ -123,7 +119,9 @@ public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 	public Digraph<Collection<E>, Collection<V>> contract(Digraph<Collection<E>, Collection<V>> contractedDigraph) {
 
 		Collection<Collection<E>> components = new ArrayList<>();
-		CollectionUtils.addAll(components, this);
+		while (this.hasNext()) {
+			components.add(this.next());
+		}
 
 		Map<E, Collection<E>> memberToComponent = new HashMap<>();
 
@@ -221,20 +219,20 @@ public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 		return component;
 	}
 
-	private class DFSSeenVerticesPredicate implements Predicate {
+	private class DFSSeenVerticesPredicate implements Predicate<E> {
 
 		private Set<E> seenVertices = new HashSet<>();
 
 		@Override
-		public boolean evaluate(Object vertex) {
+		public boolean test(E vertex) {
 			return seenVertices.contains(vertex);
 		}
 	}
 
-	private class NotSeenPredicate implements Predicate {
+	private class NotSeenPredicate implements Predicate<E> {
 
 		@Override
-		public boolean evaluate(Object vertex) {
+		public boolean test(E vertex) {
 			return !seen.contains(vertex);
 		}
 	}

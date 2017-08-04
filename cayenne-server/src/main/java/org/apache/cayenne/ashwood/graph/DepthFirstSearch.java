@@ -59,11 +59,10 @@
  */
 package org.apache.cayenne.ashwood.graph;
 
+import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
-import org.apache.commons.collections.ArrayStack;
 
 /**
  * @since 3.1
@@ -72,12 +71,12 @@ public class DepthFirstSearch<E> implements Iterator<E> {
 
 	protected DigraphIteration<E, ?> factory;
 	protected E firstVertex;
-	protected ArrayStack stack;
+	protected ArrayDeque<ArcIterator<E, ?>> stack;
 	protected Set<E> seen;
 
 	public DepthFirstSearch(DigraphIteration<E, ?> factory, E firstVertex) {
 
-		this.stack = new ArrayStack();
+		this.stack = new ArrayDeque<>();
 		this.seen = new HashSet<>();
 		this.factory = factory;
 		this.firstVertex = firstVertex;
