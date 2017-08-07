@@ -1,17 +1,3 @@
-options {
-
-	MULTI = true;
-	NODE_DEFAULT_VOID = true;
-
-	STATIC = false;
-	DEBUG_PARSER = false;
-	DEBUG_LOOKAHEAD = false;
-	DEBUG_TOKEN_MANAGER = false;
-	JAVA_UNICODE_ESCAPE = true;
-	UNICODE_INPUT = true;
-}
-
-PARSER_BEGIN(SQLTemplateParser)
 /*****************************************************************
  *   Licensed to the Apache Software Foundation (ASF) under one
  *  or more contributor license agreements.  See the NOTICE file
@@ -31,25 +17,27 @@ PARSER_BEGIN(SQLTemplateParser)
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.templater;
+package org.apache.cayenne.template.parser;
+
+import org.apache.cayenne.template.Context;
+import org.apache.cayenne.template.Directive;
 
 /**
-  * Parser of Cayenne Expressions.
-  *
-  * @since 4.1
-  */
-public class SQLTemplateParser {
-}
+ * @since 4.1
+ */
+public class ASTDirective extends IdentifierNode {
 
-PARSER_END(SQLTemplateParser)
+    public ASTDirective(int id) {
+        super(id);
+    }
 
+    @Override
+    public String evaluate(Context context) {
+        Directive directive = context.getDirective(getIdentifier());
+        if(directive == null) {
+            return "";
+        }
 
-SQLTemplate template() : {}
-{
-	block() <EOF>
-    {
-        return (SQLTemplate) jjtree.rootNode();
+        return directive.apply(context, (ASTExpression[]) children);
     }
 }
-
-
