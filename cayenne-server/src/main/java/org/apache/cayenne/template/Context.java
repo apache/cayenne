@@ -23,11 +23,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.template.directive.Bind;
+import org.apache.cayenne.template.directive.BindEqual;
+import org.apache.cayenne.template.directive.BindNotEqual;
+import org.apache.cayenne.template.directive.BindObjectEqual;
+import org.apache.cayenne.template.directive.BindObjectNotEqual;
+import org.apache.cayenne.template.directive.Directive;
+import org.apache.cayenne.template.directive.Result;
+import org.apache.cayenne.velocity.SQLTemplateRenderingUtils;
 
 /**
  * @since 4.1
@@ -38,12 +45,33 @@ public class Context {
 
     Map<String, Object> objects = new HashMap<>();
 
+    Map<String, String> parameterAliases;
+
     List<ParameterBinding> parameterBindings = new ArrayList<>();
 
     List<ColumnDescriptor> columnDescriptors = new ArrayList<>();
 
+    boolean positionalMode;
+
+    int counter;
+
     public Context() {
-        directives.put("bind", new Bind());
+        directives.put(               "bind", Bind.INSTANCE);
+        directives.put(          "bindEqual", BindEqual.INSTANCE);
+        directives.put(       "bindNotEqual", BindNotEqual.INSTANCE);
+        directives.put(    "bindObjectEqual", BindObjectEqual.INSTANCE);
+        directives.put( "bindObjectNotEqual", BindObjectNotEqual.INSTANCE);
+        directives.put(             "result", Result.INSTANCE);
+
+        objects.put("helper", new SQLTemplateRenderingUtils());
+    }
+
+    public Context(boolean positionalMode) {
+        this();
+        this.positionalMode = positionalMode;
+        if(positionalMode) {
+            parameterAliases = new HashMap<>();
+        }
     }
 
     public Directive getDirective(String name) {
@@ -51,7 +79,29 @@ public class Context {
     }
 
     public Object getObject(String name) {
-        return objects.get(name);
+        Object object = objects.get(name);
+        if(object != null) {
+            return object;
+        }
+
+        if(positionalMode) {
+            String alias = parameterAliases.get(name);
+            if(alias == null) {
+                if(counter > objects.size() - 2) {
+                    throw new CayenneRuntimeException("Too few parameters to bind template: " + (objects.size() - 1));
+                }
+                alias = String.valueOf(counter++);
+                parameterAliases.put(name, alias);
+            }
+            // give next object on each invocation of method
+            return objects.get(alias);
+        }
+
+        return null;
+    }
+
+    public void addParameter(String name, Object value) {
+        objects.put(name, value);
     }
 
     public void addParameters(Map<String, ?> parameters) {

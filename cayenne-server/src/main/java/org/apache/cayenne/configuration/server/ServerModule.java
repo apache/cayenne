@@ -111,6 +111,7 @@ import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
+import org.apache.cayenne.template.CayenneSQLTemplateProcessor;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
@@ -408,7 +409,8 @@ public class ServerModule implements Module {
         binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
         binder.bind(RowReaderFactory.class).to(DefaultRowReaderFactory.class);
 
-        binder.bind(SQLTemplateProcessor.class).to(VelocitySQLTemplateProcessor.class);
+//        binder.bind(SQLTemplateProcessor.class).to(VelocitySQLTemplateProcessor.class);
+        binder.bind(SQLTemplateProcessor.class).to(CayenneSQLTemplateProcessor.class);
 
         binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
         binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);

@@ -1,3 +1,43 @@
+/**
+
+This is a grammar for Cayenen internal parser for templates rendering
+
+Supported features:
+
+- #if(condition) #else #end conditions
+- variable evaluation: $a replaced to String return by a.toString() call or by empty string if a is null
+- method evaluation: $a.m($arg, '', 123) (can be used as #if condition)
+- custom directives via #directive syntax
+- line comments from ## to end of line
+
+This template will be resolved correctly
+    SELECT #result('A' 'a')
+    FROM $table
+    WHERE
+        #if($a)
+        COLUMN1 #bindNotEqual($helper.cayenneExp($a, 'db:ID_COLUMN1'))
+        AND
+        COLUMN2 #bindNotEqual($helper.cayenneExp($a, 'db:ID_COLUMN2'))
+        #else
+        COLUMN3 IS NULL
+        #end
+
+
+
+Comparision to Velocity:
+- no escape syntax, i.e. ${a}, directives and vars must be space separated
+- no arrays syntax
+- no #set directive
+- no loops
+- no complex expressions (neither logical nor math)
+- no evaluation of string literals, i.e. "$a/$b" will be untouched
+- no include / parse of external resources
+- no different comment styles
+- no macro
+- no other advanced features..
+
+*/
+
 options {
 
 	MULTI = true;
@@ -43,8 +83,10 @@ public class SQLTemplateParser {
 
 PARSER_END(SQLTemplateParser)
 
-
-ASTBlock template() : {}
+/*
+    Entry function in parser
+*/
+Node template() : {}
 {
 	block() <EOF>
     {
@@ -52,14 +94,21 @@ ASTBlock template() : {}
     }
 }
 
+/*
+    Top component of parsing tree
+*/
 void block() #Block : {}
 {
-    (   text()
-    |   ifElse()
+    (   ifElse()
     |   directive()
+    |   variable()
+    |   text()
     ) *
 }
 
+/*
+    Plain text that is not processed in any way by render
+*/
 void text() #Text : {
     Token t;
 }
@@ -67,8 +116,15 @@ void text() #Text : {
     t = <TEXT> {
         jjtThis.setValue(t.image);
     }
+    |
+    t = <TEXT_OTHER> {
+        jjtThis.setValue(t.image);
+    }
 }
 
+/*
+    Condition directive: #if(condition) ...  #else ... #end
+*/
 void ifElse() #IfElse : {}
 {
     <IF> <LBRACKET> expression() <RBRACKET>
@@ -77,6 +133,9 @@ void ifElse() #IfElse : {}
     <END>
 }
 
+/*
+    Directive in form of #directiveName(args list)
+*/
 void directive() #Directive : {
     Token t;
 }
@@ -84,15 +143,32 @@ void directive() #Directive : {
     <SHARP> ( t = <IDENTIFIER> ) {
         jjtThis.setIdentifier(t.image);
     }
-    <LBRACKET> (expression() (<COMMA> expression())* )? <RBRACKET>
+    <LBRACKET>
+    (
+        expression()
+        // this is comma or space separeted list
+        ((<COMMA>)? expression())*
+    )?
+    <RBRACKET>
 }
 
+/*
+    valid expression in parameters of method or directive
+    can be scalar, variable (with methods calls) or array
+*/
 void expression() #Expression : {}
 {
     scalar()
     |   variable()
+    |   array()
 }
 
+/*
+    Single scalar value: String, long, double, boolean
+    String: single or double quoted
+    long: dec, hex and octo with sign
+    double: simple and exponential form
+*/
 void scalar() : {}
 {
     <SINGLE_QUOTED_STRING> { jjtThis.setValue((String)token_source.literalValue); } #StringScalar(0)
@@ -103,6 +179,10 @@ void scalar() : {}
     |   <FALSE> { jjtThis.setValue(false); } #BoolScalar(0)
 }
 
+/*
+    Variable, optionally with some methods calls
+    $a or $a.method() or $a.method1().method2()
+*/
 void variable() #Variable : {
     Token t;
 }
@@ -110,21 +190,46 @@ void variable() #Variable : {
     <DOLLAR> ( t = <IDENTIFIER> ) {
         jjtThis.setIdentifier(t.image);
     }
-    ( <DOT> method() )*
+    ( method() )*
 }
 
+/*
+    Method call, valid only as part of variable, can be chain of methods
+    $a.method1($var).method2().method3('val')
+*/
 void method() #Method : {
     Token t;
 }
 {
+    <DOT>
     ( t = <IDENTIFIER> ) {
         jjtThis.setIdentifier(t.image);
     }
-    <LBRACKET> (expression() (<COMMA> expression())* )? <RBRACKET>
+    <LBRACKET>
+    (
+        expression()
+        // this is comma or space separeted list
+        ((<COMMA>)? expression())*
+    )?
+    <RBRACKET>
+}
+
+/*
+    Comma or space separated array of scalars and/or variables
+    valid values: [], ['a' 5], [$a, 'b', 5]
+*/
+void array() #Array : {}
+{
+    <LSBRACKET>
+    (
+        ( scalar() | variable() )
+        ( (<COMMA>)? ( scalar() | variable() )* )
+    )?
+    <RSBRACKET>
 }
 
 /****************************************
- * Copy of ExpressionParser definitions *
+ * Token manager additional methods     *
  ****************************************/
 
 TOKEN_MGR_DECLS:
@@ -134,6 +239,28 @@ TOKEN_MGR_DECLS:
 
     /** Holds the last string literal parsed. */
     private StringBuffer stringBuffer;
+
+    /** Stack of states */
+    @SuppressWarnings("unchecked")
+    java.util.LinkedList<Integer> lexicalStateStack = new java.util.LinkedList();
+
+    private void pushState() {
+        lexicalStateStack.push(curLexState);
+    }
+
+    private void popState() {
+        if(!lexicalStateStack.isEmpty()) {
+            SwitchTo(lexicalStateStack.pop());
+        }
+    }
+
+    private void compareAndSwitch(int newState, int requiredState) {
+        if(curLexState != requiredState) {
+            return;
+        }
+
+        SwitchTo(newState);
+    }
 
     /** Converts an escape sequence into a character value. */
     private char escapeChar() {
@@ -164,12 +291,20 @@ TOKEN_MGR_DECLS:
         Object  result;
         String  s = image.toString();
         int     base = 10;
+        boolean negate = false;
+        int idx = 0;
 
-        if ( s.charAt(0) == '0' ) {
-            base = (s.length() > 1 && (s.charAt(1) == 'x' || s.charAt(1) == 'X'))? 16 : 8;
+        if ( s.charAt(idx) == '-') {
+            negate = true;
+            idx++;
+        }
+
+        if ( s.charAt(idx) == '0' ) {
+            idx++;
+            base = (s.length() > 1 && (s.charAt(idx) == 'x' || s.charAt(idx) == 'X'))? 16 : 8;
         }
         if ( base == 16 ) {
-            s = s.substring(2); // Trim the 0x off the front
+            s = s.substring(idx + 1); // Trim the 0x off the front
         }
 
         switch ( s.charAt(s.length()-1) ) {
@@ -197,35 +332,67 @@ TOKEN_MGR_DECLS:
     }
 }
 
-TOKEN:
+/*
+ Parser has several states:
+    1. DEFAULT - in this state most part of the input captured by simple TEXT token
+    2. NOT_TEXT - this state is for directive and variables declaration (will be entered only if in DEFAULT state),
+        can exit to DEFAULT state if TEXT_OTHER token is encountered.
+        Other than this DEFAULT state can be restored by #else and #end tokens.
+    3. ARGS - this state is entered by open bracket "(" and consuming arguments for methods and directives
+            scalars and arrays are valid only in this state
+            ")" bracket pop state thus allowing nesting
+    4. IN_SINGLE_LINE_COMMENT - state to swallow line of comments
+    5. String literals states: WithinDoubleQuoteLiteral and WithinSingleQuoteLiteral
+
+
+*/
+
+// in args we skip everything unprinted
+<ARGS>
+SKIP :
 {
-    <IF: "#if">
-|   <ELSE: "#else">
-|   <END: "#end">
+    " "
+|   "\t"
+|   "\n"
+|   "\r"
 }
 
+// only this, next tokens plus line comments can break text state
+<DEFAULT, NOT_TEXT>
+TOKEN:
+{
+    <IF: "#if"> : NOT_TEXT
+|   <ELSE: "#else"> : DEFAULT
+|   <END: "#end"> : DEFAULT
+}
+
+<DEFAULT, NOT_TEXT, ARGS>
+TOKEN :
+{
+    <SHARP: "#">  { compareAndSwitch(SQLTemplateParserConstants.NOT_TEXT, SQLTemplateParserConstants.DEFAULT); }
+|   <DOLLAR: "$"> { compareAndSwitch(SQLTemplateParserConstants.NOT_TEXT, SQLTemplateParserConstants.DEFAULT); }
+}
+
+<ARGS>
 TOKEN:
 {
     <TRUE: "true" | "TRUE">
 |   <FALSE: "false" | "FALSE">
+|   <RBRACKET: ")"> { popState(); }
+|   <COMMA: ",">
+|   <LSBRACKET: "[">
+|   <RSBRACKET: "]">
 }
 
-TOKEN:
-{
-    <WHITESPACE : ([" ","\t"])+ >
-|   <NEWLINE : ("\n" | "\r" | "\r\n") >
-}
-
+<NOT_TEXT, ARGS>
 TOKEN :
 {
-    <SHARP: "#">
-|   <DOLLAR: "$">
-|   <LBRACKET: "(">
-|   <RBRACKET: ")">
-|   <COMMA: "," | " ">
+    <LBRACKET: "("> { pushState(); } : ARGS
 |   <DOT: ".">
 }
 
+// Identifier
+<NOT_TEXT, ARGS>
 TOKEN :
 {
     <IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
@@ -233,6 +400,7 @@ TOKEN :
 |   <#DIGIT: ["0"-"9"] >
 }
 
+<DEFAULT>
 TOKEN :
 {
     < "##" > : IN_SINGLE_LINE_COMMENT
@@ -254,6 +422,7 @@ SKIP :
  * Quoted Strings, whose object value is stored in the token manager's
  * "literalValue" field. Both single and double qoutes are allowed
  */
+<ARGS>
 MORE:
 {
     "'"  { stringBuffer = new StringBuffer(); }: WithinSingleQuoteLiteral
@@ -277,7 +446,7 @@ MORE:
 {
     <SINGLE_QUOTED_STRING: "'">
         { literalValue = stringBuffer.toString(); }
-        : DEFAULT
+        : ARGS
 }
 
 <WithinDoubleQuoteLiteral> MORE :
@@ -293,12 +462,14 @@ MORE:
 {
     <DOUBLE_QUOTED_STRING: "\"">
         { literalValue = stringBuffer.toString(); }
-        : DEFAULT
+        : ARGS
 }
 
+<ARGS>
 TOKEN:
 {
     <INT_LITERAL:
+        ( "-" )?
         ( "0" (["0"-"7"])* | ["1"-"9"] (["0"-"9"])* | "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ )
         (["l","L","h","H"])?
     >
@@ -318,10 +489,14 @@ TOKEN:
 }
 
 // This must be last to not interfere with string literals
+<DEFAULT>
 TOKEN :
 {
-    <DOUBLE_ESCAPE : "\\\\">
-|   <ESCAPE: "\\" >
-|   <TEXT: (~["$", "#", "\\"])* (~["$", "#", "\\", " ", "\t"])+ (~["$", "#", "\\"])* >
+    <TEXT: (~["$", "#"])+ >
 }
 
+<NOT_TEXT>
+TOKEN :
+{
+    <TEXT_OTHER: (~["$", "#", "0"-"9", "a"-"z", "A"-"Z", ".", "_", "("])+ > : DEFAULT
+}

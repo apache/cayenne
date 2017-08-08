@@ -30,104 +30,110 @@ public interface SQLTemplateParserConstants {
   /** End of File. */
   int EOF = 0;
   /** RegularExpression Id. */
-  int IF = 1;
+  int IF = 5;
   /** RegularExpression Id. */
-  int ELSE = 2;
+  int ELSE = 6;
   /** RegularExpression Id. */
-  int END = 3;
-  /** RegularExpression Id. */
-  int TRUE = 4;
-  /** RegularExpression Id. */
-  int FALSE = 5;
-  /** RegularExpression Id. */
-  int WHITESPACE = 6;
-  /** RegularExpression Id. */
-  int NEWLINE = 7;
+  int END = 7;
   /** RegularExpression Id. */
   int SHARP = 8;
   /** RegularExpression Id. */
   int DOLLAR = 9;
   /** RegularExpression Id. */
-  int LBRACKET = 10;
+  int TRUE = 10;
   /** RegularExpression Id. */
-  int RBRACKET = 11;
+  int FALSE = 11;
   /** RegularExpression Id. */
-  int COMMA = 12;
+  int RBRACKET = 12;
   /** RegularExpression Id. */
-  int DOT = 13;
+  int COMMA = 13;
   /** RegularExpression Id. */
-  int IDENTIFIER = 14;
+  int LSBRACKET = 14;
   /** RegularExpression Id. */
-  int LETTER = 15;
+  int RSBRACKET = 15;
   /** RegularExpression Id. */
-  int DIGIT = 16;
+  int LBRACKET = 16;
   /** RegularExpression Id. */
-  int SINGLE_LINE_COMMENT_END = 18;
+  int DOT = 17;
   /** RegularExpression Id. */
-  int ESC = 22;
+  int IDENTIFIER = 18;
   /** RegularExpression Id. */
-  int SINGLE_QUOTED_STRING = 24;
+  int LETTER = 19;
   /** RegularExpression Id. */
-  int STRING_ESC = 25;
+  int DIGIT = 20;
   /** RegularExpression Id. */
-  int DOUBLE_QUOTED_STRING = 27;
+  int SINGLE_LINE_COMMENT_END = 22;
   /** RegularExpression Id. */
-  int INT_LITERAL = 28;
+  int ESC = 26;
   /** RegularExpression Id. */
-  int FLOAT_LITERAL = 29;
+  int SINGLE_QUOTED_STRING = 28;
   /** RegularExpression Id. */
-  int DEC_FLT = 30;
+  int STRING_ESC = 29;
   /** RegularExpression Id. */
-  int DEC_DIGITS = 31;
+  int DOUBLE_QUOTED_STRING = 31;
   /** RegularExpression Id. */
-  int EXPONENT = 32;
+  int INT_LITERAL = 32;
   /** RegularExpression Id. */
-  int FLT_SUFF = 33;
+  int FLOAT_LITERAL = 33;
   /** RegularExpression Id. */
-  int DOUBLE_ESCAPE = 34;
+  int DEC_FLT = 34;
   /** RegularExpression Id. */
-  int ESCAPE = 35;
+  int DEC_DIGITS = 35;
   /** RegularExpression Id. */
-  int TEXT = 36;
+  int EXPONENT = 36;
+  /** RegularExpression Id. */
+  int FLT_SUFF = 37;
+  /** RegularExpression Id. */
+  int TEXT = 38;
+  /** RegularExpression Id. */
+  int TEXT_OTHER = 39;
 
   /** Lexical state. */
   int DEFAULT = 0;
   /** Lexical state. */
-  int IN_SINGLE_LINE_COMMENT = 1;
+  int ARGS = 1;
   /** Lexical state. */
-  int WithinSingleQuoteLiteral = 2;
+  int NOT_TEXT = 2;
   /** Lexical state. */
-  int WithinDoubleQuoteLiteral = 3;
+  int IN_SINGLE_LINE_COMMENT = 3;
+  /** Lexical state. */
+  int WithinSingleQuoteLiteral = 4;
+  /** Lexical state. */
+  int WithinDoubleQuoteLiteral = 5;
 
   /** Literal token values. */
   String[] tokenImage = {
     "<EOF>",
+    "\" \"",
+    "\"\\t\"",
+    "\"\\n\"",
+    "\"\\r\"",
     "\"#if\"",
     "\"#else\"",
     "\"#end\"",
-    "<TRUE>",
-    "<FALSE>",
-    "<WHITESPACE>",
-    "<NEWLINE>",
     "\"#\"",
     "\"$\"",
-    "\"(\"",
+    "<TRUE>",
+    "<FALSE>",
     "\")\"",
     "\",\"",
+    "\"[\"",
+    "\"]\"",
+    "\"(\"",
     "\".\"",
     "<IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
     "\"##\"",
     "<SINGLE_LINE_COMMENT_END>",
-    "<token of kind 19>",
+    "<token of kind 23>",
     "\"\\\'\"",
     "\"\\\"\"",
     "<ESC>",
-    "<token of kind 23>",
+    "<token of kind 27>",
     "\"\\\'\"",
     "<STRING_ESC>",
-    "<token of kind 26>",
+    "<token of kind 30>",
     "\"\\\"\"",
     "<INT_LITERAL>",
     "<FLOAT_LITERAL>",
@@ -135,9 +141,8 @@ public interface SQLTemplateParserConstants {
     "<DEC_DIGITS>",
     "<EXPONENT>",
     "<FLT_SUFF>",
-    "\"\\\\\\\\\"",
-    "\"\\\\\"",
     "<TEXT>",
+    "<TEXT_OTHER>",
   };
 
 }

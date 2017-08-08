@@ -17,15 +17,26 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.template;
+package org.apache.cayenne.template.directive;
 
-import org.apache.cayenne.template.parser.ASTExpression;
+import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.template.Context;
 
 /**
  * @since 4.1
  */
-public interface Directive {
+public class BindNotEqual extends Bind {
 
-    String apply(Context context, ASTExpression... expressions);
+    public static final BindEqual INSTANCE = new BindEqual();
+
+    @Override
+    protected void processBinding(Context context, StringBuilder builder, ParameterBinding binding) {
+        if (binding.getValue() != null) {
+            context.addParameterBinding(binding);
+            builder.append("<> ?");
+        } else {
+            builder.append("IS NOT NULL");
+        }
+    }
 
 }

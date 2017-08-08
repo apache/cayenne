@@ -19,10 +19,12 @@
 
 package org.apache.cayenne.template.directive;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.template.Context;
-import org.apache.cayenne.template.Directive;
 import org.apache.cayenne.template.parser.ASTExpression;
 
 /**
@@ -30,14 +32,17 @@ import org.apache.cayenne.template.parser.ASTExpression;
  */
 public class Bind implements Directive {
 
+    public static final Bind INSTANCE = new Bind();
+
     @Override
     public String apply(Context context, ASTExpression... expressions) {
-        if(expressions.length < 2) {
+        if(expressions.length < 1) {
             throw new IllegalArgumentException();
         }
 
         Object value = expressions[0].evaluateAsObject(context);
-        String jdbcTypeName = expressions[1].evaluate(context);
+        String jdbcTypeName = expressions.length < 2 ? null : expressions[1].evaluate(context);
+
         int jdbcType;
         if (jdbcTypeName != null) {
             jdbcType = TypesMapping.getSqlTypeByName(jdbcTypeName);
@@ -48,9 +53,24 @@ public class Bind implements Directive {
         }
         int scale = expressions.length < 3 ? -1 : (int)expressions[2].evaluateAsLong(context);
 
-        ParameterBinding binding = new ParameterBinding(value, jdbcType, scale);
-        context.addParameterBinding(binding);
+        StringBuilder builder = new StringBuilder();
+        if (value instanceof Collection) {
+            Iterator<?> it = ((Collection) value).iterator();
+            while (it.hasNext()) {
+                processBinding(context, builder, new ParameterBinding(it.next(), jdbcType, scale));
+                if (it.hasNext()) {
+                    builder.append(',');
+                }
+            }
+        } else {
+            processBinding(context, builder, new ParameterBinding(value, jdbcType, scale));
+        }
 
-        return "?";
+        return builder.toString();
+    }
+
+    protected void processBinding(Context context, StringBuilder builder, ParameterBinding binding) {
+        context.addParameterBinding(binding);
+        builder.append('?');
     }
 }

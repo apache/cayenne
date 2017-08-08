@@ -17,32 +17,35 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.template.parser;
+package org.apache.cayenne.template.directive;
 
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.template.Context;
-import org.apache.cayenne.template.directive.Directive;
 
 /**
  * @since 4.1
  */
-public class ASTDirective extends IdentifierNode {
+public class BindObjectNotEqual extends BindObjectEqual {
 
-    public ASTDirective(int id) {
-        super(id);
+    public static final BindObjectNotEqual INSTANCE = new BindObjectNotEqual();
+
+    @Override
+    protected void renderColumn(String columnName, int columnIndex, StringBuilder builder) {
+        if (columnIndex > 0) {
+            builder.append(" OR ");
+        }
+
+        builder.append(columnName).append(' ');
     }
 
     @Override
-    public String evaluate(Context context) {
-        Directive directive = context.getDirective(getIdentifier());
-        if(directive == null) {
-            return "";
+    protected void render(Context context, StringBuilder builder, ParameterBinding binding) {
+        if (binding.getValue() != null) {
+            context.addParameterBinding(binding);
+            builder.append("<> ?");
+        } else {
+            builder.append("IS NOT NULL");
         }
-
-        ASTExpression[] expressions = new ASTExpression[children.length];
-        for(int i=0;  i<children.length; i++) {
-            expressions[i] = (ASTExpression)children[i];
-        }
-
-        return directive.apply(context, expressions);
     }
+
 }

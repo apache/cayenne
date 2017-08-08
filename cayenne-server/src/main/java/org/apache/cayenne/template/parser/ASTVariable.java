@@ -32,6 +32,7 @@ public class ASTVariable extends IdentifierNode implements ExpressionNode {
         super(id);
     }
 
+    @Override
     public Object evaluateAsObject(Context context) {
         Object object = context.getObject(getIdentifier());
         if(object == null) {
@@ -68,6 +69,10 @@ public class ASTVariable extends IdentifierNode implements ExpressionNode {
 
     @Override
     public boolean evaluateAsBoolean(Context context) {
-        return (Boolean) Objects.requireNonNull(evaluateAsObject(context));
+        Object object = evaluateAsObject(context);
+        if(object instanceof Boolean) {
+            return (Boolean)object;
+        }
+        return object != null;
     }
 }

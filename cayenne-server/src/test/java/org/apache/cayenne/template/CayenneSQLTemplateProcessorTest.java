@@ -17,32 +17,15 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.template.parser;
+package org.apache.cayenne.template;
 
-import org.apache.cayenne.template.Context;
-import org.apache.cayenne.template.directive.Directive;
+import static org.junit.Assert.*;
 
 /**
  * @since 4.1
  */
-public class ASTDirective extends IdentifierNode {
+public class CayenneSQLTemplateProcessorTest {
 
-    public ASTDirective(int id) {
-        super(id);
-    }
 
-    @Override
-    public String evaluate(Context context) {
-        Directive directive = context.getDirective(getIdentifier());
-        if(directive == null) {
-            return "";
-        }
 
-        ASTExpression[] expressions = new ASTExpression[children.length];
-        for(int i=0;  i<children.length; i++) {
-            expressions[i] = (ASTExpression)children[i];
-        }
-
-        return directive.apply(context, expressions);
-    }
 }

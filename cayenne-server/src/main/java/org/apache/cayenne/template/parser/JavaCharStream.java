@@ -103,14 +103,6 @@ public class JavaCharStream {
     protected int inBuf = 0;
     protected int tabSize = 8;
 
-    protected void setTabSize(int i) {
-        tabSize = i;
-    }
-
-    protected int getTabSize(int i) {
-        return tabSize;
-    }
-
     protected void ExpandBuff(boolean wrapAround) {
         char[] newbuffer = new char[bufsize + 2048];
         int newbufline[] = new int[bufsize + 2048];
@@ -450,7 +442,7 @@ public class JavaCharStream {
      */
     public JavaCharStream(java.io.InputStream dstream, int startline,
                           int startcolumn, int buffersize) {
-        this(new java.io.InputStreamReader(dstream), startline, startcolumn, 4096);
+        this(new java.io.InputStreamReader(dstream), startline, startcolumn, buffersize);
     }
 
     /**
