@@ -19,30 +19,32 @@
 
 package org.apache.cayenne.template.parser;
 
+import java.util.Arrays;
+
 import org.apache.cayenne.template.Context;
-import org.apache.cayenne.template.directive.Directive;
 
-/**
- * @since 4.1
- */
-public class ASTDirective extends IdentifierNode {
+public class ASTArray extends ASTExpression {
 
-    public ASTDirective(int id) {
+    public ASTArray(int id) {
         super(id);
     }
 
     @Override
     public String evaluate(Context context) {
-        Directive directive = context.getDirective(getIdentifier());
-        if(directive == null) {
-            return "";
-        }
+        return Arrays.toString(evaluateAsArray(context));
+    }
 
-        ASTExpression[] expressions = new ASTExpression[children.length];
-        for(int i=0;  i<children.length; i++) {
-            expressions[i] = (ASTExpression)children[i];
-        }
+    @Override
+    public Object evaluateAsObject(Context context) {
+        return evaluateAsArray(context);
+    }
 
-        return directive.apply(context, expressions);
+    protected Object[] evaluateAsArray(Context context) {
+        Object[] evaluated = new Object[jjtGetNumChildren()];
+        for(int i=0; i<jjtGetNumChildren(); i++) {
+            ExpressionNode node = (ExpressionNode)jjtGetChild(i);
+            evaluated[i] = node.evaluateAsObject(context);
+        }
+        return evaluated;
     }
 }

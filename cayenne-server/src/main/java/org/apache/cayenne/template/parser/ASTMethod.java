@@ -64,14 +64,16 @@ public class ASTMethod extends IdentifierNode {
                     Object[] arguments = new Object[jjtGetNumChildren()];
                     for(Class<?> parameterType : m.getParameterTypes()) {
                         ASTExpression child = (ASTExpression)jjtGetChild(i);
-                        if(parameterType.isAssignableFrom(Double.class)) {
+                        if(parameterType.isAssignableFrom(String.class)) {
+                            arguments[i] = child.evaluate(context);
+                        } else if(parameterType.isAssignableFrom(Double.class)) {
                             arguments[i] = child.evaluateAsDouble(context);
                         } else if(parameterType.isAssignableFrom(Long.class)) {
                             arguments[i] = child.evaluateAsLong(context);
+                        } else if(parameterType.isAssignableFrom(Integer.class)) {
+                            arguments[i] = (int)child.evaluateAsLong(context);
                         } else if(parameterType.isAssignableFrom(Boolean.class)) {
                             arguments[i] = child.evaluateAsBoolean(context);
-                        } else if(parameterType.isAssignableFrom(String.class)) {
-                            arguments[i] = child.evaluate(context);
                         } else {
                             continue methodsLoop;
                         }

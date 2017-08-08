@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.template;
 
+import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.List;
@@ -27,15 +28,20 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
-import org.apache.cayenne.template.parser.ASTBlock;
+import org.apache.cayenne.template.parser.Node;
 import org.apache.cayenne.template.parser.ParseException;
 import org.apache.cayenne.template.parser.SQLTemplateParser;
+import org.apache.cayenne.template.parser.TokenMgrError;
+import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 
 
 /**
  * @since 4.1
  */
 public class CayenneSQLTemplateProcessor implements SQLTemplateProcessor {
+
+    ConcurrentLinkedHashMap<String, Node> templateCache = new ConcurrentLinkedHashMap
+            .Builder<String, Node>().maximumWeightedCapacity(100).build();
 
     @Override
     public SQLStatement processTemplate(String template, Map<String, ?> parameters) {
@@ -46,7 +52,7 @@ public class CayenneSQLTemplateProcessor implements SQLTemplateProcessor {
 
     @Override
     public SQLStatement processTemplate(String template, List<Object> positionalParameters) {
-        Context context = new Context();
+        Context context = new Context(true);
         Map<String, Object> parameters = new HashMap<>();
         int i=0;
         for(Object param : positionalParameters) {
@@ -57,13 +63,18 @@ public class CayenneSQLTemplateProcessor implements SQLTemplateProcessor {
     }
 
     protected SQLStatement process(String template, Context context) {
-        SQLTemplateParser parser = new SQLTemplateParser(new StringReader(template));
-        try {
-            ASTBlock block = parser.template();
-            String sql = block.evaluate(context);
-            return new SQLStatement(sql, context.getColumnDescriptors(), context.getParameterBindings());
-        } catch (ParseException ex) {
-            throw new CayenneRuntimeException("Error parsing template '%s' : %s", template, ex.getMessage());
+        Node node = templateCache.get(template);
+        if(node == null) {
+            SQLTemplateParser parser = new SQLTemplateParser(new BufferedReader(new StringReader(template)));
+            try {
+                node = parser.template();
+            } catch (ParseException | TokenMgrError ex) {
+                throw new CayenneRuntimeException("Error parsing template '%s' : %s", template, ex.getMessage());
+            }
+            templateCache.put(template, node);
         }
+
+        String sql = node.evaluate(context);
+        return new SQLStatement(sql, context.getColumnDescriptors(), context.getParameterBindings());
     }
 }

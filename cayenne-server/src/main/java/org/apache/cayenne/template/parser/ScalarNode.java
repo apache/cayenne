@@ -49,6 +49,11 @@ public class ScalarNode<V> extends SimpleNode implements ExpressionNode {
     }
 
     @Override
+    public Object evaluateAsObject(Context context) {
+        return value;
+    }
+
+    @Override
     public long evaluateAsLong(Context context) {
         throw new UnsupportedOperationException("Can't convert " + value + " value to long");
     }

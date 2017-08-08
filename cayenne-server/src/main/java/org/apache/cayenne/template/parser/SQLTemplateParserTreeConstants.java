@@ -15,6 +15,7 @@ public interface SQLTemplateParserTreeConstants
   public int JJTBOOLSCALAR = 9;
   public int JJTVARIABLE = 10;
   public int JJTMETHOD = 11;
+  public int JJTARRAY = 12;
 
 
   public String[] jjtNodeName = {
@@ -30,6 +31,7 @@ public interface SQLTemplateParserTreeConstants
     "BoolScalar",
     "Variable",
     "Method",
+    "Array",
   };
 }
-/* JavaCC - OriginalChecksum=7c5329fded1e29c67b674bf81b4db143 (do not edit this line) */
+/* JavaCC - OriginalChecksum=4e04f6ed8da48f129794e9555444f8df (do not edit this line) */
