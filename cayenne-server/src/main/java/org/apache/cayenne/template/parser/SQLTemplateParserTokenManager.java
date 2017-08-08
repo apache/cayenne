@@ -77,7 +77,7 @@ public class SQLTemplateParserTokenManager implements SQLTemplateParserConstants
     }
 
     private Object makeInt() {
-        Object  result;
+        long result;
         String  s = image.toString();
         int     base = 10;
         boolean negate = false;
@@ -105,7 +105,7 @@ public class SQLTemplateParserTokenManager implements SQLTemplateParserConstants
                 result = Long.valueOf( s, base );
                 break;
         }
-        return result;
+        return negate ? -result : result;
     }
 
     private Object makeFloat() {
