@@ -21,7 +21,7 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
-import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.cayenne.util.CompareToBuilder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

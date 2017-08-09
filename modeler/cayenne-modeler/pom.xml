@@ -32,24 +32,10 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity</artifactId>
 		</dependency>
 
 		<dependency>
@@ -93,8 +79,14 @@
 		</dependency>
 
 		<dependency>
+			<groupId>jgraph</groupId>
+			<artifactId>jgraph</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>com.mockrunner</groupId>
 			<artifactId>mockrunner-jdbc</artifactId>
+			<scope>test</scope>
 			<exclusions>
 				<exclusion>
 					<!-- this one have old Xerces dependency that clashes with JDK's one -->
@@ -105,8 +97,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>jgraph</groupId>
-			<artifactId>jgraph</artifactId>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

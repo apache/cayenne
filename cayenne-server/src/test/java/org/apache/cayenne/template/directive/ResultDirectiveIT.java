@@ -16,9 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.velocity;
-
-import static org.junit.Assert.assertEquals;
+package org.apache.cayenne.template.directive;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -38,6 +36,8 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test for Result directive to check if we could use ResultDirective

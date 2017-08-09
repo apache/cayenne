@@ -117,7 +117,6 @@ import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionFilter;
 import org.apache.cayenne.tx.TransactionManager;
-import org.apache.cayenne.velocity.VelocitySQLTemplateProcessor;
 import org.xml.sax.XMLReader;
 
 import java.util.Calendar;
@@ -409,7 +408,6 @@ public class ServerModule implements Module {
         binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
         binder.bind(RowReaderFactory.class).to(DefaultRowReaderFactory.class);
 
-//        binder.bind(SQLTemplateProcessor.class).to(VelocitySQLTemplateProcessor.class);
         binder.bind(SQLTemplateProcessor.class).to(CayenneSQLTemplateProcessor.class);
 
         binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);

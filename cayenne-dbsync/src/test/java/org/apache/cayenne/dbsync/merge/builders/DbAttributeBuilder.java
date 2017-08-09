@@ -22,8 +22,7 @@ import org.apache.cayenne.datafactory.DictionaryValueProvider;
 import org.apache.cayenne.datafactory.ValueProvider;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
-
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import org.apache.cayenne.util.Util;
 
 /**
  * @since 4.0.
@@ -101,7 +100,7 @@ public class DbAttributeBuilder extends DefaultBuilder<DbAttribute> {
 
     @Override
     public DbAttribute build() {
-        if (isEmpty(obj.getName())) {
+        if (Util.isEmptyString(obj.getName())) {
             name();
         }
 

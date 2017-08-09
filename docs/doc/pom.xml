@@ -46,11 +46,6 @@
 			<artifactId>cayenne-modeler</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
-		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity</artifactId>
-		</dependency>
 
 		<dependency>
 			<groupId>commons-collections</groupId>

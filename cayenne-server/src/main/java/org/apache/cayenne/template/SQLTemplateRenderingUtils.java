@@ -16,42 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.merge.builders;
 
-import org.apache.cayenne.datafactory.DataFactory;
-import org.apache.cayenne.util.Util;
+package org.apache.cayenne.template;
+
+import org.apache.cayenne.exp.ExpressionFactory;
 
 /**
- * @since 4.0.
+ * Implements utility methods used inside Velocity templates when rendering
+ * SQLTemplates.
+ * 
+ * @since 1.1
  */
-public abstract class DefaultBuilder<T> implements Builder<T> {
-
-    protected final DataFactory dataFactory;
-    protected final T obj;
-
-
-    protected DefaultBuilder(T obj) {
-        this.dataFactory = new DataFactory();
-        this.obj = obj;
-    }
-
-    public String getRandomJavaName() {
-        int count = dataFactory.getNumberBetween(1, 5);
-        StringBuilder res = new StringBuilder();
-        for (int i = 0; i < count; i++) {
-            res.append(Util.capitalized(dataFactory.getRandomWord()));
-        }
-
-        return Util.uncapitalized(res.toString());
-    }
-
-    @Override
-    public T build() {
-        return obj;
-    }
-
-    @Override
-    public T random() {
-        return build();
-    }
+public class SQLTemplateRenderingUtils {
+	/**
+	 * Returns the result of evaluation of expression with object.
+	 */
+	public Object cayenneExp(Object object, String expression) {
+		return ExpressionFactory.exp(expression).evaluate(object);
+	}
 }
