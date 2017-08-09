@@ -99,7 +99,8 @@ Node template() : {}
 */
 void block() #Block : {}
 {
-    (   ifElse()
+    (
+        ifElse()
     |   directive()
     |   variable()
     |   text()
@@ -113,11 +114,10 @@ void text() #Text : {
     Token t;
 }
 {
-    t = <TEXT> {
-        jjtThis.setValue(t.image);
-    }
-    |
-    t = <TEXT_OTHER> {
+    (
+        t = <TEXT>
+    |   t = <TEXT_OTHER>
+    ) {
         jjtThis.setValue(t.image);
     }
 }

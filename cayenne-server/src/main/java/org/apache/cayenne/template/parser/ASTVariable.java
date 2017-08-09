@@ -33,6 +33,12 @@ public class ASTVariable extends IdentifierNode implements ExpressionNode {
     }
 
     @Override
+    public String evaluateAsString(Context context) {
+        Object object = evaluateAsObject(context);
+        return object == null ? "" : object.toString();
+    }
+
+    @Override
     public Object evaluateAsObject(Context context) {
         Object object = context.getObject(getIdentifier());
         if(object == null) {
@@ -40,8 +46,7 @@ public class ASTVariable extends IdentifierNode implements ExpressionNode {
         }
         for(int i=0; i<jjtGetNumChildren(); i++) {
             ASTMethod method = (ASTMethod)jjtGetChild(i);
-            method.setParentObject(object);
-            object = method.evaluateAsObject(context);
+            object = method.evaluateAsObject(context, object);
             if(object == null) {
                 return null;
             }
@@ -50,9 +55,8 @@ public class ASTVariable extends IdentifierNode implements ExpressionNode {
     }
 
     @Override
-    public String evaluate(Context context) {
-        Object object = evaluateAsObject(context);
-        return object == null ? "" : object.toString();
+    public void evaluate(Context context) {
+        context.getBuilder().append(evaluateAsString(context));
     }
 
     @Override

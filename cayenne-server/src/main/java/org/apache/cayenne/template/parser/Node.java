@@ -30,18 +30,6 @@ import org.apache.cayenne.template.Context;
 public interface Node {
 
     /**
-     * This method is called after the node has been made the current
-     * node.  It indicates that child nodes can now be added to it.
-     */
-    void jjtOpen();
-
-    /**
-     * This method is called after all the child nodes have been
-     * added.
-     */
-    void jjtClose();
-
-    /**
      * This pair of methods are used to inform the node of its
      * parent.
      */
@@ -66,5 +54,5 @@ public interface Node {
      */
     int jjtGetNumChildren();
 
-    String evaluate(Context context);
+    void evaluate(Context context);
 }

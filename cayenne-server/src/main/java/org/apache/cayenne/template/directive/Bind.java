@@ -35,13 +35,13 @@ public class Bind implements Directive {
     public static final Bind INSTANCE = new Bind();
 
     @Override
-    public String apply(Context context, ASTExpression... expressions) {
-        if(expressions.length < 1) {
+    public void apply(Context context, ASTExpression... expressions) {
+        if (expressions.length < 1) {
             throw new IllegalArgumentException();
         }
 
         Object value = expressions[0].evaluateAsObject(context);
-        String jdbcTypeName = expressions.length < 2 ? null : expressions[1].evaluate(context);
+        String jdbcTypeName = expressions.length < 2 ? null : expressions[1].evaluateAsString(context);
 
         int jdbcType;
         if (jdbcTypeName != null) {
@@ -51,26 +51,23 @@ public class Bind implements Directive {
         } else {
             jdbcType = TypesMapping.getSqlTypeByName(TypesMapping.SQL_NULL);
         }
-        int scale = expressions.length < 3 ? -1 : (int)expressions[2].evaluateAsLong(context);
+        int scale = expressions.length < 3 ? -1 : (int) expressions[2].evaluateAsLong(context);
 
-        StringBuilder builder = new StringBuilder();
         if (value instanceof Collection) {
             Iterator<?> it = ((Collection) value).iterator();
             while (it.hasNext()) {
-                processBinding(context, builder, new ParameterBinding(it.next(), jdbcType, scale));
+                processBinding(context, new ParameterBinding(it.next(), jdbcType, scale));
                 if (it.hasNext()) {
-                    builder.append(',');
+                    context.getBuilder().append(',');
                 }
             }
         } else {
-            processBinding(context, builder, new ParameterBinding(value, jdbcType, scale));
+            processBinding(context, new ParameterBinding(value, jdbcType, scale));
         }
-
-        return builder.toString();
     }
 
-    protected void processBinding(Context context, StringBuilder builder, ParameterBinding binding) {
+    protected void processBinding(Context context, ParameterBinding binding) {
         context.addParameterBinding(binding);
-        builder.append('?');
+        context.getBuilder().append('?');
     }
 }

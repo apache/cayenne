@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.template.parser;
 
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 
 import org.apache.cayenne.template.Context;
@@ -158,6 +159,8 @@ public class SQLTemplateParserTest {
         String sql = parseString(template, context);
         assertEquals("\"val\"", sql);
 
+        context = new Context();
+        context.addParameter("a", "val");
         template = "'$a'";
         sql = parseString(template, context);
         assertEquals("'val'", sql);
@@ -172,10 +175,9 @@ public class SQLTemplateParserTest {
         assertEquals("val,val", sql);
     }
 
-    private String parseString(String template, Context context) throws ParseException {
-        SQLTemplateParser parser = new SQLTemplateParser(new StringReader(template));
-        Node block = parser.template();
-        return block.evaluate(context);
+    private String parseString(String tpl, Context context) throws ParseException {
+        new SQLTemplateParser(new ByteArrayInputStream(tpl.getBytes())).template().evaluate(context);
+        return context.buildTemplate();
     }
 
 }

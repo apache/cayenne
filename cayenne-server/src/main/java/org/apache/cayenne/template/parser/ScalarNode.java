@@ -41,10 +41,14 @@ public class ScalarNode<V> extends SimpleNode implements ExpressionNode {
     }
 
     @Override
-    public String evaluate(Context context) {
-        if(value == null) {
-            return "";
+    public void evaluate(Context context) {
+        if(value != null) {
+            context.getBuilder().append(value.toString());
         }
+    }
+
+    @Override
+    public String evaluateAsString(Context context) {
         return value.toString();
     }
 

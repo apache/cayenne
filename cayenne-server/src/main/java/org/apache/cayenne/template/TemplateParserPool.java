@@ -17,29 +17,44 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.template.parser;
+package org.apache.cayenne.template;
 
-import org.apache.cayenne.template.Context;
+import java.io.ByteArrayInputStream;
+import java.util.concurrent.ArrayBlockingQueue;
+
+import org.apache.cayenne.template.parser.SQLTemplateParser;
 
 /**
- * This is a root node of parsed template.
- * It can be nested inside #if .. #else .. #end directive.
- *
  * @since 4.1
  */
-public class ASTBlock extends SimpleNode {
+class TemplateParserPool {
 
-    public ASTBlock(int id) {
-        super(id);
-    }
+    final static int INITIAL_POOL_SIZE = 4;
+    final static int MAX_POOL_SIZE = 20;
 
-    @Override
-    public void evaluate(Context context) {
-        if(children == null) {
-            return;
-        }
-        for(Node node : children) {
-            node.evaluate(context);
+    private ArrayBlockingQueue<SQLTemplateParser> parsers = new ArrayBlockingQueue<>(MAX_POOL_SIZE);
+
+    TemplateParserPool() {
+        for(int i=0; i<INITIAL_POOL_SIZE; i++) {
+            parsers.offer(createNewParser());
         }
     }
+
+    SQLTemplateParser get() {
+        SQLTemplateParser parser = parsers.poll();
+        if(parser == null) {
+            parser = createNewParser();
+        }
+        return parser;
+    }
+
+    void put(SQLTemplateParser parser) {
+        parser.ReInit(new ByteArrayInputStream("\n".getBytes()));
+        parsers.offer(parser);
+    }
+
+    SQLTemplateParser createNewParser() {
+        return new SQLTemplateParser(new ByteArrayInputStream("\n".getBytes()));
+    }
+
 }

@@ -27,6 +27,6 @@ import org.apache.cayenne.template.parser.ASTExpression;
  */
 public interface Directive {
 
-    String apply(Context context, ASTExpression... expressions);
+    void apply(Context context, ASTExpression... expressions);
 
 }

@@ -19,8 +19,7 @@
 
 package org.apache.cayenne.template;
 
-import java.io.BufferedReader;
-import java.io.StringReader;
+import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +41,8 @@ public class CayenneSQLTemplateProcessor implements SQLTemplateProcessor {
 
     ConcurrentLinkedHashMap<String, Node> templateCache = new ConcurrentLinkedHashMap
             .Builder<String, Node>().maximumWeightedCapacity(100).build();
+
+    TemplateParserPool parserPool = new TemplateParserPool();
 
     @Override
     public SQLStatement processTemplate(String template, Map<String, ?> parameters) {
@@ -65,16 +66,21 @@ public class CayenneSQLTemplateProcessor implements SQLTemplateProcessor {
     protected SQLStatement process(String template, Context context) {
         Node node = templateCache.get(template);
         if(node == null) {
-            SQLTemplateParser parser = new SQLTemplateParser(new BufferedReader(new StringReader(template)));
+            SQLTemplateParser parser = parserPool.get();
             try {
+                parser.ReInit(new ByteArrayInputStream(template.getBytes()));
                 node = parser.template();
             } catch (ParseException | TokenMgrError ex) {
                 throw new CayenneRuntimeException("Error parsing template '%s' : %s", template, ex.getMessage());
+            } finally {
+                parserPool.put(parser);
             }
+            // can ignore case when someone resolved this template concurrently, it has no side effects
             templateCache.put(template, node);
         }
 
-        String sql = node.evaluate(context);
-        return new SQLStatement(sql, context.getColumnDescriptors(), context.getParameterBindings());
+        node.evaluate(context);
+
+        return new SQLStatement(context.buildTemplate(), context.getColumnDescriptors(), context.getParameterBindings());
     }
 }
