@@ -57,14 +57,14 @@ public class Context {
     int counter;
 
     public Context() {
-        directives.put(               "bind", Bind.INSTANCE);
-        directives.put(          "bindEqual", BindEqual.INSTANCE);
-        directives.put(       "bindNotEqual", BindNotEqual.INSTANCE);
-        directives.put(    "bindObjectEqual", BindObjectEqual.INSTANCE);
-        directives.put( "bindObjectNotEqual", BindObjectNotEqual.INSTANCE);
-        directives.put(             "result", Result.INSTANCE);
+        addDirective(             "result", Result.INSTANCE);
+        addDirective(               "bind", Bind.INSTANCE);
+        addDirective(          "bindEqual", BindEqual.INSTANCE);
+        addDirective(       "bindNotEqual", BindNotEqual.INSTANCE);
+        addDirective(    "bindObjectEqual", BindObjectEqual.INSTANCE);
+        addDirective( "bindObjectNotEqual", BindObjectNotEqual.INSTANCE);
 
-        objects.put("helper", new SQLTemplateRenderingUtils());
+        addParameter("helper", new SQLTemplateRenderingUtils());
     }
 
     public Context(boolean positionalMode) {
@@ -90,6 +90,10 @@ public class Context {
             }
         }
         return builder.toString();
+    }
+
+    public boolean haveObject(String name) {
+        return objects.containsKey(name);
     }
 
     public Object getObject(String name) {

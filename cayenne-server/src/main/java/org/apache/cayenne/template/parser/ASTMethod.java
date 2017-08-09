@@ -20,7 +20,6 @@
 package org.apache.cayenne.template.parser;
 
 import java.lang.reflect.Method;
-import java.util.Objects;
 
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.template.Context;
@@ -58,17 +57,27 @@ public class ASTMethod extends IdentifierNode {
                     Object[] arguments = new Object[jjtGetNumChildren()];
                     for(Class<?> parameterType : m.getParameterTypes()) {
                         ASTExpression child = (ASTExpression)jjtGetChild(i);
-                        if(parameterType.isAssignableFrom(String.class)) {
-                            arguments[i] = child.evaluateAsString(context);
-                        } else if(parameterType.isAssignableFrom(Double.class)) {
-                            arguments[i] = child.evaluateAsDouble(context);
-                        } else if(parameterType.isAssignableFrom(Long.class)) {
-                            arguments[i] = child.evaluateAsLong(context);
-                        } else if(parameterType.isAssignableFrom(Integer.class)) {
-                            arguments[i] = (int)child.evaluateAsLong(context);
-                        } else if(parameterType.isAssignableFrom(Boolean.class)) {
-                            arguments[i] = child.evaluateAsBoolean(context);
-                        } else {
+                        try {
+                            if (parameterType.isAssignableFrom(Object.class)) {
+                                arguments[i] = child.evaluateAsObject(context);
+                            } else if (parameterType.isAssignableFrom(String.class)) {
+                                arguments[i] = child.evaluateAsString(context);
+                            } else if (parameterType.isAssignableFrom(Boolean.class) || parameterType.isAssignableFrom(boolean.class)) {
+                                arguments[i] = child.evaluateAsBoolean(context);
+                            } else if (parameterType.isAssignableFrom(Double.class) || parameterType.isAssignableFrom(double.class)) {
+                                arguments[i] = child.evaluateAsDouble(context);
+                            } else if (parameterType.isAssignableFrom(Float.class) || parameterType.isAssignableFrom(float.class)) {
+                                arguments[i] = (float) child.evaluateAsDouble(context);
+                            } else if (parameterType.isAssignableFrom(Long.class) || parameterType.isAssignableFrom(long.class)) {
+                                arguments[i] = child.evaluateAsLong(context);
+                            } else if (parameterType.isAssignableFrom(Integer.class) || parameterType.isAssignableFrom(int.class)) {
+                                arguments[i] = (int) child.evaluateAsLong(context);
+                            } else if (parameterType.isAssignableFrom(Object[].class)) {
+                                arguments[i] = child.evaluateAsObject(context);
+                            } else {
+                                continue methodsLoop;
+                            }
+                        } catch (UnsupportedOperationException ignored) {
                             continue methodsLoop;
                         }
                         i++;
