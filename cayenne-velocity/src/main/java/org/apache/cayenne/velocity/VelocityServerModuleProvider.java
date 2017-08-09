@@ -19,19 +19,32 @@
 
 package org.apache.cayenne.velocity;
 
-import org.apache.cayenne.exp.ExpressionFactory;
+import java.util.Collection;
+import java.util.Collections;
+
+import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.di.Module;
 
 /**
- * Implements utility methods used inside Velocity templates when rendering
- * SQLTemplates.
- * 
- * @since 1.1
+ * @since 4.1
  */
-public class SQLTemplateRenderingUtils {
-	/**
-	 * Returns the result of evaluation of expression with object.
-	 */
-	public Object cayenneExp(Object object, String expression) {
-		return ExpressionFactory.exp(expression).evaluate(object);
-	}
+public class VelocityServerModuleProvider implements CayenneServerModuleProvider {
+
+    @Override
+    public Module module() {
+        return new VelocityModule();
+    }
+
+    @Override
+    public Class<? extends Module> moduleType() {
+        return VelocityModule.class;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Collection<Class<? extends Module>> overrides() {
+        Collection modules = Collections.singletonList(ServerModule.class);
+        return modules;
+    }
 }

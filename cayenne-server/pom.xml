@@ -49,11 +49,6 @@
 			<artifactId>commons-collections</artifactId>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity</artifactId>
-			<scope>compile</scope>
-		</dependency>
 
 		<!-- Optional dependencies... things that might have been placed in submodules... -->
 		<dependency>

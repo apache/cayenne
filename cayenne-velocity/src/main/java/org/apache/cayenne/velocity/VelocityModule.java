@@ -16,42 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.merge.builders;
 
-import org.apache.cayenne.datafactory.DataFactory;
-import org.apache.cayenne.util.Util;
+package org.apache.cayenne.velocity;
+
+import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
+import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Module;
 
 /**
- * @since 4.0.
+ * @since 4.1
  */
-public abstract class DefaultBuilder<T> implements Builder<T> {
-
-    protected final DataFactory dataFactory;
-    protected final T obj;
-
-
-    protected DefaultBuilder(T obj) {
-        this.dataFactory = new DataFactory();
-        this.obj = obj;
-    }
-
-    public String getRandomJavaName() {
-        int count = dataFactory.getNumberBetween(1, 5);
-        StringBuilder res = new StringBuilder();
-        for (int i = 0; i < count; i++) {
-            res.append(Util.capitalized(dataFactory.getRandomWord()));
-        }
-
-        return Util.uncapitalized(res.toString());
-    }
+public class VelocityModule implements Module {
 
     @Override
-    public T build() {
-        return obj;
-    }
-
-    @Override
-    public T random() {
-        return build();
+    public void configure(Binder binder) {
+        binder.bind(SQLTemplateProcessor.class).to(VelocitySQLTemplateProcessor.class);
     }
 }

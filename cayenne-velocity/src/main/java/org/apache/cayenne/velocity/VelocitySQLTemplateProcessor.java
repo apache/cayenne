@@ -25,6 +25,7 @@ import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.template.SQLTemplateRenderingUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.InternalContextAdapterImpl;
 import org.apache.velocity.runtime.RuntimeConstants;
