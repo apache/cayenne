@@ -35,7 +35,14 @@ public class ASTVariable extends IdentifierNode implements ExpressionNode {
     @Override
     public String evaluateAsString(Context context) {
         Object object = evaluateAsObject(context);
-        return object == null ? "" : object.toString();
+        if(object == null) {
+            if(!context.haveObject(getIdentifier())) {
+                return '$' + getIdentifier();
+            }
+            return "";
+        }
+
+        return object.toString();
     }
 
     @Override

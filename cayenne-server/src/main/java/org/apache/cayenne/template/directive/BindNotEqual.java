@@ -27,7 +27,7 @@ import org.apache.cayenne.template.Context;
  */
 public class BindNotEqual extends Bind {
 
-    public static final BindEqual INSTANCE = new BindEqual();
+    public static final BindNotEqual INSTANCE = new BindNotEqual();
 
     @Override
     protected void processBinding(Context context, ParameterBinding binding) {

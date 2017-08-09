@@ -20,9 +20,9 @@
 package org.apache.cayenne.template.parser;
 
 import java.io.ByteArrayInputStream;
-import java.io.StringReader;
 
 import org.apache.cayenne.template.Context;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 public class SQLTemplateParserTest {
 
     @Test
-    public void testSimpleParse() throws Exception {
+    public void testUnchangedParse() throws Exception {
         Context context = new Context();
         String template = "SELECT * FROM a";
 
@@ -145,6 +145,87 @@ public class SQLTemplateParserTest {
     }
 
     @Test
+    public void testHelperObject() throws Exception {
+        String tpl = "($helper.cayenneExp($a, 'field'))";
+        Context context = new Context();
+        context.addParameter("a", new TestBean(5));
+
+        String sql = parseString(tpl, context);
+        assertEquals("(5)", sql);
+    }
+
+    @Test
+    public void testMethodCallArray() throws Exception {
+        String tpl = "$a.arrayMethod(['1' '2' '3'])";
+        Context context = new Context();
+        context.addParameter("a", new TestBean(5));
+
+        String sql = parseString(tpl, context);
+        assertEquals("array_3", sql);
+    }
+
+    @Test
+    public void testMethodCallInt() throws Exception {
+        String tpl = "$a.intMethod(42)";
+        Context context = new Context();
+        context.addParameter("a", new TestBean(5));
+
+        String sql = parseString(tpl, context);
+        assertEquals("int_42", sql);
+    }
+
+    @Test
+    public void testMethodCallString() throws Exception {
+        String tpl = "$a.stringMethod(\"abc\")";
+        Context context = new Context();
+        context.addParameter("a", new TestBean(5));
+
+        String sql = parseString(tpl, context);
+        assertEquals("string_abc", sql);
+    }
+
+    @Test
+    public void testMethodCallFloat() throws Exception {
+        String tpl = "$a.floatMethod(3.14)";
+        Context context = new Context();
+        context.addParameter("a", new TestBean(5));
+
+        String sql = parseString(tpl, context);
+        assertEquals("float_3.14", sql);
+    }
+
+    @Test
+    @Ignore("Method overload not properly supported, this test can return m2_true")
+    public void testMethodCallSelectByArgType1() throws Exception {
+        String tpl = "$a.method(123)";
+        Context context = new Context();
+        context.addParameter("a", new TestBean(5));
+
+        String sql = parseString(tpl, context);
+        assertEquals("m1_123", sql);
+    }
+
+    @Test
+    public void testMethodCallSelectByArgType2() throws Exception {
+        String tpl = "$a.method(true)";
+        Context context = new Context();
+        context.addParameter("a", new TestBean(5));
+
+        String sql = parseString(tpl, context);
+        assertEquals("m2_true", sql);
+    }
+
+    @Test
+    public void testPropertyAccess() throws Exception {
+        String tpl = "$a.field()";
+        Context context = new Context();
+        context.addParameter("a", new TestBean(5));
+
+        String sql = parseString(tpl, context);
+        assertEquals("5", sql);
+    }
+
+    @Test
     public void testNestedBrackets() throws Exception {
         String tpl = "(#bind('A' 'b'))";
         String sql = parseString(tpl, new Context());
@@ -178,6 +259,41 @@ public class SQLTemplateParserTest {
     private String parseString(String tpl, Context context) throws ParseException {
         new SQLTemplateParser(new ByteArrayInputStream(tpl.getBytes())).template().evaluate(context);
         return context.buildTemplate();
+    }
+
+    static public class TestBean {
+        private int field;
+        TestBean(int field) {
+            this.field = field;
+        }
+
+        public int getField() {
+            return field;
+        }
+
+        public String arrayMethod(Object[] array) {
+            return "array_" + array.length;
+        }
+
+        public String stringMethod(String string) {
+            return "string_" + string;
+        }
+
+        public String intMethod(int i) {
+            return "int_" + i;
+        }
+
+        public String floatMethod(float f) {
+            return "float_" + f;
+        }
+
+        public String method(int i) {
+            return "m1_" + i;
+        }
+
+        public String method(boolean b) {
+            return "m2_" + b;
+        }
     }
 
 }
