@@ -42,7 +42,22 @@ public class Bind implements Directive {
 
         Object value = expressions[0].evaluateAsObject(context);
         String jdbcTypeName = expressions.length < 2 ? null : expressions[1].evaluateAsString(context);
+        int scale = expressions.length < 3 ? -1 : (int) expressions[2].evaluateAsLong(context);
 
+        if (value instanceof Collection) {
+            Iterator<?> it = ((Collection) value).iterator();
+            while (it.hasNext()) {
+                bindValue(context, it.next(), jdbcTypeName, scale);
+                if (it.hasNext()) {
+                    context.getBuilder().append(',');
+                }
+            }
+        } else {
+            bindValue(context, value, jdbcTypeName, scale);
+        }
+    }
+
+    protected void bindValue(Context context, Object value, String jdbcTypeName, int scale) {
         int jdbcType;
         if (jdbcTypeName != null) {
             jdbcType = TypesMapping.getSqlTypeByName(jdbcTypeName);
@@ -51,19 +66,8 @@ public class Bind implements Directive {
         } else {
             jdbcType = TypesMapping.getSqlTypeByName(TypesMapping.SQL_NULL);
         }
-        int scale = expressions.length < 3 ? -1 : (int) expressions[2].evaluateAsLong(context);
 
-        if (value instanceof Collection) {
-            Iterator<?> it = ((Collection) value).iterator();
-            while (it.hasNext()) {
-                processBinding(context, new ParameterBinding(it.next(), jdbcType, scale));
-                if (it.hasNext()) {
-                    context.getBuilder().append(',');
-                }
-            }
-        } else {
-            processBinding(context, new ParameterBinding(value, jdbcType, scale));
-        }
+        processBinding(context, new ParameterBinding(value, jdbcType, scale));
     }
 
     protected void processBinding(Context context, ParameterBinding binding) {
