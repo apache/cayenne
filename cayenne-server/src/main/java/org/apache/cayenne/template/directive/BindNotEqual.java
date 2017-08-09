@@ -30,12 +30,12 @@ public class BindNotEqual extends Bind {
     public static final BindEqual INSTANCE = new BindEqual();
 
     @Override
-    protected void processBinding(Context context, StringBuilder builder, ParameterBinding binding) {
+    protected void processBinding(Context context, ParameterBinding binding) {
         if (binding.getValue() != null) {
             context.addParameterBinding(binding);
-            builder.append("<> ?");
+            context.getBuilder().append("<> ?");
         } else {
-            builder.append("IS NOT NULL");
+            context.getBuilder().append("IS NOT NULL");
         }
     }
 

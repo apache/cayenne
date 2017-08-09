@@ -30,7 +30,12 @@ public class ASTArray extends ASTExpression {
     }
 
     @Override
-    public String evaluate(Context context) {
+    public void evaluate(Context context) {
+        context.getBuilder().append(evaluateAsString(context));
+    }
+
+    @Override
+    public String evaluateAsString(Context context) {
         return Arrays.toString(evaluateAsArray(context));
     }
 

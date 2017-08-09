@@ -32,20 +32,17 @@ public abstract class SimpleNode implements Node {
         id = i;
     }
 
-    public void jjtOpen() {
-    }
-
-    public void jjtClose() {
-    }
-
+    @Override
     public void jjtSetParent(Node n) {
         parent = n;
     }
 
+    @Override
     public Node jjtGetParent() {
         return parent;
     }
 
+    @Override
     public void jjtAddChild(Node n, int i) {
         if (children == null) {
             children = new Node[i + 1];
@@ -57,14 +54,17 @@ public abstract class SimpleNode implements Node {
         children[i] = n;
     }
 
+    @Override
     public Node jjtGetChild(int i) {
         return children[i];
     }
 
+    @Override
     public int jjtGetNumChildren() {
         return (children == null) ? 0 : children.length;
     }
 
+    @Override
     public String toString() {
         return SQLTemplateParserTreeConstants.jjtNodeName[id];
     }

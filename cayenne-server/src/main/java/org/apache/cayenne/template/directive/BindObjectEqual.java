@@ -24,13 +24,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.template.Context;
 import org.apache.cayenne.template.parser.ASTExpression;
-import org.apache.velocity.exception.ParseErrorException;
 
 /**
  * @since 4.1
@@ -40,7 +40,7 @@ public class BindObjectEqual implements Directive {
     public static final BindObjectEqual INSTANCE = new BindObjectEqual();
 
     @Override
-    public String apply(Context context, ASTExpression... expressions) {
+    public void apply(Context context, ASTExpression... expressions) {
 
         Object object = expressions[0].evaluateAsObject(context);
         Map<String, Object> idMap = toIdMap(object);
@@ -57,7 +57,7 @@ public class BindObjectEqual implements Directive {
         if (idMap == null) {
             // assume null object, and bind all null values
             if (sqlColumns == null || idColumns == null) {
-                throw new ParseErrorException("Invalid parameters. "
+                throw new CayenneRuntimeException("Invalid parameters. "
                         + "Either object has to be set or sqlColumns and idColumns or both.");
             }
 
@@ -72,37 +72,33 @@ public class BindObjectEqual implements Directive {
         String[] idColumnsArray = toArray(idColumns);
 
         if (sqlColumnsArray.length != idColumnsArray.length) {
-            throw new ParseErrorException(
+            throw new CayenneRuntimeException(
                     "SQL columns and ID columns arrays have different sizes.");
         }
-
-        StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < sqlColumnsArray.length; i++) {
             Object value = idMap.get(idColumnsArray[i]);
             int jdbcType = (value != null) ? TypesMapping.getSqlTypeByJava(value.getClass()) : Types.INTEGER;
 
-            renderColumn(sqlColumnsArray[i], i, builder);
-            render(context, builder, new ParameterBinding(value, jdbcType, -1));
+            renderColumn(context, sqlColumnsArray[i], i);
+            render(context, new ParameterBinding(value, jdbcType, -1));
         }
-
-        return builder.toString();
     }
 
-    protected void renderColumn(String columnName, int columnIndex, StringBuilder builder) {
+    protected void renderColumn(Context context, String columnName, int columnIndex) {
         if (columnIndex > 0) {
-            builder.append(" AND ");
+            context.getBuilder().append(" AND ");
         }
 
-        builder.append(columnName).append(' ');
+        context.getBuilder().append(columnName).append(' ');
     }
 
-    protected void render(Context context, StringBuilder builder, ParameterBinding binding) {
+    protected void render(Context context, ParameterBinding binding) {
         if (binding.getValue() != null) {
             context.addParameterBinding(binding);
-            builder.append("= ?");
+            context.getBuilder().append("= ?");
         } else {
-            builder.append("IS NULL");
+            context.getBuilder().append("IS NULL");
         }
     }
 
@@ -128,7 +124,7 @@ public class BindObjectEqual implements Directive {
     }
 
     @SuppressWarnings("unchecked")
-    protected Map<String, Object> toIdMap(Object object) throws ParseErrorException {
+    protected Map<String, Object> toIdMap(Object object) {
         if (object instanceof Persistent) {
             return ((Persistent) object).getObjectId().getIdSnapshot();
         } else if (object instanceof ObjectId) {
@@ -136,7 +132,7 @@ public class BindObjectEqual implements Directive {
         } else if(object instanceof Map) {
             return (Map<String, Object>) object;
         } else if (object != null) {
-            throw new ParseErrorException(
+            throw new CayenneRuntimeException(
                     "Invalid object parameter, expected Persistent or ObjectId or null: " + object);
         } else {
             return null;

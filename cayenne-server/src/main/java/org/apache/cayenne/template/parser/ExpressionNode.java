@@ -26,6 +26,8 @@ import org.apache.cayenne.template.Context;
  */
 public interface ExpressionNode {
 
+    String evaluateAsString(Context context);
+
     Object evaluateAsObject(Context context);
 
     long evaluateAsLong(Context context);

@@ -73,26 +73,26 @@ public class Result implements Directive {
     }
 
     @Override
-    public String apply(Context context, ASTExpression... expressions) {
+    public void apply(Context context, ASTExpression... expressions) {
 
         ColumnDescriptor columnDescriptor = new ColumnDescriptor();
 
-        String column = expressions[0].evaluate(context);
+        String column = expressions[0].evaluateAsString(context);
         columnDescriptor.setName(column);
 
         if (expressions.length > 1) {
-            String type = expressions[1].evaluate(context);
+            String type = expressions[1].evaluateAsString(context);
             columnDescriptor.setJavaClass(guessType(type));
         }
 
         String alias = null;
         if (expressions.length > 2) {
-            alias = expressions[2].evaluate(context);
+            alias = expressions[2].evaluateAsString(context);
         }
 
         String dataRowKey = null;
         if (expressions.length > 3) {
-            dataRowKey = expressions[3].evaluate(context);
+            dataRowKey = expressions[3].evaluateAsString(context);
         }
 
         // determine what we want to name this column in a resulting DataRow...
@@ -106,12 +106,10 @@ public class Result implements Directive {
 
         context.addColumnDescriptor(columnDescriptor);
 
-        String result = column;
+        context.getBuilder().append(column);
         if (!Util.isEmptyString(alias) && !alias.equals(column)) {
-            result += " AS " + alias;
+            context.getBuilder().append(" AS ").append(alias);
         }
-
-        return result;
     }
 
     /**

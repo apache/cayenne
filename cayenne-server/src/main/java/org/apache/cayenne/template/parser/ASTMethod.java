@@ -30,20 +30,14 @@ import org.apache.cayenne.template.Context;
  */
 public class ASTMethod extends IdentifierNode {
 
-    protected Object parentObject;
-
     public ASTMethod(int id) {
         super(id);
-    }
-
-    protected void setParentObject(Object parentObject) {
-        this.parentObject = Objects.requireNonNull(parentObject);
     }
 
     /**
      * Evaluate method call to an Object
      */
-    public Object evaluateAsObject(Context context) {
+    public Object evaluateAsObject(Context context, Object parentObject) {
         if(parentObject == null) {
             throw new IllegalStateException("To evaluate method node parent object should be set.");
         }
@@ -65,7 +59,7 @@ public class ASTMethod extends IdentifierNode {
                     for(Class<?> parameterType : m.getParameterTypes()) {
                         ASTExpression child = (ASTExpression)jjtGetChild(i);
                         if(parameterType.isAssignableFrom(String.class)) {
-                            arguments[i] = child.evaluate(context);
+                            arguments[i] = child.evaluateAsString(context);
                         } else if(parameterType.isAssignableFrom(Double.class)) {
                             arguments[i] = child.evaluateAsDouble(context);
                         } else if(parameterType.isAssignableFrom(Long.class)) {
@@ -94,9 +88,8 @@ public class ASTMethod extends IdentifierNode {
     }
 
     @Override
-    public String evaluate(Context context) {
-        Object object = evaluateAsObject(context);
-        return object == null ? "" : object.toString();
+    public void evaluate(Context context) {
+        throw new UnsupportedOperationException("Unable evaluate method directly, must be solved via ASTVariable");
     }
 
 }

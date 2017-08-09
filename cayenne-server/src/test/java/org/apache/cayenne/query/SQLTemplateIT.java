@@ -148,15 +148,11 @@ public class SQLTemplateIT extends ServerCase {
 		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
 		q1.setParamsArray(11, "The Fiddler", 2345, 333);
 
-		context.performNonSelectingQuery(q1);
-		// TODO: new template render doesn't throw expetion in this case
-		/*
 		try {
 			context.performNonSelectingQuery(q1);
 			fail("Exception not thrown on parameter length mismatch");
 		} catch (CayenneRuntimeException e) {
 			// expected
 		}
-		*/
 	}
 }

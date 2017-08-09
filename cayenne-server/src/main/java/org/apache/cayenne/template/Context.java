@@ -34,7 +34,6 @@ import org.apache.cayenne.template.directive.BindObjectEqual;
 import org.apache.cayenne.template.directive.BindObjectNotEqual;
 import org.apache.cayenne.template.directive.Directive;
 import org.apache.cayenne.template.directive.Result;
-import org.apache.cayenne.velocity.SQLTemplateRenderingUtils;
 
 /**
  * @since 4.1
@@ -50,6 +49,8 @@ public class Context {
     List<ParameterBinding> parameterBindings = new ArrayList<>();
 
     List<ColumnDescriptor> columnDescriptors = new ArrayList<>();
+
+    StringBuilder builder = new StringBuilder();
 
     boolean positionalMode;
 
@@ -76,6 +77,19 @@ public class Context {
 
     public Directive getDirective(String name) {
         return directives.get(name);
+    }
+
+    public StringBuilder getBuilder() {
+        return builder;
+    }
+
+    public String buildTemplate() {
+        if(positionalMode) {
+            if(counter <= objects.size() - 2) {
+                throw new CayenneRuntimeException("Too many parameters to bind template: " + (objects.size() - 1));
+            }
+        }
+        return builder.toString();
     }
 
     public Object getObject(String name) {

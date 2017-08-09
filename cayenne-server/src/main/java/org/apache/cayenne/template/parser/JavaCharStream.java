@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.template.parser;
 
+import java.io.IOException;
+
 /**
  * An implementation of interface CharStream, where the stream is assumed to
  * contain only ASCII characters (with java-like unicode escape processing).
@@ -26,6 +28,14 @@ package org.apache.cayenne.template.parser;
  * @since 4.1
  */
 public class JavaCharStream {
+
+    private static final IOException END_OF_STREAM_EXCEPTION = new IOException() {
+
+        @Override
+        public synchronized Throwable fillInStackTrace() {
+            return this;
+        }
+    };
 
     /**
      * Whether parser is static.
@@ -102,6 +112,7 @@ public class JavaCharStream {
     protected int nextCharInd = -1;
     protected int inBuf = 0;
     protected int tabSize = 8;
+    private boolean closed;
 
     protected void ExpandBuff(boolean wrapAround) {
         char[] newbuffer = new char[bufsize + 2048];
@@ -145,14 +156,17 @@ public class JavaCharStream {
 
     protected void FillBuff() throws java.io.IOException {
         int i;
-        if (maxNextCharInd == 4096)
+        if (maxNextCharInd == nextCharBuf.length)
             maxNextCharInd = nextCharInd = 0;
 
         try {
-            if ((i = inputStream.read(nextCharBuf, maxNextCharInd,
-                    4096 - maxNextCharInd)) == -1) {
+            // check for closed status to prevent the underlying Reader from
+            // throwing IOException that causes performance degradation
+            if (closed || (i = inputStream.read(nextCharBuf, maxNextCharInd,
+                    nextCharBuf.length - maxNextCharInd)) == -1) {
                 inputStream.close();
-                throw new java.io.IOException();
+                closed = true;
+                throw END_OF_STREAM_EXCEPTION;
             } else
                 maxNextCharInd += i;
         } catch (java.io.IOException e) {
@@ -412,6 +426,7 @@ public class JavaCharStream {
         prevCharIsLF = prevCharIsCR = false;
         tokenBegin = inBuf = maxNextCharInd = 0;
         nextCharInd = bufpos = -1;
+        closed = false;
     }
 
     /**

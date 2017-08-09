@@ -30,21 +30,21 @@ public class BindObjectNotEqual extends BindObjectEqual {
     public static final BindObjectNotEqual INSTANCE = new BindObjectNotEqual();
 
     @Override
-    protected void renderColumn(String columnName, int columnIndex, StringBuilder builder) {
+    protected void renderColumn(Context context, String columnName, int columnIndex) {
         if (columnIndex > 0) {
-            builder.append(" OR ");
+            context.getBuilder().append(" OR ");
         }
 
-        builder.append(columnName).append(' ');
+        context.getBuilder().append(columnName).append(' ');
     }
 
     @Override
-    protected void render(Context context, StringBuilder builder, ParameterBinding binding) {
+    protected void render(Context context, ParameterBinding binding) {
         if (binding.getValue() != null) {
             context.addParameterBinding(binding);
-            builder.append("<> ?");
+            context.getBuilder().append("<> ?");
         } else {
-            builder.append("IS NOT NULL");
+            context.getBuilder().append("IS NOT NULL");
         }
     }
 

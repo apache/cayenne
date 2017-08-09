@@ -32,10 +32,10 @@ public class ASTDirective extends IdentifierNode {
     }
 
     @Override
-    public String evaluate(Context context) {
+    public void evaluate(Context context) {
         Directive directive = context.getDirective(getIdentifier());
         if(directive == null) {
-            return "";
+            return;
         }
 
         ASTExpression[] expressions = new ASTExpression[children.length];
@@ -43,6 +43,6 @@ public class ASTDirective extends IdentifierNode {
             expressions[i] = (ASTExpression)children[i];
         }
 
-        return directive.apply(context, expressions);
+        directive.apply(context, expressions);
     }
 }

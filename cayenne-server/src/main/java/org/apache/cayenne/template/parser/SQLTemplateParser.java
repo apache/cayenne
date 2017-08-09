@@ -114,21 +114,18 @@ public class SQLTemplateParser/*@bgen(jjtree)*/implements SQLTemplateParserTreeC
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case TEXT:
         t = jj_consume_token(TEXT);
-                 jjtree.closeNodeScope(jjtn000, true);
-                 jjtc000 = false;
-        jjtn000.setValue(t.image);
         break;
       case TEXT_OTHER:
         t = jj_consume_token(TEXT_OTHER);
-                       jjtree.closeNodeScope(jjtn000, true);
-                       jjtc000 = false;
-        jjtn000.setValue(t.image);
         break;
       default:
         jj_la1[2] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
+        jjtree.closeNodeScope(jjtn000, true);
+        jjtc000 = false;
+        jjtn000.setValue(t.image);
     } finally {
       if (jjtc000) {
         jjtree.closeNodeScope(jjtn000, true);

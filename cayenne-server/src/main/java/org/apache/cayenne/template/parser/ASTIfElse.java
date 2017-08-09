@@ -31,16 +31,15 @@ public class ASTIfElse extends SimpleNode {
     }
 
     @Override
-    public String evaluate(Context context) {
+    public void evaluate(Context context) {
         ASTExpression condition = (ASTExpression)jjtGetChild(0);
         if (condition.evaluateAsBoolean(context)) {
-            return jjtGetChild(1).evaluate(context);
+            jjtGetChild(1).evaluate(context);
         } else {
             // else is optional
             if(jjtGetNumChildren() > 2) {
-                return jjtGetChild(2).evaluate(context);
+                jjtGetChild(2).evaluate(context);
             }
-            return "";
         }
     }
 }

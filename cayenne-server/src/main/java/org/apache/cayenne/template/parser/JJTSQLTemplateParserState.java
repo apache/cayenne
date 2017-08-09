@@ -19,17 +19,23 @@
 
 package org.apache.cayenne.template.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @since 4.1
+ */
 public class JJTSQLTemplateParserState {
-    private java.util.List<Node> nodes;
-    private java.util.List<Integer> marks;
+    private List<Node> nodes;
+    private List<Integer> marks;
 
     private int sp;        // number of nodes on stack
     private int mk;        // current mark
     private boolean node_created;
 
     public JJTSQLTemplateParserState() {
-        nodes = new java.util.ArrayList<>();
-        marks = new java.util.ArrayList<>();
+        nodes = new ArrayList<>();
+        marks = new ArrayList<>();
         sp = 0;
         mk = 0;
     }
@@ -82,7 +88,6 @@ public class JJTSQLTemplateParserState {
         return sp - mk;
     }
 
-
     public void clearNodeScope(Node n) {
         while (sp > mk) {
             popNode();
@@ -90,13 +95,10 @@ public class JJTSQLTemplateParserState {
         mk = marks.remove(marks.size() - 1);
     }
 
-
     public void openNodeScope(Node n) {
         marks.add(mk);
         mk = sp;
-        n.jjtOpen();
     }
-
 
     /* A definite node is constructed from a specified number of
        children.  That number of nodes are popped from the stack and
@@ -109,7 +111,6 @@ public class JJTSQLTemplateParserState {
             c.jjtSetParent(n);
             n.jjtAddChild(c, num);
         }
-        n.jjtClose();
         pushNode(n);
         node_created = true;
     }
@@ -129,7 +130,6 @@ public class JJTSQLTemplateParserState {
                 c.jjtSetParent(n);
                 n.jjtAddChild(c, a);
             }
-            n.jjtClose();
             pushNode(n);
             node_created = true;
         } else {

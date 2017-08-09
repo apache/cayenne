@@ -35,8 +35,17 @@ public class ASTExpression extends SimpleNode implements ExpressionNode {
     }
 
     @Override
-    public String evaluate(Context context) {
-        return jjtGetChild(0).evaluate(context);
+    public void evaluate(Context context) {
+        jjtGetChild(0).evaluate(context);
+    }
+
+    @Override
+    public String evaluateAsString(Context context) {
+        Object object = evaluateAsObject(context);
+        if(object != null) {
+            return object.toString();
+        }
+        return "";
     }
 
     @Override
