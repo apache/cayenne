@@ -18,7 +18,6 @@
 # How to fix: Change build setting or fix code.
 # https://docs.travis-ci.com/user/ci-environment/#Virtualization-environments
 sudo: required
-group: deprecated-2017Q2
 
 services:
   - docker
@@ -34,7 +33,6 @@ env:
 
 jdk:
   - oraclejdk8
-  - oraclejdk7
 
 script:
   - mvn verify -q -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
