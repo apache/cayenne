@@ -80,4 +80,5 @@ public class CayenneProjects {
     public static final String UUID_PROJECT = "cayenne-uuid.xml";
     public static final String CUSTOM_NAME_PROJECT = "custom-name-file.xml";
     public static final String WEIGHTED_SORT_PROJECT = "cayenne-weighted-sort.xml";
+    public static final String HYBRID_DATA_OBJECT_PROJECT = "cayenne-hybrid-data-object.xml";
 }

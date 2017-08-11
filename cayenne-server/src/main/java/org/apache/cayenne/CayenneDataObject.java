@@ -30,8 +30,18 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Implementation of DataObject that uses {@link Map} to store object fields.
+ * Implementation of {@link DataObject} that uses {@link Map} to store object fields.
+ * <p>
  * This implementation was pre 4.1 default.
+ * <p>
+ * Since <b>4.1</b> it is recommended to use {@link BaseDataObject} as superclass (and it is actually default now),
+ * as it has better performance and lower memory consumption (<b>much</b> lower for small objects).
+ * <p>
+ * You may need to use this class only if you have some generic attributes created at runtime (also
+ * consider {@link HybridDataObject} in this case) or if any compatibility issues arise.
+ *
+ * @see BaseDataObject
+ * @see HybridDataObject
  */
 public class CayenneDataObject extends BaseDataObject {
 
