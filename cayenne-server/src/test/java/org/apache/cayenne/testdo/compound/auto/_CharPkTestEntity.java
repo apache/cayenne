@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.compound.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.compound.CharFkTestEntity;
 
@@ -12,7 +15,7 @@ import org.apache.cayenne.testdo.compound.CharFkTestEntity;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _CharPkTestEntity extends CayenneDataObject {
+public abstract class _CharPkTestEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -22,30 +25,105 @@ public abstract class _CharPkTestEntity extends CayenneDataObject {
     public static final Property<String> PK_COL = Property.create("pkCol", String.class);
     public static final Property<List<CharFkTestEntity>> CHAR_FKS = Property.create("charFKs", List.class);
 
+    protected String otherCol;
+    protected String pkCol;
+
+    protected Object charFKs;
+
     public void setOtherCol(String otherCol) {
-        writeProperty("otherCol", otherCol);
+        beforePropertyWrite("otherCol", this.otherCol, otherCol);
+        this.otherCol = otherCol;
     }
+
     public String getOtherCol() {
-        return (String)readProperty("otherCol");
+        beforePropertyRead("otherCol");
+        return this.otherCol;
     }
 
     public void setPkCol(String pkCol) {
-        writeProperty("pkCol", pkCol);
+        beforePropertyWrite("pkCol", this.pkCol, pkCol);
+        this.pkCol = pkCol;
     }
+
     public String getPkCol() {
-        return (String)readProperty("pkCol");
+        beforePropertyRead("pkCol");
+        return this.pkCol;
     }
 
     public void addToCharFKs(CharFkTestEntity obj) {
         addToManyTarget("charFKs", obj, true);
     }
+
     public void removeFromCharFKs(CharFkTestEntity obj) {
         removeToManyTarget("charFKs", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<CharFkTestEntity> getCharFKs() {
         return (List<CharFkTestEntity>)readProperty("charFKs");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "otherCol":
+                return this.otherCol;
+            case "pkCol":
+                return this.pkCol;
+            case "charFKs":
+                return this.charFKs;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "otherCol":
+                this.otherCol = (String)val;
+                break;
+            case "pkCol":
+                this.pkCol = (String)val;
+                break;
+            case "charFKs":
+                this.charFKs = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.otherCol);
+        out.writeObject(this.pkCol);
+        out.writeObject(this.charFKs);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.otherCol = (String)in.readObject();
+        this.pkCol = (String)in.readObject();
+        this.charFKs = in.readObject();
+    }
 
 }

@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.relationships_delete_rules.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest1;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest3;
@@ -13,7 +16,7 @@ import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest3;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _DeleteRuleTest2 extends CayenneDataObject {
+public abstract class _DeleteRuleTest2 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -22,28 +25,90 @@ public abstract class _DeleteRuleTest2 extends CayenneDataObject {
     public static final Property<List<DeleteRuleTest3>> DELETE_RULE_TEST3ARRAY = Property.create("deleteRuleTest3Array", List.class);
     public static final Property<List<DeleteRuleTest1>> TEST1ARRAY = Property.create("test1Array", List.class);
 
+
+    protected Object deleteRuleTest3Array;
+    protected Object test1Array;
+
     public void addToDeleteRuleTest3Array(DeleteRuleTest3 obj) {
         addToManyTarget("deleteRuleTest3Array", obj, true);
     }
+
     public void removeFromDeleteRuleTest3Array(DeleteRuleTest3 obj) {
         removeToManyTarget("deleteRuleTest3Array", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<DeleteRuleTest3> getDeleteRuleTest3Array() {
         return (List<DeleteRuleTest3>)readProperty("deleteRuleTest3Array");
     }
 
-
     public void addToTest1Array(DeleteRuleTest1 obj) {
         addToManyTarget("test1Array", obj, true);
     }
+
     public void removeFromTest1Array(DeleteRuleTest1 obj) {
         removeToManyTarget("test1Array", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<DeleteRuleTest1> getTest1Array() {
         return (List<DeleteRuleTest1>)readProperty("test1Array");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "deleteRuleTest3Array":
+                return this.deleteRuleTest3Array;
+            case "test1Array":
+                return this.test1Array;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "deleteRuleTest3Array":
+                this.deleteRuleTest3Array = val;
+                break;
+            case "test1Array":
+                this.test1Array = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.deleteRuleTest3Array);
+        out.writeObject(this.test1Array);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.deleteRuleTest3Array = in.readObject();
+        this.test1Array = in.readObject();
+    }
 
 }

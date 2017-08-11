@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.map_to_many.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.map_to_many.IdMapToMany;
 
@@ -10,13 +14,16 @@ import org.apache.cayenne.testdo.map_to_many.IdMapToMany;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _IdMapToManyTarget extends CayenneDataObject {
+public abstract class _IdMapToManyTarget extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
     public static final Property<IdMapToMany> MAP_TO_MANY = Property.create("mapToMany", IdMapToMany.class);
+
+
+    protected Object mapToMany;
 
     public void setMapToMany(IdMapToMany mapToMany) {
         setToOneTarget("mapToMany", mapToMany, true);
@@ -26,5 +33,53 @@ public abstract class _IdMapToManyTarget extends CayenneDataObject {
         return (IdMapToMany)readProperty("mapToMany");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "mapToMany":
+                return this.mapToMany;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "mapToMany":
+                this.mapToMany = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.mapToMany);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.mapToMany = in.readObject();
+    }
 
 }

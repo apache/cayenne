@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.testmap.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
@@ -15,7 +18,7 @@ import org.apache.cayenne.testdo.testmap.ROArtist;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _CompoundPaintingLongNames extends CayenneDataObject {
+public abstract class _CompoundPaintingLongNames extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -32,46 +35,76 @@ public abstract class _CompoundPaintingLongNames extends CayenneDataObject {
     public static final Property<Gallery> TO_GALLERY = Property.create("toGallery", Gallery.class);
     public static final Property<PaintingInfo> TO_PAINTING_INFO = Property.create("toPaintingInfo", PaintingInfo.class);
 
+    protected String artistLongName;
+    protected BigDecimal estimatedPrice;
+    protected String galleryLongName;
+    protected String paintingDescription;
+    protected String paintingTitle;
+    protected String textLongReview;
+
+    protected Object toArtist;
+    protected Object toArtist1;
+    protected Object toGallery;
+    protected Object toPaintingInfo;
+
     public void setArtistLongName(String artistLongName) {
-        writeProperty("artistLongName", artistLongName);
+        beforePropertyWrite("artistLongName", this.artistLongName, artistLongName);
+        this.artistLongName = artistLongName;
     }
+
     public String getArtistLongName() {
-        return (String)readProperty("artistLongName");
+        beforePropertyRead("artistLongName");
+        return this.artistLongName;
     }
 
     public void setEstimatedPrice(BigDecimal estimatedPrice) {
-        writeProperty("estimatedPrice", estimatedPrice);
+        beforePropertyWrite("estimatedPrice", this.estimatedPrice, estimatedPrice);
+        this.estimatedPrice = estimatedPrice;
     }
+
     public BigDecimal getEstimatedPrice() {
-        return (BigDecimal)readProperty("estimatedPrice");
+        beforePropertyRead("estimatedPrice");
+        return this.estimatedPrice;
     }
 
     public void setGalleryLongName(String galleryLongName) {
-        writeProperty("galleryLongName", galleryLongName);
+        beforePropertyWrite("galleryLongName", this.galleryLongName, galleryLongName);
+        this.galleryLongName = galleryLongName;
     }
+
     public String getGalleryLongName() {
-        return (String)readProperty("galleryLongName");
+        beforePropertyRead("galleryLongName");
+        return this.galleryLongName;
     }
 
     public void setPaintingDescription(String paintingDescription) {
-        writeProperty("paintingDescription", paintingDescription);
+        beforePropertyWrite("paintingDescription", this.paintingDescription, paintingDescription);
+        this.paintingDescription = paintingDescription;
     }
+
     public String getPaintingDescription() {
-        return (String)readProperty("paintingDescription");
+        beforePropertyRead("paintingDescription");
+        return this.paintingDescription;
     }
 
     public void setPaintingTitle(String paintingTitle) {
-        writeProperty("paintingTitle", paintingTitle);
+        beforePropertyWrite("paintingTitle", this.paintingTitle, paintingTitle);
+        this.paintingTitle = paintingTitle;
     }
+
     public String getPaintingTitle() {
-        return (String)readProperty("paintingTitle");
+        beforePropertyRead("paintingTitle");
+        return this.paintingTitle;
     }
 
     public void setTextLongReview(String textLongReview) {
-        writeProperty("textLongReview", textLongReview);
+        beforePropertyWrite("textLongReview", this.textLongReview, textLongReview);
+        this.textLongReview = textLongReview;
     }
+
     public String getTextLongReview() {
-        return (String)readProperty("textLongReview");
+        beforePropertyRead("textLongReview");
+        return this.textLongReview;
     }
 
     public void setToArtist(Artist toArtist) {
@@ -82,7 +115,6 @@ public abstract class _CompoundPaintingLongNames extends CayenneDataObject {
         return (Artist)readProperty("toArtist");
     }
 
-
     public void setToArtist1(ROArtist toArtist1) {
         setToOneTarget("toArtist1", toArtist1, true);
     }
@@ -90,7 +122,6 @@ public abstract class _CompoundPaintingLongNames extends CayenneDataObject {
     public ROArtist getToArtist1() {
         return (ROArtist)readProperty("toArtist1");
     }
-
 
     public void setToGallery(Gallery toGallery) {
         setToOneTarget("toGallery", toGallery, true);
@@ -100,7 +131,6 @@ public abstract class _CompoundPaintingLongNames extends CayenneDataObject {
         return (Gallery)readProperty("toGallery");
     }
 
-
     public void setToPaintingInfo(PaintingInfo toPaintingInfo) {
         setToOneTarget("toPaintingInfo", toPaintingInfo, true);
     }
@@ -109,5 +139,116 @@ public abstract class _CompoundPaintingLongNames extends CayenneDataObject {
         return (PaintingInfo)readProperty("toPaintingInfo");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "artistLongName":
+                return this.artistLongName;
+            case "estimatedPrice":
+                return this.estimatedPrice;
+            case "galleryLongName":
+                return this.galleryLongName;
+            case "paintingDescription":
+                return this.paintingDescription;
+            case "paintingTitle":
+                return this.paintingTitle;
+            case "textLongReview":
+                return this.textLongReview;
+            case "toArtist":
+                return this.toArtist;
+            case "toArtist1":
+                return this.toArtist1;
+            case "toGallery":
+                return this.toGallery;
+            case "toPaintingInfo":
+                return this.toPaintingInfo;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "artistLongName":
+                this.artistLongName = (String)val;
+                break;
+            case "estimatedPrice":
+                this.estimatedPrice = (BigDecimal)val;
+                break;
+            case "galleryLongName":
+                this.galleryLongName = (String)val;
+                break;
+            case "paintingDescription":
+                this.paintingDescription = (String)val;
+                break;
+            case "paintingTitle":
+                this.paintingTitle = (String)val;
+                break;
+            case "textLongReview":
+                this.textLongReview = (String)val;
+                break;
+            case "toArtist":
+                this.toArtist = val;
+                break;
+            case "toArtist1":
+                this.toArtist1 = val;
+                break;
+            case "toGallery":
+                this.toGallery = val;
+                break;
+            case "toPaintingInfo":
+                this.toPaintingInfo = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.artistLongName);
+        out.writeObject(this.estimatedPrice);
+        out.writeObject(this.galleryLongName);
+        out.writeObject(this.paintingDescription);
+        out.writeObject(this.paintingTitle);
+        out.writeObject(this.textLongReview);
+        out.writeObject(this.toArtist);
+        out.writeObject(this.toArtist1);
+        out.writeObject(this.toGallery);
+        out.writeObject(this.toPaintingInfo);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.artistLongName = (String)in.readObject();
+        this.estimatedPrice = (BigDecimal)in.readObject();
+        this.galleryLongName = (String)in.readObject();
+        this.paintingDescription = (String)in.readObject();
+        this.paintingTitle = (String)in.readObject();
+        this.textLongReview = (String)in.readObject();
+        this.toArtist = in.readObject();
+        this.toArtist1 = in.readObject();
+        this.toGallery = in.readObject();
+        this.toPaintingInfo = in.readObject();
+    }
 
 }

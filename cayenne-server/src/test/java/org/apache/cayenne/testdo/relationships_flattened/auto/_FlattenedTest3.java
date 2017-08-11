@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.relationships_flattened.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest2;
@@ -14,7 +17,7 @@ import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest4;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _FlattenedTest3 extends CayenneDataObject {
+public abstract class _FlattenedTest3 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -25,30 +28,38 @@ public abstract class _FlattenedTest3 extends CayenneDataObject {
     public static final Property<FlattenedTest1> TO_FT1 = Property.create("toFT1", FlattenedTest1.class);
     public static final Property<FlattenedTest2> TO_FT2 = Property.create("toFT2", FlattenedTest2.class);
 
+    protected String name;
+
+    protected Object ft4Array;
+    protected Object toFT1;
+    protected Object toFT2;
+
     public void setName(String name) {
-        writeProperty("name", name);
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
+
     public String getName() {
-        return (String)readProperty("name");
+        beforePropertyRead("name");
+        return this.name;
     }
 
     public void addToFt4Array(FlattenedTest4 obj) {
         addToManyTarget("ft4Array", obj, true);
     }
+
     public void removeFromFt4Array(FlattenedTest4 obj) {
         removeToManyTarget("ft4Array", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<FlattenedTest4> getFt4Array() {
         return (List<FlattenedTest4>)readProperty("ft4Array");
     }
 
-
-
     public FlattenedTest1 getToFT1() {
         return (FlattenedTest1)readProperty("toFT1");
     }
-
 
     public void setToFT2(FlattenedTest2 toFT2) {
         setToOneTarget("toFT2", toFT2, true);
@@ -58,5 +69,74 @@ public abstract class _FlattenedTest3 extends CayenneDataObject {
         return (FlattenedTest2)readProperty("toFT2");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "name":
+                return this.name;
+            case "ft4Array":
+                return this.ft4Array;
+            case "toFT1":
+                return this.toFT1;
+            case "toFT2":
+                return this.toFT2;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "name":
+                this.name = (String)val;
+                break;
+            case "ft4Array":
+                this.ft4Array = val;
+                break;
+            case "toFT1":
+                this.toFT1 = val;
+                break;
+            case "toFT2":
+                this.toFT2 = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.name);
+        out.writeObject(this.ft4Array);
+        out.writeObject(this.toFT1);
+        out.writeObject(this.toFT2);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.name = (String)in.readObject();
+        this.ft4Array = in.readObject();
+        this.toFT1 = in.readObject();
+        this.toFT2 = in.readObject();
+    }
 
 }

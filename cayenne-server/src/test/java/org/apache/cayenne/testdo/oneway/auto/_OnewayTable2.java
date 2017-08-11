@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.oneway.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.oneway.OnewayTable1;
 
@@ -10,7 +14,7 @@ import org.apache.cayenne.testdo.oneway.OnewayTable1;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _OnewayTable2 extends CayenneDataObject {
+public abstract class _OnewayTable2 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -19,11 +23,18 @@ public abstract class _OnewayTable2 extends CayenneDataObject {
     public static final Property<Integer> ID = Property.create("id", Integer.class);
     public static final Property<OnewayTable1> TO_ONE_ONE_WAY_DB = Property.create("toOneOneWayDb", OnewayTable1.class);
 
+    protected Integer id;
+
+    protected Object toOneOneWayDb;
+
     public void setId(Integer id) {
-        writeProperty("id", id);
+        beforePropertyWrite("id", this.id, id);
+        this.id = id;
     }
+
     public Integer getId() {
-        return (Integer)readProperty("id");
+        beforePropertyRead("id");
+        return this.id;
     }
 
     public void setToOneOneWayDb(OnewayTable1 toOneOneWayDb) {
@@ -34,5 +45,60 @@ public abstract class _OnewayTable2 extends CayenneDataObject {
         return (OnewayTable1)readProperty("toOneOneWayDb");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "id":
+                return this.id;
+            case "toOneOneWayDb":
+                return this.toOneOneWayDb;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "id":
+                this.id = (Integer)val;
+                break;
+            case "toOneOneWayDb":
+                this.toOneOneWayDb = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.id);
+        out.writeObject(this.toOneOneWayDb);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.id = (Integer)in.readObject();
+        this.toOneOneWayDb = in.readObject();
+    }
 
 }

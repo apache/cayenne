@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.mt.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.mt.MtTable5;
 
@@ -12,7 +15,7 @@ import org.apache.cayenne.testdo.mt.MtTable5;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _MtTable4 extends CayenneDataObject {
+public abstract class _MtTable4 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -20,16 +23,69 @@ public abstract class _MtTable4 extends CayenneDataObject {
 
     public static final Property<List<MtTable5>> TABLE5S = Property.create("table5s", List.class);
 
+
+    protected Object table5s;
+
     public void addToTable5s(MtTable5 obj) {
         addToManyTarget("table5s", obj, true);
     }
+
     public void removeFromTable5s(MtTable5 obj) {
         removeToManyTarget("table5s", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<MtTable5> getTable5s() {
         return (List<MtTable5>)readProperty("table5s");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "table5s":
+                return this.table5s;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "table5s":
+                this.table5s = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.table5s);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.table5s = in.readObject();
+    }
 
 }

@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.inheritance.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance.DirectToSubEntity;
 import org.apache.cayenne.testdo.inheritance.RelatedEntity;
@@ -11,7 +15,7 @@ import org.apache.cayenne.testdo.inheritance.RelatedEntity;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _BaseEntity extends CayenneDataObject {
+public abstract class _BaseEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -21,11 +25,19 @@ public abstract class _BaseEntity extends CayenneDataObject {
     public static final Property<DirectToSubEntity> TO_DIRECT_TO_SUB_ENTITY = Property.create("toDirectToSubEntity", DirectToSubEntity.class);
     public static final Property<RelatedEntity> TO_RELATED_ENTITY = Property.create("toRelatedEntity", RelatedEntity.class);
 
+    protected String entityType;
+
+    protected Object toDirectToSubEntity;
+    protected Object toRelatedEntity;
+
     public void setEntityType(String entityType) {
-        writeProperty("entityType", entityType);
+        beforePropertyWrite("entityType", this.entityType, entityType);
+        this.entityType = entityType;
     }
+
     public String getEntityType() {
-        return (String)readProperty("entityType");
+        beforePropertyRead("entityType");
+        return this.entityType;
     }
 
     public void setToDirectToSubEntity(DirectToSubEntity toDirectToSubEntity) {
@@ -36,7 +48,6 @@ public abstract class _BaseEntity extends CayenneDataObject {
         return (DirectToSubEntity)readProperty("toDirectToSubEntity");
     }
 
-
     public void setToRelatedEntity(RelatedEntity toRelatedEntity) {
         setToOneTarget("toRelatedEntity", toRelatedEntity, true);
     }
@@ -45,5 +56,67 @@ public abstract class _BaseEntity extends CayenneDataObject {
         return (RelatedEntity)readProperty("toRelatedEntity");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "entityType":
+                return this.entityType;
+            case "toDirectToSubEntity":
+                return this.toDirectToSubEntity;
+            case "toRelatedEntity":
+                return this.toRelatedEntity;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "entityType":
+                this.entityType = (String)val;
+                break;
+            case "toDirectToSubEntity":
+                this.toDirectToSubEntity = val;
+                break;
+            case "toRelatedEntity":
+                this.toRelatedEntity = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.entityType);
+        out.writeObject(this.toDirectToSubEntity);
+        out.writeObject(this.toRelatedEntity);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.entityType = (String)in.readObject();
+        this.toDirectToSubEntity = in.readObject();
+        this.toRelatedEntity = in.readObject();
+    }
 
 }

@@ -1,5 +1,9 @@
 package org.apache.cayenne.testdo.mt.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.mt.MtTable1;
 
@@ -17,11 +21,66 @@ public abstract class _MtTable1Subclass1 extends MtTable1 {
 
     public static final Property<String> SUBCLASS1ATTRIBUTE1 = Property.create("subclass1Attribute1", String.class);
 
+    protected String subclass1Attribute1;
+
+
     public void setSubclass1Attribute1(String subclass1Attribute1) {
-        writeProperty("subclass1Attribute1", subclass1Attribute1);
+        beforePropertyWrite("subclass1Attribute1", this.subclass1Attribute1, subclass1Attribute1);
+        this.subclass1Attribute1 = subclass1Attribute1;
     }
+
     public String getSubclass1Attribute1() {
-        return (String)readProperty("subclass1Attribute1");
+        beforePropertyRead("subclass1Attribute1");
+        return this.subclass1Attribute1;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "subclass1Attribute1":
+                return this.subclass1Attribute1;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "subclass1Attribute1":
+                this.subclass1Attribute1 = (String)val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.subclass1Attribute1);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.subclass1Attribute1 = (String)in.readObject();
     }
 
 }

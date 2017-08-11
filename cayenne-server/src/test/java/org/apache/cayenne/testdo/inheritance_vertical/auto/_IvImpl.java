@@ -1,5 +1,9 @@
 package org.apache.cayenne.testdo.inheritance_vertical.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_vertical.IvBase;
 import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
@@ -21,18 +25,30 @@ public abstract class _IvImpl extends IvBase {
     public static final Property<IvOther> OTHER1 = Property.create("other1", IvOther.class);
     public static final Property<IvOther> OTHER2 = Property.create("other2", IvOther.class);
 
+    protected String attr1;
+    protected String attr2;
+
+    protected Object other1;
+    protected Object other2;
+
     public void setAttr1(String attr1) {
-        writeProperty("attr1", attr1);
+        beforePropertyWrite("attr1", this.attr1, attr1);
+        this.attr1 = attr1;
     }
+
     public String getAttr1() {
-        return (String)readProperty("attr1");
+        beforePropertyRead("attr1");
+        return this.attr1;
     }
 
     public void setAttr2(String attr2) {
-        writeProperty("attr2", attr2);
+        beforePropertyWrite("attr2", this.attr2, attr2);
+        this.attr2 = attr2;
     }
+
     public String getAttr2() {
-        return (String)readProperty("attr2");
+        beforePropertyRead("attr2");
+        return this.attr2;
     }
 
     public void setOther1(IvOther other1) {
@@ -43,7 +59,6 @@ public abstract class _IvImpl extends IvBase {
         return (IvOther)readProperty("other1");
     }
 
-
     public void setOther2(IvOther other2) {
         setToOneTarget("other2", other2, true);
     }
@@ -52,5 +67,74 @@ public abstract class _IvImpl extends IvBase {
         return (IvOther)readProperty("other2");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "attr1":
+                return this.attr1;
+            case "attr2":
+                return this.attr2;
+            case "other1":
+                return this.other1;
+            case "other2":
+                return this.other2;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "attr1":
+                this.attr1 = (String)val;
+                break;
+            case "attr2":
+                this.attr2 = (String)val;
+                break;
+            case "other1":
+                this.other1 = val;
+                break;
+            case "other2":
+                this.other2 = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.attr1);
+        out.writeObject(this.attr2);
+        out.writeObject(this.other1);
+        out.writeObject(this.other2);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.attr1 = (String)in.readObject();
+        this.attr2 = (String)in.readObject();
+        this.other1 = in.readObject();
+        this.other2 = in.readObject();
+    }
 
 }

@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.relationships_to_one_fk.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK1;
 
@@ -10,13 +14,16 @@ import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK1;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _ToOneFK2 extends CayenneDataObject {
+public abstract class _ToOneFK2 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
     public static final String TO_ONE_FK2_PK_PK_COLUMN = "TO_ONE_FK2_PK";
 
     public static final Property<ToOneFK1> TO_ONE_TO_FK = Property.create("toOneToFK", ToOneFK1.class);
+
+
+    protected Object toOneToFK;
 
     public void setToOneToFK(ToOneFK1 toOneToFK) {
         setToOneTarget("toOneToFK", toOneToFK, true);
@@ -26,5 +33,53 @@ public abstract class _ToOneFK2 extends CayenneDataObject {
         return (ToOneFK1)readProperty("toOneToFK");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "toOneToFK":
+                return this.toOneToFK;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "toOneToFK":
+                this.toOneToFK = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.toOneToFK);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.toOneToFK = in.readObject();
+    }
 
 }

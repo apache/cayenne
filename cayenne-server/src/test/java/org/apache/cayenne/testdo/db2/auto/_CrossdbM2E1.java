@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.db2.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.db2.CrossdbM2E2;
 
@@ -12,7 +15,7 @@ import org.apache.cayenne.testdo.db2.CrossdbM2E2;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _CrossdbM2E1 extends CayenneDataObject {
+public abstract class _CrossdbM2E1 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -21,23 +24,87 @@ public abstract class _CrossdbM2E1 extends CayenneDataObject {
     public static final Property<String> NAME = Property.create("name", String.class);
     public static final Property<List<CrossdbM2E2>> LIST_OF_M2E2 = Property.create("listOfM2E2", List.class);
 
+    protected String name;
+
+    protected Object listOfM2E2;
+
     public void setName(String name) {
-        writeProperty("name", name);
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
+
     public String getName() {
-        return (String)readProperty("name");
+        beforePropertyRead("name");
+        return this.name;
     }
 
     public void addToListOfM2E2(CrossdbM2E2 obj) {
         addToManyTarget("listOfM2E2", obj, true);
     }
+
     public void removeFromListOfM2E2(CrossdbM2E2 obj) {
         removeToManyTarget("listOfM2E2", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<CrossdbM2E2> getListOfM2E2() {
         return (List<CrossdbM2E2>)readProperty("listOfM2E2");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "name":
+                return this.name;
+            case "listOfM2E2":
+                return this.listOfM2E2;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "name":
+                this.name = (String)val;
+                break;
+            case "listOfM2E2":
+                this.listOfM2E2 = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.name);
+        out.writeObject(this.listOfM2E2);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.name = (String)in.readObject();
+        this.listOfM2E2 = in.readObject();
+    }
 
 }

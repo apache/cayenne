@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.inheritance_people.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 
@@ -10,7 +14,7 @@ import org.apache.cayenne.testdo.inheritance_people.Employee;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Address extends CayenneDataObject {
+public abstract class _Address extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -19,11 +23,18 @@ public abstract class _Address extends CayenneDataObject {
     public static final Property<String> CITY = Property.create("city", String.class);
     public static final Property<Employee> TO_EMPLOYEE = Property.create("toEmployee", Employee.class);
 
+    protected String city;
+
+    protected Object toEmployee;
+
     public void setCity(String city) {
-        writeProperty("city", city);
+        beforePropertyWrite("city", this.city, city);
+        this.city = city;
     }
+
     public String getCity() {
-        return (String)readProperty("city");
+        beforePropertyRead("city");
+        return this.city;
     }
 
     public void setToEmployee(Employee toEmployee) {
@@ -34,5 +45,60 @@ public abstract class _Address extends CayenneDataObject {
         return (Employee)readProperty("toEmployee");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "city":
+                return this.city;
+            case "toEmployee":
+                return this.toEmployee;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "city":
+                this.city = (String)val;
+                break;
+            case "toEmployee":
+                this.toEmployee = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.city);
+        out.writeObject(this.toEmployee);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.city = (String)in.readObject();
+        this.toEmployee = in.readObject();
+    }
 
 }

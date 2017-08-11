@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.inheritance.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance.SubEntity;
 
@@ -12,7 +15,7 @@ import org.apache.cayenne.testdo.inheritance.SubEntity;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _DirectToSubEntity extends CayenneDataObject {
+public abstract class _DirectToSubEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -20,16 +23,69 @@ public abstract class _DirectToSubEntity extends CayenneDataObject {
 
     public static final Property<List<SubEntity>> SUB_ENTITIES = Property.create("subEntities", List.class);
 
+
+    protected Object subEntities;
+
     public void addToSubEntities(SubEntity obj) {
         addToManyTarget("subEntities", obj, true);
     }
+
     public void removeFromSubEntities(SubEntity obj) {
         removeToManyTarget("subEntities", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<SubEntity> getSubEntities() {
         return (List<SubEntity>)readProperty("subEntities");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "subEntities":
+                return this.subEntities;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "subEntities":
+                this.subEntities = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.subEntities);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.subEntities = in.readObject();
+    }
 
 }

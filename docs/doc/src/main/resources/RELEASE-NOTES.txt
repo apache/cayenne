@@ -15,6 +15,7 @@ Changes/New Features:
 
 CAY-2152 Redesign project file upgrade system
 CAY-2329 Update project dependencies
+CAY-2330 Field based data objects
 CAY-2335 New XML loading/saving mechanics with support of plugable handlers
 CAY-2336 Support for comments in Modeler
 CAY-2339 Compatibility module to support old versions of projects at runtime

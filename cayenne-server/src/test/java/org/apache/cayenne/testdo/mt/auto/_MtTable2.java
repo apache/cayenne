@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.mt.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable3;
@@ -11,7 +15,7 @@ import org.apache.cayenne.testdo.mt.MtTable3;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _MtTable2 extends CayenneDataObject {
+public abstract class _MtTable2 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -21,11 +25,19 @@ public abstract class _MtTable2 extends CayenneDataObject {
     public static final Property<MtTable1> TABLE1 = Property.create("table1", MtTable1.class);
     public static final Property<MtTable3> TABLE3 = Property.create("table3", MtTable3.class);
 
+    protected String globalAttribute;
+
+    protected Object table1;
+    protected Object table3;
+
     public void setGlobalAttribute(String globalAttribute) {
-        writeProperty("globalAttribute", globalAttribute);
+        beforePropertyWrite("globalAttribute", this.globalAttribute, globalAttribute);
+        this.globalAttribute = globalAttribute;
     }
+
     public String getGlobalAttribute() {
-        return (String)readProperty("globalAttribute");
+        beforePropertyRead("globalAttribute");
+        return this.globalAttribute;
     }
 
     public void setTable1(MtTable1 table1) {
@@ -36,7 +48,6 @@ public abstract class _MtTable2 extends CayenneDataObject {
         return (MtTable1)readProperty("table1");
     }
 
-
     public void setTable3(MtTable3 table3) {
         setToOneTarget("table3", table3, true);
     }
@@ -45,5 +56,67 @@ public abstract class _MtTable2 extends CayenneDataObject {
         return (MtTable3)readProperty("table3");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "globalAttribute":
+                return this.globalAttribute;
+            case "table1":
+                return this.table1;
+            case "table3":
+                return this.table3;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "globalAttribute":
+                this.globalAttribute = (String)val;
+                break;
+            case "table1":
+                this.table1 = val;
+                break;
+            case "table3":
+                this.table3 = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.globalAttribute);
+        out.writeObject(this.table1);
+        out.writeObject(this.table3);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.globalAttribute = (String)in.readObject();
+        this.table1 = in.readObject();
+        this.table3 = in.readObject();
+    }
 
 }

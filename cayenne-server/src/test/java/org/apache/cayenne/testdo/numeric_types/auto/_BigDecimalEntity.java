@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.numeric_types.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 /**
@@ -11,7 +14,7 @@ import org.apache.cayenne.exp.Property;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _BigDecimalEntity extends CayenneDataObject {
+public abstract class _BigDecimalEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -19,11 +22,66 @@ public abstract class _BigDecimalEntity extends CayenneDataObject {
 
     public static final Property<BigDecimal> BIG_DECIMAL_FIELD = Property.create("bigDecimalField", BigDecimal.class);
 
+    protected BigDecimal bigDecimalField;
+
+
     public void setBigDecimalField(BigDecimal bigDecimalField) {
-        writeProperty("bigDecimalField", bigDecimalField);
+        beforePropertyWrite("bigDecimalField", this.bigDecimalField, bigDecimalField);
+        this.bigDecimalField = bigDecimalField;
     }
+
     public BigDecimal getBigDecimalField() {
-        return (BigDecimal)readProperty("bigDecimalField");
+        beforePropertyRead("bigDecimalField");
+        return this.bigDecimalField;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "bigDecimalField":
+                return this.bigDecimalField;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "bigDecimalField":
+                this.bigDecimalField = (BigDecimal)val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.bigDecimalField);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.bigDecimalField = (BigDecimal)in.readObject();
     }
 
 }

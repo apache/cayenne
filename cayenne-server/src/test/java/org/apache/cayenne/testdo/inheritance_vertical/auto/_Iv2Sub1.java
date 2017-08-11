@@ -1,5 +1,9 @@
 package org.apache.cayenne.testdo.inheritance_vertical.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv2Root;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv2X;
@@ -18,6 +22,9 @@ public abstract class _Iv2Sub1 extends Iv2Root {
 
     public static final Property<Iv2X> X = Property.create("x", Iv2X.class);
 
+
+    protected Object x;
+
     public void setX(Iv2X x) {
         setToOneTarget("x", x, true);
     }
@@ -26,5 +33,53 @@ public abstract class _Iv2Sub1 extends Iv2Root {
         return (Iv2X)readProperty("x");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "x":
+                return this.x;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "x":
+                this.x = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.x);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.x = in.readObject();
+    }
 
 }

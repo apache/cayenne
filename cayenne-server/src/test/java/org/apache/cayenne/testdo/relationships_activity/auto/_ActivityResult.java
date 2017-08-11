@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.relationships_activity.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.sql.Date;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 /**
@@ -11,7 +14,7 @@ import org.apache.cayenne.exp.Property;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _ActivityResult extends CayenneDataObject {
+public abstract class _ActivityResult extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -23,26 +26,102 @@ public abstract class _ActivityResult extends CayenneDataObject {
     public static final Property<Integer> APPOINT_NO = Property.create("appointNo", Integer.class);
     public static final Property<String> FIELD = Property.create("field", String.class);
 
+    protected Date appointDate;
+    protected int appointNo;
+    protected String field;
+
+
     public void setAppointDate(Date appointDate) {
-        writeProperty("appointDate", appointDate);
+        beforePropertyWrite("appointDate", this.appointDate, appointDate);
+        this.appointDate = appointDate;
     }
+
     public Date getAppointDate() {
-        return (Date)readProperty("appointDate");
+        beforePropertyRead("appointDate");
+        return this.appointDate;
     }
 
     public void setAppointNo(int appointNo) {
-        writeProperty("appointNo", appointNo);
+        beforePropertyWrite("appointNo", this.appointNo, appointNo);
+        this.appointNo = appointNo;
     }
+
     public int getAppointNo() {
-        Object value = readProperty("appointNo");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("appointNo");
+        return this.appointNo;
     }
 
     public void setField(String field) {
-        writeProperty("field", field);
+        beforePropertyWrite("field", this.field, field);
+        this.field = field;
     }
+
     public String getField() {
-        return (String)readProperty("field");
+        beforePropertyRead("field");
+        return this.field;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "appointDate":
+                return this.appointDate;
+            case "appointNo":
+                return this.appointNo;
+            case "field":
+                return this.field;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "appointDate":
+                this.appointDate = (Date)val;
+                break;
+            case "appointNo":
+                this.appointNo = val == null ? 0 : (Integer)val;
+                break;
+            case "field":
+                this.field = (String)val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.appointDate);
+        out.writeInt(this.appointNo);
+        out.writeObject(this.field);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.appointDate = (Date)in.readObject();
+        this.appointNo = in.readInt();
+        this.field = (String)in.readObject();
     }
 
 }

@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.inheritance_people.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_people.CustomerRepresentative;
 
@@ -12,7 +15,7 @@ import org.apache.cayenne.testdo.inheritance_people.CustomerRepresentative;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _ClientCompany extends CayenneDataObject {
+public abstract class _ClientCompany extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -21,23 +24,87 @@ public abstract class _ClientCompany extends CayenneDataObject {
     public static final Property<String> NAME = Property.create("name", String.class);
     public static final Property<List<CustomerRepresentative>> REPRESENTATIVES = Property.create("representatives", List.class);
 
+    protected String name;
+
+    protected Object representatives;
+
     public void setName(String name) {
-        writeProperty("name", name);
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
+
     public String getName() {
-        return (String)readProperty("name");
+        beforePropertyRead("name");
+        return this.name;
     }
 
     public void addToRepresentatives(CustomerRepresentative obj) {
         addToManyTarget("representatives", obj, true);
     }
+
     public void removeFromRepresentatives(CustomerRepresentative obj) {
         removeToManyTarget("representatives", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<CustomerRepresentative> getRepresentatives() {
         return (List<CustomerRepresentative>)readProperty("representatives");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "name":
+                return this.name;
+            case "representatives":
+                return this.representatives;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "name":
+                this.name = (String)val;
+                break;
+            case "representatives":
+                this.representatives = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.name);
+        out.writeObject(this.representatives);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.name = (String)in.readObject();
+        this.representatives = in.readObject();
+    }
 
 }

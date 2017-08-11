@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.relationships.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships.RelationshipHelper;
 
@@ -10,7 +14,7 @@ import org.apache.cayenne.testdo.relationships.RelationshipHelper;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _MeaningfulFK extends CayenneDataObject {
+public abstract class _MeaningfulFK extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -19,11 +23,18 @@ public abstract class _MeaningfulFK extends CayenneDataObject {
     public static final Property<Integer> RELATIONSHIP_HELPER_ID = Property.create("relationshipHelperID", Integer.class);
     public static final Property<RelationshipHelper> TO_RELATIONSHIP_HELPER = Property.create("toRelationshipHelper", RelationshipHelper.class);
 
+    protected Integer relationshipHelperID;
+
+    protected Object toRelationshipHelper;
+
     public void setRelationshipHelperID(Integer relationshipHelperID) {
-        writeProperty("relationshipHelperID", relationshipHelperID);
+        beforePropertyWrite("relationshipHelperID", this.relationshipHelperID, relationshipHelperID);
+        this.relationshipHelperID = relationshipHelperID;
     }
+
     public Integer getRelationshipHelperID() {
-        return (Integer)readProperty("relationshipHelperID");
+        beforePropertyRead("relationshipHelperID");
+        return this.relationshipHelperID;
     }
 
     public void setToRelationshipHelper(RelationshipHelper toRelationshipHelper) {
@@ -34,5 +45,60 @@ public abstract class _MeaningfulFK extends CayenneDataObject {
         return (RelationshipHelper)readProperty("toRelationshipHelper");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "relationshipHelperID":
+                return this.relationshipHelperID;
+            case "toRelationshipHelper":
+                return this.toRelationshipHelper;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "relationshipHelperID":
+                this.relationshipHelperID = (Integer)val;
+                break;
+            case "toRelationshipHelper":
+                this.toRelationshipHelper = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.relationshipHelperID);
+        out.writeObject(this.toRelationshipHelper);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.relationshipHelperID = (Integer)in.readObject();
+        this.toRelationshipHelper = in.readObject();
+    }
 
 }

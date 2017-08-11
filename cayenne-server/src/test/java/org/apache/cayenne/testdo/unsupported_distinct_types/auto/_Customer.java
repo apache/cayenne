@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.unsupported_distinct_types.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.unsupported_distinct_types.Product;
 
@@ -12,7 +15,7 @@ import org.apache.cayenne.testdo.unsupported_distinct_types.Product;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Customer extends CayenneDataObject {
+public abstract class _Customer extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -21,23 +24,87 @@ public abstract class _Customer extends CayenneDataObject {
     public static final Property<String> LONGVARCHAR_COL = Property.create("longvarcharCol", String.class);
     public static final Property<List<Product>> ORDER = Property.create("order", List.class);
 
+    protected String longvarcharCol;
+
+    protected Object order;
+
     public void setLongvarcharCol(String longvarcharCol) {
-        writeProperty("longvarcharCol", longvarcharCol);
+        beforePropertyWrite("longvarcharCol", this.longvarcharCol, longvarcharCol);
+        this.longvarcharCol = longvarcharCol;
     }
+
     public String getLongvarcharCol() {
-        return (String)readProperty("longvarcharCol");
+        beforePropertyRead("longvarcharCol");
+        return this.longvarcharCol;
     }
 
     public void addToOrder(Product obj) {
         addToManyTarget("order", obj, true);
     }
+
     public void removeFromOrder(Product obj) {
         removeToManyTarget("order", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<Product> getOrder() {
         return (List<Product>)readProperty("order");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "longvarcharCol":
+                return this.longvarcharCol;
+            case "order":
+                return this.order;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "longvarcharCol":
+                this.longvarcharCol = (String)val;
+                break;
+            case "order":
+                this.order = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.longvarcharCol);
+        out.writeObject(this.order);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.longvarcharCol = (String)in.readObject();
+        this.order = in.readObject();
+    }
 
 }

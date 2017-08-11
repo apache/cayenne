@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.testmap.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 /**
@@ -11,7 +14,7 @@ import org.apache.cayenne.exp.Property;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _RWCompoundPainting extends CayenneDataObject {
+public abstract class _RWCompoundPainting extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -21,25 +24,102 @@ public abstract class _RWCompoundPainting extends CayenneDataObject {
     public static final Property<String> PAINTING_TITLE = Property.create("paintingTitle", String.class);
     public static final Property<String> TEXT_REVIEW = Property.create("textReview", String.class);
 
+    protected BigDecimal estimatedPrice;
+    protected String paintingTitle;
+    protected String textReview;
+
+
     public void setEstimatedPrice(BigDecimal estimatedPrice) {
-        writeProperty("estimatedPrice", estimatedPrice);
+        beforePropertyWrite("estimatedPrice", this.estimatedPrice, estimatedPrice);
+        this.estimatedPrice = estimatedPrice;
     }
+
     public BigDecimal getEstimatedPrice() {
-        return (BigDecimal)readProperty("estimatedPrice");
+        beforePropertyRead("estimatedPrice");
+        return this.estimatedPrice;
     }
 
     public void setPaintingTitle(String paintingTitle) {
-        writeProperty("paintingTitle", paintingTitle);
+        beforePropertyWrite("paintingTitle", this.paintingTitle, paintingTitle);
+        this.paintingTitle = paintingTitle;
     }
+
     public String getPaintingTitle() {
-        return (String)readProperty("paintingTitle");
+        beforePropertyRead("paintingTitle");
+        return this.paintingTitle;
     }
 
     public void setTextReview(String textReview) {
-        writeProperty("textReview", textReview);
+        beforePropertyWrite("textReview", this.textReview, textReview);
+        this.textReview = textReview;
     }
+
     public String getTextReview() {
-        return (String)readProperty("textReview");
+        beforePropertyRead("textReview");
+        return this.textReview;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "estimatedPrice":
+                return this.estimatedPrice;
+            case "paintingTitle":
+                return this.paintingTitle;
+            case "textReview":
+                return this.textReview;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "estimatedPrice":
+                this.estimatedPrice = (BigDecimal)val;
+                break;
+            case "paintingTitle":
+                this.paintingTitle = (String)val;
+                break;
+            case "textReview":
+                this.textReview = (String)val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.estimatedPrice);
+        out.writeObject(this.paintingTitle);
+        out.writeObject(this.textReview);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.estimatedPrice = (BigDecimal)in.readObject();
+        this.paintingTitle = (String)in.readObject();
+        this.textReview = (String)in.readObject();
     }
 
 }

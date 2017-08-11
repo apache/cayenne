@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.mt.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.mt.MtTable2;
 
@@ -12,7 +15,7 @@ import org.apache.cayenne.testdo.mt.MtTable2;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _MtTable1 extends CayenneDataObject {
+public abstract class _MtTable1 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -22,30 +25,105 @@ public abstract class _MtTable1 extends CayenneDataObject {
     public static final Property<String> SERVER_ATTRIBUTE1 = Property.create("serverAttribute1", String.class);
     public static final Property<List<MtTable2>> TABLE2ARRAY = Property.create("table2Array", List.class);
 
+    protected String globalAttribute1;
+    protected String serverAttribute1;
+
+    protected Object table2Array;
+
     public void setGlobalAttribute1(String globalAttribute1) {
-        writeProperty("globalAttribute1", globalAttribute1);
+        beforePropertyWrite("globalAttribute1", this.globalAttribute1, globalAttribute1);
+        this.globalAttribute1 = globalAttribute1;
     }
+
     public String getGlobalAttribute1() {
-        return (String)readProperty("globalAttribute1");
+        beforePropertyRead("globalAttribute1");
+        return this.globalAttribute1;
     }
 
     public void setServerAttribute1(String serverAttribute1) {
-        writeProperty("serverAttribute1", serverAttribute1);
+        beforePropertyWrite("serverAttribute1", this.serverAttribute1, serverAttribute1);
+        this.serverAttribute1 = serverAttribute1;
     }
+
     public String getServerAttribute1() {
-        return (String)readProperty("serverAttribute1");
+        beforePropertyRead("serverAttribute1");
+        return this.serverAttribute1;
     }
 
     public void addToTable2Array(MtTable2 obj) {
         addToManyTarget("table2Array", obj, true);
     }
+
     public void removeFromTable2Array(MtTable2 obj) {
         removeToManyTarget("table2Array", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<MtTable2> getTable2Array() {
         return (List<MtTable2>)readProperty("table2Array");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "globalAttribute1":
+                return this.globalAttribute1;
+            case "serverAttribute1":
+                return this.serverAttribute1;
+            case "table2Array":
+                return this.table2Array;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "globalAttribute1":
+                this.globalAttribute1 = (String)val;
+                break;
+            case "serverAttribute1":
+                this.serverAttribute1 = (String)val;
+                break;
+            case "table2Array":
+                this.table2Array = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.globalAttribute1);
+        out.writeObject(this.serverAttribute1);
+        out.writeObject(this.table2Array);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.globalAttribute1 = (String)in.readObject();
+        this.serverAttribute1 = (String)in.readObject();
+        this.table2Array = in.readObject();
+    }
 
 }

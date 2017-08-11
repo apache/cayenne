@@ -1,5 +1,8 @@
 package org.apache.cayenne.testdo.things.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
@@ -25,11 +28,20 @@ public abstract class _Bag extends CayenneDataObject {
     public static final Property<List<Box>> BOXES = Property.create("boxes", List.class);
     public static final Property<List<Thing>> THINGS = Property.create("things", List.class);
 
+    protected String name;
+
+    protected Object balls;
+    protected Object boxes;
+    protected Object things;
+
     public void setName(String name) {
-        writeProperty("name", name);
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
+
     public String getName() {
-        return (String)readProperty("name");
+        beforePropertyRead("name");
+        return this.name;
     }
 
     @SuppressWarnings("unchecked")
@@ -37,23 +49,92 @@ public abstract class _Bag extends CayenneDataObject {
         return (List<Ball>)readProperty("balls");
     }
 
-
     public void addToBoxes(Box obj) {
         addToManyTarget("boxes", obj, true);
     }
+
     public void removeFromBoxes(Box obj) {
         removeToManyTarget("boxes", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<Box> getBoxes() {
         return (List<Box>)readProperty("boxes");
     }
-
 
     @SuppressWarnings("unchecked")
     public List<Thing> getThings() {
         return (List<Thing>)readProperty("things");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "name":
+                return this.name;
+            case "balls":
+                return this.balls;
+            case "boxes":
+                return this.boxes;
+            case "things":
+                return this.things;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "name":
+                this.name = (String)val;
+                break;
+            case "balls":
+                this.balls = val;
+                break;
+            case "boxes":
+                this.boxes = val;
+                break;
+            case "things":
+                this.things = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.name);
+        out.writeObject(this.balls);
+        out.writeObject(this.boxes);
+        out.writeObject(this.things);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.name = (String)in.readObject();
+        this.balls = in.readObject();
+        this.boxes = in.readObject();
+        this.things = in.readObject();
+    }
 
 }

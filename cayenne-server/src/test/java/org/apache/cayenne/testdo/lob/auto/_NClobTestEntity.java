@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.lob.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 /**
@@ -9,7 +13,7 @@ import org.apache.cayenne.exp.Property;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _NClobTestEntity extends CayenneDataObject {
+public abstract class _NClobTestEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -17,11 +21,66 @@ public abstract class _NClobTestEntity extends CayenneDataObject {
 
     public static final Property<String> NCLOB_COL = Property.create("nclobCol", String.class);
 
+    protected String nclobCol;
+
+
     public void setNclobCol(String nclobCol) {
-        writeProperty("nclobCol", nclobCol);
+        beforePropertyWrite("nclobCol", this.nclobCol, nclobCol);
+        this.nclobCol = nclobCol;
     }
+
     public String getNclobCol() {
-        return (String)readProperty("nclobCol");
+        beforePropertyRead("nclobCol");
+        return this.nclobCol;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "nclobCol":
+                return this.nclobCol;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "nclobCol":
+                this.nclobCol = (String)val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.nclobCol);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.nclobCol = (String)in.readObject();
     }
 
 }

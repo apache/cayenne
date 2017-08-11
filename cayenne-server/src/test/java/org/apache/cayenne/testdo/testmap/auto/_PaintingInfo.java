@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.testmap.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.testmap.Painting;
 
@@ -10,7 +14,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _PaintingInfo extends CayenneDataObject {
+public abstract class _PaintingInfo extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -20,18 +24,29 @@ public abstract class _PaintingInfo extends CayenneDataObject {
     public static final Property<String> TEXT_REVIEW = Property.create("textReview", String.class);
     public static final Property<Painting> PAINTING = Property.create("painting", Painting.class);
 
+    protected byte[] imageBlob;
+    protected String textReview;
+
+    protected Object painting;
+
     public void setImageBlob(byte[] imageBlob) {
-        writeProperty("imageBlob", imageBlob);
+        beforePropertyWrite("imageBlob", this.imageBlob, imageBlob);
+        this.imageBlob = imageBlob;
     }
+
     public byte[] getImageBlob() {
-        return (byte[])readProperty("imageBlob");
+        beforePropertyRead("imageBlob");
+        return this.imageBlob;
     }
 
     public void setTextReview(String textReview) {
-        writeProperty("textReview", textReview);
+        beforePropertyWrite("textReview", this.textReview, textReview);
+        this.textReview = textReview;
     }
+
     public String getTextReview() {
-        return (String)readProperty("textReview");
+        beforePropertyRead("textReview");
+        return this.textReview;
     }
 
     public void setPainting(Painting painting) {
@@ -42,5 +57,67 @@ public abstract class _PaintingInfo extends CayenneDataObject {
         return (Painting)readProperty("painting");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "imageBlob":
+                return this.imageBlob;
+            case "textReview":
+                return this.textReview;
+            case "painting":
+                return this.painting;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "imageBlob":
+                this.imageBlob = (byte[])val;
+                break;
+            case "textReview":
+                this.textReview = (String)val;
+                break;
+            case "painting":
+                this.painting = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.imageBlob);
+        out.writeObject(this.textReview);
+        out.writeObject(this.painting);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.imageBlob = (byte[])in.readObject();
+        this.textReview = (String)in.readObject();
+        this.painting = in.readObject();
+    }
 
 }

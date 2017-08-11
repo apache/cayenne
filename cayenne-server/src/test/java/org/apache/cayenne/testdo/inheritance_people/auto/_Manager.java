@@ -1,5 +1,8 @@
 package org.apache.cayenne.testdo.inheritance_people.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.exp.Property;
@@ -20,16 +23,69 @@ public abstract class _Manager extends Employee {
 
     public static final Property<List<Department>> MANAGED_DEPARTMENTS = Property.create("managedDepartments", List.class);
 
+
+    protected Object managedDepartments;
+
     public void addToManagedDepartments(Department obj) {
         addToManyTarget("managedDepartments", obj, true);
     }
+
     public void removeFromManagedDepartments(Department obj) {
         removeToManyTarget("managedDepartments", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<Department> getManagedDepartments() {
         return (List<Department>)readProperty("managedDepartments");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "managedDepartments":
+                return this.managedDepartments;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "managedDepartments":
+                this.managedDepartments = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.managedDepartments);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.managedDepartments = in.readObject();
+    }
 
 }

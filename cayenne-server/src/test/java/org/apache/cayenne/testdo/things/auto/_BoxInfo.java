@@ -1,5 +1,9 @@
 package org.apache.cayenne.testdo.things.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.things.Box;
@@ -19,11 +23,18 @@ public abstract class _BoxInfo extends CayenneDataObject {
     public static final Property<String> COLOR = Property.create("color", String.class);
     public static final Property<Box> BOX = Property.create("box", Box.class);
 
+    protected String color;
+
+    protected Object box;
+
     public void setColor(String color) {
-        writeProperty("color", color);
+        beforePropertyWrite("color", this.color, color);
+        this.color = color;
     }
+
     public String getColor() {
-        return (String)readProperty("color");
+        beforePropertyRead("color");
+        return this.color;
     }
 
     public void setBox(Box box) {
@@ -34,5 +45,60 @@ public abstract class _BoxInfo extends CayenneDataObject {
         return (Box)readProperty("box");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "color":
+                return this.color;
+            case "box":
+                return this.box;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "color":
+                this.color = (String)val;
+                break;
+            case "box":
+                this.box = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.color);
+        out.writeObject(this.box);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.color = (String)in.readObject();
+        this.box = in.readObject();
+    }
 
 }

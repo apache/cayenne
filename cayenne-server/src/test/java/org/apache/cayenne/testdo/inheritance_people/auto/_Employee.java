@@ -1,5 +1,8 @@
 package org.apache.cayenne.testdo.inheritance_people.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.exp.Property;
@@ -23,24 +26,33 @@ public abstract class _Employee extends AbstractPerson {
     public static final Property<List<Address>> ADDRESSES = Property.create("addresses", List.class);
     public static final Property<Department> TO_DEPARTMENT = Property.create("toDepartment", Department.class);
 
+    protected Float salary;
+
+    protected Object addresses;
+    protected Object toDepartment;
+
     public void setSalary(Float salary) {
-        writeProperty("salary", salary);
+        beforePropertyWrite("salary", this.salary, salary);
+        this.salary = salary;
     }
+
     public Float getSalary() {
-        return (Float)readProperty("salary");
+        beforePropertyRead("salary");
+        return this.salary;
     }
 
     public void addToAddresses(Address obj) {
         addToManyTarget("addresses", obj, true);
     }
+
     public void removeFromAddresses(Address obj) {
         removeToManyTarget("addresses", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<Address> getAddresses() {
         return (List<Address>)readProperty("addresses");
     }
-
 
     public void setToDepartment(Department toDepartment) {
         setToOneTarget("toDepartment", toDepartment, true);
@@ -50,5 +62,67 @@ public abstract class _Employee extends AbstractPerson {
         return (Department)readProperty("toDepartment");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "salary":
+                return this.salary;
+            case "addresses":
+                return this.addresses;
+            case "toDepartment":
+                return this.toDepartment;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "salary":
+                this.salary = (Float)val;
+                break;
+            case "addresses":
+                this.addresses = val;
+                break;
+            case "toDepartment":
+                this.toDepartment = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.salary);
+        out.writeObject(this.addresses);
+        out.writeObject(this.toDepartment);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.salary = (Float)in.readObject();
+        this.addresses = in.readObject();
+        this.toDepartment = in.readObject();
+    }
 
 }

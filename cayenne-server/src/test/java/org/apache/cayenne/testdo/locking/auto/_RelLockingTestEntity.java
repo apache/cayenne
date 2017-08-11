@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.locking.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.locking.LockingHelper;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
@@ -13,7 +16,7 @@ import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _RelLockingTestEntity extends CayenneDataObject {
+public abstract class _RelLockingTestEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -23,24 +26,33 @@ public abstract class _RelLockingTestEntity extends CayenneDataObject {
     public static final Property<List<LockingHelper>> LOCKING_HELPERS = Property.create("lockingHelpers", List.class);
     public static final Property<SimpleLockingTestEntity> TO_SIMPLE_LOCKING_TEST = Property.create("toSimpleLockingTest", SimpleLockingTestEntity.class);
 
+    protected String name;
+
+    protected Object lockingHelpers;
+    protected Object toSimpleLockingTest;
+
     public void setName(String name) {
-        writeProperty("name", name);
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
+
     public String getName() {
-        return (String)readProperty("name");
+        beforePropertyRead("name");
+        return this.name;
     }
 
     public void addToLockingHelpers(LockingHelper obj) {
         addToManyTarget("lockingHelpers", obj, true);
     }
+
     public void removeFromLockingHelpers(LockingHelper obj) {
         removeToManyTarget("lockingHelpers", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<LockingHelper> getLockingHelpers() {
         return (List<LockingHelper>)readProperty("lockingHelpers");
     }
-
 
     public void setToSimpleLockingTest(SimpleLockingTestEntity toSimpleLockingTest) {
         setToOneTarget("toSimpleLockingTest", toSimpleLockingTest, true);
@@ -50,5 +62,67 @@ public abstract class _RelLockingTestEntity extends CayenneDataObject {
         return (SimpleLockingTestEntity)readProperty("toSimpleLockingTest");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "name":
+                return this.name;
+            case "lockingHelpers":
+                return this.lockingHelpers;
+            case "toSimpleLockingTest":
+                return this.toSimpleLockingTest;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "name":
+                this.name = (String)val;
+                break;
+            case "lockingHelpers":
+                this.lockingHelpers = val;
+                break;
+            case "toSimpleLockingTest":
+                this.toSimpleLockingTest = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.name);
+        out.writeObject(this.lockingHelpers);
+        out.writeObject(this.toSimpleLockingTest);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.name = (String)in.readObject();
+        this.lockingHelpers = in.readObject();
+        this.toSimpleLockingTest = in.readObject();
+    }
 
 }

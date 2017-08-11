@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.velocity.VelocityContext;
 
@@ -47,7 +47,7 @@ public class EntityArtifact implements Artifact {
     public String getQualifiedBaseClassName() {
         return (entity.getSuperClassName() != null)
                 ? entity.getSuperClassName()
-                : CayenneDataObject.class.getName();
+                : BaseDataObject.class.getName();
     }
 
     public String getQualifiedClassName() {

@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.meaningful_pk.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 
@@ -10,7 +14,7 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _MeaningfulPKDep extends CayenneDataObject {
+public abstract class _MeaningfulPKDep extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -19,11 +23,18 @@ public abstract class _MeaningfulPKDep extends CayenneDataObject {
     public static final Property<String> DESCR = Property.create("descr", String.class);
     public static final Property<MeaningfulPKTest1> TO_MEANINGFUL_PK = Property.create("toMeaningfulPK", MeaningfulPKTest1.class);
 
+    protected String descr;
+
+    protected Object toMeaningfulPK;
+
     public void setDescr(String descr) {
-        writeProperty("descr", descr);
+        beforePropertyWrite("descr", this.descr, descr);
+        this.descr = descr;
     }
+
     public String getDescr() {
-        return (String)readProperty("descr");
+        beforePropertyRead("descr");
+        return this.descr;
     }
 
     public void setToMeaningfulPK(MeaningfulPKTest1 toMeaningfulPK) {
@@ -34,5 +45,60 @@ public abstract class _MeaningfulPKDep extends CayenneDataObject {
         return (MeaningfulPKTest1)readProperty("toMeaningfulPK");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "descr":
+                return this.descr;
+            case "toMeaningfulPK":
+                return this.toMeaningfulPK;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "descr":
+                this.descr = (String)val;
+                break;
+            case "toMeaningfulPK":
+                this.toMeaningfulPK = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.descr);
+        out.writeObject(this.toMeaningfulPK);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.descr = (String)in.readObject();
+        this.toMeaningfulPK = in.readObject();
+    }
 
 }

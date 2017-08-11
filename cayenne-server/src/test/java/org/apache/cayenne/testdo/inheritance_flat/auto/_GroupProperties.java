@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.inheritance_flat.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_flat.Group;
 
@@ -10,7 +14,7 @@ import org.apache.cayenne.testdo.inheritance_flat.Group;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _GroupProperties extends CayenneDataObject {
+public abstract class _GroupProperties extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -20,18 +24,29 @@ public abstract class _GroupProperties extends CayenneDataObject {
     public static final Property<Long> ID = Property.create("id", Long.class);
     public static final Property<Group> GROUP = Property.create("group", Group.class);
 
+    protected String description;
+    protected Long id;
+
+    protected Object group;
+
     public void setDescription(String description) {
-        writeProperty("description", description);
+        beforePropertyWrite("description", this.description, description);
+        this.description = description;
     }
+
     public String getDescription() {
-        return (String)readProperty("description");
+        beforePropertyRead("description");
+        return this.description;
     }
 
     public void setId(Long id) {
-        writeProperty("id", id);
+        beforePropertyWrite("id", this.id, id);
+        this.id = id;
     }
+
     public Long getId() {
-        return (Long)readProperty("id");
+        beforePropertyRead("id");
+        return this.id;
     }
 
     public void setGroup(Group group) {
@@ -42,5 +57,67 @@ public abstract class _GroupProperties extends CayenneDataObject {
         return (Group)readProperty("group");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "description":
+                return this.description;
+            case "id":
+                return this.id;
+            case "group":
+                return this.group;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "description":
+                this.description = (String)val;
+                break;
+            case "id":
+                this.id = (Long)val;
+                break;
+            case "group":
+                this.group = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.description);
+        out.writeObject(this.id);
+        out.writeObject(this.group);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.description = (String)in.readObject();
+        this.id = (Long)in.readObject();
+        this.group = in.readObject();
+    }
 
 }

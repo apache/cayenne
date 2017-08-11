@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.quotemap.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.quotemap.Quote_Person;
 
@@ -10,7 +14,7 @@ import org.apache.cayenne.testdo.quotemap.Quote_Person;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _QuoteAdress extends CayenneDataObject {
+public abstract class _QuoteAdress extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -20,18 +24,29 @@ public abstract class _QuoteAdress extends CayenneDataObject {
     public static final Property<String> GROUP = Property.create("group", String.class);
     public static final Property<Quote_Person> PERSON_REL = Property.create("person_Rel", Quote_Person.class);
 
+    protected String city;
+    protected String group;
+
+    protected Object person_Rel;
+
     public void setCity(String city) {
-        writeProperty("city", city);
+        beforePropertyWrite("city", this.city, city);
+        this.city = city;
     }
+
     public String getCity() {
-        return (String)readProperty("city");
+        beforePropertyRead("city");
+        return this.city;
     }
 
     public void setGroup(String group) {
-        writeProperty("group", group);
+        beforePropertyWrite("group", this.group, group);
+        this.group = group;
     }
+
     public String getGroup() {
-        return (String)readProperty("group");
+        beforePropertyRead("group");
+        return this.group;
     }
 
     public void setPerson_Rel(Quote_Person person_Rel) {
@@ -42,5 +57,67 @@ public abstract class _QuoteAdress extends CayenneDataObject {
         return (Quote_Person)readProperty("person_Rel");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "city":
+                return this.city;
+            case "group":
+                return this.group;
+            case "person_Rel":
+                return this.person_Rel;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "city":
+                this.city = (String)val;
+                break;
+            case "group":
+                this.group = (String)val;
+                break;
+            case "person_Rel":
+                this.person_Rel = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.city);
+        out.writeObject(this.group);
+        out.writeObject(this.person_Rel);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.city = (String)in.readObject();
+        this.group = (String)in.readObject();
+        this.person_Rel = in.readObject();
+    }
 
 }

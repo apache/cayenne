@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.binary_pk.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest1;
 
@@ -10,7 +14,7 @@ import org.apache.cayenne.testdo.binary_pk.BinaryPKTest1;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _BinaryPKTest2 extends CayenneDataObject {
+public abstract class _BinaryPKTest2 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -19,11 +23,18 @@ public abstract class _BinaryPKTest2 extends CayenneDataObject {
     public static final Property<String> DETAIL_NAME = Property.create("detailName", String.class);
     public static final Property<BinaryPKTest1> TO_BINARY_PKMASTER = Property.create("toBinaryPKMaster", BinaryPKTest1.class);
 
+    protected String detailName;
+
+    protected Object toBinaryPKMaster;
+
     public void setDetailName(String detailName) {
-        writeProperty("detailName", detailName);
+        beforePropertyWrite("detailName", this.detailName, detailName);
+        this.detailName = detailName;
     }
+
     public String getDetailName() {
-        return (String)readProperty("detailName");
+        beforePropertyRead("detailName");
+        return this.detailName;
     }
 
     public void setToBinaryPKMaster(BinaryPKTest1 toBinaryPKMaster) {
@@ -34,5 +45,60 @@ public abstract class _BinaryPKTest2 extends CayenneDataObject {
         return (BinaryPKTest1)readProperty("toBinaryPKMaster");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "detailName":
+                return this.detailName;
+            case "toBinaryPKMaster":
+                return this.toBinaryPKMaster;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "detailName":
+                this.detailName = (String)val;
+                break;
+            case "toBinaryPKMaster":
+                this.toBinaryPKMaster = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.detailName);
+        out.writeObject(this.toBinaryPKMaster);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.detailName = (String)in.readObject();
+        this.toBinaryPKMaster = in.readObject();
+    }
 
 }

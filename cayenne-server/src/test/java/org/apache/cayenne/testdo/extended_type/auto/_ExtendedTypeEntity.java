@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.extended_type.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.extended_type.StringET1;
 
@@ -10,7 +14,7 @@ import org.apache.cayenne.testdo.extended_type.StringET1;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _ExtendedTypeEntity extends CayenneDataObject {
+public abstract class _ExtendedTypeEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -18,11 +22,66 @@ public abstract class _ExtendedTypeEntity extends CayenneDataObject {
 
     public static final Property<StringET1> NAME = Property.create("name", StringET1.class);
 
+    protected StringET1 name;
+
+
     public void setName(StringET1 name) {
-        writeProperty("name", name);
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
+
     public StringET1 getName() {
-        return (StringET1)readProperty("name");
+        beforePropertyRead("name");
+        return this.name;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "name":
+                return this.name;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "name":
+                this.name = (StringET1)val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.name);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.name = (StringET1)in.readObject();
     }
 
 }

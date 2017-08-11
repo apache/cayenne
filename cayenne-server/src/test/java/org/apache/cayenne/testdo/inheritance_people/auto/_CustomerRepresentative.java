@@ -1,5 +1,9 @@
 package org.apache.cayenne.testdo.inheritance_people.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
 import org.apache.cayenne.testdo.inheritance_people.ClientCompany;
@@ -19,11 +23,18 @@ public abstract class _CustomerRepresentative extends AbstractPerson {
     public static final Property<String> CLIENT_CONTACT_TYPE = Property.create("clientContactType", String.class);
     public static final Property<ClientCompany> TO_CLIENT_COMPANY = Property.create("toClientCompany", ClientCompany.class);
 
+    protected String clientContactType;
+
+    protected Object toClientCompany;
+
     public void setClientContactType(String clientContactType) {
-        writeProperty("clientContactType", clientContactType);
+        beforePropertyWrite("clientContactType", this.clientContactType, clientContactType);
+        this.clientContactType = clientContactType;
     }
+
     public String getClientContactType() {
-        return (String)readProperty("clientContactType");
+        beforePropertyRead("clientContactType");
+        return this.clientContactType;
     }
 
     public void setToClientCompany(ClientCompany toClientCompany) {
@@ -34,5 +45,60 @@ public abstract class _CustomerRepresentative extends AbstractPerson {
         return (ClientCompany)readProperty("toClientCompany");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "clientContactType":
+                return this.clientContactType;
+            case "toClientCompany":
+                return this.toClientCompany;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "clientContactType":
+                this.clientContactType = (String)val;
+                break;
+            case "toClientCompany":
+                this.toClientCompany = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.clientContactType);
+        out.writeObject(this.toClientCompany);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.clientContactType = (String)in.readObject();
+        this.toClientCompany = in.readObject();
+    }
 
 }

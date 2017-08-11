@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.inheritance_flat.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_flat.Group;
 
@@ -12,7 +15,7 @@ import org.apache.cayenne.testdo.inheritance_flat.Group;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Role extends CayenneDataObject {
+public abstract class _Role extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -23,43 +26,127 @@ public abstract class _Role extends CayenneDataObject {
     public static final Property<Integer> TYPE = Property.create("type", Integer.class);
     public static final Property<List<Group>> ROLE_GROUPS = Property.create("roleGroups", List.class);
 
+    protected long id;
+    protected String name;
+    protected int type;
+
+    protected Object roleGroups;
+
     public void setId(long id) {
-        writeProperty("id", id);
+        beforePropertyWrite("id", this.id, id);
+        this.id = id;
     }
+
     public long getId() {
-        Object value = readProperty("id");
-        return (value != null) ? (Long) value : 0;
+        beforePropertyRead("id");
+        return this.id;
     }
 
     public void setName(String name) {
-        writeProperty("name", name);
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
+
     public String getName() {
-        return (String)readProperty("name");
+        beforePropertyRead("name");
+        return this.name;
     }
 
     public void setType(int type) {
-        writeProperty("type", type);
+        beforePropertyWrite("type", this.type, type);
+        this.type = type;
     }
+
     public int getType() {
-        Object value = readProperty("type");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("type");
+        return this.type;
     }
 
     public void addToRoleGroups(Group obj) {
         addToManyTarget("roleGroups", obj, true);
     }
+
     public void removeFromRoleGroups(Group obj) {
         removeToManyTarget("roleGroups", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<Group> getRoleGroups() {
         return (List<Group>)readProperty("roleGroups");
     }
 
-
     protected abstract void onPostPersist();
 
     protected abstract void onPostUpdate();
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "id":
+                return this.id;
+            case "name":
+                return this.name;
+            case "type":
+                return this.type;
+            case "roleGroups":
+                return this.roleGroups;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "id":
+                this.id = val == null ? 0 : (Long)val;
+                break;
+            case "name":
+                this.name = (String)val;
+                break;
+            case "type":
+                this.type = val == null ? 0 : (Integer)val;
+                break;
+            case "roleGroups":
+                this.roleGroups = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeLong(this.id);
+        out.writeObject(this.name);
+        out.writeInt(this.type);
+        out.writeObject(this.roleGroups);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.id = in.readLong();
+        this.name = (String)in.readObject();
+        this.type = in.readInt();
+        this.roleGroups = in.readObject();
+    }
 
 }

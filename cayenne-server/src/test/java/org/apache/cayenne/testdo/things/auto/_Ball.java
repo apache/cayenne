@@ -1,5 +1,9 @@
 package org.apache.cayenne.testdo.things.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.things.Box;
@@ -22,18 +26,30 @@ public abstract class _Ball extends CayenneDataObject {
     public static final Property<Box> BOX = Property.create("box", Box.class);
     public static final Property<Thing> THING = Property.create("thing", Thing.class);
 
+    protected Integer thingVolume;
+    protected Integer thingWeight;
+
+    protected Object box;
+    protected Object thing;
+
     public void setThingVolume(Integer thingVolume) {
-        writeProperty("thingVolume", thingVolume);
+        beforePropertyWrite("thingVolume", this.thingVolume, thingVolume);
+        this.thingVolume = thingVolume;
     }
+
     public Integer getThingVolume() {
-        return (Integer)readProperty("thingVolume");
+        beforePropertyRead("thingVolume");
+        return this.thingVolume;
     }
 
     public void setThingWeight(Integer thingWeight) {
-        writeProperty("thingWeight", thingWeight);
+        beforePropertyWrite("thingWeight", this.thingWeight, thingWeight);
+        this.thingWeight = thingWeight;
     }
+
     public Integer getThingWeight() {
-        return (Integer)readProperty("thingWeight");
+        beforePropertyRead("thingWeight");
+        return this.thingWeight;
     }
 
     public void setBox(Box box) {
@@ -44,7 +60,6 @@ public abstract class _Ball extends CayenneDataObject {
         return (Box)readProperty("box");
     }
 
-
     public void setThing(Thing thing) {
         setToOneTarget("thing", thing, true);
     }
@@ -53,5 +68,74 @@ public abstract class _Ball extends CayenneDataObject {
         return (Thing)readProperty("thing");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "thingVolume":
+                return this.thingVolume;
+            case "thingWeight":
+                return this.thingWeight;
+            case "box":
+                return this.box;
+            case "thing":
+                return this.thing;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "thingVolume":
+                this.thingVolume = (Integer)val;
+                break;
+            case "thingWeight":
+                this.thingWeight = (Integer)val;
+                break;
+            case "box":
+                this.box = val;
+                break;
+            case "thing":
+                this.thing = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.thingVolume);
+        out.writeObject(this.thingWeight);
+        out.writeObject(this.box);
+        out.writeObject(this.thing);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.thingVolume = (Integer)in.readObject();
+        this.thingWeight = (Integer)in.readObject();
+        this.box = in.readObject();
+        this.thing = in.readObject();
+    }
 
 }

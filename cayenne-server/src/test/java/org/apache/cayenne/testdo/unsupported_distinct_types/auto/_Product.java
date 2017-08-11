@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.unsupported_distinct_types.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.unsupported_distinct_types.Customer;
 import org.apache.cayenne.testdo.unsupported_distinct_types.Product;
@@ -13,7 +16,7 @@ import org.apache.cayenne.testdo.unsupported_distinct_types.Product;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Product extends CayenneDataObject {
+public abstract class _Product extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -24,47 +27,129 @@ public abstract class _Product extends CayenneDataObject {
     public static final Property<List<Product>> CONTAINED = Property.create("contained", List.class);
     public static final Property<List<Customer>> ORDER_BY = Property.create("orderBy", List.class);
 
+    protected String longvarcharCol;
+
+    protected Object base;
+    protected Object contained;
+    protected Object orderBy;
+
     public void setLongvarcharCol(String longvarcharCol) {
-        writeProperty("longvarcharCol", longvarcharCol);
+        beforePropertyWrite("longvarcharCol", this.longvarcharCol, longvarcharCol);
+        this.longvarcharCol = longvarcharCol;
     }
+
     public String getLongvarcharCol() {
-        return (String)readProperty("longvarcharCol");
+        beforePropertyRead("longvarcharCol");
+        return this.longvarcharCol;
     }
 
     public void addToBase(Product obj) {
         addToManyTarget("base", obj, true);
     }
+
     public void removeFromBase(Product obj) {
         removeToManyTarget("base", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<Product> getBase() {
         return (List<Product>)readProperty("base");
     }
 
-
     public void addToContained(Product obj) {
         addToManyTarget("contained", obj, true);
     }
+
     public void removeFromContained(Product obj) {
         removeToManyTarget("contained", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<Product> getContained() {
         return (List<Product>)readProperty("contained");
     }
 
-
     public void addToOrderBy(Customer obj) {
         addToManyTarget("orderBy", obj, true);
     }
+
     public void removeFromOrderBy(Customer obj) {
         removeToManyTarget("orderBy", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<Customer> getOrderBy() {
         return (List<Customer>)readProperty("orderBy");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "longvarcharCol":
+                return this.longvarcharCol;
+            case "base":
+                return this.base;
+            case "contained":
+                return this.contained;
+            case "orderBy":
+                return this.orderBy;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "longvarcharCol":
+                this.longvarcharCol = (String)val;
+                break;
+            case "base":
+                this.base = val;
+                break;
+            case "contained":
+                this.contained = val;
+                break;
+            case "orderBy":
+                this.orderBy = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.longvarcharCol);
+        out.writeObject(this.base);
+        out.writeObject(this.contained);
+        out.writeObject(this.orderBy);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.longvarcharCol = (String)in.readObject();
+        this.base = in.readObject();
+        this.contained = in.readObject();
+        this.orderBy = in.readObject();
+    }
 
 }

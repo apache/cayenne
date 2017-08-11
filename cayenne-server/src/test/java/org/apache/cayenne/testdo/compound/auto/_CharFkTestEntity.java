@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.compound.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.compound.CharPkTestEntity;
 
@@ -10,7 +14,7 @@ import org.apache.cayenne.testdo.compound.CharPkTestEntity;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _CharFkTestEntity extends CayenneDataObject {
+public abstract class _CharFkTestEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -19,11 +23,18 @@ public abstract class _CharFkTestEntity extends CayenneDataObject {
     public static final Property<String> NAME = Property.create("name", String.class);
     public static final Property<CharPkTestEntity> TO_CHAR_PK = Property.create("toCharPK", CharPkTestEntity.class);
 
+    protected String name;
+
+    protected Object toCharPK;
+
     public void setName(String name) {
-        writeProperty("name", name);
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
+
     public String getName() {
-        return (String)readProperty("name");
+        beforePropertyRead("name");
+        return this.name;
     }
 
     public void setToCharPK(CharPkTestEntity toCharPK) {
@@ -34,5 +45,60 @@ public abstract class _CharFkTestEntity extends CayenneDataObject {
         return (CharPkTestEntity)readProperty("toCharPK");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "name":
+                return this.name;
+            case "toCharPK":
+                return this.toCharPK;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "name":
+                this.name = (String)val;
+                break;
+            case "toCharPK":
+                this.toCharPK = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.name);
+        out.writeObject(this.toCharPK);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.name = (String)in.readObject();
+        this.toCharPK = in.readObject();
+    }
 
 }

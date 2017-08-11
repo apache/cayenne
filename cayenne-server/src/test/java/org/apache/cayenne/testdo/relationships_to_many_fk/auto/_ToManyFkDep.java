@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.relationships_to_many_fk.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkRoot;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyRoot2;
@@ -11,7 +15,7 @@ import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyRoot2;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _ToManyFkDep extends CayenneDataObject {
+public abstract class _ToManyFkDep extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -23,18 +27,30 @@ public abstract class _ToManyFkDep extends CayenneDataObject {
     public static final Property<ToManyFkRoot> ROOT = Property.create("root", ToManyFkRoot.class);
     public static final Property<ToManyRoot2> ROOT2 = Property.create("root2", ToManyRoot2.class);
 
+    protected Integer depId;
+    protected String name;
+
+    protected Object root;
+    protected Object root2;
+
     public void setDepId(Integer depId) {
-        writeProperty("depId", depId);
+        beforePropertyWrite("depId", this.depId, depId);
+        this.depId = depId;
     }
+
     public Integer getDepId() {
-        return (Integer)readProperty("depId");
+        beforePropertyRead("depId");
+        return this.depId;
     }
 
     public void setName(String name) {
-        writeProperty("name", name);
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
+
     public String getName() {
-        return (String)readProperty("name");
+        beforePropertyRead("name");
+        return this.name;
     }
 
     public void setRoot(ToManyFkRoot root) {
@@ -45,7 +61,6 @@ public abstract class _ToManyFkDep extends CayenneDataObject {
         return (ToManyFkRoot)readProperty("root");
     }
 
-
     public void setRoot2(ToManyRoot2 root2) {
         setToOneTarget("root2", root2, true);
     }
@@ -54,5 +69,74 @@ public abstract class _ToManyFkDep extends CayenneDataObject {
         return (ToManyRoot2)readProperty("root2");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "depId":
+                return this.depId;
+            case "name":
+                return this.name;
+            case "root":
+                return this.root;
+            case "root2":
+                return this.root2;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "depId":
+                this.depId = (Integer)val;
+                break;
+            case "name":
+                this.name = (String)val;
+                break;
+            case "root":
+                this.root = val;
+                break;
+            case "root2":
+                this.root2 = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.depId);
+        out.writeObject(this.name);
+        out.writeObject(this.root);
+        out.writeObject(this.root2);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.depId = (Integer)in.readObject();
+        this.name = (String)in.readObject();
+        this.root = in.readObject();
+        this.root2 = in.readObject();
+    }
 
 }

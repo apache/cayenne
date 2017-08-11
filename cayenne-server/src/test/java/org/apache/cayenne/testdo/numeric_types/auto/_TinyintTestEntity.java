@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.numeric_types.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 /**
@@ -9,7 +13,7 @@ import org.apache.cayenne.exp.Property;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _TinyintTestEntity extends CayenneDataObject {
+public abstract class _TinyintTestEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -17,11 +21,66 @@ public abstract class _TinyintTestEntity extends CayenneDataObject {
 
     public static final Property<Byte> TINYINT_COL = Property.create("tinyintCol", Byte.class);
 
+    protected Byte tinyintCol;
+
+
     public void setTinyintCol(Byte tinyintCol) {
-        writeProperty("tinyintCol", tinyintCol);
+        beforePropertyWrite("tinyintCol", this.tinyintCol, tinyintCol);
+        this.tinyintCol = tinyintCol;
     }
+
     public Byte getTinyintCol() {
-        return (Byte)readProperty("tinyintCol");
+        beforePropertyRead("tinyintCol");
+        return this.tinyintCol;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "tinyintCol":
+                return this.tinyintCol;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "tinyintCol":
+                this.tinyintCol = (Byte)val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.tinyintCol);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.tinyintCol = (Byte)in.readObject();
     }
 
 }

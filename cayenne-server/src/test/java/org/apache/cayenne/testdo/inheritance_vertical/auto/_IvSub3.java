@@ -1,5 +1,9 @@
 package org.apache.cayenne.testdo.inheritance_vertical.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_vertical.IvRoot;
 
@@ -18,11 +22,61 @@ public abstract class _IvSub3 extends IvRoot {
     public static final Property<IvRoot> IV_ROOT = Property.create("ivRoot", IvRoot.class);
 
 
+    protected Object ivRoot;
+
     public IvRoot getIvRoot() {
         return (IvRoot)readProperty("ivRoot");
     }
 
-
     protected abstract void onPrePersist();
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "ivRoot":
+                return this.ivRoot;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "ivRoot":
+                this.ivRoot = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.ivRoot);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.ivRoot = in.readObject();
+    }
 
 }

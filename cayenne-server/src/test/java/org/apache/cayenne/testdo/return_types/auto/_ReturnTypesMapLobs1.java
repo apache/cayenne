@@ -1,5 +1,9 @@
 package org.apache.cayenne.testdo.return_types.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.exp.Property;
 
@@ -18,18 +22,84 @@ public abstract class _ReturnTypesMapLobs1 extends CayenneDataObject {
     public static final Property<String> CLOB_COLUMN = Property.create("clobColumn", String.class);
     public static final Property<String> NCLOB_COLUMN = Property.create("nclobColumn", String.class);
 
+    protected String clobColumn;
+    protected String nclobColumn;
+
+
     public void setClobColumn(String clobColumn) {
-        writeProperty("clobColumn", clobColumn);
+        beforePropertyWrite("clobColumn", this.clobColumn, clobColumn);
+        this.clobColumn = clobColumn;
     }
+
     public String getClobColumn() {
-        return (String)readProperty("clobColumn");
+        beforePropertyRead("clobColumn");
+        return this.clobColumn;
     }
 
     public void setNclobColumn(String nclobColumn) {
-        writeProperty("nclobColumn", nclobColumn);
+        beforePropertyWrite("nclobColumn", this.nclobColumn, nclobColumn);
+        this.nclobColumn = nclobColumn;
     }
+
     public String getNclobColumn() {
-        return (String)readProperty("nclobColumn");
+        beforePropertyRead("nclobColumn");
+        return this.nclobColumn;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "clobColumn":
+                return this.clobColumn;
+            case "nclobColumn":
+                return this.nclobColumn;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "clobColumn":
+                this.clobColumn = (String)val;
+                break;
+            case "nclobColumn":
+                this.nclobColumn = (String)val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.clobColumn);
+        out.writeObject(this.nclobColumn);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.clobColumn = (String)in.readObject();
+        this.nclobColumn = (String)in.readObject();
     }
 
 }

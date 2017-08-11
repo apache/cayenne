@@ -1,9 +1,12 @@
 package org.apache.cayenne.testdo.relationships_activity.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.sql.Date;
 import java.util.Map;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_activity.ActivityResult;
 
@@ -13,7 +16,7 @@ import org.apache.cayenne.testdo.relationships_activity.ActivityResult;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Activity extends CayenneDataObject {
+public abstract class _Activity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -23,31 +26,105 @@ public abstract class _Activity extends CayenneDataObject {
     public static final Property<Integer> APPOINTMENT_NO = Property.create("appointmentNo", Integer.class);
     public static final Property<Map<String, ActivityResult>> RESULTS = Property.create("results", Map.class);
 
+    protected Date appointmentDate;
+    protected int appointmentNo;
+
+    protected Object results;
+
     public void setAppointmentDate(Date appointmentDate) {
-        writeProperty("appointmentDate", appointmentDate);
+        beforePropertyWrite("appointmentDate", this.appointmentDate, appointmentDate);
+        this.appointmentDate = appointmentDate;
     }
+
     public Date getAppointmentDate() {
-        return (Date)readProperty("appointmentDate");
+        beforePropertyRead("appointmentDate");
+        return this.appointmentDate;
     }
 
     public void setAppointmentNo(int appointmentNo) {
-        writeProperty("appointmentNo", appointmentNo);
+        beforePropertyWrite("appointmentNo", this.appointmentNo, appointmentNo);
+        this.appointmentNo = appointmentNo;
     }
+
     public int getAppointmentNo() {
-        Object value = readProperty("appointmentNo");
-        return (value != null) ? (Integer) value : 0;
+        beforePropertyRead("appointmentNo");
+        return this.appointmentNo;
     }
 
     public void addToResults(ActivityResult obj) {
         addToManyTarget("results", obj, true);
     }
+
     public void removeFromResults(ActivityResult obj) {
         removeToManyTarget("results", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public Map<String, ActivityResult> getResults() {
         return (Map<String, ActivityResult>)readProperty("results");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "appointmentDate":
+                return this.appointmentDate;
+            case "appointmentNo":
+                return this.appointmentNo;
+            case "results":
+                return this.results;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "appointmentDate":
+                this.appointmentDate = (Date)val;
+                break;
+            case "appointmentNo":
+                this.appointmentNo = val == null ? 0 : (Integer)val;
+                break;
+            case "results":
+                this.results = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.appointmentDate);
+        out.writeInt(this.appointmentNo);
+        out.writeObject(this.results);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.appointmentDate = (Date)in.readObject();
+        this.appointmentNo = in.readInt();
+        this.results = in.readObject();
+    }
 
 }

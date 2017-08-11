@@ -14,6 +14,11 @@ UPGRADING TO 4.1.M1
       to enable it simply add it as a dependency in Maven (or any other build system you use), however
       this module can support only versions created by Cayenne 3.1 or later.
 
+* Per CAY-2330 Field-based data objects are introduced and enabled by default.
+      Your existing code will continue to work, but in order to get benefits from this feature you should
+      regenerate code via Modeler ("Tools" -> "Generate Classes") or cgen tools in Maven/Ant/Gradle plugins.
+      Also note that serialization format of old data objects have changed, make sure you don't use serialization
+      form to store your objects.
 
 UPGRADING TO 4.0.B1
 

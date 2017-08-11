@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.toone.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.toone.TooneDep;
 
@@ -10,13 +14,16 @@ import org.apache.cayenne.testdo.toone.TooneDep;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _TooneMaster extends CayenneDataObject {
+public abstract class _TooneMaster extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
     public static final Property<TooneDep> TO_DEPENDENT = Property.create("toDependent", TooneDep.class);
+
+
+    protected Object toDependent;
 
     public void setToDependent(TooneDep toDependent) {
         setToOneTarget("toDependent", toDependent, true);
@@ -26,5 +33,53 @@ public abstract class _TooneMaster extends CayenneDataObject {
         return (TooneDep)readProperty("toDependent");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "toDependent":
+                return this.toDependent;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "toDependent":
+                this.toDependent = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.toDependent);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.toDependent = in.readObject();
+    }
 
 }

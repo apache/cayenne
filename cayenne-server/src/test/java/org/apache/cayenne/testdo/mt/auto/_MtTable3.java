@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.mt.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.mt.MtTable2;
 
@@ -12,7 +15,7 @@ import org.apache.cayenne.testdo.mt.MtTable2;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _MtTable3 extends CayenneDataObject {
+public abstract class _MtTable3 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -23,37 +26,123 @@ public abstract class _MtTable3 extends CayenneDataObject {
     public static final Property<Integer> INT_COLUMN = Property.create("intColumn", Integer.class);
     public static final Property<List<MtTable2>> TABLE2ARRAY = Property.create("table2Array", List.class);
 
+    protected byte[] binaryColumn;
+    protected String charColumn;
+    protected Integer intColumn;
+
+    protected Object table2Array;
+
     public void setBinaryColumn(byte[] binaryColumn) {
-        writeProperty("binaryColumn", binaryColumn);
+        beforePropertyWrite("binaryColumn", this.binaryColumn, binaryColumn);
+        this.binaryColumn = binaryColumn;
     }
+
     public byte[] getBinaryColumn() {
-        return (byte[])readProperty("binaryColumn");
+        beforePropertyRead("binaryColumn");
+        return this.binaryColumn;
     }
 
     public void setCharColumn(String charColumn) {
-        writeProperty("charColumn", charColumn);
+        beforePropertyWrite("charColumn", this.charColumn, charColumn);
+        this.charColumn = charColumn;
     }
+
     public String getCharColumn() {
-        return (String)readProperty("charColumn");
+        beforePropertyRead("charColumn");
+        return this.charColumn;
     }
 
     public void setIntColumn(Integer intColumn) {
-        writeProperty("intColumn", intColumn);
+        beforePropertyWrite("intColumn", this.intColumn, intColumn);
+        this.intColumn = intColumn;
     }
+
     public Integer getIntColumn() {
-        return (Integer)readProperty("intColumn");
+        beforePropertyRead("intColumn");
+        return this.intColumn;
     }
 
     public void addToTable2Array(MtTable2 obj) {
         addToManyTarget("table2Array", obj, true);
     }
+
     public void removeFromTable2Array(MtTable2 obj) {
         removeToManyTarget("table2Array", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<MtTable2> getTable2Array() {
         return (List<MtTable2>)readProperty("table2Array");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "binaryColumn":
+                return this.binaryColumn;
+            case "charColumn":
+                return this.charColumn;
+            case "intColumn":
+                return this.intColumn;
+            case "table2Array":
+                return this.table2Array;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "binaryColumn":
+                this.binaryColumn = (byte[])val;
+                break;
+            case "charColumn":
+                this.charColumn = (String)val;
+                break;
+            case "intColumn":
+                this.intColumn = (Integer)val;
+                break;
+            case "table2Array":
+                this.table2Array = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.binaryColumn);
+        out.writeObject(this.charColumn);
+        out.writeObject(this.intColumn);
+        out.writeObject(this.table2Array);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.binaryColumn = (byte[])in.readObject();
+        this.charColumn = (String)in.readObject();
+        this.intColumn = (Integer)in.readObject();
+        this.table2Array = in.readObject();
+    }
 
 }

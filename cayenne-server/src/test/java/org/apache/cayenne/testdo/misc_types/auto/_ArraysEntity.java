@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.misc_types.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 /**
@@ -9,7 +13,7 @@ import org.apache.cayenne.exp.Property;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _ArraysEntity extends CayenneDataObject {
+public abstract class _ArraysEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -20,32 +24,120 @@ public abstract class _ArraysEntity extends CayenneDataObject {
     public static final Property<char[]> CHAR_ARRAY = Property.create("charArray", char[].class);
     public static final Property<Character[]> CHAR_WRAPPER_ARRAY = Property.create("charWrapperArray", Character[].class);
 
+    protected byte[] byteArray;
+    protected Byte[] byteWrapperArray;
+    protected char[] charArray;
+    protected Character[] charWrapperArray;
+
+
     public void setByteArray(byte[] byteArray) {
-        writeProperty("byteArray", byteArray);
+        beforePropertyWrite("byteArray", this.byteArray, byteArray);
+        this.byteArray = byteArray;
     }
+
     public byte[] getByteArray() {
-        return (byte[])readProperty("byteArray");
+        beforePropertyRead("byteArray");
+        return this.byteArray;
     }
 
     public void setByteWrapperArray(Byte[] byteWrapperArray) {
-        writeProperty("byteWrapperArray", byteWrapperArray);
+        beforePropertyWrite("byteWrapperArray", this.byteWrapperArray, byteWrapperArray);
+        this.byteWrapperArray = byteWrapperArray;
     }
+
     public Byte[] getByteWrapperArray() {
-        return (Byte[])readProperty("byteWrapperArray");
+        beforePropertyRead("byteWrapperArray");
+        return this.byteWrapperArray;
     }
 
     public void setCharArray(char[] charArray) {
-        writeProperty("charArray", charArray);
+        beforePropertyWrite("charArray", this.charArray, charArray);
+        this.charArray = charArray;
     }
+
     public char[] getCharArray() {
-        return (char[])readProperty("charArray");
+        beforePropertyRead("charArray");
+        return this.charArray;
     }
 
     public void setCharWrapperArray(Character[] charWrapperArray) {
-        writeProperty("charWrapperArray", charWrapperArray);
+        beforePropertyWrite("charWrapperArray", this.charWrapperArray, charWrapperArray);
+        this.charWrapperArray = charWrapperArray;
     }
+
     public Character[] getCharWrapperArray() {
-        return (Character[])readProperty("charWrapperArray");
+        beforePropertyRead("charWrapperArray");
+        return this.charWrapperArray;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "byteArray":
+                return this.byteArray;
+            case "byteWrapperArray":
+                return this.byteWrapperArray;
+            case "charArray":
+                return this.charArray;
+            case "charWrapperArray":
+                return this.charWrapperArray;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "byteArray":
+                this.byteArray = (byte[])val;
+                break;
+            case "byteWrapperArray":
+                this.byteWrapperArray = (Byte[])val;
+                break;
+            case "charArray":
+                this.charArray = (char[])val;
+                break;
+            case "charWrapperArray":
+                this.charWrapperArray = (Character[])val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.byteArray);
+        out.writeObject(this.byteWrapperArray);
+        out.writeObject(this.charArray);
+        out.writeObject(this.charWrapperArray);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.byteArray = (byte[])in.readObject();
+        this.byteWrapperArray = (Byte[])in.readObject();
+        this.charArray = (char[])in.readObject();
+        this.charWrapperArray = (Character[])in.readObject();
     }
 
 }

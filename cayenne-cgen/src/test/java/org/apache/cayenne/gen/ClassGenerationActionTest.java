@@ -56,7 +56,6 @@ public class ClassGenerationActionTest {
 				return writer;
 			}
 		};
-
 	}
 
 	@After
@@ -80,7 +79,7 @@ public class ClassGenerationActionTest {
 
 		String superclass = generated.get(0);
 		assertTrue(superclass, superclass.contains("package org.example.auto;"));
-		assertTrue(superclass, superclass.contains("import org.apache.cayenne.CayenneDataObject;"));
+		assertTrue(superclass, superclass.contains("import org.apache.cayenne.BaseDataObject;"));
 
 		String subclass = generated.get(1);
 		assertTrue(subclass, subclass.contains("package org.example;"));
@@ -148,18 +147,16 @@ public class ClassGenerationActionTest {
 		String superclass = generated.get(0);
 
 		assertTrue(superclass, superclass.contains("public void setID(int ID)"));
-		assertTrue(superclass, superclass.contains("writeProperty(\"ID\", ID);"));
+		assertTrue(superclass, superclass.contains("this.ID = ID;"));
 
 		assertTrue(superclass, superclass.contains("public int getID()"));
-		assertTrue(superclass, superclass.contains("Object value = readProperty(\"ID\");"));
-		assertTrue(superclass, superclass.contains("return (value != null) ? (Integer) value : 0;"));
+		assertTrue(superclass, superclass.contains("return this.ID;"));
 
 		assertTrue(superclass, superclass.contains("public void setName(char name)"));
-		assertTrue(superclass, superclass.contains("writeProperty(\"name\", name);"));
+		assertTrue(superclass, superclass.contains("this.name = name;"));
 
 		assertTrue(superclass, superclass.contains("public char getName()"));
-		assertTrue(superclass, superclass.contains("Object value = readProperty(\"name\");"));
-		assertTrue(superclass, superclass.contains("return (value != null) ? (Character) value : 0;"));
+		assertTrue(superclass, superclass.contains("return this.name;"));
 
 	}
 

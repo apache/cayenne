@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.compound.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 
@@ -12,7 +15,7 @@ import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _CompoundPkTestEntity extends CayenneDataObject {
+public abstract class _CompoundPkTestEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -24,37 +27,123 @@ public abstract class _CompoundPkTestEntity extends CayenneDataObject {
     public static final Property<String> NAME = Property.create("name", String.class);
     public static final Property<List<CompoundFkTestEntity>> COMPOUND_FK_ARRAY = Property.create("compoundFkArray", List.class);
 
+    protected String key1;
+    protected String key2;
+    protected String name;
+
+    protected Object compoundFkArray;
+
     public void setKey1(String key1) {
-        writeProperty("key1", key1);
+        beforePropertyWrite("key1", this.key1, key1);
+        this.key1 = key1;
     }
+
     public String getKey1() {
-        return (String)readProperty("key1");
+        beforePropertyRead("key1");
+        return this.key1;
     }
 
     public void setKey2(String key2) {
-        writeProperty("key2", key2);
+        beforePropertyWrite("key2", this.key2, key2);
+        this.key2 = key2;
     }
+
     public String getKey2() {
-        return (String)readProperty("key2");
+        beforePropertyRead("key2");
+        return this.key2;
     }
 
     public void setName(String name) {
-        writeProperty("name", name);
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
+
     public String getName() {
-        return (String)readProperty("name");
+        beforePropertyRead("name");
+        return this.name;
     }
 
     public void addToCompoundFkArray(CompoundFkTestEntity obj) {
         addToManyTarget("compoundFkArray", obj, true);
     }
+
     public void removeFromCompoundFkArray(CompoundFkTestEntity obj) {
         removeToManyTarget("compoundFkArray", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<CompoundFkTestEntity> getCompoundFkArray() {
         return (List<CompoundFkTestEntity>)readProperty("compoundFkArray");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "key1":
+                return this.key1;
+            case "key2":
+                return this.key2;
+            case "name":
+                return this.name;
+            case "compoundFkArray":
+                return this.compoundFkArray;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "key1":
+                this.key1 = (String)val;
+                break;
+            case "key2":
+                this.key2 = (String)val;
+                break;
+            case "name":
+                this.name = (String)val;
+                break;
+            case "compoundFkArray":
+                this.compoundFkArray = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.key1);
+        out.writeObject(this.key2);
+        out.writeObject(this.name);
+        out.writeObject(this.compoundFkArray);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.key1 = (String)in.readObject();
+        this.key2 = (String)in.readObject();
+        this.name = (String)in.readObject();
+        this.compoundFkArray = in.readObject();
+    }
 
 }

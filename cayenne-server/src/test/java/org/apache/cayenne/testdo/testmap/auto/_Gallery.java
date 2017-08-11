@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.testmap.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -13,7 +16,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Gallery extends CayenneDataObject {
+public abstract class _Gallery extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -23,35 +26,108 @@ public abstract class _Gallery extends CayenneDataObject {
     public static final Property<List<Exhibit>> EXHIBIT_ARRAY = Property.create("exhibitArray", List.class);
     public static final Property<List<Painting>> PAINTING_ARRAY = Property.create("paintingArray", List.class);
 
+    protected String galleryName;
+
+    protected Object exhibitArray;
+    protected Object paintingArray;
+
     public void setGalleryName(String galleryName) {
-        writeProperty("galleryName", galleryName);
+        beforePropertyWrite("galleryName", this.galleryName, galleryName);
+        this.galleryName = galleryName;
     }
+
     public String getGalleryName() {
-        return (String)readProperty("galleryName");
+        beforePropertyRead("galleryName");
+        return this.galleryName;
     }
 
     public void addToExhibitArray(Exhibit obj) {
         addToManyTarget("exhibitArray", obj, true);
     }
+
     public void removeFromExhibitArray(Exhibit obj) {
         removeToManyTarget("exhibitArray", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<Exhibit> getExhibitArray() {
         return (List<Exhibit>)readProperty("exhibitArray");
     }
 
-
     public void addToPaintingArray(Painting obj) {
         addToManyTarget("paintingArray", obj, true);
     }
+
     public void removeFromPaintingArray(Painting obj) {
         removeToManyTarget("paintingArray", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<Painting> getPaintingArray() {
         return (List<Painting>)readProperty("paintingArray");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "galleryName":
+                return this.galleryName;
+            case "exhibitArray":
+                return this.exhibitArray;
+            case "paintingArray":
+                return this.paintingArray;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "galleryName":
+                this.galleryName = (String)val;
+                break;
+            case "exhibitArray":
+                this.exhibitArray = val;
+                break;
+            case "paintingArray":
+                this.paintingArray = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.galleryName);
+        out.writeObject(this.exhibitArray);
+        out.writeObject(this.paintingArray);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.galleryName = (String)in.readObject();
+        this.exhibitArray = in.readObject();
+        this.paintingArray = in.readObject();
+    }
 
 }

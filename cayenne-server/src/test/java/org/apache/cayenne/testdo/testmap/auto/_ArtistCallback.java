@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.testmap.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Date;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 /**
@@ -11,7 +14,7 @@ import org.apache.cayenne.exp.Property;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _ArtistCallback extends CayenneDataObject {
+public abstract class _ArtistCallback extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -20,18 +23,28 @@ public abstract class _ArtistCallback extends CayenneDataObject {
     public static final Property<String> ARTIST_NAME = Property.create("artistName", String.class);
     public static final Property<Date> DATE_OF_BIRTH = Property.create("dateOfBirth", Date.class);
 
+    protected String artistName;
+    protected Date dateOfBirth;
+
+
     public void setArtistName(String artistName) {
-        writeProperty("artistName", artistName);
+        beforePropertyWrite("artistName", this.artistName, artistName);
+        this.artistName = artistName;
     }
+
     public String getArtistName() {
-        return (String)readProperty("artistName");
+        beforePropertyRead("artistName");
+        return this.artistName;
     }
 
     public void setDateOfBirth(Date dateOfBirth) {
-        writeProperty("dateOfBirth", dateOfBirth);
+        beforePropertyWrite("dateOfBirth", this.dateOfBirth, dateOfBirth);
+        this.dateOfBirth = dateOfBirth;
     }
+
     public Date getDateOfBirth() {
-        return (Date)readProperty("dateOfBirth");
+        beforePropertyRead("dateOfBirth");
+        return this.dateOfBirth;
     }
 
     protected abstract void prePersistEntityObjEntity();
@@ -47,5 +60,61 @@ public abstract class _ArtistCallback extends CayenneDataObject {
     protected abstract void postUpdateEntityObjEntity();
 
     protected abstract void postLoadEntityObjEntity();
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "artistName":
+                return this.artistName;
+            case "dateOfBirth":
+                return this.dateOfBirth;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "artistName":
+                this.artistName = (String)val;
+                break;
+            case "dateOfBirth":
+                this.dateOfBirth = (Date)val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.artistName);
+        out.writeObject(this.dateOfBirth);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.artistName = (String)in.readObject();
+        this.dateOfBirth = (Date)in.readObject();
+    }
 
 }

@@ -1,5 +1,9 @@
 package org.apache.cayenne.testdo.inheritance_flat.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_flat.Role;
 import org.apache.cayenne.testdo.inheritance_flat.UserProperties;
@@ -18,6 +22,9 @@ public abstract class _User extends Role {
 
     public static final Property<UserProperties> USER_PROPERTIES = Property.create("userProperties", UserProperties.class);
 
+
+    protected Object userProperties;
+
     public void setUserProperties(UserProperties userProperties) {
         setToOneTarget("userProperties", userProperties, true);
     }
@@ -26,5 +33,53 @@ public abstract class _User extends Role {
         return (UserProperties)readProperty("userProperties");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "userProperties":
+                return this.userProperties;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "userProperties":
+                this.userProperties = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.userProperties);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.userProperties = in.readObject();
+    }
 
 }

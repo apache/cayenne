@@ -1,8 +1,11 @@
 package org.apache.cayenne.testdo.cay_2032.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.cay_2032.Team;
 
@@ -12,7 +15,7 @@ import org.apache.cayenne.testdo.cay_2032.Team;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _User extends CayenneDataObject {
+public abstract class _User extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -21,23 +24,87 @@ public abstract class _User extends CayenneDataObject {
     public static final Property<byte[]> NAME = Property.create("name", byte[].class);
     public static final Property<List<Team>> USER_TEAMS = Property.create("userTeams", List.class);
 
+    protected byte[] name;
+
+    protected Object userTeams;
+
     public void setName(byte[] name) {
-        writeProperty("name", name);
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
+
     public byte[] getName() {
-        return (byte[])readProperty("name");
+        beforePropertyRead("name");
+        return this.name;
     }
 
     public void addToUserTeams(Team obj) {
         addToManyTarget("userTeams", obj, true);
     }
+
     public void removeFromUserTeams(Team obj) {
         removeToManyTarget("userTeams", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<Team> getUserTeams() {
         return (List<Team>)readProperty("userTeams");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "name":
+                return this.name;
+            case "userTeams":
+                return this.userTeams;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "name":
+                this.name = (byte[])val;
+                break;
+            case "userTeams":
+                this.userTeams = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.name);
+        out.writeObject(this.userTeams);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.name = (byte[])in.readObject();
+        this.userTeams = in.readObject();
+    }
 
 }

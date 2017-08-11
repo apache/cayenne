@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.inheritance_people.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
 
@@ -10,7 +14,7 @@ import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _PersonNotes extends CayenneDataObject {
+public abstract class _PersonNotes extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -19,11 +23,18 @@ public abstract class _PersonNotes extends CayenneDataObject {
     public static final Property<String> NOTES = Property.create("notes", String.class);
     public static final Property<AbstractPerson> PERSON = Property.create("person", AbstractPerson.class);
 
+    protected String notes;
+
+    protected Object person;
+
     public void setNotes(String notes) {
-        writeProperty("notes", notes);
+        beforePropertyWrite("notes", this.notes, notes);
+        this.notes = notes;
     }
+
     public String getNotes() {
-        return (String)readProperty("notes");
+        beforePropertyRead("notes");
+        return this.notes;
     }
 
     public void setPerson(AbstractPerson person) {
@@ -34,5 +45,60 @@ public abstract class _PersonNotes extends CayenneDataObject {
         return (AbstractPerson)readProperty("person");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "notes":
+                return this.notes;
+            case "person":
+                return this.person;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "notes":
+                this.notes = (String)val;
+                break;
+            case "person":
+                this.person = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.notes);
+        out.writeObject(this.person);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.notes = (String)in.readObject();
+        this.person = in.readObject();
+    }
 
 }

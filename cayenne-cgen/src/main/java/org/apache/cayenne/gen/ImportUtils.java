@@ -194,6 +194,15 @@ public class ImportUtils {
 	}
 
 	/**
+	 * @since 4.1
+	 * @param type name
+	 * @return is given type primitive
+	 */
+	public boolean isPrimitive(String type) {
+		return classesForPrimitives.containsKey(type);
+	}
+
+	/**
 	 * Generate package and list of import statements based on the registered
 	 * types.
 	 */

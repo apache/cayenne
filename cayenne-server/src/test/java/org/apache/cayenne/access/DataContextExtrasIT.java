@@ -132,7 +132,7 @@ public class DataContextExtrasIT extends ServerCase {
     }
 
     @Test
-    public void testResolveFault() {
+    public void testResolveFault() throws Exception {
 
         Artist o1 = context.newObject(Artist.class);
         o1.setArtistName("a");
@@ -140,11 +140,20 @@ public class DataContextExtrasIT extends ServerCase {
 
         context.invalidateObjects(o1);
         assertEquals(PersistenceState.HOLLOW, o1.getPersistenceState());
-        assertNull(o1.readPropertyDirectly("artistName"));
+
+        // NOTE: Map-based data objects clear their state, while field-based do not,
+        // but all we really care is that HOLLOW object transparently updates it's state.
+        // Here can be two variants depending on what type of data object is used:
+        // assertNull(o1.readPropertyDirectly("artistName")); // map-based
+        // assertEquals("a", o1.readPropertyDirectly("artistName")); // field-based
+
+        // update table bypassing Cayenne
+        int count = tArtist.update().set("ARTIST_NAME", "b").where("ARTIST_NAME", "a").execute();
+        assertTrue(count > 0);
 
         context.prepareForAccess(o1, null, false);
         assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
-        assertEquals("a", o1.readPropertyDirectly("artistName"));
+        assertEquals("b", o1.readPropertyDirectly("artistName"));
     }
 
     @Test
@@ -158,9 +167,7 @@ public class DataContextExtrasIT extends ServerCase {
         try {
             context.prepareForAccess(o1, null, false);
             fail("Must blow on non-existing fault.");
-        }
-        catch (CayenneRuntimeException ex) {
-
+        } catch (CayenneRuntimeException ignored) {
         }
     }
 
@@ -204,7 +211,7 @@ public class DataContextExtrasIT extends ServerCase {
     public void testIdObjectFromDataRow() {
 
         DataRow row = new DataRow(10);
-        row.put("ARTIST_ID", new Integer(100000));
+        row.put("ARTIST_ID", 100000);
         DataObject obj = context.objectFromDataRow(Artist.class, row);
         assertNotNull(obj);
         assertTrue(context.getGraphManager().registeredNodes().contains(obj));
@@ -217,7 +224,7 @@ public class DataContextExtrasIT extends ServerCase {
     public void testPartialObjectFromDataRow() {
 
         DataRow row = new DataRow(10);
-        row.put("ARTIST_ID", new Integer(100001));
+        row.put("ARTIST_ID", 100001);
         row.put("ARTIST_NAME", "ArtistXYZ");
         DataObject obj = context.objectFromDataRow(Artist.class, row);
         assertNotNull(obj);
@@ -230,7 +237,7 @@ public class DataContextExtrasIT extends ServerCase {
     public void testFullObjectFromDataRow() {
 
         DataRow row = new DataRow(10);
-        row.put("ARTIST_ID", new Integer(123456));
+        row.put("ARTIST_ID", 123456);
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());
         Artist obj = context.objectFromDataRow(Artist.class, row);

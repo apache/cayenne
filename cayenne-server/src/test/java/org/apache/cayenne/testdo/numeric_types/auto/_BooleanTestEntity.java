@@ -1,6 +1,10 @@
 package org.apache.cayenne.testdo.numeric_types.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 
 /**
@@ -9,7 +13,7 @@ import org.apache.cayenne.exp.Property;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _BooleanTestEntity extends CayenneDataObject {
+public abstract class _BooleanTestEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -17,11 +21,66 @@ public abstract class _BooleanTestEntity extends CayenneDataObject {
 
     public static final Property<Boolean> BOOLEAN_COLUMN = Property.create("booleanColumn", Boolean.class);
 
+    protected Boolean booleanColumn;
+
+
     public void setBooleanColumn(Boolean booleanColumn) {
-        writeProperty("booleanColumn", booleanColumn);
+        beforePropertyWrite("booleanColumn", this.booleanColumn, booleanColumn);
+        this.booleanColumn = booleanColumn;
     }
+
     public Boolean getBooleanColumn() {
-        return (Boolean)readProperty("booleanColumn");
+        beforePropertyRead("booleanColumn");
+        return this.booleanColumn;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "booleanColumn":
+                return this.booleanColumn;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "booleanColumn":
+                this.booleanColumn = (Boolean)val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.booleanColumn);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.booleanColumn = (Boolean)in.readObject();
     }
 
 }

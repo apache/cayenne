@@ -1,5 +1,8 @@
 package org.apache.cayenne.testdo.inheritance_vertical.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.exp.Property;
@@ -22,24 +25,33 @@ public abstract class _IvConcrete extends IvAbstract {
     public static final Property<List<IvConcrete>> CHILDREN = Property.create("children", List.class);
     public static final Property<IvConcrete> PARENT = Property.create("parent", IvConcrete.class);
 
+    protected String name;
+
+    protected Object children;
+    protected Object parent;
+
     public void setName(String name) {
-        writeProperty("name", name);
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
+
     public String getName() {
-        return (String)readProperty("name");
+        beforePropertyRead("name");
+        return this.name;
     }
 
     public void addToChildren(IvConcrete obj) {
         addToManyTarget("children", obj, true);
     }
+
     public void removeFromChildren(IvConcrete obj) {
         removeToManyTarget("children", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<IvConcrete> getChildren() {
         return (List<IvConcrete>)readProperty("children");
     }
-
 
     public void setParent(IvConcrete parent) {
         setToOneTarget("parent", parent, true);
@@ -49,5 +61,67 @@ public abstract class _IvConcrete extends IvAbstract {
         return (IvConcrete)readProperty("parent");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "name":
+                return this.name;
+            case "children":
+                return this.children;
+            case "parent":
+                return this.parent;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "name":
+                this.name = (String)val;
+                break;
+            case "children":
+                this.children = val;
+                break;
+            case "parent":
+                this.parent = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.name);
+        out.writeObject(this.children);
+        out.writeObject(this.parent);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.name = (String)in.readObject();
+        this.children = in.readObject();
+        this.parent = in.readObject();
+    }
 
 }
