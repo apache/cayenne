@@ -19,6 +19,7 @@ CAY-2330 Field based data objects
 CAY-2335 New XML loading/saving mechanics with support of plugable handlers
 CAY-2336 Support for comments in Modeler
 CAY-2339 Compatibility module to support old versions of projects at runtime
+CAY-2346 Field-based data object with Map-based storage fallback
 
 Bug Fixes:
 
