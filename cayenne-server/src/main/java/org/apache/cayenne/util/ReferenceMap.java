@@ -30,6 +30,7 @@ import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -76,11 +77,6 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
      */
     protected transient Map<K, R> map;
 
-    /**
-     * This is aux storage to faster remove cleared references
-     */
-    protected transient Map<R, K> reverseMap;
-
     protected transient ReferenceQueue<V> referenceQueue;
 
     /**
@@ -90,13 +86,11 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
 
     public ReferenceMap() {
         map = new HashMap<>();
-        reverseMap = new HashMap<>();
         referenceQueue = new ReferenceQueue<>();
     }
 
     public ReferenceMap(int initialCapacity) {
         map = new HashMap<>(initialCapacity);
-        reverseMap = new HashMap<>(initialCapacity);
         referenceQueue = new ReferenceQueue<>();
     }
 
@@ -154,7 +148,6 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
         checkReferenceQueue();
         R refValue = newReference(value);
         R oldValue = map.put(key, refValue);
-        reverseMap.put(refValue, key);
         if(oldValue == null) {
             return null;
         }
@@ -168,7 +161,6 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
         if(oldValue == null) {
             return null;
         }
-        reverseMap.remove(oldValue);
         return oldValue.get();
     }
 
@@ -178,14 +170,12 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
         for(Map.Entry<? extends K, ? extends V> entry : m.entrySet()) {
             R value = newReference(entry.getValue());
             map.put(entry.getKey(), value);
-            reverseMap.put(value, entry.getKey());
         }
     }
 
     @Override
     public void clear() {
         map.clear();
-        reverseMap.clear();
         resetReferenceQueue();
     }
 
@@ -224,13 +214,28 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
      * Cleanup all references collected by GC so far
      */
     protected void checkReferenceQueue() {
+        Collection<Reference<? extends V>> valuesToRemove = null;
         Reference<? extends V> reference;
-
         while((reference = referenceQueue.poll()) != null) {
-            K keyToRemove = reverseMap.remove(reference);
-            if(keyToRemove != null) {
-                map.remove(keyToRemove);
+            if(valuesToRemove == null) {
+                valuesToRemove = new HashSet<>();
             }
+            valuesToRemove.add(reference);
+        }
+
+        if(valuesToRemove == null) {
+            return;
+        }
+
+        Collection<K> keysToRemove = new ArrayList<>(valuesToRemove.size());
+        for(Map.Entry<K, R> entry : map.entrySet()) {
+            if(valuesToRemove.contains(entry.getValue())) {
+                keysToRemove.add(entry.getKey());
+            }
+        }
+
+        for(K keyToRemove : keysToRemove) {
+            map.remove(keyToRemove);
         }
     }
 
@@ -271,10 +276,8 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
         @SuppressWarnings("unchecked")
         Map<K, V> replacement = (Map<K, V>) in.readObject();
         map = new HashMap<>(replacement.size());
-        reverseMap = new HashMap<>(replacement.size());
         referenceQueue = new ReferenceQueue<>();
         putAll(replacement);
-        map.forEach((k, v) -> reverseMap.put(v, k));
     }
 
     /**
@@ -333,7 +336,6 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
         public V setValue(V value) {
             R newRef = newReference(value);
             R oldRef = refEntry.setValue(newRef);
-            reverseMap.put(newRef, reverseMap.remove(oldRef));
             if(oldRef != null) {
                 return oldRef.get();
             }
