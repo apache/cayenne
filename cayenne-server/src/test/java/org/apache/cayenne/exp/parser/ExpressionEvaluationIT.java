@@ -20,6 +20,7 @@
 package org.apache.cayenne.exp.parser;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
@@ -223,11 +224,27 @@ public class ExpressionEvaluationIT extends ServerCase {
     }
 
     @Test
+    public void testInEmpty() {
+        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
+                .in(Collections.<BigDecimal>emptyList());
+
+        compareSqlAndEval(exp, 0);
+    }
+
+    @Test
     public void testNotIn() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
                 .nin(new BigDecimal(800), new BigDecimal(200), new BigDecimal(300), new BigDecimal(400), new BigDecimal(700));
 
         compareSqlAndEval(exp, 3);
+    }
+
+    @Test
+    public void testNotInEmpty() {
+        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
+                .nin(Collections.<BigDecimal>emptyList());
+
+        compareSqlAndEval(exp, 6);
     }
 
     @Test
