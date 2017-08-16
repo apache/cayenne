@@ -25,6 +25,8 @@ import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.TraversalHandler;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -209,8 +211,129 @@ public class SelectQueryMetadataCacheKeyTest {
         assertNotEquals(s6, s7);
     }
 
+    @Test
+    public void testPrefetchEmpty() {
+        PrefetchTreeNode prefetchTreeNode = new PrefetchTreeNode();
+        prefetchTreeNode.traverse(newPrefetchProcessor());
+        assertTrue(cacheKey.toString().isEmpty());
+    }
+
+    @Test
+    public void testPrefetchSingle() {
+        PrefetchTreeNode prefetchTreeNode;
+
+        prefetchTreeNode = new PrefetchTreeNode();
+        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
+        prefetchTreeNode.traverse(newPrefetchProcessor());
+        String s1 = cacheKey.toString();
+
+        prefetchTreeNode = new PrefetchTreeNode();
+        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
+        prefetchTreeNode.traverse(newPrefetchProcessor());
+        String s2 = cacheKey.toString();
+
+        assertFalse(s1.isEmpty());
+        assertEquals(s1, s2);
+    }
+
+    @Test
+    public void testPrefetchSemantics() {
+        PrefetchTreeNode prefetchTreeNode;
+
+        prefetchTreeNode = new PrefetchTreeNode();
+        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
+        prefetchTreeNode.traverse(newPrefetchProcessor());
+        String s1 = cacheKey.toString();
+
+        prefetchTreeNode = new PrefetchTreeNode();
+        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.disjoint());
+        prefetchTreeNode.traverse(newPrefetchProcessor());
+        String s2 = cacheKey.toString();
+
+        prefetchTreeNode = new PrefetchTreeNode();
+        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.disjointById());
+        prefetchTreeNode.traverse(newPrefetchProcessor());
+        String s3 = cacheKey.toString();
+
+        prefetchTreeNode = new PrefetchTreeNode();
+        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.disjoint());
+        prefetchTreeNode.traverse(newPrefetchProcessor());
+        String s4 = cacheKey.toString();
+
+        assertNotEquals(s1, s2);
+        assertNotEquals(s2, s3);
+        assertEquals(s2, s4);
+    }
+
+    @Test
+    public void testPrefetchMultiNodes() {
+        PrefetchTreeNode prefetchTreeNode;
+
+        prefetchTreeNode = new PrefetchTreeNode();
+        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
+        prefetchTreeNode.traverse(newPrefetchProcessor());
+        String s1 = cacheKey.toString();
+
+        prefetchTreeNode = new PrefetchTreeNode();
+        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
+        prefetchTreeNode.merge(Artist.GROUP_ARRAY.joint());
+        prefetchTreeNode.traverse(newPrefetchProcessor());
+        String s2 = cacheKey.toString();
+
+        prefetchTreeNode = new PrefetchTreeNode();
+        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
+        prefetchTreeNode.merge(Artist.GROUP_ARRAY.joint());
+        prefetchTreeNode.merge(Artist.ARTIST_EXHIBIT_ARRAY.joint());
+        prefetchTreeNode.traverse(newPrefetchProcessor());
+        String s3 = cacheKey.toString();
+
+        prefetchTreeNode = new PrefetchTreeNode();
+        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
+        prefetchTreeNode.merge(Artist.GROUP_ARRAY.joint());
+        prefetchTreeNode.merge(Artist.ARTIST_EXHIBIT_ARRAY.joint());
+        prefetchTreeNode.traverse(newPrefetchProcessor());
+        String s4 = cacheKey.toString();
+
+        assertNotEquals(s1, s2);
+        assertNotEquals(s2, s3);
+        assertEquals(s3, s4);
+    }
+
+    @Test
+    public void testPrefetchLongPaths() {
+        PrefetchTreeNode prefetchTreeNode;
+
+        prefetchTreeNode = new PrefetchTreeNode();
+        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
+        prefetchTreeNode.traverse(newPrefetchProcessor());
+        String s1 = cacheKey.toString();
+
+        prefetchTreeNode = new PrefetchTreeNode();
+        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.dot(Painting.TO_ARTIST).joint());
+        prefetchTreeNode.traverse(newPrefetchProcessor());
+        String s2 = cacheKey.toString();
+
+        prefetchTreeNode = new PrefetchTreeNode();
+        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.dot(Painting.TO_ARTIST).dot(Artist.GROUP_ARRAY).joint());
+        prefetchTreeNode.traverse(newPrefetchProcessor());
+        String s3 = cacheKey.toString();
+
+        prefetchTreeNode = new PrefetchTreeNode();
+        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.dot(Painting.TO_ARTIST).dot(Artist.GROUP_ARRAY).joint());
+        prefetchTreeNode.traverse(newPrefetchProcessor());
+        String s4 = cacheKey.toString();
+
+        assertNotEquals(s1, s2);
+        assertNotEquals(s2, s3);
+        assertEquals(s3, s4);
+    }
+
     private TraversalHandler newHandler() {
         return new SelectQueryMetadata.ToCacheKeyTraversalHandler(registry, cacheKey = new StringBuilder());
+    }
+
+    private PrefetchProcessor newPrefetchProcessor() {
+        return new SelectQueryMetadata.ToCacheKeyPrefetchProcessor(cacheKey = new StringBuilder());
     }
 
     /* ************* Test types *************** */
