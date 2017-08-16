@@ -7,6 +7,11 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 
 UPGRADING TO 4.1.M1
 
+* Per CAY-2345 Velocity replaced with Cayenne own template engine by default in cayenne-server,
+      this should be transparent in almost all cases, however if you relied on advanced Velocity
+      features in SQLTemplate you can include auto-loaded cayenne-velocity module and keep using Velocity,
+      no other actions required.
+
 * Per CAY-2335 ServerRuntime by default will fail to load projects in case of version mismatch.
       You have two options:
       - update project via opening it in Cayenne Modeler
