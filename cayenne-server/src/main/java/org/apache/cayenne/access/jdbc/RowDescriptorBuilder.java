@@ -31,8 +31,8 @@ import java.util.Set;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.util.Util;
 import org.apache.commons.collections.Transformer;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,7 +143,7 @@ public class RowDescriptorBuilder {
         }
 
         if(validateDuplicateColumnNames && !duplicates.isEmpty()) {
-            logger.warn("Found duplicated columns '" + StringUtils.join(duplicates, "', '") + "' in row descriptor. " +
+            logger.warn("Found duplicated columns '" + Util.join(duplicates, "', '") + "' in row descriptor. " +
                     "This can lead to errors when converting result to persistent objects.");
         }
 

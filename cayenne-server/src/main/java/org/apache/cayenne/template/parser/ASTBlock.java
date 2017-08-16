@@ -17,21 +17,29 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.velocity;
+package org.apache.cayenne.template.parser;
 
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.template.Context;
 
 /**
- * Implements utility methods used inside Velocity templates when rendering
- * SQLTemplates.
- * 
- * @since 1.1
+ * This is a root node of parsed template.
+ * It can be nested inside #if .. #else .. #end directive.
+ *
+ * @since 4.1
  */
-public class SQLTemplateRenderingUtils {
-	/**
-	 * Returns the result of evaluation of expression with object.
-	 */
-	public Object cayenneExp(Object object, String expression) {
-		return ExpressionFactory.exp(expression).evaluate(object);
-	}
+public class ASTBlock extends SimpleNode {
+
+    public ASTBlock(int id) {
+        super(id);
+    }
+
+    @Override
+    public void evaluate(Context context) {
+        if(children == null) {
+            return;
+        }
+        for(Node node : children) {
+            node.evaluate(context);
+        }
+    }
 }

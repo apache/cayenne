@@ -31,6 +31,7 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -341,6 +342,8 @@ public class SQLSelectIT extends ServerCase {
 	}
 
 	@Test
+	@Ignore("This is supported by Velocity only")
+	// TODO: move this test to new cayenne-velocity module
 	public void test_ParamsArray_Multiple_OptionalChunks() throws Exception {
 
 		tPainting.insert(1, "painting1", 1.0);
@@ -359,6 +362,8 @@ public class SQLSelectIT extends ServerCase {
 	}
 
 	@Test
+	@Ignore("This is supported by Velocity only")
+	// TODO: move this test to new cayenne-velocity module
 	public void test_Params_Multiple_OptionalChunks() throws Exception {
 
 		tPainting.insert(1, "painting1", 1.0);

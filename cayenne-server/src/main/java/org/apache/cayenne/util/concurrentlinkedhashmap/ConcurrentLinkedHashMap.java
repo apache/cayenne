@@ -169,7 +169,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         BUFFER_MASK = buffers - 1;
     }
 
-    static final int ceilingNextPowerOfTwo(int x) {
+    static int ceilingNextPowerOfTwo(int x) {
         // From Hacker's Delight, Chapter 3, Harry S. Warren Jr.
         return 1 << (Integer.SIZE - Integer.numberOfLeadingZeros(x - 1));
     }
@@ -228,7 +228,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         // The data store and its maximum capacity
         concurrencyLevel = builder.concurrencyLevel;
         capacity = Math.min(builder.capacity, MAXIMUM_CAPACITY);
-        data = new ConcurrentHashMap<K, Node>(
+        data = new ConcurrentHashMap<>(
                 builder.initialCapacity,
                 0.75f,
                 concurrencyLevel);
@@ -239,13 +239,13 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         nextOrder = Integer.MIN_VALUE;
         drainedOrder = Integer.MIN_VALUE;
         evictionLock = new ReentrantLock();
-        evictionDeque = new LinkedDeque<Node>();
-        drainStatus = new AtomicReference<DrainStatus>(DrainStatus.IDLE);
+        evictionDeque = new LinkedDeque<>();
+        drainStatus = new AtomicReference<>(DrainStatus.IDLE);
 
         buffers = (Queue<Task>[]) new Queue[NUMBER_OF_BUFFERS];
         bufferLengths = new AtomicIntegerArray(NUMBER_OF_BUFFERS);
         for (int i = 0; i < NUMBER_OF_BUFFERS; i++) {
-            buffers[i] = new ConcurrentLinkedQueue<Task>();
+            buffers[i] = new ConcurrentLinkedQueue<>();
         }
 
         // The notification queue and listener
@@ -755,7 +755,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         checkNotNull(value);
 
         final int weight = weigher.weightOf(value);
-        final WeightedValue<V> weightedValue = new WeightedValue<V>(value, weight);
+        final WeightedValue<V> weightedValue = new WeightedValue<>(value, weight);
         final Node node = new Node(key, weightedValue);
 
         for (;;) {
@@ -831,7 +831,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         checkNotNull(value);
 
         final int weight = weigher.weightOf(value);
-        final WeightedValue<V> weightedValue = new WeightedValue<V>(value, weight);
+        final WeightedValue<V> weightedValue = new WeightedValue<>(value, weight);
 
         final Node node = data.get(key);
         if (node == null) {
@@ -858,7 +858,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         checkNotNull(newValue);
 
         final int weight = weigher.weightOf(newValue);
-        final WeightedValue<V> newWeightedValue = new WeightedValue<V>(newValue, weight);
+        final WeightedValue<V> newWeightedValue = new WeightedValue<>(newValue, weight);
 
         final Node node = data.get(key);
         if (node == null) {
@@ -965,7 +965,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
             int initialCapacity = (weigher == Weighers.singleton()) ? Math.min(
                     limit,
                     weightedSize()) : 16;
-            Set<K> keys = new LinkedHashSet<K>(initialCapacity);
+            Set<K> keys = new LinkedHashSet<>(initialCapacity);
             Iterator<Node> iterator = ascending
                     ? evictionDeque.iterator()
                     : evictionDeque.descendingIterator();
@@ -1070,7 +1070,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
             int initialCapacity = (weigher == Weighers.singleton()) ? Math.min(
                     limit,
                     weightedSize()) : 16;
-            Map<K, V> map = new LinkedHashMap<K, V>(initialCapacity);
+            Map<K, V> map = new LinkedHashMap<>(initialCapacity);
             Iterator<Node> iterator = ascending
                     ? evictionDeque.iterator()
                     : evictionDeque.descendingIterator();
@@ -1171,7 +1171,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
          */
         boolean tryToRetire(WeightedValue<V> expect) {
             if (expect.isAlive()) {
-                WeightedValue<V> retired = new WeightedValue<V>(
+                WeightedValue<V> retired = new WeightedValue<>(
                         expect.value,
                         -expect.weight);
                 return compareAndSet(expect, retired);
@@ -1189,7 +1189,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
                 if (!current.isAlive()) {
                     return;
                 }
-                WeightedValue<V> retired = new WeightedValue<V>(
+                WeightedValue<V> retired = new WeightedValue<>(
                         current.value,
                         -current.weight);
                 if (compareAndSet(current, retired)) {
@@ -1205,7 +1205,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         void makeDead() {
             for (;;) {
                 WeightedValue<V> current = get();
-                WeightedValue<V> dead = new WeightedValue<V>(current.value, 0);
+                WeightedValue<V> dead = new WeightedValue<>(current.value, 0);
                 if (compareAndSet(current, dead)) {
                     weightedSize -= Math.abs(current.weight);
                     return;
@@ -1397,7 +1397,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
     }
 
     /** An entry that allows updates to write through to the map. */
-    final class WriteThroughEntry extends SimpleEntry<K, V> {
+    final class WriteThroughEntry extends AbstractMap.SimpleEntry<K, V> {
 
         static final long serialVersionUID = 1;
 
@@ -1412,7 +1412,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         }
 
         Object writeReplace() {
-            return new SimpleEntry<K, V>(this);
+            return new AbstractMap.SimpleEntry<>(this);
         }
     }
 
@@ -1574,7 +1574,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
     static final long serialVersionUID = 1;
 
     Object writeReplace() {
-        return new SerializationProxy<K, V>(this);
+        return new SerializationProxy<>(this);
     }
 
     private void readObject(ObjectInputStream stream) throws InvalidObjectException {
@@ -1771,7 +1771,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
         public Builder<K, V> weigher(Weigher<? super V> weigher) {
             this.weigher = (weigher == Weighers.singleton())
                     ? Weighers.<V> singleton()
-                    : new BoundedWeigher<V>(weigher);
+                    : new BoundedWeigher<>(weigher);
             return this;
         }
 
@@ -1820,62 +1820,12 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
             if (capacity < 0) {
                 throw new IllegalStateException();
             }
-            ConcurrentLinkedHashMap<K, V> map = new ConcurrentLinkedHashMap<K, V>(this);
+            ConcurrentLinkedHashMap<K, V> map = new ConcurrentLinkedHashMap<>(this);
             if (executor != DEFAULT_EXECUTOR) {
                 ScheduledExecutorService es = (ScheduledExecutorService) executor;
                 es.scheduleWithFixedDelay(new CatchUpTask(map), delay, delay, unit);
             }
             return map;
-        }
-    }
-
-    // a class similar to AbstractMap.SimpleEntry. Needed for JDK 5 compatibility. Java 6
-    // exposes it to external users.
-    static class SimpleEntry<K, V> implements Entry<K, V> {
-
-        K key;
-        V value;
-
-        public SimpleEntry(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        public SimpleEntry(Entry<K, V> e) {
-            this.key = e.getKey();
-            this.value = e.getValue();
-        }
-
-        public K getKey() {
-            return key;
-        }
-
-        public V getValue() {
-            return value;
-        }
-
-        public V setValue(V value) {
-            V oldValue = this.value;
-            this.value = value;
-            return oldValue;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof Entry))
-                return false;
-            Entry e = (Entry) o;
-            return eq(key, e.getKey()) && eq(value, e.getValue());
-        }
-
-        @Override
-        public int hashCode() {
-            return ((key == null) ? 0 : key.hashCode())
-                    ^ ((value == null) ? 0 : value.hashCode());
-        }
-
-        private static boolean eq(Object o1, Object o2) {
-            return (o1 == null ? o2 == null : o1.equals(o2));
         }
     }
 }

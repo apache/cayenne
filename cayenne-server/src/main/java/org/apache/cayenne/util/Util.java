@@ -238,6 +238,32 @@ public class Util {
 	}
 
 	/**
+	 * Capitalizes the first letter of the property name.
+	 *
+	 * @since 4.1
+	 */
+	public static String capitalized(String name) {
+		if (name == null || name.length() == 0)
+			return name;
+
+		char c = Character.toUpperCase(name.charAt(0));
+		return (name.length() == 1) ? Character.toString(c) : c + name.substring(1);
+	}
+
+	/**
+	 * Returns string with lowercased first letter
+	 *
+	 * @since 4.2
+	 */
+	public static String uncapitalized(String aString) {
+		if (aString == null || aString.length() == 0)
+			return aString;
+
+		char c = Character.toLowerCase(aString.charAt(0));
+		return (aString.length() == 1) ? Character.toString(c) : c + aString.substring(1);
+	}
+
+	/**
 	 * Creates Serializable object copy using serialization/deserialization.
 	 */
 	@SuppressWarnings("unchecked")

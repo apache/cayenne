@@ -1,0 +1,502 @@
+/**
+
+This is a grammar for Cayenen internal parser for templates rendering
+
+Supported features:
+
+- #if(condition) #else #end conditions
+- variable evaluation: $a replaced to String return by a.toString() call or by empty string if a is null
+- method evaluation: $a.m($arg, '', 123) (can be used as #if condition)
+- custom directives via #directive syntax
+- line comments from ## to end of line
+
+This template will be resolved correctly
+    SELECT #result('A' 'a')
+    FROM $table
+    WHERE
+        #if($a)
+        COLUMN1 #bindNotEqual($helper.cayenneExp($a, 'db:ID_COLUMN1'))
+        AND
+        COLUMN2 #bindNotEqual($helper.cayenneExp($a, 'db:ID_COLUMN2'))
+        #else
+        COLUMN3 IS NULL
+        #end
+
+
+
+Comparision to Velocity:
+- no escape syntax, i.e. ${a}, directives and vars must be space separated
+- no arrays syntax
+- no #set directive
+- no loops
+- no complex expressions (neither logical nor math)
+- no evaluation of string literals, i.e. "$a/$b" will be untouched
+- no include / parse of external resources
+- no different comment styles
+- no macro
+- no other advanced features..
+
+*/
+
+options {
+
+	MULTI = true;
+	NODE_DEFAULT_VOID = true;
+
+	STATIC = false;
+	DEBUG_PARSER = false;
+	DEBUG_LOOKAHEAD = false;
+	DEBUG_TOKEN_MANAGER = false;
+	JAVA_UNICODE_ESCAPE = true;
+	UNICODE_INPUT = true;
+}
+
+PARSER_BEGIN(SQLTemplateParser)
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+
+package org.apache.cayenne.template.parser;
+
+/**
+  * Parser of Cayenne Templates.
+  *
+  * @since 4.1
+  */
+public class SQLTemplateParser {
+}
+
+PARSER_END(SQLTemplateParser)
+
+/*
+    Entry function in parser
+*/
+Node template() : {}
+{
+	block() <EOF>
+    {
+        return (ASTBlock) jjtree.rootNode();
+    }
+}
+
+/*
+    Top component of parsing tree
+*/
+void block() #Block : {}
+{
+    (
+        ifElse()
+    |   directive()
+    |   variable()
+    |   text()
+    ) *
+}
+
+/*
+    Plain text that is not processed in any way by render
+*/
+void text() #Text : {
+    Token t;
+}
+{
+    (
+        t = <TEXT>
+    |   t = <TEXT_OTHER>
+    ) {
+        jjtThis.setValue(t.image);
+    }
+}
+
+/*
+    Condition directive: #if(condition) ...  #else ... #end
+*/
+void ifElse() #IfElse : {}
+{
+    <IF> <LBRACKET> expression() <RBRACKET>
+    block()
+    ( <ELSE> block() )?
+    <END>
+}
+
+/*
+    Directive in form of #directiveName(args list)
+*/
+void directive() #Directive : {
+    Token t;
+}
+{
+    <SHARP> ( t = <IDENTIFIER> ) {
+        jjtThis.setIdentifier(t.image);
+    }
+    <LBRACKET>
+    (
+        expression()
+        // this is comma or space separeted list
+        ((<COMMA>)? expression())*
+    )?
+    <RBRACKET>
+}
+
+/*
+    valid expression in parameters of method or directive
+    can be scalar, variable (with methods calls) or array
+*/
+void expression() #Expression : {}
+{
+    scalar()
+    |   variable()
+    |   array()
+}
+
+/*
+    Single scalar value: String, long, double, boolean
+    String: single or double quoted
+    long: dec, hex and octo with sign
+    double: simple and exponential form
+*/
+void scalar() : {}
+{
+    <SINGLE_QUOTED_STRING> { jjtThis.setValue((String)token_source.literalValue); } #StringScalar(0)
+    |   <DOUBLE_QUOTED_STRING> { jjtThis.setValue((String)token_source.literalValue); } #StringScalar(0)
+    |   <INT_LITERAL>   { jjtThis.setValue((Long)token_source.literalValue); } #IntScalar(0)
+    |   <FLOAT_LITERAL> { jjtThis.setValue((Double)token_source.literalValue); } #FloatScalar(0)
+    |   <TRUE>  { jjtThis.setValue(true);  } #BoolScalar(0)
+    |   <FALSE> { jjtThis.setValue(false); } #BoolScalar(0)
+}
+
+/*
+    Variable, optionally with some methods calls
+    $a or $a.method() or $a.method1().method2()
+*/
+void variable() #Variable : {
+    Token t;
+}
+{
+    <DOLLAR> ( t = <IDENTIFIER> ) {
+        jjtThis.setIdentifier(t.image);
+    }
+    ( method() )*
+}
+
+/*
+    Method call, valid only as part of variable, can be chain of methods
+    $a.method1($var).method2().method3('val')
+*/
+void method() #Method : {
+    Token t;
+}
+{
+    <DOT>
+    ( t = <IDENTIFIER> ) {
+        jjtThis.setIdentifier(t.image);
+    }
+    <LBRACKET>
+    (
+        expression()
+        // this is comma or space separeted list
+        ((<COMMA>)? expression())*
+    )?
+    <RBRACKET>
+}
+
+/*
+    Comma or space separated array of scalars and/or variables
+    valid values: [], ['a' 5], [$a, 'b', 5]
+*/
+void array() #Array : {}
+{
+    <LSBRACKET>
+    (
+        ( scalar() | variable() )
+        ( (<COMMA>)? ( scalar() | variable() )* )
+    )?
+    <RSBRACKET>
+}
+
+/****************************************
+ * Token manager additional methods     *
+ ****************************************/
+
+TOKEN_MGR_DECLS:
+{
+    /** Holds the last value computed by a constant token. */
+    Object literalValue;
+
+    /** Holds the last string literal parsed. */
+    private StringBuffer stringBuffer;
+
+    /** Stack of states */
+    @SuppressWarnings("unchecked")
+    java.util.LinkedList<Integer> lexicalStateStack = new java.util.LinkedList();
+
+    private void pushState() {
+        lexicalStateStack.push(curLexState);
+    }
+
+    private void popState() {
+        if(!lexicalStateStack.isEmpty()) {
+            SwitchTo(lexicalStateStack.pop());
+        }
+    }
+
+    private void compareAndSwitch(int newState, int requiredState) {
+        if(curLexState != requiredState) {
+            return;
+        }
+
+        SwitchTo(newState);
+    }
+
+    /** Converts an escape sequence into a character value. */
+    private char escapeChar() {
+        int ofs = image.length() - 1;
+        switch ( image.charAt(ofs) ) {
+            case 'n':   return '\n';
+            case 'r':   return '\r';
+            case 't':   return '\t';
+            case 'b':   return '\b';
+            case 'f':   return '\f';
+            case '\\':  return '\\';
+            case '\'':  return '\'';
+            case '\"':  return '\"';
+        }
+
+          // Otherwise, it's an octal number.  Find the backslash and convert.
+        while ( image.charAt(--ofs) != '\\' ){
+        }
+
+        int value = 0;
+        while ( ++ofs < image.length() ) {
+            value = (value << 3) | (image.charAt(ofs) - '0');
+        }
+        return (char) value;
+    }
+
+    private Object makeInt() {
+        long result;
+        String  s = image.toString();
+        int     base = 10;
+        boolean negate = false;
+        int idx = 0;
+
+        if ( s.charAt(idx) == '-') {
+            negate = true;
+            idx++;
+        }
+
+        if ( s.charAt(idx) == '0' ) {
+            idx++;
+            base = (s.length() > 1 && (s.charAt(idx) == 'x' || s.charAt(idx) == 'X'))? 16 : 8;
+        }
+        if ( base == 16 ) {
+            s = s.substring(idx + 1); // Trim the 0x off the front
+        }
+
+        switch ( s.charAt(s.length()-1) ) {
+            case 'l': case 'L':
+                result = Long.valueOf( s.substring(0,s.length()-1), base );
+                break;
+
+            default:
+                result = Long.valueOf( s, base );
+                break;
+        }
+        return negate ? -result : result;
+    }
+
+    private Object makeFloat() {
+        String s = image.toString();
+        switch ( s.charAt(s.length()-1) ) {
+            case 'f': case 'F':
+                return Double.valueOf( s );
+
+            case 'd': case 'D':
+            default:
+                return Double.valueOf( s );
+        }
+    }
+}
+
+/*
+ Parser has several states:
+    1. DEFAULT - in this state most part of the input captured by simple TEXT token
+    2. NOT_TEXT - this state is for directive and variables declaration (will be entered only if in DEFAULT state),
+        can exit to DEFAULT state if TEXT_OTHER token is encountered.
+        Other than this DEFAULT state can be restored by #else and #end tokens.
+    3. ARGS - this state is entered by open bracket "(" and consuming arguments for methods and directives
+            scalars and arrays are valid only in this state
+            ")" bracket pop state thus allowing nesting
+    4. IN_SINGLE_LINE_COMMENT - state to swallow line of comments
+    5. String literals states: WithinDoubleQuoteLiteral and WithinSingleQuoteLiteral
+
+
+*/
+
+// in args we skip everything unprinted
+<ARGS>
+SKIP :
+{
+    " "
+|   "\t"
+|   "\n"
+|   "\r"
+}
+
+// only this, next tokens plus line comments can break text state
+<DEFAULT, NOT_TEXT>
+TOKEN:
+{
+    <IF: "#if"> : NOT_TEXT
+|   <ELSE: "#else"> : DEFAULT
+|   <END: "#end"> : DEFAULT
+}
+
+<DEFAULT, NOT_TEXT, ARGS>
+TOKEN :
+{
+    <SHARP: "#">  { compareAndSwitch(SQLTemplateParserConstants.NOT_TEXT, SQLTemplateParserConstants.DEFAULT); }
+|   <DOLLAR: "$"> { compareAndSwitch(SQLTemplateParserConstants.NOT_TEXT, SQLTemplateParserConstants.DEFAULT); }
+}
+
+<ARGS>
+TOKEN:
+{
+    <TRUE: "true" | "TRUE">
+|   <FALSE: "false" | "FALSE">
+|   <RBRACKET: ")"> { popState(); }
+|   <COMMA: ",">
+|   <LSBRACKET: "[">
+|   <RSBRACKET: "]">
+}
+
+<NOT_TEXT, ARGS>
+TOKEN :
+{
+    <LBRACKET: "("> { pushState(); } : ARGS
+|   <DOT: ".">
+}
+
+// Identifier
+<NOT_TEXT, ARGS>
+TOKEN :
+{
+    <IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
+|   <#LETTER: ["_","a"-"z","A"-"Z"] >
+|   <#DIGIT: ["0"-"9"] >
+}
+
+<DEFAULT>
+TOKEN :
+{
+    < "##" > : IN_SINGLE_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+TOKEN :
+{
+    <SINGLE_LINE_COMMENT_END: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+<IN_SINGLE_LINE_COMMENT>
+SKIP :
+{
+    < ~[] >
+}
+
+/**
+ * Quoted Strings, whose object value is stored in the token manager's
+ * "literalValue" field. Both single and double qoutes are allowed
+ */
+<ARGS>
+MORE:
+{
+    "'"  { stringBuffer = new StringBuffer(); }: WithinSingleQuoteLiteral
+ |
+    "\""  { stringBuffer = new StringBuffer(); }: WithinDoubleQuoteLiteral
+}
+
+<WithinSingleQuoteLiteral> MORE:
+{
+	< ESC: "\\" ( ["n","r","t","b","f","\\","'","`","\""]
+                | (["0"-"3"])? ["0"-"7"] (["0"-"7"])?
+                )
+    >
+        { stringBuffer.append( escapeChar() ); }
+ |
+    < (~["'","\\"]) >
+        { stringBuffer.append( image.charAt(image.length()-1) ); }
+}
+
+<WithinSingleQuoteLiteral> TOKEN :
+{
+    <SINGLE_QUOTED_STRING: "'">
+        { literalValue = stringBuffer.toString(); }
+        : ARGS
+}
+
+<WithinDoubleQuoteLiteral> MORE :
+{
+    < STRING_ESC: <ESC> >
+        { stringBuffer.append( escapeChar() ); }
+ |
+    < (~["\"","\\"]) >
+        { stringBuffer.append( image.charAt(image.length()-1) ); }
+}
+
+<WithinDoubleQuoteLiteral> TOKEN:
+{
+    <DOUBLE_QUOTED_STRING: "\"">
+        { literalValue = stringBuffer.toString(); }
+        : ARGS
+}
+
+<ARGS>
+TOKEN:
+{
+    <INT_LITERAL:
+        ( "-" )?
+        ( "0" (["0"-"7"])* | ["1"-"9"] (["0"-"9"])* | "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ )
+        (["l","L","h","H"])?
+    >
+    { literalValue = makeInt(); }
+|   <FLOAT_LITERAL:
+        ( <DEC_FLT> (<EXPONENT>)? (<FLT_SUFF>)?
+        | <DEC_DIGITS> <EXPONENT> (<FLT_SUFF>)?
+        | <DEC_DIGITS> <FLT_SUFF>
+        )
+    >
+    { literalValue = makeFloat(); }
+
+|   <#DEC_FLT: (["0"-"9"])+ "." (["0"-"9"])* | "." (["0"-"9"])+ >
+|   <#DEC_DIGITS: (["0"-"9"])+ >
+|   <#EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+|   <#FLT_SUFF: ["d","D","f","F","b","B"] >
+}
+
+// This must be last to not interfere with string literals
+<DEFAULT>
+TOKEN :
+{
+    <TEXT: (~["$", "#"])+ >
+}
+
+<NOT_TEXT>
+TOKEN :
+{
+    <TEXT_OTHER: (~["$", "#", "0"-"9", "a"-"z", "A"-"Z", ".", "_", "("])+ > : DEFAULT
+}

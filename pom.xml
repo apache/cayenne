@@ -68,6 +68,7 @@
 		<module>cayenne-project</module>
 		<module>cayenne-project-compatibility</module>
 		<module>cayenne-server</module>
+		<module>cayenne-velocity</module>
 		<module>eventbridges</module>
 		<module>itests</module>
 		<module>maven-plugins</module>
@@ -319,7 +320,11 @@
 				<artifactId>commons-collections</artifactId>
 				<version>3.2.1</version>
 			</dependency>
-
+			<dependency>
+				<groupId>commons-lang</groupId>
+				<artifactId>commons-lang</artifactId>
+				<version>2.4</version>
+			</dependency>
 			<dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-dbcp2</artifactId>

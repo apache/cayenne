@@ -19,7 +19,7 @@
 package org.apache.cayenne.dbsync.merge.builders;
 
 import org.apache.cayenne.datafactory.DataFactory;
-import org.apache.commons.lang.StringUtils;
+import org.apache.cayenne.util.Util;
 
 /**
  * @since 4.0.
@@ -39,10 +39,10 @@ public abstract class DefaultBuilder<T> implements Builder<T> {
         int count = dataFactory.getNumberBetween(1, 5);
         StringBuilder res = new StringBuilder();
         for (int i = 0; i < count; i++) {
-            res.append(StringUtils.capitalize(dataFactory.getRandomWord()));
+            res.append(Util.capitalized(dataFactory.getRandomWord()));
         }
 
-        return StringUtils.uncapitalize(res.toString());
+        return Util.uncapitalized(res.toString());
     }
 
     @Override
