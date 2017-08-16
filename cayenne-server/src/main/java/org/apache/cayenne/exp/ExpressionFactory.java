@@ -610,7 +610,7 @@ public class ExpressionFactory {
 	 */
 	static Expression notInExp(Expression exp, Collection<?> values) {
 		if (values.isEmpty()) {
-			return new ASTFalse();
+			return new ASTTrue();
 		}
 		if(!(exp instanceof SimpleNode)) {
 			throw new IllegalArgumentException("exp should be instance of SimpleNode");

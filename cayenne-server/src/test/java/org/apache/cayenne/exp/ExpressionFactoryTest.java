@@ -191,6 +191,28 @@ public class ExpressionFactoryTest {
 	}
 
 	@Test
+	public void testNotInExp1() throws Exception {
+		Expression exp = ExpressionFactory.notInExp("abc", "a", "b");
+		assertEquals(Expression.NOT_IN, exp.getType());
+	}
+
+	@Test
+	public void testNotInExp2() throws Exception {
+		List<Object> v = new ArrayList<>();
+		v.add("a");
+		v.add("b");
+		Expression exp = ExpressionFactory.notInExp("abc", v);
+		assertEquals(Expression.NOT_IN, exp.getType());
+	}
+
+	@Test
+	public void testNotInExp3() throws Exception {
+		List<Object> v = new ArrayList<>();
+		Expression exp = ExpressionFactory.notInExp("abc", v);
+		assertEquals(Expression.TRUE, exp.getType());
+	}
+
+	@Test
 	public void testLikeExp() throws Exception {
 		String v = "abc";
 		Expression exp = ExpressionFactory.likeExp("abc", v);
