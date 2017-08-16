@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.Fault;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
@@ -28,6 +29,7 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -35,6 +37,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
+import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
@@ -81,8 +84,8 @@ public class DataContextPrefetchIT extends ServerCase {
 		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
 
 		tPainting = new TableHelper(dbHelper, "PAINTING");
-		tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "ESTIMATED_PRICE").setColumnTypes(
-				Types.INTEGER, Types.VARCHAR, Types.BIGINT, Types.DECIMAL);
+		tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "ESTIMATED_PRICE", "GALLERY_ID").setColumnTypes(
+				Types.INTEGER, Types.VARCHAR, Types.BIGINT, Types.DECIMAL, Types.INTEGER);
 
 		tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
 		tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
@@ -106,15 +109,15 @@ public class DataContextPrefetchIT extends ServerCase {
 	protected void createTwoArtistsAndTwoPaintingsDataSet() throws Exception {
 		tArtist.insert(11, "artist2");
 		tArtist.insert(101, "artist3");
-		tPainting.insert(6, "p_artist3", 101, 1000);
-		tPainting.insert(7, "p_artist2", 11, 2000);
+		tPainting.insert(6, "p_artist3", 101, 1000, null);
+		tPainting.insert(7, "p_artist2", 11, 2000, null);
 	}
 
 	protected void createArtistWithTwoPaintingsAndTwoInfosDataSet() throws Exception {
 		tArtist.insert(11, "artist2");
 
-		tPainting.insert(6, "p_artist2", 11, 1000);
-		tPainting.insert(7, "p_artist3", 11, 2000);
+		tPainting.insert(6, "p_artist2", 11, 1000, null);
+		tPainting.insert(7, "p_artist3", 11, 2000, null);
 
 		tPaintingInfo.insert(6, "xYs");
 	}
@@ -545,9 +548,9 @@ public class DataContextPrefetchIT extends ServerCase {
 		tArtGroup.insert(1, "AG");
 		tArtist.insert(11, "artist2");
 		tArtist.insert(101, "artist3");
-		tPainting.insert(6, "p_artist3", 101, 1000);
-		tPainting.insert(7, "p_artist21", 11, 2000);
-		tPainting.insert(8, "p_artist22", 11, 3000);
+		tPainting.insert(6, "p_artist3", 101, 1000, null);
+		tPainting.insert(7, "p_artist21", 11, 2000, null);
+		tPainting.insert(8, "p_artist22", 11, 3000, null);
 
 		// flattened join matches an object that is NOT the one we are looking
 		// for
@@ -657,7 +660,7 @@ public class DataContextPrefetchIT extends ServerCase {
 	@Test
 	public void testPrefetchingToOneNull() throws Exception {
 
-		tPainting.insert(6, "p_Xty", null, 1000);
+		tPainting.insert(6, "p_Xty", null, 1000, null);
 
 		SelectQuery q = new SelectQuery(Painting.class);
 		q.addPrefetch(Painting.TO_ARTIST.disjoint());
@@ -838,6 +841,109 @@ public class DataContextPrefetchIT extends ServerCase {
 
 				PaintingInfo info = (PaintingInfo) p0.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName());
 				assertNotNull(info);
+			}
+		});
+	}
+
+	/**
+	 * This test and next one is the result of CAY-2349 fix
+	 */
+	@Test
+	public void testPrefetchWithLocalCache() throws Exception {
+		tArtist.deleteAll();
+		tGallery.deleteAll();
+		tPainting.deleteAll();
+		tArtist.insert(1, "artist1");
+		tGallery.insert(1, "gallery1");
+		tPainting.insert(1, "painting1", 1, 100, 1);
+
+		List<Painting> paintings = ObjectSelect.query(Painting.class)
+				.localCache("g1").select(context);
+		assertEquals(1, paintings.size());
+		assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Fault);
+
+		paintings = ObjectSelect.query(Painting.class)
+				.prefetch(Painting.TO_ARTIST.joint())
+				.localCache("g1").select(context);
+		assertEquals(1, paintings.size());
+		assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Artist);
+
+		queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+			public void execute() {
+				List<Painting> paintings = ObjectSelect.query(Painting.class)
+						.prefetch(Painting.TO_ARTIST.joint())
+						.localCache("g1").select(context);
+				assertEquals(1, paintings.size());
+				assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Artist);
+			}
+		});
+	}
+
+	@Test
+	public void testPrefetchWithSharedCache() throws Exception {
+		tArtist.deleteAll();
+		tGallery.deleteAll();
+		tPainting.deleteAll();
+		tArtist.insert(1, "artist1");
+		tGallery.insert(1, "gallery1");
+		tPainting.insert(1, "painting1", 1, 100, 1);
+
+		final ObjectSelect<Painting> s1 = ObjectSelect.query(Painting.class)
+				.sharedCache("g1");
+
+		final ObjectSelect<Painting> s2 = ObjectSelect.query(Painting.class)
+				.prefetch(Painting.TO_ARTIST.disjoint())
+				.sharedCache("g1");
+
+		final ObjectSelect<Painting> s3 = ObjectSelect.query(Painting.class)
+				.prefetch(Painting.TO_GALLERY.joint())
+				.sharedCache("g1");
+
+		final ObjectSelect<Painting> s4 = ObjectSelect.query(Painting.class)
+				.prefetch(Painting.TO_ARTIST.disjoint())
+				.prefetch(Painting.TO_GALLERY.joint())
+				.sharedCache("g1");
+
+		// first iteration select from DB and cache
+		List<Painting> paintings = s1.select(context);
+		assertEquals(1, paintings.size());
+		assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Fault);
+		assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()) instanceof Fault);
+
+		paintings = s2.select(context);
+		assertEquals(1, paintings.size());
+		assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Artist);
+		assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()) instanceof Fault);
+
+		paintings = s3.select(context);
+		assertEquals(1, paintings.size());
+		assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Fault);
+		assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()) instanceof Gallery);
+
+		paintings = s4.select(context);
+		assertEquals(1, paintings.size());
+		assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Artist);
+		assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()) instanceof Gallery);
+
+		queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+
+			public void execute() {
+				// select from cache
+				List<Painting> paintings = s2.select(context);
+				assertEquals(1, paintings.size());
+				assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Artist);
+				assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()) instanceof Fault);
+
+				paintings = s3.select(context);
+				assertEquals(1, paintings.size());
+				assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Fault);
+				assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()) instanceof Gallery);
+
+				paintings = s4.select(context);
+				assertEquals(1, paintings.size());
+				assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Artist);
+				assertTrue(paintings.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()) instanceof Gallery);
 			}
 		});
 	}

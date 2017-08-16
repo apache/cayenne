@@ -107,10 +107,9 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		}
 
 		if(query.getColumns() != null && !query.getColumns().isEmpty()) {
-			key.append("/");
 			traversalHandler = new ToCacheKeyTraversalHandler(resolver.getValueObjectTypeRegistry(), key);
 			for(Property<?> property : query.getColumns()) {
-				key.append("c:");
+				key.append("/c:");
 				property.getExpression().traverse(traversalHandler);
 			}
 		}
@@ -144,6 +143,11 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 			if (query.getFetchLimit() > 0) {
 				key.append('l').append(query.getFetchLimit());
 			}
+		}
+
+		// add prefetch to cache key per CAY-2349
+		if(query.getPrefetchTree() != null) {
+			query.getPrefetchTree().traverse(new ToCacheKeyPrefetchProcessor(key));
 		}
 
 		return key.toString();
@@ -474,5 +478,51 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 				}
 			}
 		}
-	};
+	}
+
+	/**
+	 * Prefetch processor that append prefetch tree into cache key.
+	 * @since 4.0
+	 */
+	static class ToCacheKeyPrefetchProcessor implements PrefetchProcessor {
+
+		StringBuilder out;
+
+		ToCacheKeyPrefetchProcessor(StringBuilder out) {
+			this.out = out;
+		}
+
+		@Override
+		public boolean startPhantomPrefetch(PrefetchTreeNode node) {
+			return true;
+		}
+
+		@Override
+		public boolean startDisjointPrefetch(PrefetchTreeNode node) {
+			out.append("/pd:").append(node.getPath());
+			return true;
+		}
+
+		@Override
+		public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
+			out.append("/pi:").append(node.getPath());
+			return true;
+		}
+
+		@Override
+		public boolean startJointPrefetch(PrefetchTreeNode node) {
+			out.append("/pj:").append(node.getPath());
+			return true;
+		}
+
+		@Override
+		public boolean startUnknownPrefetch(PrefetchTreeNode node) {
+			out.append("/pu:").append(node.getPath());
+			return true;
+		}
+
+		@Override
+		public void finishPrefetch(PrefetchTreeNode node) {
+		}
+	}
 }
