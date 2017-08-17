@@ -35,7 +35,6 @@ import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.wocompat.parser.Parser;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -265,7 +264,7 @@ public class EOModelProcessor {
 				if (fetchLimit instanceof Number) {
 					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY,
 							String.valueOf(((Number) fetchLimit).intValue()));
-				} else if (StringUtils.isNumeric(fetchLimit.toString())) {
+				} else if (isNumeric(fetchLimit.toString())) {
 					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, fetchLimit.toString());
 				}
 			} catch (NumberFormatException nfex) {
@@ -320,7 +319,7 @@ public class EOModelProcessor {
 				if (fetchLimit instanceof Number) {
 					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY,
 							String.valueOf(((Number) fetchLimit).intValue()));
-				} else if (StringUtils.isNumeric(fetchLimit.toString())) {
+				} else if (isNumeric(fetchLimit.toString())) {
 					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, fetchLimit.toString());
 				}
 			} catch (NumberFormatException nfex) {
@@ -811,6 +810,19 @@ public class EOModelProcessor {
 		}
 
 		return null;
+	}
+
+	static boolean isNumeric(String str) {
+		if (str == null) {
+			return false;
+		}
+
+		for(int i = 0; i < str.length(); ++i) {
+			if (!Character.isDigit(str.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	// sorts ObjEntities so that subentities in inheritance hierarchy are shown

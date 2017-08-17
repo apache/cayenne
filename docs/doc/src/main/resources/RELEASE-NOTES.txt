@@ -21,6 +21,7 @@ CAY-2336 Support for comments in Modeler
 CAY-2339 Compatibility module to support old versions of projects at runtime
 CAY-2345 Own template renderer as a replacement for Velocity
 CAY-2346 Field-based data object with Map-based storage fallback
+CAY-2351 Remove commons-collections usage completely
 
 Bug Fixes:
 

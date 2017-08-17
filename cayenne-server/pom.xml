@@ -44,11 +44,6 @@
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<scope>compile</scope>
-		</dependency>
 		<!-- Optional dependencies... things that might have been placed in submodules... -->
 		<dependency>
 			<groupId>com.caucho</groupId>
