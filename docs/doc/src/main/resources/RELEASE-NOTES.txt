@@ -15,8 +15,10 @@ Date:
 Bug Fixes:
 
 CAY-2319 Modeler: Embeddable > Attributes. Undo does not cancel pasted objects
+CAY-2321 cdbimport: Reverse relationship is not created after adding and rev engineeering new db table
 CAY-2323 Modeler: Graph. No warning while saving the image with existing name
 CAY-2331 cgen: broken templates for data map
+CAY-2347 cdbimport: can't get all relationships on the first pass
 CAY-2349 Cache issue: 'SelectQuery' with prefetches loses relationships
 CAY-2350 Expression: NotIn with empty collection returns empty result
 
