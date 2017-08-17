@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+          project-version="10">
+
+    <db-entity name="A" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+    </db-entity>
+    <db-entity name="A_B" schema="SCHEMA_01">
+        <db-attribute name="A_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+        <db-attribute name="B_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+    </db-entity>
+    <db-entity name="B" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+    </db-entity>
+
+    <obj-entity name="A" className="A" dbEntityName="A"/>
+    <obj-entity name="B" className="B" dbEntityName="B"/>
+
+    <db-relationship name="aBs" source="A" target="A_B" toDependentPK="true" toMany="true">
+        <db-attribute-pair source="ID" target="A_ID"/>
+    </db-relationship>
+    <db-relationship name="a" source="A_B" target="A">
+        <db-attribute-pair source="A_ID" target="ID"/>
+    </db-relationship>
+
+    <db-relationship name="aBs" source="B" target="A_B" toDependentPK="true" toMany="true">
+        <db-attribute-pair source="ID" target="B_ID"/>
+    </db-relationship>
+    <db-relationship name="b" source="A_B" target="B">
+        <db-attribute-pair source="B_ID" target="ID"/>
+    </db-relationship>
+
+    <obj-relationship name="bs" source="A" target="B" db-relationship-path="aBs.b"/>
+    <obj-relationship name="as" source="B" target="A" db-relationship-path="aBs.a"/>
+</data-map>
