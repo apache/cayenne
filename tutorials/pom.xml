@@ -30,6 +30,14 @@
 	<name>cayenne-tutorials-parent: Cayenne Tutorials</name>
 	<packaging>pom</packaging>
 
+	<modules>
+		<module>tutorial</module>
+		<module>tutorial-rop-client</module>
+		<module>tutorial-rop-client-http2</module>
+		<module>tutorial-rop-server</module>
+		<module>tutorial-rop-server-http2</module>
+	</modules>
+
 	<properties>
 		<jetty.version>9.3.19.v20170502</jetty.version>
 	</properties>
@@ -50,19 +58,4 @@
         </plugins>
     </build>
 
-	<profiles>
-		<profile>
-			<id>cayenne-java8-module-to-build</id>
-			<activation>
-				<jdk>[1.8,)</jdk>
-			</activation>
-			<modules>
-				<module>tutorial</module>
-				<module>tutorial-rop-server</module>
-				<module>tutorial-rop-client</module>
-				<module>tutorial-rop-server-http2</module>
-				<module>tutorial-rop-client-http2</module>
-			</modules>
-		</profile>
-	</profiles>
 </project>
