@@ -17,12 +17,10 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.java8.access.types;
+package org.apache.cayenne.access.types;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-
-import org.apache.cayenne.access.types.ValueObjectType;
 
 /**
  * @since 4.0

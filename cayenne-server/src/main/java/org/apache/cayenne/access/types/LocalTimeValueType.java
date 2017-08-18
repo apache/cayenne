@@ -17,17 +17,38 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.java8;
+package org.apache.cayenne.access.types;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.junit.Before;
+import java.sql.Time;
+import java.time.LocalTime;
 
-public class RuntimeBase {
+/**
+ * @since 4.0
+ */
+public class LocalTimeValueType implements ValueObjectType<LocalTime, Time> {
 
-    protected ServerRuntime runtime;
+    @Override
+    public Class<Time> getTargetType() {
+        return Time.class;
+    }
 
-    @Before
-    public void setUpRuntime() {
-        this.runtime = ServerRuntime.builder().addConfig("cayenne-java8.xml").build();
+    @Override
+    public Class<LocalTime> getValueType() {
+        return LocalTime.class;
+    }
+
+    @Override
+    public LocalTime toJavaObject(Time value) {
+        return value.toLocalTime();
+    }
+
+    @Override
+    public Time fromJavaObject(LocalTime object) {
+        return Time.valueOf(object);
+    }
+
+    @Override
+    public String toCacheKey(LocalTime object) {
+        return object.toString();
     }
 }

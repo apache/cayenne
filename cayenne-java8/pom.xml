@@ -78,25 +78,6 @@
                 </executions>
             </plugin>
 			<plugin>
-				<groupId>org.apache.cayenne.plugins</groupId>
-				<artifactId>cayenne-maven-plugin</artifactId>
-				<version>${project.version}</version>
-				<configuration>
-					<map>${project.basedir}/src/test/resources/java8.map.xml</map>
-					<destDir>${project.basedir}/src/test/java</destDir>
-					<defaultPackage>org.apache.cayenne.java8.db</defaultPackage>
-					<superPkg>org.apache.cayenne.java8.db.auto</superPkg>
-				</configuration>
-				<executions>
-					<execution>
-						<id>default-cli</id>
-						<goals>
-							<goal>cgen</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<!--<configuration> <suppressionsLocation>${project.basedir}/cayenne-checkstyle-suppression.xml</suppressionsLocation> 
 					</configuration> -->

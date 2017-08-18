@@ -17,15 +17,18 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.java8;
+package org.apache.cayenne.access.types;
 
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.java8.db.LocalDateTestEntity;
-import org.apache.cayenne.java8.db.LocalDateTimeTestEntity;
-import org.apache.cayenne.java8.db.LocalTimeTestEntity;
+import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.testdo.java8.LocalDateTestEntity;
+import org.apache.cayenne.testdo.java8.LocalDateTimeTestEntity;
+import org.apache.cayenne.testdo.java8.LocalTimeTestEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
-import org.junit.Assert;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,12 +39,19 @@ import java.time.LocalTime;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-public class Java8TimeIT extends RuntimeBase {
+@UseServerRuntime(CayenneProjects.JAVA8)
+public class Java8TimeIT extends ServerCase {
+
+	@Inject
+	private DataContext context;
+
+	@Inject
+	private DBHelper dbHelper;
 
 	@Before
 	public void before() throws SQLException {
-		DBHelper dbHelper = new DBHelper(runtime.getDataSource());
 		dbHelper.deleteAll("LOCAL_DATE_TEST");
 		dbHelper.deleteAll("LOCAL_DATETIME_TEST");
 		dbHelper.deleteAll("LOCAL_TIME_TEST");
@@ -49,8 +59,6 @@ public class Java8TimeIT extends RuntimeBase {
 
 	@Test
 	public void testJava8LocalDate_Null() {
-		ObjectContext context = runtime.newContext();
-
 		LocalDateTestEntity localDateTestEntity = context.newObject(LocalDateTestEntity.class);
 		localDateTestEntity.setDate(null);
 
@@ -58,13 +66,11 @@ public class Java8TimeIT extends RuntimeBase {
 
 		LocalDateTestEntity testRead = ObjectSelect.query(LocalDateTestEntity.class).selectOne(context);
 
-		Assert.assertNull(testRead.getDate());
+		assertNull(testRead.getDate());
 	}
 
 	@Test
 	public void testJava8LocalDate() {
-		ObjectContext context = runtime.newContext();
-
 		LocalDateTestEntity localDateTestEntity = context.newObject(LocalDateTestEntity.class);
 		LocalDate localDate = LocalDate.now();
 		localDateTestEntity.setDate(localDate);
@@ -80,8 +86,6 @@ public class Java8TimeIT extends RuntimeBase {
 
 	@Test
 	public void testJava8LocalTime() {
-		ObjectContext context = runtime.newContext();
-
 		LocalTimeTestEntity localTimeTestEntity = context.newObject(LocalTimeTestEntity.class);
 		LocalTime localTime = LocalTime.now();
 		localTimeTestEntity.setTime(localTime);
@@ -98,8 +102,6 @@ public class Java8TimeIT extends RuntimeBase {
 
 	@Test
 	public void testJava8LocalDateTime() {
-		ObjectContext context = runtime.newContext();
-
 		LocalDateTimeTestEntity localDateTimeTestEntity = context.newObject(LocalDateTimeTestEntity.class);
 		LocalDateTime localDateTime = LocalDateTime.now();
 		localDateTimeTestEntity.setTimestamp(localDateTime);
@@ -116,7 +118,6 @@ public class Java8TimeIT extends RuntimeBase {
 
 	@Test
 	public void columnSelectWithJava8Type() {
-		ObjectContext context = runtime.newContext();
 		LocalDateTime localDateTime = LocalDateTime.now();
 
 		LocalDateTimeTestEntity localDateTimeTestEntity = context.newObject(LocalDateTimeTestEntity.class);

@@ -16,41 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.testdo.java8;
 
-package org.apache.cayenne.java8.access.types;
+import org.apache.cayenne.testdo.java8.auto._LocalTimeTestEntity;
 
-import java.sql.Time;
-import java.time.LocalTime;
+public class LocalTimeTestEntity extends _LocalTimeTestEntity {
 
-import org.apache.cayenne.access.types.ValueObjectType;
+    private static final long serialVersionUID = 1L; 
 
-/**
- * @since 4.0
- */
-public class LocalTimeValueType implements ValueObjectType<LocalTime, Time> {
-
-    @Override
-    public Class<Time> getTargetType() {
-        return Time.class;
-    }
-
-    @Override
-    public Class<LocalTime> getValueType() {
-        return LocalTime.class;
-    }
-
-    @Override
-    public LocalTime toJavaObject(Time value) {
-        return value.toLocalTime();
-    }
-
-    @Override
-    public Time fromJavaObject(LocalTime object) {
-        return Time.valueOf(object);
-    }
-
-    @Override
-    public String toCacheKey(LocalTime object) {
-        return object.toString();
-    }
 }

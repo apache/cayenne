@@ -1,4 +1,4 @@
-package org.apache.cayenne.java8.db.auto;
+package org.apache.cayenne.testdo.java8.auto;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
