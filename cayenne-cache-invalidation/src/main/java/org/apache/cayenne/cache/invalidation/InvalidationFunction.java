@@ -22,11 +22,14 @@ package org.apache.cayenne.cache.invalidation;
 import org.apache.cayenne.Persistent;
 
 import java.util.Collection;
+import java.util.function.Function;
 
 /**
  * @since 4.0
+ * @deprecated since 4.1 plain Function&gt;Persistent, Collection&gt;CacheGroupDescriptor>> can be used.
  */
-public interface InvalidationFunction {
+@Deprecated
+public interface InvalidationFunction extends Function<Persistent, Collection<CacheGroupDescriptor>> {
 
     /**
      * @return collection of cache groups to invalidate for given object

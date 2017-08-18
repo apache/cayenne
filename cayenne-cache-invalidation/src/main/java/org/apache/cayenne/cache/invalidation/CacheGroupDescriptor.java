@@ -21,7 +21,7 @@ package org.apache.cayenne.cache.invalidation;
 
 /**
  * Immutable object describing cache group.
- * Used as a result in {@link InvalidationFunction}.
+ * Used as a result in invalidation function.
  *
  * @see CacheGroupDescriptor#CacheGroupDescriptor(String)
  * @see CacheGroupDescriptor#CacheGroupDescriptor(String, Class, Class)

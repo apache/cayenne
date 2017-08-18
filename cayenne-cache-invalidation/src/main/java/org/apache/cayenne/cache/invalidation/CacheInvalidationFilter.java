@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * <p>
@@ -65,18 +66,13 @@ public class CacheInvalidationFilter implements DataChannelFilter {
 
     private final Provider<QueryCache> cacheProvider;
     private final List<InvalidationHandler> handlers;
-    private final Map<Class<? extends Persistent>, InvalidationFunction> mappedHandlers;
-    private final InvalidationFunction skipHandler;
+    private final Map<Class<? extends Persistent>, Function<Persistent, Collection<CacheGroupDescriptor>>> mappedHandlers;
+    private final Function<Persistent, Collection<CacheGroupDescriptor>> skipHandler;
     private final ThreadLocal<Set<CacheGroupDescriptor>> groups;
 
     public CacheInvalidationFilter(@Inject Provider<QueryCache> cacheProvider, @Inject List<InvalidationHandler> handlers) {
         this.mappedHandlers = new ConcurrentHashMap<>();
-        this.skipHandler = new InvalidationFunction() {
-            @Override
-            public Collection<CacheGroupDescriptor> apply(Persistent p) {
-                return Collections.emptyList();
-            }
-        };
+        this.skipHandler = p -> Collections.emptyList();
         this.groups = new ThreadLocal<>();
         this.cacheProvider = cacheProvider;
         this.handlers = handlers;
@@ -122,11 +118,11 @@ public class CacheInvalidationFilter implements DataChannelFilter {
         // TODO: for some reason we can't use Persistent as the argument type... (is it fixed in Cayenne 4.0.M4?)
         Persistent p = (Persistent) object;
 
-        InvalidationFunction invalidationFunction = mappedHandlers.get(p.getClass());
+        Function<Persistent, Collection<CacheGroupDescriptor>> invalidationFunction = mappedHandlers.get(p.getClass());
         if (invalidationFunction == null) {
             invalidationFunction = skipHandler;
             for (InvalidationHandler handler : handlers) {
-                InvalidationFunction function = handler.canHandle(p.getClass());
+                Function<Persistent, Collection<CacheGroupDescriptor>> function = handler.canHandle(p.getClass());
                 if (function != null) {
                     invalidationFunction = function;
                     break;

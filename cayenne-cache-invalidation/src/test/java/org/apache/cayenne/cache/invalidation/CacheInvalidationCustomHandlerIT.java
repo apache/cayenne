@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 
@@ -84,13 +85,8 @@ public class CacheInvalidationCustomHandlerIT extends CacheInvalidationCase {
 
     public static class G1InvalidationHandler implements InvalidationHandler {
         @Override
-        public InvalidationFunction canHandle(Class<? extends Persistent> type) {
-            return new InvalidationFunction() {
-                @Override
-                public Collection<CacheGroupDescriptor> apply(Persistent persistent) {
-                    return Collections.singleton(new CacheGroupDescriptor("g1"));
-                }
-            };
+        public Function<Persistent, Collection<CacheGroupDescriptor>> canHandle(Class<? extends Persistent> type) {
+            return p -> Collections.singleton(new CacheGroupDescriptor("g1"));
         }
     }
 }
