@@ -31,6 +31,8 @@ import java.util.Collection;
 import java.util.EventObject;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -74,8 +76,6 @@ import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -424,23 +424,14 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
         toggleClientFieldsVisible(map.isClientSupported());
         toggleEnabled(entity.getSuperEntityName() == null, !entity.isServerOnly());
 
-        // init ObjEntities for inheritance
-        Predicate inheritanceFilter = new Predicate() {
-            public boolean evaluate(Object object) {
-                // do not show this entity or any of the subentities
-                return entity != object && !((ObjEntity) object).isSubentityOf(entity);
-            }
-        };
+        // do not show this entity or any of the subentities
+        List<ObjEntity> objEntities = map.getObjEntities().stream()
+                .filter(object -> entity != object && !object.isSubentityOf(entity))
+                .sorted(Comparators.getDataMapChildrenComparator())
+                .collect(Collectors.toList());
+        objEntities.add(0, NO_INHERITANCE);
 
-        @SuppressWarnings("unchecked")
-        ObjEntity[] objEntities = ((Collection<ObjEntity>)CollectionUtils.select(map.getObjEntities(), inheritanceFilter))
-                .toArray(new ObjEntity[0]);
-        Arrays.sort(objEntities, Comparators.getDataMapChildrenComparator());
-        ObjEntity[] finalObjEntities = new ObjEntity[objEntities.length + 1];
-        finalObjEntities[0] = NO_INHERITANCE;
-        System.arraycopy(objEntities, 0, finalObjEntities, 1, objEntities.length);
-
-        DefaultComboBoxModel<ObjEntity> superEntityModel = new DefaultComboBoxModel<>(finalObjEntities);
+        DefaultComboBoxModel<ObjEntity> superEntityModel = new DefaultComboBoxModel<>(objEntities.toArray(new ObjEntity[0]));
         superEntityModel.setSelectedItem(entity.getSuperEntity());
         superEntityCombo.setRenderer(CellRenderers.entityListRendererWithIcons(map));
         superEntityCombo.setModel(superEntityModel);

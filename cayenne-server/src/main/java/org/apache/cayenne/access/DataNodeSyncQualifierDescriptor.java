@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
@@ -32,7 +33,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.commons.collections.Transformer;
 
 /**
  * Builds update qualifier snapshots, including optimistic locking.
@@ -42,7 +42,7 @@ import org.apache.commons.collections.Transformer;
 class DataNodeSyncQualifierDescriptor {
 
 	private List<DbAttribute> attributes;
-	private List<Transformer> valueTransformers;
+	private List<Function<ObjectDiff, Object>> valueTransformers;
 	private boolean usingOptimisticLocking;
 
 	public boolean isUsingOptimisticLocking() {
@@ -60,8 +60,7 @@ class DataNodeSyncQualifierDescriptor {
 		for (int i = 0; i < len; i++) {
 			DbAttribute attribute = attributes.get(i);
 			if (!map.containsKey(attribute.getName())) {
-
-				Object value = valueTransformers.get(i).transform(diff);
+				Object value = valueTransformers.get(i).apply(diff);
 				map.put(attribute.getName(), value);
 			}
 		}
@@ -79,13 +78,10 @@ class DataNodeSyncQualifierDescriptor {
 		if (descriptor.isMaster()) {
 			for (final DbAttribute attribute : descriptor.getDbEntity().getPrimaryKeys()) {
 				attributes.add(attribute);
-				valueTransformers.add(new Transformer() {
-
-					public Object transform(Object input) {
-						ObjectId id = (ObjectId) ((ObjectDiff) input).getNodeId();
-						return id.getIdSnapshot().get(attribute.getName());
-					}
-				});
+				valueTransformers.add(input -> {
+                    ObjectId id = (ObjectId) input.getNodeId();
+                    return id.getIdSnapshot().get(attribute.getName());
+                });
 			}
 		} else {
 
@@ -104,13 +100,10 @@ class DataNodeSyncQualifierDescriptor {
 					if (!attributes.contains(dbAttribute)) {
 
 						attributes.add(dbAttribute);
-						valueTransformers.add(new Transformer() {
-
-							public Object transform(Object input) {
-								ObjectId id = (ObjectId) ((ObjectDiff) input).getNodeId();
-								return id.getIdSnapshot().get(dbAttrPair.getSourceName());
-							}
-						});
+						valueTransformers.add(input -> {
+                            ObjectId id = (ObjectId) input.getNodeId();
+                            return id.getIdSnapshot().get(dbAttrPair.getSourceName());
+                        });
 					}
 				}
 			}
@@ -127,13 +120,7 @@ class DataNodeSyncQualifierDescriptor {
 					// only use qualifier if dbEntities match
 					if (dbAttribute.getEntity().equals(descriptor.getDbEntity()) && !attributes.contains(dbAttribute)) {
 						attributes.add(dbAttribute);
-
-						valueTransformers.add(new Transformer() {
-
-							public Object transform(Object input) {
-								return ((ObjectDiff) input).getSnapshotValue(attribute.getName());
-							}
-						});
+						valueTransformers.add(input -> input.getSnapshotValue(attribute.getName()));
 					}
 				}
 			}
@@ -154,14 +141,10 @@ class DataNodeSyncQualifierDescriptor {
 							continue;
 						}
 
-						Transformer transformer = new Transformer() {
-
-							public Object transform(Object input) {
-								ObjectId targetId = ((ObjectDiff) input).getArcSnapshotValue(relationship.getName());
-								return targetId != null ? targetId.getIdSnapshot().get(dbAttrPair.getTargetName())
-										: null;
-							}
-						};
+						Function<ObjectDiff, Object> transformer = input -> {
+                            ObjectId targetId = input.getArcSnapshotValue(relationship.getName());
+                            return targetId != null ? targetId.getIdSnapshot().get(dbAttrPair.getTargetName()) : null;
+                        };
 
 						if (index < 0) {
 							attributes.add(dbAttribute);

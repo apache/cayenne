@@ -30,7 +30,8 @@ import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.MapEvent;
@@ -44,7 +45,6 @@ import org.apache.cayenne.modeler.util.AdapterMapping;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.FileFilters;
 import org.apache.cayenne.wocompat.EOModelProcessor;
-import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -213,75 +213,67 @@ public class ImportEOModelAction extends CayenneAction {
             // merge with existing map... have to memorize map state before and after
             // to do the right events
 
-            Collection originalOE = new ArrayList(currentMap.getObjEntities());
-            Collection originalDE = new ArrayList(currentMap.getDbEntities());
-            Collection originalQueries = new ArrayList(currentMap.getQueryDescriptors());
+            Collection<ObjEntity> originalOE = new ArrayList<>(currentMap.getObjEntities());
+            Collection<DbEntity> originalDE = new ArrayList<>(currentMap.getDbEntities());
+            Collection<QueryDescriptor> originalQueries = new ArrayList<>(currentMap.getQueryDescriptors());
 
             currentMap.mergeWithDataMap(map);
             map = currentMap;
 
             // postprocess changes
-            Collection newOE = new ArrayList(currentMap.getObjEntities());
-            Collection newDE = new ArrayList(currentMap.getDbEntities());
-            Collection newQueries = new ArrayList(currentMap.getQueryDescriptors());
+            Collection<ObjEntity> newOE = new ArrayList<>(currentMap.getObjEntities());
+            Collection<DbEntity> newDE = new ArrayList<>(currentMap.getDbEntities());
+            Collection<QueryDescriptor> newQueries = new ArrayList<>(currentMap.getQueryDescriptors());
 
             EntityEvent entityEvent = new EntityEvent(Application.getFrame(), null);
             QueryEvent queryEvent = new QueryEvent(Application.getFrame(), null);
 
-            Collection addedOE = CollectionUtils.subtract(newOE, originalOE);
-            Iterator it = addedOE.iterator();
-            while (it.hasNext()) {
-                Entity e = (Entity) it.next();
+            // 1. ObjEntities
+            Collection<ObjEntity> addedOE = new ArrayList<>(newOE);
+            addedOE.removeAll(originalOE);
+            for (ObjEntity e : addedOE) {
                 entityEvent.setEntity(e);
                 entityEvent.setId(MapEvent.ADD);
                 mediator.fireObjEntityEvent(entityEvent);
             }
 
-            Collection removedOE = CollectionUtils.subtract(originalOE, newOE);
-            it = removedOE.iterator();
-            while (it.hasNext()) {
-                Entity e = (Entity) it.next();
+            Collection<ObjEntity> removedOE = new ArrayList<>(originalOE);
+            removedOE.removeAll(newOE);
+            for (ObjEntity e : removedOE) {
                 entityEvent.setEntity(e);
                 entityEvent.setId(MapEvent.REMOVE);
                 mediator.fireObjEntityEvent(entityEvent);
             }
 
-            Collection addedDE = CollectionUtils.subtract(newDE, originalDE);
-            it = addedDE.iterator();
-            while (it.hasNext()) {
-                Entity e = (Entity) it.next();
+            // 2. DbEntities
+            Collection<DbEntity> addedDE = new ArrayList<>(newDE);
+            addedDE.removeAll(originalDE);
+            for(DbEntity e: addedDE) {
                 entityEvent.setEntity(e);
                 entityEvent.setId(MapEvent.ADD);
                 mediator.fireDbEntityEvent(entityEvent);
             }
 
-            Collection removedDE = CollectionUtils.subtract(originalDE, newDE);
-            it = removedDE.iterator();
-            while (it.hasNext()) {
-                Entity e = (Entity) it.next();
+            Collection<DbEntity> removedDE = new ArrayList<>(originalDE);
+            removedDE.removeAll(newDE);
+            for(DbEntity e: removedDE) {
                 entityEvent.setEntity(e);
                 entityEvent.setId(MapEvent.REMOVE);
                 mediator.fireDbEntityEvent(entityEvent);
             }
 
-            // queries
-            Collection addedQueries = CollectionUtils.subtract(
-                    newQueries,
-                    originalQueries);
-            it = addedQueries.iterator();
-            while (it.hasNext()) {
-                QueryDescriptor q = (QueryDescriptor) it.next();
+            // 3. queries
+            Collection<QueryDescriptor> addedQueries = new ArrayList<>(newQueries);
+            addedQueries.removeAll(originalQueries);
+            for(QueryDescriptor q: addedQueries) {
                 queryEvent.setQuery(q);
                 queryEvent.setId(MapEvent.ADD);
                 mediator.fireQueryEvent(queryEvent);
             }
 
-            Collection removedQueries = CollectionUtils.subtract(
-                    originalQueries,
-                    newQueries);
-            it = removedQueries.iterator();
-            while (it.hasNext()) {
-                QueryDescriptor q = (QueryDescriptor) it.next();
+            Collection<QueryDescriptor> removedQueries = new ArrayList<>(originalQueries);
+            removedQueries.removeAll(newQueries);
+            for(QueryDescriptor q: removedQueries) {
                 queryEvent.setQuery(q);
                 queryEvent.setId(MapEvent.REMOVE);
                 mediator.fireQueryEvent(queryEvent);

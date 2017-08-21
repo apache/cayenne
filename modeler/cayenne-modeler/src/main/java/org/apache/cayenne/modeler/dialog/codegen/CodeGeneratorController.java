@@ -24,14 +24,13 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.PredicateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.JOptionPane;
 import java.awt.Component;
 import java.util.Collection;
+import java.util.function.Predicate;
 
 /**
  * A controller for the class generator dialog.
@@ -91,9 +90,9 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         GeneratorController controller = generatorSelector.getGeneratorController();
         validate(controller);
 
-        Predicate predicate = controller != null
+        Predicate<Object> predicate = controller != null
                 ? controller.getDefaultClassFilter()
-                : PredicateUtils.falsePredicate();
+                : o -> false;
 
         updateSelection(predicate);
         classesSelector.classSelectedAction();

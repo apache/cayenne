@@ -18,14 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
+import java.util.function.Supplier;
+
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.lifecycle.id.IdCoder;
-import org.apache.commons.collections.Factory;
 
 /**
  * @since 3.1
  */
-class ObjectIdPropagatedValueFactory implements Factory {
+class ObjectIdPropagatedValueFactory implements Supplier {
 
     private IdCoder referenceableHandler;
     private Persistent to;
@@ -35,7 +36,8 @@ class ObjectIdPropagatedValueFactory implements Factory {
         this.to = to;
     }
 
-    public Object create() {
+    @Override
+    public String get() {
         return referenceableHandler.getStringId(to);
     }
 }

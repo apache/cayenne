@@ -39,7 +39,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.commons.collections.comparators.ReverseComparator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -320,7 +319,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 	protected Comparator<DbEntity> getDbEntityComparator(boolean dependantFirst) {
 		Comparator<DbEntity> c = dbEntityComparator;
 		if (dependantFirst) {
-			c = new ReverseComparator(c);
+			c = c.reversed();
 		}
 		return c;
 	}
@@ -328,7 +327,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 	protected Comparator<ObjEntity> getObjEntityComparator(boolean dependantFirst) {
 		Comparator<ObjEntity> c = objEntityComparator;
 		if (dependantFirst) {
-			c = new ReverseComparator(c);
+			c = c.reversed();
 		}
 		return c;
 	}

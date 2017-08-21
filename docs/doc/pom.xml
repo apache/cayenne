@@ -48,11 +48,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>com.caucho</groupId>
             <artifactId>hessian</artifactId>
 		</dependency>

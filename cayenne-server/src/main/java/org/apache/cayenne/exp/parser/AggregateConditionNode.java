@@ -19,8 +19,9 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.util.function.Function;
+
 import org.apache.cayenne.exp.ExpressionException;
-import org.apache.commons.collections.Transformer;
 
 /**
  * Superclass of aggregated conditional nodes such as NOT, AND, OR. Performs
@@ -43,7 +44,7 @@ public abstract class AggregateConditionNode extends SimpleNode {
 	}
 
 	@Override
-	protected Object transformExpression(Transformer transformer) {
+	protected Object transformExpression(Function<Object, Object> transformer) {
 		Object transformed = super.transformExpression(transformer);
 
 		if (!(transformed instanceof AggregateConditionNode)) {

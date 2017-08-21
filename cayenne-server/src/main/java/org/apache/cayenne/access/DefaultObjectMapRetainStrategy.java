@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -25,8 +26,8 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
-import org.apache.commons.collections.map.AbstractReferenceMap;
-import org.apache.commons.collections.map.ReferenceMap;
+import org.apache.cayenne.util.SoftValueMap;
+import org.apache.cayenne.util.WeakValueMap;
 
 /**
  * Default implementation of {@link ObjectMapRetainStrategy}.
@@ -45,17 +46,15 @@ public class DefaultObjectMapRetainStrategy implements ObjectMapRetainStrategy {
         this.runtimeProperties = runtimeProperties;
     }
 
-    @SuppressWarnings("unchecked")
     public Map<Object, Persistent> createObjectMap() {
-        String strategy = runtimeProperties
-                .get(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY);
+        String strategy = runtimeProperties.get(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY);
 
         if (strategy == null || WEAK_RETAIN_STRATEGY.equals(strategy)) {
-            return new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.WEAK);
+            return new WeakValueMap<>();
         } else if (SOFT_RETAIN_STRATEGY.equals(strategy)) {
-            return new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.SOFT);
+            return new SoftValueMap<>();
         } else if (HARD_RETAIN_STRATEGY.equals(strategy)) {
-            return new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.HARD);
+            return new HashMap<>();
         } else {
             throw new CayenneRuntimeException("Unsupported retain strategy %s", strategy);
         }

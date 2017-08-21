@@ -35,7 +35,6 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
-import org.apache.commons.collections.Transformer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,6 +46,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.function.Function;
 
 /**
  * A DbEntity is a mapping descriptor that defines a structure of a database
@@ -636,7 +636,7 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
         return expression.transform(new RelationshipPathConverter(relationshipPath));
     }
 
-    final class RelationshipPathConverter implements Transformer {
+    final class RelationshipPathConverter implements Function<Object, Object> {
 
         String relationshipPath;
         boolean toMany;
@@ -656,7 +656,7 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
             }
         }
 
-        public Object transform(Object input) {
+        public Object apply(Object input) {
             if (!(input instanceof Expression)) {
                 return input;
             }

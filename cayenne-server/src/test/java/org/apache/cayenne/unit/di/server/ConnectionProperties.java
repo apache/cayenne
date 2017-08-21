@@ -20,13 +20,13 @@
 package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.commons.collections.ExtendedProperties;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * ConnectionProperties handles a set of DataSourceInfo objects using
@@ -50,10 +50,20 @@ class ConnectionProperties {
 	/**
 	 * Constructor for ConnectionProperties.
 	 */
-	ConnectionProperties(ExtendedProperties props) {
+	ConnectionProperties(Map<String, String> props) {
 		connectionInfos = new HashMap<>();
 		for (String name : extractNames(props)) {
-			DataSourceInfo dsi = buildDataSourceInfo(props.subset(name));
+			DataSourceInfo dsi = buildDataSourceInfo(
+					props.entrySet().stream()
+							.filter(e -> e.getKey().startsWith(name + '.'))
+							.collect(Collectors.toMap(
+									e -> {
+										String key = e.getKey();
+										return key.substring(key.indexOf('.') + 1);
+									},
+									Map.Entry::getValue
+							))
+			);
 			connectionInfos.put(name, dsi);
 		}
 	}
@@ -73,21 +83,21 @@ class ConnectionProperties {
 	/**
 	 * Creates a DataSourceInfo object from a set of properties.
 	 */
-	private DataSourceInfo buildDataSourceInfo(ExtendedProperties props) {
+	private DataSourceInfo buildDataSourceInfo(Map<String, String> props) {
 		DataSourceInfo dsi = new DataSourceInfo();
 
-		String adapter = props.getString(ADAPTER_KEY);
+		String adapter = props.get(ADAPTER_KEY);
 
 		// try legacy adapter key
 		if (adapter == null) {
-			adapter = props.getString(ADAPTER20_KEY);
+			adapter = props.get(ADAPTER20_KEY);
 		}
 
 		dsi.setAdapterClassName(adapter);
-		dsi.setUserName(props.getString(USER_NAME_KEY));
-		dsi.setPassword(props.getString(PASSWORD_KEY));
-		dsi.setDataSourceUrl(props.getString(URL_KEY));
-		dsi.setJdbcDriver(props.getString(DRIVER_KEY));
+		dsi.setUserName(props.get(USER_NAME_KEY));
+		dsi.setPassword(props.get(PASSWORD_KEY));
+		dsi.setDataSourceUrl(props.get(URL_KEY));
+		dsi.setJdbcDriver(props.get(DRIVER_KEY));
 		dsi.setMinConnections(MIN_CONNECTIONS);
 		dsi.setMaxConnections(MAX_CONNECTIONS);
 
@@ -97,9 +107,9 @@ class ConnectionProperties {
 	/**
 	 * Returns a list of connection names configured in the properties object.
 	 */
-	private List<String> extractNames(ExtendedProperties props) {
-		Iterator<?> it = props.getKeys();
-		List<String> list = new ArrayList<String>();
+	private List<String> extractNames(Map<String, String> props) {
+		Iterator<?> it = props.keySet().iterator();
+		List<String> list = new ArrayList<>();
 
 		while (it.hasNext()) {
 			String key = (String) it.next();

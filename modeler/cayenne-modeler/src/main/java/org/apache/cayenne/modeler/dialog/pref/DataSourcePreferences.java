@@ -27,11 +27,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
@@ -39,7 +39,6 @@ import javax.swing.JOptionPane;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.FileClassLoadingService;
-import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.DataSourceModificationEvent;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.util.CayenneController;
@@ -48,8 +47,6 @@ import org.apache.cayenne.pref.ChildrenMapPreference;
 import org.apache.cayenne.pref.PreferenceEditor;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.Util;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
 
 /**
  * Editor for the local DataSources configured in preferences.
@@ -260,17 +257,7 @@ public class DataSourcePreferences extends CayenneController {
 			}
 
 			if (details.size() > 0) {
-
-				// transform preference to file...
-				Transformer transformer = new Transformer() {
-
-					public Object transform(Object object) {
-						String pref = (String) object;
-						return new File(pref);
-					}
-				};
-
-				classLoader.setPathFiles(CollectionUtils.collect(details, transformer));
+				classLoader.setPathFiles(details.stream().map(File::new).collect(Collectors.toList()));
 			}
 
 			Class<Driver> driverClass = classLoader.loadClass(Driver.class, currentDataSource.getJdbcDriver());

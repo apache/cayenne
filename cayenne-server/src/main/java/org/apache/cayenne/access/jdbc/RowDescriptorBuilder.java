@@ -27,12 +27,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
-import org.apache.cayenne.util.Util;
-import org.apache.commons.collections.Transformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,24 +45,16 @@ public class RowDescriptorBuilder {
 
     private static final Logger logger = LoggerFactory.getLogger(RowDescriptorBuilder.class);
 
-    private static final Transformer UPPERCASE_TRANSFORMER = new Transformer() {
+    private static final Function<String, String> UPPERCASE_TRANSFORMER = input ->
+            input != null ? input.toUpperCase() : null;
 
-        public Object transform(Object input) {
-            return input != null ? input.toString().toUpperCase() : null;
-        }
-    };
-
-    private static final Transformer LOWERCASE_TRANSFORMER = new Transformer() {
-
-        public Object transform(Object input) {
-            return input != null ? input.toString().toLowerCase() : null;
-        }
-    };
+    private static final Function<String, String> LOWERCASE_TRANSFORMER = input ->
+            input != null ? input.toLowerCase() : null;
 
     protected ColumnDescriptor[] columns;
     protected ResultSetMetaData resultSetMetadata;
 
-    protected Transformer caseTransformer;
+    protected Function<String, String> caseTransformer;
     protected Map<String, String> typeOverrides;
 
     protected boolean validateDuplicateColumnNames;
@@ -143,7 +134,7 @@ public class RowDescriptorBuilder {
         }
 
         if(validateDuplicateColumnNames && !duplicates.isEmpty()) {
-            logger.warn("Found duplicated columns '" + Util.join(duplicates, "', '") + "' in row descriptor. " +
+            logger.warn("Found duplicated columns '" + String.join("', '", duplicates) + "' in row descriptor. " +
                     "This can lead to errors when converting result to persistent objects.");
         }
 
@@ -204,8 +195,8 @@ public class RowDescriptorBuilder {
 
         if (caseTransformer != null) {
             for (ColumnDescriptor aColumnArray : columnArray) {
-                aColumnArray.setDataRowKey((String) caseTransformer.transform(aColumnArray.getDataRowKey()));
-                aColumnArray.setName((String) caseTransformer.transform(aColumnArray.getName()));
+                aColumnArray.setDataRowKey(caseTransformer.apply(aColumnArray.getDataRowKey()));
+                aColumnArray.setName(caseTransformer.apply(aColumnArray.getName()));
             }
         }
         if (typeOverrides != null) {

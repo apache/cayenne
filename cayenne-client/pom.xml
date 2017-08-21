@@ -40,11 +40,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.caucho</groupId>
             <artifactId>hessian</artifactId>
 			<scope>compile</scope>

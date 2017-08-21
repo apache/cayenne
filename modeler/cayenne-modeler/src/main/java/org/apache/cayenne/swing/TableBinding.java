@@ -24,6 +24,7 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,6 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import org.apache.cayenne.util.Util;
-import org.apache.commons.collections.map.SingletonMap;
 
 /**
  * A binding for a JTable.
@@ -152,7 +152,7 @@ public class TableBinding extends BindingBase {
 
         // this map is used as "flyweight", providing on the spot context for Ognl
         // expression evaluation
-        Map listContext = new SingletonMap(ITEM_VAR, null);
+        Map<String, Object> listContext = Collections.singletonMap(ITEM_VAR, null);
 
         public int getColumnCount() {
             return headers.length;

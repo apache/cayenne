@@ -26,7 +26,6 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
-import org.apache.commons.collections.Predicate;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -36,6 +35,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * A base superclass of a top controller for the code generator. Defines all common model
@@ -52,8 +52,8 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
     protected List<Object> classes;
 
-    protected Set selectedEntities;
-    protected Set selectedEmbeddables;
+    protected Set<String> selectedEntities;
+    protected Set<String> selectedEmbeddables;
 
     protected transient Object currentClass;
 
@@ -61,14 +61,14 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         super(parent);
 
         this.dataMaps = dataMaps;
-        this.classes = new ArrayList();
+        this.classes = new ArrayList<>();
 
         for(DataMap dataMap:dataMaps){
-            this.classes.addAll(new ArrayList(dataMap.getObjEntities()));
-            this.classes.addAll(new ArrayList(dataMap.getEmbeddables()));
+            this.classes.addAll(new ArrayList<>(dataMap.getObjEntities()));
+            this.classes.addAll(new ArrayList<>(dataMap.getEmbeddables()));
         }
-        this.selectedEntities = new HashSet();
-        this.selectedEmbeddables = new HashSet();
+        this.selectedEntities = new HashSet<>();
+        this.selectedEmbeddables = new HashSet<>();
     }
 
     public List<Object> getClasses() {
@@ -99,12 +99,12 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         this.validation = validationBuffer;
     }
 
-    public boolean updateSelection(Predicate predicate) {
+    public boolean updateSelection(Predicate<Object> predicate) {
 
         boolean modified = false;
 
         for (Object classObj : classes) {
-            boolean select = predicate.evaluate(classObj);
+            boolean select = predicate.test(classObj);
             if (classObj instanceof ObjEntity) {
 
                 if (select) {
@@ -205,12 +205,12 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
     public boolean isSelected() {
         if (currentClass instanceof ObjEntity) {
-            return currentClass != null ? selectedEntities
-                    .contains(((ObjEntity) currentClass).getName()) : false;
+            return selectedEntities
+                    .contains(((ObjEntity) currentClass).getName());
         }
         if (currentClass instanceof Embeddable) {
-            return currentClass != null ? selectedEmbeddables
-                    .contains(((Embeddable) currentClass).getClassName()) : false;
+            return selectedEmbeddables
+                    .contains(((Embeddable) currentClass).getClassName());
         }
         return false;
 

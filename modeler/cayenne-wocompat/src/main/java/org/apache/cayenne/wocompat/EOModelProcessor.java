@@ -35,10 +35,6 @@ import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.wocompat.parser.Parser;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.PredicateUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +50,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Class for converting stored Apple EOModel mapping files to Cayenne DataMaps.
@@ -62,21 +60,15 @@ public class EOModelProcessor {
 
 	private static final Logger logger = LoggerFactory.getLogger(EOModelProcessor.class);
 
-	protected Predicate prototypeChecker;
+	protected Predicate<String> prototypeChecker;
 
 	public EOModelProcessor() {
-		prototypeChecker = new Predicate() {
-
-			@Override
-			public boolean evaluate(Object object) {
-				if (object == null) {
-					return false;
-				}
-
-				String entityName = object.toString();
-				return entityName.startsWith("EO") && entityName.endsWith("Prototypes");
-			}
-		};
+		prototypeChecker = entityName -> {
+            if (entityName == null) {
+                return false;
+            }
+            return entityName.startsWith("EO") && entityName.endsWith("Prototypes");
+        };
 	}
 
 	/**
@@ -154,24 +146,20 @@ public class EOModelProcessor {
 		DataMap dataMap = helper.getDataMap();
 
 		// process enitities ... throw out prototypes ... for now
-		List modelNames = new ArrayList(helper.modelNamesAsList());
-		CollectionUtils.filter(modelNames, PredicateUtils.notPredicate(prototypeChecker));
-
-		Iterator it = modelNames.iterator();
-		while (it.hasNext()) {
-			String name = (String) it.next();
-
+		List<String> modelNames = new ArrayList<>(helper.modelNamesAsList());
+		modelNames = modelNames.stream().filter(prototypeChecker.negate()).collect(Collectors.toList());
+		modelNames.forEach( name -> {
 			// create and register entity
 			makeEntity(helper, name, generateClientClass);
-		}
+		});
 
 		// now sort following inheritance hierarchy
-		Collections.sort(modelNames, new InheritanceComparator(dataMap));
+		modelNames.sort(new InheritanceComparator(dataMap));
 
 		// after all entities are loaded, process attributes
-		it = modelNames.iterator();
+		Iterator<String> it = modelNames.iterator();
 		while (it.hasNext()) {
-			String name = (String) it.next();
+			String name = it.next();
 
 			EOObjEntity e = (EOObjEntity) dataMap.getObjEntity(name);
 			// process entity attributes
@@ -228,7 +216,7 @@ public class EOModelProcessor {
 	 * @since 1.1
 	 */
 	protected boolean isPrototypesEntity(String entityName) {
-		return prototypeChecker.evaluate(entityName);
+		return prototypeChecker.test(entityName);
 	}
 
 	/**
@@ -276,7 +264,7 @@ public class EOModelProcessor {
 				if (fetchLimit instanceof Number) {
 					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY,
 							String.valueOf(((Number) fetchLimit).intValue()));
-				} else if (StringUtils.isNumeric(fetchLimit.toString())) {
+				} else if (isNumeric(fetchLimit.toString())) {
 					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, fetchLimit.toString());
 				}
 			} catch (NumberFormatException nfex) {
@@ -331,7 +319,7 @@ public class EOModelProcessor {
 				if (fetchLimit instanceof Number) {
 					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY,
 							String.valueOf(((Number) fetchLimit).intValue()));
-				} else if (StringUtils.isNumeric(fetchLimit.toString())) {
+				} else if (isNumeric(fetchLimit.toString())) {
 					descriptor.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, fetchLimit.toString());
 				}
 			} catch (NumberFormatException nfex) {
@@ -822,6 +810,19 @@ public class EOModelProcessor {
 		}
 
 		return null;
+	}
+
+	static boolean isNumeric(String str) {
+		if (str == null) {
+			return false;
+		}
+
+		for(int i = 0; i < str.length(); ++i) {
+			if (!Character.isDigit(str.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	// sorts ObjEntities so that subentities in inheritance hierarchy are shown

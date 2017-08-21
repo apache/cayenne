@@ -26,7 +26,6 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
-import org.apache.commons.collections.Transformer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.function.Function;
 
 /**
  * An extension of ObjEntity used to accomodate extra EOModel entity properties.
@@ -154,9 +154,9 @@ public class EOObjEntity extends ObjEntity {
                 : qualifiedQueryName;
     }
 
-    final class DBPathConverter implements Transformer {
+    final class DBPathConverter implements Function<Object, Object> {
 
-        public Object transform(Object input) {
+        public Object apply(Object input) {
 
             if (!(input instanceof Expression)) {
                 return input;

@@ -20,11 +20,11 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.util.Util;
-import org.apache.commons.collections.map.LinkedMap;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -168,12 +168,12 @@ public class ObjectIdTest {
         // create maps with guaranteed iteration order
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> hm1 = new LinkedMap();
+        Map<String, Object> hm1 = new LinkedHashMap<>();
         hm1.put("KEY1", 1);
         hm1.put("KEY2", 2);
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> hm2 = new LinkedMap();
+        Map<String, Object> hm2 = new LinkedHashMap();
         // put same keys but in different order
         hm2.put("KEY2", 2);
         hm2.put("KEY1", 1);
@@ -256,12 +256,12 @@ public class ObjectIdTest {
         // create maps with guaranteed iteration order
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> hm1 = new LinkedMap();
+        Map<String, Object> hm1 = new LinkedHashMap();
         hm1.put("KEY1", 1);
         hm1.put("KEY2", 2);
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> hm2 = new LinkedMap();
+        Map<String, Object> hm2 = new LinkedHashMap();
         // put same keys but in different order
         hm2.put("KEY2", new BigDecimal(2.00));
         hm2.put("KEY1", 1L);
