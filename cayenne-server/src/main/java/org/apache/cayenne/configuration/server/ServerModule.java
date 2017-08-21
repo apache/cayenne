@@ -48,6 +48,9 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.FloatType;
 import org.apache.cayenne.access.types.IntegerType;
+import org.apache.cayenne.access.types.LocalDateTimeValueType;
+import org.apache.cayenne.access.types.LocalDateValueType;
+import org.apache.cayenne.access.types.LocalTimeValueType;
 import org.apache.cayenne.access.types.LongType;
 import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.access.types.TimeType;
@@ -334,7 +337,11 @@ public class ServerModule implements Module {
         // Custom ValueObjects types contribution
         contributeValueObjectTypes(binder)
                 .add(BigIntegerValueType.class)
-                .add(UUIDValueType.class);
+                .add(UUIDValueType.class)
+                .add(LocalDateValueType.class)
+                .add(LocalTimeValueType.class)
+                .add(LocalDateTimeValueType.class);
+
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
 
         // configure explicit configurations

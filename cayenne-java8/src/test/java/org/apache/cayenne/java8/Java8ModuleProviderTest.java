@@ -22,6 +22,7 @@ import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
 import org.junit.Test;
 
+@Deprecated
 public class Java8ModuleProviderTest {
 
     @Test

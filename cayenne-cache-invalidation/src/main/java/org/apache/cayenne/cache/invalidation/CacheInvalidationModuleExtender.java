@@ -26,6 +26,7 @@ import org.apache.cayenne.di.Module;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.function.Function;
 
 /**
  * @since 4.0
@@ -61,27 +62,24 @@ public class CacheInvalidationModuleExtender {
     }
 
     public Module module() {
-        return new Module() {
-            @Override
-            public void configure(Binder binder) {
+        return binder -> {
 
-                if (noCacheGroupsHandler) {
-                    // replace CacheGroupsHandler with a dummy no op handler
-                    binder.bind(CacheGroupsHandler.class).toInstance(new CacheGroupsHandler() {
-                        @Override
-                        public InvalidationFunction canHandle(Class<? extends Persistent> type) {
-                            return null;
-                        }
-                    });
-                }
+            if (noCacheGroupsHandler) {
+                // replace CacheGroupsHandler with a dummy no op handler
+                binder.bind(CacheGroupsHandler.class).toInstance(new CacheGroupsHandler() {
+                    @Override
+                    public Function<Persistent, Collection<CacheGroupDescriptor>> canHandle(Class<? extends Persistent> type) {
+                        return null;
+                    }
+                });
+            }
 
-                ListBuilder<InvalidationHandler> handlers = CacheInvalidationModule.contributeInvalidationHandler(binder);
+            ListBuilder<InvalidationHandler> handlers = CacheInvalidationModule.contributeInvalidationHandler(binder);
 
-                handlers.addAll(handlerInstances);
+            handlers.addAll(handlerInstances);
 
-                for (Class<? extends InvalidationHandler> handlerType : handlerTypes) {
-                    handlers.add(handlerType);
-                }
+            for (Class<? extends InvalidationHandler> handlerType : handlerTypes) {
+                handlers.add(handlerType);
             }
         };
     }

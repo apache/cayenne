@@ -26,7 +26,9 @@ import java.util.Collections;
 
 /**
  * @since 4.0
+ * @deprecated since 4.1 java 8 types are in cayenne-server by default
  */
+@Deprecated
 public class Java8ServerModuleProvider implements CayenneServerModuleProvider {
 
     @Override

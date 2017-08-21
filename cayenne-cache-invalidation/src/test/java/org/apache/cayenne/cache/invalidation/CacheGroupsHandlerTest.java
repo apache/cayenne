@@ -21,7 +21,9 @@ package org.apache.cayenne.cache.invalidation;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Function;
 
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.cache.invalidation.db.E1;
 import org.apache.cayenne.cache.invalidation.db.E2;
 import org.junit.Test;
@@ -36,7 +38,7 @@ public class CacheGroupsHandlerTest {
     @Test
     public void canHandleE1() throws Exception {
         CacheGroupsHandler handler = new  CacheGroupsHandler();
-        InvalidationFunction function = handler.canHandle(E1.class);
+        Function<Persistent, Collection<CacheGroupDescriptor>> function = handler.canHandle(E1.class);
         Collection<CacheGroupDescriptor> result = function.apply(null);
 
         assertEquals(2, result.size());
@@ -52,7 +54,7 @@ public class CacheGroupsHandlerTest {
     @Test
     public void canHandleE2() throws Exception {
         CacheGroupsHandler handler = new  CacheGroupsHandler();
-        InvalidationFunction function = handler.canHandle(E2.class);
+        Function<Persistent, Collection<CacheGroupDescriptor>> function = handler.canHandle(E2.class);
         Collection<CacheGroupDescriptor> result = function.apply(null);
 
         assertEquals(6, result.size());

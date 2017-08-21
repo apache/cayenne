@@ -21,13 +21,15 @@ package org.apache.cayenne.java8;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.java8.access.types.LocalDateTimeValueType;
-import org.apache.cayenne.java8.access.types.LocalDateValueType;
-import org.apache.cayenne.java8.access.types.LocalTimeValueType;
+import org.apache.cayenne.access.types.LocalDateTimeValueType;
+import org.apache.cayenne.access.types.LocalDateValueType;
+import org.apache.cayenne.access.types.LocalTimeValueType;
 
 /**
  * @since 4.0
+ * @deprecated since 4.1 Java 8 types are in cayenne-server by default
  */
+@Deprecated
 public class Java8Module implements Module {
 
     @Override

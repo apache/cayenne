@@ -16,12 +16,39 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.java8.db;
 
-import org.apache.cayenne.java8.db.auto._LocalDateTestEntity;
+package org.apache.cayenne.access.types;
 
-public class LocalDateTestEntity extends _LocalDateTestEntity {
+import java.sql.Date;
+import java.time.LocalDate;
 
-    private static final long serialVersionUID = 1L; 
+/**
+ * @since 4.0
+ */
+public class LocalDateValueType implements ValueObjectType<LocalDate, Date> {
 
+    @Override
+    public Class<Date> getTargetType() {
+        return Date.class;
+    }
+
+    @Override
+    public Class<LocalDate> getValueType() {
+        return LocalDate.class;
+    }
+
+    @Override
+    public LocalDate toJavaObject(Date value) {
+        return value.toLocalDate();
+    }
+
+    @Override
+    public Date fromJavaObject(LocalDate object) {
+        return Date.valueOf(object);
+    }
+
+    @Override
+    public String toCacheKey(LocalDate object) {
+        return object.toString();
+    }
 }

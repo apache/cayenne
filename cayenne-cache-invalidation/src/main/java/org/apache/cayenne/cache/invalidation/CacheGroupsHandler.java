@@ -23,6 +23,7 @@ import org.apache.cayenne.Persistent;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Function;
 
 /**
  * @since 4.0
@@ -37,7 +38,7 @@ public class CacheGroupsHandler implements InvalidationHandler {
      * of {@link CacheGroups} and {@link CacheGroup} annotations for the given type.
      */
     @Override
-    public InvalidationFunction canHandle(Class<? extends Persistent> type) {
+    public Function<Persistent, Collection<CacheGroupDescriptor>> canHandle(Class<? extends Persistent> type) {
 
         CacheGroup multipleCacheGroups = type.getAnnotation(CacheGroup.class);
         CacheGroups cacheGroups = type.getAnnotation(CacheGroups.class);
@@ -49,12 +50,7 @@ public class CacheGroupsHandler implements InvalidationHandler {
         extractCacheGroups(cacheGroups, groupsList);
         extractCacheGroups(multipleCacheGroups, groupsList);
 
-        return new InvalidationFunction() {
-            @Override
-            public Collection<CacheGroupDescriptor> apply(Persistent persistent) {
-                return groupsList;
-            }
-        };
+        return p -> groupsList;
     }
 
     private void extractCacheGroups(CacheGroup cacheGroup, Collection<CacheGroupDescriptor> groupsList) {

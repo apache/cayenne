@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.cache.invalidation;
 
+import java.util.Collection;
+import java.util.function.Function;
+
 import org.apache.cayenne.Persistent;
 
 /**
@@ -30,6 +33,6 @@ public interface InvalidationHandler {
     /**
      * @return invalidation function or null if there is nothing to invalidate
      */
-    InvalidationFunction canHandle(Class<? extends Persistent> type);
+    Function<Persistent, Collection<CacheGroupDescriptor>> canHandle(Class<? extends Persistent> type);
 
 }

@@ -56,17 +56,20 @@
 		<module>cayenne-cache-invalidation</module>
 		<module>cayenne-cgen</module>
 		<module>cayenne-client</module>
+		<module>cayenne-client-jetty</module>
 		<module>cayenne-commitlog</module>
 		<module>cayenne-crypto</module>
 		<module>cayenne-dbcp2</module>
 		<module>cayenne-dbsync</module>
 		<module>cayenne-di</module>
 		<module>cayenne-gradle-plugin</module>
+		<module>cayenne-java8</module>
 		<module>cayenne-jcache</module>
 		<module>cayenne-joda</module>
 		<module>cayenne-lifecycle</module>
 		<module>cayenne-project</module>
 		<module>cayenne-project-compatibility</module>
+		<module>cayenne-protostuff</module>
 		<module>cayenne-server</module>
 		<module>cayenne-velocity</module>
 		<module>eventbridges</module>
@@ -75,6 +78,7 @@
 		<module>modeler</module>
 		<module>tutorials</module>
 		<module>docs</module>
+		<module>assembly</module>
     </modules>
 	<issueManagement>
 		<system>jira</system>
@@ -710,8 +714,8 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.6.1</version>
 					<configuration>
-						<source>1.7</source>
-						<target>1.7</target>
+						<source>1.8</source>
+						<target>1.8</target>
 						<encoding>UTF-8</encoding>
 					</configuration>
 				</plugin>
@@ -1569,18 +1573,6 @@
 			<properties>
 				<javadoc.doclint.none>-Xdoclint:none</javadoc.doclint.none>
 			</properties>
-		</profile>
-		<profile>
-			<id>cayenne-java8-module-to-build</id>
-			<activation>
-				<jdk>[1.8,)</jdk>
-			</activation>
-			<modules>
-				<module>cayenne-java8</module>
-				<module>cayenne-client-jetty</module>
-				<module>cayenne-protostuff</module>
-				<module>assembly</module>
-			</modules>
 		</profile>
 	</profiles>
 
