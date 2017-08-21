@@ -36,6 +36,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoField;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -103,7 +104,9 @@ public class Java8TimeIT extends ServerCase {
 	@Test
 	public void testJava8LocalDateTime() {
 		LocalDateTimeTestEntity localDateTimeTestEntity = context.newObject(LocalDateTimeTestEntity.class);
-		LocalDateTime localDateTime = LocalDateTime.now();
+		// round up seconds fraction
+		// reason: on MySQL field should be defined as TIMESTAMP(fractionSecondsPrecision) to support it
+		LocalDateTime localDateTime = LocalDateTime.now().with(ChronoField.NANO_OF_SECOND, 0);
 		localDateTimeTestEntity.setTimestamp(localDateTime);
 
 		context.commitChanges();
@@ -118,7 +121,9 @@ public class Java8TimeIT extends ServerCase {
 
 	@Test
 	public void columnSelectWithJava8Type() {
-		LocalDateTime localDateTime = LocalDateTime.now();
+		// round up seconds fraction
+		// reason: on MySQL field should be defined as TIMESTAMP(fractionSecondsPrecision) to support it
+		LocalDateTime localDateTime = LocalDateTime.now().with(ChronoField.NANO_OF_SECOND, 0);
 
 		LocalDateTimeTestEntity localDateTimeTestEntity = context.newObject(LocalDateTimeTestEntity.class);
 		localDateTimeTestEntity.setTimestamp(localDateTime);
