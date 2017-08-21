@@ -7,6 +7,9 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 
 UPGRADING TO 4.1.M1
 
+* Per CAY-2351 Minimum supported Java version is now Java 8. There is no options to use Cayenne 4.1 with earlier
+      versions, you should use 4.0 version if Java 7 is required by your project.
+
 * Per CAY-2345 Velocity replaced with Cayenne own template engine by default in cayenne-server,
       this should be transparent in almost all cases, however if you relied on advanced Velocity
       features in SQLTemplate you can include auto-loaded cayenne-velocity module and keep using Velocity,
@@ -14,7 +17,7 @@ UPGRADING TO 4.1.M1
 
 * Per CAY-2335 ServerRuntime by default will fail to load projects in case of version mismatch.
       You have two options:
-      - update project via opening it in Cayenne Modeler
+      - update project files via opening them in Cayenne Modeler
       - if you are unable to do so you can use new cayenne-project-compatibility module,
       to enable it simply add it as a dependency in Maven (or any other build system you use), however
       this module can support only versions created by Cayenne 3.1 or later.
