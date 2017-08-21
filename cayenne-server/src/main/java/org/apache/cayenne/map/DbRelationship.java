@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 /**
  * A DbRelationship is a descriptor of a database inter-table relationship based
@@ -113,11 +113,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
      */
     @SuppressWarnings("unchecked")
     public Collection<DbAttribute> getTargetAttributes() {
-        if (joins.size() == 0) {
-            return Collections.emptyList();
-        }
-
-        return joins.stream().map(DbJoin::getTarget).collect(Collectors.toList());
+        return mapJoinsToAttributes(DbJoin::getTarget);
     }
 
     /**
@@ -127,11 +123,22 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
      */
     @SuppressWarnings("unchecked")
     public Collection<DbAttribute> getSourceAttributes() {
+        return mapJoinsToAttributes(DbJoin::getSource);
+    }
+
+    private Collection<DbAttribute> mapJoinsToAttributes(Function<DbJoin, DbAttribute> mapper) {
         if (joins.size() == 0) {
             return Collections.emptyList();
         }
-
-        return joins.stream().map(DbJoin::getSource).collect(Collectors.toList());
+        // fast path for common case
+        if(joins.size() == 1) {
+            return Collections.singletonList(mapper.apply(joins.get(0)));
+        }
+        Collection<DbAttribute> result = new ArrayList<>(joins.size());
+        for(DbJoin join : joins) {
+            result.add(mapper.apply(join));
+        }
+        return result;
     }
 
     /**
@@ -141,7 +148,7 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
      * @since 1.0.5
      */
     public DbRelationship createReverseRelationship() {
-        DbEntity targetEntity = (DbEntity) getTargetEntity();
+        DbEntity targetEntity = getTargetEntity();
 
         DbRelationship reverse = new DbRelationship();
         reverse.setSourceEntity(targetEntity);
