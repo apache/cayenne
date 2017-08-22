@@ -34,6 +34,7 @@ CAY-2331 cgen: broken templates for data map
 CAY-2347 cdbimport: can't get all relationships on the first pass
 CAY-2349 Cache issue: 'SelectQuery' with prefetches loses relationships
 CAY-2350 Expression: NotIn with empty collection returns empty result
+CAY-2353 Broken paginated column select with only one entity in the result
 
 ----------------------------------
 Release: 4.0.B1
