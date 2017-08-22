@@ -556,6 +556,22 @@ public class ColumnSelectIT extends ServerCase {
     }
 
     @Test
+    public void testPageSizeOneScalarAsArray() {
+        List<Object[]> a = ObjectSelect.query(Artist.class)
+                .columns(Artist.ARTIST_NAME.trim())
+                .pageSize(10)
+                .select(context);
+        assertNotNull(a);
+        assertEquals(20, a.size());
+        int idx = 0;
+        for(Object[] next : a) {
+            assertNotNull(""+idx, next[0]);
+            assertTrue(next[0] instanceof String);
+            idx++;
+        }
+    }
+
+    @Test
     public void testPageSizeScalars() {
         List<Object[]> a = ObjectSelect.query(Artist.class)
                 .columns(Artist.ARTIST_NAME.trim(), Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.count())
@@ -584,6 +600,21 @@ public class ColumnSelectIT extends ServerCase {
         assertEquals(20, a.size());
         for(Artist next : a){
             assertNotNull(next);
+        }
+    }
+
+    @Test
+    public void testPageSizeOneObjectAsArray() {
+        Property<Artist> artistFull = Property.createSelf(Artist.class);
+        List<Object[]> a = ObjectSelect.query(Artist.class)
+                .columns(artistFull)
+                .pageSize(10)
+                .select(context);
+        assertNotNull(a);
+        assertEquals(20, a.size());
+        for(Object[] next : a){
+            assertNotNull(next[0]);
+            assertTrue(next[0] instanceof Artist);
         }
     }
 

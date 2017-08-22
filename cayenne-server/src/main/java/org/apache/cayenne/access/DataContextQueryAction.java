@@ -112,7 +112,8 @@ class DataContextQueryAction extends ObjectContextQueryAction {
                 if(rsMapping.size() > 1) {
                     mixedResults = true;
                 } else if(rsMapping.size() == 1) {
-                    mixedResults = !(rsMapping.get(0) instanceof EntityResultSegment);
+                    mixedResults = !(rsMapping.get(0) instanceof EntityResultSegment)
+                            || !metadata.isSingleResultSetMapping();
                 }
             }
 
@@ -121,9 +122,9 @@ class DataContextQueryAction extends ObjectContextQueryAction {
             } else {
                 DbEntity dbEntity = metadata.getDbEntity();
                 if (dbEntity != null && dbEntity.getPrimaryKeys().size() == 1) {
-                    paginatedList = new SimpleIdIncrementalFaultList<Object>(actingDataContext, query, maxIdQualifierSize);
+                    paginatedList = new SimpleIdIncrementalFaultList<>(actingDataContext, query, maxIdQualifierSize);
                 } else {
-                    paginatedList = new IncrementalFaultList<Object>(actingDataContext, query, maxIdQualifierSize);
+                    paginatedList = new IncrementalFaultList<>(actingDataContext, query, maxIdQualifierSize);
                 }
             }
 
