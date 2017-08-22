@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import javax.xml.bind.DatatypeConverter;
+import java.util.Base64;
 
 /**
  * @since 4.0
@@ -29,12 +29,12 @@ public class Base64StringConverter implements BytesConverter<String> {
 
     @Override
     public byte[] toBytes(String value) {
-        return DatatypeConverter.parseBase64Binary(value);
+        return Base64.getDecoder().decode(value);
     }
 
     @Override
     public String fromBytes(byte[] bytes) {
-        return DatatypeConverter.printBase64Binary(bytes);
+        return Base64.getEncoder().encodeToString(bytes);
     }
 
 }
