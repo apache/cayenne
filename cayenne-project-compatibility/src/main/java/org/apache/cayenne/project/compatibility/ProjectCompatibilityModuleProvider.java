@@ -19,12 +19,13 @@
 
 package org.apache.cayenne.project.compatibility;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.project.ProjectModule;
 
 /**
  * @since 4.1
@@ -44,8 +45,8 @@ public class ProjectCompatibilityModuleProvider implements CayenneServerModulePr
     @SuppressWarnings("unchecked")
     @Override
     public Collection<Class<? extends Module>> overrides() {
-        // compatibility module overrides XML loaders defind in ServerModule
-        Collection modules = Collections.singletonList(ServerModule.class);
-        return modules;
+        // compatibility module overrides XML loaders defined in ServerModule and
+        // upgrade services from ProjectModule
+        return Arrays.asList(ServerModule.class, ProjectModule.class);
     }
 }
