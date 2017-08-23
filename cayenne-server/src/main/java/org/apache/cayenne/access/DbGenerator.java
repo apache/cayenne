@@ -268,63 +268,70 @@ public class DbGenerator {
 	public void runGenerator(DataSource ds) throws Exception {
 		this.failures = null;
 
-		try (Connection connection = ds.getConnection();) {
-
-			// drop tables
-			if (shouldDropTables) {
-				ListIterator<DbEntity> it = dbEntitiesInInsertOrder.listIterator(dbEntitiesInInsertOrder.size());
-				while (it.hasPrevious()) {
-					DbEntity ent = it.previous();
-					for (String statement : dropTables.get(ent.getName())) {
-						safeExecute(connection, statement);
-					}
-				}
-			}
-
-			// create tables
-			List<String> createdTables = new ArrayList<>();
-			if (shouldCreateTables) {
-				for (final DbEntity ent : dbEntitiesInInsertOrder) {
-
-					// only create missing tables
-
-					safeExecute(connection, createTables.get(ent.getName()));
-					createdTables.add(ent.getName());
-				}
-			}
-
-			// create FK
-			if (shouldCreateTables && shouldCreateFKConstraints) {
-				for (DbEntity ent : dbEntitiesInInsertOrder) {
-
-					if (createdTables.contains(ent.getName())) {
-						List<String> fks = createConstraints.get(ent.getName());
-						for (String fk : fks) {
-							safeExecute(connection, fk);
+		try (Connection connection = ds.getConnection()) {
+			// force connection to autocommit, see CAY-2354
+			boolean autoCommit = connection.getAutoCommit();
+			connection.setAutoCommit(true);
+			try {
+				// drop tables
+				if (shouldDropTables) {
+					ListIterator<DbEntity> it = dbEntitiesInInsertOrder.listIterator(dbEntitiesInInsertOrder.size());
+					while (it.hasPrevious()) {
+						DbEntity ent = it.previous();
+						for (String statement : dropTables.get(ent.getName())) {
+							safeExecute(connection, statement);
 						}
 					}
 				}
-			}
 
-			// drop PK
-			if (shouldDropPKSupport) {
-				List<String> dropAutoPKSQL = getAdapter().getPkGenerator().dropAutoPkStatements(
-						dbEntitiesRequiringAutoPK);
-				for (final String sql : dropAutoPKSQL) {
-					safeExecute(connection, sql);
+				// create tables
+				List<String> createdTables = new ArrayList<>();
+				if (shouldCreateTables) {
+					for (final DbEntity ent : dbEntitiesInInsertOrder) {
+
+						// only create missing tables
+
+						safeExecute(connection, createTables.get(ent.getName()));
+						createdTables.add(ent.getName());
+					}
 				}
-			}
 
-			// create pk
-			if (shouldCreatePKSupport) {
-				List<String> createAutoPKSQL = getAdapter().getPkGenerator().createAutoPkStatements(
-						dbEntitiesRequiringAutoPK);
-				for (final String sql : createAutoPKSQL) {
-					safeExecute(connection, sql);
+				// create FK
+				if (shouldCreateTables && shouldCreateFKConstraints) {
+					for (DbEntity ent : dbEntitiesInInsertOrder) {
+
+						if (createdTables.contains(ent.getName())) {
+							List<String> fks = createConstraints.get(ent.getName());
+							for (String fk : fks) {
+								safeExecute(connection, fk);
+							}
+						}
+					}
 				}
-			}
 
-			new DbGeneratorPostprocessor().execute(connection, getAdapter());
+				// drop PK
+				if (shouldDropPKSupport) {
+					List<String> dropAutoPKSQL = getAdapter().getPkGenerator().dropAutoPkStatements(
+							dbEntitiesRequiringAutoPK);
+					for (final String sql : dropAutoPKSQL) {
+						safeExecute(connection, sql);
+					}
+				}
+
+				// create pk
+				if (shouldCreatePKSupport) {
+					List<String> createAutoPKSQL = getAdapter().getPkGenerator().createAutoPkStatements(
+							dbEntitiesRequiringAutoPK);
+					for (final String sql : createAutoPKSQL) {
+						safeExecute(connection, sql);
+					}
+				}
+
+				new DbGeneratorPostprocessor().execute(connection, getAdapter());
+			} finally {
+				// restore connection autocommit state in case it will be recycled in some underlying pool
+				connection.setAutoCommit(autoCommit);
+			}
 		}
 	}
 
@@ -336,7 +343,7 @@ public class DbGenerator {
 	 */
 	protected boolean safeExecute(Connection connection, String sql) throws SQLException {
 
-		try (Statement statement = connection.createStatement();) {
+		try (Statement statement = connection.createStatement()) {
 			jdbcEventLogger.log(sql);
 			statement.execute(sql);
 			return true;
