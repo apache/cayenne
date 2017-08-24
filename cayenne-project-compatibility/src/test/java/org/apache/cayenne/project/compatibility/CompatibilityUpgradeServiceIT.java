@@ -21,25 +21,15 @@ package org.apache.cayenne.project.compatibility;
 
 import java.net.URL;
 
-import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.upgrade.UpgradeService;
-import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
-import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V10;
-import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V7;
-import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V8;
-import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V9;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
 
 /**
  * @since 4.1
@@ -47,22 +37,8 @@ import static org.mockito.Mockito.mock;
 public class CompatibilityUpgradeServiceIT {
 
     @Test
-    public void testUpgradeDom() throws Exception {
-        Injector injector = DIBootstrap.createInjector(new Module() {
-            @Override
-            public void configure(Binder binder) {
-                binder.bind(UpgradeService.class).to(CompatibilityUpgradeService.class);
-                binder.bind(DocumentProvider.class).to(DefaultDocumentProvider.class);
-                binder.bindList(UpgradeHandler.class)
-                        .add(UpgradeHandler_V7.class)
-                        .add(UpgradeHandler_V8.class)
-                        .add(UpgradeHandler_V9.class)
-                        .add(UpgradeHandler_V10.class);
-
-                binder.bind(ProjectSaver.class).toInstance(mock(ProjectSaver.class));
-                binder.bind(DataChannelDescriptorLoader.class).toInstance(mock(DataChannelDescriptorLoader.class));
-            }
-        });
+    public void testUpgradeFullProjectDom() throws Exception {
+        Injector injector = getInjector();
 
         CompatibilityUpgradeService upgradeService = (CompatibilityUpgradeService)injector
                 .getInstance(UpgradeService.class);
@@ -87,4 +63,28 @@ public class CompatibilityUpgradeServiceIT {
         assertEquals(2, dataMapDocument.getElementsByTagName("db-attribute").getLength());
     }
 
+    @Test
+    public void testUpgradeStandAloneDataMapDom() throws Exception {
+        Injector injector = getInjector();
+
+        CompatibilityUpgradeService upgradeService = (CompatibilityUpgradeService)injector
+                .getInstance(UpgradeService.class);
+
+        DocumentProvider documentProvider = injector.getInstance(DocumentProvider.class);
+
+        URL dataMapUrl = getClass().getResource("test-map-v6.map.xml");
+        Document dataMapDocument = documentProvider.getDocument(dataMapUrl);
+        assertNull(dataMapDocument);
+
+        Resource resource = new URLResource(dataMapUrl);
+        upgradeService.upgradeDataMap(resource);
+
+        dataMapDocument = documentProvider.getDocument(dataMapUrl);
+        assertNotNull(dataMapDocument);
+        assertEquals("10", dataMapDocument.getDocumentElement().getAttribute("project-version"));
+    }
+
+    private Injector getInjector() {
+        return DIBootstrap.createInjector(new CompatibilityTestModule());
+    }
 }

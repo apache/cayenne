@@ -24,7 +24,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.util.Util;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -44,18 +43,14 @@ public class XMLDataMapLoader implements DataMapLoader {
     @Inject
     protected Provider<XMLReader> xmlReaderProvider;
 
-    DataMap map;
-
     public synchronized DataMap load(Resource configurationResource) throws CayenneRuntimeException {
+
+        final DataMap[] maps = new DataMap[1];
+
         try(InputStream in = configurationResource.getURL().openStream()) {
             XMLReader parser = xmlReaderProvider.get();
             LoaderContext loaderContext = new LoaderContext(parser, handlerFactory);
-            loaderContext.addDataMapListener(new DataMapLoaderListener() {
-                @Override
-                public void onDataMapLoaded(DataMap dataMap) {
-                    map = dataMap;
-                }
-            });
+            loaderContext.addDataMapListener(dataMap -> maps[0] = dataMap);
             RootDataMapHandler rootHandler = new RootDataMapHandler(loaderContext);
 
             parser.setContentHandler(rootHandler);
@@ -67,9 +62,10 @@ public class XMLDataMapLoader implements DataMapLoader {
             throw new CayenneRuntimeException("Error loading configuration from %s", e, configurationResource.getURL());
         }
 
-        if(map == null) {
+        if(maps[0] == null) {
             throw new CayenneRuntimeException("Unable to load data map from %s", configurationResource.getURL());
         }
+        DataMap map = maps[0];
 
         if(map.getName() == null) {
             // set name based on location if no name provided by map itself

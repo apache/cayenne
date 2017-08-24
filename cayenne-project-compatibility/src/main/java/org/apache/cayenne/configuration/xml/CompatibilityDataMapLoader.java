@@ -27,9 +27,13 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.project.compatibility.CompatibilityUpgradeService;
 import org.apache.cayenne.project.compatibility.DocumentProvider;
+import org.apache.cayenne.project.upgrade.UpgradeService;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
 import org.w3c.dom.Document;
@@ -42,15 +46,31 @@ import org.xml.sax.XMLReader;
 public class CompatibilityDataMapLoader extends XMLDataMapLoader {
 
     @Inject
+    Provider<UpgradeService> upgradeServiceProvider;
+
+    @Inject
     DocumentProvider documentProvider;
 
     @Override
     public DataMap load(Resource configurationResource) throws CayenneRuntimeException {
         Document document = documentProvider.getDocument(configurationResource.getURL());
+        // no document yet in provider, maybe DataMap is directly loaded
         if(document == null) {
-            return super.load(configurationResource);
+            if(!(upgradeServiceProvider.get() instanceof CompatibilityUpgradeService)) {
+                throw new ConfigurationException("CompatibilityUpgradeService expected");
+            }
+            // try to upgrade datamap directly
+            CompatibilityUpgradeService upgradeService = (CompatibilityUpgradeService)upgradeServiceProvider.get();
+            upgradeService.upgradeDataMap(configurationResource);
+            document = documentProvider.getDocument(configurationResource.getURL());
+
+            // still no document, try to load it without upgrade, though it likely will fail
+            if(document == null) {
+                return super.load(configurationResource);
+            }
         }
 
+        final DataMap[] maps = new DataMap[1];
         try {
             DOMSource source = new DOMSource(document);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -61,12 +81,7 @@ public class CompatibilityDataMapLoader extends XMLDataMapLoader {
 
             XMLReader parser = Util.createXmlReader();
             LoaderContext loaderContext = new LoaderContext(parser, handlerFactory);
-            loaderContext.addDataMapListener(new DataMapLoaderListener() {
-                @Override
-                public void onDataMapLoaded(DataMap dataMap) {
-                    map = dataMap;
-                }
-            });
+            loaderContext.addDataMapListener(dataMap -> maps[0] = dataMap);
             RootDataMapHandler rootHandler = new RootDataMapHandler(loaderContext);
 
             parser.setContentHandler(rootHandler);
@@ -76,10 +91,10 @@ public class CompatibilityDataMapLoader extends XMLDataMapLoader {
             throw new CayenneRuntimeException("Error loading configuration from %s", e, configurationResource.getURL());
         }
 
-        if(map == null) {
+        if(maps[0] == null) {
             throw new CayenneRuntimeException("Unable to load data map from %s", configurationResource.getURL());
         }
-
+        DataMap map = maps[0];
         if(map.getName() == null) {
             // set name based on location if no name provided by map itself
             map.setName(mapNameFromLocation(configurationResource.getURL().getFile()));
