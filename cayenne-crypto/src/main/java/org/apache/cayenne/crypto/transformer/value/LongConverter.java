@@ -25,7 +25,7 @@ package org.apache.cayenne.crypto.transformer.value;
  */
 public class LongConverter implements BytesConverter<Long> {
 
-    public static final BytesConverter INSTANCE = new LongConverter();
+    public static final BytesConverter<Long> INSTANCE = new LongConverter();
     private static final int BYTES = 8;
 
     static long getLong(byte[] bytes) {

@@ -30,15 +30,15 @@ public class UtilDateConverter implements BytesConverter<Date> {
 
     public static final BytesConverter<Date> INSTANCE = new UtilDateConverter(LongConverter.INSTANCE);
 
-    private BytesConverter longConverter;
+    private BytesConverter<Long> longConverter;
 
-    public UtilDateConverter(BytesConverter longConverter) {
+    public UtilDateConverter(BytesConverter<Long> longConverter) {
         this.longConverter = Objects.requireNonNull(longConverter);
     }
 
     @Override
     public Date fromBytes(byte[] bytes) {
-        return new Date((long) longConverter.fromBytes(bytes));
+        return new Date(longConverter.fromBytes(bytes));
     }
 
     @Override
