@@ -36,6 +36,7 @@ CAY-2349 Cache issue: 'SelectQuery' with prefetches loses relationships
 CAY-2350 Expression: NotIn with empty collection returns empty result
 CAY-2353 Broken paginated column select with only one entity in the result
 CAY-2354 DbGenerator.runGenerator must commit its connection
+CAY-2356 EJBQL: Incorrect COUNT() on outer joined table
 
 ----------------------------------
 Release: 4.0.B1

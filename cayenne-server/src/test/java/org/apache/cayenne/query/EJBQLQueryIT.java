@@ -546,4 +546,73 @@ public class EJBQLQueryIT extends ServerCase {
 		assertEquals("a0", ((Artist) artistDesc.get(0)[0]).getArtistName());
 		assertEquals("a1", ((Artist) artistDesc.get(1)[0]).getArtistName());
 	}
+
+    @Test
+    public void testOuterJoinCountByIdentifier() throws Exception {
+        tArtist.insert(1, "a0");
+        tArtist.insert(2, "a1");
+        tArtist.insert(3, "a2");
+
+        tPainting.insert(3, 1, "title0");
+        tPainting.insert(2, 1, "title1");
+        tPainting.insert(1, 2, "title2");
+
+        EJBQLQuery asc = new EJBQLQuery("select a, count(p) from Artist a LEFT JOIN a.paintingArray p " +
+                "GROUP BY a order by count(p) DESC");
+        List<Object[]> artistAsc = context.performQuery(asc);
+        assertEquals(3, artistAsc.size());
+        assertEquals("a0", ((Artist) artistAsc.get(0)[0]).getArtistName());
+        assertEquals("a1", ((Artist) artistAsc.get(1)[0]).getArtistName());
+        assertEquals("a2", ((Artist) artistAsc.get(2)[0]).getArtistName());
+
+        assertEquals(2L, artistAsc.get(0)[1]);
+        assertEquals(1L, artistAsc.get(1)[1]);
+        assertEquals(0L, artistAsc.get(2)[1]);
+    }
+
+    @Test
+    public void testOuterJoinCountAll() throws Exception {
+        tArtist.insert(1, "a0");
+        tArtist.insert(2, "a1");
+        tArtist.insert(3, "a2");
+
+        tPainting.insert(3, 1, "title0");
+        tPainting.insert(2, 1, "title1");
+        tPainting.insert(1, 2, "title2");
+
+        EJBQLQuery asc = new EJBQLQuery("SELECT a, count(1) FROM Artist a LEFT JOIN a.paintingArray p " +
+                "GROUP BY a ORDER BY count(1) DESC, a.artistName");
+        List<Object[]> artistAsc = context.performQuery(asc);
+        assertEquals(3, artistAsc.size());
+        assertEquals("a0", ((Artist) artistAsc.get(0)[0]).getArtistName());
+        assertEquals("a1", ((Artist) artistAsc.get(1)[0]).getArtistName());
+        assertEquals("a2", ((Artist) artistAsc.get(2)[0]).getArtistName());
+
+        assertEquals(2L, artistAsc.get(0)[1]);
+        assertEquals(1L, artistAsc.get(1)[1]);
+        assertEquals(1L, artistAsc.get(2)[1]); // here is a difference with other cases
+    }
+
+    @Test
+    public void testOuterJoinCountByPath() throws Exception {
+        tArtist.insert(1, "a0");
+        tArtist.insert(2, "a1");
+        tArtist.insert(3, "a2");
+
+        tPainting.insert(3, 1, "title0");
+        tPainting.insert(2, 1, "title1");
+        tPainting.insert(1, 2, "title2");
+
+        EJBQLQuery asc = new EJBQLQuery("select a, count(a.paintingArray+) from Artist a " +
+                "GROUP BY a order by count(a.paintingArray+) DESC");
+        List<Object[]> artistAsc = context.performQuery(asc);
+        assertEquals(3, artistAsc.size());
+        assertEquals("a0", ((Artist) artistAsc.get(0)[0]).getArtistName());
+        assertEquals("a1", ((Artist) artistAsc.get(1)[0]).getArtistName());
+        assertEquals("a2", ((Artist) artistAsc.get(2)[0]).getArtistName());
+
+        assertEquals(2L, artistAsc.get(0)[1]);
+        assertEquals(1L, artistAsc.get(1)[1]);
+        assertEquals(0L, artistAsc.get(2)[1]);
+    }
 }
