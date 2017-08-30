@@ -25,11 +25,12 @@ import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 import org.apache.cayenne.ejbql.parser.EJBQLAggregateColumn;
+import org.apache.cayenne.ejbql.parser.EJBQLIntegerLiteral;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * @since 3.0
@@ -93,6 +94,20 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
         }
     }
 
+    /**
+     * This method tries to find mandatory PK attribute, if no such exists returns first PK attribute.
+     * Used to translate COUNT(entity) expressions into COUNT(alias.pk_column).
+     */
+    private DbAttribute getPk(DbEntity dbEntity) {
+        for(DbAttribute attribute : dbEntity.getPrimaryKeys()) {
+            if(attribute.isMandatory()) {
+                return attribute;
+            }
+        }
+
+        return dbEntity.getPrimaryKeys().iterator().next();
+    }
+
     class FieldPathTranslator extends EJBQLPathTranslator {
 
         FieldPathTranslator() {
@@ -124,12 +139,14 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
 
         @Override
         protected void processTerminatingRelationship(ObjRelationship relationship) {
-            Collection<DbAttribute> dbAttr = ((ObjEntity) relationship.getTargetEntity()).getDbEntity().getAttributes();
+            Collection<DbAttribute> dbAttr = relationship.getTargetEntity().getDbEntity().getAttributes();
 
             if (dbAttr.size() > 0) {
                 resolveJoin();
             }
-            context.append('*');
+
+            DbAttribute pk = getPk(relationship.getTargetEntity().getDbEntity());
+            context.append(lastAlias).append('.').append(pk.getName());
         }
     }
 
@@ -142,8 +159,21 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
         }
 
         @Override
+        public boolean visitIntegerLiteral(EJBQLIntegerLiteral expression) {
+            // this allows to use COUNT(1) in EJBQL
+            context.append(expression.getText());
+            return false;
+        }
+
+        @Override
         public boolean visitIdentifier(EJBQLExpression expression) {
-            context.append('*');
+            ClassDescriptor classDescriptor = context.getCompiledExpression().getEntityDescriptor(expression.getText());
+            if(classDescriptor == null) {
+                throw new EJBQLException("Unmapped id variable: " + expression.getText());
+            }
+            String alias = context.getTableAlias(expression.getText(), classDescriptor.getEntity().getDbEntityName());
+            DbAttribute pk = getPk(classDescriptor.getEntity().getDbEntity());
+            context.append(alias).append('.').append(pk.getName());
             return false;
         }
 
