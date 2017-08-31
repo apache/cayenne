@@ -675,13 +675,26 @@ public class EJBQLQueryIT extends ServerCase {
         registry.addCallback(LifecycleEvent.POST_LOAD, Painting.class, "postAddCallback");
 
         // select Paintings, where one of it will be null
-        EJBQLQuery queryFullProduct = new EJBQLQuery("select a.paintingArray+ from Artist a order by a.artistName");
-        List<Painting> result1 = context.performQuery(queryFullProduct);
+        EJBQLQuery query = new EJBQLQuery("select a.paintingArray+ from Artist a order by a.artistName");
+        List<Painting> result1 = context.performQuery(query);
         assertEquals(4, result1.size());
         assertNull(result1.get(3));
         for(int i=0; i<3; i++) {
             assertNotNull(result1.get(i));
             assertTrue(result1.get(i).isPostAdded());
         }
+    }
+
+    @Test
+    public void testOrderByDbPath() throws Exception {
+        tArtist.insert(1, "a3");
+        tArtist.insert(2, "a2");
+        tArtist.insert(3, "a1");
+
+        EJBQLQuery query = new EJBQLQuery("SELECT a FROM Artist a ORDER BY db:a.ARTIST_ID DESC");
+        List<Artist> result = context.performQuery(query);
+        assertEquals("a1", result.get(0).getArtistName());
+        assertEquals("a2", result.get(1).getArtistName());
+        assertEquals("a3", result.get(2).getArtistName());
     }
 }
