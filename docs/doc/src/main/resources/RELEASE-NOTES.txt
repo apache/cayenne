@@ -38,6 +38,7 @@ CAY-2353 Broken paginated column select with only one entity in the result
 CAY-2354 DbGenerator.runGenerator must commit its connection
 CAY-2356 EJBQL: Incorrect COUNT() on outer joined table
 CAY-2357 Generic select queries silently convert result to nulls if no PK column found
+CAY-2358 NPE when callbacks invoked on null objects
 
 ----------------------------------
 Release: 4.0.B1

@@ -20,7 +20,6 @@ package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -111,14 +110,8 @@ class LifecycleCallbackEventHandler {
      * Registers a callback object to be invoked when a lifecycle event occurs.
      */
     private void addCallback(Class<?> entityClass, AbstractCallback callback) {
-        Collection<AbstractCallback> entityListeners = listeners.get(entityClass
-                .getName());
-
-        if (entityListeners == null) {
-            entityListeners = new ArrayList<>(3);
-            listeners.put(entityClass.getName(), entityListeners);
-        }
-
+        Collection<AbstractCallback> entityListeners = listeners
+                .computeIfAbsent(entityClass.getName(), k -> new ArrayList<>(3));
         entityListeners.add(callback);
     }
 
@@ -126,6 +119,11 @@ class LifecycleCallbackEventHandler {
      * Invokes callbacks for a given entity object.
      */
     void performCallbacks(Persistent object) {
+        if(object == null) {
+            // this can happen if object resolved to null from some query with outer join
+            // (e.g. in EJBQL or SQLTemplate)
+            return;
+        }
 
         // default listeners are invoked first
         if (!defaultListeners.isEmpty()) {

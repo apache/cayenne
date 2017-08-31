@@ -28,6 +28,8 @@ import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.LifecycleEvent;
+import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -645,4 +647,31 @@ public class EJBQLQueryIT extends ServerCase {
         }
     }
 
+    @Test
+    public void testNullObjectsCallback() throws Exception {
+        tArtist.insert(1, "a1");
+        tArtist.insert(2, "a2");
+        tArtist.insert(3, "a3");
+
+        tPainting.insert(1, 2, "title1");
+        tPainting.insert(2, 1, "title2");
+        tPainting.insert(3, 1, "title3");
+
+        // set callback to be called
+        LifecycleCallbackRegistry registry = runtime
+                .getDataDomain()
+                .getEntityResolver()
+                .getCallbackRegistry();
+        registry.addCallback(LifecycleEvent.POST_LOAD, Painting.class, "postAddCallback");
+
+        // select Paintings, where one of it will be null
+        EJBQLQuery queryFullProduct = new EJBQLQuery("select a.paintingArray+ from Artist a order by a.artistName");
+        List<Painting> result1 = context.performQuery(queryFullProduct);
+        assertEquals(4, result1.size());
+        assertNull(result1.get(3));
+        for(int i=0; i<3; i++) {
+            assertNotNull(result1.get(i));
+            assertTrue(result1.get(i).isPostAdded());
+        }
+    }
 }
