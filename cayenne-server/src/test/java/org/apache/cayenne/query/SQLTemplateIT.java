@@ -161,7 +161,7 @@ public class SQLTemplateIT extends ServerCase {
 
 	@Test
 	public void testSQLTemplateSelectNullObjects() throws Exception {
-		tPainting.insert(1, null, "p1", BigInteger.valueOf(10L));
+		tPainting.insert(1, null, "p1", 10);
 
 
 		String sql = "SELECT p.GALLERY_ID FROM PAINTING p";
@@ -175,7 +175,7 @@ public class SQLTemplateIT extends ServerCase {
 
 	@Test(expected = CayenneRuntimeException.class)
 	public void testSQLTemplateSelectInvalid() throws Exception {
-		tPainting.insert(1, null, "p1", BigInteger.valueOf(10L));
+		tPainting.insert(1, null, "p1", 10);
 
 		String sql = "SELECT p.PAINTING_TITLE FROM PAINTING p";
 		SQLTemplate q1 = new SQLTemplate(Gallery.class, sql);
