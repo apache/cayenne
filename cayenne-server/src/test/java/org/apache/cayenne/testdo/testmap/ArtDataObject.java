@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.testdo.testmap;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 
 /**
  * This class exists solely to enable testing of arbitrary superclasses for
  * ObjEntities. It has no functionality at this stage (nor is any likely)
  */
-public class ArtDataObject extends CayenneDataObject {
+public class ArtDataObject extends BaseDataObject {
 
     private static final long serialVersionUID = -1350981440925237535L;
 
