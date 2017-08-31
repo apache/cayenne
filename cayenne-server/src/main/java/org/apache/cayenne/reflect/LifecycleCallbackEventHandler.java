@@ -138,6 +138,11 @@ class LifecycleCallbackEventHandler {
      * Invokes callbacks for a given entity object.
      */
     void performCallbacks(Persistent object) {
+        if(object == null) {
+            // this can happen if object resolved to null from some query with outer join
+            // (e.g. in EJBQL or SQLTemplate)
+            return;
+        }
 
         // default listeners are invoked first
         if (!defaultListeners.isEmpty()
