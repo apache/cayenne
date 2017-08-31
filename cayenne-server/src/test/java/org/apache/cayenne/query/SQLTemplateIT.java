@@ -26,6 +26,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -33,11 +34,13 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -154,5 +157,31 @@ public class SQLTemplateIT extends ServerCase {
 		} catch (CayenneRuntimeException e) {
 			// expected
 		}
+	}
+
+	@Test
+	public void testSQLTemplateSelectNullObjects() throws Exception {
+		tPainting.insert(1, null, "p1", BigInteger.valueOf(10L));
+
+
+		String sql = "SELECT p.GALLERY_ID FROM PAINTING p";
+		SQLTemplate q1 = new SQLTemplate(Gallery.class, sql);
+		q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
+		List<Gallery> galleries = context.performQuery(q1);
+
+		assertEquals(1, galleries.size());
+		assertNull(galleries.get(0));
+	}
+
+	@Test(expected = CayenneRuntimeException.class)
+	public void testSQLTemplateSelectInvalid() throws Exception {
+		tPainting.insert(1, null, "p1", BigInteger.valueOf(10L));
+
+		String sql = "SELECT p.PAINTING_TITLE FROM PAINTING p";
+		SQLTemplate q1 = new SQLTemplate(Gallery.class, sql);
+		q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
+
+		// this should fail as result can't be converted to Gallery class
+		context.performQuery(q1);
 	}
 }

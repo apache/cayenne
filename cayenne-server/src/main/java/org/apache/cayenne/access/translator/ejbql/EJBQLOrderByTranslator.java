@@ -69,4 +69,9 @@ class EJBQLOrderByTranslator extends EJBQLBaseVisitor {
         expression.visit(childVisitor);
         return false;
     }
+
+    @Override
+    public boolean visitDbPath(EJBQLExpression expression, int finishedChildIndex) {
+        return super.visitDbPath(expression, finishedChildIndex);
+    }
 }
