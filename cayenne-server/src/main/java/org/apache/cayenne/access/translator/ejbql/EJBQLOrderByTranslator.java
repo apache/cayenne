@@ -72,6 +72,12 @@ class EJBQLOrderByTranslator extends EJBQLBaseVisitor {
 
     @Override
     public boolean visitDbPath(EJBQLExpression expression, int finishedChildIndex) {
-        return super.visitDbPath(expression, finishedChildIndex);
+        expression.visit(new EJBQLDbPathTranslator(context) {
+            @Override
+            protected void appendMultiColumnPath(EJBQLMultiColumnOperand operand) {
+                throw new EJBQLException("Can't order on multi-column paths or objects");
+            }
+        });
+        return false;
     }
 }
