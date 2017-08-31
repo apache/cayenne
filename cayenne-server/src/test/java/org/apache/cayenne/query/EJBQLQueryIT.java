@@ -625,4 +625,34 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals(1L, artistAsc.get(1)[1]);
         assertEquals(0L, artistAsc.get(2)[1]);
     }
+
+	@Test
+	public void testNullObjects() throws Exception {
+        tArtist.insert(1, "a1");
+        tArtist.insert(2, "a2");
+        tArtist.insert(3, "a3");
+
+        tPainting.insert(1, 2, "title1");
+        tPainting.insert(2, 1, "title2");
+        tPainting.insert(3, 1, "title3");
+
+        EJBQLQuery queryFullProduct = new EJBQLQuery("select a, p from Artist a, Painting p");
+        List<Object[]> result1 = context.performQuery(queryFullProduct);
+        assertEquals(9, result1.size());
+        for(Object[] next : result1) {
+            assertEquals(2, next.length);
+            assertNotNull(next[0]);
+            assertNotNull(next[1]);
+        }
+
+        EJBQLQuery queryToOneRel = new EJBQLQuery("select p.toGallery+, p.toArtist+, p from Painting p");
+        List<Object[]> result2 = context.performQuery(queryToOneRel);
+        assertEquals(3, result2.size());
+        for(Object[] next : result2) {
+            assertNull(next[0]); // Gallery
+            assertTrue(next[1] instanceof Artist);
+            assertTrue(next[2] instanceof Painting);
+        }
+    }
+
 }
