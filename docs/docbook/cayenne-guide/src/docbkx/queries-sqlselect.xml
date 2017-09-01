@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~   Licensed to the Apache Software Foundation (ASF) under one
+  ~  or more contributor license agreements.  See the NOTICE file
+  ~  distributed with this work for additional information
+  ~  regarding copyright ownership.  The ASF licenses this file
+  ~  to you under the Apache License, Version 2.0 (the
+  ~  "License"); you may not use this file except in compliance
+  ~  with the License.  You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<section xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="sqlselect">
+    <title>SQLSelect and SQLExec</title>
+    <para>
+        <code>SQLSelect</code> and <code>SQLExec</code> are essentially a "fluent" versions of older <code>SQLTemplate</code> query.
+        <code>SQLSelect</code> can be used (as name suggests) to select custom data in form of entities, separate columns or collection of <code>DataRow</code>.
+        <code>SQLExec</code> is designed to just execute any raw SQL code (e.g. updates, deletes, DDLs, etc.)
+        This queries support all directives described in <link linkend="sqltemplate">SQLTemplate</link> section.
+    </para>
+    <para>
+        Here is example of how to use <code>SQLSelect</code>:
+        <programlisting language="java"><![CDATA[SQLSelect<Painting> q1 = SQLSelect
+    .query(Painting.class, "SELECT * FROM PAINTING WHERE PAINTING_TITLE LIKE #bind($title)")
+    .params("title", "painting%")
+    .upperColumnNames()
+    .localCache()
+    .limit(100)
+    .select(context);]]></programlisting>
+    </para>
+    <para>
+        And here is example of how to use <code>SQLExec</code>:
+        <programlisting language="java"><![CDATA[int inserted = SQLExec
+    .query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))")
+    .paramsArray(55, "Picasso")
+    .update(context);]]></programlisting>
+    </para>
+</section>
