@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~   Licensed to the Apache Software Foundation (ASF) under one
+  ~  or more contributor license agreements.  See the NOTICE file
+  ~  distributed with this work for additional information
+  ~  regarding copyright ownership.  The ASF licenses this file
+  ~  to you under the Apache License, Version 2.0 (the
+  ~  "License"); you may not use this file except in compliance
+  ~  with the License.  You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+         version="5.0" xml:id="ext-joda">
+    <title>Joda time extension</title>
+    <section>
+        <title>Description</title>
+        <para>Joda time module allows to use <code>org.joda.time.LocalTime</code>, <code>org.joda.time.LocalDate</code>,
+            <code>org.joda.time.LocalDateTime</code> and <code>org.joda.time.DateTime</code> types for entity attributes</para>
+    </section>
+    <section>
+        <title>Including in a Project</title>
+        <section>
+            <title>Maven</title>
+            <para>
+                <programlisting language="xml">&lt;dependency>
+    &lt;groupId>org.apache.cayenne&lt;/groupId>
+    &lt;artifactId>cayenne-joda&lt;/artifactId>
+    &lt;version><?eval ${project.version}?>&lt;/version>
+&lt;/dependency></programlisting>
+            </para>
+        </section>
+        <section>
+            <title>Gradle</title>
+            <para>
+                <programlisting language="groovy">compile 'org.apache.cayenne:cayenne-joda:<?eval ${project.version}?>'</programlisting>
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>Usage</title>
+        <para>
+            This module doesn't require any additional setup, you can just use new data types in your model.
+        </para>
+    </section>
+</chapter>

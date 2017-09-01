@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~   Licensed to the Apache Software Foundation (ASF) under one
+  ~  or more contributor license agreements.  See the NOTICE file
+  ~  distributed with this work for additional information
+  ~  regarding copyright ownership.  The ASF licenses this file
+  ~  to you under the Apache License, Version 2.0 (the
+  ~  "License"); you may not use this file except in compliance
+  ~  with the License.  You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+         version="5.0" xml:id="ext-dbcp2">
+    <title>Apache Commons DBCP integration</title>
+    <section>
+        <title>Description</title>
+        <para>
+            This module enables usage of Apache Commons DBCP2 connection pool.
+        </para>
+    </section>
+    <section>
+        <title>Including in a Project</title>
+        <section>
+            <title>Maven</title>
+            <para>
+                <programlisting language="xml">&lt;dependency>
+    &lt;groupId>org.apache.cayenne&lt;/groupId>
+    &lt;artifactId>cayenne-dbcp2&lt;/artifactId>
+    &lt;version><?eval ${project.version}?>&lt;/version>
+&lt;/dependency></programlisting>
+            </para>
+        </section>
+        <section>
+            <title>Gradle</title>
+            <para>
+                <programlisting language="groovy">compile 'org.apache.cayenne:cayenne-dbcp2:<?eval ${project.version}?>'</programlisting>
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>Usage</title>
+        <para>
+            To use DBCP2 pool you can just setup it in <code>DataNode</code> settings in Cayenne Modeler:
+        </para>
+        <para><inlinemediaobject>
+            <imageobject>
+                <imagedata fileref="images/ext-dbcp-setup.png" scalefit="1" width="100%"/>
+            </imageobject>
+        </inlinemediaobject></para>
+    </section>
+</chapter>

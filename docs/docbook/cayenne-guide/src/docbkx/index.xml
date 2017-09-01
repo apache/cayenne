@@ -42,6 +42,7 @@
     <xi:include href="part2.xml"/>
     <xi:include href="part3.xml"/>
     <xi:include href="part4.xml"/>
+    <xi:include href="part5.xml"/>
     <xi:include href="appendix-a.xml"/>
     <xi:include href="appendix-b.xml"/>
     <xi:include href="appendix-c.xml"/>
