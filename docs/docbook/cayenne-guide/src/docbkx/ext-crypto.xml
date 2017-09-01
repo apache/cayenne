@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~   Licensed to the Apache Software Foundation (ASF) under one
+  ~  or more contributor license agreements.  See the NOTICE file
+  ~  distributed with this work for additional information
+  ~  regarding copyright ownership.  The ASF licenses this file
+  ~  to you under the Apache License, Version 2.0 (the
+  ~  "License"); you may not use this file except in compliance
+  ~  with the License.  You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+         version="5.0" xml:id="ext-crypto">
+    <title>Crypto extension</title>
+    <section>
+        <title>Description</title>
+        <para>Crypto module allows encrypt and decrypt values stored in DB transparently to your Java app.</para>
+    </section>
+    <section>
+        <title>Including in a Project</title>
+        <section>
+            <title>Maven</title>
+            <para>
+                <programlisting language="xml">&lt;dependency>
+    &lt;groupId>org.apache.cayenne&lt;/groupId>
+    &lt;artifactId>cayenne-crypto&lt;/artifactId>
+    &lt;version><?eval ${project.version}?>&lt;/version>
+&lt;/dependency></programlisting>
+            </para>
+        </section>
+        <section>
+            <title>Gradle</title>
+            <para>
+                <programlisting language="groovy">compile 'org.apache.cayenne:cayenne-crypto:<?eval ${project.version}?>'</programlisting>
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>Usage</title>
+        <section>
+            <title>Setup your model and DB</title>
+            <para>
+                To use crypto you must prepare your database structure to allow <code>byte[]</code> storage.
+                Also you should define naming convention to mark encrypted columns and set appropriate SQL type.
+                Default naming strategy that doesn't require additional setup is using <code>"CRYPTO_"</code> prefix on columns
+                that will contain encrypted data.
+                If you need to you can change this default strategy by injecting you own implementation of
+                <code>org.apache.cayenne.crypto.map.ColumnMapper</code> interface.
+                <programlisting language="java"><![CDATA[
+ServerRuntime.builder()
+        .addModule(CryptoModule.extend()
+                .columnMapper(MyColumnMapper.class)
+                .module())]]></programlisting>
+            </para>
+            <para>
+                Currently supported SQL types that can be used to store encrypted data are:
+                <orderedlist>
+                    <listitem>
+                        <para>
+                            Binary types: <code>BINARY, BLOB, VARBINARY, LONGVARBINARY</code>.
+                            This types are preferred.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>Character types, that will store <code>base64</code> encoded value:
+                            <code>CHAR, NCHAR, CLOB, NCLOB, LONGVARCHAR, LONGNVARCHAR, VARCHAR, NVARCHAR</code></para>
+                    </listitem>
+                </orderedlist>
+                <note>
+                    <para>Not all data types may be supported by your database.</para>
+                </note>
+            </para>
+            <para>
+                Here is example of how your <code>ObjEntity</code> with two encrypted and two unencrypted properties
+                can look like in the Cayenne Modeler:
+            </para>
+            <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="images/ext-crypto-obj-entity.png" scalefit="1" width="100%"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        </section>
+        <section>
+            <title>Setup keystore</title>
+            <para>
+                To perform encryption you must provide <code>KEYSTORE_URL</code> and <code>KEY_PASSWORD</code> to this module.
+                Currently crypto module supports only Java "jceks" KeyStore.
+                <programlisting language="java"><![CDATA[
+ServerRuntime.builder()
+        .addModule(CryptoModule.extend()
+                .keyStore(this.getClass().getResource("keystore.jcek"), "my-password".toCharArray(), "my-key-alias")
+                .module())]]></programlisting>
+            </para>
+        </section>
+        <section>
+            <title>Additional settings</title>
+            <para>
+                Additionally to <code>ColumnMapper</code> mentioned above you can customize other parts of
+                <code>crypto module</code>.
+                You can enable <code>gzip</code> compression and <code>HMAC</code> usage (this will ensure integrity of data).
+                <programlisting language="java"><![CDATA[
+ServerRuntime.builder()
+        .addModule(CryptoModule.extend()
+                .compress()
+                .useHMAC()
+                .module())]]></programlisting>
+            </para>
+            <para>
+                Another useful extension point is support for custom Java value types. To add support for your
+                data type you need to implement <code>org.apache.cayenne.crypto.transformer.value.BytesConverter</code>
+                interface that will convert required type to and from <code>byte[]</code>.
+                <programlisting language="java"><![CDATA[
+ServerRuntime.builder()
+        .addModule(CryptoModule.extend()
+                .objectToBytesConverter(MyClass.class, new MyClassBytesConverter())
+                .module())]]></programlisting>
+            </para>
+            <note>
+                <para>In addition to Java primitive types (and their object counterparts), <code>crypto module</code>
+                    by default supports encryption only of <code>java.util.Date</code>, <code>java.math.BigInteger</code>
+                    and <code>java.math.BigDecimal</code> types.
+                </para>
+            </note>
+        </section>
+    </section>
+</chapter>

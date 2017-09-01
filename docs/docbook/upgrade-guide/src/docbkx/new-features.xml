@@ -33,7 +33,7 @@
 			<para>Cayenne 3.1 introduced dependency injection and ServerRuntime. 4.0 provides a very convenient utility to create a custom runtime
 				with various extensions. This reduces the code needed to integrate Cayenne in your environment to just a few lines and no
 				boilerplate.
-				E.g.:<programlisting language="java">ServerRuntime runtime = new ServerRuntimeBuilder("myproject")
+				E.g.:<programlisting language="java">ServerRuntime runtime = ServerRuntime.builder("myproject")
         .addConfigs("cayenne-project1.xml", "cayenne-project2.xml")
         .addModule(binder -> binder.bind(JdbcEventLogger.class).toInstance(myLogger))
         .dataSource(myDataSource)
@@ -50,7 +50,8 @@
 				decorators. True to the "smallest-footprint" DI philosophy, decorator approach is
 				very simple and does not require proxies or class enhancement. Just implement the
 				decorated interface and provide a constructor that takes a delegate instance being
-				decorated:<programlisting language="java">public class MyInterfaceDecorator implements MyInterface {
+				decorated:
+				<programlisting language="java">public class MyInterfaceDecorator implements MyInterface {
 
     private MyInterface delegate;
 
@@ -64,13 +65,9 @@
     }
 }
 
-Module module = new Module() {
-
-    @Override
-    public void configure(Binder binder) {
-        binder.decorate(MyInterface.class).before(MyInterfaceDecorator.class);
-    }
-};</programlisting></para>
+Module module = binder ->
+        binder.decorate(MyInterface.class).before(MyInterfaceDecorator.class);</programlisting>
+			</para>
 		</section>
 	</section>
 	<section xml:id="framework-api">
@@ -86,6 +83,17 @@ Module module = new Module() {
      .query(Artist.class)
      .where(Artist.ARTIST_NAME.eq("Picasso"))
      .selectOne(context);</programlisting></para>
+			</section>
+			<section>
+				<title>ColumnSelect</title>
+				<para>
+					This query allows you directly access individual properties of Objects and use functions (including aggregate)
+					via type-safe API.
+					<programlisting language="java"><![CDATA[List<String> names = ObjectSelect
+	.columnQuery(Artist.class, Artist.ARTIST_NAME)
+	.where(Artist.ARTIST_NAME.length().gt(6))
+	.select(context);]]></programlisting>
+				</para>
 			</section>
 			<section>
 				<title>SQLSelect</title>
@@ -161,10 +169,10 @@ Expression e = ExpressionFactory.exp(
 				regular DB storage. Encrypted values can be stored in (VAR)BINARY and (VAR)CHAR columns. Currently "cayenne-crypto" supports
 				AES/CBC/PKCS5Padding encryption (though other cyphers can be added). It also supports encrypted data compression. Here is an example
 				of building a crypto DI module that can be added to
-				ServerRuntime:<programlisting language="java">Module cryptoExtensions = new CryptoModuleBuilder()
+				ServerRuntime:<programlisting language="java">Module cryptoExtensions = CryptoModule.extend()
 	.keyStore("file:///mykeystore", "keystorepassword".toCharArray(), "keyalias")
 	.compress()
-	.build();</programlisting></para>
+	.module();</programlisting></para>
 		</section>
 	</section>
 	<section xml:id="cayenne-modeler">
@@ -179,6 +187,7 @@ Expression e = ExpressionFactory.exp(
 			<para>Managing listeners in the DataMap XML model is counterproductive and confusing, so support for listeners was removed from both
 				the XML and the Modeler. If you previously had listeners mapped in the model, annotate their callback methods, and perform listener
 				registration in the code: <programlisting language="java">runtime.getDataDomain().addListener(myListener);</programlisting>
+				or via DI: <programlisting language="java"><![CDATA[Module module = binder -> ServerModule.contributeDomainListeners(myListener);]]></programlisting>
 				Entity callbacks on the other hand are managed in the Modeler as before.</para>
 		</section>
 	</section>
@@ -198,6 +207,32 @@ Expression e = ExpressionFactory.exp(
 			<title>cgen</title>
 			<para>As was mentioned above, cgen now includes Property&lt;T> static variables for expression building. It is also made smarter about
 				its defaults for "destDir" and "superPkg".</para>
+		</section>
+		<section>
+			<title>Gradle Plugin</title>
+			<para>
+				Cayenne now provides it's own Gradle Plugin that allows you easily integrate <code>cdbimport</code>
+				and <code>cgen</code> tools into your build process.
+				Here is example of it's usage:
+				<programlisting language="groovy">
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'org.apache.cayenne.plugins', name: 'cayenne-gradle-plugin', version: '<?eval ${project.version}?>'
+    }
+}
+
+apply plugin: 'org.apache.cayenne'
+
+cayenne.defaultDataMap 'datamap.map.xml'
+
+dependencies {
+    compile cayenne.dependency('server')
+    compile cayenne.dependency('java8')
+}</programlisting>
+			</para>
 		</section>
 	</section>
 </article>
