@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~   Licensed to the Apache Software Foundation (ASF) under one
+  ~  or more contributor license agreements.  See the NOTICE file
+  ~  distributed with this work for additional information
+  ~  regarding copyright ownership.  The ASF licenses this file
+  ~  to you under the Apache License, Version 2.0 (the
+  ~  "License"); you may not use this file except in compliance
+  ~  with the License.  You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<section xmlns="http://docbook.org/ns/docbook" xml:id="namedquery">
+            <title>NamedQuery</title>
+        <para>NamedQuery is a query that is a reference to another query stored in the DataMap. The
+            actual stored query can be SelectQuery, SQLTemplate, EJBQLQuery, etc. It doesn't matter
+            - the API for calling them is the same - via a
+            NamedQuery:<programlisting language="java">String[] keys = new String[] {"loginid", "password"};
+Object[] values = new String[] {"joe", "secret"};
+
+NamedQuery query = new NamedQuery("Login", keys, values);
+
+List&lt;User> matchingUsers = context.performQuery(query); </programlisting>
+            <warning>
+                <para>This query is deprecated in favor of <code>MappedSelect</code> and <code>MappedExec</code></para>
+            </warning>
+        </para>
+    </section>
