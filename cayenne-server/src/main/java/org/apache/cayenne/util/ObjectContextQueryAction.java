@@ -20,7 +20,6 @@
 package org.apache.cayenne.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +33,7 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
@@ -125,12 +125,21 @@ public abstract class ObjectContextQueryAction {
 
             for (response.reset(); response.next();) {
                 if (response.isList()) {
-
                     List objects = response.currentList();
                     if (objects.isEmpty()) {
                         childResponse.addResultList(objects);
-                    }
-                    else {
+                    } else {
+
+                        // minor optimization, skip Object[] if there are no persistent objects
+                        boolean haveObjects = metadata.getResultSetMapping() == null;
+                        if(!haveObjects) {
+                            for (Object next : metadata.getResultSetMapping()) {
+                                if(next instanceof EntityResultSegment) {
+                                    haveObjects = true;
+                                    break;
+                                }
+                            }
+                        }
 
                         if (merger == null) {
                             merger = new ShallowMergeOperation(targetContext);
@@ -141,8 +150,23 @@ public abstract class ObjectContextQueryAction {
 
                         List<Object> childObjects = new ArrayList<>(objects.size());
                         for (Object object1 : objects) {
-                            Persistent object = (Persistent) object1;
-                            childObjects.add(merger.merge(object));
+                            if(object1 instanceof Persistent) {
+                                Persistent object = (Persistent) object1;
+                                childObjects.add(merger.merge(object));
+                            } else if(haveObjects && object1 instanceof Object[]) {
+                                // merge objects inside Object[]
+                                Object[] parentData = (Object[]) object1;
+                                Object[] childData = new Object[parentData.length];
+                                System.arraycopy(parentData, 0, childData, 0, parentData.length);
+                                for(int i=0; i<childData.length; i++) {
+                                    if(childData[i] instanceof Persistent) {
+                                        childData[i] = merger.merge((Persistent)childData[i]);
+                                    }
+                                }
+                                childObjects.add(childData);
+                            } else {
+                                childObjects.add(object1);
+                            }
                         }
 
                         childResponse.addResultList(childObjects);
