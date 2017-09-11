@@ -19,6 +19,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
@@ -696,5 +697,26 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals("a1", result.get(0).getArtistName());
         assertEquals("a2", result.get(1).getArtistName());
         assertEquals("a3", result.get(2).getArtistName());
+    }
+
+    @Test
+    public void testSelectFromNestedContext() throws Exception {
+        tArtist.insert(1, "a1");
+        tArtist.insert(2, "a2");
+
+        tPainting.insert(1, 2, "title1");
+        tPainting.insert(2, 1, "title2");
+        tPainting.insert(3, 1, "title3");
+
+        ObjectContext nested = runtime.newContext(context);
+
+        EJBQLQuery query = new EJBQLQuery("SELECT a, COUNT(a.paintingArray) FROM Artist a GROUP BY a");
+        List<Object[]> result = nested.performQuery(query);
+        assertEquals(2, result.size());
+        for(Object[] next : result) {
+            assertTrue(next[0] instanceof Artist);
+            assertTrue(next[1] instanceof Number);
+        }
+
     }
 }
