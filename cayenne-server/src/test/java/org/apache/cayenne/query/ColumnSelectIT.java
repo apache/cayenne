@@ -23,15 +23,18 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Types;
 import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Fault;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -51,12 +54,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @since 4.0
@@ -66,6 +64,9 @@ public class ColumnSelectIT extends ServerCase {
 
     @Inject
     private DataContext context;
+
+    @Inject
+    private ServerRuntime runtime;
 
     @Inject
     private DBHelper dbHelper;
@@ -984,6 +985,62 @@ public class ColumnSelectIT extends ServerCase {
         Property<String> property = new Property<>("artistName");
         List<String> names = ObjectSelect.columnQuery(Artist.class, property).select(context);
         assertEquals(20, names.size());
+    }
+
+
+    /*
+     * Test selection from nested context
+     */
+
+    @Test
+    public void testNestedContextScalarResult() {
+        ObjectContext childContext = runtime.newContext(context);
+
+        List<String> names = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME)
+                .select(childContext);
+        assertEquals(20, names.size());
+        for(String name : names) {
+            assertNotNull(name);
+        }
+    }
+    @Test
+    public void testNestedContextObjectResult() {
+        ObjectContext childContext = runtime.newContext(context);
+
+        Property<Artist> artistProperty = Property.createSelf(Artist.class);
+        List<Artist> artists = ObjectSelect.columnQuery(Artist.class, artistProperty)
+                .select(childContext);
+        assertEquals(20, artists.size());
+        for(Artist artist : artists) {
+            assertNotNull(artist);
+        }
+    }
+
+    @Test
+    public void testNestedContextScalarArrayResult() {
+        ObjectContext childContext = runtime.newContext(context);
+
+        List<Object[]> data = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
+                .select(childContext);
+        assertEquals(20, data.size());
+        for(Object[] next : data) {
+            assertTrue(next[0] instanceof String);
+            assertTrue(next[1] instanceof Date);
+        }
+    }
+
+    @Test
+    public void testNestedContextMixedResult() {
+        ObjectContext childContext = runtime.newContext(context);
+
+        Property<Artist> artistProperty = Property.createSelf(Artist.class);
+        List<Object[]> data = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, artistProperty)
+                .select(childContext);
+        assertEquals(20, data.size());
+        for(Object[] next : data) {
+            assertTrue(next[0] instanceof String);
+            assertTrue(next[1] instanceof Artist);
+        }
     }
 
 }
