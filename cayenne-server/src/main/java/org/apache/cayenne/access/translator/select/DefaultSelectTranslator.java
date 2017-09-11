@@ -415,7 +415,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 			int expressionType = property.getExpression().getType();
 
 			// forbid direct selection of toMany relationships columns
-			if((expressionType == Expression.OBJ_PATH || expressionType == Expression.DB_PATH)
+			if(property.getType() != null && (expressionType == Expression.OBJ_PATH || expressionType == Expression.DB_PATH)
 					&& (Collection.class.isAssignableFrom(property.getType())
 							|| Map.class.isAssignableFrom(property.getType()))) {
 				throw new CayenneRuntimeException("Can't directly select toMany relationship columns. " +
@@ -424,7 +424,9 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 
 			// evaluate ObjPath with Persistent type as toOne relations and use it as full object
 			boolean objectProperty = expressionType == Expression.FULL_OBJECT
-					|| (expressionType == Expression.OBJ_PATH && Persistent.class.isAssignableFrom(property.getType()));
+					|| (property.getType() != null
+						&& expressionType == Expression.OBJ_PATH
+						&& Persistent.class.isAssignableFrom(property.getType()));
 
 			// Qualifier Translator in case of Object Columns have side effect -
 			// it will create required joins, that we catch with listener above.
@@ -455,7 +457,12 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 				}
 
 				int type = getJdbcTypeForProperty(property);
-				ColumnDescriptor descriptor = new ColumnDescriptor(builder.toString(), type, property.getType().getName());
+				ColumnDescriptor descriptor;
+				if(property.getType() != null) {
+					descriptor = new ColumnDescriptor(builder.toString(), type, property.getType().getName());
+				} else {
+					descriptor = new ColumnDescriptor(builder.toString(), type);
+				}
 				descriptor.setDataRowKey(alias);
 				descriptor.setIsExpression(true);
 				columns.add(descriptor);

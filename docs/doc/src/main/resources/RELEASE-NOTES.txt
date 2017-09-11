@@ -40,6 +40,7 @@ CAY-2356 EJBQL: Incorrect COUNT() on outer joined table
 CAY-2357 Generic select queries silently convert result to nulls if no PK column found
 CAY-2358 NPE when callbacks invoked on null objects
 CAY-2359 EJBQL: db path in not supported in ORDER BY
+CAY-2362 ColumnSelect: unable to use Property without type
 
 ----------------------------------
 Release: 4.0.B1
