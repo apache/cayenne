@@ -973,4 +973,17 @@ public class ColumnSelectIT extends ServerCase {
                 .select(context);
         assertEquals(22, result.size());
     }
+
+    /*
+     * Test deprecated property constructor
+     */
+
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testDeprecateConstructor() {
+        Property<String> property = new Property<>("artistName");
+        List<String> names = ObjectSelect.columnQuery(Artist.class, property).select(context);
+        assertEquals(20, names.size());
+    }
+
 }
