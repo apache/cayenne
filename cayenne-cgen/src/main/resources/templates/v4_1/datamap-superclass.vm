@@ -34,9 +34,9 @@
 ${importUtils.setPackage($superPackageName)}##
 #if(${superPackageName})${importUtils.addReservedType("${superPackageName}.${superClassName}")}#end##
 #if(${basePackageName})${importUtils.addType("${basePackageName}.${baseClassName}")}#end##
+${importUtils.addType('org.apache.cayenne.ObjectContext')}##
 #if( ${object.hasSelectQueries()} )
 ${importUtils.addType('java.util.List')}##
-${importUtils.addType('org.apache.cayenne.ObjectContext')}##
 ${importUtils.addType('org.apache.cayenne.query.MappedSelect')}##
 #foreach( $selectQuery in ${object.SelectQueries})
 ${importUtils.addType(${selectQuery.Root.ClassName})}##
