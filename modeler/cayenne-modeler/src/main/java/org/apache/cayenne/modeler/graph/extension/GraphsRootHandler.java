@@ -19,12 +19,8 @@
 
 package org.apache.cayenne.modeler.graph.extension;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.xml.DataChannelLoaderListener;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.graph.GraphMap;
-import org.apache.cayenne.modeler.graph.GraphRegistry;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -32,7 +28,7 @@ import org.xml.sax.SAXException;
 /**
  * @since 4.1
  */
-public class GraphsRootHandler extends NamespaceAwareNestedTagHandler {
+class GraphsRootHandler extends NamespaceAwareNestedTagHandler {
 
     static final String GRAPHS_TAG = "graphs";
 

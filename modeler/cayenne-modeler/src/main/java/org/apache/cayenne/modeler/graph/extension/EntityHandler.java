@@ -24,7 +24,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
-import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.GraphConstants;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -32,7 +31,7 @@ import org.xml.sax.SAXException;
 /**
  * @since 4.1
  */
-public class EntityHandler extends NamespaceAwareNestedTagHandler {
+class EntityHandler extends NamespaceAwareNestedTagHandler {
 
     static final String ENTITY_TAG = "entity";
 

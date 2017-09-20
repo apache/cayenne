@@ -23,7 +23,6 @@ import java.util.Map;
 
 import javax.swing.undo.UndoableEdit;
 
-import com.sun.corba.se.impl.orbutil.graph.Graph;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.xml.DataChannelLoaderListener;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
@@ -41,7 +40,7 @@ import org.xml.sax.SAXException;
 /**
  * Class to load graph from XML
  */
-public class GraphHandler extends NamespaceAwareNestedTagHandler {
+class GraphHandler extends NamespaceAwareNestedTagHandler {
 
     static final String GRAPH_TAG = "graph";
 
