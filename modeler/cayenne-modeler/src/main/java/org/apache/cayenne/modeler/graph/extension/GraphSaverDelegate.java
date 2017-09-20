@@ -57,7 +57,6 @@ class GraphSaverDelegate extends BaseSaverDelegate {
         GraphMap map = registry.getGraphMap(channelDescriptor);
         encoder.start("graphs")
                 .attribute("xmlns", GraphExtension.NAMESPACE)
-                .attribute("selected", map.getSelectedType().toString())
                 .nested(map, getParentDelegate())
                 .end();
     }
