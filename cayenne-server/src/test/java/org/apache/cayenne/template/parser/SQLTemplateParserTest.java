@@ -20,8 +20,15 @@
 package org.apache.cayenne.template.parser;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.cayenne.template.Context;
+import org.apache.cayenne.template.DefaultTemplateContextFactory;
+import org.apache.cayenne.template.TemplateContextFactory;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -32,9 +39,16 @@ import static org.junit.Assert.*;
  */
 public class SQLTemplateParserTest {
 
+    private TemplateContextFactory contextFactory;
+
+    @Before
+    public void setUp() {
+        contextFactory = new DefaultTemplateContextFactory();
+    }
+
     @Test
     public void testUnchangedParse() throws Exception {
-        Context context = new Context();
+        Context context = contextFactory.createContext(Collections.emptyMap());
         String template = "SELECT * FROM a";
 
         String sql = parseString(template, context);
@@ -43,8 +57,7 @@ public class SQLTemplateParserTest {
 
     @Test
     public void testParameterParse() throws Exception {
-        Context context = new Context();
-        context.addParameter("a", true);
+        Context context = contextFactory.createContext(Collections.singletonMap("a", true));
         String template = "SELECT $a FROM a";
 
         String sql = parseString(template, context);
@@ -53,15 +66,13 @@ public class SQLTemplateParserTest {
 
     @Test
     public void testIfElseParse() throws Exception {
-        Context context = new Context();
-        context.addParameter("a", true);
+        Context context = contextFactory.createContext(Collections.singletonMap("a", true));
         String template = "SELECT #if($a) * #else 1 #end FROM a";
 
         String sql = parseString(template, context);
         assertEquals("SELECT  *  FROM a", sql);
 
-        context = new Context();
-        context.addParameter("a", false);
+        context = contextFactory.createContext(Collections.singletonMap("a", false));
         template = "SELECT #if($a) * #else 1 #end FROM a";
 
         sql = parseString(template, context);
@@ -70,9 +81,11 @@ public class SQLTemplateParserTest {
 
     @Test
     public void testBindParse() throws Exception {
-        Context context = new Context();
-        context.addParameter("a", "var");
-        context.addParameter("b", "bbb");
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("a", "var");
+        parameters.put("b", "bbb");
+
+        Context context = contextFactory.createContext(parameters);
         String template = "SELECT #if($a) #bind($a, 'INT' ,2) #else #bind($b, 'CHAR' ,2) #end FROM a";
 
         String sql = parseString(template, context);
@@ -84,22 +97,24 @@ public class SQLTemplateParserTest {
 
     @Test
     public void testComplexParse() throws Exception {
-        String template = "SELECT * \n" +
-                "FROM ME\n" +
-                "#if($a) \n" +
-                "WHERE \n" +
-                "COLUMN1 #bind($helper.cayenneExp($a, 'db:ID_COLUMN1'), 'INT')\n" +
-                "     \tAND \n" +
-                "COLUMN2 #bind($helper.cayenneExp($a, 'db:ID_COLUMN2'), 'VARCHAR')\n" +
-                "#end\n";
-        Context context = new Context();
         class Helper {
             public String cayenneExp(Object obj, String exp) {
                 return "aaaa";
             }
         }
-        context.addParameter("a", "var");
-        context.addParameter("helper", new Helper());
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("a", "var");
+        parameters.put("myHelper", new Helper());
+
+        String template = "SELECT * \n" +
+                "FROM ME\n" +
+                "#if($a) \n" +
+                "WHERE \n" +
+                "COLUMN1 #bind($myHelper.cayenneExp($a, 'db:ID_COLUMN1'), 'INT')\n" +
+                "     \tAND \n" +
+                "COLUMN2 #bind($myHelper.cayenneExp($a, 'db:ID_COLUMN2'), 'VARCHAR')\n" +
+                "#end\n";
+        Context context = contextFactory.createContext(parameters);
 
         String sql = parseString(template, context);
         assertEquals("SELECT * \n" +
@@ -120,14 +135,15 @@ public class SQLTemplateParserTest {
                 "#result('t0.ID' 'java.lang.Integer' 'ec0_1' 'ec0_1' 4) " +
                 "FROM BIGDECIMAL_ENTITY t0 WHERE {fn ABS( t0.BIGDECIMAL_FIELD)} < #bind($id0 'DECIMAL')";
 
-        Context context = new Context();
-        context.addParameter("$id0", 123);
+        Context context = contextFactory.createContext(Collections.singletonMap("id0", 123));
         String sql = parseString(tpl, context);
 
         assertEquals("SELECT " +
                 "t0.BIGDECIMAL_FIELD AS ec0_0, " +
                 "t0.ID AS ec0_1 " +
                 "FROM BIGDECIMAL_ENTITY t0 WHERE {fn ABS( t0.BIGDECIMAL_FIELD)} < ?", sql);
+        assertEquals(1, context.getParameterBindings().length);
+        assertEquals(2, context.getColumnDescriptors().length);
     }
 
     @Test
@@ -141,14 +157,20 @@ public class SQLTemplateParserTest {
                 "FROM ARTIST t0 " +
                 "LEFT OUTER JOIN PAINTING t1 ON (t0.ARTIST_ID = t1.ARTIST_ID) " +
                 "GROUP BY t0.ARTIST_NAME, t0.DATE_OF_BIRTH, t0.ARTIST_ID ORDER BY t0.ARTIST_NAME";
-        parseString(tpl, new Context());
+        Context context = contextFactory.createContext(Collections.emptyMap());
+        String sql = parseString(tpl, context);
+        assertEquals(5, context.getColumnDescriptors().length);
+        assertEquals("SELECT COUNT(*) AS sc0, t0.ARTIST_NAME AS ec1_0, " +
+                "t0.DATE_OF_BIRTH AS ec1_1, t0.ARTIST_ID AS ec1_2, SUM(t1.ESTIMATED_PRICE) AS sc2 " +
+                "FROM ARTIST t0 " +
+                "LEFT OUTER JOIN PAINTING t1 ON (t0.ARTIST_ID = t1.ARTIST_ID) " +
+                "GROUP BY t0.ARTIST_NAME, t0.DATE_OF_BIRTH, t0.ARTIST_ID ORDER BY t0.ARTIST_NAME", sql);
     }
 
     @Test
     public void testHelperObject() throws Exception {
         String tpl = "($helper.cayenneExp($a, 'field'))";
-        Context context = new Context();
-        context.addParameter("a", new TestBean(5));
+        Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
         String sql = parseString(tpl, context);
         assertEquals("(5)", sql);
@@ -157,8 +179,7 @@ public class SQLTemplateParserTest {
     @Test
     public void testMethodCallArray() throws Exception {
         String tpl = "$a.arrayMethod(['1' '2' '3'])";
-        Context context = new Context();
-        context.addParameter("a", new TestBean(5));
+        Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
         String sql = parseString(tpl, context);
         assertEquals("array_3", sql);
@@ -167,8 +188,7 @@ public class SQLTemplateParserTest {
     @Test
     public void testMethodCallInt() throws Exception {
         String tpl = "$a.intMethod(42)";
-        Context context = new Context();
-        context.addParameter("a", new TestBean(5));
+        Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
         String sql = parseString(tpl, context);
         assertEquals("int_42", sql);
@@ -177,8 +197,7 @@ public class SQLTemplateParserTest {
     @Test
     public void testMethodCallString() throws Exception {
         String tpl = "$a.stringMethod(\"abc\")";
-        Context context = new Context();
-        context.addParameter("a", new TestBean(5));
+        Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
         String sql = parseString(tpl, context);
         assertEquals("string_abc", sql);
@@ -187,8 +206,7 @@ public class SQLTemplateParserTest {
     @Test
     public void testMethodCallFloat() throws Exception {
         String tpl = "$a.floatMethod(3.14)";
-        Context context = new Context();
-        context.addParameter("a", new TestBean(5));
+        Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
         String sql = parseString(tpl, context);
         assertEquals("float_3.14", sql);
@@ -198,8 +216,7 @@ public class SQLTemplateParserTest {
     @Ignore("Method overload not properly supported, this test can return m2_true")
     public void testMethodCallSelectByArgType1() throws Exception {
         String tpl = "$a.method(123)";
-        Context context = new Context();
-        context.addParameter("a", new TestBean(5));
+        Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
         String sql = parseString(tpl, context);
         assertEquals("m1_123", sql);
@@ -208,8 +225,7 @@ public class SQLTemplateParserTest {
     @Test
     public void testMethodCallSelectByArgType2() throws Exception {
         String tpl = "$a.method(true)";
-        Context context = new Context();
-        context.addParameter("a", new TestBean(5));
+        Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
         String sql = parseString(tpl, context);
         assertEquals("m2_true", sql);
@@ -218,8 +234,7 @@ public class SQLTemplateParserTest {
     @Test
     public void testPropertyAccess() throws Exception {
         String tpl = "$a.field()";
-        Context context = new Context();
-        context.addParameter("a", new TestBean(5));
+        Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
 
         String sql = parseString(tpl, context);
         assertEquals("5", sql);
@@ -228,20 +243,20 @@ public class SQLTemplateParserTest {
     @Test
     public void testNestedBrackets() throws Exception {
         String tpl = "(#bind('A' 'b'))";
-        String sql = parseString(tpl, new Context());
+        String sql = parseString(tpl, contextFactory.createContext(Collections.emptyMap()));
         assertEquals("(?)", sql);
     }
 
     @Test
     public void testQuotes() throws Exception {
         String template = "\"$a\"";
-        Context context = new Context();
-        context.addParameter("a", "val");
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("a", "val");
+        Context context = contextFactory.createContext(parameters);
         String sql = parseString(template, context);
         assertEquals("\"val\"", sql);
 
-        context = new Context();
-        context.addParameter("a", "val");
+        context = contextFactory.createContext(parameters);
         template = "'$a'";
         sql = parseString(template, context);
         assertEquals("'val'", sql);
@@ -250,8 +265,9 @@ public class SQLTemplateParserTest {
     @Test
     public void testComma() throws Exception {
         String template = "$a,$a";
-        Context context = new Context();
-        context.addParameter("a", "val");
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("a", "val");
+        Context context = contextFactory.createContext(parameters);
         String sql = parseString(template, context);
         assertEquals("val,val", sql);
     }

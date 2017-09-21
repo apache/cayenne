@@ -27,51 +27,30 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.template.directive.Bind;
-import org.apache.cayenne.template.directive.BindEqual;
-import org.apache.cayenne.template.directive.BindNotEqual;
-import org.apache.cayenne.template.directive.BindObjectEqual;
-import org.apache.cayenne.template.directive.BindObjectNotEqual;
 import org.apache.cayenne.template.directive.Directive;
-import org.apache.cayenne.template.directive.Result;
 
 /**
  * @since 4.1
  */
 public class Context {
 
-    Map<String, Directive> directives = new HashMap<>();
+    private final StringBuilder builder;
+    private final Map<String, ?> objects;
+    private final Map<String, String> parameterAliases;
+    private final Map<String, Directive> directives;
 
-    Map<String, Object> objects = new HashMap<>();
+    private List<ParameterBinding> parameterBindings;
+    private List<ColumnDescriptor> columnDescriptors;
+    private int counter;
 
-    Map<String, String> parameterAliases;
-
-    List<ParameterBinding> parameterBindings = new ArrayList<>();
-
-    List<ColumnDescriptor> columnDescriptors = new ArrayList<>();
-
-    StringBuilder builder = new StringBuilder();
-
-    boolean positionalMode;
-
-    int counter;
-
-    public Context() {
-        addDirective(             "result", Result.INSTANCE);
-        addDirective(               "bind", Bind.INSTANCE);
-        addDirective(          "bindEqual", BindEqual.INSTANCE);
-        addDirective(       "bindNotEqual", BindNotEqual.INSTANCE);
-        addDirective(    "bindObjectEqual", BindObjectEqual.INSTANCE);
-        addDirective( "bindObjectNotEqual", BindObjectNotEqual.INSTANCE);
-
-        addParameter("helper", new SQLTemplateRenderingUtils());
-    }
-
-    public Context(boolean positionalMode) {
-        this();
-        this.positionalMode = positionalMode;
+    public Context(Map<String, Directive> directives, Map<String, ?> parameters, boolean positionalMode) {
+        this.directives = directives;
+        this.objects = parameters;
+        this.builder = new StringBuilder();
         if(positionalMode) {
             parameterAliases = new HashMap<>();
+        } else {
+            parameterAliases = null;
         }
     }
 
@@ -84,8 +63,9 @@ public class Context {
     }
 
     public String buildTemplate() {
-        if(positionalMode) {
-            if(counter <= objects.size() - 2) {
+        if(parameterAliases != null) {
+            // there is always helper object, thus -1
+            if(counter < objects.size() - 1) {
                 throw new CayenneRuntimeException("Too many parameters to bind template: " + (objects.size() - 1));
             }
         }
@@ -102,7 +82,7 @@ public class Context {
             return object;
         }
 
-        if(positionalMode) {
+        if(parameterAliases != null) {
             String alias = parameterAliases.get(name);
             if(alias == null) {
                 if(counter > objects.size() - 2) {
@@ -118,31 +98,31 @@ public class Context {
         return null;
     }
 
-    public void addParameter(String name, Object value) {
-        objects.put(name, value);
-    }
-
-    public void addParameters(Map<String, ?> parameters) {
-        objects.putAll(parameters);
-    }
-
-    public void addDirective(String name, Directive directive) {
-        directives.put(name, directive);
-    }
-
     public void addParameterBinding(ParameterBinding binding) {
+        if(parameterBindings == null) {
+            parameterBindings = new ArrayList<>();
+        }
         parameterBindings.add(binding);
     }
 
     public void addColumnDescriptor(ColumnDescriptor descriptor) {
+        if(columnDescriptors == null) {
+            columnDescriptors = new ArrayList<>();
+        }
         columnDescriptors.add(descriptor);
     }
 
     public ColumnDescriptor[] getColumnDescriptors() {
-        return columnDescriptors.toArray(new ColumnDescriptor[0]);
+        if(columnDescriptors == null) {
+            return new ColumnDescriptor[0];
+        }
+        return columnDescriptors.toArray(new ColumnDescriptor[columnDescriptors.size()]);
     }
 
     public ParameterBinding[] getParameterBindings() {
-        return parameterBindings.toArray(new ParameterBinding[0]);
+        if(parameterBindings == null) {
+            return new ParameterBinding[0];
+        }
+        return parameterBindings.toArray(new ParameterBinding[parameterBindings.size()]);
     }
 }

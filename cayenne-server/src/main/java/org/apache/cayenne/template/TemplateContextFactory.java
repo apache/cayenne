@@ -17,37 +17,19 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.template.parser;
+package org.apache.cayenne.template;
 
-import org.apache.cayenne.template.Context;
-import org.apache.cayenne.template.directive.Directive;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
 
 /**
  * @since 4.1
  */
-public class ASTDirective extends IdentifierNode {
+public interface TemplateContextFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(ASTDirective.class);
+    Context createContext(Map<String, ?> parameters, boolean positionalMode);
 
-    public ASTDirective(int id) {
-        super(id);
+    default Context createContext(Map<String, ?> parameters) {
+        return createContext(parameters, false);
     }
 
-    @Override
-    public void evaluate(Context context) {
-        Directive directive = context.getDirective(getIdentifier());
-        if(directive == null) {
-            logger.warn("Unknown directive #{}", getIdentifier());
-            return;
-        }
-
-        ASTExpression[] expressions = new ASTExpression[children.length];
-        for(int i=0;  i<children.length; i++) {
-            expressions[i] = (ASTExpression)children[i];
-        }
-
-        directive.apply(context, expressions);
-    }
 }

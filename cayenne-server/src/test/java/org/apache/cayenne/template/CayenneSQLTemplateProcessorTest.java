@@ -44,14 +44,14 @@ public class CayenneSQLTemplateProcessorTest {
 
     @Before
     public void before() {
-        processor = new CayenneSQLTemplateProcessor();
+        processor = new CayenneSQLTemplateProcessor(new DefaultTemplateContextFactory());
     }
 
     @Test
     public void testProcessTemplateUnchanged1() throws Exception {
         String sqlTemplate = "SELECT * FROM ME";
 
-        SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
+        SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.emptyMap());
 
         assertEquals(sqlTemplate, compiled.getSql());
         assertEquals(0, compiled.getBindings().length);
@@ -61,7 +61,7 @@ public class CayenneSQLTemplateProcessorTest {
     public void testProcessTemplateUnchanged2() throws Exception {
         String sqlTemplate = "SELECT a.b as XYZ FROM $SYSTEM_TABLE";
 
-        SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
+        SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.emptyMap());
 
         assertEquals(sqlTemplate, compiled.getSql());
         assertEquals(0, compiled.getBindings().length);
@@ -71,7 +71,7 @@ public class CayenneSQLTemplateProcessorTest {
     public void testProcessTemplateSimpleDynamicContent() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE $a";
 
-        Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
+        Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
         SQLStatement compiled = processor.processTemplate(sqlTemplate, map);
 
         assertEquals("SELECT * FROM ME WHERE VALUE_OF_A", compiled.getSql());
@@ -84,7 +84,7 @@ public class CayenneSQLTemplateProcessorTest {
     public void testProcessTemplateBind() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE "
                 + "COLUMN1 = #bind($a 'VARCHAR') AND COLUMN2 = #bind($b 'INTEGER')";
-        Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
+        Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
         SQLStatement compiled = processor.processTemplate(sqlTemplate, map);
 
         assertEquals("SELECT * FROM ME WHERE COLUMN1 = ? AND COLUMN2 = ?", compiled.getSql());
@@ -96,7 +96,7 @@ public class CayenneSQLTemplateProcessorTest {
     @Test
     public void testProcessTemplateBindGuessVarchar() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($a)";
-        Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
+        Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
 
         SQLStatement compiled = processor.processTemplate(sqlTemplate, map);
 
@@ -107,7 +107,7 @@ public class CayenneSQLTemplateProcessorTest {
     @Test
     public void testProcessTemplateBindGuessInteger() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($a)";
-        Map<String, Object> map = Collections.<String, Object> singletonMap("a", 4);
+        Map<String, Object> map = Collections.singletonMap("a", 4);
 
         SQLStatement compiled = processor.processTemplate(sqlTemplate, map);
 
@@ -119,12 +119,12 @@ public class CayenneSQLTemplateProcessorTest {
     public void testProcessTemplateBindEqual() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN #bindEqual($a 'VARCHAR')";
 
-        SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
+        SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.emptyMap());
 
         assertEquals("SELECT * FROM ME WHERE COLUMN IS NULL", compiled.getSql());
         assertEquals(0, compiled.getBindings().length);
 
-        Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
+        Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
 
         compiled = processor.processTemplate(sqlTemplate, map);
 
@@ -137,12 +137,12 @@ public class CayenneSQLTemplateProcessorTest {
     public void testProcessTemplateBindNotEqual() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN #bindNotEqual($a 'VARCHAR')";
 
-        SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
+        SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.emptyMap());
 
         assertEquals("SELECT * FROM ME WHERE COLUMN IS NOT NULL", compiled.getSql());
         assertEquals(0, compiled.getBindings().length);
 
-        Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
+        Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
 
         compiled = processor.processTemplate(sqlTemplate, map);
 
@@ -158,7 +158,7 @@ public class CayenneSQLTemplateProcessorTest {
         DataObject dataObject = new CayenneDataObject();
         dataObject.setObjectId(new ObjectId("T", "ID_COLUMN", 5));
 
-        Map<String, Object> map = Collections.<String, Object> singletonMap("a", dataObject);
+        Map<String, Object> map = Collections.singletonMap("a", dataObject);
 
         SQLStatement compiled = processor.processTemplate(sqlTemplate, map);
 
@@ -180,7 +180,7 @@ public class CayenneSQLTemplateProcessorTest {
         DataObject dataObject = new CayenneDataObject();
         dataObject.setObjectId(id);
 
-        Map<String, Object> map = Collections.<String, Object> singletonMap("a", dataObject);
+        Map<String, Object> map = Collections.singletonMap("a", dataObject);
 
         SQLStatement compiled = processor.processTemplate(sqlTemplate, map);
 
@@ -194,7 +194,7 @@ public class CayenneSQLTemplateProcessorTest {
     public void testProcessTemplateConditions() throws Exception {
         String sqlTemplate = "SELECT * FROM ME #if($a) WHERE COLUMN1 > #bind($a)#end";
 
-        Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
+        Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
 
         SQLStatement compiled = processor.processTemplate(sqlTemplate, map);
 
@@ -202,7 +202,7 @@ public class CayenneSQLTemplateProcessorTest {
         assertEquals(1, compiled.getBindings().length);
         assertBindingValue("VALUE_OF_A", compiled.getBindings()[0]);
 
-        compiled = processor.processTemplate(sqlTemplate, Collections.<String, Object> emptyMap());
+        compiled = processor.processTemplate(sqlTemplate, Collections.emptyMap());
 
         assertEquals("SELECT * FROM ME ", compiled.getSql());
         assertEquals(0, compiled.getBindings().length);
@@ -212,7 +212,7 @@ public class CayenneSQLTemplateProcessorTest {
     public void testProcessTemplateBindCollection() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN IN (#bind($list 'VARCHAR'))";
 
-        Map<String, Object> map = Collections.<String, Object> singletonMap("list", Arrays.asList("a", "b", "c"));
+        Map<String, Object> map = Collections.singletonMap("list", Arrays.asList("a", "b", "c"));
         SQLStatement compiled = processor.processTemplate(sqlTemplate, map);
 
         assertEquals("SELECT * FROM ME WHERE COLUMN IN (?,?,?)", compiled.getSql());
@@ -220,6 +220,13 @@ public class CayenneSQLTemplateProcessorTest {
         assertBindingValue("a", compiled.getBindings()[0]);
         assertBindingValue("b", compiled.getBindings()[1]);
         assertBindingValue("c", compiled.getBindings()[2]);
+    }
+
+    @Test
+    public void testUnknownDirective() throws Exception {
+        String sqlTemplate = "SELECT #from(1) FROM a";
+        SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.emptyMap());
+        assertEquals("SELECT  FROM a", compiled.getSql());
     }
 
     private void assertBindingValue(Object expectedValue, Object binding) {

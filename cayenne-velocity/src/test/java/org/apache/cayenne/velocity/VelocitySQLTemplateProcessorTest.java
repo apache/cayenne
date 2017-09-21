@@ -222,6 +222,13 @@ public class VelocitySQLTemplateProcessorTest {
 		assertBindingValue("c", compiled.getBindings()[2]);
 	}
 
+	@Test
+	public void testUnknownDirective() throws Exception {
+		String sqlTemplate = "SELECT #from(1) FROM a";
+		SQLStatement compiled = processor.processTemplate(sqlTemplate, Collections.emptyMap());
+        assertEquals("SELECT #from(1) FROM a", compiled.getSql());
+	}
+
 	private void assertBindingValue(Object expectedValue, Object binding) {
 		assertTrue("Not a binding!", binding instanceof ParameterBinding);
 		assertEquals(expectedValue, ((ParameterBinding) binding).getValue());

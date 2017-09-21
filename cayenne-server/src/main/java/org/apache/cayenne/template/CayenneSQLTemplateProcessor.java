@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.template.parser.Node;
 import org.apache.cayenne.template.parser.ParseException;
 import org.apache.cayenne.template.parser.SQLTemplateParser;
@@ -44,22 +45,26 @@ public class CayenneSQLTemplateProcessor implements SQLTemplateProcessor {
 
     TemplateParserPool parserPool = new TemplateParserPool();
 
+    private TemplateContextFactory contextFactory;
+
+    public CayenneSQLTemplateProcessor(@Inject TemplateContextFactory contextFactory) {
+        this.contextFactory = contextFactory;
+    }
+
     @Override
     public SQLStatement processTemplate(String template, Map<String, ?> parameters) {
-        Context context = new Context();
-        context.addParameters(parameters);
+        Context context = contextFactory.createContext(parameters);
         return process(template, context);
     }
 
     @Override
     public SQLStatement processTemplate(String template, List<Object> positionalParameters) {
-        Context context = new Context(true);
         Map<String, Object> parameters = new HashMap<>();
         int i=0;
         for(Object param : positionalParameters) {
             parameters.put(String.valueOf(i++), param);
         }
-        context.addParameters(parameters);
+        Context context = contextFactory.createContext(parameters, true);
         return process(template, context);
     }
 

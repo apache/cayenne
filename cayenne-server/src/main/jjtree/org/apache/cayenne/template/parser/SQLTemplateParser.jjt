@@ -26,7 +26,6 @@ This template will be resolved correctly
 
 Comparision to Velocity:
 - no escape syntax, i.e. ${a}, directives and vars must be space separated
-- no arrays syntax
 - no #set directive
 - no loops
 - no complex expressions (neither logical nor math)
