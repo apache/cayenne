@@ -43,6 +43,7 @@ CAY-2359 EJBQL: db path in not supported in ORDER BY
 CAY-2362 ColumnSelect: unable to use Property without type
 CAY-2363 ColumnSelect: unable to use from nested context
 CAY-2364 Wrong logging in SQLTemplate
+CAY-2365 SQLExec query tries to convert (unexpected) result set into objects
 
 ----------------------------------
 Release: 4.0.B1

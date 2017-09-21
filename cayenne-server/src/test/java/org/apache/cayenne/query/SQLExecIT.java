@@ -19,7 +19,10 @@
 package org.apache.cayenne.query;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -58,6 +61,21 @@ public class SQLExecIT extends ServerCase {
 
         assertEquals(1, inserted);
         assertEquals("a3", dbHelper.getString("ARTIST", "ARTIST_NAME").trim());
+    }
+
+    @Test
+    public void test_ExecuteSelect() throws Exception {
+        int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(context);
+        assertEquals(1, inserted);
+
+        QueryResult result = SQLExec.query("SELECT * FROM ARTIST").execute(context);
+        assertEquals(2, result.size());
+        assertTrue(result.isList());
+        assertEquals(1, result.firstList().size());
+
+        DataRow row = (DataRow)result.firstList().get(0);
+        assertEquals(1L, row.get("ARTIST_ID"));
+        assertEquals("a", row.get("ARTIST_NAME"));
     }
 
     @Test

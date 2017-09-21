@@ -61,7 +61,8 @@ class ObjectResolver {
 
 		// sanity check
 		if (descriptor == null || descriptor.getEntity() == null) {
-			throw new CayenneRuntimeException("Set up Object entity or use rowFetchingQuery");
+			// possible cause: query that is not expected to have result set somehow got it..
+			throw new CayenneRuntimeException("No ClassDescriptor. Maybe DataRows should be fetched instead of objects.");
 		}
 
 		DbEntity dbEntity = descriptor.getEntity().getDbEntity();
