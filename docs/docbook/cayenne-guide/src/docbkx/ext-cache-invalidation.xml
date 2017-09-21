@@ -22,10 +22,10 @@
     <title>Cache invalidation extension</title>
     <section>
         <title>Description</title>
-        <para>Cache invalidation module is small extensions that allows easily manage cache invalidation policy.</para>
+        <para>Cache invalidation module is an extension that allows to define cache invalidation policy programmatically.</para>
     </section>
     <section>
-        <title>Including in a Project</title>
+        <title>Including in a project</title>
         <section>
             <title>Maven</title>
             <para>
@@ -46,28 +46,27 @@
     <section>
         <title>Usage</title>
         <para>
-            Module supports autoloading mechanism, so no other actions required to start using it.
-            Just mark you entities with <code>@CacheGroups</code> annotation:
+            Module supports autoloading mechanism, so no other actions required to enable it.
+            Just mark your entities with <code>@CacheGroups</code> annotation and you are ready to use it:
             <programlisting language="java"><![CDATA[
 @CacheGroups("some-group")
 public class MyEntity extends _MyEntity {
     // ...
 }]]></programlisting>
-            That's all, now after any modification of <code>MyEntity</code> objects cache group <code>"some-group"</code>
-            will be invalidated automatically.
+            After any modification of <code>MyEntity</code> objects cache group <code>"some-group"</code>
+            will be dropped from cache automatically.
             <note>
                 <para>You can read more about cache and cache groups in corresponding <link linkend="caching-and-fresh-data">chapter</link> of this documentation.</para>
             </note>
         </para>
         <para>
-            In case you need some complex logic of cache invalidation you can disable this default behaviour and
-            provide you own logic.
+            In case you need some complex logic of cache invalidation you can disable default behaviour and provide your own.
         </para>
         <para>
-            To do so you need to implement <code>org.apache.cayenne.cache.invalidation.InvalidationHandler</code> interface and tell Cache Invalidation module to
+            To do so you need to implement <code>org.apache.cayenne.cache.invalidation.InvalidationHandler</code> interface and setup Cache Invalidation module to
             use it.
-            Let's assume we have our implementation class called <code>CustomInvalidationHandler</code> that will simply match
-            all entities with <code>"custom-group"</code> cache group:
+            Let's use implementation class called <code>CustomInvalidationHandler</code> that will simply match
+            all entities' types with <code>"custom-group"</code> cache group regardless of any annotations:
             <programlisting language="java"><![CDATA[
 public class CustomInvalidationHandler implements InvalidationHandler {
     @Override

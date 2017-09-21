@@ -25,7 +25,7 @@
         <para>The goal of this module is to capture commit changes and present them to interested parties in an easy-to-process format.</para>
     </section>
     <section>
-        <title>Including in a Project</title>
+        <title>Including in a project</title>
         <section>
             <title>Maven</title>
             <para>
@@ -46,12 +46,12 @@
     <section>
         <title>Usage</title>
         <para>
-            In order to use <code>commitlog</code> module you need to perform three easy steps:
+            In order to use <code>commitlog</code> module you need to perform three steps:
             <orderedlist>
                 <listitem>
-                    <para>Mark all entities that changes you interested in with <code>@org.apache.cayenne.commitlog.CommitLog</code> annotation</para>
+                    <para>Mark all entities which changes you are interested in with <code>@org.apache.cayenne.commitlog.CommitLog</code> annotation</para>
                     <programlisting language="java"><![CDATA[
-@CommitLog(ignoredProperties = {"somePropertyToSkip"})
+@CommitLog(ignoredProperties = {"somePrivatePropertyToSkip"})
 public class MyEntity extends _MyEntity {
     // ...
 }]]></programlisting>
@@ -64,7 +64,7 @@ public class MyCommitLogListener implements CommitLogListener {
     @Override
     public void onPostCommit(ObjectContext originatingContext, ChangeMap changes) {
         // ChangeMap will contain all information about changes happened in performed commit
-        // this example will simply print IDs of all inserted objects
+        // this particular example will print IDs of all inserted objects
         changes.getUniqueChanges().stream()
             .filter(change -> change.getType() == ObjectChangeType.INSERT)
             .map(ObjectChange::getPostCommitId)

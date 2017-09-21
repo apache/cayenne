@@ -25,7 +25,7 @@
         Difference between <code>MappedSelect</code> and <code>MappedExec</code> is (as reflected in their names)
         whether underlying query intended to select data or just to perform some generic SQL code.
         <note>
-            <para>This queries are "fluent" versions of deprecated <code>NamedQuery</code> class.</para>
+            <para>These queries are "fluent" versions of deprecated <code>NamedQuery</code> class.</para>
         </note>
     </para>
     <para>

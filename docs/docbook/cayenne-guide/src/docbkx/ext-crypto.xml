@@ -25,7 +25,7 @@
         <para>Crypto module allows encrypt and decrypt values stored in DB transparently to your Java app.</para>
     </section>
     <section>
-        <title>Including in a Project</title>
+        <title>Including in a project</title>
         <section>
             <title>Maven</title>
             <para>
@@ -48,17 +48,8 @@
         <section>
             <title>Setup your model and DB</title>
             <para>
-                To use crypto you must prepare your database structure to allow <code>byte[]</code> storage.
-                Also you should define naming convention to mark encrypted columns and set appropriate SQL type.
-                Default naming strategy that doesn't require additional setup is using <code>"CRYPTO_"</code> prefix on columns
-                that will contain encrypted data.
-                If you need to you can change this default strategy by injecting you own implementation of
-                <code>org.apache.cayenne.crypto.map.ColumnMapper</code> interface.
-                <programlisting language="java"><![CDATA[
-ServerRuntime.builder()
-        .addModule(CryptoModule.extend()
-                .columnMapper(MyColumnMapper.class)
-                .module())]]></programlisting>
+                To use crypto module you must prepare your database to allow <code>byte[]</code> storage and properly name
+                columns that will contain encrypted values.
             </para>
             <para>
                 Currently supported SQL types that can be used to store encrypted data are:
@@ -66,7 +57,7 @@ ServerRuntime.builder()
                     <listitem>
                         <para>
                             Binary types: <code>BINARY, BLOB, VARBINARY, LONGVARBINARY</code>.
-                            This types are preferred.
+                            These types are preferred.
                         </para>
                     </listitem>
                     <listitem>
@@ -79,8 +70,18 @@ ServerRuntime.builder()
                 </note>
             </para>
             <para>
-                Here is example of how your <code>ObjEntity</code> with two encrypted and two unencrypted properties
-                can look like in the Cayenne Modeler:
+                Default naming strategy that doesn't require additional setup suggests using <code>"CRYPTO_"</code> prefix.
+                You can change this default strategy by injecting you own implementation of
+                <code>org.apache.cayenne.crypto.map.ColumnMapper</code> interface.
+                <programlisting language="java"><![CDATA[
+ServerRuntime.builder()
+        .addModule(CryptoModule.extend()
+                .columnMapper(MyColumnMapper.class)
+                .module())]]></programlisting>
+            </para>
+            <para>
+                Here is an example of how <code>ObjEntity</code> with two encrypted and two unencrypted properties
+                can look like:
             </para>
             <para><inlinemediaobject>
                 <imageobject>
@@ -91,7 +92,7 @@ ServerRuntime.builder()
         <section>
             <title>Setup keystore</title>
             <para>
-                To perform encryption you must provide <code>KEYSTORE_URL</code> and <code>KEY_PASSWORD</code> to this module.
+                To perform encryption you must provide <code>KEYSTORE_URL</code> and <code>KEY_PASSWORD</code>.
                 Currently crypto module supports only Java "jceks" KeyStore.
                 <programlisting language="java"><![CDATA[
 ServerRuntime.builder()
@@ -105,7 +106,7 @@ ServerRuntime.builder()
             <para>
                 Additionally to <code>ColumnMapper</code> mentioned above you can customize other parts of
                 <code>crypto module</code>.
-                You can enable <code>gzip</code> compression and <code>HMAC</code> usage (this will ensure integrity of data).
+                You can enable <code>gzip</code> compression and <code>HMAC</code> usage (later will ensure integrity of data).
                 <programlisting language="java"><![CDATA[
 ServerRuntime.builder()
         .addModule(CryptoModule.extend()
@@ -125,7 +126,7 @@ ServerRuntime.builder()
             </para>
             <note>
                 <para>In addition to Java primitive types (and their object counterparts), <code>crypto module</code>
-                    by default supports encryption only of <code>java.util.Date</code>, <code>java.math.BigInteger</code>
+                    supports encryption only of <code>java.util.Date</code>, <code>java.math.BigInteger</code>
                     and <code>java.math.BigDecimal</code> types.
                 </para>
             </note>
