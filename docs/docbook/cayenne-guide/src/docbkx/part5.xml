@@ -23,8 +23,8 @@
     <xi:include href="ext-cache-invalidation.xml"/>
     <xi:include href="ext-commit-log.xml"/>
     <xi:include href="ext-crypto.xml"/>
-    <xi:include href="ext-dbcp2.xml"/>
-    <xi:include href="ext-java8.xml"/>
+    <!--<xi:include href="ext-dbcp2.xml"/>-->
+    <!--<xi:include href="ext-java8.xml"/>-->
     <xi:include href="ext-jcache.xml"/>
     <xi:include href="ext-joda.xml"/>
     <xi:include href="ext-project-compatibility.xml"/>

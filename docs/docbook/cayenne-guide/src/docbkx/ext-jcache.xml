@@ -22,10 +22,10 @@
     <title>JCache integration</title>
     <section>
         <title>Description</title>
-        <para>This module allows integrate any JCache (JSR 107) compatible caching provider with Cayenne.</para>
+        <para>This module allows to integrate any JCache (JSR 107) compatible caching provider with Cayenne.</para>
     </section>
     <section>
-        <title>Including in a Project</title>
+        <title>Including in a project</title>
         <section>
             <title>Maven</title>
             <para>
@@ -46,16 +46,16 @@
     <section>
         <title>Usage</title>
         <para>
-            All you need is to include this module and any compatible caching provider (e.g. Ehcache).
-            If required you can provide own implementation of <code>org.apache.cayenne.jcache.JCacheConfigurationFactory</code>
-            to customize cache configuration.
+            To use JCache provider in your app you need to include this module and caching provider libs (e.g. Ehcache).
+            You can provide own implementation of <code>org.apache.cayenne.jcache.JCacheConfigurationFactory</code>
+            to customize cache configuration if required.
         </para>
         <para>
             For advanced configuration and management please use provider specific options and tools.
         </para>
         <note>
             <para>You can read about using cache in Cayenne in <link linkend="caching-and-fresh-data">this</link> chapter.</para>
-            <para>You may alse be interested in <link linkend="ext-cache-invalidation">cache invalidation</link> extension.</para>
+            <para>You may else be interested in <link linkend="ext-cache-invalidation">cache invalidation</link> extension.</para>
         </note>
     </section>
 </chapter>

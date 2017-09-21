@@ -24,15 +24,15 @@
         <title>Description</title>
         <para>Since version <emphasis>4.1</emphasis> Cayenne doesn't allow to load project XML files
             from previous versions as this can lead to unexpected errors in runtime. This module allows to
-            use project files from older versions performing their upgrade on the fly.
-            This can be useful when using Caynnne models from third-party libraries in your app.
+            use project files from older versions performing their upgrade on the fly (without modifying files).
+            This can be useful when using Cayenne models from third-party libraries in your app.
             <note>
                 <para>You should prefer explicit project upgrade via Cayenne Modeler.</para>
             </note>
         </para>
     </section>
     <section>
-        <title>Including in a Project</title>
+        <title>Including in a project</title>
         <section>
             <title>Maven</title>
             <para>

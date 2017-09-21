@@ -27,7 +27,7 @@
         </para>
     </section>
     <section>
-        <title>Including in a Project</title>
+        <title>Including in a project</title>
         <section>
             <title>Maven</title>
             <para>
@@ -48,7 +48,7 @@
     <section>
         <title>Usage</title>
         <para>
-            To use DBCP2 pool you can just setup it in <code>DataNode</code> settings in Cayenne Modeler:
+            To use DBCP2 pool you need to setup it in <code>DataNode</code> settings in Cayenne Modeler:
         </para>
         <para><inlinemediaobject>
             <imageobject>
