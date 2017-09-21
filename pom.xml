@@ -902,8 +902,7 @@
 				<artifactId>apache-rat-plugin</artifactId>
 				<configuration>
 					<excludes>
-						<exclude>**/target</exclude>
-						<exclude>**/build</exclude>
+						<exclude>build/**/*</exclude>
                         <exclude>**/.*</exclude>
                         <exclude>**/.*/**</exclude>
 
