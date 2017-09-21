@@ -218,6 +218,7 @@ public class SQLExec extends IndirectQuery {
         SQLTemplate template = new SQLTemplate();
         template.setRoot(root);
         template.setDefaultTemplate(getSql());
+        template.setFetchingDataRows(true); // in case result set will be returned
 
         if (positionalParams != null) {
             template.setParamsList(positionalParams);
