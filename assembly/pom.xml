@@ -144,6 +144,18 @@
 			<version>${project.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-velocity</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-project-compatibility</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -318,7 +330,7 @@
 									<executable>/bin/chmod</executable>
 									<arguments>
 										<argument>755</argument>
-										<argument>target/cayenne-${project.version}-macosx/cayenne-${project.version}-macosx/CayenneModeler.app/Contents/MacOS/JavaAppLauncher</argument>
+										<argument>target/cayenne-${project.version}-macosx/CayenneModeler.app/Contents/MacOS/JavaAppLauncher</argument>
 									</arguments>
 								</configuration>
 							</execution>
@@ -335,7 +347,7 @@
 									<arguments>
 										<argument>create</argument>
 										<argument>-srcfolder</argument>
-										<argument>target/cayenne-${project.version}-macosx/cayenne-${project.version}-macosx</argument>
+										<argument>target/cayenne-${project.version}-macosx/</argument>
 										<argument>-format</argument>
 										<argument>UDZO</argument>
 										<argument>-volname</argument>

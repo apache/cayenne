@@ -47,7 +47,7 @@
 			</excludes>
 		</fileSet>
 		<fileSet>
-			<directory>../cayenne-cgen/src/main/resources/templates/v1_2</directory>
+			<directory>../cayenne-cgen/src/main/resources/templates/v4_1</directory>
 			<outputDirectory>templates</outputDirectory>
 		</fileSet>
 	</fileSets>
@@ -91,23 +91,20 @@
 				<include>org.apache.cayenne:cayenne-cgen</include>
 				<include>org.apache.cayenne:cayenne-ant</include>
 				<include>org.apache.cayenne:cayenne-dbcp2</include>
-				<include>org.apache.cayenne:cayenne-java8</include>
 				<include>org.apache.cayenne:cayenne-jcache</include>
 				<include>org.apache.cayenne:cayenne-cache-invalidation</include>
 				<include>org.apache.cayenne:cayenne-jgroups</include>
 				<include>org.apache.cayenne:cayenne-jms</include>
 				<include>org.apache.cayenne:cayenne-xmpp</include>
+				<include>org.apache.cayenne:cayenne-velocity</include>
+				<include>org.apache.cayenne:cayenne-project-compatibility</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>
 			<outputDirectory>lib/third-party</outputDirectory>
 			<!-- Include only a minimal set of dependencies to run cayenne-server and ant tasks -->
 			<includes>
-				<include>commons-collections:commons-collections</include>
 				<include>org.slf4j:slf4j-api</include>
-				<include>commons-lang:commons-lang</include>
-				<include>org.apache.velocity:velocity</include>
-				<include>foundrylogic.vpp:vpp</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>
