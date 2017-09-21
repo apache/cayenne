@@ -253,23 +253,90 @@ binder.bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
                 this:<programlisting language="java">binder.bind(QueryCache.class).to(EhCacheQueryCache.class);</programlisting></para>
         </section>
     </section>
-    <section xml:id="extendedtypes">
-        <title>Extended Types</title>
-        <para>JDBC specification defines a set of "standard" database column types (defined in java.sql.Types class)
-            and a very specific mapping of these types to Java Object Types, such as java.lang.String,
-            java.math.BigDecimal, etc. Sometimes there is a need to use a custom Java type not known to JDBC driver and
-            Cayenne allows to configure it. For this Cayenne needs to know how to instantiate this type from
-            a database "primitive" value, and conversely, how to transform an object of the custom type to
-            a JDBC-compatible object.</para>
-        <section xml:id="supporting-non-standard-types">
-            <title>Supporting Non-Standard Types</title>
-            <para>For supporting non-standard type you should define it via an interface <code>org.apache.cayenne.access.types.ExtendedType</code>.
-                An implementation must provide <code>ExtendedType.getClassName()</code> method that returns
-                a fully qualified Java class name for the supported custom type, and a number of methods
-                that convert data between JDBC and custom type.
-                The following example demonstrates how to add a custom DoubleArrayType
-                to store java.lang.Double[] as a custom string in a database:</para>
-            <programlisting language="java">
+    <section>
+        <title>Using custom data types</title>
+        <section>
+            <title>Value object type</title>
+            <para>
+                <code>ValueObjectType</code> is a new and lightweight alternative to the Extended Types API described in the following section.
+                In most cases is should be preferred as is it easier to understand and use. Currently only one case is known when <code>ExtendedType</code> should be used:
+                when your value object can be mapped on different JDBC types.
+            </para>
+            <para>
+                In order to use your custom data type you should implement <code>ValueObjectType</code> describing it in terms of some type already known to Cayenne
+                (e.g. backed by system or user ExtendedType).
+                Let's assume we want to support some data type called <code>Money</code>:
+                <programlisting language="java"><![CDATA[public class Money {
+    private BigDecimal value;
+
+    public Money(BigDecimal value) {
+        this.value = value;
+    }
+
+    public BigDecimal getValue() {
+        return value;
+    }
+
+    // .. some other business logic ..
+}]]></programlisting>
+                Here is how <code>ValueObjectType</code> that will allow to store our <code>Money</code> class as <code>BigDecimal</code>
+                can be implemented:
+                <programlisting language="java"><![CDATA[public class MoneyValueObjectType implements ValueObjectType<Money, BigDecimal> {
+
+    @Override
+    public Class<BigDecimal> getTargetType() {
+        return BigDecimal.class;
+    }
+
+    @Override
+    public Class<Money> getValueType() {
+        return Money.class;
+    }
+
+    @Override
+    public Money toJavaObject(BigDecimal value) {
+        return new Money(value);
+    }
+
+    @Override
+    public BigDecimal fromJavaObject(Money object) {
+        return object.getValue();
+    }
+
+    @Override
+    public String toCacheKey(Money object) {
+        return object.getValue().toString();
+    }
+}]]></programlisting>
+            </para>
+            <para>
+                Last step is to register this new type in <code>ServerRuntime</code>:
+                <programlisting language="java"><![CDATA[ServerRuntime runtime = ServerRuntime.builder()
+    .addConfig("cayenne-project.xml")
+    .addModule(binder -> ServerModule.contributeValueObjectTypes(binder).add(MoneyValueObjectType.class))
+    .build();]]></programlisting>
+            </para>
+            <para>More examples of implementation you can find in
+                <!--<link xlink:href="https://github.com/apache/cayenne/tree/master/cayenne-java8">cayenne-java8 module</link> or-->
+                <link xlink:href="https://github.com/apache/cayenne/tree/master/cayenne-joda">cayenne-joda module</link>.</para>
+        </section>
+        <section xml:id="extendedtypes">
+            <title>Extended Types</title>
+            <para>JDBC specification defines a set of "standard" database column types (defined in java.sql.Types class)
+                and a very specific mapping of these types to Java Object Types, such as java.lang.String,
+                java.math.BigDecimal, etc. Sometimes there is a need to use a custom Java type not known to JDBC driver and
+                Cayenne allows to configure it. For this Cayenne needs to know how to instantiate this type from
+                a database "primitive" value, and conversely, how to transform an object of the custom type to
+                a JDBC-compatible object.</para>
+            <section xml:id="supporting-non-standard-types">
+                <title>Supporting Non-Standard Types</title>
+                <para>For supporting non-standard type you should define it via an interface <code>org.apache.cayenne.access.types.ExtendedType</code>.
+                    An implementation must provide <code>ExtendedType.getClassName()</code> method that returns
+                    a fully qualified Java class name for the supported custom type, and a number of methods
+                    that convert data between JDBC and custom type.
+                    The following example demonstrates how to add a custom DoubleArrayType
+                    to store <code>java.lang.Double[]</code> as a custom string in a database:</para>
+                <programlisting language="java">
 /**
 * Defines methods to read Java objects from JDBC ResultSets and write as parameters of
 * PreparedStatements.
@@ -336,42 +403,38 @@ public class DoubleArrayType implements ExtendedType {
         return res;
     }
 }
-            </programlisting>
-            <para>For Java7</para>
-            <programlisting language="java">
+                </programlisting>
+                <para>For Java7</para>
+                <programlisting language="java">
 // add DoubleArrayType to list of user types
 ServerRuntime runtime = ServerRuntime.builder()
                 .addConfig("cayenne-project.xml")
                 .addModule(new Module() {
                     @Override
                     public void configure(Binder binder) {
-                        binder
-                                .bindList(Constants.SERVER_USER_TYPES_LIST)
-                                .add(new DoubleArrayType());
+                        ServerModule.contributeUserTypes(binder).add(new DoubleArrayType());
                     }
                 })
                 .build();
-            </programlisting>
-            <para>For Java8</para>
-            <programlisting language="java">
+                </programlisting>
+                <para>For Java8</para>
+                <programlisting language="java">
 // add DoubleArrayType to list of user types
 ServerRuntime runtime = ServerRuntime.builder()
                 .addConfig("cayenne-project.xml")
-                .addModule(binder -> binder.bindList(Constants.SERVER_USER_TYPES_LIST).add(new DoubleArrayType()))
+                .addModule(binder -> ServerModule.contributeUserTypes(binder).add(new DoubleArrayType()))
                 .build();
-            </programlisting>
-            <para>More examples of implementation you can find in
-                <link xlink:href="https://github.com/apache/cayenne/tree/master/cayenne-java8">cayenne-java8 module</link> or
-                <link xlink:href="https://github.com/apache/cayenne/tree/master/cayenne-joda">cayenne-joda module</link>.</para>
-        </section>
-        <section xml:id="dbadapters-and-extended-types">
-            <title>DbAdapters and Extended Types</title>
-            <para>As shown in the example above, ExtendedTypes are stored by DbAdapter. In fact DbAdapters often install
-                their own extended types to address incompatibilities, incompleteness and differences between
-                JDBC drivers in handling "standard" JDBC types. For instance some drivers support reading large
-                character columns (CLOB) as java.sql.Clob, but some other - as "character stream", etc.
-                Adapters provided with Cayenne override <code>configureExtendedTypes()</code> method to install their own types,
-                possibly substituting Cayenne defaults. Custom DbAdapters can use the same technique.</para>
+                </programlisting>
+            </section>
+            <section xml:id="dbadapters-and-extended-types">
+                <title>DbAdapters and Extended Types</title>
+                <para>As shown in the example above, ExtendedTypes are stored by DbAdapter. In fact DbAdapters often install
+                    their own extended types to address incompatibilities, incompleteness and differences between
+                    JDBC drivers in handling "standard" JDBC types. For instance some drivers support reading large
+                    character columns (CLOB) as java.sql.Clob, but some other - as "character stream", etc.
+                    Adapters provided with Cayenne override <code>configureExtendedTypes()</code> method to install their own types,
+                    possibly substituting Cayenne defaults. Custom DbAdapters can use the same technique.</para>
+            </section>
         </section>
     </section>
     <section xml:id="noteworthy-runtime-components">
@@ -388,12 +451,21 @@ ServerRuntime runtime = ServerRuntime.builder()
         </section>
         <section xml:id="datasourcefactory">
             <title>DataSourceFactory</title>
+            <para>Factory that returns <code>javax.sql.DataSource</code> object based on the configuration provided in the
+                "nodeDescriptor".
+            </para>
         </section>
         <section xml:id="datachannelfilter">
             <title>DataChannelFilter</title>
+            <para> An interface of a filter that allows to intercept DataChannel operations. Filters allow
+                to implement chains of custom processors around a DataChannel, that can be used for
+                security, monitoring, business logic, providing context to lifecycle event listeners,
+                etc.
+            </para>
         </section>
         <section xml:id="querycache">
             <title>QueryCache</title>
+            <para>Defines API of a cache that stores query results.</para>
         </section>
     </section>
 </chapter>
