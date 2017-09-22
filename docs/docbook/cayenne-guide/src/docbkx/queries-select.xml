@@ -54,8 +54,8 @@ INFO: === returned 1 row. - took 6 ms.</screen>
         </para>
         <para>To order the results of ObjectSelect, one or more orderings can be applied:
             <programlisting language="java">List&lt;Artist> objects = ObjectSelect.query(Artist.class)
-    .addOrderBy(Artist.DATE_OF_BIRTH.desc())
-    .addOrderBy(Artist.NAME.asc())
+    .orderBy(Artist.DATE_OF_BIRTH.desc())
+    .orderBy(Artist.NAME.asc())
     .select(context);</programlisting>
         </para>
         <para>There's a number of other useful methods in ObjectSelect that define what to select
