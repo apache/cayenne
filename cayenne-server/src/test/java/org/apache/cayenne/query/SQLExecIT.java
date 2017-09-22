@@ -74,8 +74,15 @@ public class SQLExecIT extends ServerCase {
         assertEquals(1, result.firstList().size());
 
         DataRow row = (DataRow)result.firstList().get(0);
-        assertEquals(1L, row.get("ARTIST_ID"));
-        assertEquals("a", row.get("ARTIST_NAME"));
+        // there is no methods to control case of the columns' names in SQLExec, so check both versions
+        assertTrue(row.containsKey("ARTIST_ID") || row.containsKey("artist_id"));
+        if(row.containsKey("ARTIST_ID")) {
+            assertEquals(1L, row.get("ARTIST_ID"));
+            assertEquals("a", row.get("ARTIST_NAME"));
+        } else {
+            assertEquals(1L, row.get("artist_id"));
+            assertEquals("a", row.get("artist_name"));
+        }
     }
 
     @Test
