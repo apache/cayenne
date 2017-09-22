@@ -23,7 +23,7 @@
         <code>SQLSelect</code> and <code>SQLExec</code> are essentially a "fluent" versions of older <code>SQLTemplate</code> query.
         <code>SQLSelect</code> can be used (as name suggests) to select custom data in form of entities, separate columns or collection of <code>DataRow</code>.
         <code>SQLExec</code> is designed to just execute any raw SQL code (e.g. updates, deletes, DDLs, etc.)
-        This queries support all directives described in <link linkend="sqltemplate">SQLTemplate</link> section.
+        These queries support all directives described in <link linkend="sqltemplate">SQLTemplate</link> section.
     </para>
     <para>
         Here is example of how to use <code>SQLSelect</code>:

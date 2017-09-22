@@ -265,6 +265,8 @@ binder.bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
             <para>
                 In order to use your custom data type you should implement <code>ValueObjectType</code> describing it in terms of some type already known to Cayenne
                 (e.g. backed by system or user ExtendedType).
+            </para>
+            <para>
                 Let's assume we want to support some data type called <code>Money</code>:
                 <programlisting language="java"><![CDATA[public class Money {
     private BigDecimal value;
@@ -317,8 +319,8 @@ binder.bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
     .build();]]></programlisting>
             </para>
             <para>More examples of implementation you can find in
-                <!--<link xlink:href="https://github.com/apache/cayenne/tree/master/cayenne-java8">cayenne-java8 module</link> or-->
-                <link xlink:href="https://github.com/apache/cayenne/tree/master/cayenne-joda">cayenne-joda module</link>.</para>
+                <link xlink:href="https://github.com/apache/cayenne/tree/STABLE-4.0/cayenne-java8/src/main/java/org/apache/cayenne/java8/access/types">cayenne-java8 module</link>
+            </para>
         </section>
         <section xml:id="extendedtypes">
             <title>Extended Types</title>
