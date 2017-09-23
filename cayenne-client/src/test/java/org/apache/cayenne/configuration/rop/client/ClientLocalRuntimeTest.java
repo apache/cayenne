@@ -23,7 +23,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.ObjectContextFactory;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.ClientConnection;
@@ -32,10 +31,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 public class ClientLocalRuntimeTest {
@@ -43,11 +39,8 @@ public class ClientLocalRuntimeTest {
     @Test
 	public void testDefaultConstructor() {
 
-		Module serverModule = new Module() {
-
-			public void configure(Binder binder) {
-			}
-		};
+		Module serverModule = binder -> {
+        };
 
 		ClientRuntime runtime = ClientRuntime.builder()
 				.disableModulesAutoLoading()
@@ -64,21 +57,16 @@ public class ClientLocalRuntimeTest {
 
 		final DataContext serverContext = mock(DataContext.class);
 
-		Module serverModule = new Module() {
+		Module serverModule = binder -> binder.bind(ObjectContextFactory.class).toInstance(new ObjectContextFactory() {
 
-			public void configure(Binder binder) {
-				binder.bind(ObjectContextFactory.class).toInstance(new ObjectContextFactory() {
+            public ObjectContext createContext(DataChannel parent) {
+                return null;
+            }
 
-					public ObjectContext createContext(DataChannel parent) {
-						return null;
-					}
-
-					public ObjectContext createContext() {
-						return serverContext;
-					}
-				});
-			}
-		};
+            public ObjectContext createContext() {
+                return serverContext;
+            }
+        });
 
 		ClientRuntime runtime = ClientRuntime.builder()
 				.local(DIBootstrap.createInjector(serverModule))

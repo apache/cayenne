@@ -21,14 +21,18 @@ package org.apache.cayenne.configuration.server;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.datasource.DataSourceBuilder;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleLoader;
 
 import javax.sql.DataSource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * A convenience class to assemble custom ServerRuntime. It allows to easily
@@ -247,13 +251,10 @@ public class ServerRuntimeBuilder {
         Collection<Module> modules = new ArrayList<>();
 
         if (!configs.isEmpty()) {
-            modules.add(new Module() {
-                @Override
-                public void configure(Binder binder) {
-                    ListBuilder<String> locationsBinder = ServerModule.contributeProjectLocations(binder);
-                    for (String c : configs) {
-                        locationsBinder.add(c);
-                    }
+            modules.add(binder -> {
+                ListBuilder<String> locationsBinder = ServerModule.contributeProjectLocations(binder);
+                for (String c : configs) {
+                    locationsBinder.add(c);
                 }
             });
         }
@@ -269,57 +270,46 @@ public class ServerRuntimeBuilder {
         if (nameOverride != null) {
 
             final String finalNameOverride = nameOverride;
-            modules.add(new Module() {
-                @Override
-                public void configure(Binder binder) {
-                    ServerModule.contributeProperties(binder).put(Constants.SERVER_DOMAIN_NAME_PROPERTY, finalNameOverride);
-                }
-            });
+            modules.add(binder -> ServerModule.contributeProperties(binder).put(Constants.SERVER_DOMAIN_NAME_PROPERTY, finalNameOverride));
         }
 
         if (dataSourceFactory != null) {
 
-            modules.add(new Module() {
-                @Override
-                public void configure(Binder binder) {
-                    binder.bind(DataDomain.class).toProvider(SyntheticNodeDataDomainProvider.class);
-                    binder.bind(DataSourceFactory.class).toInstance(dataSourceFactory);
-                }
+            modules.add(binder -> {
+                binder.bind(DataDomain.class).toProvider(SyntheticNodeDataDomainProvider.class);
+                binder.bind(DataSourceFactory.class).toInstance(dataSourceFactory);
             });
 
         }
         // URL and driver are the minimal requirement for DelegatingDataSourceFactory to work
         else if (jdbcUrl != null && jdbcDriver != null) {
-            modules.add(new Module() {
-                @Override
-                public void configure(Binder binder) {
-                    binder.bind(DataDomain.class).toProvider(SyntheticNodeDataDomainProvider.class);
-                    MapBuilder<String> props = ServerModule.contributeProperties(binder)
-                            .put(Constants.JDBC_DRIVER_PROPERTY, jdbcDriver).put(Constants.JDBC_URL_PROPERTY, jdbcUrl);
+            modules.add(binder -> {
+                binder.bind(DataDomain.class).toProvider(SyntheticNodeDataDomainProvider.class);
+                MapBuilder<String> props = ServerModule.contributeProperties(binder)
+                        .put(Constants.JDBC_DRIVER_PROPERTY, jdbcDriver).put(Constants.JDBC_URL_PROPERTY, jdbcUrl);
 
-                    if (jdbcUser != null) {
-                        props.put(Constants.JDBC_USERNAME_PROPERTY, jdbcUser);
-                    }
+                if (jdbcUser != null) {
+                    props.put(Constants.JDBC_USERNAME_PROPERTY, jdbcUser);
+                }
 
-                    if (jdbcPassword != null) {
-                        props.put(Constants.JDBC_PASSWORD_PROPERTY, jdbcPassword);
-                    }
+                if (jdbcPassword != null) {
+                    props.put(Constants.JDBC_PASSWORD_PROPERTY, jdbcPassword);
+                }
 
-                    if (jdbcMinConnections > 0) {
-                        props.put(Constants.JDBC_MIN_CONNECTIONS_PROPERTY, Integer.toString(jdbcMinConnections));
-                    }
+                if (jdbcMinConnections > 0) {
+                    props.put(Constants.JDBC_MIN_CONNECTIONS_PROPERTY, Integer.toString(jdbcMinConnections));
+                }
 
-                    if (jdbcMaxConnections > 0) {
-                        props.put(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, Integer.toString(jdbcMaxConnections));
-                    }
+                if (jdbcMaxConnections > 0) {
+                    props.put(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, Integer.toString(jdbcMaxConnections));
+                }
 
-                    if (maxQueueWaitTime > 0) {
-                        props.put(Constants.JDBC_MAX_QUEUE_WAIT_TIME, Long.toString(maxQueueWaitTime));
-                    }
+                if (maxQueueWaitTime > 0) {
+                    props.put(Constants.JDBC_MAX_QUEUE_WAIT_TIME, Long.toString(maxQueueWaitTime));
+                }
 
-                    if (validationQuery != null) {
-                        props.put(Constants.JDBC_VALIDATION_QUERY_PROPERTY, validationQuery);
-                    }
+                if (validationQuery != null) {
+                    props.put(Constants.JDBC_VALIDATION_QUERY_PROPERTY, validationQuery);
                 }
             });
         }

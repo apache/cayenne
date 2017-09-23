@@ -26,16 +26,12 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.MockDataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.ObjectContextFactory;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 public class ServletContextHandlerTest {
@@ -43,23 +39,20 @@ public class ServletContextHandlerTest {
     @Test
     public void testRequestStart_bindContext() {
 
-        Module module = new Module() {
+        Module module = binder -> {
 
-            public void configure(Binder binder) {
+            binder.bind(DataChannel.class).to(MockDataChannel.class);
+            binder.bind(ObjectContextFactory.class).toInstance(
+                    new ObjectContextFactory() {
 
-                binder.bind(DataChannel.class).to(MockDataChannel.class);
-                binder.bind(ObjectContextFactory.class).toInstance(
-                        new ObjectContextFactory() {
+                        public ObjectContext createContext(DataChannel parent) {
+                            return mock(ObjectContext.class);
+                        }
 
-                            public ObjectContext createContext(DataChannel parent) {
-                                return mock(ObjectContext.class);
-                            }
-
-                            public ObjectContext createContext() {
-                                return mock(ObjectContext.class);
-                            }
-                        });
-            }
+                        public ObjectContext createContext() {
+                            return mock(ObjectContext.class);
+                        }
+                    });
         };
         Injector injector = DIBootstrap.createInjector(module);
         SessionContextRequestHandler handler = new SessionContextRequestHandler();

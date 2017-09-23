@@ -23,18 +23,17 @@ import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventBridge;
-import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventBridge;
 import org.apache.cayenne.event.MockEventBridgeProvider;
-import org.apache.cayenne.log.Slf4jJdbcEventLogger;
+import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
@@ -65,18 +64,16 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
         final EventManager EVENT_MANAGER = new DefaultEventManager();
         final int CACHE_SIZE = 500;
 
-        Module testModule = new Module() {
-            public void configure(Binder binder) {
-                binder.bind(DataDomain.class).toInstance(DOMAIN);
-                binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
-                binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
-                binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-                binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
-                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
-                binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
-                ServerModule.setSnapshotCacheSize(binder, CACHE_SIZE);
-            }
+        Module testModule = binder -> {
+            binder.bind(DataDomain.class).toInstance(DOMAIN);
+            binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
+            binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
+            binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
+            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+            binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
+            binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
+            ServerModule.setSnapshotCacheSize(binder, CACHE_SIZE);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -92,18 +89,16 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
         final DataDomain DOMAIN = new DataDomain("test");
         final EventManager EVENT_MANAGER = new DefaultEventManager();
 
-        Module testModule = new Module() {
-            public void configure(Binder binder) {
-                binder.bind(DataDomain.class).toInstance(DOMAIN);
-                binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
-                binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
-                binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-                binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
-                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(EventBridge.class).toProvider(MockEventBridgeProvider.class);
-                binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
-                ServerModule.contributeProperties(binder);
-            }
+        Module testModule = binder -> {
+            binder.bind(DataDomain.class).toInstance(DOMAIN);
+            binder.bind(EventManager.class).toInstance(EVENT_MANAGER);
+            binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
+            binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
+            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+            binder.bind(EventBridge.class).toProvider(MockEventBridgeProvider.class);
+            binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
+            ServerModule.contributeProperties(binder);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);

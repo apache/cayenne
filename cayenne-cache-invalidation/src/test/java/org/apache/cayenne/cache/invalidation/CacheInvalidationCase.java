@@ -20,7 +20,6 @@ package org.apache.cayenne.cache.invalidation;
 
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -51,11 +50,7 @@ public abstract class CacheInvalidationCase {
 	protected abstract Module extendInvalidationModule();
 
 	protected Module buildCustomModule() {
-		return new Module() {
-			@Override
-			public void configure(Binder binder) {
-			}
-		};
+		return binder -> { };
 	}
 
 	protected ServerRuntimeBuilder configureCayenne() {

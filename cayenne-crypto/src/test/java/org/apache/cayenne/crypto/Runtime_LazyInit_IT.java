@@ -23,7 +23,6 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.crypto.db.Table1;
 import org.apache.cayenne.crypto.db.Table4;
 import org.apache.cayenne.crypto.key.KeySource;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.ObjectSelect;
@@ -32,9 +31,7 @@ import org.junit.Test;
 
 import java.security.Key;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class Runtime_LazyInit_IT extends Runtime_AES128_Base {
 
@@ -49,14 +46,9 @@ public class Runtime_LazyInit_IT extends Runtime_AES128_Base {
 
     @Override
     protected ServerRuntime createRuntime(final Module crypto) {
-        Module cryptoWrapper = new Module() {
-            @Override
-            public void configure(Binder binder) {
-
-                crypto.configure(binder);
-
-                binder.decorate(KeySource.class).after(LockingKeySourceDecorator.class);
-            }
+        Module cryptoWrapper = binder -> {
+            crypto.configure(binder);
+            binder.decorate(KeySource.class).after(LockingKeySourceDecorator.class);
         };
 
         return super.createRuntime(cryptoWrapper);

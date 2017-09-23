@@ -21,7 +21,6 @@ package org.apache.cayenne.configuration.server;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.tx.TransactionListener;
@@ -72,13 +71,10 @@ public class ServerRuntime extends CayenneRuntime {
         modules.add(new ServerModule());
 
         if (configurationLocations.length > 0) {
-            modules.add(new Module() {
-                @Override
-                public void configure(Binder binder) {
-                    ListBuilder<String> locationsBinder = ServerModule.contributeProjectLocations(binder);
-                    for (String c : configurationLocations) {
-                        locationsBinder.add(c);
-                    }
+            modules.add(binder -> {
+                ListBuilder<String> locationsBinder = ServerModule.contributeProjectLocations(binder);
+                for (String c : configurationLocations) {
+                    locationsBinder.add(c);
                 }
             });
         }

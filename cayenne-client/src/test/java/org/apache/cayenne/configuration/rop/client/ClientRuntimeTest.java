@@ -62,19 +62,9 @@ public class ClientRuntimeTest {
 
 		final boolean[] configured = new boolean[2];
 
-		Module m1 = new Module() {
+		Module m1 = binder -> configured[0] = true;
 
-			public void configure(Binder binder) {
-				configured[0] = true;
-			}
-		};
-
-		Module m2 = new Module() {
-
-			public void configure(Binder binder) {
-				configured[1] = true;
-			}
-		};
+		Module m2 = binder -> configured[1] = true;
 
 		Map<String, String> properties = new HashMap<>();
 
@@ -93,19 +83,9 @@ public class ClientRuntimeTest {
 
 		Collection<Module> modules = new ArrayList<Module>();
 
-		modules.add(new Module() {
+		modules.add(binder -> configured[0] = true);
 
-			public void configure(Binder binder) {
-				configured[0] = true;
-			}
-		});
-
-		modules.add(new Module() {
-
-			public void configure(Binder binder) {
-				configured[1] = true;
-			}
-		});
+		modules.add(binder -> configured[1] = true);
 
 		Map<String, String> properties = new HashMap<>();
 
@@ -149,14 +129,10 @@ public class ClientRuntimeTest {
 
 		Map<String, String> properties = new HashMap<>();
 
-		Module extraModule = new Module() {
+		Module extraModule = binder ->
+            // use a noop connection to prevent hessian startup errors...
+            binder.bind(ClientConnection.class).to(MockClientConnection.class);
 
-			public void configure(Binder binder) {
-
-				// use a noop connection to prevent hessian startup errors...
-				binder.bind(ClientConnection.class).to(MockClientConnection.class);
-			}
-		};
 
 		ClientRuntime runtime = new ClientRuntime(properties, extraModule);
 

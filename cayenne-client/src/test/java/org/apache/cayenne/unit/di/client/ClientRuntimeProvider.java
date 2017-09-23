@@ -23,10 +23,8 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.configuration.rop.client.LocalConnectionProvider;
 import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Key;
-import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.remote.ClientConnection;
 
@@ -42,14 +40,12 @@ public class ClientRuntimeProvider implements Provider<ClientRuntime> {
     public ClientRuntime get() throws ConfigurationException {
         return ClientRuntime.builder()
                 .properties(clientCaseProperties.getRuntimeProperties())
-                .addModule(new Module() {
-                    public void configure(Binder binder) {
-                        // add an interceptor between client and server parts to capture and inspect the traffic
-                        binder.bind(Key.get(DataChannel.class, ClientRuntime.CLIENT_SERVER_CHANNEL_KEY))
-                                .toProviderInstance(new InterceptingClientServerChannelProvider(serverRuntimeProvider.get().getInjector()));
-                        // create local connection
-                        binder.bind(ClientConnection.class).toProviderInstance(new LocalConnectionProvider());
-                    }
+                .addModule(binder -> {
+                    // add an interceptor between client and server parts to capture and inspect the traffic
+                    binder.bind(Key.get(DataChannel.class, ClientRuntime.CLIENT_SERVER_CHANNEL_KEY))
+                            .toProviderInstance(new InterceptingClientServerChannelProvider(serverRuntimeProvider.get().getInjector()));
+                    // create local connection
+                    binder.bind(ClientConnection.class).toProviderInstance(new LocalConnectionProvider());
                 })
                 .build();
     }

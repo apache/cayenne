@@ -25,7 +25,6 @@ import org.apache.cayenne.crypto.map.PatternColumnMapper;
 import org.apache.cayenne.crypto.transformer.bytes.BytesTransformerFactory;
 import org.apache.cayenne.crypto.transformer.value.BytesConverter;
 import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
 
@@ -227,81 +226,77 @@ public class CryptoModuleExtender {
      */
     public Module module() {
 
-        return new Module() {
+        return binder -> {
 
-            @Override
-            public void configure(Binder binder) {
+            MapBuilder<String> props = CryptoModule.contributeProperties(binder);
 
-                MapBuilder<String> props = CryptoModule.contributeProperties(binder);
+            if (cipherAlgoritm != null) {
+                props.put(CryptoConstants.CIPHER_ALGORITHM, cipherAlgoritm);
+            }
 
-                if (cipherAlgoritm != null) {
-                    props.put(CryptoConstants.CIPHER_ALGORITHM, cipherAlgoritm);
+            if (cipherMode != null) {
+                props.put(CryptoConstants.CIPHER_MODE, cipherMode);
+            }
+
+            String keyStoreUrl = keyStoreUrl();
+            if (keyStoreUrl != null) {
+                props.put(CryptoConstants.KEYSTORE_URL, keyStoreUrl);
+            }
+
+            if (encryptionKeyAlias != null) {
+                props.put(CryptoConstants.ENCRYPTION_KEY_ALIAS, encryptionKeyAlias);
+            }
+
+            if (compress) {
+                props.put(CryptoConstants.COMPRESSION, "true");
+            }
+
+            if (useHMAC) {
+                props.put(CryptoConstants.USE_HMAC, "true");
+            }
+
+            if (keyPassword != null) {
+                CryptoModule.contributeCredentials(binder).put(CryptoConstants.KEY_PASSWORD, keyPassword);
+            }
+
+            if (cipherFactoryType != null) {
+                binder.bind(CipherFactory.class).to(cipherFactoryType);
+            }
+
+            if (valueTransformerFactoryType != null) {
+                binder.bind(ValueTransformerFactory.class).to(valueTransformerFactoryType);
+            }
+
+            if (!extraDbToBytes.isEmpty()) {
+                MapBuilder<BytesConverter<?>> dbToBytesBinder = CryptoModule.contributeDbToByteConverters(binder);
+                for (Map.Entry<Integer, BytesConverter<?>> extraConverter : extraDbToBytes.entrySet()) {
+                    dbToBytesBinder.put(extraConverter.getKey().toString(), extraConverter.getValue());
                 }
+            }
 
-                if (cipherMode != null) {
-                    props.put(CryptoConstants.CIPHER_MODE, cipherMode);
+            if (!extraObjectToBytes.isEmpty()) {
+                MapBuilder<BytesConverter<?>> objectToBytesBinder = CryptoModule.contributeObjectToByteConverters(binder);
+                for (Map.Entry<String, BytesConverter<?>> extraConverter : extraObjectToBytes.entrySet()) {
+                    objectToBytesBinder.put(extraConverter.getKey(), extraConverter.getValue());
                 }
+            }
 
-                String keyStoreUrl = keyStoreUrl();
-                if (keyStoreUrl != null) {
-                    props.put(CryptoConstants.KEYSTORE_URL, keyStoreUrl);
-                }
+            if (bytesTransformerFactoryType != null) {
+                binder.bind(BytesTransformerFactory.class).to(bytesTransformerFactoryType);
+            }
 
-                if (encryptionKeyAlias != null) {
-                    props.put(CryptoConstants.ENCRYPTION_KEY_ALIAS, encryptionKeyAlias);
-                }
+            if (keySource != null) {
+                binder.bind(KeySource.class).toInstance(keySource);
+            } else if (keySourceType != null) {
+                binder.bind(KeySource.class).to(keySourceType);
+            }
 
-                if (compress) {
-                    props.put(CryptoConstants.COMPRESSION, "true");
-                }
-
-                if (useHMAC) {
-                    props.put(CryptoConstants.USE_HMAC, "true");
-                }
-
-                if (keyPassword != null) {
-                    CryptoModule.contributeCredentials(binder).put(CryptoConstants.KEY_PASSWORD, keyPassword);
-                }
-
-                if (cipherFactoryType != null) {
-                    binder.bind(CipherFactory.class).to(cipherFactoryType);
-                }
-
-                if (valueTransformerFactoryType != null) {
-                    binder.bind(ValueTransformerFactory.class).to(valueTransformerFactoryType);
-                }
-
-                if (!extraDbToBytes.isEmpty()) {
-                    MapBuilder<BytesConverter<?>> dbToBytesBinder = CryptoModule.contributeDbToByteConverters(binder);
-                    for (Map.Entry<Integer, BytesConverter<?>> extraConverter : extraDbToBytes.entrySet()) {
-                        dbToBytesBinder.put(extraConverter.getKey().toString(), extraConverter.getValue());
-                    }
-                }
-
-                if (!extraObjectToBytes.isEmpty()) {
-                    MapBuilder<BytesConverter<?>> objectToBytesBinder = CryptoModule.contributeObjectToByteConverters(binder);
-                    for (Map.Entry<String, BytesConverter<?>> extraConverter : extraObjectToBytes.entrySet()) {
-                        objectToBytesBinder.put(extraConverter.getKey(), extraConverter.getValue());
-                    }
-                }
-
-                if (bytesTransformerFactoryType != null) {
-                    binder.bind(BytesTransformerFactory.class).to(bytesTransformerFactoryType);
-                }
-
-                if (keySource != null) {
-                    binder.bind(KeySource.class).toInstance(keySource);
-                } else if (keySourceType != null) {
-                    binder.bind(KeySource.class).to(keySourceType);
-                }
-
-                if (columnMapperPattern != null) {
-                    binder.bind(ColumnMapper.class).toInstance(new PatternColumnMapper(columnMapperPattern));
-                } else if (columnMapperType != null) {
-                    binder.bind(ColumnMapper.class).to(columnMapperType);
-                } else if (columnMapper != null) {
-                    binder.bind(ColumnMapper.class).toInstance(columnMapper);
-                }
+            if (columnMapperPattern != null) {
+                binder.bind(ColumnMapper.class).toInstance(new PatternColumnMapper(columnMapperPattern));
+            } else if (columnMapperType != null) {
+                binder.bind(ColumnMapper.class).to(columnMapperType);
+            } else if (columnMapper != null) {
+                binder.bind(ColumnMapper.class).toInstance(columnMapper);
             }
         };
     }

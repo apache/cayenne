@@ -26,7 +26,6 @@ import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -50,18 +49,15 @@ public class XMLDataChannelDescriptorLoaderTest {
     private Injector injector;
 
     @Before
-    public void setUp() throws Exception {
-        Module testModule = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
-                binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
-                binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
-                binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
-                binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
-                binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
-                binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
-            }
+    public void setUp() {
+        Module testModule = binder -> {
+            binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+            binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+            binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
+            binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
+            binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
         };
 
         this.injector = DIBootstrap.createInjector(testModule);

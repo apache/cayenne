@@ -19,7 +19,6 @@
 package org.apache.cayenne.di.spi;
 
 import org.apache.cayenne.di.BeforeScopeEnd;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1;
 import org.apache.cayenne.di.mock.MockImplementation1_EventAnnotations;
@@ -27,24 +26,14 @@ import org.apache.cayenne.di.mock.MockImplementation1_Provider;
 import org.apache.cayenne.di.mock.MockInterface1;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class DefaultInjectorScopeTest {
 
     @Test
     public void testDefaultScope_IsSingleton() {
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(MockImplementation1.class);
-            }
-        };
+        Module module = binder -> binder.bind(MockInterface1.class).to(MockImplementation1.class);
 
         DefaultInjector injector = new DefaultInjector(module);
 
@@ -63,15 +52,10 @@ public class DefaultInjectorScopeTest {
     @Test
     public void testNoScope() {
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder
-                        .bind(MockInterface1.class)
-                        .to(MockImplementation1.class)
-                        .withoutScope();
-            }
-        };
+        Module module = binder -> binder
+                .bind(MockInterface1.class)
+                .to(MockImplementation1.class)
+                .withoutScope();
 
         DefaultInjector injector = new DefaultInjector(module);
 
@@ -91,15 +75,10 @@ public class DefaultInjectorScopeTest {
     @Test
     public void testSingletonScope() {
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder
-                        .bind(MockInterface1.class)
-                        .to(MockImplementation1.class)
-                        .inSingletonScope();
-            }
-        };
+        Module module = binder -> binder
+                .bind(MockInterface1.class)
+                .to(MockImplementation1.class)
+                .inSingletonScope();
 
         DefaultInjector injector = new DefaultInjector(module);
 
@@ -120,13 +99,8 @@ public class DefaultInjectorScopeTest {
 
         MockImplementation1_EventAnnotations.reset();
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_EventAnnotations.class).inSingletonScope();
-            }
-        };
+        Module module = binder -> binder.bind(MockInterface1.class).to(
+                MockImplementation1_EventAnnotations.class).inSingletonScope();
 
         DefaultInjector injector = new DefaultInjector(module);
 
@@ -147,13 +121,10 @@ public class DefaultInjectorScopeTest {
     @Test
     public void testSingletonScope_WithProvider() {
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).toProvider(
-                        MockImplementation1_Provider.class).inSingletonScope();
-            }
-        };
+        Module module = binder -> binder
+                .bind(MockInterface1.class)
+                .toProvider(MockImplementation1_Provider.class)
+                .inSingletonScope();
 
         DefaultInjector injector = new DefaultInjector(module);
 
@@ -172,13 +143,9 @@ public class DefaultInjectorScopeTest {
     @Test
     public void testNoScope_WithProvider() {
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).toProvider(
-                        MockImplementation1_Provider.class).withoutScope();
-            }
-        };
+        Module module = binder -> binder
+                .bind(MockInterface1.class)
+                .toProvider(MockImplementation1_Provider.class).withoutScope();
 
         DefaultInjector injector = new DefaultInjector(module);
 

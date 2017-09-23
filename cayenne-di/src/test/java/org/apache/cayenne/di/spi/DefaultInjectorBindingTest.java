@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1;
@@ -28,21 +27,14 @@ import org.apache.cayenne.di.mock.MockInterface1;
 import org.apache.cayenne.di.mock.MockInterface1Provider;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 
 public class DefaultInjectorBindingTest {
 
     @Test
     public void testClassBinding() {
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(MockImplementation1.class);
-            }
-        };
+        Module module = binder -> binder.bind(MockInterface1.class).to(MockImplementation1.class);
 
         DefaultInjector injector = new DefaultInjector(module);
 
@@ -54,15 +46,12 @@ public class DefaultInjectorBindingTest {
     @Test
     public void testClassNamedBinding() {
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(MockImplementation1.class);
-                binder.bind(Key.get(MockInterface1.class, "abc")).to(
-                        MockImplementation1Alt.class);
-                binder.bind(Key.get(MockInterface1.class, "xyz")).to(
-                        MockImplementation1Alt2.class);
-            }
+        Module module = binder -> {
+            binder.bind(MockInterface1.class).to(MockImplementation1.class);
+            binder.bind(Key.get(MockInterface1.class, "abc")).to(
+                    MockImplementation1Alt.class);
+            binder.bind(Key.get(MockInterface1.class, "xyz")).to(
+                    MockImplementation1Alt2.class);
         };
 
         DefaultInjector injector = new DefaultInjector(module);
@@ -86,14 +75,9 @@ public class DefaultInjectorBindingTest {
 
     @Test
     public void testProviderBinding() {
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder
-                        .bind(MockInterface1.class)
-                        .toProvider(MockInterface1Provider.class);
-            }
-        };
+        Module module = binder -> binder
+                .bind(MockInterface1.class)
+                .toProvider(MockInterface1Provider.class);
 
         DefaultInjector injector = new DefaultInjector(module);
 
@@ -107,12 +91,7 @@ public class DefaultInjectorBindingTest {
 
         final MockImplementation1 instance = new MockImplementation1();
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).toInstance(instance);
-            }
-        };
+        Module module = binder -> binder.bind(MockInterface1.class).toInstance(instance);
 
         DefaultInjector injector = new DefaultInjector(module);
 
@@ -124,12 +103,9 @@ public class DefaultInjectorBindingTest {
     @Test
     public void testClassReBinding() {
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(MockImplementation1.class);
-                binder.bind(MockInterface1.class).to(MockImplementation1Alt.class);
-            }
+        Module module = binder -> {
+            binder.bind(MockInterface1.class).to(MockImplementation1.class);
+            binder.bind(MockInterface1.class).to(MockImplementation1Alt.class);
         };
 
         DefaultInjector injector = new DefaultInjector(module);

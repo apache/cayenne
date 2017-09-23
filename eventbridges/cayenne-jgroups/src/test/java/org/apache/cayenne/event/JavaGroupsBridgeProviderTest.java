@@ -58,12 +58,10 @@ public class JavaGroupsBridgeProviderTest {
 
     @Test
     public void testUseProperties() throws Exception {
-        Module module = new Module() {
-            public void configure(Binder binder) {
-                JGroupsModule.contributeMulticastAddress(binder, MCAST_ADDRESS_TEST);
-                JGroupsModule.contributeMulticastPort(binder, Integer.parseInt(MCAST_PORT_TEST));
-                JGroupsModule.contributeConfigUrl(binder, CONFIG_URL_TEST);
-            }
+        Module module = binder -> {
+            JGroupsModule.contributeMulticastAddress(binder, MCAST_ADDRESS_TEST);
+            JGroupsModule.contributeMulticastPort(binder, Integer.parseInt(MCAST_PORT_TEST));
+            JGroupsModule.contributeConfigUrl(binder, CONFIG_URL_TEST);
         };
 
         Injector injector = DIBootstrap.createInjector(new DefaultBindings(), new JGroupsModule(), module);

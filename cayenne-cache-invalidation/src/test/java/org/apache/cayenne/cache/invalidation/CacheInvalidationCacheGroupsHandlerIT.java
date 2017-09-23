@@ -22,10 +22,9 @@ package org.apache.cayenne.cache.invalidation;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
 import org.apache.cayenne.cache.invalidation.db.E1;
 import org.apache.cayenne.cache.invalidation.db.E2;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.ObjectSelect;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,11 +49,8 @@ public class CacheInvalidationCacheGroupsHandlerIT extends CacheInvalidationCase
 
     @Override
     protected Module extendInvalidationModule() {
-        return new Module() {
-            @Override
-            public void configure(Binder binder) {
-                // do nothing module
-            }
+        return binder -> {
+            // do nothing module
         };
     }
 
@@ -75,12 +71,7 @@ public class CacheInvalidationCacheGroupsHandlerIT extends CacheInvalidationCase
             }
         };
 
-        return new Module() {
-            @Override
-            public void configure(Binder binder) {
-                binder.bind(QueryCache.class).toInstance(cache);
-            }
-        };
+        return binder -> binder.bind(QueryCache.class).toInstance(cache);
     }
 
     @Test

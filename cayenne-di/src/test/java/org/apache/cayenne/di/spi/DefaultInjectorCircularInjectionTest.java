@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1_DepOn2;
@@ -41,12 +40,9 @@ public class DefaultInjectorCircularInjectionTest {
     @Test
     public void testFieldInjection_CircularDependency() {
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(MockImplementation1_DepOn2.class);
-                binder.bind(MockInterface2.class).to(MockImplementation2.class);
-            }
+        Module module = binder -> {
+            binder.bind(MockInterface1.class).to(MockImplementation1_DepOn2.class);
+            binder.bind(MockInterface2.class).to(MockImplementation2.class);
         };
 
         DefaultInjector injector = new DefaultInjector(module);
@@ -66,13 +62,10 @@ public class DefaultInjectorCircularInjectionTest {
     @Test
     public void testProviderInjection_CircularDependency() {
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_DepOn2Provider.class);
-                binder.bind(MockInterface2.class).to(MockImplementation2.class);
-            }
+        Module module = binder -> {
+            binder.bind(MockInterface1.class).to(
+                    MockImplementation1_DepOn2Provider.class);
+            binder.bind(MockInterface2.class).to(MockImplementation2.class);
         };
 
         DefaultInjector injector = new DefaultInjector(module);
@@ -84,14 +77,11 @@ public class DefaultInjectorCircularInjectionTest {
     @Test
     public void testConstructorInjection_CircularDependency() {
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_DepOn2Constructor.class);
-                binder.bind(MockInterface2.class).to(
-                        MockImplementation2_Constructor.class);
-            }
+        Module module = binder -> {
+            binder.bind(MockInterface1.class).to(
+                    MockImplementation1_DepOn2Constructor.class);
+            binder.bind(MockInterface2.class).to(
+                    MockImplementation2_Constructor.class);
         };
 
         DefaultInjector injector = new DefaultInjector(module);
@@ -111,15 +101,12 @@ public class DefaultInjectorCircularInjectionTest {
     @Test
     public void testConstructorInjection_WithFieldInjectionDeps() {
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_DepOn2Constructor.class);
-                binder.bind(MockInterface2.class).to(
-                        MockImplementation2_I3Dependency.class);
-                binder.bind(MockInterface3.class).to(MockImplementation3.class);
-            }
+        Module module = binder -> {
+            binder.bind(MockInterface1.class).to(
+                    MockImplementation1_DepOn2Constructor.class);
+            binder.bind(MockInterface2.class).to(
+                    MockImplementation2_I3Dependency.class);
+            binder.bind(MockInterface3.class).to(MockImplementation3.class);
         };
 
         DefaultInjector injector = new DefaultInjector(module);

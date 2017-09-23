@@ -61,14 +61,12 @@ public class XMPPBridgeProviderTest {
 
     @Test
     public void testUseProperties() throws Exception {
-        Module module = new Module() {
-            public void configure(Binder binder) {
-                XMPPModule.contributeSecureConnection(binder, SECURE_CONNECTION_TEST);
-                XMPPModule.contributeHost(binder, HOST_TEST);
-                XMPPModule.contributePort(binder, PORT_TEST);
-                XMPPModule.contributeLogin(binder, LOGIN_TEST, PASSWORD_TEST);
-                XMPPModule.contributeChatService(binder, CHAT_SERVICE_TEST);
-            }
+        Module module = binder -> {
+            XMPPModule.contributeSecureConnection(binder, SECURE_CONNECTION_TEST);
+            XMPPModule.contributeHost(binder, HOST_TEST);
+            XMPPModule.contributePort(binder, PORT_TEST);
+            XMPPModule.contributeLogin(binder, LOGIN_TEST, PASSWORD_TEST);
+            XMPPModule.contributeChatService(binder, CHAT_SERVICE_TEST);
         };
 
         Injector injector = DIBootstrap.createInjector(new DefaultBindings(), new XMPPModule(), module);

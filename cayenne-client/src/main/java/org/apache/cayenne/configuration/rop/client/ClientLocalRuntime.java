@@ -19,7 +19,6 @@
 package org.apache.cayenne.configuration.rop.client;
 
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
@@ -58,13 +57,10 @@ public class ClientLocalRuntime extends ClientRuntime {
     private static Collection<Module> collectModules(final Injector serverInjector, Collection<Module> extraModules) {
 
         Collection<Module> modules = new ArrayList<>(extraModules.size() + 1);
-        modules.add(new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(Key.get(DataChannel.class, ClientRuntime.CLIENT_SERVER_CHANNEL_KEY)).toProviderInstance(
-                        new LocalClientServerChannelProvider(serverInjector));
-                binder.bind(ClientConnection.class).toProviderInstance(new LocalConnectionProvider());
-            }
+        modules.add(binder -> {
+            binder.bind(Key.get(DataChannel.class, ClientRuntime.CLIENT_SERVER_CHANNEL_KEY)).toProviderInstance(
+                    new LocalClientServerChannelProvider(serverInjector));
+            binder.bind(ClientConnection.class).toProviderInstance(new LocalConnectionProvider());
         });
 
         modules.addAll(extraModules);

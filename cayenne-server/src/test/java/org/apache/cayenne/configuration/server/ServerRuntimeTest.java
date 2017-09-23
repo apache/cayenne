@@ -24,7 +24,6 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ObjectContextFactory;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.EventManager;
@@ -54,12 +53,7 @@ public class ServerRuntimeTest {
         final TransactionFactory txFactory = mock(TransactionFactory.class);
         when(txFactory.createTransaction()).thenReturn(tx);
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(TransactionFactory.class).toInstance(txFactory);
-            }
-        };
+        Module module = binder -> binder.bind(TransactionFactory.class).toInstance(txFactory);
 
         ServerRuntime runtime = ServerRuntime.builder().addConfig("xxxx").addModule(module).build();
         try {
@@ -117,19 +111,9 @@ public class ServerRuntimeTest {
 
         final boolean[] configured = new boolean[2];
 
-        Module m1 = new Module() {
+        Module m1 = binder -> configured[0] = true;
 
-            public void configure(Binder binder) {
-                configured[0] = true;
-            }
-        };
-
-        Module m2 = new Module() {
-
-            public void configure(Binder binder) {
-                configured[1] = true;
-            }
-        };
+        Module m2 = binder -> configured[1] = true;
 
         ServerRuntime runtime = new ServerRuntime(asList(m1, m2));
 
@@ -162,12 +146,7 @@ public class ServerRuntimeTest {
             }
         };
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(DataChannel.class).toInstance(channel);
-            }
-        };
+        Module module = binder -> binder.bind(DataChannel.class).toInstance(channel);
 
         ServerRuntime runtime = new ServerRuntime("Yuis", module);
         assertSame(channel, runtime.getChannel());
@@ -188,12 +167,7 @@ public class ServerRuntimeTest {
             }
         };
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(ObjectContextFactory.class).toInstance(factory);
-            }
-        };
+        Module module = binder -> binder.bind(ObjectContextFactory.class).toInstance(factory);
 
         ServerRuntime runtime = new ServerRuntime("mnYw", module);
         assertSame(context, runtime.newContext());

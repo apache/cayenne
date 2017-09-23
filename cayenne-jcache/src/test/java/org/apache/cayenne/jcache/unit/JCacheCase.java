@@ -20,10 +20,8 @@
 package org.apache.cayenne.jcache.unit;
 
 import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.unit.di.DICase;
 import org.apache.cayenne.unit.di.server.SchemaBuilder;
@@ -42,12 +40,7 @@ public class JCacheCase extends DICase {
         final DefaultScope testScope = new DefaultScope();
         injector = DIBootstrap.createInjector(
                 new ServerCaseModule(testScope),
-                new Module() {
-                    @Override
-                    public void configure(Binder binder) {
-                        binder.bind(ServerRuntime.class).toProvider(CacheServerRuntimeProvider.class).in(testScope);
-                    }
-                }
+                binder -> binder.bind(ServerRuntime.class).toProvider(CacheServerRuntimeProvider.class).in(testScope)
         );
         injector.getInstance(SchemaBuilder.class).rebuildSchema();
     }

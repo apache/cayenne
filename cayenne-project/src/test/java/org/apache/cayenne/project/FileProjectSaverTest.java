@@ -23,7 +23,6 @@ import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
@@ -53,13 +52,9 @@ public class FileProjectSaverTest extends Project2Case {
 
     @Before
     public void setUp() throws Exception {
-        Module testModule = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(ConfigurationNameMapper.class).to(
-                        DefaultConfigurationNameMapper.class);
-            }
-        };
+        Module testModule = binder -> binder
+                .bind(ConfigurationNameMapper.class)
+                .to(DefaultConfigurationNameMapper.class);
 
         saver = new FileProjectSaver(Collections.<ProjectExtension>emptyList());
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -142,6 +137,7 @@ public class FileProjectSaverTest extends Project2Case {
     /**
      * Method test fix for CAY-1780. If specify related fragments (for example ./../)
      * in target file path then file must be created successfully.
+     *
      * @throws Exception
      */
     @Test

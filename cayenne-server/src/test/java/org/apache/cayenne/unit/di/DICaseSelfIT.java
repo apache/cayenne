@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di;
 
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
@@ -27,30 +26,25 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 
 public class DICaseSelfIT extends DICase {
 
     private static final Injector injector;
 
     static {
-        Module selfTestModule = new Module() {
+        Module selfTestModule = binder -> {
+            DefaultScope testScope = new DefaultScope();
 
-            public void configure(Binder binder) {
-                DefaultScope testScope = new DefaultScope();
+            binder.bind(UnitTestLifecycleManager.class).toInstance(
+                    new DefaultUnitTestLifecycleManager(testScope));
 
-                binder.bind(UnitTestLifecycleManager.class).toInstance(
-                        new DefaultUnitTestLifecycleManager(testScope));
-
-                binder.bind(Key.get(Object.class, "test-scope")).to(Object.class).in(
-                        testScope);
-                binder
-                        .bind(Key.get(Object.class, "singleton-scope"))
-                        .to(Object.class)
-                        .inSingletonScope();
-            }
+            binder.bind(Key.get(Object.class, "test-scope")).to(Object.class).in(
+                    testScope);
+            binder
+                    .bind(Key.get(Object.class, "singleton-scope"))
+                    .to(Object.class)
+                    .inSingletonScope();
         };
 
         injector = DIBootstrap.createInjector(selfTestModule);

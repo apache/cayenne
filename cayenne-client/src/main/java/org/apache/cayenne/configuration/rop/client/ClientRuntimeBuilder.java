@@ -19,20 +19,19 @@
 
 package org.apache.cayenne.configuration.rop.client;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.configuration.server.ServerModule;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleLoader;
 import org.apache.cayenne.remote.ClientConnection;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -132,22 +131,14 @@ public class ClientRuntimeBuilder {
         Collection<Module> modules = new ArrayList<>();
 
         if(properties != null) {
-            modules.add(new Module() {
-                @Override
-                public void configure(Binder binder) {
-                    ServerModule.contributeProperties(binder).putAll(properties);
-                }
-            });
+            modules.add(binder -> ServerModule.contributeProperties(binder).putAll(properties));
         }
 
         if(local) {
-            modules.add(new Module() {
-                @Override
-                public void configure(Binder binder) {
-                    binder.bind(Key.get(DataChannel.class, ClientRuntime.CLIENT_SERVER_CHANNEL_KEY))
-                            .toProviderInstance(new LocalClientServerChannelProvider(serverInjector));
-                    binder.bind(ClientConnection.class).toProviderInstance(new LocalConnectionProvider());
-                }
+            modules.add(binder -> {
+                binder.bind(Key.get(DataChannel.class, ClientRuntime.CLIENT_SERVER_CHANNEL_KEY))
+                        .toProviderInstance(new LocalClientServerChannelProvider(serverInjector));
+                binder.bind(ClientConnection.class).toProviderInstance(new LocalConnectionProvider());
             });
         }
 

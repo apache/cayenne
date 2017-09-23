@@ -24,7 +24,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DataPort;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
@@ -72,14 +71,11 @@ public class DataPortTask extends CayenneTask {
         validateParameters();
 
         String projectFileLocation = projectFile.getName();
-        Module dataPortModule = new Module() {
-
-            public void configure(Binder binder) {
-                FilesystemResourceLocator filesystemResourceLocator = new FilesystemResourceLocator(projectFile);
-                binder.bind(ResourceLocator.class).toInstance(filesystemResourceLocator);
-                binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR))
-                        .toInstance(filesystemResourceLocator);
-            }
+        Module dataPortModule = binder -> {
+            FilesystemResourceLocator filesystemResourceLocator = new FilesystemResourceLocator(projectFile);
+            binder.bind(ResourceLocator.class).toInstance(filesystemResourceLocator);
+            binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR))
+                    .toInstance(filesystemResourceLocator);
         };
 
         ServerRuntime runtime = new ServerRuntime(projectFileLocation,

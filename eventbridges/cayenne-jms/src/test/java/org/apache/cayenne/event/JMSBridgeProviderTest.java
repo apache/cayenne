@@ -55,13 +55,8 @@ public class JMSBridgeProviderTest {
     }
 
     @Test
-    public void testUseProperties() throws Exception {
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                JMSModule.contributeTopicConnectionFactory(binder, TOPIC_CONNECTION_FACTORY_TEST);
-            }
-        };
+    public void testUseProperties() {
+        Module module = binder -> JMSModule.contributeTopicConnectionFactory(binder, TOPIC_CONNECTION_FACTORY_TEST);
 
         Injector injector = DIBootstrap.createInjector(new DefaultBindings(), new JMSModule(), module);
         JMSBridge bridge = (JMSBridge) injector.getInstance(EventBridge.class);

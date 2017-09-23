@@ -31,7 +31,6 @@ import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -39,8 +38,8 @@ import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -51,9 +50,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -79,16 +76,13 @@ public class DefaultDbAdapterFactoryTest {
         MockDataSource dataSource = new MockDataSource();
         dataSource.setupConnection(connection);
 
-        Module testModule = new Module() {
+        Module testModule = binder -> {
+            ServerModule.contributeProperties(binder);
 
-            public void configure(Binder binder) {
-                ServerModule.contributeProperties(binder);
-
-                binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
-                binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
-                binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
-                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-            }
+            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -106,25 +100,22 @@ public class DefaultDbAdapterFactoryTest {
 
         List<DbAdapterDetector> detectors = new ArrayList<DbAdapterDetector>();
 
-        Module testModule = new Module() {
+        Module testModule = binder -> {
+            ServerModule.contributeProperties(binder);
+            ServerModule.contributeDefaultTypes(binder);
+            ServerModule.contributeUserTypes(binder);
+            ServerModule.contributeTypeFactories(binder);
 
-            public void configure(Binder binder) {
-                ServerModule.contributeProperties(binder);
-                ServerModule.contributeDefaultTypes(binder);
-                ServerModule.contributeUserTypes(binder);
-                ServerModule.contributeTypeFactories(binder);
+            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
+            binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
+            binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+            binder.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
 
-                binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
-                binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
-                binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
-                binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
-                binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
-                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
-
-                ServerModule.contributeValueObjectTypes(binder);
-                binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
-            }
+            ServerModule.contributeValueObjectTypes(binder);
+            binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -146,25 +137,22 @@ public class DefaultDbAdapterFactoryTest {
 
         List<DbAdapterDetector> detectors = new ArrayList<DbAdapterDetector>();
 
-        Module testModule = new Module() {
+        Module testModule = binder -> {
+            ServerModule.contributeProperties(binder);
+            ServerModule.contributeDefaultTypes(binder);
+            ServerModule.contributeUserTypes(binder);
+            ServerModule.contributeTypeFactories(binder);
 
-            public void configure(Binder binder) {
-                ServerModule.contributeProperties(binder);
-                ServerModule.contributeDefaultTypes(binder);
-                ServerModule.contributeUserTypes(binder);
-                ServerModule.contributeTypeFactories(binder);
+            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
+            binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
+            binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+            binder.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
 
-                binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
-                binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
-                binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
-                binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
-                binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
-                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-                binder.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
-
-                ServerModule.contributeValueObjectTypes(binder);
-                binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
-            }
+            ServerModule.contributeValueObjectTypes(binder);
+            binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -196,16 +184,13 @@ public class DefaultDbAdapterFactoryTest {
         MockDataSource dataSource = new MockDataSource();
         dataSource.setupConnection(connection);
 
-        Module testModule = new Module() {
+        Module testModule = binder -> {
+            ServerModule.contributeProperties(binder);
 
-            public void configure(Binder binder) {
-                ServerModule.contributeProperties(binder);
-
-                binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
-                binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
-                binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
-                binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-            }
+            binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);

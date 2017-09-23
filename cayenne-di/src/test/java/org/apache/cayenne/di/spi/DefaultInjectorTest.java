@@ -18,15 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1_EventAnnotations;
 import org.apache.cayenne.di.mock.MockInterface1;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class DefaultInjectorTest {
 
@@ -40,12 +37,7 @@ public class DefaultInjectorTest {
     public void testConstructor_SingleModule() {
         final boolean[] configureCalled = new boolean[1];
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                configureCalled[0] = true;
-            }
-        };
+        Module module = binder -> configureCalled[0] = true;
 
         new DefaultInjector(module);
         assertTrue(configureCalled[0]);
@@ -56,19 +48,9 @@ public class DefaultInjectorTest {
 
         final boolean[] configureCalled = new boolean[2];
 
-        Module module1 = new Module() {
+        Module module1 = binder -> configureCalled[0] = true;
 
-            public void configure(Binder binder) {
-                configureCalled[0] = true;
-            }
-        };
-
-        Module module2 = new Module() {
-
-            public void configure(Binder binder) {
-                configureCalled[1] = true;
-            }
-        };
+        Module module2 = binder -> configureCalled[1] = true;
 
         new DefaultInjector(module1, module2);
         assertTrue(configureCalled[0]);
@@ -80,13 +62,10 @@ public class DefaultInjectorTest {
 
         MockImplementation1_EventAnnotations.reset();
 
-        Module module = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(
-                        MockImplementation1_EventAnnotations.class).inSingletonScope();
-            }
-        };
+        Module module = binder -> binder
+                .bind(MockInterface1.class)
+                .to(MockImplementation1_EventAnnotations.class)
+                .inSingletonScope();
 
         DefaultInjector injector = new DefaultInjector(module);
 

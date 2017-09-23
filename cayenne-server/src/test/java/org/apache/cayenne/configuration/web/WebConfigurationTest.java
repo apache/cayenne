@@ -20,7 +20,6 @@ package org.apache.cayenne.configuration.web;
 
 import com.mockrunner.mock.web.MockFilterConfig;
 import com.mockrunner.mock.web.MockServletConfig;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.junit.Test;
 
@@ -28,10 +27,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class WebConfigurationTest {
 
@@ -41,16 +37,10 @@ public class WebConfigurationTest {
         MockFilterConfig config = new MockFilterConfig();
         WebConfiguration configuration = new WebConfiguration(config);
 
-        Module m1 = new Module() {
-
-            public void configure(Binder binder) {
-            }
+        Module m1 = binder -> {
         };
 
-        Module m2 = new Module() {
-
-            public void configure(Binder binder) {
-            }
+        Module m2 = binder -> {
         };
 
         Collection<Module> modules = configuration.createModules(m1, m2);
@@ -73,16 +63,10 @@ public class WebConfigurationTest {
 
         WebConfiguration configuration = new WebConfiguration(config);
 
-        Module m1 = new Module() {
-
-            public void configure(Binder binder) {
-            }
+        Module m1 = binder -> {
         };
 
-        Module m2 = new Module() {
-
-            public void configure(Binder binder) {
-            }
+        Module m2 = binder -> {
         };
 
         Collection<Module> modules = configuration.createModules(m1, m2);
@@ -107,16 +91,10 @@ public class WebConfigurationTest {
 
         WebConfiguration configuration = new WebConfiguration(config);
 
-        Module m1 = new Module() {
-
-            public void configure(Binder binder) {
-            }
+        Module m1 = binder -> {
         };
 
-        Module m2 = new Module() {
-
-            public void configure(Binder binder) {
-            }
+        Module m2 = binder -> {
         };
 
         Collection<Module> modules = configuration.createModules(m1, m2);

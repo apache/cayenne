@@ -30,16 +30,15 @@ import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
-import org.apache.cayenne.log.Slf4jJdbcEventLogger;
+import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
@@ -48,11 +47,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class DataContextFactoryTest {
 
@@ -64,24 +59,21 @@ public class DataContextFactoryTest {
 
         domain.setSharedCacheEnabled(false);
 
-        Module testModule = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
-                binder.bind(DataDomain.class).toInstance(domain);
-                binder.bind(EventManager.class).toInstance(eventManager);
-                binder.bind(QueryCache.class).toInstance(new MapQueryCache(5));
-                binder.bind(RuntimeProperties.class).toInstance(
-                        new DefaultRuntimeProperties(Collections.<String, String>emptyMap()));
-                binder.bind(ObjectMapRetainStrategy.class).to(
-                        DefaultObjectMapRetainStrategy.class);
-                binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
-                binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-                binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
-                binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
-                binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
-                binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
-            }
+        Module testModule = binder -> {
+            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(DataDomain.class).toInstance(domain);
+            binder.bind(EventManager.class).toInstance(eventManager);
+            binder.bind(QueryCache.class).toInstance(new MapQueryCache(5));
+            binder.bind(RuntimeProperties.class).toInstance(
+                    new DefaultRuntimeProperties(Collections.<String, String>emptyMap()));
+            binder.bind(ObjectMapRetainStrategy.class).to(
+                    DefaultObjectMapRetainStrategy.class);
+            binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
+            binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
+            binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
+            binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
+            binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
+            binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -104,23 +96,20 @@ public class DataContextFactoryTest {
 
         domain.setValidatingObjectsOnCommit(true);
 
-        Module testModule = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
-                binder.bind(DataDomain.class).toInstance(domain);
-                binder.bind(EventManager.class).toInstance(eventManager);
-                binder.bind(QueryCache.class).toInstance(new MapQueryCache(5));
-                binder.bind(RuntimeProperties.class).toInstance(
-                        new DefaultRuntimeProperties(Collections.<String, String>emptyMap()));
-                binder.bind(ObjectMapRetainStrategy.class).to(
-                        DefaultObjectMapRetainStrategy.class);
-                binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
-                binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-                binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
-                binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
-                binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
-            }
+        Module testModule = binder -> {
+            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(DataDomain.class).toInstance(domain);
+            binder.bind(EventManager.class).toInstance(eventManager);
+            binder.bind(QueryCache.class).toInstance(new MapQueryCache(5));
+            binder.bind(RuntimeProperties.class).toInstance(
+                    new DefaultRuntimeProperties(Collections.<String, String>emptyMap()));
+            binder.bind(ObjectMapRetainStrategy.class).to(
+                    DefaultObjectMapRetainStrategy.class);
+            binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
+            binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
+            binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
+            binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
+            binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);

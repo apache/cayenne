@@ -20,7 +20,6 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
@@ -28,12 +27,7 @@ import org.junit.Test;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 public class BaseContextTest {
@@ -54,12 +48,9 @@ public class BaseContextTest {
         final DataChannel channel = mock(DataChannel.class);
         final QueryCache cache = mock(QueryCache.class);
 
-        Module testModule = new Module() {
-
-            public void configure(Binder binder) {
-                binder.bind(DataChannel.class).toInstance(channel);
-                binder.bind(QueryCache.class).toInstance(cache);
-            }
+        Module testModule = binder -> {
+            binder.bind(DataChannel.class).toInstance(channel);
+            binder.bind(QueryCache.class).toInstance(cache);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);

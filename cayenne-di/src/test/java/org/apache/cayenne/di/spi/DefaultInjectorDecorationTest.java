@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1;
 import org.apache.cayenne.di.mock.MockInterface1;
@@ -37,13 +36,9 @@ public class DefaultInjectorDecorationTest {
     @Test
     public void testSingleDecorator_After() {
 
-        Module module = new Module() {
-
-            @Override
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(MockImplementation1.class);
-                binder.decorate(MockInterface1.class).after(MockInterface1_Decorator1.class);
-            }
+        Module module = binder -> {
+            binder.bind(MockInterface1.class).to(MockImplementation1.class);
+            binder.decorate(MockInterface1.class).after(MockInterface1_Decorator1.class);
         };
 
         DefaultInjector injector = new DefaultInjector(module);
@@ -56,13 +51,9 @@ public class DefaultInjectorDecorationTest {
     @Test
     public void testSingleDecorator_Before() {
 
-        Module module = new Module() {
-
-            @Override
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(MockImplementation1.class);
-                binder.decorate(MockInterface1.class).before(MockInterface1_Decorator1.class);
-            }
+        Module module = binder -> {
+            binder.bind(MockInterface1.class).to(MockImplementation1.class);
+            binder.decorate(MockInterface1.class).before(MockInterface1_Decorator1.class);
         };
 
         DefaultInjector injector = new DefaultInjector(module);
@@ -75,16 +66,12 @@ public class DefaultInjectorDecorationTest {
     @Test
     public void testDecoratorChain() {
 
-        Module module = new Module() {
+        Module module = binder -> {
+            binder.bind(MockInterface1.class).to(MockImplementation1.class);
+            binder.decorate(MockInterface1.class).before(MockInterface1_Decorator1.class);
+            binder.decorate(MockInterface1.class).before(MockInterface1_Decorator2.class);
+            binder.decorate(MockInterface1.class).after(MockInterface1_Decorator3.class);
 
-            @Override
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(MockImplementation1.class);
-                binder.decorate(MockInterface1.class).before(MockInterface1_Decorator1.class);
-                binder.decorate(MockInterface1.class).before(MockInterface1_Decorator2.class);
-                binder.decorate(MockInterface1.class).after(MockInterface1_Decorator3.class);
-
-            }
         };
 
         DefaultInjector injector = new DefaultInjector(module);
@@ -97,13 +84,9 @@ public class DefaultInjectorDecorationTest {
     @Test
     public void testSingleDecorator_Provider_ConstructorInjection() {
 
-        Module module = new Module() {
-
-            @Override
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(MockImplementation1.class);
-                binder.decorate(MockInterface1.class).before(MockInterface1_Decorator4.class);
-            }
+        Module module = binder -> {
+            binder.bind(MockInterface1.class).to(MockImplementation1.class);
+            binder.decorate(MockInterface1.class).before(MockInterface1_Decorator4.class);
         };
 
         DefaultInjector injector = new DefaultInjector(module);
@@ -116,13 +99,9 @@ public class DefaultInjectorDecorationTest {
     @Test
     public void testSingleDecorator_Provider_FieldInjection() {
 
-        Module module = new Module() {
-
-            @Override
-            public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(MockImplementation1.class);
-                binder.decorate(MockInterface1.class).before(MockInterface1_Decorator5.class);
-            }
+        Module module = binder -> {
+            binder.bind(MockInterface1.class).to(MockImplementation1.class);
+            binder.decorate(MockInterface1.class).before(MockInterface1_Decorator5.class);
         };
 
         DefaultInjector injector = new DefaultInjector(module);

@@ -69,7 +69,6 @@ import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -78,11 +77,11 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.event.EventBridge;
-import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
-import org.apache.cayenne.log.Slf4jJdbcEventLogger;
+import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.map.LifecycleEvent;
@@ -97,181 +96,178 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DataDomainProviderTest {
 
-	@Test
-	public void testGet() {
+    @Test
+    public void testGet() {
 
-		// create dependencies
-		final String testConfigName = "testConfig";
-		final DataChannelDescriptor testDescriptor = new DataChannelDescriptor();
+        // create dependencies
+        final String testConfigName = "testConfig";
+        final DataChannelDescriptor testDescriptor = new DataChannelDescriptor();
 
-		DataMap map1 = new DataMap("map1");
-		testDescriptor.getDataMaps().add(map1);
+        DataMap map1 = new DataMap("map1");
+        testDescriptor.getDataMaps().add(map1);
 
-		DataMap map2 = new DataMap("map2");
-		testDescriptor.getDataMaps().add(map2);
+        DataMap map2 = new DataMap("map2");
+        testDescriptor.getDataMaps().add(map2);
 
-		DataNodeDescriptor nodeDescriptor1 = new DataNodeDescriptor();
-		nodeDescriptor1.setName("node1");
-		nodeDescriptor1.getDataMapNames().add("map1");
-		nodeDescriptor1.setAdapterType(OracleAdapter.class.getName());
-		nodeDescriptor1.setDataSourceFactoryType(MockDataSourceFactory.class.getName());
-		nodeDescriptor1.setParameters("jdbc/testDataNode1");
-		nodeDescriptor1.setSchemaUpdateStrategyType(ThrowOnPartialOrCreateSchemaStrategy.class.getName());
-		testDescriptor.getNodeDescriptors().add(nodeDescriptor1);
+        DataNodeDescriptor nodeDescriptor1 = new DataNodeDescriptor();
+        nodeDescriptor1.setName("node1");
+        nodeDescriptor1.getDataMapNames().add("map1");
+        nodeDescriptor1.setAdapterType(OracleAdapter.class.getName());
+        nodeDescriptor1.setDataSourceFactoryType(MockDataSourceFactory.class.getName());
+        nodeDescriptor1.setParameters("jdbc/testDataNode1");
+        nodeDescriptor1.setSchemaUpdateStrategyType(ThrowOnPartialOrCreateSchemaStrategy.class.getName());
+        testDescriptor.getNodeDescriptors().add(nodeDescriptor1);
 
-		DataNodeDescriptor nodeDescriptor2 = new DataNodeDescriptor();
-		nodeDescriptor2.setName("node2");
-		nodeDescriptor2.getDataMapNames().add("map2");
-		nodeDescriptor2.setParameters("testDataNode2.driver.xml");
-		testDescriptor.getNodeDescriptors().add(nodeDescriptor2);
+        DataNodeDescriptor nodeDescriptor2 = new DataNodeDescriptor();
+        nodeDescriptor2.setName("node2");
+        nodeDescriptor2.getDataMapNames().add("map2");
+        nodeDescriptor2.setParameters("testDataNode2.driver.xml");
+        testDescriptor.getNodeDescriptors().add(nodeDescriptor2);
 
-		final DataChannelDescriptorLoader testLoader = new DataChannelDescriptorLoader() {
+        final DataChannelDescriptorLoader testLoader = new DataChannelDescriptorLoader() {
 
-			@Override
-			public ConfigurationTree<DataChannelDescriptor> load(Resource configurationResource)
-					throws ConfigurationException {
-				return new ConfigurationTree<>(testDescriptor, null);
-			}
-		};
+            @Override
+            public ConfigurationTree<DataChannelDescriptor> load(Resource configurationResource)
+                    throws ConfigurationException {
+                return new ConfigurationTree<>(testDescriptor, null);
+            }
+        };
 
-		final EventManager eventManager = new MockEventManager();
-		final TestListener mockListener = new TestListener();
+        final EventManager eventManager = new MockEventManager();
+        final TestListener mockListener = new TestListener();
 
-		Module testModule = new Module() {
+        Module testModule = binder -> {
+            final ClassLoaderManager classLoaderManager = new DefaultClassLoaderManager();
+            binder.bind(ClassLoaderManager.class).toInstance(classLoaderManager);
+            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
 
-			@Override
-			public void configure(Binder binder) {
-				final ClassLoaderManager classLoaderManager = new DefaultClassLoaderManager();
-				binder.bind(ClassLoaderManager.class).toInstance(classLoaderManager);
-				binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            ServerModule.contributeProperties(binder);
 
-				ServerModule.contributeProperties(binder);
+            ServerModule.contributeAdapterDetectors(binder).add(FirebirdSniffer.class)
+                    .add(OpenBaseSniffer.class).add(FrontBaseSniffer.class).add(IngresSniffer.class)
+                    .add(SQLiteSniffer.class).add(DB2Sniffer.class).add(H2Sniffer.class).add(HSQLDBSniffer.class)
+                    .add(SybaseSniffer.class).add(DerbySniffer.class).add(SQLServerSniffer.class)
+                    .add(OracleSniffer.class).add(PostgresSniffer.class).add(MySQLSniffer.class);
+            ServerModule.contributeDomainFilters(binder);
+            ServerModule.contributeDomainListeners(binder).add(mockListener);
+            ServerModule.contributeProjectLocations(binder).add(testConfigName);
 
-				ServerModule.contributeAdapterDetectors(binder).add(FirebirdSniffer.class)
-						.add(OpenBaseSniffer.class).add(FrontBaseSniffer.class).add(IngresSniffer.class)
-						.add(SQLiteSniffer.class).add(DB2Sniffer.class).add(H2Sniffer.class).add(HSQLDBSniffer.class)
-						.add(SybaseSniffer.class).add(DerbySniffer.class).add(SQLServerSniffer.class)
-						.add(OracleSniffer.class).add(PostgresSniffer.class).add(MySQLSniffer.class);
-				ServerModule.contributeDomainFilters(binder);
-				ServerModule.contributeDomainListeners(binder).add(mockListener);
-				ServerModule.contributeProjectLocations(binder).add(testConfigName);
+            // configure extended types
+            ServerModule.contributeDefaultTypes(binder);
+            ServerModule.contributeUserTypes(binder);
+            ServerModule.contributeTypeFactories(binder);
 
-				// configure extended types
-				ServerModule.contributeDefaultTypes(binder);
-				ServerModule.contributeUserTypes(binder);
-				ServerModule.contributeTypeFactories(binder);
+            binder.bind(EventManager.class).toInstance(eventManager);
+            binder.bind(EntitySorter.class).toInstance(new AshwoodEntitySorter());
+            binder.bind(SchemaUpdateStrategyFactory.class).to(DefaultSchemaUpdateStrategyFactory.class);
 
-				binder.bind(EventManager.class).toInstance(eventManager);
-				binder.bind(EntitySorter.class).toInstance(new AshwoodEntitySorter());
-				binder.bind(SchemaUpdateStrategyFactory.class).to(DefaultSchemaUpdateStrategyFactory.class);
+            final ResourceLocator locator = new ClassLoaderResourceLocator(classLoaderManager) {
 
-				final ResourceLocator locator = new ClassLoaderResourceLocator(classLoaderManager) {
+                public Collection<Resource> findResources(String name) {
+                    // ResourceLocator also used by JdbcAdapter to locate types.xml...
+                    // if this is the request we are getting, just let it go through..
+                    if (name.endsWith("types.xml")) {
+                        return super.findResources(name);
+                    }
 
-					public Collection<Resource> findResources(String name) {
-						// ResourceLocator also used by JdbcAdapter to locate types.xml...
-						// if this is the request we are getting, just let it go through..
-						if (name.endsWith("types.xml")) {
-							return super.findResources(name);
-						}
+                    assertEquals(testConfigName, name);
+                    return Collections.<Resource>singleton(new MockResource());
+                }
+            };
 
-						assertEquals(testConfigName, name);
-						return Collections.<Resource> singleton(new MockResource());
-					}
-				};
+            binder.bind(ResourceLocator.class).toInstance(locator);
+            binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).toInstance(locator);
+            binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+            binder.bind(DataChannelDescriptorMerger.class).to(DefaultDataChannelDescriptorMerger.class);
+            binder.bind(DataChannelDescriptorLoader.class).toInstance(testLoader);
+            binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
+            binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+            binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
+            binder.bind(SelectTranslatorFactory.class).to(DefaultSelectTranslatorFactory.class);
 
-				binder.bind(ResourceLocator.class).toInstance(locator);
-				binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).toInstance(locator);
-				binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
-				binder.bind(DataChannelDescriptorMerger.class).to(DefaultDataChannelDescriptorMerger.class);
-				binder.bind(DataChannelDescriptorLoader.class).toInstance(testLoader);
-				binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
-				binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-				binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
-				binder.bind(SelectTranslatorFactory.class).to(DefaultSelectTranslatorFactory.class);
+            binder.bind(DataSourceFactory.class).toInstance(new MockDataSourceFactory());
+            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            binder.bind(QueryCache.class).toInstance(mock(QueryCache.class));
+            binder.bind(RowReaderFactory.class).toInstance(mock(RowReaderFactory.class));
+            binder.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
+            binder.bind(SQLTemplateProcessor.class).toInstance(mock(SQLTemplateProcessor.class));
 
-				binder.bind(DataSourceFactory.class).toInstance(new MockDataSourceFactory());
-				binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
-				binder.bind(QueryCache.class).toInstance(mock(QueryCache.class));
-				binder.bind(RowReaderFactory.class).toInstance(mock(RowReaderFactory.class));
-				binder.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
-				binder.bind(SQLTemplateProcessor.class).toInstance(mock(SQLTemplateProcessor.class));
+            binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
+            binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
 
-                binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
-                binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
+            ServerModule.contributeValueObjectTypes(binder);
+            binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
+        };
 
-				ServerModule.contributeValueObjectTypes(binder);
-				binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
-			}
-		};
+        Injector injector = DIBootstrap.createInjector(testModule);
 
-		Injector injector = DIBootstrap.createInjector(testModule);
+        // create and initialize provide instance to test
+        DataDomainProvider provider = new DataDomainProvider();
+        injector.injectMembers(provider);
 
-		// create and initialize provide instance to test
-		DataDomainProvider provider = new DataDomainProvider();
-		injector.injectMembers(provider);
+        DataChannel channel = provider.get();
+        assertNotNull(channel);
 
-		DataChannel channel = provider.get();
-		assertNotNull(channel);
+        assertTrue(channel instanceof DataDomain);
 
-		assertTrue(channel instanceof DataDomain);
+        DataDomain domain = (DataDomain) channel;
+        assertSame(eventManager, domain.getEventManager());
+        assertEquals(2, domain.getDataMaps().size());
+        assertTrue(domain.getDataMaps().contains(map1));
+        assertTrue(domain.getDataMaps().contains(map2));
 
-		DataDomain domain = (DataDomain) channel;
-		assertSame(eventManager, domain.getEventManager());
-		assertEquals(2, domain.getDataMaps().size());
-		assertTrue(domain.getDataMaps().contains(map1));
-		assertTrue(domain.getDataMaps().contains(map2));
+        assertEquals(2, domain.getDataNodes().size());
+        DataNode node1 = domain.getDataNode("node1");
+        assertNotNull(node1);
+        assertEquals(1, node1.getDataMaps().size());
+        assertSame(map1, node1.getDataMaps().iterator().next());
+        assertSame(node1, domain.lookupDataNode(map1));
+        assertEquals(nodeDescriptor1.getDataSourceFactoryType(), node1.getDataSourceFactory());
+        assertNotNull(node1.getDataSource());
+        assertEquals(nodeDescriptor1.getParameters(), node1.getDataSourceLocation());
 
-		assertEquals(2, domain.getDataNodes().size());
-		DataNode node1 = domain.getDataNode("node1");
-		assertNotNull(node1);
-		assertEquals(1, node1.getDataMaps().size());
-		assertSame(map1, node1.getDataMaps().iterator().next());
-		assertSame(node1, domain.lookupDataNode(map1));
-		assertEquals(nodeDescriptor1.getDataSourceFactoryType(), node1.getDataSourceFactory());
-		assertNotNull(node1.getDataSource());
-		assertEquals(nodeDescriptor1.getParameters(), node1.getDataSourceLocation());
+        assertNotNull(node1.getSchemaUpdateStrategy());
+        assertEquals(nodeDescriptor1.getSchemaUpdateStrategyType(), node1.getSchemaUpdateStrategy().getClass()
+                .getName());
 
-		assertNotNull(node1.getSchemaUpdateStrategy());
-		assertEquals(nodeDescriptor1.getSchemaUpdateStrategyType(), node1.getSchemaUpdateStrategy().getClass()
-				.getName());
+        assertNotNull(node1.getAdapter());
+        assertEquals(OracleAdapter.class, node1.getAdapter().getClass());
 
-		assertNotNull(node1.getAdapter());
-		assertEquals(OracleAdapter.class, node1.getAdapter().getClass());
+        DataNode node2 = domain.getDataNode("node2");
+        assertNotNull(node2);
+        assertEquals(1, node2.getDataMaps().size());
+        assertSame(map2, node2.getDataMaps().iterator().next());
+        assertSame(node2, domain.lookupDataNode(map2));
+        assertNull(node2.getDataSourceFactory());
+        assertNotNull(node2.getDataSource());
+        assertEquals(nodeDescriptor2.getParameters(), node2.getDataSourceLocation());
+        assertNotNull(node2.getSchemaUpdateStrategy());
+        assertEquals(SkipSchemaUpdateStrategy.class.getName(), node2.getSchemaUpdateStrategy().getClass().getName());
 
-		DataNode node2 = domain.getDataNode("node2");
-		assertNotNull(node2);
-		assertEquals(1, node2.getDataMaps().size());
-		assertSame(map2, node2.getDataMaps().iterator().next());
-		assertSame(node2, domain.lookupDataNode(map2));
-		assertNull(node2.getDataSourceFactory());
-		assertNotNull(node2.getDataSource());
-		assertEquals(nodeDescriptor2.getParameters(), node2.getDataSourceLocation());
-		assertNotNull(node2.getSchemaUpdateStrategy());
-		assertEquals(SkipSchemaUpdateStrategy.class.getName(), node2.getSchemaUpdateStrategy().getClass().getName());
+        assertNotNull(node2.getAdapter());
 
-		assertNotNull(node2.getAdapter());
+        // check that we have mock listener passed correctly
+        Persistent mockPersistent = mock(Persistent.class);
+        ObjectId mockObjectId = mock(ObjectId.class);
+        when(mockObjectId.getEntityName()).thenReturn("mock-entity-name");
+        when(mockPersistent.getObjectId()).thenReturn(mockObjectId);
+        domain.getEntityResolver().getCallbackRegistry().performCallbacks(LifecycleEvent.POST_LOAD, mockPersistent);
 
-		// check that we have mock listener passed correctly
-		Persistent mockPersistent = mock(Persistent.class);
-		ObjectId mockObjectId = mock(ObjectId.class);
-		when(mockObjectId.getEntityName()).thenReturn("mock-entity-name");
-		when(mockPersistent.getObjectId()).thenReturn(mockObjectId);
-		domain.getEntityResolver().getCallbackRegistry().performCallbacks(LifecycleEvent.POST_LOAD, mockPersistent);
+        assertEquals("Should call postLoadCallback() method", 1, TestListener.counter.get());
+    }
 
-		assertEquals("Should call postLoadCallback() method", 1, TestListener.counter.get());
-	}
+    static class TestListener {
 
-	static class TestListener {
+        static private AtomicInteger counter = new AtomicInteger();
 
-		static private AtomicInteger counter = new AtomicInteger();
-
-		@PostLoad
-		public void postLoadCallback(Object object) {
-			counter.incrementAndGet();
-		}
-	}
+        @PostLoad
+        public void postLoadCallback(Object object) {
+            counter.incrementAndGet();
+        }
+    }
 }

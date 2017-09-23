@@ -18,14 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.commitlog;
 
-import org.apache.cayenne.configuration.server.ServerModule;
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.ListBuilder;
-import org.apache.cayenne.di.Module;
 import org.apache.cayenne.commitlog.meta.AnnotationCommitLogEntityFactory;
-import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
 import org.apache.cayenne.commitlog.meta.CommitLogEntity;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
+import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
+import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.di.ListBuilder;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.tx.TransactionFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,34 +97,29 @@ public class CommitLogModuleExtender {
      * listeners in Cayenne.
      */
     public Module module() {
-        return new Module() {
+        return binder -> {
 
-            @SuppressWarnings({"unchecked"})
-            @Override
-            public void configure(Binder binder) {
+            if (listenerTypes.isEmpty() && listenerInstances.isEmpty()) {
+                LOGGER.info("No listeners configured. Skipping CommitLogFilter registration");
+                return;
+            }
 
-                if (listenerTypes.isEmpty() && listenerInstances.isEmpty()) {
-                    LOGGER.info("No listeners configured. Skipping CommitLogFilter registration");
-                    return;
-                }
+            binder.bind(CommitLogEntityFactory.class).to(entityFactoryType);
 
-                binder.bind(CommitLogEntityFactory.class).to(entityFactoryType);
+            ListBuilder<CommitLogListener> listeners = CommitLogModule.contributeListeners(binder)
+                    .addAll(listenerInstances);
 
-                ListBuilder<CommitLogListener> listeners = CommitLogModule.contributeListeners(binder)
-                        .addAll(listenerInstances);
+            // types have to be added one-by-one
+            for (Class<? extends CommitLogListener> type : listenerTypes) {
+                // TODO: temp hack - need to bind each type before adding to collection...
+                binder.bind(type).to((Class) type);
+                listeners.add(type);
+            }
 
-                // types have to be added one-by-one
-                for (Class<? extends CommitLogListener> type : listenerTypes) {
-                    // TODO: temp hack - need to bind each type before adding to collection...
-                    binder.bind(type).to((Class) type);
-                    listeners.add(type);
-                }
-
-                if (excludeFromTransaction) {
-                    ServerModule.contributeDomainFilters(binder).addAfter(CommitLogFilter.class, TransactionFilter.class);
-                } else {
-                    ServerModule.contributeDomainFilters(binder).insertBefore(CommitLogFilter.class, TransactionFilter.class);
-                }
+            if (excludeFromTransaction) {
+                ServerModule.contributeDomainFilters(binder).addAfter(CommitLogFilter.class, TransactionFilter.class);
+            } else {
+                ServerModule.contributeDomainFilters(binder).insertBefore(CommitLogFilter.class, TransactionFilter.class);
             }
         };
     }
