@@ -38,6 +38,11 @@
                                     <th>Status</th>
                                 </tr>
                                 <tr>
+                                    <td>4.1</td>
+                                    <td>Java 1.8 or newer</td>
+                                    <td>Development</td>
+                                </tr>
+                                <tr>
                                     <td>4.0</td>
                                     <td>Java 1.7 or newer</td>
                                     <td>Beta</td>

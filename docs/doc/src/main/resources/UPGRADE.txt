@@ -5,7 +5,7 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
 
-UPGRADING TO 4.0.M6
+UPGRADING TO 4.0.B1
 
 * Per CAY-2302 postcommit module and all it's internals renamed to commitlog.
       Most important change is the new @CommitLog annotation which should be used instead of @Auditable,
