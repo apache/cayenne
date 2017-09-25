@@ -19,19 +19,16 @@
 
 package org.apache.cayenne.configuration.xml;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.util.LocalizedStringsHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
 
 /**
  * @since 4.1
  */
-final class DataChannelHandler extends NamespaceAwareNestedTagHandler {
+final class DataChannelHandler extends VersionAwareHandler {
 
     private static Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
@@ -41,28 +38,10 @@ final class DataChannelHandler extends NamespaceAwareNestedTagHandler {
     DataChannelDescriptor descriptor;
 
     DataChannelHandler(XMLDataChannelDescriptorLoader xmlDataChannelDescriptorLoader, DataChannelDescriptor dataChannelDescriptor, LoaderContext loaderContext) {
-        super(loaderContext);
+        super(loaderContext, DOMAIN_TAG);
         this.xmlDataChannelDescriptorLoader = xmlDataChannelDescriptorLoader;
         this.descriptor = dataChannelDescriptor;
         setTargetNamespace(DataChannelDescriptor.SCHEMA_XSD);
-    }
-
-    @Override
-    protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
-        switch (localName) {
-            case DOMAIN_TAG:
-                validateVersion(attributes);
-                return true;
-        }
-        return false;
-    }
-
-    protected void validateVersion(Attributes attributes) {
-        String version = attributes.getValue("project-version");
-        if(!XMLDataChannelDescriptorLoader.CURRENT_PROJECT_VERSION.equals(version)) {
-            throw new CayenneRuntimeException("Unsupported project version: %s, please upgrade project using Modeler v%s",
-                    version, LocalizedStringsHandler.getString("cayenne.version"));
-        }
     }
 
     @Override

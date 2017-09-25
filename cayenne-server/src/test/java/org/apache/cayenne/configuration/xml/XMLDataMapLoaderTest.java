@@ -68,6 +68,12 @@ public class XMLDataMapLoaderTest {
         loader.load(new URLResource(new URL("file:/no_such_file_for_map_xml")));
     }
 
+    @Test(expected = CayenneRuntimeException.class)
+    public void loadWrongVersionConfig() throws Exception {
+        URL url = getClass().getResource("testConfigMap5.map.xml");
+        loader.load(new URLResource(url));
+    }
+
     @Test
     public void loadEmptyConfig() throws Exception {
         URL url = getClass().getResource("testConfigMap2.map.xml");

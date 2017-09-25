@@ -22,21 +22,15 @@ package org.apache.cayenne.configuration.xml;
 import org.apache.cayenne.map.DataMap;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
 
 /**
  * @since 4.1
  */
-public class RootDataMapHandler extends NamespaceAwareNestedTagHandler {
+public class RootDataMapHandler extends VersionAwareHandler {
 
     public RootDataMapHandler(LoaderContext loaderContext) {
-        super(loaderContext);
+        super(loaderContext, "data-map");
         setTargetNamespace(DataMap.SCHEMA_XSD);
-    }
-
-    @Override
-    protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
-        return false;
     }
 
     @Override

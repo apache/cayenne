@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.xml;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationTree;
@@ -93,6 +94,24 @@ public class XMLDataChannelDescriptorLoaderTest {
         } catch (ConfigurationException e) {
             // expected
         }
+    }
+
+    @Test(expected = CayenneRuntimeException.class)
+    public void loadInvalidVersion() throws Exception {
+        XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
+        injector.injectMembers(loader);
+
+        URL url = getClass().getResource("cayenne-testConfig4.xml");
+        loader.load(new URLResource(url));
+    }
+
+    @Test(expected = CayenneRuntimeException.class)
+    public void loadInvalidNamespace() throws Exception {
+        XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
+        injector.injectMembers(loader);
+
+        URL url = getClass().getResource("cayenne-testConfig5.xml");
+        loader.load(new URLResource(url));
     }
 
     @Test

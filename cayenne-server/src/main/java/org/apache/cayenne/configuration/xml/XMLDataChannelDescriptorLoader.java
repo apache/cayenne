@@ -131,12 +131,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 		try(InputStream in = configurationURL.openStream()) {
 			XMLReader parser = xmlReaderProvider.get();
 			LoaderContext loaderContext = new LoaderContext(parser, handlerFactory);
-			loaderContext.addDataMapListener(new DataMapLoaderListener() {
-				@Override
-				public void onDataMapLoaded(DataMap dataMap) {
-					descriptor.getDataMaps().add(dataMap);
-				}
-			});
+			loaderContext.addDataMapListener(dataMap -> descriptor.getDataMaps().add(dataMap));
 
 			DataChannelHandler rootHandler = new DataChannelHandler(this, descriptor, loaderContext);
 			parser.setContentHandler(rootHandler);

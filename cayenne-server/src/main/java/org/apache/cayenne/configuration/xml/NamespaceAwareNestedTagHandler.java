@@ -35,6 +35,8 @@ abstract public class NamespaceAwareNestedTagHandler extends SAXNestedTagHandler
 
     protected String targetNamespace;
 
+    protected boolean allowAllNamespaces;
+
     private StringBuilder charactersBuffer = new StringBuilder();
 
     public NamespaceAwareNestedTagHandler(LoaderContext loaderContext) {
@@ -66,7 +68,8 @@ abstract public class NamespaceAwareNestedTagHandler extends SAXNestedTagHandler
 
         ContentHandler childHandler = createChildTagHandler(namespaceURI, localName, qName, attributes);
 
-        if(!namespaceURI.equals(targetNamespace) || !processElement(namespaceURI, localName, attributes)) {
+        boolean validNamespace = allowAllNamespaces || namespaceURI.equals(targetNamespace);
+        if(!validNamespace || !processElement(namespaceURI, localName, attributes)) {
             // recursively pass element down into child handlers
             childHandler.startElement(namespaceURI, localName, qName, attributes);
         }
@@ -93,5 +96,9 @@ abstract public class NamespaceAwareNestedTagHandler extends SAXNestedTagHandler
 
     public void setTargetNamespace(String targetNamespace) {
         this.targetNamespace = targetNamespace;
+    }
+
+    public void setAllowAllNamespaces(boolean allowAllNamespaces) {
+        this.allowAllNamespaces = allowAllNamespaces;
     }
 }
