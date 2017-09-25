@@ -156,4 +156,13 @@ public class QuotedIdentifiersIT extends ServerCase {
         assertEquals("Name", resultList.get(1).getName());
     }
 
+    @Test
+    public void testQuotedEJBQLCountQuery() throws Exception {
+        EJBQLQuery query = new EJBQLQuery("select count(p) from Quote_Person p");
+        assertEquals(Collections.singletonList(2L), context.performQuery(query));
+
+        query = new EJBQLQuery("select count(p.fULL_name) from Quote_Person p");
+        assertEquals(Collections.singletonList(0L), context.performQuery(query));
+    }
+
 }

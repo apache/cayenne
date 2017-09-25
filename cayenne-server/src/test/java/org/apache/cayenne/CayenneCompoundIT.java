@@ -21,6 +21,7 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -33,6 +34,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +55,7 @@ public class CayenneCompoundIT extends ServerCase {
 
 	protected TableHelper tCompoundPKTest;
 	protected TableHelper tCharPKTest;
+	protected TableHelper tCompoundIntPKTest;
 
 	@Before
 	public void setUp() throws Exception {
@@ -61,6 +64,9 @@ public class CayenneCompoundIT extends ServerCase {
 
 		tCharPKTest = new TableHelper(dbHelper, "CHAR_PK_TEST");
 		tCharPKTest.setColumns("PK_COL", "OTHER_COL");
+
+		tCompoundIntPKTest = new TableHelper(dbHelper, "COMPOUND_INT_PK");
+		tCompoundIntPKTest.setColumns("id1", "id2", "name");
 	}
 
 	private void createOneCompoundPK() throws Exception {
@@ -180,5 +186,16 @@ public class CayenneCompoundIT extends ServerCase {
 			assertEquals(String.class, next[0].getClass());
 			assertEquals(CompoundPkTestEntity.class, next[1].getClass());
 		}
+	}
+
+	@Test
+	public void testEjbqlCountSelect() throws Exception {
+		tCompoundIntPKTest.insert(1, 2, "test");
+		tCompoundIntPKTest.insert(2, 3, "test");
+		tCompoundIntPKTest.insert(1, 4, "test");
+		tCompoundIntPKTest.insert(2, 5, "test");
+
+		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(a) FROM CompoundIntPk a");
+		assertEquals(Collections.singletonList(4L), context.performQuery(query));
 	}
 }

@@ -20,6 +20,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.query.SelectQuery;
@@ -35,6 +36,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -752,4 +754,36 @@ public class VerticalInheritanceIT extends ServerCase {
 		context.commitChanges();
 	}
 
+	@Test
+	public void testCountEjbqlQuery() throws Exception {
+		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
+		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+		TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
+		ivSub1Table.setColumns("ID", "SUB1_NAME");
+
+		TableHelper ivSub2Table = new TableHelper(dbHelper, "IV_SUB2");
+		ivSub2Table.setColumns("ID", "SUB2_ATTR", "SUB2_NAME");
+
+		// Root, IvSub1, IvSub2
+
+		ivRootTable.insert(1, "root1", "");
+
+		ivRootTable.insert(2, "sub11", "IvSub1");
+		ivSub1Table.insert(2, "sub_name1_1");
+
+		ivRootTable.insert(3, "sub21", "IvSub2");
+		ivRootTable.insert(4, "sub22", "IvSub2");
+		ivSub2Table.insert(3, "attr1", "sub_name2_1");
+		ivSub2Table.insert(4, "attr2", "sub_name2_2");
+
+		EJBQLQuery query1 = new EJBQLQuery("SELECT COUNT(a) FROM IvRoot a");
+		assertEquals(Collections.singletonList(4L), context.performQuery(query1));
+
+		EJBQLQuery query2 = new EJBQLQuery("SELECT COUNT(a) FROM IvSub1 a");
+		assertEquals(Collections.singletonList(1L), context.performQuery(query2));
+
+		EJBQLQuery query3 = new EJBQLQuery("SELECT COUNT(a) FROM IvSub2 a");
+		assertEquals(Collections.singletonList(2L), context.performQuery(query3));
+	}
 }
