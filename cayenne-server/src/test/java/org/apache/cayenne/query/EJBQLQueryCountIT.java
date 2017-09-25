@@ -55,6 +55,18 @@ public class EJBQLQueryCountIT extends ServerCase {
 	}
 
 	@Test
+	public void test_SimpleCount() throws Exception {
+		tArtist.insert(1, "A1");
+		tArtist.insert(2, "A2");
+		tArtist.insert(3, "A3");
+
+		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(a) FROM Artist a");
+
+		// this should be simply a count of painting/artist joins
+		assertEquals(Collections.singletonList(3L), context.performQuery(query));
+	}
+
+	@Test
 	public void test_ToOne() throws Exception {
 		tArtist.insert(1, "A1");
 		tArtist.insert(2, "A2");
@@ -67,23 +79,23 @@ public class EJBQLQueryCountIT extends ServerCase {
 		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(p.toArtist) FROM Painting p");
 
 		// this should be simply a count of painting/artist joins
-		assertEquals(Collections.singletonList(3l), context.performQuery(query));
+		assertEquals(Collections.singletonList(3L), context.performQuery(query));
 	}
 
-//	@Test
-//	public void test_DistinctToOne() throws Exception {
-//		tArtist.insert(1, "A1");
-//		tArtist.insert(2, "A2");
-//		tArtist.insert(3, "A3");
-//
-//		tPainting.insert(1, 1, "P1");
-//		tPainting.insert(2, 1, "P2");
-//		tPainting.insert(4, 2, "P1");
-//
-//		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(DISTINCT p.toArtist) FROM Painting p");
-//		// this should be a count of artists that have paintings
-//		assertEquals(Collections.singletonList(2l), context.performQuery(query));
-//	}
+	@Test
+	public void test_DistinctToOne() throws Exception {
+		tArtist.insert(1, "A1");
+		tArtist.insert(2, "A2");
+		tArtist.insert(3, "A3");
+
+		tPainting.insert(1, 1, "P1");
+		tPainting.insert(2, 1, "P2");
+		tPainting.insert(4, 2, "P1");
+
+		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(DISTINCT p.toArtist) FROM Painting p");
+		// this should be a count of artists that have paintings
+		assertEquals(Collections.singletonList(2l), context.performQuery(query));
+	}
 	
 	@Test
 	public void test_DistinctToOneAttribute() throws Exception {
@@ -97,7 +109,7 @@ public class EJBQLQueryCountIT extends ServerCase {
 
 		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(DISTINCT p.toArtist.artistName) FROM Painting p");
 		// this should be a count of artists that have paintings
-		assertEquals(Collections.singletonList(1l), context.performQuery(query));
+		assertEquals(Collections.singletonList(1L), context.performQuery(query));
 	}
 	
 }

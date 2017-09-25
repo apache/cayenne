@@ -146,7 +146,7 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
             }
 
             DbAttribute pk = getPk(relationship.getTargetEntity().getDbEntity());
-            context.append(lastAlias).append('.').append(pk.getName());
+            context.append(lastAlias).append('.').append(context.getQuotingStrategy().quotedName(pk));
         }
     }
 
@@ -171,9 +171,11 @@ class EJBQLAggregateColumnTranslator extends EJBQLBaseVisitor {
             if(classDescriptor == null) {
                 throw new EJBQLException("Unmapped id variable: " + expression.getText());
             }
-            String alias = context.getTableAlias(expression.getText(), classDescriptor.getEntity().getDbEntityName());
-            DbAttribute pk = getPk(classDescriptor.getEntity().getDbEntity());
-            context.append(alias).append('.').append(pk.getName());
+
+            DbEntity dbEntity = classDescriptor.getEntity().getDbEntity();
+            String tableName = context.getQuotingStrategy().quotedFullyQualifiedName(dbEntity);
+            context.append(context.getTableAlias(expression.getText(), tableName))
+                    .append('.').append(context.getQuotingStrategy().quotedName(getPk(dbEntity)));
             return false;
         }
 

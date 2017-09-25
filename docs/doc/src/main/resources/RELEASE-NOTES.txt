@@ -44,10 +44,11 @@ CAY-2362 ColumnSelect: unable to use Property without type
 CAY-2363 ColumnSelect: unable to use from nested context
 CAY-2364 Wrong logging in SQLTemplate
 CAY-2365 SQLExec query tries to convert (unexpected) result set into objects
+CAY-2366 Incorrect EJBQL COUNT translation
 
 ----------------------------------
 Release: 4.0.B1
-Date:
+Date: June 12, 2017
 ----------------------------------
 Changes/New Features:
 

@@ -28,6 +28,11 @@
 		<db-attribute name="KEY2" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="20"/>
 		<db-attribute name="NAME" type="VARCHAR" length="255"/>
 	</db-entity>
+	<db-entity name="COMPOUND_INT_PK">
+		<db-attribute name="id1" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="id2" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="name" type="VARCHAR" length="100"/>
+	</db-entity>
 	<obj-entity name="CharFkTestEntity" className="org.apache.cayenne.testdo.compound.CharFkTestEntity" dbEntityName="CHAR_FK_TEST">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
@@ -42,6 +47,11 @@
 		<obj-attribute name="key1" type="java.lang.String" db-attribute-path="KEY1"/>
 		<obj-attribute name="key2" type="java.lang.String" db-attribute-path="KEY2"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="CompoundIntPk" className="org.apache.cayenne.testdo.compound.CompoundIntPk" dbEntityName="COMPOUND_INT_PK">
+		<obj-attribute name="id1" type="java.lang.Integer" db-attribute-path="id1"/>
+		<obj-attribute name="id2" type="java.lang.Integer" db-attribute-path="id2"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
 	</obj-entity>
 	<db-relationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST">
 		<db-attribute-pair source="FK_COL" target="PK_COL"/>
