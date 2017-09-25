@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>org.apache.cayenne.docs</groupId>
 		<artifactId>cayenne-docbook</artifactId>
-		<version>4.1.M2-SNAPSHOT</version>
+		<version>4.1.M1-SNAPSHOT</version>
 	</parent>
 	
 	<modelVersion>4.0.0</modelVersion>
