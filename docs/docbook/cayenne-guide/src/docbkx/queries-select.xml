@@ -79,7 +79,7 @@ INFO: === returned 1 row. - took 6 ms.</screen>
         </para>
     </section>
     <section>
-        <title>Selecting using aggregate functions</title>
+        <title>Selecting aggregate functions</title>
         <para>
             ObjectSelect query supports usage of aggregate functions.
             Most common variant of aggregation is selecting count of records, this can be done really easy:
