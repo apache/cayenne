@@ -45,6 +45,7 @@ CAY-2363 ColumnSelect: unable to use from nested context
 CAY-2364 Wrong logging in SQLTemplate
 CAY-2365 SQLExec query tries to convert (unexpected) result set into objects
 CAY-2366 Incorrect EJBQL COUNT translation
+CAY-2367 ClassCastException reading object with an attribute of type 'char'
 CAY-2368 ColumnSelect: Property.self() translates into wrong SQL code
 
 ----------------------------------
