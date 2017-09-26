@@ -402,16 +402,12 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		QualifierTranslator qualifierTranslator = adapter.getQualifierTranslator(this);
 		AccumulatingBindingListener bindingListener = new AccumulatingBindingListener();
 		final String[] joinTableAliasForProperty = {null};
-		joinListener = new AddJoinListener() {
-			@Override
-			public void joinAdded() {
-				// capture last alias for joined table, will use it to resolve object columns
-				joinTableAliasForProperty[0] = getCurrentAlias();
-			}
-		};
+		// capture last alias for joined table, will use it to resolve object columns
+		joinListener = () -> joinTableAliasForProperty[0] = getCurrentAlias();
 		setAddBindingListener(bindingListener);
 
 		for(Property<?> property : query.getColumns()) {
+			joinTableAliasForProperty[0] = null;
 			int expressionType = property.getExpression().getType();
 
 			// forbid direct selection of toMany relationships columns

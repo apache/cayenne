@@ -477,6 +477,37 @@ public class ColumnSelectIT extends ServerCase {
         assertEquals("ng1 artist1", a);
     }
 
+    @Test
+    public void testAliasOrder() {
+        // test that all table aliases are correct
+        List<Object[]> result = ObjectSelect.columnQuery(Artist.class,
+                Artist.PAINTING_ARRAY.outer().count(),
+                Property.createSelf(Artist.class),
+                Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE),
+                Property.createSelf(Artist.class),
+                Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).dot(Gallery.GALLERY_NAME),
+                Artist.ARTIST_NAME,
+                Property.createSelf(Artist.class)
+        ).select(context);
+        assertEquals(21, result.size());
+        for(Object[] next : result) {
+            long count = (Long)next[0];
+            Artist artist = (Artist)next[1];
+            String paintingTitle = (String)next[2];
+            Artist artist2 = (Artist)next[3];
+            String galleryName = (String)next[4];
+            String artistName = (String)next[5];
+            Artist artist3 = (Artist)next[6];
+
+            assertTrue(paintingTitle.startsWith("painting"));
+            assertTrue(count == 4L || count == 5L);
+            assertEquals("tate modern", galleryName);
+            assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, artist2.getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, artist3.getPersistenceState());
+        }
+    }
+
     /*
      *  Test iterated select
      */
