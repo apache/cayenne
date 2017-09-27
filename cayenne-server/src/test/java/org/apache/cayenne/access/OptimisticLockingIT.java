@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
@@ -58,8 +59,8 @@ public class OptimisticLockingIT extends ServerCase {
     @Before
     public void setUp() throws Exception {
         tSimpleLockingTest = new TableHelper(dbHelper, "SIMPLE_LOCKING_TEST");
-        tSimpleLockingTest.setColumns("LOCKING_TEST_ID", "NAME", "DESCRIPTION")
-                .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARCHAR);
+        tSimpleLockingTest.setColumns("LOCKING_TEST_ID", "NAME", "DESCRIPTION", "INT_COLUMN_NOTNULL")
+                .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.INTEGER);
 
         tRelLockingTest = new TableHelper(dbHelper, "REL_LOCKING_TEST");
         tRelLockingTest.setColumns(
@@ -72,33 +73,21 @@ public class OptimisticLockingIT extends ServerCase {
     }
 
     protected void createSimpleLockingDataSet() throws Exception {
-        tLockingHelper.delete().execute();
-        tRelLockingTest.delete().execute();
-        tSimpleLockingTest.delete().execute();
-        tSimpleLockingTest.insert(1, "LockTest1", null);
+        tSimpleLockingTest.insert(1, "LockTest1", null, 1);
     }
 
     protected void createLockingOnNullDataSet() throws Exception {
-        tLockingHelper.delete().execute();
-        tRelLockingTest.delete().execute();
-        tSimpleLockingTest.delete().execute();
-        tSimpleLockingTest.insert(1, null, null);
+        tSimpleLockingTest.insert(1, null, null, 0);
     }
 
     protected void createLockingOnMixedDataSet() throws Exception {
-        tLockingHelper.delete().execute();
-        tRelLockingTest.delete().execute();
-        tSimpleLockingTest.delete().execute();
-        tSimpleLockingTest.insert(1, null, null);
-        tSimpleLockingTest.insert(2, "LockTest2", null);
-        tSimpleLockingTest.insert(3, "LockTest3", "Another Lock Test");
+        tSimpleLockingTest.insert(1, null, null, 1);
+        tSimpleLockingTest.insert(2, "LockTest2", null, 2);
+        tSimpleLockingTest.insert(3, "LockTest3", "Another Lock Test", 3);
     }
 
     protected void createLockingOnToOneDataSet() throws Exception {
-        tLockingHelper.delete().execute();
-        tRelLockingTest.delete().execute();
-        tSimpleLockingTest.delete().execute();
-        tSimpleLockingTest.insert(1, "LockTest1", null);
+        tSimpleLockingTest.insert(1, "LockTest1", null, 2);
         tRelLockingTest.insert(5, 1, "Rel Test 1");
         tLockingHelper.insert(1, 5, "Locking Helper 1");
     }
@@ -261,6 +250,27 @@ public class OptimisticLockingIT extends ServerCase {
 
         object.setDescription("second update");
 
+        context.commitChanges();
+    }
+
+    @Test
+    public void testSuccessSimpleLockingNullablePrimitiveColumn() throws Exception {
+        createSimpleLockingDataSet();
+
+        SimpleLockingTestEntity object = ObjectSelect.query(SimpleLockingTestEntity.class).selectOne(context);
+
+        // we should have NULL value in primitive column
+        assertEquals(0, object.getIntColumnNull());
+        assertNull(object.readPropertyDirectly("intColumnNull"));
+
+        // change object and save... no optimistic lock failure expected
+        object.setDescription("first update");
+        object.setIntColumnNotnull(2);
+        context.commitChanges();
+
+        // update values once more
+        object.setDescription("second update");
+        object.setIntColumnNull(3);
         context.commitChanges();
     }
 

@@ -101,7 +101,8 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 ## Create Fields ##
 ###################
 #foreach( $attr in ${object.DeclaredAttributes} )
-#set ( $type = "$importUtils.formatJavaType(${attr.Type}, false)")
+## don't use primitive type if attribute is nullable
+#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $attr.isMandatory())")
     protected $type $stringUtils.formatVariableName(${attr.Name});
 #end
 
@@ -114,10 +115,12 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 #########################################################
 #foreach( $attr in ${object.DeclaredAttributes} )
 #set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
+#set ( $type = "$importUtils.formatJavaType(${attr.Type})")
 ##
 ## setter
+##
 #if ("true" != "${object.isReadOnly()}")
-    public void set${stringUtils.capitalized($attr.Name)}($importUtils.formatJavaType(${attr.Type}) $name) {
+    public void set${stringUtils.capitalized($attr.Name)}($type $name) {
         beforePropertyWrite("${attr.Name}", this.$name, $name);
         this.$name = $name;
     }
@@ -125,16 +128,26 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 #end
 ##
 ## getter
+##
 #if ( $importUtils.isBoolean(${attr.Type}) )
     public boolean is${stringUtils.capitalized($attr.Name)}() {
 #else
-    public $importUtils.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
+    public $type get${stringUtils.capitalized($attr.Name)}() {
 #end
         beforePropertyRead("${attr.Name}");
-        return this.$stringUtils.formatVariableName(${attr.Name});
+#if ($importUtils.isPrimitive($type) && !$attr.isMandatory())
+        if(this.$name == null) {
+#if ($importUtils.isBoolean($type))
+            return false;
+#else
+            return 0;
+#end
+        }
+#end
+        return this.$name;
     }
 
-#end
+#end## of foreach declared attribute
 ##
 ## Create list add/remove/get methods
 #foreach( $rel in ${object.DeclaredRelationships} )
@@ -214,10 +227,16 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 
         switch (propName) {
 #foreach( $attr in ${object.DeclaredAttributes} )
-#set ( $type = "$importUtils.formatJavaType(${attr.Type}, false)")
+#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $attr.isMandatory())")
 #set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
             case "${attr.Name}":
+#if ( $importUtils.isBoolean($type) )
+                this.${name} = val == null ? false : ($type)val;
+#elseif ($importUtils.isPrimitive($type))
+                this.${name} = val == null ? 0 : ($type)val;
+#else
                 this.${name} = ($type)val;
+#end
                 break;
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
@@ -246,7 +265,7 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
         super.writeState(out);
 #foreach( $attr in ${object.DeclaredAttributes} )
 #set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
-#set ( $type = "$importUtils.formatJavaType(${attr.Type})")
+#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $attr.isMandatory())")
 #if($importUtils.isPrimitive($type))
         out.write${stringUtils.capitalized($type)}(this.$name);
 #else
@@ -263,7 +282,7 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
         super.readState(in);
 #foreach( $attr in ${object.DeclaredAttributes} )
 #set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
-#set ( $type = "$importUtils.formatJavaType(${attr.Type})")
+#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $attr.isMandatory())")
 #if($importUtils.isPrimitive($type))
         this.$name = in.read${stringUtils.capitalized($type)}();
 #else
