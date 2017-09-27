@@ -59,7 +59,7 @@ public class PrimitiveAttributesIT extends ServerCase {
         TableHelper tPrimitives = new TableHelper(dbHelper, "PRIMITIVES_TEST");
         tPrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN", "CHAR_COLUMN");
         for (int i = 1; i <= 20; i++) {
-            tPrimitives.insert(i, (i % 2 == 0), i * 10, (char) ('a' + i));
+            tPrimitives.insert(i, (i % 2 == 0), i * 10, String.valueOf((char)('a' + i)));
         }
 
         List<PrimitivesTestEntity> result = ObjectSelect.query(PrimitivesTestEntity.class)
