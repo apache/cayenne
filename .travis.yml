@@ -33,6 +33,7 @@ env:
 
 jdk:
   - oraclejdk8
+  - oraclejdk9
 
 script:
   - mvn verify -q -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
