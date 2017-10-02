@@ -26,6 +26,7 @@ import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -39,6 +40,9 @@ public class SQLExecIT extends ServerCase {
 
     @Inject
     private DBHelper dbHelper;
+
+    @Inject
+    private UnitDbAdapter unitDbAdapter;
 
     @Test
     public void test_DataMapNameRoot() throws Exception {
@@ -74,14 +78,14 @@ public class SQLExecIT extends ServerCase {
         assertEquals(1, result.firstList().size());
 
         DataRow row = (DataRow)result.firstList().get(0);
-        // there is no methods to control case of the columns' names in SQLExec, so check both versions
-        assertTrue(row.containsKey("ARTIST_ID") || row.containsKey("artist_id"));
-        if(row.containsKey("ARTIST_ID")) {
-            assertEquals(1L, row.get("ARTIST_ID"));
-            assertEquals("a", row.get("ARTIST_NAME"));
-        } else {
+        if(unitDbAdapter.isLowerCaseNames()) {
+            assertTrue(row.containsKey("artist_id"));
             assertEquals(1L, row.get("artist_id"));
             assertEquals("a", row.get("artist_name"));
+        } else {
+            assertTrue(row.containsKey("ARTIST_ID"));
+            assertEquals(1L, row.get("ARTIST_ID"));
+            assertEquals("a", row.get("ARTIST_NAME"));
         }
     }
 
