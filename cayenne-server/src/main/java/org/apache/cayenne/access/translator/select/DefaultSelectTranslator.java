@@ -412,6 +412,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		setAddBindingListener(bindingListener);
 
 		for(Property<?> property : query.getColumns()) {
+			joinTableAliasForProperty[0] = null;
 			int expressionType = property.getExpression().getType();
 
 			// forbid direct selection of toMany relationships columns

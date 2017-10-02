@@ -15,6 +15,7 @@ Bug Fixes:
 
 CAY-2364 Wrong logging in SQLTemplate
 CAY-2365 SQLExec query tries to convert (unexpected) result set into objects
+CAY-2368 ColumnSelect: Property.self() translates into wrong SQL code
 
 ----------------------------------
 Release: 4.0.B2
