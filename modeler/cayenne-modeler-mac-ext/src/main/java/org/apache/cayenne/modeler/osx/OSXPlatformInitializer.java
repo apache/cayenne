@@ -40,12 +40,7 @@ import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 
-import com.apple.eawt.AboutHandler;
-import com.apple.eawt.AppEvent;
 import com.apple.eawt.Application;
-import com.apple.eawt.PreferencesHandler;
-import com.apple.eawt.QuitHandler;
-import com.apple.eawt.QuitResponse;
 
 public class OSXPlatformInitializer implements PlatformInitializer {
 
@@ -58,27 +53,18 @@ public class OSXPlatformInitializer implements PlatformInitializer {
         overrideUIDefaults();
 
         // configure special Mac menu handlers
-        Application app = Application.getApplication();
-        app.setAboutHandler(new AboutHandler() {
-            @Override
-            public void handleAbout(AppEvent.AboutEvent aboutEvent) {
-                actionManager.getAction(AboutAction.class).showAboutDialog();
-            }
-        });
+        OSXApplicationWrapper wrapper = new OSXApplicationWrapper(Application.getApplication());
+        wrapper.setAboutHandler(()
+                -> actionManager.getAction(AboutAction.class).showAboutDialog());
 
-        app.setPreferencesHandler(new PreferencesHandler() {
-            @Override
-            public void handlePreferences(AppEvent.PreferencesEvent preferencesEvent) {
-                actionManager.getAction(ConfigurePreferencesAction.class).showPreferencesDialog();
-            }
-        });
+        wrapper.setPreferencesHandler(()
+                -> actionManager.getAction(ConfigurePreferencesAction.class).showPreferencesDialog());
 
-        app.setQuitHandler(new QuitHandler() {
-            @Override
-            public void handleQuitRequestWith(AppEvent.QuitEvent quitEvent, QuitResponse quitResponse) {
-                if(!actionManager.getAction(ExitAction.class).exit()) {
-                    quitResponse.cancelQuit();
-                }
+        wrapper.setQuitHandler(r -> {
+            if(!actionManager.getAction(ExitAction.class).exit()) {
+                r.cancelQuit();
+            } else {
+                r.performQuit();
             }
         });
     }
