@@ -31,6 +31,7 @@ import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CalendarType;
 import org.apache.cayenne.access.types.CharType;
+import org.apache.cayenne.access.types.CharacterValueType;
 import org.apache.cayenne.access.types.DateType;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.DoubleType;
@@ -151,7 +152,10 @@ public class ServerCaseModule implements Module {
                 .put(FrontBaseAdapter.class.getName(), FrontBaseUnitDbAdapter.class.getName())
                 .put(IngresAdapter.class.getName(), IngresUnitDbAdapter.class.getName())
                 .put(SQLiteAdapter.class.getName(), SQLiteUnitDbAdapter.class.getName());
-        ServerModule.contributeProperties(binder);
+        ServerModule.contributeProperties(binder)
+                // Use soft references instead of default weak.
+                // Should remove problems with random-failing tests (those that are GC-sensitive).
+                .put(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "soft");
         
         // configure extended types
         ServerModule.contributeDefaultTypes(binder)
@@ -179,7 +183,8 @@ public class ServerCaseModule implements Module {
                 .add(UUIDValueType.class)
                 .add(LocalDateValueType.class)
                 .add(LocalTimeValueType.class)
-                .add(LocalDateTimeValueType.class);
+                .add(LocalDateTimeValueType.class)
+                .add(CharacterValueType.class);
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
 
         binder.bind(SchemaBuilder.class).to(SchemaBuilder.class);
