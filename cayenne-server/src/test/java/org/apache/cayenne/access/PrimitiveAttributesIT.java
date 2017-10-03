@@ -32,6 +32,8 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.PRIMITIVE_PROJECT)
 public class PrimitiveAttributesIT extends ServerCase {
@@ -58,14 +60,23 @@ public class PrimitiveAttributesIT extends ServerCase {
     public void testSelect() throws Exception {
         TableHelper tPrimitives = new TableHelper(dbHelper, "PRIMITIVES_TEST");
         tPrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN", "CHAR_COLUMN");
-        for (int i = 1; i <= 20; i++) {
-            tPrimitives.insert(i, (i % 2 == 0), i * 10, String.valueOf((char)('a' + i)));
-        }
+        tPrimitives.insert(1, true, -100, String.valueOf('a'))
+                .insert(2, false, 0, String.valueOf('~'))
+                .insert(3, true, Integer.MAX_VALUE, String.valueOf('Å'));
 
         List<PrimitivesTestEntity> result = ObjectSelect.query(PrimitivesTestEntity.class)
                 .orderBy(PrimitivesTestEntity.INT_COLUMN.asc()).select(context);
-        assertEquals(20, result.size());
-        assertEquals(40, result.get(3).getIntColumn());
-        assertEquals('d', result.get(2).getCharColumn());
+        assertEquals(3, result.size());
+        assertEquals(-100, result.get(0).getIntColumn());
+        assertEquals('a', result.get(0).getCharColumn());
+        assertTrue(result.get(0).isBooleanColumn());
+
+        assertEquals(0, result.get(1).getIntColumn());
+        assertEquals('~', result.get(1).getCharColumn());
+        assertFalse(result.get(1).isBooleanColumn());
+
+        assertEquals(Integer.MAX_VALUE, result.get(2).getIntColumn());
+        assertEquals('Å', result.get(2).getCharColumn());
+        assertTrue(result.get(2).isBooleanColumn());
     }
 }
