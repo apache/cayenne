@@ -33,8 +33,8 @@ import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -148,7 +148,7 @@ public class DataContextExtrasIT extends ServerCase {
         // assertEquals("a", o1.readPropertyDirectly("artistName")); // field-based
 
         // update table bypassing Cayenne
-        int count = tArtist.update().set("ARTIST_NAME", "b").where("ARTIST_NAME", "a").execute();
+        int count = tArtist.update().set("ARTIST_NAME", "b").execute();
         assertTrue(count > 0);
 
         context.prepareForAccess(o1, null, false);
@@ -321,9 +321,9 @@ public class DataContextExtrasIT extends ServerCase {
 
         createPhantomModificationDataSet();
 
-        List<?> objects = context.performQuery(new SelectQuery(Artist.class));
-        Artist a1 = (Artist) objects.get(0);
-        Artist a2 = (Artist) objects.get(1);
+        List<Artist> objects = ObjectSelect.query(Artist.class).select(context);
+        Artist a1 = objects.get(0);
+        Artist a2 = objects.get(1);
 
         a1.setArtistName(a1.getArtistName());
         a1.resetValidationFlags();
@@ -354,8 +354,8 @@ public class DataContextExtrasIT extends ServerCase {
 
         createPhantomModificationsValidateToOneDataSet();
 
-        List<?> objects = context.performQuery(new SelectQuery(Painting.class));
-        Painting p1 = (Painting) objects.get(0);
+        List<Painting> objects = ObjectSelect.query(Painting.class).select(context);
+        Painting p1 = objects.get(0);
 
         p1.setPaintingTitle(p1.getPaintingTitle());
         p1.resetValidationFlags();
@@ -371,8 +371,8 @@ public class DataContextExtrasIT extends ServerCase {
 
         createValidateOnToManyChangeDataSet();
 
-        List<?> objects = context.performQuery(new SelectQuery(Artist.class));
-        Artist a1 = (Artist) objects.get(0);
+        List<Artist> objects = ObjectSelect.query(Artist.class).select(context);
+        Artist a1 = objects.get(0);
 
         Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("XXX");
@@ -388,8 +388,8 @@ public class DataContextExtrasIT extends ServerCase {
 
         createPhantomModificationDataSet();
 
-        List<?> objects = context.performQuery(new SelectQuery(Artist.class));
-        Artist a1 = (Artist) objects.get(0);
+        List<Artist> objects = ObjectSelect.query(Artist.class).select(context);
+        Artist a1 = objects.get(0);
 
         String oldName = a1.getArtistName();
 
@@ -405,11 +405,10 @@ public class DataContextExtrasIT extends ServerCase {
 
         createPhantomRelationshipModificationCommitDataSet();
 
-        SelectQuery query = new SelectQuery(Painting.class);
-        List<?> objects = context.performQuery(query);
+        List<Painting> objects = ObjectSelect.query(Painting.class).select(context);
         assertEquals(1, objects.size());
 
-        Painting p1 = (Painting) objects.get(0);
+        Painting p1 = objects.get(0);
 
         Artist oldArtist = p1.getToArtist();
         Artist newArtist = Cayenne.objectForPK(context, Artist.class, 33002);
@@ -431,11 +430,10 @@ public class DataContextExtrasIT extends ServerCase {
 
         createPhantomRelationshipModificationCommitDataSet();
 
-        SelectQuery query = new SelectQuery(Painting.class);
-        List<?> objects = context.performQuery(query);
+        List<Painting> objects = ObjectSelect.query(Painting.class).select(context);
         assertEquals(1, objects.size());
 
-        Painting p1 = (Painting) objects.get(0);
+        Painting p1 = objects.get(0);
 
         Artist oldArtist = p1.getToArtist();
         Artist newArtist = Cayenne.objectForPK(context, Artist.class, 33002);

@@ -6,23 +6,23 @@
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.java8"/>
 	<db-entity name="LOCAL_DATETIME_TEST">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="Timestamp" type="TIMESTAMP"/>
+		<db-attribute name="TimestampField" type="TIMESTAMP"/>
 	</db-entity>
 	<db-entity name="LOCAL_DATE_TEST">
-		<db-attribute name="Date" type="DATE"/>
+		<db-attribute name="DateField" type="DATE"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="LOCAL_TIME_TEST">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="Time" type="TIME"/>
+		<db-attribute name="TimeField" type="TIME"/>
 	</db-entity>
 	<obj-entity name="LocalDateTest" className="org.apache.cayenne.testdo.java8.LocalDateTestEntity" dbEntityName="LOCAL_DATE_TEST">
-		<obj-attribute name="date" type="java.time.LocalDate" db-attribute-path="Date"/>
+		<obj-attribute name="date" type="java.time.LocalDate" db-attribute-path="DateField"/>
 	</obj-entity>
 	<obj-entity name="LocalDateTimeTest" className="org.apache.cayenne.testdo.java8.LocalDateTimeTestEntity" dbEntityName="LOCAL_DATETIME_TEST">
-		<obj-attribute name="timestamp" type="java.time.LocalDateTime" db-attribute-path="Timestamp"/>
+		<obj-attribute name="timestamp" type="java.time.LocalDateTime" db-attribute-path="TimestampField"/>
 	</obj-entity>
 	<obj-entity name="LocalTimeTest" className="org.apache.cayenne.testdo.java8.LocalTimeTestEntity" dbEntityName="LOCAL_TIME_TEST">
-		<obj-attribute name="time" type="java.time.LocalTime" db-attribute-path="Time"/>
+		<obj-attribute name="time" type="java.time.LocalTime" db-attribute-path="TimeField"/>
 	</obj-entity>
 </data-map>

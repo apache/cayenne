@@ -80,11 +80,11 @@ public class SQLExecIT extends ServerCase {
         DataRow row = (DataRow)result.firstList().get(0);
         if(unitDbAdapter.isLowerCaseNames()) {
             assertTrue(row.containsKey("artist_id"));
-            assertEquals(1L, row.get("artist_id"));
+            assertEquals(1L, ((Number)row.get("artist_id")).longValue());
             assertEquals("a", row.get("artist_name"));
         } else {
             assertTrue(row.containsKey("ARTIST_ID"));
-            assertEquals(1L, row.get("ARTIST_ID"));
+            assertEquals(1L, ((Number)row.get("ARTIST_ID")).longValue());
             assertEquals("a", row.get("ARTIST_NAME"));
         }
     }
@@ -96,7 +96,7 @@ public class SQLExecIT extends ServerCase {
                 .paramsArray(55, "a3").update(context);
 
         assertEquals(1, inserted);
-        assertEquals(55l, dbHelper.getLong("ARTIST", "ARTIST_ID"));
+        assertEquals(55L, dbHelper.getLong("ARTIST", "ARTIST_ID"));
         assertEquals("a3", dbHelper.getString("ARTIST", "ARTIST_NAME").trim());
     }
 }

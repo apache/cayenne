@@ -62,7 +62,7 @@ public class PrimitiveAttributesIT extends ServerCase {
         tPrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN", "CHAR_COLUMN");
         tPrimitives.insert(1, true, -100, String.valueOf('a'))
                 .insert(2, false, 0, String.valueOf('~'))
-                .insert(3, true, Integer.MAX_VALUE, String.valueOf('Å'));
+                .insert(3, true, Integer.MAX_VALUE, String.valueOf('Z'));
 
         List<PrimitivesTestEntity> result = ObjectSelect.query(PrimitivesTestEntity.class)
                 .orderBy(PrimitivesTestEntity.INT_COLUMN.asc()).select(context);
@@ -76,7 +76,7 @@ public class PrimitiveAttributesIT extends ServerCase {
         assertFalse(result.get(1).isBooleanColumn());
 
         assertEquals(Integer.MAX_VALUE, result.get(2).getIntColumn());
-        assertEquals('Å', result.get(2).getCharColumn());
+        assertEquals('Z', result.get(2).getCharColumn());
         assertTrue(result.get(2).isBooleanColumn());
     }
 }
