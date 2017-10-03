@@ -16,6 +16,8 @@
 	</db-entity>
 	<db-entity name="SIMPLE_LOCKING_TEST">
 		<db-attribute name="DESCRIPTION" type="VARCHAR" length="200"/>
+		<db-attribute name="INT_COLUMN_NOTNULL" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="INT_COLUMN_NULL" type="INTEGER"/>
 		<db-attribute name="LOCKING_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 	</db-entity>
@@ -27,6 +29,8 @@
 	</obj-entity>
 	<obj-entity name="SimpleLockingTestEntity" className="org.apache.cayenne.testdo.locking.SimpleLockingTestEntity" lock-type="optimistic" dbEntityName="SIMPLE_LOCKING_TEST">
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="DESCRIPTION"/>
+		<obj-attribute name="intColumnNotnull" type="int" lock="true" db-attribute-path="INT_COLUMN_NOTNULL"/>
+		<obj-attribute name="intColumnNull" type="int" lock="true" db-attribute-path="INT_COLUMN_NULL"/>
 		<obj-attribute name="name" type="java.lang.String" lock="true" db-attribute-path="NAME"/>
 	</obj-entity>
 	<db-relationship name="toRelLockingTest" source="LOCKING_HELPER" target="REL_LOCKING_TEST">

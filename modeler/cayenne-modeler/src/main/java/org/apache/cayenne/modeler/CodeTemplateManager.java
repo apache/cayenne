@@ -39,6 +39,7 @@ public class CodeTemplateManager {
 
 	public static final String STANDARD_SERVER_SUPERCLASS = "Standard Server Superclass";
 	public static final String STANDARD_SERVER_SUBCLASS = "Standard Server Subclass";
+	public static final String SINGLE_SERVER_CLASS = "Single Server class";
 	static final String STANDARD_CLIENT_SUPERCLASS = "Standard Client Superclass";
 	static final String STANDARD_CLIENT_SUBCLASS = "Standard Client Subclass";
 
@@ -64,6 +65,7 @@ public class CodeTemplateManager {
 		standardSubclassTemplates = new ArrayList<>(3);
 		standardSubclassTemplates.add(STANDARD_SERVER_SUBCLASS);
 		standardSubclassTemplates.add(STANDARD_CLIENT_SUBCLASS);
+		standardSubclassTemplates.add(SINGLE_SERVER_CLASS);
 
 		updateCustomTemplates(getTemplatePreferences(application));
 
@@ -72,23 +74,23 @@ public class CodeTemplateManager {
 		standardTemplates.put(STANDARD_CLIENT_SUPERCLASS, ClientClassGenerationAction.SUPERCLASS_TEMPLATE);
 		standardTemplates.put(STANDARD_SERVER_SUBCLASS, ClassGenerationAction.SUBCLASS_TEMPLATE);
 		standardTemplates.put(STANDARD_CLIENT_SUBCLASS, ClientClassGenerationAction.SUBCLASS_TEMPLATE);
+		standardTemplates.put(SINGLE_SERVER_CLASS, ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
 	}
 
 	/**
 	 * Updates custom templates from preferences.
 	 */
 	public void updateCustomTemplates(Preferences preference) {
-		String[] keys = null;
+		String[] keys = {};
 		try {
 			keys = preference.childrenNames();
 		} catch (BackingStoreException e) {
 			logger.warn("Error reading preferences");
 		}
 		this.customTemplates = new HashMap<>(keys.length, 1);
-
-		for (int j = 0; j < keys.length; j++) {
-			FSPath path = new FSPath(preference.node(keys[j]));
-			customTemplates.put(keys[j], path.getPath());
+		for (String key : keys) {
+			FSPath path = new FSPath(preference.node(key));
+			customTemplates.put(key, path.getPath());
 		}
 	}
 

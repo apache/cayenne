@@ -20,9 +20,13 @@ public abstract class _SimpleLockingTestEntity extends BaseDataObject {
     public static final String LOCKING_TEST_ID_PK_COLUMN = "LOCKING_TEST_ID";
 
     public static final Property<String> DESCRIPTION = Property.create("description", String.class);
+    public static final Property<Integer> INT_COLUMN_NOTNULL = Property.create("intColumnNotnull", Integer.class);
+    public static final Property<Integer> INT_COLUMN_NULL = Property.create("intColumnNull", Integer.class);
     public static final Property<String> NAME = Property.create("name", String.class);
 
     protected String description;
+    protected int intColumnNotnull;
+    protected Integer intColumnNull;
     protected String name;
 
 
@@ -34,6 +38,29 @@ public abstract class _SimpleLockingTestEntity extends BaseDataObject {
     public String getDescription() {
         beforePropertyRead("description");
         return this.description;
+    }
+
+    public void setIntColumnNotnull(int intColumnNotnull) {
+        beforePropertyWrite("intColumnNotnull", this.intColumnNotnull, intColumnNotnull);
+        this.intColumnNotnull = intColumnNotnull;
+    }
+
+    public int getIntColumnNotnull() {
+        beforePropertyRead("intColumnNotnull");
+        return this.intColumnNotnull;
+    }
+
+    public void setIntColumnNull(int intColumnNull) {
+        beforePropertyWrite("intColumnNull", this.intColumnNull, intColumnNull);
+        this.intColumnNull = intColumnNull;
+    }
+
+    public int getIntColumnNull() {
+        beforePropertyRead("intColumnNull");
+        if(this.intColumnNull == null) {
+            return 0;
+        }
+        return this.intColumnNull;
     }
 
     public void setName(String name) {
@@ -55,6 +82,10 @@ public abstract class _SimpleLockingTestEntity extends BaseDataObject {
         switch(propName) {
             case "description":
                 return this.description;
+            case "intColumnNotnull":
+                return this.intColumnNotnull;
+            case "intColumnNull":
+                return this.intColumnNull;
             case "name":
                 return this.name;
             default:
@@ -71,6 +102,12 @@ public abstract class _SimpleLockingTestEntity extends BaseDataObject {
         switch (propName) {
             case "description":
                 this.description = (String)val;
+                break;
+            case "intColumnNotnull":
+                this.intColumnNotnull = val == null ? 0 : (int)val;
+                break;
+            case "intColumnNull":
+                this.intColumnNull = (Integer)val;
                 break;
             case "name":
                 this.name = (String)val;
@@ -92,6 +129,8 @@ public abstract class _SimpleLockingTestEntity extends BaseDataObject {
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
         out.writeObject(this.description);
+        out.writeInt(this.intColumnNotnull);
+        out.writeObject(this.intColumnNull);
         out.writeObject(this.name);
     }
 
@@ -99,6 +138,8 @@ public abstract class _SimpleLockingTestEntity extends BaseDataObject {
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
         this.description = (String)in.readObject();
+        this.intColumnNotnull = in.readInt();
+        this.intColumnNull = (Integer)in.readObject();
         this.name = (String)in.readObject();
     }
 

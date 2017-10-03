@@ -12,7 +12,7 @@
 		<db-attribute name="BOOLEAN_COLUMN" type="BOOLEAN"/>
 		<db-attribute name="CHAR_COLUMN" type="CHAR" length="1"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="INT_COLUMN" type="INTEGER"/>
+		<db-attribute name="INT_COLUMN" type="INTEGER" isMandatory="true"/>
 	</db-entity>
 	<obj-entity name="PrimitivesTestEntity" className="org.apache.cayenne.testdo.primitive.PrimitivesTestEntity" dbEntityName="PRIMITIVES_TEST">
 		<obj-attribute name="booleanColumn" type="boolean" db-attribute-path="BOOLEAN_COLUMN"/>
