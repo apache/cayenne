@@ -40,7 +40,7 @@ import org.apache.cayenne.access.types.BooleanType;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CalendarType;
-import org.apache.cayenne.access.types.CharacterType;
+import org.apache.cayenne.access.types.CharacterValueType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.DateType;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
@@ -344,7 +344,7 @@ public class ServerModule implements Module {
                 .add(LocalDateValueType.class)
                 .add(LocalTimeValueType.class)
                 .add(LocalDateTimeValueType.class)
-                .add(CharacterType.class);
+                .add(CharacterValueType.class);
 
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
 

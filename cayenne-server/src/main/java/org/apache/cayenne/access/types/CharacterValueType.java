@@ -23,7 +23,7 @@ package org.apache.cayenne.access.types;
  * This is char and Character type mapped to zero or one char String.
  * @since 4.1
  */
-public class CharacterType implements ValueObjectType<Character, String> {
+public class CharacterValueType implements ValueObjectType<Character, String> {
     @Override
     public Class<String> getTargetType() {
         return String.class;
