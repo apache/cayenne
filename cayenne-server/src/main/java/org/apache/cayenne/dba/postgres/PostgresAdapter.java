@@ -232,6 +232,9 @@ public class PostgresAdapter extends JdbcAdapter {
 
 	@Override
 	public boolean typeSupportsLength(int type) {
+		if(Types.DOUBLE == type || Types.REAL == type){
+			return false;
+		}
 		// "bytea" type does not support length
 		String[] externalTypes = externalTypesForJdbcType(type);
 		if (externalTypes != null && externalTypes.length > 0) {
