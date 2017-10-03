@@ -16,6 +16,7 @@ public abstract class _PrimitivesTestEntity extends CayenneDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public static final Property<Boolean> BOOLEAN_COLUMN = Property.create("booleanColumn", Boolean.class);
+    public static final Property<Character> CHAR_COLUMN = Property.create("charColumn", Character.class);
     public static final Property<Integer> INT_COLUMN = Property.create("intColumn", Integer.class);
 
     public void setBooleanColumn(boolean booleanColumn) {
@@ -24,6 +25,14 @@ public abstract class _PrimitivesTestEntity extends CayenneDataObject {
 	public boolean isBooleanColumn() {
         Boolean value = (Boolean)readProperty("booleanColumn");
         return (value != null) ? value.booleanValue() : false;
+    }
+
+    public void setCharColumn(char charColumn) {
+        writeProperty("charColumn", charColumn);
+    }
+    public char getCharColumn() {
+        Object value = readProperty("charColumn");
+        return (value != null) ? (Character) value : 0;
     }
 
     public void setIntColumn(int intColumn) {

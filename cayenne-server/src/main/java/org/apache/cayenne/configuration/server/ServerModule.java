@@ -41,6 +41,7 @@ import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CalendarType;
 import org.apache.cayenne.access.types.CharType;
+import org.apache.cayenne.access.types.CharacterType;
 import org.apache.cayenne.access.types.DateType;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.DoubleType;
@@ -328,7 +329,8 @@ public class ServerModule implements Module {
         // Custom ValueObjects types contribution
         contributeValueObjectTypes(binder)
                 .add(BigIntegerValueType.class)
-                .add(UUIDValueType.class);
+                .add(UUIDValueType.class)
+                .add(CharacterType.class);
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
 
         // configure explicit configurations

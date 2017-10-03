@@ -47,6 +47,7 @@ public class ExtendedTypeMap {
 		classesForPrimitives.put("float", Float.class.getName());
 		classesForPrimitives.put("short", Short.class.getName());
 		classesForPrimitives.put("int", Integer.class.getName());
+		classesForPrimitives.put("char", Character.class.getName());
 	}
 
 	protected Map<String, String> typeAliases;
