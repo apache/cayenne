@@ -73,4 +73,11 @@ public class DB2UnitDbAdapter extends UnitDbAdapter {
     public boolean supportsSelectBooleanExpression() {
         return false;
     }
+
+    @Override
+    public void cleanDB(Connection conn, String tableName) throws Exception {
+        StringBuffer sql = new StringBuffer();
+        sql.append("Call Sysproc.admin_cmd ('reorg Table ").append(tableName).append(" ')");
+        executeDDL(conn,sql.toString());
+    }
 }

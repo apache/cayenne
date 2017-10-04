@@ -24,7 +24,7 @@ CAY-2346 Field-based data object with Map-based storage fallback
 CAY-2351 Remove commons-collections usage completely
 
 Bug Fixes:
-
+CAY-2200 Update DB2 support. Many tests cases are failing now.
 CAY-2312 Modeler: Undo does not work for checkboxes
 CAY-2318 Modeler: Query. Exception after Undo clicking
 CAY-2319 Modeler: Embeddable > Attributes. Undo does not cancel pasted objects
