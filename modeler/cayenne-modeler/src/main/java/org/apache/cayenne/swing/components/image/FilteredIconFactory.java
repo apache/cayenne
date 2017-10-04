@@ -25,11 +25,10 @@ import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageProducer;
 import java.awt.image.RGBImageFilter;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
-
-import sun.swing.ImageIconUIResource;
 
 /**
  * @since 4.0
@@ -64,7 +63,7 @@ public class FilteredIconFactory {
             icon.paintIcon(DUMMY, img.getGraphics(), 0, 0);
             ImageProducer producer = new FilteredImageSource(img.getSource(), filterType.filter);
             Image resultImage = DUMMY.createImage(producer);
-            return new ImageIconUIResource(resultImage);
+            return new ImageIcon(resultImage);
         }
         return null;
     }
