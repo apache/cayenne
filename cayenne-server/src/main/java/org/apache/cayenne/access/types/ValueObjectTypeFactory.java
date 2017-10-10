@@ -45,7 +45,7 @@ public class ValueObjectTypeFactory implements ExtendedTypeFactory {
         if(valueObjectType == null) {
             return null;
         }
-        ExtendedType<?> decorator = map.getExplictlyRegisteredType(valueObjectType.getTargetType().getName());
+        ExtendedType<?> decorator = map.getExplictlyRegisteredType(valueObjectType.getTargetType().getCanonicalName());
 
         return new ExtendedTypeConverter(decorator, valueObjectType);
     }
