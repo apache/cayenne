@@ -22,6 +22,7 @@ package org.apache.cayenne.access.types;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Objects;
 
 /**
  * @since 4.0
@@ -52,12 +53,12 @@ public class ValueObjectTypeFactory implements ExtendedTypeFactory {
 
     static class ExtendedTypeConverter<T, E> implements ExtendedType<T> {
 
-        private ExtendedType<E> extendedType;
-        private ValueObjectType<T, E> valueObjectType;
+        ExtendedType<E> extendedType;
+        ValueObjectType<T, E> valueObjectType;
 
         ExtendedTypeConverter(ExtendedType<E> extendedType, ValueObjectType<T, E> valueObjectType) {
-            this.extendedType = extendedType;
-            this.valueObjectType = valueObjectType;
+            this.extendedType = Objects.requireNonNull(extendedType);
+            this.valueObjectType = Objects.requireNonNull(valueObjectType);
         }
 
         @Override
