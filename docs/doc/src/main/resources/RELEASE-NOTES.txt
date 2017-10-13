@@ -8,6 +8,17 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
+Release: 4.1.M2
+Date:
+----------------------------------
+Changes/New Features:
+
+
+Bug Fixes:
+
+CAY-2370 ValueObjectType for byte[] fails lookup
+
+----------------------------------
 Release: 4.1.M1
 Date:
 ----------------------------------
@@ -49,7 +60,6 @@ CAY-2365 SQLExec query tries to convert (unexpected) result set into objects
 CAY-2366 Incorrect EJBQL COUNT translation
 CAY-2367 ClassCastException reading object with an attribute of type 'char'
 CAY-2368 ColumnSelect: Property.self() translates into wrong SQL code
-CAY-2370 ValueObjectType for byte[] fails lookup
 
 ----------------------------------
 Release: 4.0.B1
