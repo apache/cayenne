@@ -14,56 +14,44 @@ import static org.mockito.Mockito.when;
 
 public class ValueObjectTypeFactoryTest {
 
-    ExtendedTypeMap map;
-    DefaultValueObjectTypeRegistry registry;
-    ValueObjectType valueObjectType1, valueObjectType2, valueObjectType3, valueObjectType4;
     ExtendedType tstType1, tstType2, tstType3, tstType4;
+
     ValueObjectTypeFactory factory;
 
     @Before
     public void setUpRegistry(){
-        valueObjectType1 = mock(ValueObjectType.class);
-        when(valueObjectType1.getValueType()).thenReturn(UUID.class);
-        when(valueObjectType1.getTargetType()).thenReturn(byte[].class);
-
-        valueObjectType2 = mock(ValueObjectType.class);
-        when(valueObjectType2.getValueType()).thenReturn(String.class);
-        when(valueObjectType2.getTargetType()).thenReturn(String.class);
-
-        valueObjectType3 = mock(ValueObjectType.class);
-        when(valueObjectType3.getValueType()).thenReturn(int.class);
-        when(valueObjectType3.getTargetType()).thenReturn(int.class);
-
-        valueObjectType4 = mock(ValueObjectType.class);
-        when(valueObjectType4.getValueType()).thenReturn(String[].class);
-        when(valueObjectType4.getTargetType()).thenReturn(String[].class);
-
         List<ValueObjectType<?, ?>> list = new ArrayList<>();
-        list.add(valueObjectType1);
-        list.add(valueObjectType2);
-        list.add(valueObjectType3);
-        list.add(valueObjectType4);
+        list.add(createMockValueType(UUID.class, byte[].class));
+        list.add(createMockValueType(String.class, String.class));
+        list.add(createMockValueType(int.class, int.class));
+        list.add(createMockValueType(String[].class, String[].class));
 
+        DefaultValueObjectTypeRegistry registry = new DefaultValueObjectTypeRegistry(list);
 
-        registry = new DefaultValueObjectTypeRegistry(list);
-
-        map = new ExtendedTypeMap();
+        ExtendedTypeMap extendedTypeMap = new ExtendedTypeMap();
 
         tstType1 = mock(ExtendedType.class);
         when(tstType1.getClassName()).thenReturn("byte[]");
-        map.registerType(tstType1);
+        extendedTypeMap.registerType(tstType1);
 
         tstType2 = new MockExtendedType(String.class);
-        map.registerType(tstType2);
+        extendedTypeMap.registerType(tstType2);
 
         tstType3 = new MockExtendedType(int.class);
-        map.registerType(tstType3);
+        extendedTypeMap.registerType(tstType3);
 
         tstType4 = mock(ExtendedType.class);
         when(tstType4.getClassName()).thenReturn(String[].class.getCanonicalName());
-        map.registerType(tstType4);
+        extendedTypeMap.registerType(tstType4);
 
-        factory = new ValueObjectTypeFactory(map,registry);
+        factory = new ValueObjectTypeFactory(extendedTypeMap,registry);
+    }
+
+    private ValueObjectType createMockValueType(Class<?> valueClass, Class<?> targetClass) {
+        ValueObjectType valueObjectType = mock(ValueObjectType.class);
+        when(valueObjectType.getValueType()).thenReturn(valueClass);
+        when(valueObjectType.getTargetType()).thenReturn(targetClass);
+        return valueObjectType;
     }
 
     @Test
