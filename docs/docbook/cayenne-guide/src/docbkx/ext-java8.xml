@@ -22,8 +22,11 @@
     <title>Java 8 extension</title>
     <section>
         <title>Description</title>
-        <para>Java 8 module allows to use <code>java.time.LocalTime</code>, <code>java.time.LocalDate</code>
-        and <code>java.time.LocalDateTime</code> types for entity attributes</para>
+        <para><emphasis>Since Cayenne 4.1 this extension is deprecated, and is present for backwards
+                compatibility purposes only. cayenne-server module now incorporates all Cayenne Java
+                8 functionality.</emphasis> Java 8 module allows to use
+                <code>java.time.LocalTime</code>, <code>java.time.LocalDate</code> and
+                <code>java.time.LocalDateTime</code> types for entity attributes.  </para>
     </section>
     <section>
         <title>Including in a project</title>

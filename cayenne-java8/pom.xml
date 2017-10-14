@@ -16,6 +16,8 @@
 		<groupId>org.apache.cayenne</groupId>
 		<version>4.1.M2-SNAPSHOT</version>
 	</parent>
+
+	<!-- DEPRECATED SINCE 4.1 -->
 	<artifactId>cayenne-java8</artifactId>
 	<name>cayenne-java8: Cayenne Java8 Extensions</name>
 	<packaging>jar</packaging>
