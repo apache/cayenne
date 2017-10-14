@@ -2,7 +2,7 @@
 <book xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0"
     xml:id="upgrade-guide" xmlns:xi="http://www.w3.org/2001/XInclude">
     <info>
-        <title>Cayenne 4.0 New Features and Upgrade Guide</title>
+        <title>Cayenne 4.1 New Features and Upgrade Guide</title>
         <copyright>
             <year>2011-<?dbtimestamp format="Y"?></year>
             <holder>Apache Software Foundation and individual authors</holder>
