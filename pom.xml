@@ -261,6 +261,13 @@
 			</roles>
 			<timezone>+3</timezone>
 		</developer>
+		<developer>
+			<name>Hugi Þórðarson</name>
+			<email>hugi@karlmenn.is</email>
+			<roles>
+				<role>Committer</role>
+			</roles>
+		</developer>
 	</developers>
 	<licenses>
 		<license>
