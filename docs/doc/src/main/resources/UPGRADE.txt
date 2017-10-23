@@ -4,6 +4,86 @@ Apache Cayenne Upgrade Information
 IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
+UPGRADING TO 4.1.M2
+
+* Per CAY-2377 Cleanup deprecated code
+      - removed void objEntityAdded(ObjEntity entity) in org.apache.cayenne.dbsync.reverse.dbload.DefaultDbLoaderDelegate
+      and in org.apache.cayenne.dbsync.reverse.DbLoaderDelegate;
+      - removed void objEntityRemoved(ObjEntity entity) in org.apache.cayenne.dbsync.reverse.dbload.DefaultDbLoaderDelegate
+      and in org.apache.cayenne.dbsync.reverse.DbLoaderDelegate;
+      - removed cayenne-java8 module and remove cayenne-java8 module from pom.xml;
+      - removed org.apache.cayenne.lifecycle.sort.SortWeight and org.apache.cayenne.lifecycle.sort.WeightedAshwoodEntitySorter
+      with tests. Since 4.0 moved to cayenne server org.apache.cayenne.ashwood.WeightedAshwoodEntitySorter,
+      org.apache.cayenne.ashwood.SortWeight;
+      - removed CayenneProjectModule from org.apache.cayenne.project since 4.0 renamed to ProjectModule;
+      - removed int getLine() renamed to getEndLine() and int getColumn() renamed to getEndColumn() in
+      org.apache.cayenne.wocompat.parser.SimpleCharStream;
+      - removed EOModelHelper(String path) since 4.0 use EOModelHelper(URL) in org.apache.cayenne.wocompat.EOModelHelper;
+      - removed <T> ListBuilder<T> bindList(String bindingName) since 4.0 use type-safe methods Binder#bindList(Class)
+      or Binder#bindList(Class, String) in org.apache.cayenne.di.Binder and org.apache.cayenne.di.spi.DefaultBinder;
+      - removed <T> MapBuilder<T> bindMap(String bindingName) since 4.0 use type-safe methods Binder#bindMap(Class) or
+      Binder#bindMap(Class, String) in org.apache.cayenne.di.Binder and org.apache.cayenne.di.spi.DefaultBinder with test
+      in DefaultInjectorInjectionTest void mapInjectionDeprecated();
+      - removed String oldDriver = "" use {@code <dataSource>} tag to set connection properties in
+      org.apache.cayenne.tools.DbGeneratorMojo;
+      - removed void setUrl(String url); void setDriver(String driver), void setMeaningfulPkTables(String meaningfulPkTables),
+      void setDefaultPackage(String defaultPackage) in org.apache.cayenne.tools.DbImporterMojo;
+      - removed String oldUrl = ""; String oldMeaningfulPkTables = ""; String oldDriver = ""; String oldDefaultPackage = "";
+      public OldReverseEngineering reverseEngineering; in org.apache.cayenne.tools.DbImporterMojo;
+      - removed org.apache.cayenne.tools.OldReverseEngineering
+      - removed void setDriver(String driver) in org.apache.cayenne.tools.DbGeneratorMojo;
+      - removed String makePath(String... pathParts) in org.apache.cayenne.CayenneDataObject;
+      - removed void addListener(LifecycleEvent type, Class<?> entityClass, String methodName);
+      since 4.0 renamed to addCallback(LifecycleEvent, Class, String) in org.apache.cayenne.reflect.LifecycleCallbackRegistry
+      - removed ClassLoader getClassLoader() {since 4.0 unused, as AdhocObjectFactory.getClassLoader() is used instead} in
+      org.apache.cayenne.resource.ClassLoaderResourceLocator;
+      - removed int getLine(); int getColumn(); {@see #getEndColumn, @see #getEndLine} in org.apache.cayenne.exp.parser.JavaCharStream;
+      - removed void encodeAsEJBQL(PrintWriter pw, String rootId); void encodeAsString(PrintWriter pw) since 4.0 use
+      {appendAsEJBQL(Appendable, String), appendAsString(Appendable)} in org.apache.cayenne.exp.parser.SimpleNode;
+      - removed void setPassword(String password); void setUserName(String userName) {since 4.0. Connection parameters are immutable.} in
+      org.apache.cayenne.datasource.DriverDataSource;
+      - removed String getUserName(); String getPassword() {since 4.0. Connection parameters are immutable and not readable.} in
+      org.apache.cayenne.datasource.DriverDataSource;
+      - removed void setConnectionUrl(String connectionUrl)  {since 4.0. Connection parameters are immutable and not readable.} in
+      org.apache.cayenne.datasource.DriverDataSource;
+      - removed void getConnectionUrl()  {since 4.0. Connection parameters are immutable and not readable.} in
+      org.apache.cayenne.datasource.DriverDataSource;
+      - removed BatchTranslatorFactory getBatchQueryBuilderFactory(); void setBatchQueryBuilderFactory(BatchTranslatorFactory batchQueryBuilderFactory)
+      {since 4.0 BatchQueryBuilderfactory is attached to the DataNode} in org.apache.cayenne.dba.JdbcAdapter;
+      - removed Expression fromString(String expressionString) {since 4.0 use ExpressionFactory#exp(String, Object...)} in
+      org.apache.cayenne.exp.Expression;
+      - removed abstract void encodeAsEJBQL(PrintWriter pw, String rootId); {since 4.0 use appendAsEJBQL(Appendable, String)} in
+      org.apache.cayenne.exp.Expression;
+      - removed abstract void encodeAsString(PrintWriter pw); {since 4.0 use appendAsString(Appendable)} in
+      org.apache.cayenne.exp.Expression;
+      - removed ObjectContext getContext(); ObjectContext getContext(DataChannel parentChannel)
+      {since 3.1 use better named newContext(); newContext(DataChannel)} instead} in org.apache.cayenne.configuration.CayenneRuntime;
+      - removed ROP_SERVICE_URL_PROPERTY, ROP_SERVICE_USERNAME_PROPERTY, ROP_SERVICE_PASSWORD_PROPERTY, ROP_SERVICE_REALM_PROPERTY,
+      ROP_SERVICE_USE_ALPN_PROPERTY, ROP_SERVICE_SHARED_SESSION_PROPERTY, ROP_SERVICE_TIMEOUT_PROPERTY, ROP_CHANNEL_EVENTS_PROPERTY,
+      ROP_CONTEXT_CHANGE_EVENTS_PROPERTY, ROP_CONTEXT_LIFECYCLE_EVENTS_PROPERTY {since 4.0 moved to cayenne-client
+      org.apache.cayenne.configuration.rop.client.ClientConstants} in org.apache.cayenne.configuration.Constants;
+      - removed void logConnect(String dataSource); void logConnect(String url, String userName, String password);
+      void logPoolCreated(DataSourceInfo dsi); void logConnectSuccess(); void logConnectFailure(Throwable th);
+      {since 4.0 connection events are logged by the DataSources using their own logger} in
+      org.apache.cayenne.log.JdbcEventLogger and in org.apache.cayenne.log.NoopJdbcEventLogger and in org.apache.cayenne.log.Slf4jJdbcEventLogger;
+      - removed void clearCache(); {since 4.0 in favor of refreshMappingCache()} in org.apache.cayenne.map.EntityResolver;
+      - removed Collection<SQLResult> getResultSets(); {since 4.0 use getResults()} in org.apache.cayenne.map.EntityResolver;
+      - removed EntityInheritanceTree lookupInheritanceTree(String entityName) {since 4.0 use getInheritanceTree(String)} in org.apache.cayenne.map.EntityResolver;
+      - removed Procedure lookupProcedure(Query q) {since 4.0 use q.getMetaData(resolver).getProcedure()} in org.apache.cayenne.map.EntityResolver;
+      - removed final String USING_EXTERNAL_TRANSACTIONS_PROPERTY = "cayenne.DataDomain.usingExternalTransactions"; final boolean USING_EXTERNAL_TRANSACTIONS_DEFAULT = false;
+      {since 4.0 See Constants#SERVER_EXTERNAL_TX_PROPERTY} in org.apache.cayenne.access.DataDomain;
+      - removed static final String EVENT_BRIDGE_FACTORY_DEFAULT = "org.apache.cayenne.event.JavaGroupsBridgeFactory"; static final String
+      REMOTE_NOTIFICATION_PROPERTY = "cayenne.DataRowStore.remote.notify"; static final String SNAPSHOT_EXPIRATION_PROPERTY = "cayenne.DataRowStore.snapshot.expiration";
+      {since 4.0 does nothing} in org.apache.cayenne.access.DataRowStore;
+      - removed static final String SNAPSHOT_CACHE_SIZE_PROPERTY = "cayenne.DataRowStore.snapshot.size"; {since 4.0, use org.apache.cayenne.configuration.Constants#SNAPSHOT_CACHE_SIZE_PROPERTY}
+      in org.apache.cayenne.access.DataRowStore;
+      - removed static final String EVENT_BRIDGE_FACTORY_PROPERTY = "cayenne.DataRowStore.EventBridge.factory"; {since 4.0 DataRowStoreFactory establishes EventBridge}
+       in org.apache.cayenne.access.DataRowStore;
+      - removed static final boolean REMOTE_NOTIFICATION_DEFAULT = false; {without usages} in org.apache.cayenne.access.DataRowStore;
+      - removed boolean notifyingRemoteListeners; {since 4.0 does nothing} in org.apache.cayenne.access.DataRowStore;
+      - removed boolean isNotifyingRemoteListeners(); void setNotifyingRemoteListeners(boolean notifyingRemoteListeners); {since 4.0 never used} in org.apache.cayenne.access.DataRowStore;
+
+
 
 UPGRADING TO 4.1.M1
 

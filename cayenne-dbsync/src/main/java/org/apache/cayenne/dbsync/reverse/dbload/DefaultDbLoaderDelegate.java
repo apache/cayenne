@@ -50,15 +50,4 @@ public class DefaultDbLoaderDelegate implements DbLoaderDelegate {
         return true;
     }
 
-    @Deprecated
-    @Override
-    public void objEntityAdded(ObjEntity entity) {
-
-    }
-
-    @Deprecated
-    @Override
-    public void objEntityRemoved(ObjEntity entity) {
-
-    }
 }

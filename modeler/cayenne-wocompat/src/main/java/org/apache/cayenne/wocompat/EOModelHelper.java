@@ -50,16 +50,6 @@ public class EOModelHelper {
 	protected DataMap dataMap;
 	private Map prototypeValues;
 
-	/**
-	 * Creates helper instance and tries to locate EOModel and load index file.
-	 * 
-	 * @deprecated since 4.0, use {@link #EOModelHelper(URL)}.
-	 */
-	@Deprecated
-	public EOModelHelper(String path) throws Exception {
-		this(new File(path).toURI().toURL());
-	}
-
 	public EOModelHelper(URL modelUrl) throws Exception {
 
 		this.modelUrl = modelUrl;

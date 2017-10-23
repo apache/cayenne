@@ -247,14 +247,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @deprecated since 4.0 use {@link #getResults()}.
-     */
-    @Deprecated
-    public Collection<SQLResult> getResultSets() {
-        return getResults();
-    }
-
-    /**
      * @since 4.0
      */
     public Collection<SQLResult> getResults() {
@@ -386,16 +378,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
         }
     }
 
-    /**
-     * Removes all entity mappings from the cache.
-     *
-     * @deprecated since 4.0 in favor of {@link #refreshMappingCache()}.
-     */
-    @Deprecated
-    public void clearCache() {
-        refreshMappingCache();
-    }
-
     private void checkMappingCache() {
         if (mappingCache == null) {
             refreshMappingCache();
@@ -469,14 +451,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
         return tree;
 
-    }
-
-    /**
-     * @deprecated since 4.0 use {@link #getInheritanceTree(String)}.
-     */
-    @Deprecated
-    public EntityInheritanceTree lookupInheritanceTree(String entityName) {
-        return getInheritanceTree(entityName);
     }
 
     /**
@@ -568,14 +542,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
         }
 
         return getObjEntity(object.getClass());
-    }
-
-    /**
-     * @deprecated since 4.0. Use q.getMetaData(resolver).getProcedure()
-     */
-    @Deprecated
-    public Procedure lookupProcedure(Query q) {
-        return q.getMetaData(this).getProcedure();
     }
 
     /**

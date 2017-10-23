@@ -161,14 +161,6 @@ public class LifecycleCallbackRegistry {
 	}
 
 	/**
-	 * @since 4.0 renamed to {@link #addCallback(LifecycleEvent, Class, String)}.
-	 */
-	@Deprecated
-	public void addListener(LifecycleEvent type, Class<?> entityClass, String methodName) {
-		addCallback(type, entityClass, methodName);
-	}
-
-	/**
 	 * Adds a listener, mapping its methods to events based on annotations.
 	 * 
 	 * @since 3.1

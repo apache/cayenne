@@ -111,12 +111,6 @@ public class DbGeneratorMojo extends AbstractMojo {
     @Parameter(defaultValue = "true")
     private boolean createFK;
 
-    /**
-     * @deprecated use {@code <dataSource>} tag to set connection properties
-     */
-    @Deprecated @Parameter(name = "driver", property = "driver")
-    private final String oldDriver = "";             // TODO remove in 4.0.BETA
-
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         Logger logger = new MavenLogger(this);
@@ -169,9 +163,4 @@ public class DbGeneratorMojo extends AbstractMojo {
         return injector.getInstance(DataMapLoader.class).load(new URLResource(map.toURI().toURL()));
     }
 
-    @Deprecated
-    public void setDriver(String driver) {
-        throw new UnsupportedOperationException("Connection properties were replaced with <dataSource> tag since 4.0.M5.\n" +
-                "\tFor additional information see http://cayenne.apache.org/docs/4.0/cayenne-guide/including-cayenne-in-project.html#maven-projects");
-    }
 }

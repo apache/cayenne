@@ -63,7 +63,6 @@
 		<module>cayenne-dbsync</module>
 		<module>cayenne-di</module>
 		<module>cayenne-gradle-plugin</module>
-		<module>cayenne-java8</module>
 		<module>cayenne-jcache</module>
 		<module>cayenne-joda</module>
 		<module>cayenne-lifecycle</module>

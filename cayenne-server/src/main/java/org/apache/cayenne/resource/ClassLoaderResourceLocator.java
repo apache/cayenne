@@ -66,26 +66,4 @@ public class ClassLoaderResourceLocator implements ResourceLocator {
         return resources;
     }
 
-    /**
-     * @deprecated since 4.0 unused, as AdhocObjectFactory.getClassLoader() is
-     *             used instead.
-     */
-    @Deprecated
-    protected ClassLoader getClassLoader() {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
-        if (loader == null) {
-            loader = getClass().getClassLoader();
-        }
-
-        if (loader == null) {
-            loader = ClassLoader.getSystemClassLoader();
-        }
-
-        if (loader == null) {
-            throw new IllegalStateException("Can't detect ClassLoader to use for resource location");
-        }
-
-        return loader;
-    }
 }

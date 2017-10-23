@@ -156,66 +156,6 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 		}
 	}
 
-	@Deprecated
-	@Override
-	public void logConnect(String dataSource) {
-		if (isLoggable()) {
-			logger.info("Connecting. JNDI path: " + dataSource);
-		}
-	}
-
-	@Deprecated
-	@Override
-	public void logConnect(String url, String userName, String password) {
-		if (isLoggable()) {
-			// append URL on the same line to make log somewhat grep-friendly
-			logger.info("Opening connection: " + url + "\n\tLogin: " + userName + "\n\tPassword: *******");
-		}
-	}
-
-	@Deprecated
-	@Override
-	public void logPoolCreated(DataSourceInfo dsi) {
-		if (isLoggable()) {
-			StringBuilder buf = new StringBuilder("Created connection pool: ");
-
-			if (dsi != null) {
-				// append URL on the same line to make log somewhat
-				// grep-friendly
-				buf.append(dsi.getDataSourceUrl());
-
-				if (dsi.getAdapterClassName() != null) {
-					buf.append("\n\tCayenne DbAdapter: ").append(dsi.getAdapterClassName());
-				}
-
-				buf.append("\n\tDriver class: ").append(dsi.getJdbcDriver());
-
-				if (dsi.getMinConnections() >= 0) {
-					buf.append("\n\tMin. connections in the pool: ").append(dsi.getMinConnections());
-				}
-				if (dsi.getMaxConnections() >= 0) {
-					buf.append("\n\tMax. connections in the pool: ").append(dsi.getMaxConnections());
-				}
-			} else {
-				buf.append(" pool information unavailable");
-			}
-
-			logger.info(buf.toString());
-		}
-	}
-
-	@Deprecated
-	@Override
-	public void logConnectSuccess() {
-		logger.info("+++ Connecting: SUCCESS.");
-	}
-
-	@Deprecated
-	@Override
-	public void logConnectFailure(Throwable th) {
-		logger.info("*** Connecting: FAILURE.", th);
-	}
-
 	@Override
 	public void logGeneratedKey(DbAttribute attribute, Object value) {
 		if (isLoggable()) {

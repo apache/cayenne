@@ -44,18 +44,6 @@ public interface Binder {
     <T> BindingBuilder<T> bind(Key<T> key);
 
     /**
-     * Starts a binding of a java.util.Map&lt;String, ?&gt; distinguished by its binding name.
-     * Map binding should continue using returned MapBuilder. This is somewhat equivalent
-     * of using "bind(Map.class, bindingName)", however returned MapBuilder provides extra
-     * DI capabilities.
-     *
-     * @deprecated since 4.0, use use type-safe methods {@link Binder#bindMap(Class)}
-     *             or {@link Binder#bindMap(Class, String)}
-     */
-    @Deprecated
-    <T> MapBuilder<T> bindMap(String bindingName);
-
-    /**
      * Starts a binding of a java.util.Map&lt;String, T&gt; distinguished by its values type.
      * Map binding should continue using returned MapBuilder.
      * This is a type safe way of binding a map.
@@ -73,18 +61,6 @@ public interface Binder {
      * @since 4.0
      */
     <T> MapBuilder<T> bindMap(Class<T> valueType, String bindingName);
-
-    /**
-     * Starts a binding of a java.util.List&lt;?&gt; distinguished by its binding name.
-     * List binding should continue using returned ListBuilder. This is somewhat equivalent of
-     * using "bind(List.class, bindingName)", however returned ListBuilder provides extra
-     * DI capabilities.
-     *
-     * @deprecated since 4.0, use type-safe methods {@link Binder#bindList(Class)}
-     *             or {@link Binder#bindList(Class, String)}
-     */
-    @Deprecated
-    <T> ListBuilder<T> bindList(String bindingName);
 
     /**
      * Starts a binding of a java.util.List&lt;T&gt; distinguished by its values type and binding name.

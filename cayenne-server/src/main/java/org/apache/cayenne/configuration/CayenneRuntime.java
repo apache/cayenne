@@ -135,20 +135,4 @@ public abstract class CayenneRuntime {
         return injector.getInstance(ObjectContextFactory.class).createContext(parentChannel);
     }
 
-    /**
-     * @deprecated since 3.1 use better named {@link #newContext()} instead.
-     */
-    @Deprecated
-    public ObjectContext getContext() {
-        return newContext();
-    }
-
-    /**
-     * @deprecated since 3.1 use better named {@link #newContext(DataChannel)}
-     * instead.
-     */
-    @Deprecated
-    public ObjectContext getContext(DataChannel parentChannel) {
-        return newContext(parentChannel);
-    }
 }

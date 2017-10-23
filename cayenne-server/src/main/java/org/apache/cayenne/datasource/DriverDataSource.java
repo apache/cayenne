@@ -202,63 +202,6 @@ public class DriverDataSource implements DataSource {
 
 	/**
 	 * @since 3.0
-	 * @deprecated since 4.0. Connection parameters are immutable and not
-	 *             readable.
-	 */
-	@Deprecated
-	public String getConnectionUrl() {
-		return connectionUrl;
-	}
-
-	/**
-	 * @since 3.0
-	 * @deprecated since 4.0. Connection parameters are immutable.
-	 */
-	@Deprecated
-	public void setConnectionUrl(String connectionUrl) {
-		this.connectionUrl = connectionUrl;
-	}
-
-	/**
-	 * @since 3.0
-	 * @deprecated since 4.0. Connection parameters are immutable and not
-	 *             readable.
-	 */
-	@Deprecated
-	public String getPassword() {
-		return password;
-	}
-
-	/**
-	 * @deprecated since 4.0. Connection parameters are immutable.
-	 * @since 3.0
-	 */
-	@Deprecated
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	/**
-	 * @since 3.0
-	 * @deprecated since 4.0. Connection parameters are immutable and not
-	 *             readable.
-	 */
-	@Deprecated
-	public String getUserName() {
-		return userName;
-	}
-
-	/**
-	 * @since 3.0
-	 * @deprecated since 4.0. Connection parameters are immutable.
-	 */
-	@Deprecated
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	/**
-	 * @since 3.0
 	 */
 	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {

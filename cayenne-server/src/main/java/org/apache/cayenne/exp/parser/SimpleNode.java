@@ -294,19 +294,6 @@ public abstract class SimpleNode extends Expression implements Node {
 		}
 	}
 
-	/**
-	 * @deprecated since 4.0 use {@link #appendAsString(Appendable)}.
-	 */
-	@Override
-	@Deprecated
-	public void encodeAsString(PrintWriter pw) {
-		try {
-			appendAsString(pw);
-		} catch (IOException e) {
-			throw new CayenneRuntimeException("Unexpected IO exception appending to PrintWriter", e);
-		}
-	}
-
 	@Override
 	public Object getOperand(int index) {
 		Node child = jjtGetChild(index);
@@ -419,20 +406,6 @@ public abstract class SimpleNode extends Expression implements Node {
 			String string = this.toString();
 			throw new ExpressionException("Error evaluating expression '%s'",
 					string, Util.unwindException(th), string);
-		}
-	}
-
-	/**
-	 * @since 3.0
-	 * @deprecated since 4.0 use {@link #appendAsEJBQL(Appendable, String)}.
-	 */
-	@Override
-	@Deprecated
-	public void encodeAsEJBQL(PrintWriter pw, String rootId) {
-		try {
-			appendAsEJBQL(pw, rootId);
-		} catch (IOException e) {
-			throw new CayenneRuntimeException("Unexpected IO exception appending to PrintWriter", e);
 		}
 	}
 
