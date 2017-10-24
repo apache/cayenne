@@ -288,15 +288,6 @@ public class PropertyTest {
         assertEquals("test.path", ex.toString());
     }
 
-    @SuppressWarnings("deprecation")
-    @Test
-    public void testDeprecatedConstruct() {
-        Property<String> p = new Property<>("p");
-        assertNull(p.getType());
-        assertEquals("p", p.getName());
-        assertEquals(new ASTObjPath("p"), p.getExpression());
-    }
-
     @Test
     public void testCreationWithName() {
         Property<String> p1 = new Property<>("p1", String.class);

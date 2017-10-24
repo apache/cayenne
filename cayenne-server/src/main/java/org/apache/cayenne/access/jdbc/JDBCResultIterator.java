@@ -166,25 +166,4 @@ public class JDBCResultIterator<T> implements ResultIterator<T> {
         }
     }
 
-    /**
-     * @deprecated since 4.0 always returns false. Connection closing is outside
-     *             the scope of this iterator. See
-     *             {@link ConnectionAwareResultIterator} for a replacement.
-     */
-    @Deprecated
-    public boolean isClosingConnection() {
-        return false;
-    }
-
-    /**
-     * Sets the <code>closingConnection</code> property.
-     * 
-     * @deprecated since 4.0 does nothing. Connection closing is outside the
-     *             scope of this iterator. See
-     *             {@link ConnectionAwareResultIterator} for a replacement.
-     */
-    @Deprecated
-    public void setClosingConnection(boolean flag) {
-        // noop
-    }
 }

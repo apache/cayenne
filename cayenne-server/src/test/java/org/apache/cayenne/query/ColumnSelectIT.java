@@ -1007,19 +1007,6 @@ public class ColumnSelectIT extends ServerCase {
     }
 
     /*
-     * Test deprecated property constructor
-     */
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void testDeprecateConstructor() {
-        Property<String> property = new Property<>("artistName");
-        List<String> names = ObjectSelect.columnQuery(Artist.class, property).select(context);
-        assertEquals(20, names.size());
-    }
-
-
-    /*
      * Test selection from nested context
      */
 

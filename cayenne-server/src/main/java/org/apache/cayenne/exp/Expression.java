@@ -337,45 +337,6 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	}
 
 	/**
-	 * A shortcut for <code>expWithParams(params, true)</code>.
-	 * 
-	 * @deprecated since 4.0 use {@link #params(Map)}
-	 */
-	@Deprecated
-	public Expression expWithParameters(Map<String, ?> parameters) {
-		return expWithParameters(parameters, true);
-	}
-
-	/**
-	 * Creates and returns a new Expression instance using this expression as a
-	 * prototype. All ExpressionParam operands are substituted with the values
-	 * in the <code>params</code> map.
-	 * <p>
-	 * <i>Null values in the <code>params</code> map should be explicitly
-	 * created in the map for the corresponding key. </i>
-	 * </p>
-	 * 
-	 * @param parameters
-	 *            a map of parameters, with each key being a string name of an
-	 *            expression parameter, and value being the value that should be
-	 *            used in the final expression.
-	 * @param pruneMissing
-	 *            If <code>true</code>, subexpressions that rely on missing
-	 *            parameters will be pruned from the resulting tree. If
-	 *            <code>false</code> , any missing values will generate an
-	 *            exception.
-	 * @return Expression resulting from the substitution of parameters with
-	 *         real values, or null if the whole expression was pruned, due to
-	 *         the missing parameters.
-	 * 
-	 * @deprecated since 4.0 use {@link #params(Map, boolean)} instead.
-	 */
-	@Deprecated
-	public Expression expWithParameters(Map<String, ?> parameters, boolean pruneMissing) {
-		return params(parameters, pruneMissing);
-	}
-
-	/**
 	 * Creates a new expression that joins this object with another expression,
 	 * using specified join type. It is very useful for incrementally building
 	 * chained expressions, like long AND or OR statements.

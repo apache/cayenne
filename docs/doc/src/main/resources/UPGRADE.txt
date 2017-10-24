@@ -98,7 +98,18 @@ UPGRADING TO 4.1.M2
       - removed from org.apache.cayenne.lifecycle.db and org.apache.cayenne.lifecycle.db.auto classes with @Audit annotation;
       - removed Audit db-entities, obj-entities and relationships from lifecycle-map.map.xml;
       - removed org.apache.cayenne.lifecycle.unit {no usage};
-
+      - removed org.apache.cayenne.access.Transaction {since 4.0. For manual transaction management use BaseTransaction or
+      ServerRuntime#performInTransaction(org.apache.cayenne.tx.TransactionalOperation) Also note that since 4.0 an actual Transaction is an interface
+      located in a different package: org.apache.cayenne.tx.Transaction};
+      - removed boolean isClosingConnection(); void setClosingConnection(boolean flag) {since 4.0 always returns false; since 4.0 does nothing.
+      Connection closing is outside the scope of this iterator. See ConnectionAwareResultIterator} in org.apache.cayenne.jdbc.JDBCResultIterator;
+      - removed Expression expWithParameters(Map<String, ?> parameters) {since 4.0 use #params(Map)} in org.apache.cayenne.exp.Expression;
+      - removed Expression expWithParameters(Map<String, ?> parameters, boolean pruneMissing) {since 4.0 use #params(Map, boolean)}
+      in org.apache.cayenne.exp.Expression;
+      - removed org.apache.cayenne.exp.Expression_ParamsLegacyTest;
+      - removed Property(final String name) {use factory method Property.create("propertyName", PropertyType.class)} in org.apache.cayenne.exp.Property;
+      - removed void testDeprecatedConstruct(); in org.apache.cayenne.exp.PropertyTest;
+      - removed void testDeprecatedConstruct(); in org.apache.cayenne.query.ColumnSelectIT;
 
 
 UPGRADING TO 4.1.M1
