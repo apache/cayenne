@@ -92,7 +92,12 @@ UPGRADING TO 4.1.M2
       - removed DataMap loadEOModel(String path) {since 4.0 in favor of loadEOModel(URL)} in org.apache.cayenne.wocompat;
       - removed DataMap loadEOModel(String path, boolean generateClientClass) {since 4.0 in favor of loadEOModel(URL, boolean)} in org.apache.cayenne.wocompat;
       - removed Map loadModeIndex(URL url) {since 4.0 in favor of loadModeIndex(URL)} in org.apache.cayenne.wocompat;
-
+      - removed org.apache.cayenne.lifecycle.audit;
+      - removed org.apache.cayenne.lifecycle.changeset;
+      - removed org.apache.cayenne.lifecycle.audit in tests;
+      - removed from org.apache.cayenne.lifecycle.db and org.apache.cayenne.lifecycle.db.auto classes with @Audit annotation;
+      - removed Audit db-entities, obj-entities and relationships from lifecycle-map.map.xml;
+      - removed org.apache.cayenne.lifecycle.unit {no usage};
 
 
 
