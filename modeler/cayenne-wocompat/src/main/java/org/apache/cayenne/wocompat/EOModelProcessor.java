@@ -72,14 +72,6 @@ public class EOModelProcessor {
 	}
 
 	/**
-	 * @deprecated since 4.0 in favor of {@link #loadModeIndex(URL)}.
-	 */
-	@Deprecated
-	public Map loadModeIndex(String path) throws Exception {
-		return loadModeIndex(new File(path).toURI().toURL());
-	}
-
-	/**
 	 * Returns index.eomodeld contents as a Map.
 	 * 
 	 * @since 4.0
@@ -101,22 +93,6 @@ public class EOModelProcessor {
 			plistParser.ReInit(in);
 			return (Map) plistParser.propertyList();
 		}
-	}
-
-	/**
-	 * @deprecated since 4.0 in favor of {@link #loadEOModel(URL)}.
-	 */
-	@Deprecated
-	public DataMap loadEOModel(String path) throws Exception {
-		return loadEOModel(path, false);
-	}
-
-	/**
-	 * @deprecated since 4.0 in favor of {@link #loadEOModel(URL, boolean)}.
-	 */
-	@Deprecated
-	public DataMap loadEOModel(String path, boolean generateClientClass) throws Exception {
-		return loadEOModel(new File(path).toURI().toURL(), generateClientClass);
 	}
 
 	/**

@@ -82,6 +82,17 @@ UPGRADING TO 4.1.M2
       - removed static final boolean REMOTE_NOTIFICATION_DEFAULT = false; {without usages} in org.apache.cayenne.access.DataRowStore;
       - removed boolean notifyingRemoteListeners; {since 4.0 does nothing} in org.apache.cayenne.access.DataRowStore;
       - removed boolean isNotifyingRemoteListeners(); void setNotifyingRemoteListeners(boolean notifyingRemoteListeners); {since 4.0 never used} in org.apache.cayenne.access.DataRowStore;
+      - removed <taskdef name="cdataport" classname="org.apache.cayenne.tools.DataPortTask"/> in org.apache.cayenne.tools.antlib.xml;
+      - removed org.apache.cayenne.tools.AntDataPortDelegate and org.apache.cayenne.tools.DataPortTask;
+      - removed AntDataPortDelegateTest in org.apache.cayenne.tools.AntDataPortDelegateTest;
+      - removed List<?> filter(List<?> items) in org.apache.cayenne.dbsync.NamePatternMatcher {begore used in AntDataPortDelegate wich was removed};
+      - removed org.apache.cayenne.access.DataPort;
+      - removed org.apache.cayenne.access.DataPortDelegate;
+      - removed org.apache.cayenne.cache.invalidation.InvalidationFunction;
+      - removed DataMap loadEOModel(String path) {since 4.0 in favor of loadEOModel(URL)} in org.apache.cayenne.wocompat;
+      - removed DataMap loadEOModel(String path, boolean generateClientClass) {since 4.0 in favor of loadEOModel(URL, boolean)} in org.apache.cayenne.wocompat;
+      - removed Map loadModeIndex(URL url) {since 4.0 in favor of loadModeIndex(URL)} in org.apache.cayenne.wocompat;
+
 
 
 

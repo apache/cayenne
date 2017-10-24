@@ -59,40 +59,6 @@ public class NamePatternMatcher implements NameFilter {
     }
 
     /**
-     * Applies preconfigured list of filters to the list, removing entities that do not
-     * pass the filter.
-     * 
-     * @deprecated since 3.0 still used by AntDataPortDelegate, which itself should
-     *             probably be deprecated
-     */
-    @Deprecated
-    public List<?> filter(List<?> items) {
-        if (items == null || items.isEmpty()) {
-            return items;
-        }
-
-        if (itemIncludeFilters.length == 0 && itemExcludeFilters.length == 0) {
-            return items;
-        }
-
-        Iterator<?> it = items.iterator();
-        while (it.hasNext()) {
-            CayenneMapEntry entity = (CayenneMapEntry) it.next();
-
-            if (!passedIncludeFilter(entity.getName())) {
-                it.remove();
-                continue;
-            }
-
-            if (!passedExcludeFilter(entity.getName())) {
-                it.remove();
-            }
-        }
-
-        return items;
-    }
-
-    /**
      * Returns an array of Patterns. Takes a comma-separated list of patterns, attempting
      * to convert them to the java.util.regex.Pattern syntax. E.g.
      * <p>
