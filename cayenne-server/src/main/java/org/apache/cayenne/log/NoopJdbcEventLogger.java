@@ -46,24 +46,9 @@ public class NoopJdbcEventLogger implements JdbcEventLogger {
 	@Override
 	public void logGeneratedKey(DbAttribute attribute, Object value) {
 	}
-
-	@Deprecated
-	@Override
-	public void logQuery(String sql, List<?> params) {
-	}
-
-	@Deprecated
-	@Override
-	public void logQuery(String sql, List<DbAttribute> attrs, List<?> params, long time) {
-	}
 	
 	@Override
 	public void logQuery(String sql, ParameterBinding[] bindings) {
-	}
-
-	@Override
-	@Deprecated
-	public void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting) {
 	}
 
 	@Override

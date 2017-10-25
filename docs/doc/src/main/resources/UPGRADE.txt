@@ -110,7 +110,23 @@ UPGRADING TO 4.1.M2
       - removed Property(final String name) {use factory method Property.create("propertyName", PropertyType.class)} in org.apache.cayenne.exp.Property;
       - removed void testDeprecatedConstruct(); in org.apache.cayenne.exp.PropertyTest;
       - removed void testDeprecatedConstruct(); in org.apache.cayenne.query.ColumnSelectIT;
-
+      - removed void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting); {since 4.0 use
+      logQueryParameters(String, ParameterBinding[])} in org.apache.cayenne.log.JdbcEventLogger;
+      - removed void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting) in org.apache.cayenne.log.Slf4jJdbcEventLogger;
+      - removed void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting) in org.apache.cayenne.log.NoopJdbcEventLogger;
+      - removed void logQuery(String sql, List<?> params); {since 4.0 use logQuery(String, ParameterBinding[])} in org.apache.cayenne.log.JdbcEventLogger;
+      - removed void logQuery(String queryStr, List<?> params) in org.apache.cayenne.log.Slf4jJdbcEventLogger;
+      - removed void logQuery(String sql, List<?> params) in org.apache.cayenne.log.NoopJdbcEventLogger;
+      - removed void logQuery(String sql, List<DbAttribute> attrs, List<?> params, long time); {since 4.0 use logQuery(String, ParameterBinding[])}
+      in org.apache.cayenne.log.JdbcEventLogger;
+      - removed void logQuery(String queryStr, List<DbAttribute> attrs, List<?> params, long time); in org.apache.cayenne.log.Slf4jJdbcEventLogger;
+      - removed void logQuery(String sql, List<DbAttribute> attrs, List<?> params, long time); in org.apache.cayenne.log.NoopJdbcEventLogger;
+      - removed void logQuery(String queryStr, List<DbAttribute> attrs, List<?> params, long time) in org.apache.cayenne.log.FormattedSlf4jJdbcEventLogger;
+      - removed void buildLog(StringBuilder buffer, String prefix, String postfix, List<DbAttribute> attributes, List<?> parameters, boolean isInserting);
+      {since 4.0 uses old style of parameter logging} in org.apache.cayenne.log.Slf4jJdbcEventLogger;
+      - removed void sqlLiteralForObject(StringBuilder buffer, Object object); {his should go away once we can remove 4.0 deprecated API. The actual logic for printing a value is now
+      spread around the ExtendedTypes} in org.apache.cayenne.log.Slf4jJdbcEventLogger;
+      - removed test void testSqlLiteralForObject() in org.apache.cayenne.log;
 
 UPGRADING TO 4.1.M1
 
