@@ -146,8 +146,36 @@ UPGRADING TO 4.1.M2
       in org.apache.cayenne.cache.EhCacheQueryCache;
       - removed ServerRuntimeBuilder builder() {since 4.0.M5 in favor of ServerRuntime#builder()} in org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
       - removed ServerRuntimeBuilder builder(String name) {since 4.0.M5 in favor of ServerRuntime#builder(String)} in org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
-
-
+      - removed ObjEntity lookupObjEntity(Class<?> entityClass) {since 4.0, use getObjEntity(Class)} in org.apache.cayenne.map.EntityResolver;
+      - removed synchronized ObjEntity lookupObjEntity(Class aClass) in org.apache.cayenne.map.MockEntityResolver;
+      - removed boolean isIndexedByClass() {since 4.0. There's no replacement. This property is meaningless and is no longer respected by the code} in org.apache.cayenne.map.EntityResolver;
+      - removed void setIndexedByClass(boolean b) {since 4.0. There's no replacement. This property is meaningless and is no longer
+      respected by the code} in org.apache.cayenne.map.EntityResolver;
+      - removed protected boolean indexedByClass; in org.apache.cayenne.map.EntityResolver;
+      - removed void setEntityListenerFactory(EntityListenerFactory entityListenerFactory); {since 4.0 this method does nothing, as EntityResolver no longer loads listeners from its DataMaps.}
+      in org.apache.cayenne.map.EntityResolver;
+      - removed Procedure lookupProcedure(String procedureName) {since 4.0 use getProcedure(String)} in org.apache.cayenne.map.EntityResolver;
+      - removed ObjEntity lookupObjEntity(Object object) {4.0 a corresponding getObjEntity method should be used} in org.apache.cayenne.map.EntityResolver;
+      - removed Class<?> getJavaClass() {since 4.0 this method based on statically defined class loading algorithm is not going to work in environments like OSGi.
+      AdhocObjectFactory should be used as it can provide the environment-specific class loading policy.} in prg.apache.cayenne.map.Embeddable;
+      - removed void addDefaultEntityListener(EntityListener listener) {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.DataMap;
+      - removed EntityListener getDefaultEntityListener(String className) {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.DataMap;
+      - removed List<EntityListener> getDefaultEntityListeners() {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.DataMap;
+      - removed void removeDefaultEntityListener(String className) {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.DataMap;
+      - removed void removeDefaultEntityListener(String className) {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.DataMap;
+      - removed void addEntityListener(EntityListener listener) {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.ObjEntity;
+      - removed EntityListener getEntityListener(String className) {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.ObjEntity;
+      - removed List<EntityListener> getEntityListeners() {since 4.0 unused, as listeners are no longer mapped in a DataMap} in org.apache.cayenne.map.ObjEntity;
+      - removed boolean isExcludingDefaultListeners() {since 4.0 unused, as listeners are no longer mapped in a DataMap} in org.apache.cayenne.map.ObjEntity;
+      - removed boolean isExcludingSuperclassListeners() {since 4.0 unused, as listeners are no longer mapped in a DataMap} in org.apache.cayenne.map.ObjEntity;
+      - removed void removeEntityListener(String className) {since 4.0 unused, as listeners are no longer mapped in a DataMap} in org.apache.cayenne.map.ObjEntity;
+      - removed void setExcludingDefaultListeners(boolean excludingDefaultListeners) {since 4.0 unused, as listeners are no longer mapped in a DataMap} in org.apache.cayenne.map.ObjEntity;
+      - removed void setExcludingSuperclassListeners(boolean excludingSuperclassListeners) in org.apache.cayenne.map.ObjEntity;
+      - removed boolean excludingDefaultListeners in org.apache.cayenne.map.ObjEntity;
+      - removed boolean excludingSuperclassListeners in org.apache.cayenne.map.ObjEntity;
+      - removed List<EntityListener> defaultEntityListeners; {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.DataMap;
+      - removed List<EntityListener> entityListeners;  in org.apache.cayenne.map.ObjEntity;
+      - removed EntityListener getEntityListener(String className) in org.apache.cayenne.map.MockMappingNamespace;
 
 UPGRADING TO 4.1.M1
 

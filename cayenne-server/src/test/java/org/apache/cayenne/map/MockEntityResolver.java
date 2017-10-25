@@ -32,12 +32,6 @@ public class MockEntityResolver extends EntityResolver {
         this.mockObjEntity = mockObjEntity;
     }
 
-    @Override
-    @Deprecated
-    public synchronized ObjEntity lookupObjEntity(Class aClass) {
-        return mockObjEntity;
-    }
-
     public synchronized ObjEntity lookupObjEntity(DataObject dataObject) {
         return mockObjEntity;
     }

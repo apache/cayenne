@@ -56,9 +56,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
     protected static final Logger logger = LoggerFactory.getLogger(EntityResolver.class);
     protected static AtomicLong incrementer = new AtomicLong();
 
-    @Deprecated
-    protected boolean indexedByClass;
-
     protected Collection<DataMap> maps;
     protected transient MappingNamespace mappingCache;
     protected EntityResolver clientEntityResolver;
@@ -507,72 +504,15 @@ public class EntityResolver implements MappingNamespace, Serializable {
         return entity;
     }
 
-    /**
-     * @deprecated since 4.0, use {@link #getObjEntity(Class)}.
-     */
-    public ObjEntity lookupObjEntity(Class<?> entityClass) {
-        return getObjEntity(entityClass);
-    }
-
     public ObjEntity getObjEntity(Persistent object) {
         checkMappingCache();
         return mappingCache.getObjEntity(object);
-    }
-
-    /**
-     * Looks in the DataMap's that this object was created with for the
-     * ObjEntity that services the specified data Object
-     * 
-     * @return the required ObjEntity, or null if none matches the specifier
-     * @since 4.0 a corresponding getObjEntity method should be used.
-     */
-    @Deprecated
-    public ObjEntity lookupObjEntity(Object object) {
-        if (object instanceof ObjEntity) {
-            return (ObjEntity) object;
-        }
-
-        if (object instanceof Persistent) {
-            ObjectId id = ((Persistent) object).getObjectId();
-            if (id != null) {
-                return getObjEntity(id.getEntityName());
-            }
-        } else if (object instanceof Class) {
-            return getObjEntity((Class<?>) object);
-        }
-
-        return getObjEntity(object.getClass());
-    }
-
-    /**
-     * @deprecated since 4.0 use {@link #getProcedure(String)}.
-     */
-    @Deprecated
-    public Procedure lookupProcedure(String procedureName) {
-        return getProcedure(procedureName);
     }
 
     public synchronized void removeDataMap(DataMap map) {
         if (maps.remove(map)) {
             refreshMappingCache();
         }
-    }
-
-    /**
-     * @deprecated since 4.0. There's no replacement. This property is
-     *             meaningless and is no longer respected by the code.
-     */
-    @Deprecated
-    public boolean isIndexedByClass() {
-        return indexedByClass;
-    }
-
-    /**
-     * @deprecated since 4.0. There's no replacement. This property is
-     *             meaningless.
-     */
-    public void setIndexedByClass(boolean b) {
-        indexedByClass = b;
     }
 
     /**
@@ -610,16 +550,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
         }
 
         return classDescriptorMap;
-    }
-
-    /**
-     * @since 3.0
-     * @deprecated since 4.0 this method does nothing, as EntityResolver no
-     *             longer loads listeners from its DataMaps.
-     */
-    @Deprecated
-    public void setEntityListenerFactory(EntityListenerFactory entityListenerFactory) {
-        // noop
     }
 
     /**

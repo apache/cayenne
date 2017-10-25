@@ -74,25 +74,6 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
 	}
 
 	/**
-	 * Returns Java class of the embeddable.
-	 * 
-	 * @deprecated since 4.0 this method based on statically defined class
-	 *             loading algorithm is not going to work in environments like
-	 *             OSGi. {@link AdhocObjectFactory} should be used as it can
-	 *             provide the environment-specific class loading policy.
-	 */
-	@Deprecated
-	public Class<?> getJavaClass() {
-		String name = getClassName();
-
-		try {
-			return Util.getJavaClass(name);
-		} catch (ClassNotFoundException e) {
-			throw new CayenneRuntimeException("Failed to load class " + name + ": " + e.getMessage(), e);
-		}
-	}
-
-	/**
 	 * Returns EmbeddableAttribute of this Embeddable that maps to
 	 * <code>dbAttribute</code> parameter. Returns null if no such attribute is
 	 * found.
