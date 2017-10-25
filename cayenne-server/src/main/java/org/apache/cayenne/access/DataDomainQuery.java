@@ -63,11 +63,6 @@ class DataDomainQuery implements Query, QueryMetadata {
         return false;
     }
 
-    @Deprecated
-    public Query getOrginatingQuery() {
-        return null;
-    }
-
     /**
      * @since 4.0
      */

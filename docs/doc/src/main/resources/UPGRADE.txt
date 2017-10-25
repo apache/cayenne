@@ -138,6 +138,14 @@ UPGRADING TO 4.1.M2
       - removed DriverDataSource(String driverClassName, String connectionUrl, String userName, String password) {since 4.0 as class loading should not happen here.
       Use DriverDataSource(Driver, String, String, String)} in org.apache.cayenne.datasource.DriverDataSource;
       - removed static Driver loadDriver(String driverClassName) {since 4.0 as class loading should not happen here} in org.apache.cayenne.datasource.DriverDataSource;
+      - removed Query getOrginatingQuery(); {since 4.0, use QueryMetadata#getOriginatingQuery()} in org.apache.cayenne.query.QueryMetadata;
+      - removed Query getOrginatingQuery(); in org.apache.cayenne.access.DataDomainQuery;
+      - removed Query getOrginatingQuery(); in org.apache.cayenne.access.ObjectsFromDataRowsQuery;
+      - removed Ehcache getDefaultCache() {since 4.0 - this method is no longer in use. If you are overriding it, override cacheName(QueryMetadata) instead.}
+      in org.apache.cayenne.cache.EhCacheQueryCache;
+      - removed ServerRuntimeBuilder builder() {since 4.0.M5 in favor of ServerRuntime#builder()} in org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
+      - removed ServerRuntimeBuilder builder(String name) {since 4.0.M5 in favor of ServerRuntime#builder(String)} in org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
+
 
 
 UPGRADING TO 4.1.M1

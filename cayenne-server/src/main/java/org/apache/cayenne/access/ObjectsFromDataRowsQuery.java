@@ -131,11 +131,6 @@ class ObjectsFromDataRowsQuery implements Query, QueryMetadata {
         return 0;
     }
 
-    @Deprecated
-    public Query getOrginatingQuery() {
-        return null;
-    }
-
     public Query getOriginatingQuery() {
         return null;
     }

@@ -189,18 +189,6 @@ public class EhCacheQueryCache implements QueryCache {
     }
 
     /**
-     * Returns default cache group.
-     * 
-     * @deprecated since 4.0 - this method is no longer in use. If you are
-     *             overriding it, override {@link #cacheName(QueryMetadata)}
-     *             instead.
-     */
-    @Deprecated
-    public Ehcache getDefaultCache() {
-        return cacheManager.getCache(DEFAULT_CACHE_NAME);
-    }
-
-    /**
      * Shuts down EhCache CacheManager
      */
     @BeforeScopeEnd

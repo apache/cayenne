@@ -205,13 +205,6 @@ public interface QueryMetadata {
     int getFetchLimit();
 
     /**
-     * @since 3.0
-     * @deprecated since 4.0, use {@link QueryMetadata#getOriginatingQuery()}
-     */
-    @Deprecated
-    Query getOrginatingQuery();
-
-    /**
      * Returns a query that originated this query. Originating query is a query whose
      * result is needed to obtain the result of the query owning this metadata. Most often
      * than not the returned value is null. One example of non-null originating query is a

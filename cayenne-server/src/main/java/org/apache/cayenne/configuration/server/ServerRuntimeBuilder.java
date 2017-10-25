@@ -60,22 +60,6 @@ public class ServerRuntimeBuilder {
     private boolean autoLoadModules;
 
     /**
-     * @deprecated since 4.0.M5 in favor of {@link ServerRuntime#builder()}
-     */
-    @Deprecated
-    public static ServerRuntimeBuilder builder() {
-        return ServerRuntime.builder();
-    }
-
-    /**
-     * @deprecated since 4.0.M5 in favor of {@link ServerRuntime#builder(String)}
-     */
-    @Deprecated
-    public static ServerRuntimeBuilder builder(String name) {
-        return ServerRuntime.builder(name);
-    }
-
-    /**
      * Creates an empty builder.
      *
      * @deprecated since 4.0.M5 in favor of {@link ServerRuntime#builder()}
