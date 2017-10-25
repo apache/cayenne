@@ -88,12 +88,6 @@ public class QueryMetadataProxy implements QueryMetadata {
         return mdDelegate.getObjEntity();
     }
 
-    @Deprecated
-    @Override
-    public Query getOrginatingQuery() {
-        return mdDelegate.getOriginatingQuery();
-    }
-
     @Override
     public Query getOriginatingQuery() {
         return mdDelegate.getOriginatingQuery();
