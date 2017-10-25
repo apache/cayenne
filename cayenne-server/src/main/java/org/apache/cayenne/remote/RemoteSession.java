@@ -109,38 +109,6 @@ public class RemoteSession implements Serializable {
         return eventBridgeFactory != null;
     }
 
-    /**
-     * Creates an EventBridge that will listen for server events. Returns null if server
-     * events support is not configured in the descriptor.
-     * 
-     * @throws CayenneRuntimeException if EventBridge startup fails for any reason.
-     * 
-     * @deprecated since 4.0. Factory creation should is handled by the client connection.
-     */
-    @Deprecated
-    public EventBridge createServerEventBridge() throws CayenneRuntimeException {
-
-        if (!isServerEventsEnabled()) {
-            return null;
-        }
-
-        try {
-            EventBridgeFactory factory = (EventBridgeFactory) Class.forName(
-                    eventBridgeFactory).newInstance();
-
-            Map<String, String> parameters = eventBridgeParameters != null
-                    ? eventBridgeParameters
-                    : Collections.<String, String>emptyMap();
-
-            // must use "name", not the sessionId as an external subject for the event
-            // bridge
-            return factory.createEventBridge(SUBJECTS, name, parameters);
-        }
-        catch (Exception ex) {
-            throw new CayenneRuntimeException("Error creating EventBridge.", ex);
-        }
-    }
-
     @Override
     public String toString() {
         ToStringBuilder builder = new ToStringBuilder(this)

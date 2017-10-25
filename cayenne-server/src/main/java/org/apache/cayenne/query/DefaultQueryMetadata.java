@@ -74,15 +74,6 @@ class DefaultQueryMetadata implements QueryMetadata {
     }
 
     /**
-     * @since 3.0
-     * @deprecated use {@link DefaultQueryMetadata#getOriginatingQuery()}
-     */
-    @Deprecated
-    public Query getOrginatingQuery() {
-        return null;
-    }
-
-    /**
      * @since 4.0
      */
     public Query getOriginatingQuery() {

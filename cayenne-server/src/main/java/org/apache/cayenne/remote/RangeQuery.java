@@ -72,11 +72,6 @@ class RangeQuery implements Query {
 
         return new QueryMetadataProxy(originatingMetadata) {
 
-            @Deprecated
-            public Query getOrginatingQuery() {
-                return getOriginatingQuery();
-            }
-
             public Query getOriginatingQuery() {
                 return originatingQuery;
             }

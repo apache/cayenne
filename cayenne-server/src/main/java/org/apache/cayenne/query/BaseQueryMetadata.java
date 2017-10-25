@@ -351,14 +351,6 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 	}
 
 	/**
-	 * @deprecated since 4.0, use {@link BaseQueryMetadata#getOriginatingQuery()}
-	 */
-	@Deprecated
-	public Query getOrginatingQuery() {
-		return null;
-	}
-
-	/**
 	 * @since 4.0
 	 */
 	public Query getOriginatingQuery() {

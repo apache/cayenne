@@ -108,11 +108,6 @@ public class MockQueryMetadata implements QueryMetadata {
         return null;
     }
 
-    @Deprecated
-    public Query getOrginatingQuery() {
-        return null;
-    }
-
     public Query getOriginatingQuery() {
         return null;
     }

@@ -176,6 +176,13 @@ UPGRADING TO 4.1.M2
       - removed List<EntityListener> defaultEntityListeners; {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.DataMap;
       - removed List<EntityListener> entityListeners;  in org.apache.cayenne.map.ObjEntity;
       - removed EntityListener getEntityListener(String className) in org.apache.cayenne.map.MockMappingNamespace;
+      - removed Query getOrginatingQuery() in org.apache.cayenne.remote.RangeQuery;
+      - removed EventBridge createServerEventBridge() {since 4.0. Factory creation should is handled by the client connection} in org.apache.cayenne.remote.RemoteSession;
+      - removed Query getOrginatingQuery() {use DefaultQueryMetadata#getOriginatingQuery()} in org.apache.cayenne.query.DefaultQueryMetadata;
+      - removed Query getOrginatingQuery() in org.apache.cayenne.query.MockQueryMetadata;
+      - removed Query getOrginatingQuery() {since 4.0, use BaseQueryMetadata#getOriginatingQuery()} in org.apache.cayenne.query.BaseQueryMetadata;
+      
+
 
 UPGRADING TO 4.1.M1
 
