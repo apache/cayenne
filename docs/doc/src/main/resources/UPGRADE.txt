@@ -127,6 +127,18 @@ UPGRADING TO 4.1.M2
       - removed void sqlLiteralForObject(StringBuilder buffer, Object object); {his should go away once we can remove 4.0 deprecated API. The actual logic for printing a value is now
       spread around the ExtendedTypes} in org.apache.cayenne.log.Slf4jJdbcEventLogger;
       - removed test void testSqlLiteralForObject() in org.apache.cayenne.log;
+      - removed QuotingStrategy getQuotingStrategy(boolean needQuotes); {since 4.0 use getQuotingStrategy()} in org.apache.cayenne.dba.DbAdapter;
+      - removed QuotingStrategy getQuotingStrategy(boolean isQuoteStrategy) in org.apache.cayenne.dba.AutoAdapter and org.apache.cayenne.dba.JdbcAdapter;
+      - removed String quoteFullyQualifiedName(DbEntity entity); {since 4.0 renamed to quotedFullyQualifiedName(DbEntity)} in org.apache.cayenne.dba.QuotingStrategy;
+      - removed String quoteFullyQualifiedName(DbEntity entity); in org.apache.cayenne.dba.DefaultQuotingStrategy;
+      - removed String quoteString(String identifier); in org.apache.cayenne.dba.QuotingStrategy;
+      - removed String quoteString(String name); in org.apache.cayenne.dba.DefaultQuotingStrategy;
+      - removed DriverDataSource(String driverClassName, String connectionUrl) {since 4.0 as class loading should not happen here. Use DriverDataSource(Driver, String, String, String)}
+      in org.apache.cayenne.datasource.DriverDataSource;
+      - removed DriverDataSource(String driverClassName, String connectionUrl, String userName, String password) {since 4.0 as class loading should not happen here.
+      Use DriverDataSource(Driver, String, String, String)} in org.apache.cayenne.datasource.DriverDataSource;
+      - removed static Driver loadDriver(String driverClassName) {since 4.0 as class loading should not happen here} in org.apache.cayenne.datasource.DriverDataSource;
+
 
 UPGRADING TO 4.1.M1
 

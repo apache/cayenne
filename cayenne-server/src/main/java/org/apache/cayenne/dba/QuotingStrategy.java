@@ -30,21 +30,6 @@ import org.apache.cayenne.map.Entity;
 public interface QuotingStrategy {
 
     /**
-     * Returns a properly quoted identifier.
-     * 
-     * @deprecated since 4.0
-     */
-    @Deprecated
-    String quoteString(String identifier);
-
-    /**
-     * @deprecated since 4.0 renamed to
-     *             {@link #quotedFullyQualifiedName(DbEntity)}.
-     */
-    @Deprecated
-    String quoteFullyQualifiedName(DbEntity entity);
-
-    /**
      * Builds a fully qualified name from catalog, schema, name parts of
      * DbEntity, inclosing them in quotations according to this strategy
      * algorithm. Analog of "quotedIdentifier(entity.getCatalog(),
