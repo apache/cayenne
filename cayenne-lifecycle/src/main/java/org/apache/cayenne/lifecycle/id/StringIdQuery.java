@@ -162,11 +162,6 @@ public class StringIdQuery implements Query {
                 return false;
             }
 
-            @Deprecated
-            public Query getOrginatingQuery() {
-                return null;
-            }
-
             public Query getOriginatingQuery() {
                 return null;
             }
@@ -273,8 +268,4 @@ public class StringIdQuery implements Query {
         return dataMap;
     }
 
-    @Deprecated
-    public void setDataMap(DataMap dataMap) {
-        this.dataMap = dataMap;
-    }
 }

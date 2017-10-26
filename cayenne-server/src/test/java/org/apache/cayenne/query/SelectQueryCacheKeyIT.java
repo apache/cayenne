@@ -89,28 +89,6 @@ public class SelectQueryCacheKeyIT extends ServerCase {
     }
 
     @Test
-    public void testUseLocalCacheOld() {
-
-        SelectQuery<Artist> q1 = new SelectQuery<>(Artist.class);
-        q1.useLocalCache();
-
-        QueryMetadata md1 = q1.getMetaData(resolver);
-        assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.getCacheStrategy());
-        assertNotNull(md1.getCacheKey());
-        assertNull(md1.getCacheGroups());
-        assertNull(md1.getCacheGroup());
-
-        SelectQuery<Artist> q2 = new SelectQuery<>(Artist.class);
-        q2.useLocalCache("g1", "g2");
-
-        QueryMetadata md2 = q2.getMetaData(resolver);
-        assertEquals(QueryCacheStrategy.LOCAL_CACHE, md2.getCacheStrategy());
-        assertNotNull(md2.getCacheKey());
-        assertEquals(1, md2.getCacheGroups().length);
-        assertEquals("g1", md2.getCacheGroup());
-    }
-
-    @Test
     public void testSharedCache() {
 
         SelectQuery<Artist> query = new SelectQuery<>(Artist.class);

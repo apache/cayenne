@@ -181,7 +181,12 @@ UPGRADING TO 4.1.M2
       - removed Query getOrginatingQuery() {use DefaultQueryMetadata#getOriginatingQuery()} in org.apache.cayenne.query.DefaultQueryMetadata;
       - removed Query getOrginatingQuery() in org.apache.cayenne.query.MockQueryMetadata;
       - removed Query getOrginatingQuery() {since 4.0, use BaseQueryMetadata#getOriginatingQuery()} in org.apache.cayenne.query.BaseQueryMetadata;
-      
+      - removed Query getOrginatingQuery() in org.apache.cayenne.lifecycle.StringIdQuery;
+      - removed void setDataMap(DataMap dataMap) on org.apache.cayenne.lifecycle.StringIdQuery;
+      - removed void useLocalCache(String... cacheGroups) {since 4.0, use CacheableQuery#useLocalCache(String)} in org.apache.cayenne.org.apacche.cayenne.query.CacheableQuery with test
+      void testUseLocalCacheOld() in org.apache.cayenne.query.SelectQueryCacheKeyIT;
+      - removed int size() {since 4.0 use getRows().size()} in org.apache.cayenne.query.BatchQuery;
+
 
 
 UPGRADING TO 4.1.M1

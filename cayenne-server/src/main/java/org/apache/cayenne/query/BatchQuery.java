@@ -157,11 +157,4 @@ public abstract class BatchQuery implements Query {
         return dbAttributes;
     }
 
-    /**
-     * @deprecated since 4.0 use getRows().size().
-     */
-    @Deprecated
-    public int size() {
-        return rows.size();
-    }
 }

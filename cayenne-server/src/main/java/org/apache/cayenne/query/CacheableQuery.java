@@ -114,23 +114,6 @@ public abstract class CacheableQuery implements Query {
     }
 
     /**
-     * Instructs Cayenne to look for query results in the "local" cache when
-     * running the query. This is a short-hand notation for:
-     *
-     * <pre>
-     * query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-     * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
-     * </pre>
-     * @deprecated since 4.0, use {@link CacheableQuery#useLocalCache(String)}
-     * @since 4.0
-     */
-    @Deprecated
-    public void useLocalCache(String... cacheGroups) {
-        setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        setCacheGroups(cacheGroups);
-    }
-
-    /**
      * Instructs Cayenne to look for query results in the "shared" cache when
      * running the query. This is a short-hand notation for:
      *
