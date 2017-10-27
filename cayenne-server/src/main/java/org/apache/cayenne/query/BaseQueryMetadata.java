@@ -302,18 +302,6 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 
 	/**
 	 * @since 3.0
-	 * @deprecated since 4.0, use {@link BaseQueryMetadata#getCacheGroup()}
-	 */
-	@Deprecated
-	public String[] getCacheGroups() {
-		if(cacheGroup == null) {
-			return null;
-		}
-		return new String[]{cacheGroup};
-	}
-
-	/**
-	 * @since 3.0
 	 * @deprecated since 4.0, use {@link BaseQueryMetadata#setCacheGroup(String)}
 	 */
 	@Deprecated

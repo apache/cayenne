@@ -108,14 +108,6 @@ class DefaultQueryMetadata implements QueryMetadata {
     }
 
     /**
-     * @deprecated since 4.0, use {@link DefaultQueryMetadata#getCacheGroup()}
-     */
-    @Deprecated
-    public String[] getCacheGroups() {
-        return null;
-    }
-
-    /**
      * @since 4.0
      */
     @Override

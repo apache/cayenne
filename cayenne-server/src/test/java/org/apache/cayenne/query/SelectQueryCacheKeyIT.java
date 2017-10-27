@@ -109,7 +109,6 @@ public class SelectQueryCacheKeyIT extends ServerCase {
         QueryMetadata md1 = q1.getMetaData(resolver);
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
         assertNotNull(md1.getCacheKey());
-        assertNull(md1.getCacheGroups());
         assertNull(md1.getCacheGroup());
         
         SelectQuery<Artist> q2 = new SelectQuery<>(Artist.class);
@@ -118,7 +117,6 @@ public class SelectQueryCacheKeyIT extends ServerCase {
         QueryMetadata md2 = q2.getMetaData(resolver);
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md2.getCacheStrategy());
         assertNotNull(md2.getCacheKey());
-        assertEquals(1, md2.getCacheGroups().length);
         assertEquals("g1", md2.getCacheGroup());
     }
 

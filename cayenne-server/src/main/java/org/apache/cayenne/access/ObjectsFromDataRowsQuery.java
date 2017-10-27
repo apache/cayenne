@@ -101,11 +101,6 @@ class ObjectsFromDataRowsQuery implements Query, QueryMetadata {
         return null;
     }
 
-    @Deprecated
-    public String[] getCacheGroups() {
-        return null;
-    }
-
     public String getCacheGroup() {
         return null;
     }

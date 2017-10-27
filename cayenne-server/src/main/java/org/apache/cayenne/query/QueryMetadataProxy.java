@@ -38,12 +38,6 @@ public class QueryMetadataProxy implements QueryMetadata {
         this.mdDelegate = mdDelegate;
     }
 
-    @Deprecated
-    @Override
-    public String[] getCacheGroups() {
-        return mdDelegate.getCacheGroups();
-    }
-
     public String getCacheGroup() {
         return mdDelegate.getCacheGroup();
     }

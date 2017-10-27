@@ -95,7 +95,7 @@ public class EhCacheQueryCacheTest {
 
         QueryMetadata md = mock(QueryMetadata.class);
         when(md.getCacheKey()).thenReturn("k1");
-        when(md.getCacheGroups()).thenReturn(new String[] { "cg1" });
+        when(md.getCacheGroup()).thenReturn("cg1");
 
         assertEquals(lists[0], cache.get(md, factory));
         assertEquals(lists[0], cache.get(md, factory));
@@ -117,7 +117,7 @@ public class EhCacheQueryCacheTest {
 
         QueryMetadata md = mock(QueryMetadata.class);
         when(md.getCacheKey()).thenReturn("k1");
-        when(md.getCacheGroups()).thenReturn(new String[] { "cg1" });
+        when(md.getCacheGroup()).thenReturn("cg1");
 
         assertEquals(lists[0], cache.get(md, factory));
         assertEquals(lists[0], cache.get(md, factory));

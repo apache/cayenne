@@ -204,6 +204,24 @@ UPGRADING TO 4.1.M2
       - removed DataMap dataMap in org.apache.cayenne.query.QueryChain;
       - removed DataMap dataMap in org.apache.cayenne.query.BatchQuery;
       - removed void setDataMap(DataMap dataMap) in org.apache.cayenne.query.BatchQuery;
+      - change in void testGet_WithFactory_WithCacheGroups() from getCacheGroups() to getCacheGroup() in org.apache.cayenne.cache.EhCacheQueryCacheTest;
+      - change in void testRemoveGroup_WithFactory_WithCacheGroups() from getCacheGroups() to getCacheGroup() in org.apache.cayenne.cache.EhCacheQueryCacheTest;
+      - change in void testRemoveGroup_WithFactory_WithCacheGroups() from getCacheGroups() to getCacheGroup() in org.apache.cayenne.cache.EhCacheQueryCacheTest_WithConfigTest;
+      - change in void testUseSharedCache(): removed getCacheGroups() in org.apache.cayenne.query.SelectQueryCacheKeyIT;
+      - removed in void testCreateReplacementQuery_Bare()  getCacheGroups() in org.apache.cayenne.queryObjectSelect_CompileIT;
+      - removed in void testCreateReplacementQuery_Full()  getCacheGroups() in org.apache.cayenne.queryObjectSelect_CompileIT;
+      - removed String[] getCacheGroups() in org.apache.cayenne.query.QueryMetadataProxy;
+      - removed String[] getCacheGroups() {since 4.0, use ueryMetadataWrapper#getCacheKey()} in org.apache.cayenne.query.QueryMetadataWrapper;
+      - removed String[] getCacheGroups() {since 4.0, use IncrementalSelectQuery#getCacheGroup()} in org.apache.cayenne.remote.IncrementalSelectQuery;
+      - removed String[] getCacheGroups() {since 4.0, use CacheableQuery#getCacheGroup()} in org.apache.cayenne.query.CacheableQuery;
+      - removed String[] getCacheGroups() in org.apache.cayenne.access.ObjectsFromDataRowsQuery;
+      - removed String[] getCacheGroups() in org.apache.cayenne.query.MockQueryMetadata;
+      - removed String[] getCacheGroups() {since 4.0, use DefaultQueryMetadata#getCacheGroup()} in org.apache.cayenne.query.DefaultQueryMetadata;
+      - removed String[] getCacheGroups() in org.apache.cayenne.access.DataDomainQuery;
+      - removed String[] getCacheGroups() {since 4.0, use BaseQueryMetadata#getCacheGroup()} in org.apache.cayenne.query.BaseQueryMetadata;
+      - removed String[] getCacheGroups() in org.apache.cayenne.remote.RangeQuery;
+      - removed String[] getCacheGroups() in org.apache.cayenne.lifecycle.id.StringIdQuery;
+      - removed String[] getCacheGroups() in org.apache.cayenne.query.QueryMetadata;
 
 
 UPGRADING TO 4.1.M1

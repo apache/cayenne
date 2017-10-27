@@ -88,11 +88,6 @@ class RangeQuery implements Query {
                 return cacheKey;
             }
 
-            @Deprecated
-            public String[] getCacheGroups() {
-                return null;
-            }
-
             public String getCacheGroup() {
                 return null;
             }

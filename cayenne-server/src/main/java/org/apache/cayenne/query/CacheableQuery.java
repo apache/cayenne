@@ -48,15 +48,6 @@ public abstract class CacheableQuery implements Query {
     }
 
     /**
-     * @since 3.0
-     * @deprecated since 4.0, use {@link CacheableQuery#getCacheGroup()}
-     */
-    @Deprecated
-    public String[] getCacheGroups() {
-        return getBaseMetaData().getCacheGroups();
-    }
-
-    /**
      * @since 4.0
      */
     public String getCacheGroup() {
