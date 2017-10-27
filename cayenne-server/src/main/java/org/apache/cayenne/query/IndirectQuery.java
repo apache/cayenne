@@ -44,14 +44,6 @@ public abstract class IndirectQuery implements Query {
 	protected transient EntityResolver lastResolver;
 
 	/**
-	 * @since 3.1
-	 */
-	@Deprecated
-	public void setDataMap(DataMap dataMap) {
-		this.dataMap = dataMap;
-	}
-
-	/**
 	 * Returns the metadata obtained from the replacement query.
 	 */
 	@Override

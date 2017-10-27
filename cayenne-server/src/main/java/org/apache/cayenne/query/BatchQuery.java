@@ -45,12 +45,6 @@ public abstract class BatchQuery implements Query {
     protected String name;
 
     /**
-     * @since 3.1
-     */
-    @Deprecated
-    protected DataMap dataMap;
-
-    /**
      * @since 4.0
      */
     protected List<BatchQueryRow> rows;
@@ -81,14 +75,6 @@ public abstract class BatchQuery implements Query {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * @since 3.1
-     */
-    @Deprecated
-    public void setDataMap(DataMap dataMap) {
-        this.dataMap = dataMap;
     }
 
     /**

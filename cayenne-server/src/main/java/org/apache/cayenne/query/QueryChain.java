@@ -42,12 +42,6 @@ public class QueryChain implements Query {
     protected String name;
 
     /**
-     * @since 3.1
-     */
-    @Deprecated
-    protected DataMap dataMap;
-
-    /**
      * Creates an empty QueryChain.
      */
     public QueryChain() {
@@ -123,14 +117,6 @@ public class QueryChain implements Query {
     @Deprecated
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * @since 3.1
-     */
-    @Deprecated
-    public void setDataMap(DataMap dataMap) {
-        this.dataMap = dataMap;
     }
 
     /**

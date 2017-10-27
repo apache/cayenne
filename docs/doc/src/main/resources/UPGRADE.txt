@@ -199,6 +199,11 @@ UPGRADING TO 4.1.M2
       - removed DataMap getDataMap() in org.apache.cayenne.query.EJBQLQuery;
       - removed DataMap getDataMap() in org.apache.cayenne.query.QueryChain;
       - removed DataMap getDataMap() in org.apache.cayenne.remote.RangeQuery;
+      - removed void setDataMap(DataMap dataMap) in org.apache.cayenne.query.IndirectQuery;
+      - removed void setDataMap(DataMap dataMap) in org.apache.cayenne.query.QueryChain;
+      - removed DataMap dataMap in org.apache.cayenne.query.QueryChain;
+      - removed DataMap dataMap in org.apache.cayenne.query.BatchQuery;
+      - removed void setDataMap(DataMap dataMap) in org.apache.cayenne.query.BatchQuery;
 
 
 UPGRADING TO 4.1.M1
