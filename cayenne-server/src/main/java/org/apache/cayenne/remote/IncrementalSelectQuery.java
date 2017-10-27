@@ -226,16 +226,6 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 	}
 
 	/**
-	 * @deprecated since 4.0 only first cache group will be used
-	 * 			   use {@link IncrementalSelectQuery#setCacheGroup(String)}
-	 */
-	@Override
-	@Deprecated
-	public void setCacheGroups(String... cacheGroups) {
-		query.setCacheGroups(cacheGroups);
-	}
-
-	/**
 	 * @since 4.0
 	 */
 	@Override

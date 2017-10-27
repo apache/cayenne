@@ -70,8 +70,7 @@ public class StringIdQuery implements Query {
 
     @Deprecated
     protected String name;
-    @Deprecated
-    protected DataMap dataMap;
+
     protected Collection<String> stringIds;
 
     protected transient Map<String, SelectQuery> idQueriesByEntity;

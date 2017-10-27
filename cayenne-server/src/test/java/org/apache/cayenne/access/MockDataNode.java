@@ -132,11 +132,6 @@ public class MockDataNode extends DataNode {
     }
 
     @Override
-    public String getDataSourceLocation() {
-        return node.getDataSourceLocation();
-    }
-
-    @Override
     public EntityResolver getEntityResolver() {
         return node.getEntityResolver();
     }
@@ -169,11 +164,6 @@ public class MockDataNode extends DataNode {
     @Override
     public void setDataSourceFactory(String dataSourceFactory) {
         node.setDataSourceFactory(dataSourceFactory);
-    }
-
-    @Override
-    public void setDataSourceLocation(String dataSourceLocation) {
-        node.setDataSourceLocation(dataSourceLocation);
     }
 
     @Override

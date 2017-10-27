@@ -47,15 +47,6 @@ public class DataNodeIT extends ServerCase {
     }
 
     @Test
-    public void testDataSourceLocation() throws Exception {
-        String tstName = "tst_name";
-        DataNode node = new DataNode();
-        assertNull(node.getDataSourceLocation());
-        node.setDataSourceLocation(tstName);
-        assertEquals(tstName, node.getDataSourceLocation());
-    }
-
-    @Test
     public void testDataSourceFactory() throws Exception {
         String tstName = "tst_name";
         DataNode node = new DataNode();

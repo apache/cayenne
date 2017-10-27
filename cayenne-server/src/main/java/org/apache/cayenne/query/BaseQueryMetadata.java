@@ -301,17 +301,6 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 	}
 
 	/**
-	 * @since 3.0
-	 * @deprecated since 4.0, use {@link BaseQueryMetadata#setCacheGroup(String)}
-	 */
-	@Deprecated
-	void setCacheGroups(String... groups) {
-		if(groups.length > 0) {
-			this.cacheGroup = groups[0];
-		}
-	}
-
-	/**
 	 * @since 4.0
 	 */
 	@Override

@@ -55,18 +55,6 @@ public abstract class CacheableQuery implements Query {
     }
 
     /**
-     * @since 3.0
-     * @deprecated since 4.0, use {@link CacheableQuery#setCacheGroup(String)}
-     */
-    @Deprecated
-    public void setCacheGroups(String... cacheGroups) {
-        getBaseMetaData().setCacheGroups(cacheGroups);
-        if(cacheGroups.length > 1) {
-            logger.warn("Multiple cache groups usage have been deprecated, only first one will be used.");
-        }
-    }
-
-    /**
      * @since 4.0
      */
     public void setCacheGroup(String cacheGroup) {
@@ -104,22 +92,7 @@ public abstract class CacheableQuery implements Query {
         setCacheGroup(cacheGroup);
     }
 
-    /**
-     * Instructs Cayenne to look for query results in the "shared" cache when
-     * running the query. This is a short-hand notation for:
-     *
-     * <pre>
-     * query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-     * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
-     * </pre>
-     * @deprecated since 4.0, use {@link CacheableQuery#useSharedCache(String)}
-     * @since 4.0
-     */
-    @Deprecated
-    public void useSharedCache(String... cacheGroups) {
-        setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-        setCacheGroups(cacheGroups);
-    }
+
 
     /**
      * Instructs Cayenne to look for query results in the "shared" cache when

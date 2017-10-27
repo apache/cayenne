@@ -121,16 +121,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     }
 
-    /**
-     * @since 3.0
-     * @deprecated since 4.0 does nothing. Previously it used to create runtime
-     *             ObjRelationships, that broke a lot of things.
-     */
-    @Deprecated
-    public void applyObjectLayerDefaults() {
-        // noop
-    }
-
     private String getUniqueRelationshipName(Entity entity) {
         String name;
 

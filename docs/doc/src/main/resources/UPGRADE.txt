@@ -222,7 +222,24 @@ UPGRADING TO 4.1.M2
       - removed String[] getCacheGroups() in org.apache.cayenne.remote.RangeQuery;
       - removed String[] getCacheGroups() in org.apache.cayenne.lifecycle.id.StringIdQuery;
       - removed String[] getCacheGroups() in org.apache.cayenne.query.QueryMetadata;
-
+      - removed useSharedCache from void testUseSharedCache()  in org.apache.cayenne.query.SelectQueryCacheKeyIT;
+      - removed void useSharedCache(String... cacheGroups) {since 4.0, use CacheableQuery#useSharedCache(String)} in org.apache.cayenne.query.CacheableQuery;
+      - removed void setCacheGroups(String... groups) {since 4.0, use BaseQueryMetadata#setCacheGroup(String)} in org.apache.cayenne.query.BaseQueryMetadata;
+      - removed void setCacheGroups(String... cacheGroups) {since 4.0 only first cache group will be used use IncrementalSelectQuery#setCacheGroup(String)}
+      in org.apache.cayenne.remote.IncrementalSelectQuery;
+      - removed void setCacheGroups(String... cacheGroups) {since 4.0, use CacheableQuery#setCacheGroup(String)}
+      in org.apache.cayenne.query.CacheableQuery;
+      - removed applyObjectLayerDefaults() from org.apache.cayenne.configuration.server.DataDomainProvider;
+      - removed void applyObjectLayerDefaults() {since 4.0 does nothing} in org.apache.cayenne.map.EntityResolver;
+      - removed dataNode.setDataSourceLocation(nodeDescriptor.getParameters()); from org.apache.cayenne.configuration.server.DefaultDataNodeFactory;
+      - removed void testDataSourceLocation() in org.apache.cayenne.access.DataNodeIT;
+      - removed void setDataSourceLocation(String dataSourceLocation) from org.apache.cayenne.access.MockDataNode;
+      - removed void setDataSourceLocation(String dataSourceLocation) {since 4.0. This information is irrelevant at the DataNode level} from
+      org.apache.cayenne.access.DataNode;
+      - removed assertEquals(nodeDescriptor1.getParameters(), node1.getDataSourceLocation()); from org.apache.cayenne.configuration.server.DataDomainProviderTest;
+      - removed void getDataSourceLocation(String dataSourceLocation) from org.apache.cayenne.access.MockDataNode;
+      - removed void getDataSourceLocation(String dataSourceLocation) {since 4.0. This information is irrelevant at the DataNode level} from
+      org.apache.cayenne.access.DataNode;
 
 UPGRADING TO 4.1.M1
 
