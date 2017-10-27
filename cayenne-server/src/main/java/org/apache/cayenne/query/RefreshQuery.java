@@ -149,16 +149,7 @@ public class RefreshQuery implements Query {
                     Query substitutedQuery) {
                 query.route(router, resolver, this);
             }
-
-            @Deprecated
-            public DataMap getDataMap() {
-                return query.getDataMap();
-            }
         };
     }
 
-    @Deprecated
-    public DataMap getDataMap() {
-        return null;
-    }
 }

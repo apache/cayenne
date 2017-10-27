@@ -58,14 +58,6 @@ public class EJBQLQuery extends CacheableQuery {
     public EJBQLQuery() {
     }
     
-    /**
-     * @since 3.1
-     */
-    @Deprecated
-    public DataMap getDataMap() {
-        return dataMap;
-    }
-    
     
     /**
      * @since 3.1

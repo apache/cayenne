@@ -186,7 +186,19 @@ UPGRADING TO 4.1.M2
       - removed void useLocalCache(String... cacheGroups) {since 4.0, use CacheableQuery#useLocalCache(String)} in org.apache.cayenne.org.apacche.cayenne.query.CacheableQuery with test
       void testUseLocalCacheOld() in org.apache.cayenne.query.SelectQueryCacheKeyIT;
       - removed int size() {since 4.0 use getRows().size()} in org.apache.cayenne.query.BatchQuery;
-
+      - removed DataMap getDataMap(); {since 4.0, QueryDescriptor#getDataMap() should be used instead} in org.apache.cayenne.query.Query;
+      - removed DataMap getDataMap()  in org.apache.cayenne.lifecycle.StringIdQuery;
+      - removed DataMap getDataMap() in org.apache.cayenne.query.RefreshQuery;
+      - removed DataMap getDataMap() in org.apache.cayenne.query.MockQuery;
+      - removed DataMap getDataMap() in org.apache.cayenne.query.IndirectQuery;
+      - removed DataMap getDataMap() in org.apache.cayenne.remote.IncrementalQuery;
+      - removed @deprecated from DataMap gerDataMap() in org.apache.cayenne.access.DataDomainQuery;
+      - removed @deprecated from DataMap gerDataMap() in org.apache.cayenne.access.ObjectsFromDataRowsQuery;
+      - removed DataMap getDataMap() in org.apache.cayenne.query.AbstractQuery;
+      - removed DataMap getDataMap() in org.apache.cayenne.query.BatchQuery;
+      - removed DataMap getDataMap() in org.apache.cayenne.query.EJBQLQuery;
+      - removed DataMap getDataMap() in org.apache.cayenne.query.QueryChain;
+      - removed DataMap getDataMap() in org.apache.cayenne.remote.RangeQuery;
 
 
 UPGRADING TO 4.1.M1

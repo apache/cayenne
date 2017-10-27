@@ -262,10 +262,4 @@ public class StringIdQuery implements Query {
     public void setName(String name) {
         this.name = name;
     }
-
-    @Deprecated
-    public DataMap getDataMap() {
-        return dataMap;
-    }
-
 }

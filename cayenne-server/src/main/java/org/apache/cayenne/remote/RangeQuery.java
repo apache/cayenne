@@ -163,11 +163,4 @@ class RangeQuery implements Query {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * @since 3.1
-     */
-    @Deprecated
-    public DataMap getDataMap() {
-        throw new UnsupportedOperationException();
-    }
 }

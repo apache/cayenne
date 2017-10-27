@@ -47,14 +47,6 @@ public abstract class AbstractQuery extends CacheableQuery {
      * @since 3.1
      */
     @Deprecated
-    public DataMap getDataMap() {
-        return dataMap;
-    }
-
-    /**
-     * @since 3.1
-     */
-    @Deprecated
     public void setDataMap(DataMap dataMap) {
         this.dataMap = dataMap;
     }

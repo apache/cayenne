@@ -34,11 +34,6 @@ public class MockQuery implements Query {
     public MockQuery() {
     }
 
-    @Deprecated
-    public DataMap getDataMap() {
-        return null;
-    }
-
     public QueryMetadata getMetaData(EntityResolver resolver) {
         return DefaultQueryMetadata.defaultMetadata;
     }

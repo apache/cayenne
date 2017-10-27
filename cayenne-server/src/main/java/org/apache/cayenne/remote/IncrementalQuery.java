@@ -75,13 +75,4 @@ class IncrementalQuery implements Query {
     public String getName() {
         return query.getName();
     }
-
-    /**
-     * @since 3.1
-     * @deprecated since 4.0
-     */
-    @Deprecated
-    public DataMap getDataMap() {
-        return query.getDataMap();
-    }
 }
