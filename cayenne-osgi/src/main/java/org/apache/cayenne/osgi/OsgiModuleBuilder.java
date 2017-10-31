@@ -16,7 +16,8 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.osgi;
+
+package org.apache.cayenne.osgi;
 
 import java.sql.Driver;
 

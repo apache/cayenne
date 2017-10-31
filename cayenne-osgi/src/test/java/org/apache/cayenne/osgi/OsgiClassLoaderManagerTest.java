@@ -16,23 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.osgi;
 
+package org.apache.cayenne.osgi;
+
+import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.Collections;
-
-import static org.junit.Assert.assertSame;
-import static org.mockito.Mockito.mock;
 
 public class OsgiClassLoaderManagerTest {
 
     @Test
     public void testGetClassLoader() {
 
-        final ClassLoader appCl = mock(ClassLoader.class);
-        final ClassLoader diCl = mock(ClassLoader.class);
-        final ClassLoader serverCl = mock(ClassLoader.class);
+        final ClassLoader appCl = Mockito.mock(ClassLoader.class);
+        final ClassLoader diCl = Mockito.mock(ClassLoader.class);
+        final ClassLoader serverCl = Mockito.mock(ClassLoader.class);
 
         OsgiClassLoaderManager manager = new OsgiClassLoaderManager(appCl, Collections.<String, ClassLoader> emptyMap()) {
             @Override
@@ -46,13 +46,13 @@ public class OsgiClassLoaderManagerTest {
             }
         };
 
-        assertSame(appCl, manager.getClassLoader(null));
-        assertSame(appCl, manager.getClassLoader(""));
-        assertSame(appCl, manager.getClassLoader("org/example/test"));
-        assertSame(appCl, manager.getClassLoader("/org/example/test"));
-        assertSame(serverCl, manager.getClassLoader("/org/apache/cayenne/access/DataContext.class"));
-        assertSame(diCl, manager.getClassLoader("/org/apache/cayenne/di/Injector.class"));
-        assertSame(diCl, manager.getClassLoader("org/apache/cayenne/di/Injector.class"));
+        Assert.assertSame(appCl, manager.getClassLoader(null));
+        Assert.assertSame(appCl, manager.getClassLoader(""));
+        Assert.assertSame(appCl, manager.getClassLoader("org/example/test"));
+        Assert.assertSame(appCl, manager.getClassLoader("/org/example/test"));
+        Assert.assertSame(serverCl, manager.getClassLoader("/org/apache/cayenne/access/DataContext.class"));
+        Assert.assertSame(diCl, manager.getClassLoader("/org/apache/cayenne/di/Injector.class"));
+        Assert.assertSame(diCl, manager.getClassLoader("org/apache/cayenne/di/Injector.class"));
 
     }
 

@@ -16,7 +16,8 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.osgi;
+
+package org.apache.cayenne.osgi;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
