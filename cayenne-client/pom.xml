@@ -74,7 +74,12 @@
     		<artifactId>slf4j-simple</artifactId>
     		<scope>test</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-rop-server</artifactId>
+            <version>4.1.M2-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>

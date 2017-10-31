@@ -20,10 +20,10 @@
 package org.apache.cayenne.tutorial;
 
 import org.apache.cayenne.configuration.rop.client.ProtostuffModule;
-import org.apache.cayenne.configuration.rop.server.ROPServerModule;
+import org.apache.cayenne.rop.server.ROPServerModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.configuration.web.WebConfiguration;
-import org.apache.cayenne.configuration.web.WebUtil;
+import org.apache.cayenne.web.WebConfiguration;
+import org.apache.cayenne.web.WebUtil;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.RemoteService;
 import org.apache.cayenne.rop.ROPSerializationService;

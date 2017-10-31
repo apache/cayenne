@@ -83,7 +83,11 @@
         <module>cayenne-web</module>
 =======
         <module>cayenne-osgi</module>
+<<<<<<< HEAD
 >>>>>>> e8768c6e3... CAY-2372 Extracted OSGI module from server module
+=======
+        <module>cayenne-rop-server</module>
+>>>>>>> 48b87d59f... CAY-2372 with osgi, web and rop-server modules. Tests failling
     </modules>
 	<issueManagement>
 		<system>jira</system>
