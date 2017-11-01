@@ -20,6 +20,7 @@ package org.apache.cayenne.rop.server;
 
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.RemoteService;

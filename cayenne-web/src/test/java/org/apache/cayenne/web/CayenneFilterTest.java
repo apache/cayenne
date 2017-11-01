@@ -101,11 +101,10 @@ public class CayenneFilterTest {
 		Collection<Module> modules = runtime.getModules();
 		assertEquals(3, modules.size());
 
-//		Was removed because now it is not in correct order. ServerModule and WebModule can change there positioins.
-// 		Object[] marray = modules.toArray();
-//		assertTrue(marray[0] instanceof ServerModule);
-//		//		 [2] is an inner class
-//		assertTrue(marray[1] instanceof WebModule);
+// 		Now we dont  correct order.
+/*		Object[] marray = modules.toArray();
+	    assertTrue(marray[0] instanceof WebModule);
+		assertTrue(marray[1] instanceof ServerModule);*/
 
 		RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
 		assertTrue(handler instanceof SessionContextRequestHandler);
@@ -131,13 +130,12 @@ public class CayenneFilterTest {
 		Collection<Module> modules = runtime.getModules();
 		assertEquals(5, modules.size());
 
-//		Was removed because now it is not in correct order. ServerModule and WebModule can change there positioins.
-//		Object[] marray = modules.toArray();
-//		assertTrue(marray[0] instanceof ServerModule);
-//		// [4] is an inner class
-//		assertTrue(marray[1] instanceof WebModule);
-//		assertTrue(marray[2] instanceof MockModule1);
-//		assertTrue(marray[3] instanceof MockModule2);
+//		Now we dont know correct order.
+		/*Object[] marray = modules.toArray();
+		assertTrue(marray[0] instanceof WebModule);
+		assertTrue(marray[1] instanceof ServerModule);
+		assertTrue(marray[2] instanceof MockModule1);
+		assertTrue(marray[3] instanceof MockModule2);*/
 
 		RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
 		assertTrue(handler instanceof MockRequestHandler);
@@ -165,9 +163,9 @@ public class CayenneFilterTest {
 		filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
 		assertEquals(1, handler.getStarted());
 		assertEquals(1, handler.getEnded());
-//
-//		filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
-//		assertEquals(2, handler.getStarted());
-//		assertEquals(2, handler.getEnded());
+
+		filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
+		assertEquals(2, handler.getStarted());
+		assertEquals(2, handler.getEnded());
 	}
 }
