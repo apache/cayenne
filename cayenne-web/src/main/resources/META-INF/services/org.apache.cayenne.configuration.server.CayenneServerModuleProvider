@@ -17,4 +17,4 @@
 #  under the License.
 ##################################################################
 
-org.apache.cayenne.web.WebServerModuleProvider
+org.apache.cayenne.configuration.web.WebServerModuleProvider
