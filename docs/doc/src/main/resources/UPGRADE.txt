@@ -239,6 +239,11 @@ UPGRADING TO 4.1.M2
       org.apache.cayenne.access.DataNode;
       - removed OSQueryCache in org.apache.cayenne.cache with tests;
       - removed EhCacheQueryCache in org.apache.cayenne.cache with tests;
+      - removed Tstmap and _Tstmap org.apache.cayenne.testdo.testmap;
+      - removed MultiTier and _MultiTier in org.apache.cayenne.testdo.mt;
+      - removed ClientMultiTier and _ClientMultiTier in org.apache.cayenne.testdo.mt;
+      - removed NamedQueryTest in org.apache.cayenne.query.NamedQueryTest;
+      - removed NamedQuery in org.apache.cayenne.query;
 
 UPGRADING TO 4.1.M1
 
