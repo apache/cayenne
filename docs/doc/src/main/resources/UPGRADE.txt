@@ -204,9 +204,6 @@ UPGRADING TO 4.1.M2
       - removed DataMap dataMap in org.apache.cayenne.query.QueryChain;
       - removed DataMap dataMap in org.apache.cayenne.query.BatchQuery;
       - removed void setDataMap(DataMap dataMap) in org.apache.cayenne.query.BatchQuery;
-      - change in void testGet_WithFactory_WithCacheGroups() from getCacheGroups() to getCacheGroup() in org.apache.cayenne.cache.EhCacheQueryCacheTest;
-      - change in void testRemoveGroup_WithFactory_WithCacheGroups() from getCacheGroups() to getCacheGroup() in org.apache.cayenne.cache.EhCacheQueryCacheTest;
-      - change in void testRemoveGroup_WithFactory_WithCacheGroups() from getCacheGroups() to getCacheGroup() in org.apache.cayenne.cache.EhCacheQueryCacheTest_WithConfigTest;
       - change in void testUseSharedCache(): removed getCacheGroups() in org.apache.cayenne.query.SelectQueryCacheKeyIT;
       - removed in void testCreateReplacementQuery_Bare()  getCacheGroups() in org.apache.cayenne.queryObjectSelect_CompileIT;
       - removed in void testCreateReplacementQuery_Full()  getCacheGroups() in org.apache.cayenne.queryObjectSelect_CompileIT;
@@ -240,6 +237,8 @@ UPGRADING TO 4.1.M2
       - removed void getDataSourceLocation(String dataSourceLocation) from org.apache.cayenne.access.MockDataNode;
       - removed void getDataSourceLocation(String dataSourceLocation) {since 4.0. This information is irrelevant at the DataNode level} from
       org.apache.cayenne.access.DataNode;
+      - removed OSQueryCache in org.apache.cayenne.cache with tests;
+      - removed EhCacheQueryCache in org.apache.cayenne.cache with tests;
 
 UPGRADING TO 4.1.M1
 
