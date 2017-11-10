@@ -16,6 +16,7 @@ Bug Fixes Since 3.1.1:
 
 CAY-2084 ObjectIdQuery - no cache access polymorphism
 CAY-2101 DataContext.currentSnapshot() doesn't set snapshot entity name
+CAY-2137 When generating SQL from EJBQL, use "AND" to separate multiple join conditions
 CAY-2226 PK generation for Frontbase: PK cache size must be ignored
 CAY-2276 PrePersist listener registered as PostPersist in LifecycleCallbackRegistry.addListener(Class<?>, LifecycleListener)
 

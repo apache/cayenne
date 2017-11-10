@@ -210,7 +210,7 @@ public class EJBQLJoinAppender {
         }
 
         while (it.hasNext()) {
-            context.append(", ");
+            context.append(" AND ");
             DbJoin dbJoin = it.next();
             context
                     .append(sourceAlias)

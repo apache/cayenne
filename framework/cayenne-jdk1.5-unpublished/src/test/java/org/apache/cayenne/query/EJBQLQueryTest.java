@@ -34,6 +34,8 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.CompoundFkTestEntity;
+import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
@@ -403,4 +405,30 @@ public class EJBQLQueryTest extends ServerCase {
                 + "a.artistName = a.artistName");
         assertTrue(context.performQuery(query).size() > 0);
     }
+
+    private void createCompoundPkDataSet() throws Exception {
+        TableHelper tCompoundPk = new TableHelper(dbHelper, "COMPOUND_PK_TEST");
+        tCompoundPk.setColumns("KEY1", "KEY2", "NAME");
+
+        TableHelper tCompoundFk = new TableHelper(dbHelper, "COMPOUND_FK_TEST");
+        tCompoundFk.setColumns("F_KEY1", "F_KEY2", "NAME", "PKEY");
+
+        tCompoundPk.insert("a", "b", "abc");
+        tCompoundPk.insert("c", "d", "cde");
+
+        tCompoundFk.insert("a", "b", "test", 1);
+        tCompoundFk.insert("c", "d", "nottest", 2);
+    }
+
+    public void testEJBQLCompoundJoin() throws Exception {
+        createCompoundPkDataSet();
+
+        EJBQLQuery query = new EJBQLQuery(
+                "select f from CompoundFkTestEntity f inner join f.toCompoundPk p where p.name like 'a%'");
+        List res = context.performQuery(query);
+        assertEquals(1, res.size());
+        assertTrue(res.get(0) instanceof CompoundFkTestEntity);
+        assertEquals("test", ((CompoundFkTestEntity)res.get(0)).getName());
+    }
+
 }
