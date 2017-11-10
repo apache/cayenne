@@ -147,10 +147,6 @@ class Compiler {
                 for (int i = 1; i < path.getChildrenCount(); i++) {
 
                     String pathChunk = path.getChild(i).getText();
-                    if(pathChunk.endsWith(Entity.OUTER_JOIN_INDICATOR)) {
-                        pathChunk = pathChunk.substring(0, pathChunk.length() - 1);
-                    }
-
                     buffer.append('.').append(pathChunk);
 
                     Property property = descriptor.getProperty(pathChunk);
