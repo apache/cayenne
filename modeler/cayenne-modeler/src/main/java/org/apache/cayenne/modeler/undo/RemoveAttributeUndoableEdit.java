@@ -152,4 +152,8 @@ public class RemoveAttributeUndoableEdit extends CayenneUndoableEdit {
 
         return super.getPresentationName();
     }
+
+	public ObjEntity getObjEntity() {
+		return objEntity;
+	}
 }
