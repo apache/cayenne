@@ -140,4 +140,25 @@ public class EJBQLCompiledExpressionTest extends ServerCase {
         assertNotNull(select2.getEntityDescriptor("PaInTinGAlIaS"));
     }
 
+    /**
+     * <p>If an expression has an 'entity variable' used in the SELECT clause then there should be a
+     * corresponding definition for the 'entity variable' in the FROM clause.  This did, at some
+     * point throw an NPE.</p>
+     */
+    public void testMissingEntityBeanVariable() {
+        String ejbql = "SELECT b FROM Artist a";
+        EJBQLQuery query = new EJBQLQuery(ejbql);
+
+        try {
+            runtime.getContext().performQuery(query);
+            fail("expected an instance of " + EJBQLException.class.getSimpleName() + " to have been thrown.");
+        }
+        catch(EJBQLException e) {
+            assertEquals("the entity variable 'b' does not refer to any entity in the FROM clause", e.getUnlabeledMessage());
+        }
+        catch(Throwable th) {
+            fail("expected an instance of " + EJBQLException.class.getSimpleName() + " to have been thrown.");
+        }
+    }
+
 }

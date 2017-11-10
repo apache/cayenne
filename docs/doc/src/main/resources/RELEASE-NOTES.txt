@@ -14,6 +14,7 @@ Date: not yet released
 
 Bug Fixes Since 3.1.1:
 
+CAY-1969 Malformed EJBQL Yields NPE
 CAY-2084 ObjectIdQuery - no cache access polymorphism
 CAY-2101 DataContext.currentSnapshot() doesn't set snapshot entity name
 CAY-2137 When generating SQL from EJBQL, use "AND" to separate multiple join conditions
