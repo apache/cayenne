@@ -43,8 +43,6 @@ public class DataContextEJBQLInheritanceTest extends ServerCase {
 
     @Override
     protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PERSON");
-
         TableHelper person = new TableHelper(dbHelper, "PERSON");
         person.setColumns("PERSON_ID", "NAME", "PERSON_TYPE", "SALARY")
                 .setColumnTypes(
@@ -52,6 +50,13 @@ public class DataContextEJBQLInheritanceTest extends ServerCase {
                         Types.VARCHAR, 
                         Types.CHAR,
                         Types.FLOAT);
+
+        person.update().set("DEPARTMENT_ID", null, Types.INTEGER).execute();
+        dbHelper.deleteAll("ADDRESS");
+        dbHelper.deleteAll("DEPARTMENT");
+        dbHelper.deleteAll("PERSON_NOTES");
+        dbHelper.deleteAll("PERSON");
+        dbHelper.deleteAll("CLIENT_COMPANY");
 
         person.insert(1, "a", "EE", 20000);
         person.insert(2, "b", "EE", 25000);

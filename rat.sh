@@ -63,6 +63,7 @@ java -jar $RAT -d $DIR \
 	-e 'CLOVER.txt' \
 	-e '*.html' \
 	-e '*.css' \
-	-e 'derby.log'
+	-e 'derby.log' \
+	-e '*.iml'
 
 
