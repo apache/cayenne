@@ -21,6 +21,7 @@ package org.apache.cayenne.ejbql;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -108,4 +109,35 @@ public class EJBQLCompiledExpressionTest extends ServerCase {
         assertNotNull(select3.getEntityDescriptor("a"));
         assertNotNull(select3.getEntityDescriptor("A"));
     }
+
+    /**
+     * CAY-2175
+     */
+    public void testGetEntityDescriptorCaseSensitivityInJoin() {
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+        EJBQLParser parser = EJBQLParserFactory.getParser();
+
+        EJBQLCompiledExpression select1 = parser.compile(
+                "SELECT artistAlias FROM Artist artistAlias " +
+                        "WHERE artistAlias.artistName = 'Abcd'",
+                resolver
+        );
+        assertNotNull(select1.getEntityDescriptor("artistalias"));
+        assertNotNull(select1.getEntityDescriptor("artistAlias"));
+        assertNotNull(select1.getEntityDescriptor("ArTiStAlIaS"));
+
+        EJBQLCompiledExpression select2 = parser.compile(
+                "SELECT artistalias from Artist AS ArtistAlias JOIN artistalias.paintingArray as PaintingAlias " +
+                        "where aRtistALiaS.artistName = 'Abcd'",
+                resolver
+        );
+        assertNotNull(select2.getEntityDescriptor("artistalias"));
+        assertNotNull(select2.getEntityDescriptor("artistAlias"));
+        assertNotNull(select2.getEntityDescriptor("ArTiStAlIaS"));
+
+        assertNotNull(select2.getEntityDescriptor("PaintingAlias"));
+        assertNotNull(select2.getEntityDescriptor("paintingalias"));
+        assertNotNull(select2.getEntityDescriptor("PaInTinGAlIaS"));
+    }
+
 }

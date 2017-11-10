@@ -34,6 +34,7 @@ import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.ObjAttribute;
@@ -87,49 +88,48 @@ class Compiler {
 
         Map<EJBQLPath, Integer> pathsInSelect = new HashMap<EJBQLPath, Integer>();
 
-        if (parsed != null) {
-            for (int i = 0; i < parsed.getChildrenCount(); i++) {
-                if (parsed.getChild(i) instanceof EJBQLSelectClause) {
+        for (int i = 0; i < parsed.getChildrenCount(); i++) {
+            if (parsed.getChild(i) instanceof EJBQLSelectClause) {
 
-                    EJBQLExpression parsedTemp = parsed.getChild(i);
-                    boolean stop = false;
+                EJBQLExpression parsedTemp = parsed.getChild(i);
+                boolean stop = false;
 
-                    while (parsedTemp.getChildrenCount() > 0 && !stop) {
-                        EJBQLExpression newParsedTemp = null;
-                        for (int j = 0; j < parsedTemp.getChildrenCount(); j++) {
-                            if (parsedTemp.getChild(j) instanceof EJBQLSelectExpression) {
-                                for (int k = 0; k < parsedTemp
-                                        .getChild(j)
-                                        .getChildrenCount(); k++) {
+                while (parsedTemp.getChildrenCount() > 0 && !stop) {
+                    EJBQLExpression newParsedTemp = null;
+                    for (int j = 0; j < parsedTemp.getChildrenCount(); j++) {
+                        if (parsedTemp.getChild(j) instanceof EJBQLSelectExpression) {
+                            for (int k = 0; k < parsedTemp
+                                    .getChild(j)
+                                    .getChildrenCount(); k++) {
 
-                                    if (parsedTemp.getChild(j).getChild(k) instanceof EJBQLPath) {
-                                        pathsInSelect.put((EJBQLPath) parsedTemp
-                                                .getChild(j)
-                                                .getChild(k), j);
+                                if (parsedTemp.getChild(j).getChild(k) instanceof EJBQLPath) {
+                                    pathsInSelect.put((EJBQLPath) parsedTemp
+                                            .getChild(j)
+                                            .getChild(k), j);
 
-                                    }
                                 }
                             }
-                            else {
-                                if (parsedTemp.getChild(j).getChildrenCount() == 0) {
-                                    stop = true;
-                                }
-                                else {
-                                    newParsedTemp = parsedTemp.getChild(j);
-                                }
-                            }
-                        }
-
-                        if (!stop && newParsedTemp != null) {
-                            parsedTemp = newParsedTemp;
                         }
                         else {
-                            stop = true;
+                            if (parsedTemp.getChild(j).getChildrenCount() == 0) {
+                                stop = true;
+                            }
+                            else {
+                                newParsedTemp = parsedTemp.getChild(j);
+                            }
                         }
+                    }
+
+                    if (!stop && newParsedTemp != null) {
+                        parsedTemp = newParsedTemp;
+                    }
+                    else {
+                        stop = true;
                     }
                 }
             }
         }
+
         // postprocess paths, now that all id vars are resolved
         if (paths != null) {
             for (EJBQLPath path : paths) {
@@ -147,6 +147,10 @@ class Compiler {
                 for (int i = 1; i < path.getChildrenCount(); i++) {
 
                     String pathChunk = path.getChild(i).getText();
+                    if(pathChunk.endsWith(Entity.OUTER_JOIN_INDICATOR)) {
+                        pathChunk = pathChunk.substring(0, pathChunk.length() - 1);
+                    }
+
                     buffer.append('.').append(pathChunk);
 
                     Property property = descriptor.getProperty(pathChunk);
@@ -173,7 +177,7 @@ class Compiler {
                     Integer integer = pathsInSelect.get(path);
                     if (integer != null) {
                         resultComponents.remove(integer.intValue());
-                        resultComponents.add(pathsInSelect.get(path).intValue(), ident);
+                        resultComponents.add(integer, ident);
                         rootId = pathRelationshipString;
                     }
                 }
@@ -530,7 +534,7 @@ class Compiler {
         @Override
         public boolean visitPath(EJBQLExpression expression, int finishedChildIndex) {
             if (finishedChildIndex + 1 < expression.getChildrenCount()) {
-                this.id = ((EJBQLPath) expression).getId();
+                this.id = normalizeIdPath(((EJBQLPath) expression).getId());
                 this.descriptor = descriptorsById.get(id);
 
                 if (descriptor == null) {
@@ -560,7 +564,7 @@ class Compiler {
         public boolean visitIdentifier(EJBQLExpression expression) {
             if (incoming != null) {
 
-                String aliasId = expression.getText();
+                String aliasId = expression.getText().toLowerCase();
 
                 // map id variable to class descriptor
                 ClassDescriptor old = descriptorsById.put(aliasId, descriptor);
