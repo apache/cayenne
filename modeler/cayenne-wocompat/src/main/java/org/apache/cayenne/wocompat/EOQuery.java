@@ -109,12 +109,12 @@ public class EOQuery<T> extends SelectQuery<T> {
 		}
 	}
 
+	/**
+	 * Since 4.1 is unused.
+	 */
+	@Deprecated
 	public String getEOName() {
-		if (root instanceof EOObjEntity) {
-			return ((EOObjEntity) root).localQueryName(getName());
-		} else {
-			return getName();
-		}
+		return null;
 	}
 
 	public Collection getBindingNames() {

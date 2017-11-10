@@ -39,8 +39,6 @@ public abstract class AbstractQuery extends CacheableQuery {
     protected Object root;
 
     @Deprecated
-    protected String name;
-    @Deprecated
     protected DataMap dataMap;
 
     /**
@@ -52,33 +50,13 @@ public abstract class AbstractQuery extends CacheableQuery {
     }
 
     /**
-     * Returns a symbolic name of the query.
-     * 
-     * @since 1.1
-     */
-    @Deprecated
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets a symbolic name of the query.
-     * 
-     * @since 1.1
-     */
-    @Deprecated
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
      * Returns default select parameters.
      * 
      * @since 1.2
      */
     public QueryMetadata getMetaData(EntityResolver resolver) {
         BaseQueryMetadata md = new BaseQueryMetadata();
-        md.resolve(getRoot(), resolver, getName());
+        md.resolve(getRoot(), resolver, null);
         return md;
     }
 
@@ -124,7 +102,6 @@ public abstract class AbstractQuery extends CacheableQuery {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("root", root)
-                .append("name", getName())
                 .toString();
     }
 

@@ -140,17 +140,6 @@ public class SelectQueryTest {
 		assertNotNull(q1.getQualifier());
 		assertTrue(q1.getQualifier() != query.getQualifier());
 	}
-
-	@Test
-	public void testQueryWithParamsSkipName() {
-		query.setRoot(Artist.class);
-		query.setDistinct(true);
-		query.setName("name");
-
-		SelectQuery<?> q1 = query.queryWithParameters(Collections.<String, Object> emptyMap());
-		assertEquals("name", query.getName());
-		assertNull(q1.getName());
-	}
 	
 	@Test
 	public void testAndQualifier() {

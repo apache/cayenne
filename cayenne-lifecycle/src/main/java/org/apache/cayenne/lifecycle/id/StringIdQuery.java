@@ -68,9 +68,6 @@ public class StringIdQuery implements Query {
         return Arrays.asList(stringIds);
     }
 
-    @Deprecated
-    protected String name;
-
     protected Collection<String> stringIds;
 
     protected transient Map<String, SelectQuery> idQueriesByEntity;
@@ -246,14 +243,5 @@ public class StringIdQuery implements Query {
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         throw new UnsupportedOperationException(
                 "This query was supposed to be replace with a set of SelectQueries during the route phase");
-    }
-
-    @Deprecated
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

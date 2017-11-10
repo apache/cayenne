@@ -70,9 +70,4 @@ class IncrementalQuery implements Query {
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         return query.createSQLAction(visitor);
     }
-
-    @Deprecated
-    public String getName() {
-        return query.getName();
-    }
 }

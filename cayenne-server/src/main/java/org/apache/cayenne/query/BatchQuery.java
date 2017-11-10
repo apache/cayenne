@@ -41,9 +41,6 @@ public abstract class BatchQuery implements Query {
      */
     protected DbEntity dbEntity;
 
-    @Deprecated
-    protected String name;
-
     /**
      * @since 4.0
      */
@@ -65,16 +62,6 @@ public abstract class BatchQuery implements Query {
      */
     public List<BatchQueryRow> getRows() {
         return rows;
-    }
-
-    @Override
-    @Deprecated
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**

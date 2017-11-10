@@ -145,12 +145,6 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 	}
 
 	@Override
-	@Deprecated
-	public String getName() {
-		return query.getName();
-	}
-
-	@Override
 	public List<Ordering> getOrderings() {
 		return query.getOrderings();
 	}
@@ -246,12 +240,6 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 	@Override
 	public void setFetchLimit(int fetchLimit) {
 		query.setFetchLimit(fetchLimit);
-	}
-
-	@Override
-	@Deprecated
-	public void setName(String name) {
-		query.setName(name);
 	}
 
 	@Override

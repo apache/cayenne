@@ -58,7 +58,7 @@ public abstract class FluentSelect<T> extends IndirectQuery implements Select<T>
     /**
      * Translates self to a SelectQuery.
      */
-    @SuppressWarnings({"deprecation", "unchecked"})
+    @SuppressWarnings("unchecked")
     @Override
     protected Query createReplacementQuery(EntityResolver resolver) {
 
@@ -87,7 +87,6 @@ public abstract class FluentSelect<T> extends IndirectQuery implements Select<T>
             throw new CayenneRuntimeException("Undefined root entity of the query");
         }
 
-        replacement.setName(name);
         replacement.setQualifier(where);
         replacement.addOrderings(orderings);
         replacement.setPrefetchTree(prefetches);

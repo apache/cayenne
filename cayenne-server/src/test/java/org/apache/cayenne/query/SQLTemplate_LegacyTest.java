@@ -39,25 +39,19 @@ public class SQLTemplate_LegacyTest {
 	@Deprecated
 	public void testQueryWithParameters() {
 		SQLTemplate q1 = new SQLTemplate("E1", "SELECT");
-		q1.setName("QName");
 
 		Query q2 = q1.queryWithParameters(Collections.EMPTY_MAP);
 		assertNotNull(q2);
 		assertNotSame(q1, q2);
 		assertTrue(q2 instanceof SQLTemplate);
 
-		assertNull(q2.getName());
-
 		Query q3 = q1.queryWithParameters(Collections.singletonMap("a", "b"));
 		assertNotNull(q3);
 		assertNotSame(q1, q3);
-		assertNull(q3.getName());
-		assertFalse(q1.getName().equals(q3.getName()));
 
 		Query q4 = q1.queryWithParameters(Collections.singletonMap("a", "b"));
 		assertNotNull(q4);
 		assertNotSame(q3, q4);
-		assertEquals(q3.getName(), q4.getName());
 	}
 
 	@SuppressWarnings("unchecked")

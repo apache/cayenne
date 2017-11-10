@@ -28,10 +28,6 @@ public class MockAbstractQuery extends AbstractQuery {
 
     }
 
-    public MockAbstractQuery(String name) {
-        setName(name);
-    }
-
     @Override
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         return null;

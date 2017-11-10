@@ -246,6 +246,21 @@ UPGRADING TO 4.1.M2
       - removed NamedQuery in org.apache.cayenne.query;
       - removed int size() in org.apache.cayenne.jcache.JCacheQueryCache and org.apache.cayenne.cache.NestedQueryCache;
       - removed int size() in org.apache.cayenne.cache.QueryCache;
+      - deprecated getEOName() in org.apache.cayenne.wocompat.EOQuery;
+      - changes in org.apache.cayenne.modeler.DisplayEventType: Query getName change to QueryDescriptor getName();
+      - removed append(getName()) from toString() in org.apache.cayenne.query.AbstractQuery;
+      - removed getName() from org.apache.cayenne.wocompat.EOQueryTest, org.apache.cayenne.query.SelectQueryTest,
+      org.apache.cayenne.query.EJBQLQueryIT, org.apache.cayenne.query.SQLTemplate_LegacyTest, org.apache.cayenne.map.SelectQueryDescriptorTest
+      org.apache.cayenne.map.SQLTemplateDescriptorTest;
+      - removed getName() from org.apache.cayenne.query.AbstractQuery, from org.apache.cayenne.query.BatchQuery, org.apache.cayenne.access.DataDomainQuery,
+      org.apache.cayenne.query.EJBQLQuery, org.apache.cayenne.IncrementalQuery, org.apache.cayenne.remote.IncrementalSelectQuery, org.apache.cayenne.query.IndirectQuery,
+      org.apache.cayenne.access.ObjectsFromDataRowsQuery, org.apache.cayenne.query.QueryChain, org.apache.cayenne.remote.RangeQuery, org.apache.cayenne.lifecycle.id.StringIdQuery,
+      org.apache.cayenne.query.MockQuery, org.apache.cayenne.query.RefreshQuery; org.apache.cayenne.query.Query;
+      - removed setName(String name) from org.apache.cayenne.remote.IncrementalSelectQuery, org.apache.cayenne.map.SelectQueryDescriptor, org.apache.cayenne.map.SQLTemplateDescriptor,
+      org.apache.cayenne.map.ProcedureQueryDescriptor, org.apache.cayenne.query.FluentSelect, org.apache.cayenne.query.AbstractQuery org.apache.cayenne.query.EJBQLQuery, org.apache.cayenne.BatchQuery
+      org.apache.cayenne.query.QueryChain org.apache.cayenne.lifecycle.StringIdQuery;
+      - removed setName(String name) in org.apache.cayenne.query.SelectQueryCacheKeyIT, org.apache.cayenne.query.SQLTemplateCacheKeyIT, org.apache.cayenne.query.ProcedureQueryCacheKeyIT,
+      org.apache.cayenne.query.SQLTemplate_LegacyTest, org.apache.cayenne.query.MockAbstractQuery;
 
 UPGRADING TO 4.1.M1
 

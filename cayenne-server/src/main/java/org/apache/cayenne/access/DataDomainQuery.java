@@ -70,11 +70,6 @@ class DataDomainQuery implements Query, QueryMetadata {
         return null;
     }
 
-    @Deprecated
-    public String getName() {
-        return null;
-    }
-
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
     }
 

@@ -62,14 +62,4 @@ public interface Query extends Serializable {
      * @since 1.2
      */
     SQLAction createSQLAction(SQLActionVisitor visitor);
-
-    /**
-     * Returns a symbolic name of the query. The name is normally used as a key to find
-     * queries stored in the DataMap.
-     * 
-     * @since 1.1
-     * @deprecated {@link QueryDescriptor#getName()} should be used instead
-     */
-    @Deprecated
-    String getName();
 }

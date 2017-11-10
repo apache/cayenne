@@ -51,7 +51,6 @@ public class EOQueryTest {
 
         EOQuery query = new EOQuery(map.getObjEntity("Entity1"), (Map) fspecMap
                 .get("E1FS1"));
-        assertNull(query.getName());
 
         assertNotNull(query.getQualifier());
         assertEquals(

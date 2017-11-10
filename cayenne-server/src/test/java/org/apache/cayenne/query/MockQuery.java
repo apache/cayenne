@@ -46,11 +46,6 @@ public class MockQuery implements Query {
         return selecting;
     }
 
-    @Deprecated
-    public String getName() {
-        return null;
-    }
-
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         return null;
     }

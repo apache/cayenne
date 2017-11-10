@@ -51,17 +51,6 @@ public abstract class IndirectQuery implements Query {
 		return getReplacementQuery(resolver).getMetaData(resolver);
 	}
 
-	@Override
-	@Deprecated
-	public String getName() {
-		return name;
-	}
-
-	@Deprecated
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	/**
 	 * Delegates routing to a replacement query.
 	 */

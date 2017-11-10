@@ -40,8 +40,6 @@ import java.util.Map;
 public class EJBQLQuery extends CacheableQuery {
 
     @Deprecated
-    protected String name;
-    @Deprecated
     protected DataMap dataMap;
     protected String ejbqlStatement;
     
@@ -127,16 +125,6 @@ public class EJBQLQuery extends CacheableQuery {
         }
 
         return expression;
-    }
-
-    @Deprecated
-    public String getName() {
-        return name;
-    }
-
-    @Deprecated
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**

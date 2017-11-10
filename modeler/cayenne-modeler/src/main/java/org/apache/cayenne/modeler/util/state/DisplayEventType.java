@@ -24,6 +24,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
 import org.apache.cayenne.query.Query;
@@ -54,8 +55,8 @@ public abstract class DisplayEventType {
             return ((DataMap) object).getName();
         } else if (object instanceof Embeddable) {
             return ((Embeddable) object).getClassName();
-        } else if (object instanceof Query) {
-            return ((Query) object).getName();
+        } else if (object instanceof QueryDescriptor) {
+            return ((QueryDescriptor) object).getName();
         } else {
             return "";
         }

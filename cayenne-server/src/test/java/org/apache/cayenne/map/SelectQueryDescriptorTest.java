@@ -39,15 +39,6 @@ public class SelectQueryDescriptorTest {
     }
 
     @Test
-    public void testGetQueryName() throws Exception {
-        SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
-        builder.setRoot("FakeRoot");
-        builder.setName("xyz");
-
-        assertEquals("xyz", builder.buildQuery().getName());
-    }
-
-    @Test
     public void testGetQueryRoot() throws Exception {
         DataMap map = new DataMap();
         ObjEntity entity = new ObjEntity("A");

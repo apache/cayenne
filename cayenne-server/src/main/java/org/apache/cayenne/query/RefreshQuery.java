@@ -85,10 +85,6 @@ public class RefreshQuery implements Query {
         return new BaseQueryMetadata();
     }
 
-    public String getName() {
-        return null;
-    }
-
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
         // noop
     }
@@ -136,11 +132,6 @@ public class RefreshQuery implements Query {
                 }
 
                 return wrappedMd;
-            }
-
-            @Deprecated
-            public String getName() {
-                return query.getName();
             }
 
             public void route(

@@ -149,11 +149,6 @@ class RangeQuery implements Query {
         throw new UnsupportedOperationException();
     }
 
-    @Deprecated
-    public String getName() {
-        throw new UnsupportedOperationException();
-    }
-
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
         throw new UnsupportedOperationException();
     }
