@@ -106,16 +106,11 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        assertEquals(0, clientContext.getQueryCache().size());
-        assertEquals(0, serverContext.getQueryCache().size());
-
         List<?> results = clientContext.performQuery(query);
 
-        assertEquals(1, clientContext.getQueryCache().size());
         assertSame(results, clientContext.getQueryCache().get(
                 query.getMetaData(clientContext.getEntityResolver())));
 
-        assertEquals(0, serverContext.getQueryCache().size());
     }
 
     @Test

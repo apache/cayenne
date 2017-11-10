@@ -244,6 +244,8 @@ UPGRADING TO 4.1.M2
       - removed ClientMultiTier and _ClientMultiTier in org.apache.cayenne.testdo.mt;
       - removed NamedQueryTest in org.apache.cayenne.query.NamedQueryTest;
       - removed NamedQuery in org.apache.cayenne.query;
+      - removed int size() in org.apache.cayenne.jcache.JCacheQueryCache and org.apache.cayenne.cache.NestedQueryCache;
+      - removed int size() in org.apache.cayenne.cache.QueryCache;
 
 UPGRADING TO 4.1.M1
 
