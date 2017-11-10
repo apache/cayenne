@@ -37,12 +37,12 @@ import java.util.Set;
 
 /**
  * Map that transparently stores values as references and resolves them as needed.
- * Though this implementation try to follow general {@link Map} contract (including equals() and hashCode())
+ * Though this implementation tries to follow general {@link Map} contract (including equals() and hashCode())
  * it is not intended for general usage.
  * <p>
  * There is no HardReferenceMap as simple HashMap can be used for that.
  * <p>
- * This map doesn't guaranties that value will be there even right after put(), as GC can remove it at any time.
+ * This map doesn't guarantee that value will be there even right after put(), as GC can remove it at any time.
  * <p>
  * This implementation supports proper serialization, concrete classes should use {@link #writeObjectInternal(ObjectOutputStream)}
  * and {@link #readObjectInternal(ObjectInputStream)} methods to support it too.
