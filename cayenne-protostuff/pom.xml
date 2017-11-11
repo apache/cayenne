@@ -65,12 +65,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.cayenne</groupId>
-            <artifactId>cayenne-java8</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>

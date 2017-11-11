@@ -24,7 +24,6 @@ import org.apache.cayenne.configuration.rop.client.ClientConstants;
 import org.apache.cayenne.configuration.rop.client.ClientJettyHttp2Module;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.configuration.rop.client.ProtostuffModule;
-import org.apache.cayenne.java8.Java8Module;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.rop.JettyHttp2ClientConnectionProvider;
 import org.apache.cayenne.rop.http.JettyHttpROPConnector;
@@ -68,8 +67,7 @@ public class Http2Client {
 
         ClientRuntime runtime = new ClientRuntime(properties,
                 new ClientJettyHttp2Module(),
-                new ProtostuffModule(),
-                new Java8Module());
+                new ProtostuffModule());
 
         ObjectContext context = runtime.newContext();
 

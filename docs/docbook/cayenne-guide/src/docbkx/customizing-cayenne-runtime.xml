@@ -317,7 +317,6 @@ binder.bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
     .build();]]></programlisting>
             </para>
             <para>More examples of implementation you can find in
-                <!--<link xlink:href="https://github.com/apache/cayenne/tree/master/cayenne-java8">cayenne-java8 module</link> or-->
                 <link xlink:href="https://github.com/apache/cayenne/tree/master/cayenne-joda">cayenne-joda module</link>.</para>
         </section>
         <section xml:id="extendedtypes">
