@@ -105,7 +105,7 @@ public class CayenneUndoManager extends javax.swing.undo.UndoManager {
     private void focusObjEntity(RemoveAttributeUndoableEdit removeAttributeUndoableEdit){
     	DbEntityCounterpartAction bbEntityCounterpartAction = new  DbEntityCounterpartAction(application);
     	ObjEntity entity = removeAttributeUndoableEdit.getObjEntity();
-    	if(removeAttributeUndoableEdit.getObjEntity()!=null)
+    	if(entity != null)
     		bbEntityCounterpartAction.viewCounterpartEntity(entity);
     }
   
