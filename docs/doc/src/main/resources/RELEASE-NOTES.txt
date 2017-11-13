@@ -17,6 +17,7 @@ Changes/New Features:
 Bug Fixes:
 
 CAY-2370 ValueObjectType for byte[] fails lookup
+CAY-2380 ReferenceMap should not store or return null values
 
 ----------------------------------
 Release: 4.1.M1
