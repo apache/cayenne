@@ -61,12 +61,8 @@ public class ServerRuntimeBuilder {
 
     /**
      * Creates an empty builder.
-     *
-     * @deprecated since 4.0.M5 in favor of {@link ServerRuntime#builder()}
      */
-    @Deprecated
-    // TODO remove once we are comfortable with removal of the deprecated API
-    public ServerRuntimeBuilder() {
+    protected ServerRuntimeBuilder() {
         this(null);
     }
 
@@ -74,12 +70,8 @@ public class ServerRuntimeBuilder {
      * Creates a builder with a fixed name of the DataDomain of the resulting
      * ServerRuntime. Specifying explicit name is often needed for consistency
      * in runtimes merged from multiple configs, each having its own name.
-     *
-     * @deprecated since 4.0.M5 in favor of {@link ServerRuntime#builder(String)}
      */
-    @Deprecated
-    // TODO make private once we are comfortable with removal of the deprecated API
-    public ServerRuntimeBuilder(String name) {
+    protected ServerRuntimeBuilder(String name) {
         this.configs = new LinkedHashSet<>();
         this.modules = new ArrayList<>();
         this.name = name;

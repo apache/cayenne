@@ -266,6 +266,9 @@ UPGRADING TO 4.1.M2
 
       - removed setDataMap from buildQuery() in SQLTemplateDescriptor, SelectQueryDescriptor, ProcedureQueryDescriptor and EJBQLQueryDescriptor;
       - removed setDataMap from org.apache.cayenne.AbstractQuery and from org.apache.cayenne.query.EJBQLQuery;
+      - removed ServerRuntime(String configurationLocation, Module... extraModules), ServerRuntime(String[] configurationLocations, Module... extraModules) and
+      Collection<Module> collectModules(final String[] configurationLocations, Module... extraModules) from org.apache.cayenne.configuration.server.ServerRuntime;
+
 
 UPGRADING TO 4.1.M1
 

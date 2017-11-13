@@ -37,6 +37,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -73,38 +74,6 @@ public class ServerRuntimeTest {
 
     }
 
-    @Deprecated
-    @Test
-    public void testDefaultConstructor_SingleLocation() {
-        ServerRuntime runtime = new ServerRuntime("xxxx");
-
-        List<String> locations = runtime.getInjector().getInstance(
-                Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
-
-        assertEquals(Arrays.asList("xxxx"), locations);
-
-        Collection<Module> modules = runtime.getModules();
-        assertEquals(2, modules.size());
-        Module m0 = modules.iterator().next();
-        assertTrue(m0 instanceof ServerModule);
-    }
-
-    @Test
-    @Deprecated
-    public void testDefaultConstructor_MultipleLocations() {
-        ServerRuntime runtime = new ServerRuntime(new String[]{"xxxx", "yyyy"});
-
-        List<String> locations = runtime.getInjector().getInstance(
-                Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
-
-        assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
-
-        Collection<Module> modules = runtime.getModules();
-        assertEquals(2, modules.size());
-        Module m0 = modules.iterator().next();
-        assertTrue(m0 instanceof ServerModule);
-    }
-
     @Test
     @Deprecated
     public void testConstructor_Modules() {
@@ -125,7 +94,6 @@ public class ServerRuntimeTest {
     }
 
     @Test
-    @Deprecated
     public void testGetDataChannel_CustomModule() {
         final DataChannel channel = new DataChannel() {
 
@@ -148,12 +116,11 @@ public class ServerRuntimeTest {
 
         Module module = binder -> binder.bind(DataChannel.class).toInstance(channel);
 
-        ServerRuntime runtime = new ServerRuntime("Yuis", module);
+        ServerRuntime runtime = new ServerRuntime(Collections.singleton(module));
         assertSame(channel, runtime.getChannel());
     }
 
     @Test
-    @Deprecated
     public void testGetObjectContext_CustomModule() {
         final ObjectContext context = new DataContext();
         final ObjectContextFactory factory = new ObjectContextFactory() {
@@ -169,7 +136,7 @@ public class ServerRuntimeTest {
 
         Module module = binder -> binder.bind(ObjectContextFactory.class).toInstance(factory);
 
-        ServerRuntime runtime = new ServerRuntime("mnYw", module);
+        ServerRuntime runtime = new ServerRuntime(Collections.singleton(module));
         assertSame(context, runtime.newContext());
         assertSame(context, runtime.newContext());
     }
