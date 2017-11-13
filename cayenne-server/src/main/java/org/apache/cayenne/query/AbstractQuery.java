@@ -56,7 +56,7 @@ public abstract class AbstractQuery extends CacheableQuery {
      */
     public QueryMetadata getMetaData(EntityResolver resolver) {
         BaseQueryMetadata md = new BaseQueryMetadata();
-        md.resolve(getRoot(), resolver, null);
+        md.resolve(getRoot(), resolver);
         return md;
     }
 

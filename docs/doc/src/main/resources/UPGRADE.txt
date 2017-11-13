@@ -262,6 +262,10 @@ UPGRADING TO 4.1.M2
       - removed setName(String name) in org.apache.cayenne.query.SelectQueryCacheKeyIT, org.apache.cayenne.query.SQLTemplateCacheKeyIT, org.apache.cayenne.query.ProcedureQueryCacheKeyIT,
       org.apache.cayenne.query.SQLTemplate_LegacyTest, org.apache.cayenne.query.MockAbstractQuery;
 
+      - removed String cacheKey from boolean resolve(Object root, EntityResolver resolver) arguments;
+
+
+
 UPGRADING TO 4.1.M1
 
 * Per CAY-2351 Minimum supported Java version is now Java 8. There is no options to use Cayenne 4.1 with earlier

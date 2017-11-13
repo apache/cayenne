@@ -91,11 +91,9 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 		setPrefetchTree(info.getPrefetchTree());
 	}
 
-	boolean resolve(Object root, EntityResolver resolver, String cacheKey) {
+	boolean resolve(Object root, EntityResolver resolver) {
 
 		if (lastRoot != root || lastEntityResolver != resolver) {
-
-			this.cacheKey = cacheKey;
 
 			this.classDescriptor = null;
 			this.dbEntity = null;

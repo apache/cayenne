@@ -43,7 +43,7 @@ class EJBQLQueryMetadata extends BaseQueryMetadata {
 
         ObjEntity root = expression.getRootDescriptor().getEntity();
 
-        if (!super.resolve(root, resolver, null)) {
+        if (!super.resolve(root, resolver)) {
             return false;
         }
 
