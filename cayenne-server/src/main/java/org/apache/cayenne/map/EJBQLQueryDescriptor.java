@@ -52,7 +52,6 @@ public class EJBQLQueryDescriptor extends QueryDescriptor {
     @Override
     public EJBQLQuery buildQuery() {
         EJBQLQuery ejbqlQuery = new EJBQLQuery(this.getEjbql());
-        ejbqlQuery.setDataMap(dataMap);
         ejbqlQuery.initWithProperties(this.getProperties());
 
         return ejbqlQuery;

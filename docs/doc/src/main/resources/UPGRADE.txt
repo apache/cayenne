@@ -264,7 +264,8 @@ UPGRADING TO 4.1.M2
 
       - removed String cacheKey from boolean resolve(Object root, EntityResolver resolver) arguments;
 
-
+      - removed setDataMap from buildQuery() in SQLTemplateDescriptor, SelectQueryDescriptor, ProcedureQueryDescriptor and EJBQLQueryDescriptor;
+      - removed setDataMap from org.apache.cayenne.AbstractQuery and from org.apache.cayenne.query.EJBQLQuery;
 
 UPGRADING TO 4.1.M1
 

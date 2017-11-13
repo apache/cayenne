@@ -39,8 +39,6 @@ import java.util.Map;
  */
 public class EJBQLQuery extends CacheableQuery {
 
-    @Deprecated
-    protected DataMap dataMap;
     protected String ejbqlStatement;
     
     protected Map<String, Object> namedParameters;
@@ -54,15 +52,6 @@ public class EJBQLQuery extends CacheableQuery {
     }
 
     public EJBQLQuery() {
-    }
-    
-    
-    /**
-     * @since 3.1
-     */
-    @Deprecated
-    public void setDataMap(DataMap dataMap) {
-        this.dataMap = dataMap;
     }
 
     public void initWithProperties(Map<String, ?> properties) {

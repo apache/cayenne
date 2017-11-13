@@ -75,7 +75,6 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
             template.setRoot(root);
         }
 
-        template.setDataMap(dataMap);
         template.initWithProperties(this.getProperties());
 
         // init SQL

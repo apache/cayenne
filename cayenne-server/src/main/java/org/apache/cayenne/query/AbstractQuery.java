@@ -38,17 +38,6 @@ public abstract class AbstractQuery extends CacheableQuery {
      */
     protected Object root;
 
-    @Deprecated
-    protected DataMap dataMap;
-
-    /**
-     * @since 3.1
-     */
-    @Deprecated
-    public void setDataMap(DataMap dataMap) {
-        this.dataMap = dataMap;
-    }
-
     /**
      * Returns default select parameters.
      * 
