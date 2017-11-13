@@ -21,7 +21,7 @@
 	<groupId>org.apache.cayenne</groupId>
 	<name>Cayenne</name>
 
-	<version>3.1.2-SNAPSHOT</version>
+	<version>3.1.2</version>
 	<packaging>pom</packaging>
 
 	<description>
@@ -200,7 +200,7 @@
 		<connection>scm:git:https://git-wip-us.apache.org/repos/asf/cayenne.git</connection>
 		<developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/cayenne.git</developerConnection>
 		<url>https://github.com/apache/cayenne</url>
-		<tag>STABLE-3.1</tag>
+		<tag>3.1.2</tag>
 	</scm>
 	<organization>
 		<name>Apache Cayenne</name>
