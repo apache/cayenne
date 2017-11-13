@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -44,8 +45,7 @@ import java.util.Set;
  * <p>
  * This map doesn't guarantee that value will be there even right after put(), as GC can remove it at any time.
  * <p>
- * This implementation supports proper serialization, concrete classes should use {@link #writeObjectInternal(ObjectOutputStream)}
- * and {@link #readObjectInternal(ObjectInputStream)} methods to support it too.
+ * This implementation supports proper serialization.
  * <p>
  *
  * @param <K> key type
@@ -63,8 +63,6 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
      * Implementation notes:
      *  - internally data stored in HashMap thus this class and all implementations are not thread safe;
      *  - to track references that were cleared ReferenceQueue is used;
-     *  - this map stores not only direct key => ref map but also a reverse ref => key to be able
-     *  effectively clear data that was removed by GC;
      *  - this map is abstract, all that required for the concrete implementation is
      *  to define newReference(Object) method;
      *  - all accessors/modifiers should call checkReferenceQueue() to clear all stale data
@@ -75,7 +73,7 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
     /**
      * This is a main data storage used for most operations
      */
-    protected transient Map<K, R> map;
+    protected transient HashMap<K, R> map;
 
     protected transient ReferenceQueue<V> referenceQueue;
 
@@ -121,12 +119,14 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
     public boolean containsValue(Object value) {
         checkReferenceQueue();
         for(R ref : map.values()) {
-            if(ref != null) {
-                V v = ref.get();
-                if(v != null) {
-                    if(v.equals(value)) {
-                        return true;
-                    }
+            if(ref == null) {
+                // should not happen, we can't have nulls in internal map
+                throw new IllegalStateException();
+            }
+            V v = ref.get();
+            if(v != null) {
+                if(v.equals(value)) {
+                    return true;
                 }
             }
         }
@@ -145,6 +145,9 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
 
     @Override
     public V put(K key, V value) {
+        if(value == null) {
+            throw new NullPointerException("ReferenceMap can't contain null values");
+        }
         checkReferenceQueue();
         R refValue = newReference(value);
         R oldValue = map.put(key, refValue);
@@ -168,6 +171,9 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
     public void putAll(Map<? extends K, ? extends V> m) {
         checkReferenceQueue();
         for(Map.Entry<? extends K, ? extends V> entry : m.entrySet()) {
+            if(entry.getValue() == null) {
+                throw new NullPointerException("ReferenceMap can't contain null values");
+            }
             R value = newReference(entry.getValue());
             map.put(entry.getKey(), value);
         }
@@ -182,6 +188,7 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
     @Override
     public Set<K> keySet() {
         checkReferenceQueue();
+        // should this check for cleared references? it can be invalid later anyway...
         return map.keySet();
     }
 
@@ -193,7 +200,11 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
         Collection<V> values = new ArrayList<>(referenceValues.size());
         for(R v : referenceValues) {
             if(v != null) {
-                values.add(v.get());
+                V value = v.get();
+                // check for null in case GC cleared some values after last queue check
+                if(value != null) {
+                    values.add(value);
+                }
             }
         }
         return values;
@@ -254,25 +265,20 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
     abstract R newReference(V value);
 
     private void writeObject(ObjectOutputStream out) throws IOException {
-        writeObjectInternal(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readObjectInternal(in);
-    }
-
-    protected void writeObjectInternal(ObjectOutputStream out) throws IOException {
         checkReferenceQueue();
-        Map<K, V> replacementMap = new HashMap<>();
+        Map<K, V> replacementMap = new HashMap<>(map.size());
         for(Entry<K, R> entry : map.entrySet()) {
             if(entry.getValue() != null) {
-                replacementMap.put(entry.getKey(), entry.getValue().get());
+                V value = entry.getValue().get();
+                if(value != null) {
+                    replacementMap.put(entry.getKey(), value);
+                }
             }
         }
         out.writeObject(replacementMap);
     }
 
-    protected void readObjectInternal(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         @SuppressWarnings("unchecked")
         Map<K, V> replacement = (Map<K, V>) in.readObject();
         map = new HashMap<>(replacement.size());
@@ -297,24 +303,53 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
     }
 
     /**
-     * Iterator used by entrySet. Wrapper around {@link #map} iterator
+     * Iterator used by entrySet. Wrapper around {@link #map} iterator.
+     * It fetch ahead to be sure we have valid value, or otherwise we can return cleared reference.
      */
     class ReferenceEntryIterator implements Iterator<Entry<K, V>> {
 
         Iterator<Entry<K, R>> internalIterator;
 
+        Entry<K, V> next;
+
         ReferenceEntryIterator() {
             internalIterator = map.entrySet().iterator();
+            tryAdvance();
         }
 
         @Override
         public boolean hasNext() {
-            return internalIterator.hasNext();
+            return next != null;
         }
 
         @Override
         public Entry<K, V> next() {
-            return new ReferenceEntry(internalIterator.next());
+            if(!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            Entry<K, V> result = next;
+            tryAdvance();
+            return result;
+        }
+
+        /**
+         * Moves ahead internalIterator and tries to find first and store nonnull reference
+         */
+        private void tryAdvance() {
+            next = null;
+
+            while(internalIterator.hasNext()) {
+                Entry<K, R> nextRefEntry = internalIterator.next();
+                if(nextRefEntry.getValue() == null) {
+                    // should not happen, we can't have nulls in internal map
+                    throw new IllegalStateException();
+                }
+                V value = nextRefEntry.getValue().get();
+                if(value != null) {
+                    next = new ReferenceEntry(nextRefEntry, value);
+                    break;
+                }
+            }
         }
     }
 
@@ -327,8 +362,8 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
 
         Entry<K, R> refEntry;
 
-        public ReferenceEntry(Entry<K, R> refEntry) {
-            super(refEntry.getKey(), refEntry.getValue() != null ? refEntry.getValue().get() : null);
+        public ReferenceEntry(Entry<K, R> refEntry, V value) {
+            super(refEntry.getKey(), value);
             this.refEntry = refEntry;
         }
 
@@ -337,7 +372,7 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
             R newRef = newReference(value);
             R oldRef = refEntry.setValue(newRef);
             if(oldRef != null) {
-                return oldRef.get();
+                return getValue();
             }
             return null;
         }

@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.util;
 
+import java.io.Serializable;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -73,7 +74,7 @@ public class WeakValueMapTest {
         Map<String, Integer> data = new HashMap<>();
         data.put("key_1", 123);
         data.put("key_2", 42);
-        data.put("key_3", null);
+        data.put("key_3", 543);
 
         Map<String, Integer> map = new WeakValueMap<>(data);
 
@@ -84,7 +85,7 @@ public class WeakValueMapTest {
         assertFalse(map.containsValue(321));
         assertTrue(map.containsValue(42));
         assertNull(map.get("nonexistent_key2"));
-        assertNull(map.get("key_3"));
+        assertEquals(Integer.valueOf(543), map.get("key_3"));
         assertEquals(new Integer(123), map.getOrDefault("key_1", 42));
 
         assertEquals(data.size(), map.values().size());
@@ -101,7 +102,7 @@ public class WeakValueMapTest {
         Map<String, Integer> data = new HashMap<>();
         data.put("key_1", 123);
         data.put("key_2", 42);
-        data.put("key_3", null);
+        data.put("key_3", 543);
 
         Map<String, Integer> map = new WeakValueMap<>(data);
 
@@ -123,7 +124,7 @@ public class WeakValueMapTest {
         Map<String, Integer> map = new WeakValueMap<>();
         map.put("key_1", 123);
         map.put("key_2", 42);
-        map.put("key_3", null);
+        map.put("key_3", 543);
         assertEquals(3, map.size());
 
         int counter = 0;
@@ -141,18 +142,20 @@ public class WeakValueMapTest {
 
     @Test
     public void testSerializationSupport() throws Exception {
-        WeakValueMap<String, Integer> map = new WeakValueMap<>();
+        WeakValueMap<String, Object> map = new WeakValueMap<>();
         map.put("key_1", 123);
         map.put("key_2", 42);
-        map.put("key_3", null);
-        assertEquals(3, map.size());
+        map.put("key_3", 543);
+        map.put("key_4", new TestSerializable());
+        assertEquals(4, map.size());
 
-        WeakValueMap<String, Integer> clone = Util.cloneViaSerialization(map);
+        WeakValueMap<String, Object> clone = Util.cloneViaSerialization(map);
 
-        assertEquals(3, clone.size());
-        assertEquals(new Integer(42), clone.get("key_2"));
+        assertEquals(4, clone.size());
+        assertEquals(42, clone.get("key_2"));
         assertTrue(clone.containsKey("key_3"));
         assertTrue(clone.containsValue(123));
+        assertTrue(clone.containsKey("key_4"));
     }
 
     @Test
@@ -160,13 +163,13 @@ public class WeakValueMapTest {
         Map<String, Integer> map1 = new WeakValueMap<>();
         map1.put("key_1", 123);
         map1.put("key_2", 42);
-        map1.put("key_3", null);
+        map1.put("key_3", 543);
         assertEquals(3, map1.size());
 
         Map<String, Integer> map2 = new HashMap<>();
         map2.put("key_1", 123);
         map2.put("key_2", 42);
-        map2.put("key_3", null);
+        map2.put("key_3", 543);
 
         assertEquals(map1, map2);
         assertEquals(map1.hashCode(), map2.hashCode());
@@ -177,8 +180,9 @@ public class WeakValueMapTest {
         Map<String, Integer> map = new WeakValueMap<>(3);
         map.put("key_1", 123);
         map.put("key_2", 42);
-        map.put("key_3", null);
-        assertEquals(3, map.size());
+        map.put("key_3", 543);
+        map.put("key_4", 321);
+        assertEquals(4, map.size());
 
         for(Map.Entry<String, Integer> entry : map.entrySet()) {
             if("key_2".equals(entry.getKey())) {
@@ -192,12 +196,32 @@ public class WeakValueMapTest {
         Map<String, Integer> map = new WeakValueMap<>(3);
         map.put("key_1", 123);
         map.put("key_2", 42);
-        map.put("key_3", null);
+        map.put("key_3", 543);
         assertEquals(3, map.size());
 
         Iterator<Map.Entry<String, Integer>> iterator = map.entrySet().iterator();
         while(iterator.hasNext()) {
             iterator.remove();
         }
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testPutNullValue() {
+        Map<Object, Object> map = new WeakValueMap<>();
+        map.put("1", null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testPutAllNullValue() {
+
+        Map<Object, Object> values = new HashMap<>();
+        values.put("123", null);
+
+        Map<Object, Object> map = new WeakValueMap<>();
+        map.putAll(values);
+    }
+
+    static class TestSerializable implements Serializable {
+        private static final long serialVersionUID = -8726479278547192134L;
     }
 }

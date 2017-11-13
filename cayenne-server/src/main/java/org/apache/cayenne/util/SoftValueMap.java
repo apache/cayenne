@@ -19,16 +19,14 @@
 
 package org.apache.cayenne.util;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.ref.SoftReference;
-import java.lang.ref.WeakReference;
 import java.util.Map;
 
 /**
- * Map that stores values wrapped into {@link WeakReference}
+ * Map that stores values wrapped into {@link SoftReference}
+ *
+ * @see WeakValueMap
  *
  * @since 4.1
  */
@@ -51,14 +49,5 @@ public class SoftValueMap<K, V> extends ReferenceMap<K, V, SoftReference<V>> imp
     @Override
     SoftReference<V> newReference(V value) {
         return new SoftReference<>(value, referenceQueue);
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeObjectInternal(out);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readObjectInternal(in);
     }
 }
