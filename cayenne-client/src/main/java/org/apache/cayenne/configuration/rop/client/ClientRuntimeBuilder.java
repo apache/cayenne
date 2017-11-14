@@ -53,7 +53,7 @@ public class ClientRuntimeBuilder {
     Injector serverInjector;
     private Map<String, String> properties;
 
-    ClientRuntimeBuilder() {
+     ClientRuntimeBuilder() {
         modules = new ArrayList<>();
         autoLoadModules = true;
         local = false;

@@ -52,55 +52,6 @@ public class ClientRuntime extends CayenneRuntime {
 		return new ClientRuntimeBuilder();
 	}
 
-	@Deprecated
-	private static Collection<Module> collectModules(Map<String, String> properties, Module... extraModules) {
-
-		Collection<Module> modules = extraModules != null ? asList(extraModules) : Collections.<Module>emptyList();
-		return collectModules(properties, modules);
-	}
-
-	@Deprecated
-	private static Collection<Module> collectModules(Map<String, String> properties, Collection<Module> extraModules) {
-		Collection<Module> modules = new ArrayList<>();
-		modules.add(new ClientModule(properties));
-
-		if(extraModules != null) {
-			modules.addAll(extraModules);
-		}
-
-		return modules;
-	}
-
-	/**
-	 * Creates a client runtime configuring it with a standard set of services
-	 * contained in {@link ClientModule}. CayenneClientModule is created based
-	 * on a set of properties that contain things like connection information,
-	 * etc. Recognized property keys are defined in {@link ClientModule}. An
-	 * optional array of extra modules may contain service overrides and/or user
-	 * services.
-	 *
-	 * @deprecated since 4.0, use {@link ClientRuntime#builder()} instead.
-	 */
-	@Deprecated
-	public ClientRuntime(Map<String, String> properties, Collection<Module> extraModules) {
-		this(collectModules(properties, extraModules));
-	}
-
-	/**
-	 * Creates a client runtime configuring it with a standard set of services
-	 * contained in {@link ClientModule}. CayenneClientModule is created based
-	 * on a set of properties that contain things like connection information,
-	 * etc. Recognized property keys are defined in {@link ClientModule}. An
-	 * optional collection of extra modules may contain service overrides and/or
-	 * user services.
-	 *
-	 * @deprecated since 4.0, use {@link ClientRuntime#builder()} instead.
-	 */
-	@Deprecated
-	public ClientRuntime(Map<String, String> properties, Module... extraModules) {
-		this(collectModules(properties, extraModules));
-	}
-
 	/**
 	 * @since 4.0
 	 */

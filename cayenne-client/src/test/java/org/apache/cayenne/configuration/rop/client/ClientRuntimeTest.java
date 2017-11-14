@@ -30,78 +30,19 @@ import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.MockClientConnection;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @SuppressWarnings("deprecation")
 public class ClientRuntimeTest {
 
     @Test
-	public void testDefaultConstructor() {
-		ClientRuntime runtime = new ClientRuntime(Collections.<String, String> emptyMap());
-
-		Collection<Module> modules = runtime.getModules();
-		assertEquals(1, modules.size());
-		Object[] marray = modules.toArray();
-
-		assertTrue(marray[0] instanceof ClientModule);
-	}
-
-    @Test
-	public void testConstructor_Modules() {
-
-		final boolean[] configured = new boolean[2];
-
-		Module m1 = binder -> configured[0] = true;
-
-		Module m2 = binder -> configured[1] = true;
-
-		Map<String, String> properties = new HashMap<>();
-
-		ClientRuntime runtime = new ClientRuntime(properties, m1, m2);
-		Collection<Module> modules = runtime.getModules();
-		assertEquals(3, modules.size());
-
-		assertTrue(configured[0]);
-		assertTrue(configured[1]);
-	}
-
-    @Test
-	public void testConstructor_ModulesCollection() {
-
-		final boolean[] configured = new boolean[2];
-
-		Collection<Module> modules = new ArrayList<Module>();
-
-		modules.add(binder -> configured[0] = true);
-
-		modules.add(binder -> configured[1] = true);
-
-		Map<String, String> properties = new HashMap<>();
-
-		ClientRuntime runtime = new ClientRuntime(properties, modules);
-		Collection<Module> cmodules = runtime.getModules();
-		assertEquals(3, cmodules.size());
-
-		assertTrue(configured[0]);
-		assertTrue(configured[1]);
-	}
-
-    @Test
 	public void testGetObjectContext() {
 
 		Map<String, String> properties = new HashMap<>();
-		ClientModule extraModule = new ClientModule(properties) {
+		ClientModule extraModule = new ClientModule() {
 
 			@Override
 			public void configure(Binder binder) {
@@ -112,7 +53,10 @@ public class ClientRuntimeTest {
 			}
 		};
 
-		ClientRuntime runtime = new ClientRuntime(properties, extraModule);
+		ClientRuntime runtime = ClientRuntime.builder()
+								.properties(properties)
+								.addModule(extraModule)
+								.build();
 
 		ObjectContext context = runtime.newContext();
 		assertNotNull(context);
@@ -134,7 +78,10 @@ public class ClientRuntimeTest {
             binder.bind(ClientConnection.class).to(MockClientConnection.class);
 
 
-		ClientRuntime runtime = new ClientRuntime(properties, extraModule);
+		ClientRuntime runtime = ClientRuntime.builder()
+								.properties(properties)
+								.addModule(extraModule)
+								.build();
 
 		DataChannel channel = runtime.getChannel();
 		assertNotNull(channel);
@@ -145,7 +92,9 @@ public class ClientRuntimeTest {
 	public void testShutdown() throws Exception {
 
 		Map<String, String> properties = new HashMap<>();
-		ClientRuntime runtime = new ClientRuntime(properties);
+		ClientRuntime runtime = ClientRuntime.builder()
+								.properties(properties)
+								.build();
 
 		// make sure objects to be shut down are resolved
 
