@@ -76,8 +76,8 @@ public class DbEntityCounterpartAction extends CayenneAction {
         ObjEntity entity = it.next();
         viewCounterpartEntity(entity);
     }
-    
-    public void viewCounterpartEntity(ObjEntity entity) {
+
+    public void viewCounterpartEntity(ObjEntity entity) {        
         TreePath path = buildTreePath(entity);
         editor().getProjectTreeView().getSelectionModel().setSelectionPath(path);
         

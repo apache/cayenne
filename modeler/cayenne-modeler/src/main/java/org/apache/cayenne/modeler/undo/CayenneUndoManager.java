@@ -22,9 +22,7 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.RedoAction;
 import org.apache.cayenne.modeler.action.UndoAction;
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -83,10 +81,9 @@ public class CayenneUndoManager extends javax.swing.undo.UndoManager {
 
             edit.stopWatchingCaretPosition();
         } else {
-        	if(e instanceof RemoveAttributeUndoableEdit)
-        		focusObjEntity((RemoveAttributeUndoableEdit)e);
-        	super.undo();
+            super.undo();
         }
+
         updateUI();
     }
 
@@ -101,12 +98,4 @@ public class CayenneUndoManager extends javax.swing.undo.UndoManager {
         undoAction.setName(getUndoPresentationName());
         redoAction.setName(getRedoPresentationName());
     }
-
-    private void focusObjEntity(RemoveAttributeUndoableEdit removeAttributeUndoableEdit){
-    	DbEntityCounterpartAction bbEntityCounterpartAction = new  DbEntityCounterpartAction(application);
-    	ObjEntity entity = removeAttributeUndoableEdit.getObjEntity();
-    	if(entity != null)
-    		bbEntityCounterpartAction.viewCounterpartEntity(entity);
-    }
-  
 }

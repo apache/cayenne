@@ -30,6 +30,7 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
+import org.apache.cayenne.modeler.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
@@ -114,6 +115,7 @@ public class RemoveAttributeUndoableEdit extends CayenneUndoableEdit {
             for (ObjAttribute attr : objAttributes) {
                 action.createObjAttribute(dataMap, objEntity, attr);
             }
+            focusObjEntity(action,objEntity);
         }
 
         if (dbEntity != null) {
@@ -130,6 +132,11 @@ public class RemoveAttributeUndoableEdit extends CayenneUndoableEdit {
 
     }
 
+    private void focusObjEntity(CreateAttributeAction action,ObjEntity objEntity){
+    	DbEntityCounterpartAction bbEntityCounterpartAction = new  DbEntityCounterpartAction(action.getApplication());
+   		bbEntityCounterpartAction.viewCounterpartEntity(objEntity);
+    }
+    
     @Override
     public String getPresentationName() {
         if (objEntity != null) {
@@ -152,8 +159,4 @@ public class RemoveAttributeUndoableEdit extends CayenneUndoableEdit {
 
         return super.getPresentationName();
     }
-
-	public ObjEntity getObjEntity() {
-		return objEntity;
-	}
 }
