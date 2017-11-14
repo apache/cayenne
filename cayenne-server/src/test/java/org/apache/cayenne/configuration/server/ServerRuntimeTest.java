@@ -75,7 +75,6 @@ public class ServerRuntimeTest {
     }
 
     @Test
-    @Deprecated
     public void testConstructor_Modules() {
 
         final boolean[] configured = new boolean[2];

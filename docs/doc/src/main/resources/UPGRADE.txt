@@ -7,273 +7,39 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 UPGRADING TO 4.1.M2
 
 * Per CAY-2377 Cleanup deprecated code
-      - removed void objEntityAdded(ObjEntity entity) in org.apache.cayenne.dbsync.reverse.dbload.DefaultDbLoaderDelegate
-      and in org.apache.cayenne.dbsync.reverse.DbLoaderDelegate;
-      - removed void objEntityRemoved(ObjEntity entity) in org.apache.cayenne.dbsync.reverse.dbload.DefaultDbLoaderDelegate
-      and in org.apache.cayenne.dbsync.reverse.DbLoaderDelegate;
-      - removed cayenne-java8 module and remove cayenne-java8 module from pom.xml;
-      - removed org.apache.cayenne.lifecycle.sort.SortWeight and org.apache.cayenne.lifecycle.sort.WeightedAshwoodEntitySorter
-      with tests. Since 4.0 moved to cayenne server org.apache.cayenne.ashwood.WeightedAshwoodEntitySorter,
-      org.apache.cayenne.ashwood.SortWeight;
-      - removed CayenneProjectModule from org.apache.cayenne.project since 4.0 renamed to ProjectModule;
-      - removed int getLine() renamed to getEndLine() and int getColumn() renamed to getEndColumn() in
-      org.apache.cayenne.wocompat.parser.SimpleCharStream;
-      - removed EOModelHelper(String path) since 4.0 use EOModelHelper(URL) in org.apache.cayenne.wocompat.EOModelHelper;
-      - removed <T> ListBuilder<T> bindList(String bindingName) since 4.0 use type-safe methods Binder#bindList(Class)
-      or Binder#bindList(Class, String) in org.apache.cayenne.di.Binder and org.apache.cayenne.di.spi.DefaultBinder;
-      - removed <T> MapBuilder<T> bindMap(String bindingName) since 4.0 use type-safe methods Binder#bindMap(Class) or
-      Binder#bindMap(Class, String) in org.apache.cayenne.di.Binder and org.apache.cayenne.di.spi.DefaultBinder with test
-      in DefaultInjectorInjectionTest void mapInjectionDeprecated();
-      - removed String oldDriver = "" use {@code <dataSource>} tag to set connection properties in
-      org.apache.cayenne.tools.DbGeneratorMojo;
-      - removed void setUrl(String url); void setDriver(String driver), void setMeaningfulPkTables(String meaningfulPkTables),
-      void setDefaultPackage(String defaultPackage) in org.apache.cayenne.tools.DbImporterMojo;
-      - removed String oldUrl = ""; String oldMeaningfulPkTables = ""; String oldDriver = ""; String oldDefaultPackage = "";
-      public OldReverseEngineering reverseEngineering; in org.apache.cayenne.tools.DbImporterMojo;
-      - removed org.apache.cayenne.tools.OldReverseEngineering
-      - removed void setDriver(String driver) in org.apache.cayenne.tools.DbGeneratorMojo;
-      - removed String makePath(String... pathParts) in org.apache.cayenne.CayenneDataObject;
-      - removed void addListener(LifecycleEvent type, Class<?> entityClass, String methodName);
-      since 4.0 renamed to addCallback(LifecycleEvent, Class, String) in org.apache.cayenne.reflect.LifecycleCallbackRegistry
-      - removed ClassLoader getClassLoader() {since 4.0 unused, as AdhocObjectFactory.getClassLoader() is used instead} in
-      org.apache.cayenne.resource.ClassLoaderResourceLocator;
-      - removed int getLine(); int getColumn(); {@see #getEndColumn, @see #getEndLine} in org.apache.cayenne.exp.parser.JavaCharStream;
-      - removed void encodeAsEJBQL(PrintWriter pw, String rootId); void encodeAsString(PrintWriter pw) since 4.0 use
-      {appendAsEJBQL(Appendable, String), appendAsString(Appendable)} in org.apache.cayenne.exp.parser.SimpleNode;
-      - removed void setPassword(String password); void setUserName(String userName) {since 4.0. Connection parameters are immutable.} in
-      org.apache.cayenne.datasource.DriverDataSource;
-      - removed String getUserName(); String getPassword() {since 4.0. Connection parameters are immutable and not readable.} in
-      org.apache.cayenne.datasource.DriverDataSource;
-      - removed void setConnectionUrl(String connectionUrl)  {since 4.0. Connection parameters are immutable and not readable.} in
-      org.apache.cayenne.datasource.DriverDataSource;
-      - removed void getConnectionUrl()  {since 4.0. Connection parameters are immutable and not readable.} in
-      org.apache.cayenne.datasource.DriverDataSource;
-      - removed BatchTranslatorFactory getBatchQueryBuilderFactory(); void setBatchQueryBuilderFactory(BatchTranslatorFactory batchQueryBuilderFactory)
-      {since 4.0 BatchQueryBuilderfactory is attached to the DataNode} in org.apache.cayenne.dba.JdbcAdapter;
-      - removed Expression fromString(String expressionString) {since 4.0 use ExpressionFactory#exp(String, Object...)} in
-      org.apache.cayenne.exp.Expression;
-      - removed abstract void encodeAsEJBQL(PrintWriter pw, String rootId); {since 4.0 use appendAsEJBQL(Appendable, String)} in
-      org.apache.cayenne.exp.Expression;
-      - removed abstract void encodeAsString(PrintWriter pw); {since 4.0 use appendAsString(Appendable)} in
-      org.apache.cayenne.exp.Expression;
-      - removed ObjectContext getContext(); ObjectContext getContext(DataChannel parentChannel)
-      {since 3.1 use better named newContext(); newContext(DataChannel)} instead} in org.apache.cayenne.configuration.CayenneRuntime;
-      - removed ROP_SERVICE_URL_PROPERTY, ROP_SERVICE_USERNAME_PROPERTY, ROP_SERVICE_PASSWORD_PROPERTY, ROP_SERVICE_REALM_PROPERTY,
-      ROP_SERVICE_USE_ALPN_PROPERTY, ROP_SERVICE_SHARED_SESSION_PROPERTY, ROP_SERVICE_TIMEOUT_PROPERTY, ROP_CHANNEL_EVENTS_PROPERTY,
-      ROP_CONTEXT_CHANGE_EVENTS_PROPERTY, ROP_CONTEXT_LIFECYCLE_EVENTS_PROPERTY {since 4.0 moved to cayenne-client
-      org.apache.cayenne.configuration.rop.client.ClientConstants} in org.apache.cayenne.configuration.Constants;
-      - removed void logConnect(String dataSource); void logConnect(String url, String userName, String password);
-      void logPoolCreated(DataSourceInfo dsi); void logConnectSuccess(); void logConnectFailure(Throwable th);
-      {since 4.0 connection events are logged by the DataSources using their own logger} in
-      org.apache.cayenne.log.JdbcEventLogger and in org.apache.cayenne.log.NoopJdbcEventLogger and in org.apache.cayenne.log.Slf4jJdbcEventLogger;
-      - removed void clearCache(); {since 4.0 in favor of refreshMappingCache()} in org.apache.cayenne.map.EntityResolver;
-      - removed Collection<SQLResult> getResultSets(); {since 4.0 use getResults()} in org.apache.cayenne.map.EntityResolver;
-      - removed EntityInheritanceTree lookupInheritanceTree(String entityName) {since 4.0 use getInheritanceTree(String)} in org.apache.cayenne.map.EntityResolver;
-      - removed Procedure lookupProcedure(Query q) {since 4.0 use q.getMetaData(resolver).getProcedure()} in org.apache.cayenne.map.EntityResolver;
-      - removed final String USING_EXTERNAL_TRANSACTIONS_PROPERTY = "cayenne.DataDomain.usingExternalTransactions"; final boolean USING_EXTERNAL_TRANSACTIONS_DEFAULT = false;
-      {since 4.0 See Constants#SERVER_EXTERNAL_TX_PROPERTY} in org.apache.cayenne.access.DataDomain;
-      - removed static final String EVENT_BRIDGE_FACTORY_DEFAULT = "org.apache.cayenne.event.JavaGroupsBridgeFactory"; static final String
-      REMOTE_NOTIFICATION_PROPERTY = "cayenne.DataRowStore.remote.notify"; static final String SNAPSHOT_EXPIRATION_PROPERTY = "cayenne.DataRowStore.snapshot.expiration";
-      {since 4.0 does nothing} in org.apache.cayenne.access.DataRowStore;
-      - removed static final String SNAPSHOT_CACHE_SIZE_PROPERTY = "cayenne.DataRowStore.snapshot.size"; {since 4.0, use org.apache.cayenne.configuration.Constants#SNAPSHOT_CACHE_SIZE_PROPERTY}
-      in org.apache.cayenne.access.DataRowStore;
-      - removed static final String EVENT_BRIDGE_FACTORY_PROPERTY = "cayenne.DataRowStore.EventBridge.factory"; {since 4.0 DataRowStoreFactory establishes EventBridge}
-       in org.apache.cayenne.access.DataRowStore;
-      - removed static final boolean REMOTE_NOTIFICATION_DEFAULT = false; {without usages} in org.apache.cayenne.access.DataRowStore;
-      - removed boolean notifyingRemoteListeners; {since 4.0 does nothing} in org.apache.cayenne.access.DataRowStore;
-      - removed boolean isNotifyingRemoteListeners(); void setNotifyingRemoteListeners(boolean notifyingRemoteListeners); {since 4.0 never used} in org.apache.cayenne.access.DataRowStore;
-      - removed <taskdef name="cdataport" classname="org.apache.cayenne.tools.DataPortTask"/> in org.apache.cayenne.tools.antlib.xml;
-      - removed org.apache.cayenne.tools.AntDataPortDelegate and org.apache.cayenne.tools.DataPortTask;
-      - removed AntDataPortDelegateTest in org.apache.cayenne.tools.AntDataPortDelegateTest;
-      - removed List<?> filter(List<?> items) in org.apache.cayenne.dbsync.NamePatternMatcher {begore used in AntDataPortDelegate wich was removed};
-      - removed org.apache.cayenne.access.DataPort;
-      - removed org.apache.cayenne.access.DataPortDelegate;
-      - removed org.apache.cayenne.cache.invalidation.InvalidationFunction;
-      - removed DataMap loadEOModel(String path) {since 4.0 in favor of loadEOModel(URL)} in org.apache.cayenne.wocompat;
-      - removed DataMap loadEOModel(String path, boolean generateClientClass) {since 4.0 in favor of loadEOModel(URL, boolean)} in org.apache.cayenne.wocompat;
-      - removed Map loadModeIndex(URL url) {since 4.0 in favor of loadModeIndex(URL)} in org.apache.cayenne.wocompat;
-      - removed org.apache.cayenne.lifecycle.audit;
-      - removed org.apache.cayenne.lifecycle.changeset;
-      - removed org.apache.cayenne.lifecycle.audit in tests;
-      - removed from org.apache.cayenne.lifecycle.db and org.apache.cayenne.lifecycle.db.auto classes with @Audit annotation;
-      - removed Audit db-entities, obj-entities and relationships from lifecycle-map.map.xml;
-      - removed org.apache.cayenne.lifecycle.unit {no usage};
-      - removed org.apache.cayenne.access.Transaction {since 4.0. For manual transaction management use BaseTransaction or
-      ServerRuntime#performInTransaction(org.apache.cayenne.tx.TransactionalOperation) Also note that since 4.0 an actual Transaction is an interface
-      located in a different package: org.apache.cayenne.tx.Transaction};
-      - removed boolean isClosingConnection(); void setClosingConnection(boolean flag) {since 4.0 always returns false; since 4.0 does nothing.
-      Connection closing is outside the scope of this iterator. See ConnectionAwareResultIterator} in org.apache.cayenne.jdbc.JDBCResultIterator;
-      - removed Expression expWithParameters(Map<String, ?> parameters) {since 4.0 use #params(Map)} in org.apache.cayenne.exp.Expression;
-      - removed Expression expWithParameters(Map<String, ?> parameters, boolean pruneMissing) {since 4.0 use #params(Map, boolean)}
-      in org.apache.cayenne.exp.Expression;
-      - removed org.apache.cayenne.exp.Expression_ParamsLegacyTest;
-      - removed Property(final String name) {use factory method Property.create("propertyName", PropertyType.class)} in org.apache.cayenne.exp.Property;
-      - removed void testDeprecatedConstruct(); in org.apache.cayenne.exp.PropertyTest;
-      - removed void testDeprecatedConstruct(); in org.apache.cayenne.query.ColumnSelectIT;
-      - removed void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting); {since 4.0 use
-      logQueryParameters(String, ParameterBinding[])} in org.apache.cayenne.log.JdbcEventLogger;
-      - removed void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting) in org.apache.cayenne.log.Slf4jJdbcEventLogger;
-      - removed void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting) in org.apache.cayenne.log.NoopJdbcEventLogger;
-      - removed void logQuery(String sql, List<?> params); {since 4.0 use logQuery(String, ParameterBinding[])} in org.apache.cayenne.log.JdbcEventLogger;
-      - removed void logQuery(String queryStr, List<?> params) in org.apache.cayenne.log.Slf4jJdbcEventLogger;
-      - removed void logQuery(String sql, List<?> params) in org.apache.cayenne.log.NoopJdbcEventLogger;
-      - removed void logQuery(String sql, List<DbAttribute> attrs, List<?> params, long time); {since 4.0 use logQuery(String, ParameterBinding[])}
-      in org.apache.cayenne.log.JdbcEventLogger;
-      - removed void logQuery(String queryStr, List<DbAttribute> attrs, List<?> params, long time); in org.apache.cayenne.log.Slf4jJdbcEventLogger;
-      - removed void logQuery(String sql, List<DbAttribute> attrs, List<?> params, long time); in org.apache.cayenne.log.NoopJdbcEventLogger;
-      - removed void logQuery(String queryStr, List<DbAttribute> attrs, List<?> params, long time) in org.apache.cayenne.log.FormattedSlf4jJdbcEventLogger;
-      - removed void buildLog(StringBuilder buffer, String prefix, String postfix, List<DbAttribute> attributes, List<?> parameters, boolean isInserting);
-      {since 4.0 uses old style of parameter logging} in org.apache.cayenne.log.Slf4jJdbcEventLogger;
-      - removed void sqlLiteralForObject(StringBuilder buffer, Object object); {his should go away once we can remove 4.0 deprecated API. The actual logic for printing a value is now
-      spread around the ExtendedTypes} in org.apache.cayenne.log.Slf4jJdbcEventLogger;
-      - removed test void testSqlLiteralForObject() in org.apache.cayenne.log;
-      - removed QuotingStrategy getQuotingStrategy(boolean needQuotes); {since 4.0 use getQuotingStrategy()} in org.apache.cayenne.dba.DbAdapter;
-      - removed QuotingStrategy getQuotingStrategy(boolean isQuoteStrategy) in org.apache.cayenne.dba.AutoAdapter and org.apache.cayenne.dba.JdbcAdapter;
-      - removed String quoteFullyQualifiedName(DbEntity entity); {since 4.0 renamed to quotedFullyQualifiedName(DbEntity)} in org.apache.cayenne.dba.QuotingStrategy;
-      - removed String quoteFullyQualifiedName(DbEntity entity); in org.apache.cayenne.dba.DefaultQuotingStrategy;
-      - removed String quoteString(String identifier); in org.apache.cayenne.dba.QuotingStrategy;
-      - removed String quoteString(String name); in org.apache.cayenne.dba.DefaultQuotingStrategy;
-      - removed DriverDataSource(String driverClassName, String connectionUrl) {since 4.0 as class loading should not happen here. Use DriverDataSource(Driver, String, String, String)}
-      in org.apache.cayenne.datasource.DriverDataSource;
-      - removed DriverDataSource(String driverClassName, String connectionUrl, String userName, String password) {since 4.0 as class loading should not happen here.
-      Use DriverDataSource(Driver, String, String, String)} in org.apache.cayenne.datasource.DriverDataSource;
-      - removed static Driver loadDriver(String driverClassName) {since 4.0 as class loading should not happen here} in org.apache.cayenne.datasource.DriverDataSource;
-      - removed Query getOrginatingQuery(); {since 4.0, use QueryMetadata#getOriginatingQuery()} in org.apache.cayenne.query.QueryMetadata;
-      - removed Query getOrginatingQuery(); in org.apache.Cayenne.query.QueryMetadataProxy;
-      - removed Query getOrginatingQuery(); in org.apache.cayenne.access.DataDomainQuery;
-      - removed Query getOrginatingQuery(); in org.apache.cayenne.access.ObjectsFromDataRowsQuery;
-      - removed Ehcache getDefaultCache() {since 4.0 - this method is no longer in use. If you are overriding it, override cacheName(QueryMetadata) instead.}
-      in org.apache.cayenne.cache.EhCacheQueryCache;
-      - removed ServerRuntimeBuilder builder() {since 4.0.M5 in favor of ServerRuntime#builder()} in org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
-      - removed ServerRuntimeBuilder builder(String name) {since 4.0.M5 in favor of ServerRuntime#builder(String)} in org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
-      - removed ObjEntity lookupObjEntity(Class<?> entityClass) {since 4.0, use getObjEntity(Class)} in org.apache.cayenne.map.EntityResolver;
-      - removed synchronized ObjEntity lookupObjEntity(Class aClass) in org.apache.cayenne.map.MockEntityResolver;
-      - removed boolean isIndexedByClass() {since 4.0. There's no replacement. This property is meaningless and is no longer respected by the code} in org.apache.cayenne.map.EntityResolver;
-      - removed void setIndexedByClass(boolean b) {since 4.0. There's no replacement. This property is meaningless and is no longer
-      respected by the code} in org.apache.cayenne.map.EntityResolver;
-      - removed protected boolean indexedByClass; in org.apache.cayenne.map.EntityResolver;
-      - removed void setEntityListenerFactory(EntityListenerFactory entityListenerFactory); {since 4.0 this method does nothing, as EntityResolver no longer loads listeners from its DataMaps.}
-      in org.apache.cayenne.map.EntityResolver;
-      - removed Procedure lookupProcedure(String procedureName) {since 4.0 use getProcedure(String)} in org.apache.cayenne.map.EntityResolver;
-      - removed ObjEntity lookupObjEntity(Object object) {4.0 a corresponding getObjEntity method should be used} in org.apache.cayenne.map.EntityResolver;
-      - removed Class<?> getJavaClass() {since 4.0 this method based on statically defined class loading algorithm is not going to work in environments like OSGi.
-      AdhocObjectFactory should be used as it can provide the environment-specific class loading policy.} in prg.apache.cayenne.map.Embeddable;
-      - removed void addDefaultEntityListener(EntityListener listener) {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.DataMap;
-      - removed EntityListener getDefaultEntityListener(String className) {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.DataMap;
-      - removed List<EntityListener> getDefaultEntityListeners() {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.DataMap;
-      - removed void removeDefaultEntityListener(String className) {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.DataMap;
-      - removed void removeDefaultEntityListener(String className) {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.DataMap;
-      - removed void addEntityListener(EntityListener listener) {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.ObjEntity;
-      - removed EntityListener getEntityListener(String className) {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.ObjEntity;
-      - removed List<EntityListener> getEntityListeners() {since 4.0 unused, as listeners are no longer mapped in a DataMap} in org.apache.cayenne.map.ObjEntity;
-      - removed boolean isExcludingDefaultListeners() {since 4.0 unused, as listeners are no longer mapped in a DataMap} in org.apache.cayenne.map.ObjEntity;
-      - removed boolean isExcludingSuperclassListeners() {since 4.0 unused, as listeners are no longer mapped in a DataMap} in org.apache.cayenne.map.ObjEntity;
-      - removed void removeEntityListener(String className) {since 4.0 unused, as listeners are no longer mapped in a DataMap} in org.apache.cayenne.map.ObjEntity;
-      - removed void setExcludingDefaultListeners(boolean excludingDefaultListeners) {since 4.0 unused, as listeners are no longer mapped in a DataMap} in org.apache.cayenne.map.ObjEntity;
-      - removed void setExcludingSuperclassListeners(boolean excludingSuperclassListeners) in org.apache.cayenne.map.ObjEntity;
-      - removed boolean excludingDefaultListeners in org.apache.cayenne.map.ObjEntity;
-      - removed boolean excludingSuperclassListeners in org.apache.cayenne.map.ObjEntity;
-      - removed List<EntityListener> defaultEntityListeners; {since 4.0 unused as listeners are no longer tied to a DataMap} in org.apache.cayenne.map.DataMap;
-      - removed List<EntityListener> entityListeners;  in org.apache.cayenne.map.ObjEntity;
-      - removed EntityListener getEntityListener(String className) in org.apache.cayenne.map.MockMappingNamespace;
-      - removed Query getOrginatingQuery() in org.apache.cayenne.remote.RangeQuery;
-      - removed EventBridge createServerEventBridge() {since 4.0. Factory creation should is handled by the client connection} in org.apache.cayenne.remote.RemoteSession;
-      - removed Query getOrginatingQuery() {use DefaultQueryMetadata#getOriginatingQuery()} in org.apache.cayenne.query.DefaultQueryMetadata;
-      - removed Query getOrginatingQuery() in org.apache.cayenne.query.MockQueryMetadata;
-      - removed Query getOrginatingQuery() {since 4.0, use BaseQueryMetadata#getOriginatingQuery()} in org.apache.cayenne.query.BaseQueryMetadata;
-      - removed Query getOrginatingQuery() in org.apache.cayenne.lifecycle.StringIdQuery;
-      - removed void setDataMap(DataMap dataMap) on org.apache.cayenne.lifecycle.StringIdQuery;
-      - removed void useLocalCache(String... cacheGroups) {since 4.0, use CacheableQuery#useLocalCache(String)} in org.apache.cayenne.org.apacche.cayenne.query.CacheableQuery with test
-      void testUseLocalCacheOld() in org.apache.cayenne.query.SelectQueryCacheKeyIT;
-      - removed int size() {since 4.0 use getRows().size()} in org.apache.cayenne.query.BatchQuery;
-      - removed DataMap getDataMap(); {since 4.0, QueryDescriptor#getDataMap() should be used instead} in org.apache.cayenne.query.Query;
-      - removed DataMap getDataMap()  in org.apache.cayenne.lifecycle.StringIdQuery;
-      - removed DataMap getDataMap() in org.apache.cayenne.query.RefreshQuery;
-      - removed DataMap getDataMap() in org.apache.cayenne.query.MockQuery;
-      - removed DataMap getDataMap() in org.apache.cayenne.query.IndirectQuery;
-      - removed DataMap getDataMap() in org.apache.cayenne.remote.IncrementalQuery;
-      - removed @deprecated from DataMap gerDataMap() in org.apache.cayenne.access.DataDomainQuery;
-      - removed @deprecated from DataMap gerDataMap() in org.apache.cayenne.access.ObjectsFromDataRowsQuery;
-      - removed DataMap getDataMap() in org.apache.cayenne.query.AbstractQuery;
-      - removed DataMap getDataMap() in org.apache.cayenne.query.BatchQuery;
-      - removed DataMap getDataMap() in org.apache.cayenne.query.EJBQLQuery;
-      - removed DataMap getDataMap() in org.apache.cayenne.query.QueryChain;
-      - removed DataMap getDataMap() in org.apache.cayenne.remote.RangeQuery;
-      - removed void setDataMap(DataMap dataMap) in org.apache.cayenne.query.IndirectQuery;
-      - removed void setDataMap(DataMap dataMap) in org.apache.cayenne.query.QueryChain;
-      - removed DataMap dataMap in org.apache.cayenne.query.QueryChain;
-      - removed DataMap dataMap in org.apache.cayenne.query.BatchQuery;
-      - removed void setDataMap(DataMap dataMap) in org.apache.cayenne.query.BatchQuery;
-      - change in void testUseSharedCache(): removed getCacheGroups() in org.apache.cayenne.query.SelectQueryCacheKeyIT;
-      - removed in void testCreateReplacementQuery_Bare()  getCacheGroups() in org.apache.cayenne.queryObjectSelect_CompileIT;
-      - removed in void testCreateReplacementQuery_Full()  getCacheGroups() in org.apache.cayenne.queryObjectSelect_CompileIT;
-      - removed String[] getCacheGroups() in org.apache.cayenne.query.QueryMetadataProxy;
-      - removed String[] getCacheGroups() {since 4.0, use ueryMetadataWrapper#getCacheKey()} in org.apache.cayenne.query.QueryMetadataWrapper;
-      - removed String[] getCacheGroups() {since 4.0, use IncrementalSelectQuery#getCacheGroup()} in org.apache.cayenne.remote.IncrementalSelectQuery;
-      - removed String[] getCacheGroups() {since 4.0, use CacheableQuery#getCacheGroup()} in org.apache.cayenne.query.CacheableQuery;
-      - removed String[] getCacheGroups() in org.apache.cayenne.access.ObjectsFromDataRowsQuery;
-      - removed String[] getCacheGroups() in org.apache.cayenne.query.MockQueryMetadata;
-      - removed String[] getCacheGroups() {since 4.0, use DefaultQueryMetadata#getCacheGroup()} in org.apache.cayenne.query.DefaultQueryMetadata;
-      - removed String[] getCacheGroups() in org.apache.cayenne.access.DataDomainQuery;
-      - removed String[] getCacheGroups() {since 4.0, use BaseQueryMetadata#getCacheGroup()} in org.apache.cayenne.query.BaseQueryMetadata;
-      - removed String[] getCacheGroups() in org.apache.cayenne.remote.RangeQuery;
-      - removed String[] getCacheGroups() in org.apache.cayenne.lifecycle.id.StringIdQuery;
-      - removed String[] getCacheGroups() in org.apache.cayenne.query.QueryMetadata;
-      - removed useSharedCache from void testUseSharedCache()  in org.apache.cayenne.query.SelectQueryCacheKeyIT;
-      - removed void useSharedCache(String... cacheGroups) {since 4.0, use CacheableQuery#useSharedCache(String)} in org.apache.cayenne.query.CacheableQuery;
-      - removed void setCacheGroups(String... groups) {since 4.0, use BaseQueryMetadata#setCacheGroup(String)} in org.apache.cayenne.query.BaseQueryMetadata;
-      - removed void setCacheGroups(String... cacheGroups) {since 4.0 only first cache group will be used use IncrementalSelectQuery#setCacheGroup(String)}
-      in org.apache.cayenne.remote.IncrementalSelectQuery;
-      - removed void setCacheGroups(String... cacheGroups) {since 4.0, use CacheableQuery#setCacheGroup(String)}
-      in org.apache.cayenne.query.CacheableQuery;
-      - removed applyObjectLayerDefaults() from org.apache.cayenne.configuration.server.DataDomainProvider;
-      - removed void applyObjectLayerDefaults() {since 4.0 does nothing} in org.apache.cayenne.map.EntityResolver;
-      - removed dataNode.setDataSourceLocation(nodeDescriptor.getParameters()); from org.apache.cayenne.configuration.server.DefaultDataNodeFactory;
-      - removed void testDataSourceLocation() in org.apache.cayenne.access.DataNodeIT;
-      - removed void setDataSourceLocation(String dataSourceLocation) from org.apache.cayenne.access.MockDataNode;
-      - removed void setDataSourceLocation(String dataSourceLocation) {since 4.0. This information is irrelevant at the DataNode level} from
-      org.apache.cayenne.access.DataNode;
-      - removed assertEquals(nodeDescriptor1.getParameters(), node1.getDataSourceLocation()); from org.apache.cayenne.configuration.server.DataDomainProviderTest;
-      - removed void getDataSourceLocation(String dataSourceLocation) from org.apache.cayenne.access.MockDataNode;
-      - removed void getDataSourceLocation(String dataSourceLocation) {since 4.0. This information is irrelevant at the DataNode level} from
-      org.apache.cayenne.access.DataNode;
-      - removed OSQueryCache in org.apache.cayenne.cache with tests;
-      - removed EhCacheQueryCache in org.apache.cayenne.cache with tests;
-      - removed Tstmap and _Tstmap org.apache.cayenne.testdo.testmap;
-      - removed MultiTier and _MultiTier in org.apache.cayenne.testdo.mt;
-      - removed ClientMultiTier and _ClientMultiTier in org.apache.cayenne.testdo.mt;
-      - removed NamedQueryTest in org.apache.cayenne.query.NamedQueryTest;
-      - removed NamedQuery in org.apache.cayenne.query;
-      - removed int size() in org.apache.cayenne.jcache.JCacheQueryCache and org.apache.cayenne.cache.NestedQueryCache;
-      - removed int size() in org.apache.cayenne.cache.QueryCache;
-      - deprecated getEOName() in org.apache.cayenne.wocompat.EOQuery;
-      - changes in org.apache.cayenne.modeler.DisplayEventType: Query getName change to QueryDescriptor getName();
-      - removed append(getName()) from toString() in org.apache.cayenne.query.AbstractQuery;
-      - removed getName() from org.apache.cayenne.wocompat.EOQueryTest, org.apache.cayenne.query.SelectQueryTest,
-      org.apache.cayenne.query.EJBQLQueryIT, org.apache.cayenne.query.SQLTemplate_LegacyTest, org.apache.cayenne.map.SelectQueryDescriptorTest
-      org.apache.cayenne.map.SQLTemplateDescriptorTest;
-      - removed getName() from org.apache.cayenne.query.AbstractQuery, from org.apache.cayenne.query.BatchQuery, org.apache.cayenne.access.DataDomainQuery,
-      org.apache.cayenne.query.EJBQLQuery, org.apache.cayenne.IncrementalQuery, org.apache.cayenne.remote.IncrementalSelectQuery, org.apache.cayenne.query.IndirectQuery,
-      org.apache.cayenne.access.ObjectsFromDataRowsQuery, org.apache.cayenne.query.QueryChain, org.apache.cayenne.remote.RangeQuery, org.apache.cayenne.lifecycle.id.StringIdQuery,
-      org.apache.cayenne.query.MockQuery, org.apache.cayenne.query.RefreshQuery; org.apache.cayenne.query.Query;
-      - removed setName(String name) from org.apache.cayenne.remote.IncrementalSelectQuery, org.apache.cayenne.map.SelectQueryDescriptor, org.apache.cayenne.map.SQLTemplateDescriptor,
-      org.apache.cayenne.map.ProcedureQueryDescriptor, org.apache.cayenne.query.FluentSelect, org.apache.cayenne.query.AbstractQuery org.apache.cayenne.query.EJBQLQuery, org.apache.cayenne.BatchQuery
-      org.apache.cayenne.query.QueryChain org.apache.cayenne.lifecycle.StringIdQuery;
-      - removed setName(String name) in org.apache.cayenne.query.SelectQueryCacheKeyIT, org.apache.cayenne.query.SQLTemplateCacheKeyIT, org.apache.cayenne.query.ProcedureQueryCacheKeyIT,
-      org.apache.cayenne.query.SQLTemplate_LegacyTest, org.apache.cayenne.query.MockAbstractQuery;
+      Per CAY-2377 Cleanup deprecated code
+            - Cleanup JdbcEventLogger and implementations.
+            - Remove getName(), setName(String name), getDataMap(), setDataMap(DataMap dataMap) from org.apache.cayenne.query.Query and from implementations.
+            - Cleanup org.apache.cayenne.map.*.
+            - Remove getQuotingStrategy(boolean isQuoteStrategy) from org.apache.cayenne.dba.DbAdapter, from org.apache.cayenne.dba.QuotingStrategy
+            and from implementations.
+            - Remove getCacheGroups(), getOrginatingQuery() from org.apache.cayenne.query.QueryMetadata and from implementations.
+            - Remove getCacheGroups(), useSharedCache(String... cacheGroups), setCacheGroups(String... cacheGroups) from org.aapche.cayenne.query.QueryMetadata and from implementations.
+            - Cleanup org.apache.cayenne.cache.EhCacheQueryCache and org.apache.cayenne.cache.NestedQueryCache.
+            - Cleanup org.apache.cayenne.access.*.
+            - Cleanup org.apache.cayenne.exp.*.
+            - Cleanup org.apache.cayenne.wocompat.*.
+            - Remove objEntityAdded(ObjEntity entity) and objEntityRemoved(ObjEntity entity) from org.apache.cayenne.dbsync.reverse.DbLoaderDelegate and from implementations.
+            - Cleanup org.apache.cayenne.tools.DbGeneratorMojo.
+            - Remove bindList(String bindingName) and bindMap(String bindingName) from org.apache.cayenne.di.Binder and from implementations.
+            - Cleanup org.apache.cayenne.configuration.*.
 
-      - removed String cacheKey from boolean resolve(Object root, EntityResolver resolver) arguments;
-
-      - removed setDataMap from buildQuery() in SQLTemplateDescriptor, SelectQueryDescriptor, ProcedureQueryDescriptor and EJBQLQueryDescriptor;
-      - removed setDataMap from org.apache.cayenne.AbstractQuery and from org.apache.cayenne.query.EJBQLQuery;
-      - removed ServerRuntime(String configurationLocation, Module... extraModules), ServerRuntime(String[] configurationLocations, Module... extraModules) and
-      Collection<Module> collectModules(final String[] configurationLocations, Module... extraModules) from org.apache.cayenne.configuration.server.ServerRuntime;
-      - removed org.apache.cayenne.configuration.rop.client.;
-      - removed ClientRuntime(Map<String, String> properties, Collection<Module> extraModules), ClientRuntime(Map<String, String> properties, Module... extraModules),
-      Collection<Module> collectModules(Map<String, String> properties, Module... extraModules), Collection<Module> collectModules(Map<String, String> properties, Collection<Module> extraModules)
-      from org.apache.cayenne.configuration.rop.client.ClientRuntime;
-      - removed ClientModule(Map<String, String> properties) in org.apache.cayenne.configuration.rop.client.ClientModule;
-      - removed ConfigurationLocations from org.apache.cayenne.configuration.ServerModule;
+            Was removed
+            - java-8 module
+            - org.apache.cayenne.lifecycle.audit
+            - org.apache.cayenne.lifecycle.changeset
+            - org.apache.cayenne.lifecycle.sort.SortWeight
+            - org.apache.cayenne.lifecycle.sort.WeightedAshwoodEntitySorter
+            - org.apache.cayenne.tools.OldReverseEngineering
+            - org.apache.cayenne.tools.AntDataPortDelegate
+            - org.apache.cayenne.tools.DataPortTask
+            - org.apache.cayenne.access.DataPort
+            - org.apache.cayenne.access.DataPortDelegate
+            - org.apache.cayenne.cache.invalidation.InvalidationFunction
+            - org.apache.cayenne.cache.OSQueryCache
+            - org.apache.cayenne.cache.EhCacheQueryCache
+            - org.apache.cayenne.query.NamedQuery
+            - org.apache.cayenne.project.CayenneProjectModule
 
 
 UPGRADING TO 4.1.M1
