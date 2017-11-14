@@ -273,6 +273,7 @@ UPGRADING TO 4.1.M2
       Collection<Module> collectModules(Map<String, String> properties, Module... extraModules), Collection<Module> collectModules(Map<String, String> properties, Collection<Module> extraModules)
       from org.apache.cayenne.configuration.rop.client.ClientRuntime;
       - removed ClientModule(Map<String, String> properties) in org.apache.cayenne.configuration.rop.client.ClientModule;
+      - removed ConfigurationLocations from org.apache.cayenne.configuration.ServerModule;
 
 
 UPGRADING TO 4.1.M1

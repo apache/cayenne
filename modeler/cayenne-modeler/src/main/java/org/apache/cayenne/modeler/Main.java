@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.dbsync.DbSyncModule;
+import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
@@ -107,7 +108,13 @@ public class Main {
     protected Collection<Module> appendModules(Collection<Module> modules) {
         // TODO: this is dirty... "CayenneModeler" is not a project name, and ServerModule is out of place inside
         // the Modeler... If we need ServerRuntime for certain operations, those should start their own stack...
-        modules.add(new ServerModule("CayenneModeler"));
+        modules.add(new ServerModule(){
+            @Override
+            public void configure(Binder binder) {
+                super.configure(binder);
+                ServerModule.contributeProjectLocations(binder).add("CayenneModeler");
+            }
+        });
 
         modules.add(new ProjectModule());
         modules.add(new DbSyncModule());

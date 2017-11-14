@@ -137,9 +137,6 @@ public class ServerModule implements Module {
 
     private static final int DEFAULT_MAX_ID_QUALIFIER_SIZE = 10000;
 
-    @Deprecated
-    protected String[] configurationLocations;
-
     /**
      * Sets transaction management to either external or internal transactions. Default is internally-managed transactions.
      *
@@ -275,28 +272,6 @@ public class ServerModule implements Module {
      * @since 4.0
      */
     public ServerModule() {
-        this.configurationLocations = new String[0];
-    }
-
-    /**
-     * Creates a ServerModule with at least one configuration location. For multi-module projects additional locations
-     * can be specified as well.
-     *
-     * @deprecated since 4.0 use {@link ServerRuntimeBuilder#addConfig(String)} and/or
-     * {@link ServerModule#contributeProjectLocations(Binder)} to specify locations.
-     */
-    @Deprecated
-    public ServerModule(String firstConfigLocation, String... configurationLocations) {
-        if (configurationLocations == null) {
-            configurationLocations = new String[0];
-        }
-
-        this.configurationLocations = new String[configurationLocations.length + 1];
-        this.configurationLocations[0] = firstConfigLocation;
-
-        if (configurationLocations.length > 0) {
-            System.arraycopy(configurationLocations, 0, this.configurationLocations, 1, configurationLocations.length);
-        }
     }
 
     public void configure(Binder binder) {
@@ -350,9 +325,6 @@ public class ServerModule implements Module {
 
         // configure explicit configurations
         ListBuilder<String> locationsListBuilder = contributeProjectLocations(binder);
-        for (String location : configurationLocations) {
-            locationsListBuilder.add(location);
-        }
 
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
 
