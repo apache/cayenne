@@ -67,7 +67,7 @@ public class DefaultEventManager implements EventManager {
         if (!singleThread) {
             dispatchThreads = new ArrayList<>(dispatchThreadCount);
 
-            String prefix = "cayenne-edt-" + hashCode() + "-";
+            String prefix = "cayenne-event-";
 
             // start dispatch threads
             for (int i = 0; i < dispatchThreadCount; i++) {
