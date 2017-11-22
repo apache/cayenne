@@ -30,7 +30,7 @@ import java.util.Collection;
 
 /**
  * A filter that creates a Cayenne server runtime, possibly including custom modules. By
- * default runtime includes {@link ServerModule} and {@link WebModule}. Any custom modules
+ * default runtime includes {@link ServerModule}. Any custom modules
  * are loaded after the two standard ones to allow custom service overrides. Filter
  * initialization parameters:
  * <ul>

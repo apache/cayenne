@@ -4,6 +4,12 @@ Apache Cayenne Upgrade Information
 IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
+UPGRADING TO 4.1.M1
+
+* Per CAY-2372
+    - Extract cayenne-web module from cayenne server. Now cayenne-web is autoloaded.
+    - Extract cayenne-osgi module from cayenne-server.
+    - Extract cayenne-rop-server from cayenne-server.
 
 UPGRADING TO 4.1.M1
 
