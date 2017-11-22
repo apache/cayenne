@@ -42,6 +42,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-rop-server</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.apache.cayenne.modeler</groupId>
 			<artifactId>cayenne-modeler</artifactId>
 			<version>${project.version}</version>
