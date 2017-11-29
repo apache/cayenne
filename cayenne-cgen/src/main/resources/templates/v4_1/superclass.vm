@@ -110,7 +110,15 @@ public abstract class ${superClassName} extends ${baseClassName} {
 ###################
 #foreach( $attr in ${object.DeclaredAttributes} )
 ## don't use primitive type if attribute is nullable
-#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $attr.isMandatory())")
+## if PK was modeled as object type use object type
+## and use primitives for PK if it was modeled as primitive.
+#set ( $flag = $attr.isMandatory() && $attr.isPrimaryKey() )
+#if ( $flag )
+    #set ( $flag = $flag && $importUtils.isPrimitive(${attr.Type}) )
+#elseif ( $attr.isMandatory() )
+    #set ( $flag = !$flag )
+#end
+#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $flag)" )
     protected $type $stringUtils.formatVariableName(${attr.Name});
 #end
 
@@ -233,7 +241,13 @@ public abstract class ${superClassName} extends ${baseClassName} {
 
         switch (propName) {
 #foreach( $attr in ${object.DeclaredAttributes} )
-#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $attr.isMandatory())")
+#set ( $flag = $attr.isMandatory() && $attr.isPrimaryKey() )
+#if ( $flag )
+    #set ( $flag = $flag && $importUtils.isPrimitive(${attr.Type}) )
+#elseif ( $attr.isMandatory() )
+    #set ( $flag = !$flag )
+#end
+#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $flag)")
 #set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
             case "${attr.Name}":
 #if ( $importUtils.isBoolean($type) )
@@ -271,7 +285,13 @@ public abstract class ${superClassName} extends ${baseClassName} {
         super.writeState(out);
 #foreach( $attr in ${object.DeclaredAttributes} )
 #set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
-#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $attr.isMandatory())")
+#set ( $flag = $attr.isMandatory() && $attr.isPrimaryKey() )
+#if ( $flag )
+    #set ( $flag = $flag && $importUtils.isPrimitive(${attr.Type}) )
+#elseif ( $attr.isMandatory() )
+    #set ( $flag = !$flag )
+#end
+#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $flag)")
 #if($importUtils.isPrimitive($type))
         out.write${stringUtils.capitalized($type)}(this.$name);
 #else
@@ -288,7 +308,13 @@ public abstract class ${superClassName} extends ${baseClassName} {
         super.readState(in);
 #foreach( $attr in ${object.DeclaredAttributes} )
 #set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
-#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $attr.isMandatory())")
+#set ( $flag = $attr.isMandatory() && $attr.isPrimaryKey() )
+#if ( $flag )
+    #set ( $flag = $flag && $importUtils.isPrimitive(${attr.Type}) )
+#elseif ( $attr.isMandatory() )
+    #set ( $flag = !$flag )
+#end
+#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $flag)")
 #if($importUtils.isPrimitive($type))
         this.$name = in.read${stringUtils.capitalized($type)}();
 #else
