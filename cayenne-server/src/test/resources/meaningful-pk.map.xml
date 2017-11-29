@@ -18,6 +18,9 @@
 		<db-attribute name="DESCR" type="VARCHAR" length="50"/>
 		<db-attribute name="PK_ATTRIBUTE" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
+	<db-entity name="MEANINGFUL_PK_TEST2">
+		<db-attribute name="PK1" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<obj-entity name="MeaningfulPKDep" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep" dbEntityName="MEANINGFUL_PK_DEP">
 		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
 	</obj-entity>
@@ -27,6 +30,9 @@
 	</obj-entity>
 	<obj-entity name="MeaningfulPk" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk" clientClassName="org.apache.cayenne.testdo.meaningful_pk.ClientMeaningfulPk" dbEntityName="MEANINGFUL_PK">
 		<obj-attribute name="pk" type="java.lang.String" db-attribute-path="PK"/>
+	</obj-entity>
+	<obj-entity name="MeaningfulPkTest2" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2" clientClassName="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2" dbEntityName="MEANINGFUL_PK_TEST2">
+		<obj-attribute name="pk1" type="int" db-attribute-path="PK1"/>
 	</obj-entity>
 	<db-relationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1">
 		<db-attribute-pair source="MASTER_PK" target="PK_ATTRIBUTE"/>

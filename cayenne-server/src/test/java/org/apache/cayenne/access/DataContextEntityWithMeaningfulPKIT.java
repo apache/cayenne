@@ -25,9 +25,10 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
+import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -36,10 +37,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
 public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
@@ -86,8 +84,7 @@ public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
 
     @Test
     public void testChangeKey() throws Exception {
-        MeaningfulPKTest1 obj = (MeaningfulPKTest1) context
-                .newObject("MeaningfulPKTest1");
+        MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
         obj.setPkAttribute(new Integer(1000));
         obj.setDescr("aaa-aaa");
         context.commitChanges();
@@ -102,32 +99,41 @@ public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
 
     @Test
     public void testToManyRelationshipWithMeaningfulPK1() throws Exception {
-        MeaningfulPKTest1 obj = (MeaningfulPKTest1) context
-                .newObject("MeaningfulPKTest1");
+        MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
         obj.setPkAttribute(new Integer(1000));
         obj.setDescr("aaa-aaa");
         context.commitChanges();
 
         // must be able to resolve to-many relationship
         ObjectContext context = runtime.newContext();
-        List objects = context.performQuery(new SelectQuery(MeaningfulPKTest1.class));
+        List<MeaningfulPKTest1> objects = ObjectSelect.query(MeaningfulPKTest1.class).select(context);
         assertEquals(1, objects.size());
-        obj = (MeaningfulPKTest1) objects.get(0);
+        obj = objects.get(0);
         assertEquals(0, obj.getMeaningfulPKDepArray().size());
     }
 
     @Test
     public void testToManyRelationshipWithMeaningfulPK2() throws Exception {
-        MeaningfulPKTest1 obj = (MeaningfulPKTest1) context
-                .newObject("MeaningfulPKTest1");
+        MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
         obj.setPkAttribute(new Integer(1000));
         obj.setDescr("aaa-aaa");
         context.commitChanges();
 
         // must be able to set reverse relationship
-        MeaningfulPKDep dep = (MeaningfulPKDep) context.newObject("MeaningfulPKDep");
+        MeaningfulPKDep dep = context.newObject(MeaningfulPKDep.class);
         dep.setToMeaningfulPK(obj);
         context.commitChanges();
     }
 
+    @Test
+    public void testGeneratedPK(){
+        MeaningfulPkTest2 obj = context.newObject(MeaningfulPkTest2.class);
+        MeaningfulPkTest2 obj1 = context.newObject(MeaningfulPkTest2.class);
+        context.commitChanges();
+
+        ObjectContext context = runtime.newContext();
+        List<MeaningfulPkTest2> objects = ObjectSelect.query(MeaningfulPkTest2.class).select(context);
+        assertEquals(2, objects.size());
+        assertNotEquals(objects.get(0).getPk1(), objects.get(1).getPk1());
+    }
 }
