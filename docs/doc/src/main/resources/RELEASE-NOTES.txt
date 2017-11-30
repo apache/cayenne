@@ -18,6 +18,7 @@ Bug Fixes:
 
 CAY-2370 ValueObjectType for byte[] fails lookup
 CAY-2380 ReferenceMap should not store or return null values
+CAY-2382 Lack of synchronization in DataContext serialization
 
 ----------------------------------
 Release: 4.1.M1
