@@ -1060,7 +1060,10 @@ public class DataContext extends BaseContext {
     // ---------------------------------------------
 
     private void writeObject(ObjectOutputStream out) throws IOException {
-        out.defaultWriteObject();
+        // See CAY-2382
+        synchronized (getObjectStore()) {
+            out.defaultWriteObject();
+        }
 
         // Serialize local snapshots cache
         if (!isUsingSharedSnapshotCache()) {
