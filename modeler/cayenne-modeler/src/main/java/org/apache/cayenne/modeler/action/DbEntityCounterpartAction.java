@@ -22,10 +22,8 @@ package org.apache.cayenne.modeler.action;
 import java.awt.event.ActionEvent;
 import java.util.Iterator;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
@@ -74,7 +72,10 @@ public class DbEntityCounterpartAction extends CayenneAction {
         }
 
         ObjEntity entity = it.next();
-        
+        viewCounterpartEntity(entity);
+    }
+
+    public void viewCounterpartEntity(ObjEntity entity) {        
         TreePath path = buildTreePath(entity);
         editor().getProjectTreeView().getSelectionModel().setSelectionPath(path);
         
@@ -94,9 +95,9 @@ public class DbEntityCounterpartAction extends CayenneAction {
     }
     
     /**
-     * Builds a tree path for a given path. Urgent for later selection.
+     * Builds a tree path for a given entity. Urgent for later selection.
      * 
-     * @param path
+     * @param entity to build path for
      * @return tree path
      */
     public static TreePath buildTreePath(Entity entity) {
