@@ -25,9 +25,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectTreeModel;
-import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 
 public class ObjEntityCounterpartAction extends BaseViewEntityAction {
@@ -59,13 +57,6 @@ public class ObjEntityCounterpartAction extends BaseViewEntityAction {
                 entity.getDataMap(),
                 (DataChannelDescriptor) getProjectController().getProject().getRootNode());
         getProjectController().fireDbEntityDisplayEvent(event);
-    }
-
-    public static EditorView editor() {
-        return ((CayenneModelerFrame) Application
-                .getInstance()
-                .getFrameController()
-                .getView()).getView();
     }
 
     /**

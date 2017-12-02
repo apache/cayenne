@@ -29,10 +29,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.CayenneModelerFrame;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.ProjectTreeModel;
-import org.apache.cayenne.modeler.editor.EditorView;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
@@ -85,13 +83,6 @@ public class DbEntityCounterpartAction extends CayenneAction {
                 entity.getDataMap(),
                 (DataChannelDescriptor) getProjectController().getProject().getRootNode());
         getProjectController().fireObjEntityDisplayEvent(event);
-    }
-    
-    public static EditorView editor() {
-        return ((CayenneModelerFrame) Application
-                .getInstance()
-                .getFrameController()
-                .getView()).getView();
     }
     
     /**

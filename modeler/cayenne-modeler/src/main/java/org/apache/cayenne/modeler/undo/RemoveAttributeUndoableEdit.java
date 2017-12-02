@@ -30,8 +30,6 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
-import org.apache.cayenne.modeler.action.DbEntityCounterpartAction;
-import org.apache.cayenne.modeler.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
@@ -132,14 +130,6 @@ public class RemoveAttributeUndoableEdit extends CayenneUndoableEdit {
             }
         }
 
-    }
-
-    private void focusObjEntity(ObjEntity objEntity){
-        actionManager.getAction(DbEntityCounterpartAction.class).viewCounterpartEntity(objEntity);
-    }
-
-    private void focusDBEntity(DbEntity dbEntity){
-        actionManager.getAction(ObjEntityCounterpartAction.class).viewCounterpartObject(dbEntity);
     }
 
     @Override

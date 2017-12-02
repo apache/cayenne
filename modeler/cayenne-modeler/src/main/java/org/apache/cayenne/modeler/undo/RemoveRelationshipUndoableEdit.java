@@ -26,8 +26,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
-import org.apache.cayenne.modeler.action.DbEntityCounterpartAction;
-import org.apache.cayenne.modeler.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
 
 public class RemoveRelationshipUndoableEdit extends CayenneUndoableEdit {
@@ -88,13 +86,5 @@ public class RemoveRelationshipUndoableEdit extends CayenneUndoableEdit {
             }
             focusDBEntity(dbEntity);
         }
-    }
-
-    private void focusObjEntity(ObjEntity objEntity){
-        actionManager.getAction(DbEntityCounterpartAction.class).viewCounterpartEntity(objEntity);
-    }
-
-    private void focusDBEntity(DbEntity dbEntity){
-        actionManager.getAction(ObjEntityCounterpartAction.class).viewCounterpartObject(dbEntity);
     }
 }
