@@ -20,6 +20,7 @@ CAY-2370 ValueObjectType for byte[] fails lookup
 CAY-2379 Modeler: Visualization issue after an undo action for a deleted ObjAttribute
 CAY-2380 ReferenceMap should not store or return null values
 CAY-2382 Lack of synchronization in DataContext serialization
+CAY-2384 Modeler: Visualization issue after an undo action for a deleted ObjRelationship
 
 ----------------------------------
 Release: 4.1.M1
