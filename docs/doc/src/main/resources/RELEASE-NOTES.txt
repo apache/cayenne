@@ -22,6 +22,7 @@ CAY-2368 ColumnSelect: Property.self() translates into wrong SQL code
 CAY-2370 ValueObjectType for byte[] fails lookup
 CAY-2379 Modeler: Visualization issue after an undo action for a deleted ObjAttribute
 CAY-2382 Lack of synchronization in DataContext serialization
+CAY-2384 Modeler: Visualization issue after an undo action for a deleted ObjRelationship
 
 ----------------------------------
 Release: 4.0.B2
