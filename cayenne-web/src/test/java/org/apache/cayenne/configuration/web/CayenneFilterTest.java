@@ -18,7 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
-import com.mockrunner.mock.web.*;
+import com.mockrunner.mock.web.MockFilterChain;
+import com.mockrunner.mock.web.MockFilterConfig;
+import com.mockrunner.mock.web.MockHttpServletRequest;
+import com.mockrunner.mock.web.MockHttpServletResponse;
+import com.mockrunner.mock.web.MockServletContext;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.server.ServerModule;
@@ -30,7 +34,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class CayenneFilterTest {
 

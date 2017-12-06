@@ -16,13 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.configuration.osgi;
+
+import java.util.Map;
 
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.Injector;
-
-import java.util.Map;
 
 /**
  * @since 4.0

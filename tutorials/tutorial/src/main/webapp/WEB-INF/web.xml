@@ -29,7 +29,7 @@
 	-->
 	<filter>
 		<filter-name>cayenne-project</filter-name>
-		<filter-class>org.apache.cayenne.web.CayenneFilter</filter-class>
+		<filter-class>org.apache.cayenne.configuration.web.CayenneFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>cayenne-project</filter-name>

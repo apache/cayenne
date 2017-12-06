@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
-import org.apache.cayenne.configuration.CayenneRuntime;
-
 import javax.servlet.ServletContext;
+
+import org.apache.cayenne.configuration.CayenneRuntime;
 
 /**
  * A helper class to retrieve and store {@link CayenneRuntime} in the

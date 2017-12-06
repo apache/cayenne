@@ -16,12 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.configuration.osgi;
 
-import org.apache.cayenne.di.Module;
-
 import java.sql.Driver;
+
+import org.apache.cayenne.di.Module;
 
 /**
  * A builder of a DI module that helps to bootstrap Cayenne in OSGi environment.

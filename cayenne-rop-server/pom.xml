@@ -28,7 +28,6 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
-            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.apache.cayenne</groupId>
@@ -68,6 +67,7 @@
         <dependency>
             <groupId>com.mockrunner</groupId>
             <artifactId>mockrunner-servlet</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

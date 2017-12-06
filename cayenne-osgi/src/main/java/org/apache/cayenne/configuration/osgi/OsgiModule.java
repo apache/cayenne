@@ -16,16 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.configuration.osgi;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.Module;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A DI module that helps to bootstrap Cayenne in OSGi environment.

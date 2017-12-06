@@ -18,15 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import org.apache.cayenne.di.Module;
 
 /**
  * <p>Stateless implementation of {@link RequestHandler} that creates a new
