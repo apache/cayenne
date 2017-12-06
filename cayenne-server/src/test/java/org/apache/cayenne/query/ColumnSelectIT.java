@@ -21,6 +21,7 @@ package org.apache.cayenne.query;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.text.DateFormat;
 import java.util.Date;
@@ -45,6 +46,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.PostgresUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -1072,6 +1074,23 @@ public class ColumnSelectIT extends ServerCase {
             assertTrue(next[0] instanceof String);
             assertTrue(next[1] instanceof Artist);
         }
+    }
+
+    @Test
+    public void testByteArraySelect() throws SQLException {
+        new TableHelper(dbHelper, "PAINTING_INFO")
+                .setColumns("IMAGE_BLOB", "PAINTING_ID")
+                .setColumnTypes(Types.LONGVARBINARY, Types.INTEGER)
+                .insert(new byte[]{(byte)1, (byte)2, (byte)3, (byte)4, (byte)5}, 1)
+                .insert(new byte[]{(byte)5, (byte)4, (byte)3, (byte)2}, 2);
+
+        List<byte[]> blobs = ObjectSelect.columnQuery(PaintingInfo.class, PaintingInfo.IMAGE_BLOB)
+                .orderBy("db:" + PaintingInfo.PAINTING_ID_PK_COLUMN)
+                .select(context);
+
+        assertEquals(2, blobs.size());
+        assertArrayEquals(new byte[]{(byte)1, (byte)2, (byte)3, (byte)4, (byte)5}, blobs.get(0));
+        assertArrayEquals(new byte[]{(byte)5, (byte)4, (byte)3, (byte)2}, blobs.get(1));
     }
 
 }

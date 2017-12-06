@@ -455,7 +455,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 				int type = getJdbcTypeForProperty(property);
 				ColumnDescriptor descriptor;
 				if(property.getType() != null) {
-					descriptor = new ColumnDescriptor(builder.toString(), type, property.getType().getName());
+					descriptor = new ColumnDescriptor(builder.toString(), type, property.getType().getCanonicalName());
 				} else {
 					descriptor = new ColumnDescriptor(builder.toString(), type);
 				}
