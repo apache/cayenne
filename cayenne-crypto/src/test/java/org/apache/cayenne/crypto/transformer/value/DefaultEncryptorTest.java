@@ -27,11 +27,11 @@ import static org.junit.Assert.assertNull;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.xml.bind.DatatypeConverter;
 
 import org.apache.cayenne.crypto.transformer.bytes.BytesDecryptor;
 import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
@@ -116,7 +116,7 @@ public class DefaultEncryptorTest {
         assertNotNull(s1_t);
         assertNotEquals(s1_t, s1);
 
-        byte[] b1_t = DatatypeConverter.parseBase64Binary(s1_t);
+        byte[] b1_t = Base64.getDecoder().decode(s1_t);
         assertEquals(s1, new String(decryptor.decrypt(b1_t, 0, null), Utf8StringConverter.DEFAULT_CHARSET));
 
         String s2_t = (String) e.encrypt(encryptor, s2);
@@ -124,7 +124,7 @@ public class DefaultEncryptorTest {
         assertNotNull(s2_t);
         assertNotEquals(s2_t, s2);
 
-        byte[] b2_t = DatatypeConverter.parseBase64Binary(s2_t);
+        byte[] b2_t = Base64.getDecoder().decode(s2_t);
         assertEquals(s2, new String(decryptor.decrypt(b2_t, 0, null), Utf8StringConverter.DEFAULT_CHARSET));
     }
 }

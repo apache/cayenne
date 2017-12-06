@@ -50,7 +50,16 @@ public class GradlePluginIT extends BaseTaskIT {
 
     @Test
     public void testGradleVersionsCompatibility() throws Exception {
-        String[] versions = {"3.5", "3.3", "3.0", "2.12", "2.8"};
+
+        String[] versions;
+
+        // Old gradle versions will fail on Java 9
+        if (System.getProperty("java.version").startsWith("9")) {
+            versions = new String[]{"4.3.1", "4.3"};
+        } else {
+            versions = new String[]{"4.3", "4.0", "3.5", "3.3", "3.0", "2.12", "2.8"};
+        }
+
         List<String> failedVersions = new ArrayList<>();
         for(String version : versions) {
             try {
