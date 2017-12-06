@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.Arrays;
 
 /**
  * A ResultIterator that does in-memory filtering of rows to return only
@@ -144,11 +145,18 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
         while (delegate.hasNextRow()) {
             T next = delegate.nextRow();
 
-            if (fetchedIds.add(next)) {
+            if (isUnique(next)) {
                 this.nextDataRow = next;
                 break;
             }
         }
+    }
+
+    private boolean isUnique(T next) {
+        if(next instanceof Object[]){
+            return fetchedIds.add(new ObjectArrayWrapper((Object[]) next));
+        }
+        return fetchedIds.add(next);
     }
 
     private void checkNextRowWithUniqueId() {
@@ -165,10 +173,36 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
                 id.put(pk.getName(), ((DataRow)next).get(pk.getName()));
             }
 
-            if (fetchedIds.add(id)) {
+            if (isUnique((T) id)) {
                 this.nextDataRow = next;
                 break;
             }
+        }
+    }
+
+    class ObjectArrayWrapper{
+        private Object[] objects;
+
+        ObjectArrayWrapper(Object[] objects){
+            this.objects = objects;
+        }
+
+        Object[] getObjects(){
+            return objects;
+        }
+
+        public int hashCode(){
+            return Arrays.deepHashCode(objects);
+        }
+
+        public boolean equals(Object o){
+            if (o == this)
+                return true;
+
+            if (!(o instanceof DistinctResultIterator.ObjectArrayWrapper))
+                return false;
+
+            return Arrays.deepEquals(this.getObjects(),((ObjectArrayWrapper)o).getObjects());
         }
     }
 

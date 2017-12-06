@@ -25,9 +25,11 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
@@ -96,28 +98,6 @@ public class SelectActionIT extends ServerCase {
     @Test
     public void  testAddingDistinctToQuery() throws Exception{
         if (accessStackAdapter.supportsLobs()){
-//            DistEntity obj = context.newObject(DistEntity.class);
-//            obj.setName("ABC");
-//            obj.setField("test".getBytes());
-//            DistEntity obj2 = context.newObject(DistEntity.class);
-//            obj2.setName("ABC1");
-//            obj2.setField("test".getBytes());
-//
-//            DistEntityRel objRel1 = context.newObject(DistEntityRel.class);
-//            objRel1.setNum(5);
-//            DistEntityRel objRel2 = context.newObject(DistEntityRel.class);
-//            objRel2.setNum(6);
-//            DistEntityRel objRel3 = context.newObject(DistEntityRel.class);
-//            objRel3.setNum(7);
-//            DistEntityRel objRel4 = context.newObject(DistEntityRel.class);
-//            objRel4.setNum(5);
-//
-//            obj.addToDistRel(objRel1);
-//            obj.addToDistRel(objRel2);
-//            obj.addToDistRel(objRel3);
-//            obj2.addToDistRel(objRel4);
-
-//            context.commitChanges();
 
             TableHelper tDistEntity = new TableHelper(dbHelper, "DIST_ENTITY");
             tDistEntity.setColumns("ID", "NAME", "FIELD");
@@ -141,7 +121,9 @@ public class SelectActionIT extends ServerCase {
             ObjectContext objectContext = serverRuntime.newContext();
 
             SQLTemplate select = new SQLTemplate(DistEntity.class, "SELECT t0.FIELD, t0.NAME, t0.ID FROM DIST_ENTITY t0 JOIN DIST_ENTITY_REL t1 ON (t0.ID = t1.DIST_ID) WHERE (t1.NUM > 0) AND (t0.NAME LIKE 'dist_entity1')");
+            select.setColumnNamesCapitalization(CapsStrategy.UPPER);
             List<DistEntity> list1 = objectContext.performQuery(select);
+
             assertEquals(4, list1.size());
 
             List<DistEntity> list2 = ObjectSelect.query(DistEntity.class)
@@ -150,6 +132,27 @@ public class SelectActionIT extends ServerCase {
                     .select(objectContext);
 
             assertEquals(1,list2.size());
+
+            EJBQLQuery query1 = new EJBQLQuery("select d FROM DistEntity d JOIN d.distRel r where d.name='dist_entity1' and r.num>0");
+            List<DistEntity> list3 = context.performQuery(query1);
+
+            assertEquals(4,list3.size());
+
+            List<String> list4 = ObjectSelect
+                    .columnQuery(DistEntity.class, DistEntity.NAME)
+                    .where(DistEntity.DIST_REL.dot(DistEntityRel.NUM).gt(0))
+                    .and(DistEntity.NAME.eq("dist_entity1"))
+                    .select(context);
+
+            assertEquals(1,list4.size());
+
+            List<Object[]> list5 = ObjectSelect
+                    .columnQuery(DistEntity.class, DistEntity.NAME, DistEntity.FIELD)
+                    .where(DistEntity.DIST_REL.dot(DistEntityRel.NUM).gt(0))
+                    .and(DistEntity.NAME.eq("dist_entity1"))
+                    .select(context);
+
+            assertEquals(1,list5.size());
         }
     }
 
