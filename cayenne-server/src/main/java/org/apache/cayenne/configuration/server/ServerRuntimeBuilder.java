@@ -60,13 +60,6 @@ public class ServerRuntimeBuilder {
     private boolean autoLoadModules;
 
     /**
-     * Creates an empty builder.
-     */
-    protected ServerRuntimeBuilder() {
-        this(null);
-    }
-
-    /**
      * Creates a builder with a fixed name of the DataDomain of the resulting
      * ServerRuntime. Specifying explicit name is often needed for consistency
      * in runtimes merged from multiple configs, each having its own name.

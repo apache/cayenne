@@ -27,7 +27,6 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.ProjectStatePreferences;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 public abstract class DisplayEventType {

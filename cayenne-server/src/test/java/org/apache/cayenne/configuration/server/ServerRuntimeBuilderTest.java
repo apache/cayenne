@@ -52,7 +52,7 @@ public class ServerRuntimeBuilderTest {
 	public void test_NoLocation() {
 
 		// this is meaningless (no DataSource), but should work...
-		runtime = new ServerRuntimeBuilder().build();
+		runtime = new ServerRuntimeBuilder(null).build();
 
 		List<String> locations = runtime.getInjector().getInstance(
 				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
@@ -67,7 +67,7 @@ public class ServerRuntimeBuilderTest {
 	@Test
 	public void test_SingleLocation() {
 
-		runtime = new ServerRuntimeBuilder().addConfig("xxxx").build();
+		runtime = new ServerRuntimeBuilder(null).addConfig("xxxx").build();
 
 		List<String> locations = runtime.getInjector().getInstance(
 				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
@@ -83,7 +83,7 @@ public class ServerRuntimeBuilderTest {
 	@Test
 	public void test_MultipleLocations() {
 
-		runtime = new ServerRuntimeBuilder().addConfigs("xxxx", "yyyy").build();
+		runtime = new ServerRuntimeBuilder(null).addConfigs("xxxx", "yyyy").build();
 
 		List<String> locations = runtime.getInjector().getInstance(
 				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
@@ -100,7 +100,7 @@ public class ServerRuntimeBuilderTest {
 
 		Module m = mock(Module.class);
 
-		runtime = new ServerRuntimeBuilder().addModule(m).build();
+		runtime = new ServerRuntimeBuilder(null).addModule(m).build();
 
 		Collection<Module> modules = runtime.getModules();
 		assertEquals(3, modules.size());
@@ -111,7 +111,7 @@ public class ServerRuntimeBuilderTest {
 
 	@Test
 	public void test_UnnamedDomain_NoLocation() {
-		runtime = new ServerRuntimeBuilder().build();
+		runtime = new ServerRuntimeBuilder(null).build();
 		assertEquals("cayenne", runtime.getDataDomain().getName());
 	}
 

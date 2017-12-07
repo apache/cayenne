@@ -73,7 +73,7 @@ public interface QueryCache {
      *
      * @since 4.0
      */
-    void removeGroup(String grou3pKey, Class<?> keyType, Class<?> valueType);
+    void removeGroup(String groupKey, Class<?> keyType, Class<?> valueType);
 
     /**
      * Clears all cache entries.
