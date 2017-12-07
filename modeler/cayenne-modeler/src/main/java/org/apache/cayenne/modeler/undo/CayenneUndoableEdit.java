@@ -43,4 +43,5 @@ public abstract class CayenneUndoableEdit extends AbstractUndoableEdit {
     public boolean canUndo() {
         return true;
     }
+
 }

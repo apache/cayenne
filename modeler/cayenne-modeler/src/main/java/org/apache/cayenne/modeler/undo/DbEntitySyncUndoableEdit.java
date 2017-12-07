@@ -60,9 +60,7 @@ public class DbEntitySyncUndoableEdit extends CompoundEdit {
         }
 
         public void objRelationshipAdded(ObjRelationship rel) {
-            addEdit(new CreateRelationshipUndoableEdit(entity, new ObjRelationship[] {
-                rel
-            }));
+            addEdit(new CreateRelationshipUndoableEdit(entity, new ObjRelationship[] {rel}));
         }
 
         public void objAttributeAdded(ObjAttribute attr) {
@@ -86,13 +84,7 @@ public class DbEntitySyncUndoableEdit extends CompoundEdit {
             for (DbAttribute da : dbAttrs) {
                 ObjAttribute oa = entity.getAttributeForDbAttribute(da);
                 if (oa != null) {
-                    addEdit(new RemoveAttributeUndoableEdit(
-                            domain,
-                            map,
-                            entity,
-                            new ObjAttribute[] {
-                                oa
-                            }));
+                    addEdit(new RemoveAttributeUndoableEdit(entity, new ObjAttribute[] {oa}));
                 }
             }
         }

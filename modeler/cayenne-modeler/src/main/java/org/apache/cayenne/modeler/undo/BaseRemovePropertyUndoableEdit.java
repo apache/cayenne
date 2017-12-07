@@ -17,42 +17,38 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action;
+package org.apache.cayenne.modeler.undo;
 
-import java.util.Iterator;
-
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.action.ObjEntityCounterpartAction;
+import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
 
-public class DbEntityCounterpartAction extends BaseViewEntityAction {
+/**
+ * @since 4.1
+ */
+public abstract class BaseRemovePropertyUndoableEdit extends CayenneUndoableEdit {
 
-    public static String getActionName() {
-        return "View related ObjEntity";
+    protected ObjEntity objEntity;
+    protected DbEntity dbEntity;
+    protected Embeddable embeddable;
+
+    protected void focusObjEntity(){
+        actionManager.getAction(ObjEntityCounterpartAction.class).navigateToEntity(objEntity);
     }
 
-    public DbEntityCounterpartAction(Application application) {
-        super(getActionName(), application);
+    protected void focusDBEntity(){
+        actionManager.getAction(ObjEntityCounterpartAction.class).navigateToEntity(dbEntity);
     }
 
-    public String getIconName() {
-        return "icon-move_up.png";
-    }
-
-    @Override
-    protected Entity getEntity() {
-        DbEntity dbEntity = getProjectController().getCurrentDbEntity();
-        if (dbEntity == null) {
-            return null;
-        }
-
-        Iterator<ObjEntity> it = dbEntity.getDataMap().getMappedEntities(dbEntity).iterator();
-        if (!it.hasNext()) {
-            return null;
-        }
-
-        return it.next();
+    protected void focusEmbeddable() {
+        controller.fireEmbeddableDisplayEvent(new EmbeddableDisplayEvent(
+                this,
+                embeddable,
+                embeddable.getDataMap(),
+                (DataChannelDescriptor) controller.getProject().getRootNode()));
     }
 
 }
