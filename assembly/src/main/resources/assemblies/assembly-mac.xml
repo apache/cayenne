@@ -96,6 +96,9 @@
 				<include>org.apache.cayenne:cayenne-xmpp</include>
 				<include>org.apache.cayenne:cayenne-velocity</include>
 				<include>org.apache.cayenne:cayenne-project-compatibility</include>
+				<include>org.apache.cayenne:cayenne-web</include>
+				<include>org.apache.cayenne:cayenne-osgi</include>
+				<include>org.apache.cayenne:cayenne-rop-server</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>
