@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
+
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 

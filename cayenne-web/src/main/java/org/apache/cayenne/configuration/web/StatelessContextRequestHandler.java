@@ -33,11 +33,11 @@ import org.apache.cayenne.di.Module;
  * <p>Stateless implementation of {@link RequestHandler} that creates a new
  * {@link ObjectContext} for each request and binds it to the request thread.
  * <p>
- * This is an alternative to the session-based request handler 
+ * This is an alternative to the session-based request handler
  * {@link SessionContextRequestHandler} which is the default.
  * <p>
  * The request handler can be used by injecting it with a custom @{link Module}, like so:
- * 
+ *
 <pre><code>
 import org.apache.cayenne.configuration.web.RequestHandler;
 import org.apache.cayenne.configuration.web.StatelessContextRequestHandler;
@@ -49,7 +49,7 @@ public class AppModule implements Module {
     }
 }
 </code></pre>
- * 
+ *
  * @since 4.0
  */
 public class StatelessContextRequestHandler implements RequestHandler {

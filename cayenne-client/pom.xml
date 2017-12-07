@@ -44,6 +44,11 @@
             <artifactId>hessian</artifactId>
 			<scope>compile</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-rop-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
 		<!-- Test dependencies -->
 		<dependency>
@@ -74,7 +79,7 @@
     		<artifactId>slf4j-simple</artifactId>
     		<scope>test</scope>
 		</dependency>
-	</dependencies>
+    </dependencies>
 
 	<build>
 		<plugins>

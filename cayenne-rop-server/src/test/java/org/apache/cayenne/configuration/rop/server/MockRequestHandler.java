@@ -18,21 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.server;
 
-import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.remote.MockRemoteService;
-import org.apache.cayenne.remote.RemoteService;
+import org.apache.cayenne.configuration.web.RequestHandler;
 
-public class ROPHessianServlet_ConfigModule implements Module {
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
-    public void configure(Binder binder) {
-        
-        DataDomain domain = new DataDomain("x");
-        binder.bind(DataChannel.class).toInstance(domain);
-        binder.bind(DataDomain.class).toInstance(domain);
-        binder.bind(RemoteService.class).to(MockRemoteService.class);
+
+public class MockRequestHandler implements RequestHandler {
+
+    public void requestEnd(ServletRequest request, ServletResponse response) {
+    }
+
+    public void requestStart(ServletRequest request, ServletResponse response) {
     }
 
 }

@@ -29,6 +29,7 @@ import org.apache.cayenne.remote.RemoteService;
 import org.apache.cayenne.rop.ROPSerializationService;
 import org.apache.cayenne.rop.ROPServlet;
 
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import java.util.Collection;

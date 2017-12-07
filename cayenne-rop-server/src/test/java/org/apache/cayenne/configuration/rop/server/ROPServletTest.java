@@ -23,10 +23,8 @@ import com.mockrunner.mock.web.MockServletContext;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.server.ServerModule;
-import org.apache.cayenne.configuration.web.MockModule1;
-import org.apache.cayenne.configuration.web.MockModule2;
-import org.apache.cayenne.configuration.web.MockRequestHandler;
 import org.apache.cayenne.configuration.web.RequestHandler;
+import org.apache.cayenne.configuration.web.WebModule;
 import org.apache.cayenne.configuration.web.WebUtil;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
@@ -116,14 +114,18 @@ public class ROPServletTest {
 				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
 		assertEquals(Arrays.asList(name + ".xml"), locations);
-		
+
 		Collection<Module> modules = runtime.getModules();
-		assertEquals(3, modules.size());
+		assertEquals(4, modules.size());
 		Object[] marray = modules.toArray();
 
-		assertTrue(marray[0] instanceof ServerModule);
-		// [2] is an inner class
-		assertTrue(marray[1] instanceof ROPServerModule);
+		if(marray[0] instanceof ServerModule){
+			assertTrue(marray[1] instanceof WebModule);
+		}
+		else{
+			assertTrue(marray[0] instanceof WebModule);
+		}
+		assertTrue(marray[2] instanceof ROPServerModule);
 	}
 
 	@Test
@@ -145,15 +147,18 @@ public class ROPServletTest {
 		assertNotNull(runtime);
 
 		Collection<Module> modules = runtime.getModules();
-		assertEquals(5, modules.size());
+		assertEquals(6, modules.size());
 
 		Object[] marray = modules.toArray();
-
-		assertTrue(marray[0] instanceof ServerModule);
-		// [1] is an inner class
-		assertTrue(marray[1] instanceof ROPServerModule);
-		assertTrue(marray[2] instanceof MockModule1);
-		assertTrue(marray[3] instanceof MockModule2);
+		if(marray[0] instanceof ServerModule){
+			assertTrue(marray[1] instanceof WebModule);
+		}
+		else{
+			assertTrue(marray[0] instanceof WebModule);
+		}
+		assertTrue(marray[2] instanceof ROPServerModule);
+		assertTrue(marray[3] instanceof MockModule1);
+		assertTrue(marray[4] instanceof MockModule2);
 
 		RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
 		assertTrue(handler instanceof MockRequestHandler);
@@ -174,11 +179,11 @@ public class ROPServletTest {
 		servlet.init(config);
 		runtime = WebUtil.getCayenneRuntime(context);
 		Collection<Module> modules = runtime.getModules();
-		assertEquals(4, modules.size());
+		assertEquals(5, modules.size());
 
 		Object[] marray = modules.toArray();
 
-		assertTrue(marray[2] instanceof ROPHessianServlet_ConfigModule);
+		assertTrue(marray[3] instanceof ROPHessianServlet_ConfigModule);
 
 		// TODO: mock servlet request to check that the right service instance
 		// is invoked

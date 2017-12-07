@@ -79,6 +79,9 @@
 		<module>tutorials</module>
 		<module>docs</module>
 		<module>assembly</module>
+        <module>cayenne-web</module>
+        <module>cayenne-osgi</module>
+        <module>cayenne-rop-server</module>
     </modules>
 	<issueManagement>
 		<system>jira</system>
