@@ -46,13 +46,6 @@ class DefaultBinder implements Binder {
 		return new DefaultBindingBuilder<>(key, injector);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	@Deprecated
-	public <T> ListBuilder<T> bindList(String bindingName) {
-		return (ListBuilder<T>)bindList(Object.class, bindingName);
-	}
-
 	/**
 	 * @since 4.0
 	 */
@@ -67,13 +60,6 @@ class DefaultBinder implements Binder {
 	@Override
 	public <T> ListBuilder<T> bindList(Class<T> valueType, String bindingName) {
 		return new DefaultListBuilder<>(Key.getListOf(valueType, bindingName), injector);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	@Deprecated
-	public <T> MapBuilder<T> bindMap(String bindingName) {
-		return (MapBuilder<T>)bindMap(Object.class, bindingName);
 	}
 
 	/**

@@ -33,7 +33,7 @@ class SQLTemplateMetadata extends BaseQueryMetadata {
 
 	boolean resolve(Object root, EntityResolver resolver, SQLTemplate query) {
 
-		if (super.resolve(root, resolver, null)) {
+		if (super.resolve(root, resolver)) {
 
 			resultSetMapping = query.getResult() != null ? query.getResult().getResolvedComponents(resolver) : null;
 

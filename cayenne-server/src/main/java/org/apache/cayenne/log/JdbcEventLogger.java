@@ -36,56 +36,7 @@ public interface JdbcEventLogger {
 	 */
 	void log(String message);
 
-	/**
-	 * Logs database connection event using container data source.
-	 * 
-	 * @deprecated since 4.0 connection events are logged by the DataSources
-	 *             using their own logger.
-	 */
-	@Deprecated
-	void logConnect(String dataSource);
-
-	/**
-	 * @deprecated since 4.0 connection events are logged by the DataSources
-	 *             using their own logger.
-	 */
-	@Deprecated
-	void logConnect(String url, String userName, String password);
-
-	/**
-	 * @deprecated since 4.0 connection events are logged by the DataSources
-	 *             using their own logger.
-	 */
-	@Deprecated
-	void logPoolCreated(DataSourceInfo dsi);
-
-	/**
-	 * @deprecated since 4.0 connection events are logged by the DataSources
-	 *             using their own logger.
-	 */
-	@Deprecated
-	void logConnectSuccess();
-
-	/**
-	 * @deprecated since 4.0 connection events are logged by the DataSources
-	 *             using their own logger.
-	 */
-	@Deprecated
-	void logConnectFailure(Throwable th);
-
 	void logGeneratedKey(DbAttribute attribute, Object value);
-
-	/**
-	 * @deprecated since 4.0 use {@link #logQuery(String, ParameterBinding[])}.
-	 */
-	@Deprecated
-	void logQuery(String sql, List<?> params);
-
-	/**
-	 * @deprecated since 4.0 use {@link #logQuery(String, ParameterBinding[])}.
-	 */
-	@Deprecated
-	void logQuery(String sql, List<DbAttribute> attrs, List<?> params, long time);
 
 	/**
 	 * @since 4.0
@@ -96,12 +47,6 @@ public interface JdbcEventLogger {
 	 * @since 4.0
 	 */
 	void logQueryParameters(String label, ParameterBinding[] bindings);
-
-	/**
-	 * @deprecated since 4.0 use {@link #logQueryParameters(String, ParameterBinding[])}
-	 */
-	@Deprecated
-	void logQueryParameters(String label, List<DbAttribute> attrs, List<Object> parameters, boolean isInserting);
 
 	void logSelectCount(int count, long time);
 

@@ -130,7 +130,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
 		}
 
 		dataDomain.getEntityResolver().applyDBLayerDefaults();
-		dataDomain.getEntityResolver().applyObjectLayerDefaults();
 		dataDomain.getEntityResolver().setValueObjectTypeRegistry(valueObjectTypeRegistry);
 
 		for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {

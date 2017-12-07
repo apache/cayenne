@@ -214,16 +214,6 @@ public class EJBQLQueryIT extends ServerCase {
     }
 
     @Test
-    public void testGetName() {
-        String ejbql = "select a FROM Artist a";
-        EJBQLQuery query = new EJBQLQuery(ejbql);
-
-        assertNull(query.getName());
-        query.setName("XYZ");
-        assertEquals("XYZ", query.getName());
-    }
-
-    @Test
     public void testUniqueKeyEntity() {
         // insertValue();
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();

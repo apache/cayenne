@@ -170,19 +170,6 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	protected int type;
 
 	/**
-	 * Parses string, converting it to Expression. If string does not represent
-	 * a semantically correct expression, an ExpressionException is thrown.
-	 * 
-	 * @since 1.1
-	 * @deprecated since 4.0 use
-	 *             {@link ExpressionFactory#exp(String, Object...)}
-	 */
-	@Deprecated
-	public static Expression fromString(String expressionString) {
-		return exp(expressionString);
-	}
-
-	/**
 	 * Returns a map of path aliases for this expression. It returns a non-empty
 	 * map only if this is a path expression and the aliases are known at the
 	 * expression creation time. Otherwise an empty map is returned.
@@ -347,45 +334,6 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 */
 	public Expression params(Map<String, ?> parameters, boolean pruneMissing) {
 		return transform(new NamedParamTransformer(parameters, pruneMissing));
-	}
-
-	/**
-	 * A shortcut for <code>expWithParams(params, true)</code>.
-	 * 
-	 * @deprecated since 4.0 use {@link #params(Map)}
-	 */
-	@Deprecated
-	public Expression expWithParameters(Map<String, ?> parameters) {
-		return expWithParameters(parameters, true);
-	}
-
-	/**
-	 * Creates and returns a new Expression instance using this expression as a
-	 * prototype. All ExpressionParam operands are substituted with the values
-	 * in the <code>params</code> map.
-	 * <p>
-	 * <i>Null values in the <code>params</code> map should be explicitly
-	 * created in the map for the corresponding key. </i>
-	 * </p>
-	 * 
-	 * @param parameters
-	 *            a map of parameters, with each key being a string name of an
-	 *            expression parameter, and value being the value that should be
-	 *            used in the final expression.
-	 * @param pruneMissing
-	 *            If <code>true</code>, subexpressions that rely on missing
-	 *            parameters will be pruned from the resulting tree. If
-	 *            <code>false</code> , any missing values will generate an
-	 *            exception.
-	 * @return Expression resulting from the substitution of parameters with
-	 *         real values, or null if the whole expression was pruned, due to
-	 *         the missing parameters.
-	 * 
-	 * @deprecated since 4.0 use {@link #params(Map, boolean)} instead.
-	 */
-	@Deprecated
-	public Expression expWithParameters(Map<String, ?> parameters, boolean pruneMissing) {
-		return params(parameters, pruneMissing);
 	}
 
 	/**
@@ -692,33 +640,12 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	}
 
 	/**
-	 * Stores a String representation of Expression using a provided
-	 * PrintWriter.
-	 * 
-	 * @since 1.1
-	 * @deprecated since 4.0 use {@link #appendAsString(Appendable)}.
-	 */
-	@Deprecated
-	public abstract void encodeAsString(PrintWriter pw);
-
-	/**
 	 * Appends own content as a String to the provided Appendable.
 	 * 
 	 * @since 4.0
 	 * @throws IOException
 	 */
 	public abstract void appendAsString(Appendable out) throws IOException;
-
-	/**
-	 * Stores a String representation of Expression as EJBQL using a provided
-	 * PrintWriter. DB path expressions produce non-standard EJBQL path
-	 * expressions.
-	 * 
-	 * @since 3.0
-	 * @deprecated since 4.0 use {@link #appendAsEJBQL(Appendable, String)}
-	 */
-	@Deprecated
-	public abstract void encodeAsEJBQL(PrintWriter pw, String rootId);
 
 	/**
 	 * Stores a String representation of Expression as EJBQL using a provided

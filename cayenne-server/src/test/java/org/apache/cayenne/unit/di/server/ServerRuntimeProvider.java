@@ -51,7 +51,7 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
         this.unitDbAdapter = unitDbAdapter;
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("unchecked")
     @Override
     public ServerRuntime get() throws ConfigurationException {
 
@@ -61,9 +61,12 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
                     + "annotate your test case with @UseServerRuntime");
         }
 
-        Collection<? extends Module> modules = getExtraModules();
+        Collection modules = getExtraModules();
 
-        return new ServerRuntime(configurationLocation, modules.toArray(new Module[modules.size()]));
+        return ServerRuntime.builder()
+                        .addConfig(configurationLocation)
+                        .addModules(modules)
+                        .build();
     }
 
     protected Collection<? extends Module> getExtraModules() {

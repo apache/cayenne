@@ -56,9 +56,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
     protected static final Logger logger = LoggerFactory.getLogger(EntityResolver.class);
     protected static AtomicLong incrementer = new AtomicLong();
 
-    @Deprecated
-    protected boolean indexedByClass;
-
     protected Collection<DataMap> maps;
     protected transient MappingNamespace mappingCache;
     protected EntityResolver clientEntityResolver;
@@ -122,16 +119,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
             }
         }
 
-    }
-
-    /**
-     * @since 3.0
-     * @deprecated since 4.0 does nothing. Previously it used to create runtime
-     *             ObjRelationships, that broke a lot of things.
-     */
-    @Deprecated
-    public void applyObjectLayerDefaults() {
-        // noop
     }
 
     private String getUniqueRelationshipName(Entity entity) {
@@ -244,14 +231,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
     public Collection<Embeddable> getEmbeddables() {
         checkMappingCache();
         return mappingCache.getEmbeddables();
-    }
-
-    /**
-     * @deprecated since 4.0 use {@link #getResults()}.
-     */
-    @Deprecated
-    public Collection<SQLResult> getResultSets() {
-        return getResults();
     }
 
     /**
@@ -386,16 +365,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
         }
     }
 
-    /**
-     * Removes all entity mappings from the cache.
-     *
-     * @deprecated since 4.0 in favor of {@link #refreshMappingCache()}.
-     */
-    @Deprecated
-    public void clearCache() {
-        refreshMappingCache();
-    }
-
     private void checkMappingCache() {
         if (mappingCache == null) {
             refreshMappingCache();
@@ -472,14 +441,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @deprecated since 4.0 use {@link #getInheritanceTree(String)}.
-     */
-    @Deprecated
-    public EntityInheritanceTree lookupInheritanceTree(String entityName) {
-        return getInheritanceTree(entityName);
-    }
-
-    /**
      * Looks in the DataMap's that this object was created with for the
      * ObjEntity that maps to the services the specified class
      *
@@ -533,80 +494,15 @@ public class EntityResolver implements MappingNamespace, Serializable {
         return entity;
     }
 
-    /**
-     * @deprecated since 4.0, use {@link #getObjEntity(Class)}.
-     */
-    public ObjEntity lookupObjEntity(Class<?> entityClass) {
-        return getObjEntity(entityClass);
-    }
-
     public ObjEntity getObjEntity(Persistent object) {
         checkMappingCache();
         return mappingCache.getObjEntity(object);
-    }
-
-    /**
-     * Looks in the DataMap's that this object was created with for the
-     * ObjEntity that services the specified data Object
-     * 
-     * @return the required ObjEntity, or null if none matches the specifier
-     * @since 4.0 a corresponding getObjEntity method should be used.
-     */
-    @Deprecated
-    public ObjEntity lookupObjEntity(Object object) {
-        if (object instanceof ObjEntity) {
-            return (ObjEntity) object;
-        }
-
-        if (object instanceof Persistent) {
-            ObjectId id = ((Persistent) object).getObjectId();
-            if (id != null) {
-                return getObjEntity(id.getEntityName());
-            }
-        } else if (object instanceof Class) {
-            return getObjEntity((Class<?>) object);
-        }
-
-        return getObjEntity(object.getClass());
-    }
-
-    /**
-     * @deprecated since 4.0. Use q.getMetaData(resolver).getProcedure()
-     */
-    @Deprecated
-    public Procedure lookupProcedure(Query q) {
-        return q.getMetaData(this).getProcedure();
-    }
-
-    /**
-     * @deprecated since 4.0 use {@link #getProcedure(String)}.
-     */
-    @Deprecated
-    public Procedure lookupProcedure(String procedureName) {
-        return getProcedure(procedureName);
     }
 
     public synchronized void removeDataMap(DataMap map) {
         if (maps.remove(map)) {
             refreshMappingCache();
         }
-    }
-
-    /**
-     * @deprecated since 4.0. There's no replacement. This property is
-     *             meaningless and is no longer respected by the code.
-     */
-    @Deprecated
-    public boolean isIndexedByClass() {
-        return indexedByClass;
-    }
-
-    /**
-     * @deprecated since 4.0. There's no replacement. This property is
-     *             meaningless.
-     */
-    public void setIndexedByClass(boolean b) {
-        indexedByClass = b;
     }
 
     /**
@@ -644,16 +540,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
         }
 
         return classDescriptorMap;
-    }
-
-    /**
-     * @since 3.0
-     * @deprecated since 4.0 this method does nothing, as EntityResolver no
-     *             longer loads listeners from its DataMaps.
-     */
-    @Deprecated
-    public void setEntityListenerFactory(EntityListenerFactory entityListenerFactory) {
-        // noop
     }
 
     /**

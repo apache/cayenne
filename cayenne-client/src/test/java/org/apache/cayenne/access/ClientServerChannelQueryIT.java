@@ -97,13 +97,6 @@ public class ClientServerChannelQueryIT extends ClientCase {
         // read page 1
         assertTrue(results.get(0) instanceof ClientMtTable1);
 
-        // now kick out the server-side list from local cache, and see if the query would
-        // recover...
-        QueryCache qc = serverChannel.getQueryCache();
-        assertEquals(1, qc.size());
-        qc.clear();
-        assertEquals(0, qc.size());
-
         assertTrue(results.get(3) instanceof ClientMtTable1);
     }
 

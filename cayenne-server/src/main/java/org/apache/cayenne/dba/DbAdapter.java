@@ -194,13 +194,6 @@ public interface DbAdapter {
 	void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column);
 
 	/**
-	 * @since 3.0
-	 * @deprecated since 4.0 use {@link #getQuotingStrategy()}.
-	 */
-	@Deprecated
-	QuotingStrategy getQuotingStrategy(boolean needQuotes);
-
-	/**
 	 * Returns SQL identifier quoting strategy object
 	 *
 	 * @since 4.0

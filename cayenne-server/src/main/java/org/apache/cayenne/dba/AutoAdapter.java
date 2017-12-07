@@ -220,15 +220,6 @@ public class AutoAdapter implements DbAdapter {
 	}
 
 	/**
-	 * @deprecated since 4.0
-	 */
-	@Deprecated
-	@Override
-	public QuotingStrategy getQuotingStrategy(boolean isQuoteStrategy) {
-		return getAdapter().getQuotingStrategy(isQuoteStrategy);
-	}
-
-	/**
 	 * @since 4.0
 	 */
 	@Override

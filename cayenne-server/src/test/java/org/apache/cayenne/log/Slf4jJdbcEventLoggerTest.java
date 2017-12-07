@@ -30,16 +30,6 @@ import static org.junit.Assert.assertTrue;
 public class Slf4jJdbcEventLoggerTest {
 
     @Test
-    public void testSqlLiteralForObject() throws Exception {
-        StringBuilder buf = new StringBuilder();
-
-        // test unsupported type
-        new Slf4jJdbcEventLogger(new DefaultRuntimeProperties(Collections.<String, String>emptyMap()))
-                .sqlLiteralForObject(buf, new Object());
-        assertTrue(buf.length() > 0);
-    }
-
-    @Test
     public void testAppendFormattedByte() throws Exception {
         assertFormatting((byte) 0, "00");
         assertFormatting((byte) 1, "01");

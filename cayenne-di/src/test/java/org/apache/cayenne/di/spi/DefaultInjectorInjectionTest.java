@@ -184,35 +184,6 @@ public class DefaultInjectorInjectionTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    public void mapInjectionDeprecated() {
-        final String bindingName = "xyz";
-        final Object test = "test_map";
-        Module module = binder -> {
-            binder.bind(MockInterface1.class).to(MockImplementation1_MapConfiguration.class);
-            binder.bindMap(bindingName).put("test", test).put("abc", "def");
-        };
-
-        DefaultInjector injector = new DefaultInjector(module);
-        // Even with old version of binding we should use new version of key...
-        Map<String, Object> map = injector.getInstance(Key.getMapOf(String.class, Object.class, bindingName));
-        assertNotNull(map);
-        assertEquals(test, map.get("test"));
-
-        try {
-            // Old version of getting by key will fail...
-            injector.getInstance(Key.get(Map.class, bindingName));
-            fail("DI Exception should be thrown");
-        } catch (DIRuntimeException ignored) {
-        }
-
-        // Check that injection is working
-        MockInterface1 interface1 = injector.getInstance(MockInterface1.class);
-        assertThat(interface1, instanceOf(MockImplementation1_MapConfiguration.class));
-        assertEquals(";abc=def;test=test_map", interface1.getName());
-    }
-
-    @Test
     public void testMapInjection() {
         Module module = binder -> {
             binder.bind(MockInterface1.class).to(MockImplementation1_MapConfiguration.class);

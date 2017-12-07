@@ -229,7 +229,6 @@ public class DataDomainProviderTest {
         assertSame(node1, domain.lookupDataNode(map1));
         assertEquals(nodeDescriptor1.getDataSourceFactoryType(), node1.getDataSourceFactory());
         assertNotNull(node1.getDataSource());
-        assertEquals(nodeDescriptor1.getParameters(), node1.getDataSourceLocation());
 
         assertNotNull(node1.getSchemaUpdateStrategy());
         assertEquals(nodeDescriptor1.getSchemaUpdateStrategyType(), node1.getSchemaUpdateStrategy().getClass()
@@ -245,7 +244,6 @@ public class DataDomainProviderTest {
         assertSame(node2, domain.lookupDataNode(map2));
         assertNull(node2.getDataSourceFactory());
         assertNotNull(node2.getDataSource());
-        assertEquals(nodeDescriptor2.getParameters(), node2.getDataSourceLocation());
         assertNotNull(node2.getSchemaUpdateStrategy());
         assertEquals(SkipSchemaUpdateStrategy.class.getName(), node2.getSchemaUpdateStrategy().getClass().getName());
 

@@ -85,19 +85,6 @@ public class Property<E> {
     private final Class<? super E> type;
 
     /**
-     * Constructs a new property with the given name.
-     *
-     * @param name name of the property (usually it's obj path)
-     *
-     * @see Property#create(String, Class)
-     * @deprecated use factory method Property.create("propertyName", PropertyType.class)
-     */
-    @Deprecated
-	public Property(final String name) {
-        this(name, null);
-    }
-
-    /**
      * Constructs a new property with the given name and type.
      *
      * @param name of the property (usually it's obj path)

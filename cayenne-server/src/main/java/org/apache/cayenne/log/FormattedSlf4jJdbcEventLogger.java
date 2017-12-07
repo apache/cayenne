@@ -120,16 +120,4 @@ public class FormattedSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
         return result;
     }
 
-    @Override
-    @Deprecated
-    public void logQuery(
-            String queryStr,
-            List<DbAttribute> attrs,
-            List<?> params,
-            long time) {
-        if (isLoggable()) {
-            super.logQuery(formatQuery(queryStr), attrs, params, time);
-        }
-    }
-
 }

@@ -38,15 +38,6 @@ public class QueryChain implements Query {
 
     protected Collection<Query> chain;
 
-    @Deprecated
-    protected String name;
-
-    /**
-     * @since 3.1
-     */
-    @Deprecated
-    protected DataMap dataMap;
-
     /**
      * Creates an empty QueryChain.
      */
@@ -113,32 +104,6 @@ public class QueryChain implements Query {
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         throw new CayenneRuntimeException("Chain doesn't support its own execution "
                 + "and should've been split into separate queries during routing phase.");
-    }
-
-    @Deprecated
-    public String getName() {
-        return name;
-    }
-
-    @Deprecated
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @since 3.1
-     */
-    @Deprecated
-    public DataMap getDataMap() {
-        return dataMap;
-    }
-
-    /**
-     * @since 3.1
-     */
-    @Deprecated
-    public void setDataMap(DataMap dataMap) {
-        this.dataMap = dataMap;
     }
 
     /**

@@ -46,26 +46,6 @@ import org.apache.cayenne.rop.http.ClientHessianSerializationServiceProvider;
 public class ClientModule implements Module {
 
     /**
-     * @deprecated since 4.0 in favour of {@link ClientRuntimeBuilder}
-     * @see ClientRuntimeBuilder#properties(Map)
-     */
-    @Deprecated
-    protected Map<String, String> properties = null;
-
-    /**
-     * @deprecated since 4.0 in favour of {@link ClientRuntimeBuilder}
-     * @see ClientRuntimeBuilder#properties(Map)
-     */
-    @Deprecated
-    public ClientModule(Map<String, String> properties) {
-        if (properties == null) {
-            throw new NullPointerException("Null 'properties' map");
-        }
-
-        this.properties = properties;
-    }
-
-    /**
      * @since 4.0
      */
     public ClientModule() {
@@ -76,12 +56,6 @@ public class ClientModule implements Module {
 
         // Contribute always to create binding
         MapBuilder<String> propertiesBuilder = ServerModule.contributeProperties(binder);
-
-        // expose user-provided ROP properties as the main properties map
-        // binding here is left only for backward compatibility, should go away with the deprecated code.
-        if(properties != null) {
-            propertiesBuilder.putAll(properties);
-        }
 
         binder.bind(ObjectContextFactory.class).to(CayenneContextFactory.class);
         binder.bind(ROPSerializationService.class).toProvider(ClientHessianSerializationServiceProvider.class);

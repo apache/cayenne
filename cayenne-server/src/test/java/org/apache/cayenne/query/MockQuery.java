@@ -34,11 +34,6 @@ public class MockQuery implements Query {
     public MockQuery() {
     }
 
-    @Deprecated
-    public DataMap getDataMap() {
-        return null;
-    }
-
     public QueryMetadata getMetaData(EntityResolver resolver) {
         return DefaultQueryMetadata.defaultMetadata;
     }
@@ -49,11 +44,6 @@ public class MockQuery implements Query {
 
     public boolean isSelecting() {
         return selecting;
-    }
-
-    @Deprecated
-    public String getName() {
-        return null;
     }
 
     public SQLAction createSQLAction(SQLActionVisitor visitor) {

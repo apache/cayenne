@@ -33,6 +33,7 @@ import org.apache.cayenne.tutorial.persistent.client.Gallery;
 import org.apache.cayenne.tutorial.persistent.client.Painting;
 
 import javax.net.ssl.HttpsURLConnection;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,9 +66,11 @@ public class Http2Client {
         properties.put(ClientConstants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
         properties.put(ClientConstants.ROP_SERVICE_REALM_PROPERTY, "Cayenne Realm");
 
-        ClientRuntime runtime = new ClientRuntime(properties,
-                new ClientJettyHttp2Module(),
-                new ProtostuffModule());
+        ClientRuntime runtime = ClientRuntime.builder()
+                            .properties(properties)
+                            .addModule(new ClientJettyHttp2Module())
+                            .addModule(new ProtostuffModule())
+                            .build();
 
         ObjectContext context = runtime.newContext();
 

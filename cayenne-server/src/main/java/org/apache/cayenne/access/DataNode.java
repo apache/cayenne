@@ -145,26 +145,6 @@ public class DataNode implements QueryEngine {
 	}
 
 	/**
-	 * Returns a location of DataSource of this node. Depending on how this node
-	 * was created, location is either a JNDI name, or a location of node XML
-	 * file, etc.
-	 *
-	 * @deprecated since 4.0. This information is irrelevant at the DataNode level
-	 */
-	@Deprecated
-	public String getDataSourceLocation() {
-		return dataSourceLocation;
-	}
-
-	/**
-	 * @deprecated since 4.0. This information is irrelevant at the DataNode level
-	 */
-	@Deprecated
-	public void setDataSourceLocation(String dataSourceLocation) {
-		this.dataSourceLocation = dataSourceLocation;
-	}
-
-	/**
 	 * Returns a name of DataSourceFactory class for this node.
 	 */
 	public String getDataSourceFactory() {

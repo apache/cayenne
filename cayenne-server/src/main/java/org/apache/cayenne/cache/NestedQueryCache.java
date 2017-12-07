@@ -114,17 +114,6 @@ public class NestedQueryCache implements QueryCache {
         delegate.removeGroup(groupKey, keyType, valueType);
     }
 
-    /**
-     * Returns a shared cache size.
-     * @see QueryCache#size()
-     * @deprecated since 4.0
-     */
-    @Override
-    @Deprecated
-    public int size() {
-        return delegate.size();
-    }
-
     private String qualifiedKey(String key) {
         return key != null ? namespace + key : null;
     }

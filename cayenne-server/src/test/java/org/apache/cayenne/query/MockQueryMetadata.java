@@ -67,11 +67,6 @@ public class MockQueryMetadata implements QueryMetadata {
         return null;
     }
 
-    @Deprecated
-    public String[] getCacheGroups() {
-        return null;
-    }
-
     public String getCacheGroup() {
         return null;
     }
@@ -105,11 +100,6 @@ public class MockQueryMetadata implements QueryMetadata {
     }
 
     public PrefetchTreeNode getPrefetchTree() {
-        return null;
-    }
-
-    @Deprecated
-    public Query getOrginatingQuery() {
         return null;
     }
 

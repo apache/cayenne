@@ -143,19 +143,6 @@ public interface QueryMetadata {
     String getCacheKey();
 
     /**
-     * Returns an optional array of cache "groups". Cache groups allow to invalidate query
-     * caches in bulk on different events. Usually the first group in the array is
-     * considered to be the "main" group that is used for declarative cache invalidation
-     * with some cache providers.
-     * 
-     * @since 3.0
-     * @deprecated since 4.0 only single cache group supported, use {@link QueryMetadata#getCacheGroup()} instead
-     * @see QueryMetadata#getCacheGroup()
-     */
-    @Deprecated
-    String[] getCacheGroups();
-
-    /**
      * Returns an optional cache "group".
      * Cache groups allow to invalidate query caches in bulk on different events.
      *
@@ -203,13 +190,6 @@ public interface QueryMetadata {
      *         query
      */
     int getFetchLimit();
-
-    /**
-     * @since 3.0
-     * @deprecated since 4.0, use {@link QueryMetadata#getOriginatingQuery()}
-     */
-    @Deprecated
-    Query getOrginatingQuery();
 
     /**
      * Returns a query that originated this query. Originating query is a query whose

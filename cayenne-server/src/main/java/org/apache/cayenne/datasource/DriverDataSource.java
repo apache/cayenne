@@ -47,59 +47,6 @@ public class DriverDataSource implements DataSource {
 	protected String password;
 
 	/**
-	 * Loads JDBC driver using current thread class loader.
-	 * 
-	 * @since 3.0
-	 * @deprecated since 4.0 as class loading should not happen here.
-	 */
-	@Deprecated
-	private static Driver loadDriver(String driverClassName) {
-
-		Class<?> driverClass;
-		try {
-			driverClass = Util.getJavaClass(driverClassName);
-		} catch (Exception ex) {
-			throw new CayenneRuntimeException("Can not load JDBC driver named '%s': %s", driverClassName, ex.getMessage());
-		}
-
-		try {
-			return (Driver) driverClass.newInstance();
-		} catch (Exception ex) {
-			throw new CayenneRuntimeException("Error instantiating driver '%s': %s", driverClassName, ex.getMessage());
-		}
-	}
-
-	/**
-	 * Creates a new DriverDataSource. If "driverClassName" is null,
-	 * DriverDataSource will consult DriverManager for a registered driver for
-	 * the given URL. So when specifying null, a user must take care of
-	 * registering the driver. "connectionUrl" on the other hand must NOT be
-	 * null.
-	 * 
-	 * @deprecated since 4.0 as class loading should not happen here. Use {
-	 *             {@link #DriverDataSource(Driver, String, String, String)}.
-	 */
-	@Deprecated
-	public DriverDataSource(String driverClassName, String connectionUrl) {
-		this(driverClassName, connectionUrl, null, null);
-	}
-
-	/**
-	 * Creates a new DriverDataSource. If "driverClassName" is null,
-	 * DriverDataSource will consult DriverManager for a registered driver for
-	 * the given URL. So when specifying null, a user must take care of
-	 * registering the driver. "connectionUrl" on the other hand must NOT be
-	 * null.
-	 * 
-	 * @deprecated since 4.0 as class loading should not happen here. Use
-	 *             {@link #DriverDataSource(Driver, String, String, String)}.
-	 */
-	@Deprecated
-	public DriverDataSource(String driverClassName, String connectionUrl, String userName, String password) {
-		this(loadDriver(driverClassName), connectionUrl, userName, password);
-	}
-
-	/**
 	 * Creates a DriverDataSource wrapping a given Driver. If "driver" is null,
 	 * DriverDataSource will consult DriverManager for a registered driver for
 	 * the given URL. So when specifying null, a user must take care of
@@ -198,63 +145,6 @@ public class DriverDataSource implements DataSource {
 	@Override
 	public void setLogWriter(PrintWriter out) throws SQLException {
 		DriverManager.setLogWriter(out);
-	}
-
-	/**
-	 * @since 3.0
-	 * @deprecated since 4.0. Connection parameters are immutable and not
-	 *             readable.
-	 */
-	@Deprecated
-	public String getConnectionUrl() {
-		return connectionUrl;
-	}
-
-	/**
-	 * @since 3.0
-	 * @deprecated since 4.0. Connection parameters are immutable.
-	 */
-	@Deprecated
-	public void setConnectionUrl(String connectionUrl) {
-		this.connectionUrl = connectionUrl;
-	}
-
-	/**
-	 * @since 3.0
-	 * @deprecated since 4.0. Connection parameters are immutable and not
-	 *             readable.
-	 */
-	@Deprecated
-	public String getPassword() {
-		return password;
-	}
-
-	/**
-	 * @deprecated since 4.0. Connection parameters are immutable.
-	 * @since 3.0
-	 */
-	@Deprecated
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	/**
-	 * @since 3.0
-	 * @deprecated since 4.0. Connection parameters are immutable and not
-	 *             readable.
-	 */
-	@Deprecated
-	public String getUserName() {
-		return userName;
-	}
-
-	/**
-	 * @since 3.0
-	 * @deprecated since 4.0. Connection parameters are immutable.
-	 */
-	@Deprecated
-	public void setUserName(String userName) {
-		this.userName = userName;
 	}
 
 	/**

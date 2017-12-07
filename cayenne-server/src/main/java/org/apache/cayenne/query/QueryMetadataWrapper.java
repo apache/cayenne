@@ -70,16 +70,6 @@ class QueryMetadataWrapper extends QueryMetadataProxy {
     }
 
     /**
-     * @deprecated since 4.0, use {@link QueryMetadataWrapper#getCacheKey()}
-     */
-    @Deprecated
-    public String[] getCacheGroups() {
-        return (overrideExists(QueryMetadata.CACHE_GROUPS_PROPERTY))
-                ? (String[]) overrides.get(QueryMetadata.CACHE_GROUPS_PROPERTY)
-                : super.getCacheGroups();
-    }
-
-    /**
      * @since 4.0
      */
     public String getCacheGroup() {

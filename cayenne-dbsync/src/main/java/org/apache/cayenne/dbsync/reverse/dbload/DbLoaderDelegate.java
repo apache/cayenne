@@ -49,15 +49,4 @@ public interface DbLoaderDelegate {
      */
     boolean dbRelationshipLoaded(DbEntity entity, DbRelationship relationship);
 
-    /**
-     * @deprecated since 4.0 no longer invoked as DbLoader does not deal with object layer anymore.
-     */
-    @Deprecated
-    void objEntityAdded(ObjEntity entity);
-
-    /**
-     * @deprecated since 4.0 no longer invoked as DbLoader does not deal with object layer anymore.
-     */
-    @Deprecated
-    void objEntityRemoved(ObjEntity entity);
 }

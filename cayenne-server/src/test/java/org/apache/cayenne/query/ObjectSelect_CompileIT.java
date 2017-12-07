@@ -66,7 +66,6 @@ public class ObjectSelect_CompileIT extends ServerCase {
 		assertNull(selectQuery.getPrefetchTree());
 
 		assertEquals(QueryCacheStrategy.NO_CACHE, selectQuery.getCacheStrategy());
-		assertNull(selectQuery.getCacheGroups());
 		assertNull(selectQuery.getCacheGroup());
 		assertEquals(0, selectQuery.getFetchLimit());
 		assertEquals(0, selectQuery.getFetchOffset());
@@ -102,9 +101,7 @@ public class ObjectSelect_CompileIT extends ServerCase {
 		assertEquals(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS, childPrefetch.getSemantics());
 
 		assertEquals(QueryCacheStrategy.LOCAL_CACHE, selectQuery.getCacheStrategy());
-		assertArrayEquals(new String[] { "cg2" }, selectQuery.getCacheGroups());
 		assertEquals("cg2", selectQuery.getCacheGroup());
-
 		assertEquals(46, selectQuery.getFetchLimit());
 		assertEquals(9, selectQuery.getFetchOffset());
 		assertEquals(6, selectQuery.getPageSize());

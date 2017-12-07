@@ -54,53 +54,14 @@ public class DataRowStore implements Serializable {
 
     private static Logger logger = LoggerFactory.getLogger(DataRowStore.class);
 
-    /**
-     * @deprecated since 4.0, never used actually
-     */
-    @Deprecated
-    public static final String SNAPSHOT_EXPIRATION_PROPERTY = "cayenne.DataRowStore.snapshot.expiration";
-
-    /**
-     * @deprecated since 4.0, use {@link org.apache.cayenne.configuration.Constants#SNAPSHOT_CACHE_SIZE_PROPERTY}
-     */
-    @Deprecated
-    public static final String SNAPSHOT_CACHE_SIZE_PROPERTY = "cayenne.DataRowStore.snapshot.size";
-
-    /**
-     * @deprecated since 4.0 does nothing. Previously it used to check if need to create {@link EventBridge}.
-     */
-    @Deprecated
-    public static final String REMOTE_NOTIFICATION_PROPERTY = "cayenne.DataRowStore.remote.notify";
-
-    /**
-     * @deprecated since 4.0 {@link DataRowStoreFactory} establishes {@link EventBridge}.
-     */
-    @Deprecated
-    public static final String EVENT_BRIDGE_FACTORY_PROPERTY = "cayenne.DataRowStore.EventBridge.factory";
-
     // default property values
 
     public static final long SNAPSHOT_EXPIRATION_DEFAULT = 2 * 60 * 60; // default expiration time is 2 hours
     public static final int SNAPSHOT_CACHE_SIZE_DEFAULT = 10000;
 
-    @Deprecated
-    public static final boolean REMOTE_NOTIFICATION_DEFAULT = false;
-
-    /**
-     * @deprecated since 4.0 does nothing.
-     */
-    @Deprecated
-    public static final String EVENT_BRIDGE_FACTORY_DEFAULT = "org.apache.cayenne.event.JavaGroupsBridgeFactory";
-
     protected String name;
     private int maxSize;
     protected ConcurrentMap<ObjectId, DataRow> snapshots;
-
-    /**
-     * @deprecated since 4.0 does nothing. Previously it used to check if need to create {@link EventBridge}.
-     */
-    @Deprecated
-    protected boolean notifyingRemoteListeners;
 
     protected transient EventManager eventManager;
     protected transient EventBridge remoteNotificationsHandler;
@@ -518,16 +479,6 @@ public class DataRowStore implements Serializable {
             // register as "non-blocking" if needed.
             eventManager.postEvent(event, getSnapshotEventSubject());
         }
-    }
-
-    @Deprecated
-    public boolean isNotifyingRemoteListeners() {
-        return notifyingRemoteListeners;
-    }
-
-    @Deprecated
-    public void setNotifyingRemoteListeners(boolean notifyingRemoteListeners) {
-        this.notifyingRemoteListeners = notifyingRemoteListeners;
     }
 
     // deserialization support

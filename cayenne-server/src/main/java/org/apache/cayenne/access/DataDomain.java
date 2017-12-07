@@ -68,18 +68,6 @@ public class DataDomain implements QueryEngine, DataChannel {
 	public static final boolean VALIDATING_OBJECTS_ON_COMMIT_DEFAULT = true;
 
 	/**
-	 * @deprecated since 4.0 See {@link Constants#SERVER_EXTERNAL_TX_PROPERTY}.
-	 */
-	@Deprecated
-	public static final String USING_EXTERNAL_TRANSACTIONS_PROPERTY = "cayenne.DataDomain.usingExternalTransactions";
-
-	/**
-	 * @deprecated since 4.0 See {@link Constants#SERVER_EXTERNAL_TX_PROPERTY}.
-	 */
-	@Deprecated
-	public static final boolean USING_EXTERNAL_TRANSACTIONS_DEFAULT = false;
-
-	/**
 	 * @since 3.1
 	 */
 	@Inject

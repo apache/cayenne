@@ -91,11 +91,9 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 		setPrefetchTree(info.getPrefetchTree());
 	}
 
-	boolean resolve(Object root, EntityResolver resolver, String cacheKey) {
+	boolean resolve(Object root, EntityResolver resolver) {
 
 		if (lastRoot != root || lastEntityResolver != resolver) {
-
-			this.cacheKey = cacheKey;
 
 			this.classDescriptor = null;
 			this.dbEntity = null;
@@ -301,29 +299,6 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 	}
 
 	/**
-	 * @since 3.0
-	 * @deprecated since 4.0, use {@link BaseQueryMetadata#getCacheGroup()}
-	 */
-	@Deprecated
-	public String[] getCacheGroups() {
-		if(cacheGroup == null) {
-			return null;
-		}
-		return new String[]{cacheGroup};
-	}
-
-	/**
-	 * @since 3.0
-	 * @deprecated since 4.0, use {@link BaseQueryMetadata#setCacheGroup(String)}
-	 */
-	@Deprecated
-	void setCacheGroups(String... groups) {
-		if(groups.length > 0) {
-			this.cacheGroup = groups[0];
-		}
-	}
-
-	/**
 	 * @since 4.0
 	 */
 	@Override
@@ -348,14 +323,6 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 
 	public int getPageSize() {
 		return pageSize;
-	}
-
-	/**
-	 * @deprecated since 4.0, use {@link BaseQueryMetadata#getOriginatingQuery()}
-	 */
-	@Deprecated
-	public Query getOrginatingQuery() {
-		return null;
 	}
 
 	/**

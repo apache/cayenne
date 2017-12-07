@@ -73,7 +73,7 @@ public interface QueryCache {
      *
      * @since 4.0
      */
-    void removeGroup(String groupKey, Class<?> keyType, Class<?> valueType);
+    void removeGroup(String grou3pKey, Class<?> keyType, Class<?> valueType);
 
     /**
      * Clears all cache entries.
@@ -82,13 +82,4 @@ public interface QueryCache {
      */
     @Deprecated
     void clear();
-
-    /**
-     * Returns the number of entries currently in the cache, including expired but not
-     * removed entries.
-     *
-     * @deprecated since 4.0. Please use implementation specific methods to perform cache management tasks.
-     */
-    @Deprecated
-    int size();
 }

@@ -36,7 +36,9 @@ public class Main {
         properties.put(ClientConstants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
         properties.put(ClientConstants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
 
-        ClientRuntime runtime = new ClientRuntime(properties);
+        ClientRuntime runtime = ClientRuntime.builder()
+                                .properties(properties)
+                                .build();
 
         ObjectContext context = runtime.newContext();
 

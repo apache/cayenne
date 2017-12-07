@@ -68,12 +68,6 @@ class ObjectsFromDataRowsQuery implements Query, QueryMetadata {
         return null;
     }
 
-    @Deprecated
-    public String getName() {
-        return null;
-    }
-
-    @Deprecated
     public DataMap getDataMap() {
         return null;
     }
@@ -102,11 +96,6 @@ class ObjectsFromDataRowsQuery implements Query, QueryMetadata {
         return null;
     }
 
-    @Deprecated
-    public String[] getCacheGroups() {
-        return null;
-    }
-
     public String getCacheGroup() {
         return null;
     }
@@ -129,11 +118,6 @@ class ObjectsFromDataRowsQuery implements Query, QueryMetadata {
 
     public int getFetchLimit() {
         return 0;
-    }
-
-    @Deprecated
-    public Query getOrginatingQuery() {
-        return null;
     }
 
     public Query getOriginatingQuery() {

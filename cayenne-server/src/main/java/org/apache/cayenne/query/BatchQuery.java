@@ -41,15 +41,6 @@ public abstract class BatchQuery implements Query {
      */
     protected DbEntity dbEntity;
 
-    @Deprecated
-    protected String name;
-
-    /**
-     * @since 3.1
-     */
-    @Deprecated
-    protected DataMap dataMap;
-
     /**
      * @since 4.0
      */
@@ -71,33 +62,6 @@ public abstract class BatchQuery implements Query {
      */
     public List<BatchQueryRow> getRows() {
         return rows;
-    }
-
-    @Override
-    @Deprecated
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @since 3.1
-     */
-    @Override
-    @Deprecated
-    public DataMap getDataMap() {
-        return dataMap;
-    }
-
-    /**
-     * @since 3.1
-     */
-    @Deprecated
-    public void setDataMap(DataMap dataMap) {
-        this.dataMap = dataMap;
     }
 
     /**
@@ -157,11 +121,4 @@ public abstract class BatchQuery implements Query {
         return dbAttributes;
     }
 
-    /**
-     * @deprecated since 4.0 use getRows().size().
-     */
-    @Deprecated
-    public int size() {
-        return rows.size();
-    }
 }

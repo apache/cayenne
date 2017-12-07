@@ -146,11 +146,6 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	private SortedMap<String, SQLResult> results;
 
 	/**
-	 * @deprecated since 4.0 unused as listeners are no longer tied to a DataMap.
-	 */
-	private List<EntityListener> defaultEntityListeners;
-
-	/**
 	 * @since 3.1
 	 */
 	protected transient Resource configurationSource;
@@ -180,7 +175,6 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		dbEntityMap = new TreeMap<>();
 		procedureMap = new TreeMap<>();
 		queryDescriptorMap = new TreeMap<>();
-		defaultEntityListeners = new ArrayList<>(3);
 		results = new TreeMap<>();
 		setName(mapName);
 		initWithProperties(properties);
@@ -717,75 +711,6 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		}
 
 		return namespace != null ? namespace.getResult(name) : null;
-	}
-
-	/**
-	 * Returns an unmodifiable list of default {@link EntityListener} objects.
-	 * Note that since the order of listeners is significant a list, not just a
-	 * generic Collection is returned.
-	 * 
-	 * @since 3.0
-	 * @deprecated since 4.0 unused as listeners are no longer tied to a
-	 *             DataMap.
-	 */
-	@Deprecated
-	public List<EntityListener> getDefaultEntityListeners() {
-		return Collections.unmodifiableList(defaultEntityListeners);
-	}
-
-	/**
-	 * Adds a new EntityListener.
-	 * 
-	 * @since 3.0
-	 * @throws IllegalArgumentException
-	 *             if a listener for the same class name is already registered.
-	 * @deprecated since 4.0 unused as listeners are no longer tied to a
-	 *             DataMap.
-	 */
-	@Deprecated
-	public void addDefaultEntityListener(EntityListener listener) {
-		for (EntityListener next : defaultEntityListeners) {
-			if (listener.getClassName().equals(next.getClassName())) {
-				throw new IllegalArgumentException("Duplicate default listener for " + next.getClassName());
-			}
-		}
-
-		defaultEntityListeners.add(listener);
-	}
-
-	/**
-	 * Removes a listener matching class name.
-	 * 
-	 * @since 3.0
-	 * @deprecated since 4.0 unused as listeners are no longer tied to a
-	 *             DataMap.
-	 */
-	@Deprecated
-	public void removeDefaultEntityListener(String className) {
-		Iterator<EntityListener> it = defaultEntityListeners.iterator();
-		while (it.hasNext()) {
-			EntityListener next = it.next();
-			if (className.equals(next.getClassName())) {
-				it.remove();
-				break;
-			}
-		}
-	}
-
-	/**
-	 * @since 3.0
-	 * @deprecated since 4.0 unused, as listeners are no longer tied to a
-	 *             DataMap.
-	 */
-	@Deprecated
-	public EntityListener getDefaultEntityListener(String className) {
-		for (EntityListener listener : defaultEntityListeners) {
-			if (className.equals(listener.getClassName())) {
-				return listener;
-			}
-		}
-
-		return null;
 	}
 
 	/**

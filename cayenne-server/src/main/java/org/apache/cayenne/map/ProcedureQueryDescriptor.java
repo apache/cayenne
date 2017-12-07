@@ -57,8 +57,6 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
             procedureQuery.setRoot(root);
         }
 
-        procedureQuery.setName(this.getName());
-        procedureQuery.setDataMap(dataMap);
         procedureQuery.setResultEntityName(this.getResultEntityName());
         procedureQuery.initWithProperties(this.getProperties());
 

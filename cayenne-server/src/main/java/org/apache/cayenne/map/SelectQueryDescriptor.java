@@ -128,8 +128,6 @@ public class SelectQueryDescriptor extends QueryDescriptor {
     public SelectQuery<?> buildQuery() {
         SelectQuery<Object> selectQuery = new SelectQuery<>();
         selectQuery.setRoot(this.getRoot());
-        selectQuery.setName(this.getName());
-        selectQuery.setDataMap(dataMap);
         selectQuery.setQualifier(this.getQualifier());
 
         List<Ordering> orderings = this.getOrderings();

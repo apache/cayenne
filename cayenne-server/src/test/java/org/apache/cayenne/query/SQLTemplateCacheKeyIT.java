@@ -46,7 +46,6 @@ public class SQLTemplateCacheKeyIT extends ServerCase {
         assertEquals(QueryCacheStrategy.NO_CACHE, md1.getCacheStrategy());
         assertNull(md1.getCacheKey());
 
-        query.setName("XYZ");
         QueryMetadata md2 = query.getMetaData(resolver);
         assertEquals(QueryCacheStrategy.NO_CACHE, md2.getCacheStrategy());
         assertNull(md2.getCacheKey());
@@ -82,7 +81,6 @@ public class SQLTemplateCacheKeyIT extends ServerCase {
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
 
         query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-        query.setName("XYZ");
 
         QueryMetadata md1 = query.getMetaData(resolver);
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());

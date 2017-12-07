@@ -68,10 +68,6 @@ public class StringIdQuery implements Query {
         return Arrays.asList(stringIds);
     }
 
-    @Deprecated
-    protected String name;
-    @Deprecated
-    protected DataMap dataMap;
     protected Collection<String> stringIds;
 
     protected transient Map<String, SelectQuery> idQueriesByEntity;
@@ -162,11 +158,6 @@ public class StringIdQuery implements Query {
                 return false;
             }
 
-            @Deprecated
-            public Query getOrginatingQuery() {
-                return null;
-            }
-
             public Query getOriginatingQuery() {
                 return null;
             }
@@ -192,11 +183,6 @@ public class StringIdQuery implements Query {
             }
 
             public String getCacheKey() {
-                return null;
-            }
-
-            @Deprecated
-            public String[] getCacheGroups() {
                 return null;
             }
 
@@ -257,24 +243,5 @@ public class StringIdQuery implements Query {
     public SQLAction createSQLAction(SQLActionVisitor visitor) {
         throw new UnsupportedOperationException(
                 "This query was supposed to be replace with a set of SelectQueries during the route phase");
-    }
-
-    @Deprecated
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Deprecated
-    public DataMap getDataMap() {
-        return dataMap;
-    }
-
-    @Deprecated
-    public void setDataMap(DataMap dataMap) {
-        this.dataMap = dataMap;
     }
 }

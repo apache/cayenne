@@ -75,7 +75,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 
 	boolean resolve(Object root, EntityResolver resolver, SelectQuery<?> query) {
 
-		if (super.resolve(root, resolver, null)) {
+		if (super.resolve(root, resolver)) {
 			// generate unique cache key, but only if we are caching..
 			if (cacheStrategy != null && cacheStrategy != QueryCacheStrategy.NO_CACHE) {
 				this.cacheKey = makeCacheKey(query, resolver);

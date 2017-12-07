@@ -132,15 +132,6 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 	}
 
 	/**
-	 * @deprecated since 4.0, use {@link IncrementalSelectQuery#getCacheGroup()}
-	 */
-	@Override
-	@Deprecated
-	public String[] getCacheGroups() {
-		return query.getCacheGroups();
-	}
-
-	/**
 	 * @since 4.0
 	 */
 	@Override
@@ -151,12 +142,6 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 	@Override
 	public int getFetchLimit() {
 		return query.getFetchLimit();
-	}
-
-	@Override
-	@Deprecated
-	public String getName() {
-		return query.getName();
 	}
 
 	@Override
@@ -235,16 +220,6 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 	}
 
 	/**
-	 * @deprecated since 4.0 only first cache group will be used
-	 * 			   use {@link IncrementalSelectQuery#setCacheGroup(String)}
-	 */
-	@Override
-	@Deprecated
-	public void setCacheGroups(String... cacheGroups) {
-		query.setCacheGroups(cacheGroups);
-	}
-
-	/**
 	 * @since 4.0
 	 */
 	@Override
@@ -265,12 +240,6 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 	@Override
 	public void setFetchLimit(int fetchLimit) {
 		query.setFetchLimit(fetchLimit);
-	}
-
-	@Override
-	@Deprecated
-	public void setName(String name) {
-		query.setName(name);
 	}
 
 	@Override

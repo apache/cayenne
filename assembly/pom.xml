@@ -90,12 +90,6 @@
 			<version>${project.version}</version>
 		</dependency>
 
-        <dependency>
-            <groupId>org.apache.cayenne</groupId>
-            <artifactId>cayenne-java8</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
 		 <dependency>
             <groupId>org.apache.cayenne</groupId>
             <artifactId>cayenne-dbcp2</artifactId>

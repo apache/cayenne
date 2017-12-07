@@ -610,39 +610,10 @@ public class JdbcAdapter implements DbAdapter {
 	}
 
 	/**
-	 * @since 3.0
-	 * @deprecated since 4.0 use {@link #getQuotingStrategy()}.
-	 */
-	@Deprecated
-	public QuotingStrategy getQuotingStrategy(boolean needQuotes) {
-		return getQuotingStrategy();
-	}
-
-	/**
 	 * @since 4.0
 	 */
 	public QuotingStrategy getQuotingStrategy() {
 		return quotingStrategy;
-	}
-
-	/**
-	 * @since 3.1
-	 * @deprecated since 4.0 BatchQueryBuilderfactory is attached to the
-	 * DataNode.
-	 */
-	@Deprecated
-	public BatchTranslatorFactory getBatchQueryBuilderFactory() {
-		return batchQueryBuilderFactory;
-	}
-
-	/**
-	 * @since 3.1
-	 * @deprecated since 4.0 BatchQueryBuilderfactory is attached to the
-	 * DataNode.
-	 */
-	@Deprecated
-	public void setBatchQueryBuilderFactory(BatchTranslatorFactory batchQueryBuilderFactory) {
-		this.batchQueryBuilderFactory = batchQueryBuilderFactory;
 	}
 
 	/**

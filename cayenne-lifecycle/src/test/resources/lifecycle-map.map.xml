@@ -4,37 +4,6 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.lifecycle.db"/>
-	<db-entity name="AUDITABLE1">
-		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="AUDITABLE2">
-		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
-		<db-attribute name="CHAR_PROPERTY2" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="AUDITABLE_CHILD1">
-		<db-attribute name="AUDITABLE1_ID" type="INTEGER"/>
-		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="AUDITABLE_CHILD2">
-		<db-attribute name="AUDITABLE1_ID" type="INTEGER"/>
-		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="AUDITABLE_CHILD3">
-		<db-attribute name="AUDITABLE2_ID" type="INTEGER"/>
-		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
-		<db-attribute name="CHAR_PROPERTY2" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-	</db-entity>
-	<db-entity name="AUDITABLE_CHILD_UUID">
-		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
-		<db-attribute name="CHAR_PROPERTY2" type="VARCHAR" length="200"/>
-		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="UUID" type="VARCHAR" length="200"/>
-	</db-entity>
 	<db-entity name="E1">
 		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
@@ -62,28 +31,6 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="UUID" type="VARCHAR" length="200"/>
 	</db-entity>
-	<obj-entity name="Auditable1" className="org.apache.cayenne.lifecycle.db.Auditable1" dbEntityName="AUDITABLE1">
-		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
-	</obj-entity>
-	<obj-entity name="Auditable2" className="org.apache.cayenne.lifecycle.db.Auditable2" dbEntityName="AUDITABLE2">
-		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
-		<obj-attribute name="charProperty2" type="java.lang.String" db-attribute-path="CHAR_PROPERTY2"/>
-	</obj-entity>
-	<obj-entity name="AuditableChild1" className="org.apache.cayenne.lifecycle.db.AuditableChild1" dbEntityName="AUDITABLE_CHILD1">
-		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
-	</obj-entity>
-	<obj-entity name="AuditableChild2" className="org.apache.cayenne.lifecycle.db.AuditableChild2" dbEntityName="AUDITABLE_CHILD2">
-		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
-	</obj-entity>
-	<obj-entity name="AuditableChild3" className="org.apache.cayenne.lifecycle.db.AuditableChild3" dbEntityName="AUDITABLE_CHILD3">
-		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
-		<obj-attribute name="charProperty2" type="java.lang.String" db-attribute-path="CHAR_PROPERTY2"/>
-	</obj-entity>
-	<obj-entity name="AuditableChildUuid" className="org.apache.cayenne.lifecycle.db.AuditableChildUuid" dbEntityName="AUDITABLE_CHILD_UUID">
-		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
-		<obj-attribute name="charProperty2" type="java.lang.String" db-attribute-path="CHAR_PROPERTY2"/>
-		<obj-attribute name="uuid" type="java.lang.String" db-attribute-path="UUID"/>
-	</obj-entity>
 	<obj-entity name="E1" className="org.apache.cayenne.lifecycle.db.E1" dbEntityName="E1"/>
 	<obj-entity name="E2" className="org.apache.cayenne.lifecycle.db.E2" dbEntityName="E2"/>
 	<obj-entity name="E3" className="org.apache.cayenne.lifecycle.db.E3" dbEntityName="E3"/>
@@ -93,24 +40,6 @@
 	<obj-entity name="UuidRoot1" className="org.apache.cayenne.lifecycle.db.UuidRoot1" dbEntityName="UUID_ROOT1">
 		<obj-attribute name="uuid" type="java.lang.String" db-attribute-path="UUID"/>
 	</obj-entity>
-	<db-relationship name="children1" source="AUDITABLE1" target="AUDITABLE_CHILD1" toMany="true">
-		<db-attribute-pair source="ID" target="AUDITABLE1_ID"/>
-	</db-relationship>
-	<db-relationship name="children2" source="AUDITABLE1" target="AUDITABLE_CHILD2" toMany="true">
-		<db-attribute-pair source="ID" target="AUDITABLE1_ID"/>
-	</db-relationship>
-	<db-relationship name="children" source="AUDITABLE2" target="AUDITABLE_CHILD3" toMany="true">
-		<db-attribute-pair source="ID" target="AUDITABLE2_ID"/>
-	</db-relationship>
-	<db-relationship name="parent" source="AUDITABLE_CHILD1" target="AUDITABLE1">
-		<db-attribute-pair source="AUDITABLE1_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="parent" source="AUDITABLE_CHILD2" target="AUDITABLE1">
-		<db-attribute-pair source="AUDITABLE1_ID" target="ID"/>
-	</db-relationship>
-	<db-relationship name="parent" source="AUDITABLE_CHILD3" target="AUDITABLE2">
-		<db-attribute-pair source="AUDITABLE2_ID" target="ID"/>
-	</db-relationship>
 	<db-relationship name="e34s" source="E3" target="E34" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="ID" target="E3_ID"/>
 	</db-relationship>
@@ -129,11 +58,6 @@
 	<db-relationship name="deps" source="SORT_ROOT" target="SORT_DEP" toMany="true">
 		<db-attribute-pair source="ID" target="ROOT_ID"/>
 	</db-relationship>
-	<obj-relationship name="children1" source="Auditable1" target="AuditableChild1" deleteRule="Deny" db-relationship-path="children1"/>
-	<obj-relationship name="children" source="Auditable2" target="AuditableChild3" deleteRule="Deny" db-relationship-path="children"/>
-	<obj-relationship name="parent" source="AuditableChild1" target="Auditable1" deleteRule="Nullify" db-relationship-path="parent"/>
-	<obj-relationship name="parent" source="AuditableChild2" target="Auditable1" deleteRule="Nullify" db-relationship-path="parent"/>
-	<obj-relationship name="parent" source="AuditableChild3" target="Auditable2" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="e4s" source="E3" target="E4" deleteRule="Deny" db-relationship-path="e34s.e4"/>
 	<obj-relationship name="e3s" source="E4" target="E3" deleteRule="Deny" db-relationship-path="e34s.e3"/>
 	<obj-relationship name="root" source="SortDep" target="SortRoot" deleteRule="Nullify" db-relationship-path="root"/>

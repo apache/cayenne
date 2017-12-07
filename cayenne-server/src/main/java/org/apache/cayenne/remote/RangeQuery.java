@@ -72,11 +72,6 @@ class RangeQuery implements Query {
 
         return new QueryMetadataProxy(originatingMetadata) {
 
-            @Deprecated
-            public Query getOrginatingQuery() {
-                return getOriginatingQuery();
-            }
-
             public Query getOriginatingQuery() {
                 return originatingQuery;
             }
@@ -91,11 +86,6 @@ class RangeQuery implements Query {
 
             public String getCacheKey() {
                 return cacheKey;
-            }
-
-            @Deprecated
-            public String[] getCacheGroups() {
-                return null;
             }
 
             public String getCacheGroup() {
@@ -159,20 +149,8 @@ class RangeQuery implements Query {
         throw new UnsupportedOperationException();
     }
 
-    @Deprecated
-    public String getName() {
-        throw new UnsupportedOperationException();
-    }
-
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * @since 3.1
-     */
-    @Deprecated
-    public DataMap getDataMap() {
-        throw new UnsupportedOperationException();
-    }
 }
