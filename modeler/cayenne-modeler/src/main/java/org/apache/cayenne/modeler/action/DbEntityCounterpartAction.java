@@ -19,20 +19,14 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.event.ActionEvent;
 import java.util.Iterator;
 
-import javax.swing.tree.TreePath;
-
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
-import org.apache.cayenne.modeler.util.CayenneAction;
 
-public class DbEntityCounterpartAction extends CayenneAction {
+public class DbEntityCounterpartAction extends BaseViewEntityAction {
 
     public static String getActionName() {
         return "View related ObjEntity";
@@ -46,42 +40,19 @@ public class DbEntityCounterpartAction extends CayenneAction {
         return "icon-move_up.png";
     }
 
-    /**
-     * @see org.apache.cayenne.modeler.util.CayenneAction#performAction(ActionEvent)
-     */
-    public void performAction(ActionEvent e) {
-        viewCounterpartEntity();
-    }
-
-    protected void viewCounterpartEntity() {
-        ProjectController mediator = getProjectController();
-
-        DbEntity dbEntity = mediator.getCurrentDbEntity();
-
+    @Override
+    protected Entity getEntity() {
+        DbEntity dbEntity = getProjectController().getCurrentDbEntity();
         if (dbEntity == null) {
-            return;
+            return null;
         }
-        
+
         Iterator<ObjEntity> it = dbEntity.getDataMap().getMappedEntities(dbEntity).iterator();
         if (!it.hasNext()) {
-            return;
+            return null;
         }
 
-        ObjEntity entity = it.next();
-        viewCounterpartEntity(entity);
+        return it.next();
     }
 
-    public void viewCounterpartEntity(ObjEntity entity) {        
-        TreePath path = buildTreePath(entity);
-        editor().getProjectTreeView().getSelectionModel().setSelectionPath(path);
-        
-        EntityDisplayEvent event = new EntityDisplayEvent(
-                editor().getProjectTreeView(),
-                entity,
-                entity.getDataMap(),
-                (DataChannelDescriptor) getProjectController().getProject().getRootNode());
-        getProjectController().fireObjEntityDisplayEvent(event);
-    }
-    
-    
 }

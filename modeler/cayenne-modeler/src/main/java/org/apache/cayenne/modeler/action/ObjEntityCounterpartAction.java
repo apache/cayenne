@@ -19,13 +19,9 @@
 
 package org.apache.cayenne.modeler.action;
 
-import javax.swing.tree.TreePath;
-
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 
 public class ObjEntityCounterpartAction extends BaseViewEntityAction {
 
@@ -43,19 +39,11 @@ public class ObjEntityCounterpartAction extends BaseViewEntityAction {
 
     @Override
     protected Entity getEntity() {
+        ObjEntity objEntity = getProjectController().getCurrentObjEntity();
+        if (objEntity == null) {
+            return null;
+        }
         return objEntity.getDbEntity();
-    }
-
-    public void viewCounterpartObject(DbEntity entity) {
-        TreePath path = buildTreePath(entity);
-        editor().getProjectTreeView().getSelectionModel().setSelectionPath(path);
-
-        EntityDisplayEvent event = new EntityDisplayEvent(
-                editor().getProjectTreeView(),
-                entity,
-                entity.getDataMap(),
-                (DataChannelDescriptor) getProjectController().getProject().getRootNode());
-        getProjectController().fireDbEntityDisplayEvent(event);
     }
 
 }

@@ -24,7 +24,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
@@ -34,9 +33,7 @@ import java.awt.event.ActionEvent;
 /**
  * @since 4.0
  */
-public abstract class BaseViewEntityAction extends CayenneAction{
-
-    protected ObjEntity objEntity;
+public abstract class BaseViewEntityAction extends CayenneAction {
 
     abstract protected Entity getEntity();
 
@@ -53,31 +50,25 @@ public abstract class BaseViewEntityAction extends CayenneAction{
     }
 
     protected void viewEntity() {
-        ProjectController mediator = getProjectController();
-
-        objEntity = mediator.getCurrentObjEntity();
-
-        if (objEntity == null) {
-            return;
-        }
-
         Entity entity = getEntity();
-
         if(entity != null) {
-            TreePath path = DbEntityCounterpartAction.buildTreePath(entity);
-            DbEntityCounterpartAction.editor().getProjectTreeView().getSelectionModel().setSelectionPath(path);
+            navigateToEntity(entity);
+        }
+    }
 
-            EntityDisplayEvent event = new EntityDisplayEvent(
-                    DbEntityCounterpartAction.editor().getProjectTreeView(),
-                    entity,
-                    entity.getDataMap(),
-                    (DataChannelDescriptor) getProjectController().getProject().getRootNode());
+    public void navigateToEntity(Entity entity) {
+        TreePath path = buildTreePath(entity);
+        editor().getProjectTreeView().getSelectionModel().setSelectionPath(path);
 
-            if (entity instanceof DbEntity) {
-                mediator.fireDbEntityDisplayEvent(event);
-            } else if (entity instanceof ObjEntity){
-                mediator.fireObjEntityDisplayEvent(event);
-            }
+        EntityDisplayEvent event = new EntityDisplayEvent(
+                editor().getProjectTreeView(),
+                entity,
+                entity.getDataMap(),
+                (DataChannelDescriptor) getProjectController().getProject().getRootNode());
+        if (entity instanceof DbEntity) {
+            getProjectController().fireDbEntityDisplayEvent(event);
+        } else if (entity instanceof ObjEntity){
+            getProjectController().fireObjEntityDisplayEvent(event);
         }
     }
 }

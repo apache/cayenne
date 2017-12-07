@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 
 /**
@@ -37,6 +38,10 @@ public class ObjEntityToSuperEntityAction extends BaseViewEntityAction {
 
     @Override
     protected Entity getEntity() {
-        return super.objEntity.getSuperEntity();
+        ObjEntity objEntity = getProjectController().getCurrentObjEntity();
+        if (objEntity == null) {
+            return null;
+        }
+        return objEntity.getSuperEntity();
     }
 }

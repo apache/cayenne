@@ -23,7 +23,6 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.ObjEntityCounterpartAction;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
 
@@ -37,11 +36,11 @@ public abstract class BaseRemovePropertyUndoableEdit extends CayenneUndoableEdit
     protected Embeddable embeddable;
 
     protected void focusObjEntity(){
-        actionManager.getAction(DbEntityCounterpartAction.class).viewCounterpartEntity(objEntity);
+        actionManager.getAction(ObjEntityCounterpartAction.class).navigateToEntity(objEntity);
     }
 
     protected void focusDBEntity(){
-        actionManager.getAction(ObjEntityCounterpartAction.class).viewCounterpartObject(dbEntity);
+        actionManager.getAction(ObjEntityCounterpartAction.class).navigateToEntity(dbEntity);
     }
 
     protected void focusEmbeddable() {
