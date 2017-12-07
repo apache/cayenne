@@ -28,12 +28,9 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.RemoveRelationshipAction;
 
-public class RemoveRelationshipUndoableEdit extends CayenneUndoableEdit {
+public class RemoveRelationshipUndoableEdit extends BaseRemovePropertyUndoableEdit {
 
-    private ObjEntity objEntity;
     private ObjRelationship[] rels;
-
-    private DbEntity dbEntity;
     private DbRelationship[] dbRels;
 
     public RemoveRelationshipUndoableEdit(ObjEntity objEntity, ObjRelationship[] rels) {
@@ -52,39 +49,36 @@ public class RemoveRelationshipUndoableEdit extends CayenneUndoableEdit {
     public String getPresentationName() {
         if (objEntity != null) {
             return "Remove Obj Relationship";
-        }
-        else {
+        } else {
             return "Remove Db Relationship";
         }
     }
 
     @Override
     public void redo() throws CannotRedoException {
-        RemoveRelationshipAction action = actionManager
-                .getAction(RemoveRelationshipAction.class);
+        RemoveRelationshipAction action = actionManager.getAction(RemoveRelationshipAction.class);
         if (objEntity != null) {
             action.removeObjRelationships(objEntity, rels);
-        }
-        else {
+            focusObjEntity();
+        } else {
             action.removeDbRelationships(dbEntity, dbRels);
+            focusDBEntity();
         }
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        CreateRelationshipAction action = actionManager
-                .getAction(CreateRelationshipAction.class);
+        CreateRelationshipAction action = actionManager.getAction(CreateRelationshipAction.class);
         if (objEntity != null) {
             for (ObjRelationship r : rels) {
                 action.createObjRelationship(objEntity, r);
             }
-            focusObjEntity(objEntity);
-        }
-        else {
+            focusObjEntity();
+        } else {
             for (DbRelationship dr : dbRels) {
                 action.createDbRelationship(dbEntity, dr);
             }
-            focusDBEntity(dbEntity);
+            focusDBEntity();
         }
     }
 }

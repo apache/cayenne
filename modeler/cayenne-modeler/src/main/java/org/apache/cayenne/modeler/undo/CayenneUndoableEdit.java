@@ -20,13 +20,9 @@ package org.apache.cayenne.modeler.undo;
 
 import javax.swing.undo.AbstractUndoableEdit;
 
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
-import org.apache.cayenne.modeler.action.DbEntityCounterpartAction;
-import org.apache.cayenne.modeler.action.ObjEntityCounterpartAction;
 
 public abstract class CayenneUndoableEdit extends AbstractUndoableEdit {
     
@@ -47,12 +43,5 @@ public abstract class CayenneUndoableEdit extends AbstractUndoableEdit {
     public boolean canUndo() {
         return true;
     }
-    
-    protected void focusObjEntity(ObjEntity objEntity){
-        actionManager.getAction(DbEntityCounterpartAction.class).viewCounterpartEntity(objEntity);
-    }
 
-    protected void focusDBEntity(DbEntity dbEntity){
-        actionManager.getAction(ObjEntityCounterpartAction.class).viewCounterpartObject(dbEntity);
-    }
 }

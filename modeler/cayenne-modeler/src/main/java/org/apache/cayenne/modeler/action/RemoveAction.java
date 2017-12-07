@@ -258,9 +258,7 @@ public class RemoveAction extends CayenneAction {
         		ObjEntity entity = mediator.getCurrentObjEntity();
 
                 application.getUndoManager()
-                        .addEdit(new RemoveAttributeUndoableEdit(
-                                (DataChannelDescriptor)mediator.getProject().getRootNode(),
-                                mediator.getCurrentDataMap(), entity, objAttrs));
+                        .addEdit(new RemoveAttributeUndoableEdit(entity, objAttrs));
 
                 for (ObjAttribute attrib : objAttrs) {
                     entity.removeAttribute(attrib.getName());
@@ -281,9 +279,7 @@ public class RemoveAction extends CayenneAction {
         		DbEntity entity = mediator.getCurrentDbEntity();
 
                 application.getUndoManager()
-                        .addEdit(new RemoveAttributeUndoableEdit(
-                                (DataChannelDescriptor)mediator.getProject().getRootNode(),
-                                mediator.getCurrentDataMap(), entity, dbAttrs));
+                        .addEdit(new RemoveAttributeUndoableEdit(entity, dbAttrs));
 
                 for (DbAttribute attrib : dbAttrs) {
                     entity.removeAttribute(attrib.getName());

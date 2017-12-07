@@ -44,11 +44,8 @@ import org.apache.cayenne.modeler.util.ProjectUtil;
 
 /**
  * Removes currently selected attribute from either the DbEntity or ObjEntity.
- * 
  */
 public class RemoveAttributeAction extends RemoveAction implements MultipleObjectsAction {
-
-    
 
     private final static String ACTION_NAME = "Remove Attribute";
 
@@ -75,11 +72,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
      */
     @Override
     public boolean enableForPath(ConfigurationNode object) {
-        if (object == null) {
-            return false;
-        }
-
-        return object instanceof Attribute;
+        return object != null && object instanceof Attribute;
     }
 
     @Override
@@ -107,37 +100,25 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
                 removeEmbeddableAttributes(embeddable, embAttrs);
 
             }
-        }
-        else if (objAttrs != null && objAttrs.length > 0) {
+        } else if (objAttrs != null && objAttrs.length > 0) {
             if ((objAttrs.length == 1 && dialog.shouldDelete("ObjAttribute", objAttrs[0]
                     .getName()))
                     || (objAttrs.length > 1 && dialog.shouldDelete("selected ObjAttributes"))) {
 
                 ObjEntity entity = mediator.getCurrentObjEntity();
 
-                application.getUndoManager().addEdit(
-                        new RemoveAttributeUndoableEdit(
-                                (DataChannelDescriptor)mediator.getProject().getRootNode(),
-                                mediator.getCurrentDataMap(),
-                                entity,
-                                objAttrs));
+                application.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(entity, objAttrs));
 
                 removeObjAttributes(entity, objAttrs);
             }
-        }
-        else if (dbAttrs != null && dbAttrs.length > 0) {
+        } else if (dbAttrs != null && dbAttrs.length > 0) {
         	if ((dbAttrs.length == 1 && dialog.shouldDelete("DbAttribute", dbAttrs[0]
         			.getName()))
                     || (dbAttrs.length > 1 && dialog.shouldDelete("selected DbAttributes"))) {
 
         		DbEntity entity = mediator.getCurrentDbEntity();
 
-                application.getUndoManager().addEdit(
-                		new RemoveAttributeUndoableEdit(
-                				(DataChannelDescriptor)mediator.getProject().getRootNode(),
-                                mediator.getCurrentDataMap(),
-                                entity,
-                                dbAttrs));
+                application.getUndoManager().addEdit(new RemoveAttributeUndoableEdit(entity, dbAttrs));
 
                 removeDbAttributes(mediator.getCurrentDataMap(), entity, dbAttrs);
         	}
@@ -181,9 +162,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
         }
     }
 
-    public void removeEmbeddableAttributes(
-            Embeddable embeddable,
-            EmbeddableAttribute[] attrs) {
+    public void removeEmbeddableAttributes(Embeddable embeddable, EmbeddableAttribute[] attrs) {
         ProjectController mediator = getProjectController();
 
         for (EmbeddableAttribute attrib : attrs) {

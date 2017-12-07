@@ -21,8 +21,6 @@ package org.apache.cayenne.modeler.undo;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
@@ -31,125 +29,87 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeAction;
-import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
-import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 
-public class RemoveAttributeUndoableEdit extends CayenneUndoableEdit {
-
-    private DataChannelDescriptor domain;
-    private DataMap dataMap;
+public class RemoveAttributeUndoableEdit extends BaseRemovePropertyUndoableEdit {
 
     private DbAttribute[] dbAttributes;
     private ObjAttribute[] objAttributes;
-
-    private ObjEntity objEntity;
-    private DbEntity dbEntity;
-
-    private Embeddable embeddable;
     private EmbeddableAttribute[] embeddableAttrs;
 
-    public RemoveAttributeUndoableEdit(Embeddable embeddable,
-            EmbeddableAttribute[] embeddableAttrs) {
+    public RemoveAttributeUndoableEdit(Embeddable embeddable, EmbeddableAttribute[] embeddableAttributes) {
         super();
         this.embeddable = embeddable;
-        this.embeddableAttrs = embeddableAttrs;
+        this.embeddableAttrs = embeddableAttributes;
     }
 
-    public RemoveAttributeUndoableEdit(DataChannelDescriptor domain, DataMap dataMap,
-            ObjEntity entity, ObjAttribute[] attribs) {
+    public RemoveAttributeUndoableEdit(ObjEntity entity, ObjAttribute[] objAttributes) {
         this.objEntity = entity;
-        this.objAttributes = attribs;
-        this.domain = domain;
-        this.dataMap = dataMap;
+        this.objAttributes = objAttributes;
     }
 
-    public RemoveAttributeUndoableEdit(DataChannelDescriptor domain, DataMap dataMap,
-            DbEntity entity, DbAttribute[] attribs) {
+    public RemoveAttributeUndoableEdit(DbEntity entity, DbAttribute[] dbAttributes) {
         this.dbEntity = entity;
-        this.dbAttributes = attribs;
-        this.domain = domain;
-        this.dataMap = dataMap;
+        this.dbAttributes = dbAttributes;
     }
 
     @Override
     public void redo() throws CannotRedoException {
-        RemoveAttributeAction action = actionManager
-                .getAction(RemoveAttributeAction.class);
+        RemoveAttributeAction action = actionManager.getAction(RemoveAttributeAction.class);
 
         if (objEntity != null) {
             action.removeObjAttributes(objEntity, objAttributes);
-            controller.fireObjEntityDisplayEvent(new EntityDisplayEvent(
-                    this,
-                    objEntity,
-                    dataMap,
-                    domain));
+            focusObjEntity();
         }
 
         if (dbEntity != null) {
             action.removeDbAttributes(dbEntity.getDataMap(), dbEntity, dbAttributes);
-            controller.fireDbEntityDisplayEvent(new EntityDisplayEvent(
-                    this,
-                    dbEntity,
-                    dataMap,
-                    domain));
+            focusDBEntity();
         }
 
         if (embeddable != null) {
             action.removeEmbeddableAttributes(embeddable, embeddableAttrs);
-            controller.fireEmbeddableDisplayEvent(new EmbeddableDisplayEvent(
-                    this,
-                    embeddable,
-                    dataMap,
-                    domain));
+            focusEmbeddable();
         }
     }
 
     @Override
     public void undo() throws CannotUndoException {
-
-        CreateAttributeAction action = actionManager
-                .getAction(CreateAttributeAction.class);
+        CreateAttributeAction action = actionManager.getAction(CreateAttributeAction.class);
 
         if (objEntity != null) {
             for (ObjAttribute attr : objAttributes) {
-                action.createObjAttribute(dataMap, objEntity, attr);
+                action.createObjAttribute(objEntity.getDataMap(), objEntity, attr);
             }
-            focusObjEntity(objEntity);
+            focusObjEntity();
         }
 
         if (dbEntity != null) {
             for (DbAttribute attr : dbAttributes) {
-                action.createDbAttribute(dataMap, dbEntity, attr);
+                action.createDbAttribute(dbEntity.getDataMap(), dbEntity, attr);
             }
-            focusDBEntity(dbEntity);
+            focusDBEntity();
         }
 
         if (embeddable != null) {
             for (EmbeddableAttribute attr : embeddableAttrs) {
                 action.createEmbAttribute(embeddable, attr);
             }
+            focusEmbeddable();
         }
-
     }
 
     @Override
     public String getPresentationName() {
         if (objEntity != null) {
-            return (objAttributes.length > 1)
-                    ? "Remove ObjAttributes"
-                    : "Remove ObjAttribute";
+            return (objAttributes.length > 1) ? "Remove ObjAttributes" : "Remove ObjAttribute";
         }
 
         if (dbEntity != null) {
-            return (dbAttributes.length > 1)
-                    ? "Remove DbAttributes"
-                    : "Remove DbAttribute";
+            return (dbAttributes.length > 1) ? "Remove DbAttributes" : "Remove DbAttribute";
         }
 
         if (embeddableAttrs != null) {
-            return (embeddableAttrs.length > 1)
-                    ? "Remove Embeddable Attributes"
-                    : "Remove Embeddable Attribute";
+            return (embeddableAttrs.length > 1) ? "Remove Embeddable Attributes" : "Remove Embeddable Attribute";
         }
 
         return super.getPresentationName();
