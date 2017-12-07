@@ -19,17 +19,22 @@
 
 package org.apache.cayenne.dbsync.merge.token.db;
 
+import java.sql.Connection;
 import java.sql.Types;
 
 import org.apache.cayenne.dbsync.merge.MergeCase;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.junit.Test;
 
 public class SetPrimaryKeyToDbIT extends MergeCase {
-
+	@Inject
+	DBHelper dbHelper;
 	@Test
 	public void test() throws Exception {
+
 		dropTableIfPresent("NEW_TABLE");
 		assertTokensAndExecute(0, 0);
 
@@ -37,6 +42,7 @@ public class SetPrimaryKeyToDbIT extends MergeCase {
 
 		DbAttribute e1col1 = new DbAttribute("ID1", Types.INTEGER, dbEntity1);
 		e1col1.setMandatory(true);
+
 		e1col1.setPrimaryKey(true);
 		dbEntity1.addAttribute(e1col1);
 		map.addDbEntity(dbEntity1);
@@ -50,6 +56,11 @@ public class SetPrimaryKeyToDbIT extends MergeCase {
 
 		assertTokensAndExecute(2, 0);
 		assertTokensAndExecute(0, 0);
+
+		//used to REORG TABLE only for db2
+		try(Connection con = dbHelper.getConnection()) {
+			accessStackAdapter.cleanDB(con, dbEntity1.getFullyQualifiedName());
+		}
 
 		e1col1.setPrimaryKey(false);
 		e1col2.setPrimaryKey(true);

@@ -34,8 +34,10 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.junit.Test;
 
+import java.sql.Connection;
 import java.sql.Types;
 import java.util.List;
 
@@ -49,6 +51,8 @@ public class ValueForNullIT extends MergeCase {
 
     @Inject
     private DataContext context;
+    @Inject
+    DBHelper dbHelper;
 
     @Test
     public void test() throws Exception {
@@ -59,6 +63,7 @@ public class ValueForNullIT extends MergeCase {
 
         // insert some rows before adding "not null" column
         final int nrows = 10;
+
         for (int i = 0; i < nrows; i++) {
             DataObject o = (DataObject) context.newObject("Painting");
             o.writeProperty("paintingTitle", "ptitle" + i);
@@ -91,6 +96,11 @@ public class ValueForNullIT extends MergeCase {
 
         // check that is was merged
         assertTokensAndExecute(0, 0);
+
+        //used to REORG TABLE only for db2
+        try(Connection con = dbHelper.getConnection()) {
+            accessStackAdapter.cleanDB(con, dbEntity.getFullyQualifiedName());
+        }
 
         // check values for null
         Expression qual = ExpressionFactory.matchExp(objAttr.getName(), DEFAULT_VALUE_STRING);

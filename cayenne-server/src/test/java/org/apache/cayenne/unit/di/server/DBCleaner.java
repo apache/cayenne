@@ -30,6 +30,7 @@ import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.unit.UnitDbAdapter;
 
 import java.net.URL;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class DBCleaner {
         this.location = location;
     }
 
-    public void clean() throws SQLException {
+    public void clean() throws Exception {
         XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
         injector.injectMembers(loader);
 
@@ -63,6 +64,9 @@ public class DBCleaner {
             List<DbEntity> entities = schemaBuilder.dbEntitiesInDeleteOrder(map);
 
             for (DbEntity entity : entities) {
+                try(Connection con = dbHelper.getConnection()) {
+                    accessStackAdapter.cleanDB(con, entity.getName());
+                }
                 dbHelper.deleteAll(entity.getName());
             }
         }

@@ -24,6 +24,7 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.db2.DB2Adapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.map.DataMap;
@@ -403,4 +404,6 @@ public class UnitDbAdapter {
     public boolean supportsExtractPart(ASTExtract.DateTimePart part) {
         return true;
     }
+
+    public void cleanDB(Connection conn, String tableName) throws Exception {}
 }
