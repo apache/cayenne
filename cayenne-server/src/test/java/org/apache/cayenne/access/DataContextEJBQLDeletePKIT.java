@@ -50,12 +50,12 @@ public class DataContextEJBQLDeletePKIT extends ServerCase {
     @Before
     public void setUp() throws Exception {
         tMeaningfulPKTest1Table = new TableHelper(dbHelper, "MEANINGFUL_PK_TEST1");
-        tMeaningfulPKTest1Table.setColumns("PK_ATTRIBUTE", "DESCR");
+        tMeaningfulPKTest1Table.setColumns("PK_ATTRIBUTE", "DESCR", "INT_ATTRIBUTE");
     }
 
     protected void createMeaningfulPKDataSet() throws Exception {
         for (int i = 1; i <= 33; i++) {
-            tMeaningfulPKTest1Table.insert(i, "a" + i);
+            tMeaningfulPKTest1Table.insert(i, "a" + i, 0);
         }
     }
 
