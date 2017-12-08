@@ -20,6 +20,7 @@ Bug Fixes:
 
 CAY-2370 ValueObjectType for byte[] fails lookup
 CAY-2380 ReferenceMap should not store or return null values
+CAY-2381 cgen: meaningful PK with boxed type ends up with primitive type in generated source
 CAY-2382 Lack of synchronization in DataContext serialization
 CAY-2387 Can't select byte[] property with ColumnSelect
 CAY-2388 Modeler: Visualization issues with undo/redo actions for attributes and relationships

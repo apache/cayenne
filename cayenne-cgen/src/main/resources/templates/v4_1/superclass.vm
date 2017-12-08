@@ -109,8 +109,8 @@ public abstract class ${superClassName} extends ${baseClassName} {
 ## Create Fields ##
 ###################
 #foreach( $attr in ${object.DeclaredAttributes} )
-## don't use primitive type if attribute is nullable
-#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $attr.isMandatory())")
+#set ( $flag = $importUtils.canUsePrimitive($attr) )
+#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $flag)" )
     protected $type $stringUtils.formatVariableName(${attr.Name});
 #end
 
@@ -233,8 +233,9 @@ public abstract class ${superClassName} extends ${baseClassName} {
 
         switch (propName) {
 #foreach( $attr in ${object.DeclaredAttributes} )
-#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $attr.isMandatory())")
 #set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
+#set ( $flag = $importUtils.canUsePrimitive($attr) )
+#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $flag)")
             case "${attr.Name}":
 #if ( $importUtils.isBoolean($type) )
                 this.${name} = val == null ? false : ($type)val;
@@ -271,7 +272,8 @@ public abstract class ${superClassName} extends ${baseClassName} {
         super.writeState(out);
 #foreach( $attr in ${object.DeclaredAttributes} )
 #set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
-#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $attr.isMandatory())")
+#set ( $flag = $importUtils.canUsePrimitive($attr) )
+#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $flag)")
 #if($importUtils.isPrimitive($type))
         out.write${stringUtils.capitalized($type)}(this.$name);
 #else
@@ -288,7 +290,8 @@ public abstract class ${superClassName} extends ${baseClassName} {
         super.readState(in);
 #foreach( $attr in ${object.DeclaredAttributes} )
 #set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
-#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $attr.isMandatory())")
+#set ( $flag = $importUtils.canUsePrimitive($attr) )
+#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $flag)")
 #if($importUtils.isPrimitive($type))
         this.$name = in.read${stringUtils.capitalized($type)}();
 #else

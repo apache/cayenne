@@ -20,14 +20,16 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
+import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -36,10 +38,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
 public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
@@ -52,82 +51,142 @@ public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
     private ServerRuntime runtime;
 
     @Test
-    public void testInsertWithMeaningfulPK() throws Exception {
+    public void testInsertWithMeaningfulPK() {
         MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
         obj.setPkAttribute(1000);
         obj.setDescr("aaa-aaa");
         context.commitChanges();
-        ObjectIdQuery q = new ObjectIdQuery(new ObjectId(
-                "MeaningfulPKTest1",
-                MeaningfulPKTest1.PK_ATTRIBUTE_PK_COLUMN,
-                1000), true, ObjectIdQuery.CACHE_REFRESH);
-        assertEquals(1, context.performQuery(q).size());
+        ObjectId objId = new ObjectId("MeaningfulPKTest1", MeaningfulPKTest1.PK_ATTRIBUTE_PK_COLUMN, 1000);
+        ObjectIdQuery q = new ObjectIdQuery(objId, true, ObjectIdQuery.CACHE_REFRESH);
+        @SuppressWarnings("unchecked")
+        List<DataRow> result = (List<DataRow>)context.performQuery(q);
+        assertEquals(1, result.size());
+        assertEquals(1000, result.get(0).get(MeaningfulPKTest1.PK_ATTRIBUTE_PK_COLUMN));
     }
 
     @Test
-    public void testGeneratedKey() throws Exception {
+    public void testGeneratedKey() {
         MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
         obj.setDescr("aaa-aaa");
         context.commitChanges();
 
-        assertNotNull(obj.getPkAttribute());
-        assertSame(obj, Cayenne.objectForPK(context, MeaningfulPKTest1.class, obj
-                .getPkAttribute()));
+        assertNotEquals(0, obj.getPkAttribute());
+        assertSame(obj, Cayenne.objectForPK(context, MeaningfulPKTest1.class, obj.getPkAttribute()));
 
         int id = Cayenne.intPKForObject(obj);
 
-        Map snapshot = context.getObjectStore().getDataRowCache().getCachedSnapshot(
-                obj.getObjectId());
+        Map snapshot = context.getObjectStore().getDataRowCache().getCachedSnapshot(obj.getObjectId());
         assertNotNull(snapshot);
         assertTrue(snapshot.containsKey(MeaningfulPKTest1.PK_ATTRIBUTE_PK_COLUMN));
-        assertEquals(new Integer(id), snapshot
-                .get(MeaningfulPKTest1.PK_ATTRIBUTE_PK_COLUMN));
+        assertEquals(id, snapshot.get(MeaningfulPKTest1.PK_ATTRIBUTE_PK_COLUMN));
     }
 
     @Test
-    public void testChangeKey() throws Exception {
-        MeaningfulPKTest1 obj = (MeaningfulPKTest1) context
-                .newObject("MeaningfulPKTest1");
-        obj.setPkAttribute(new Integer(1000));
+    public void testChangeKey() {
+        MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
+        obj.setPkAttribute(1000);
         obj.setDescr("aaa-aaa");
         context.commitChanges();
 
-        obj.setPkAttribute(new Integer(2000));
+        obj.setPkAttribute(2000);
         context.commitChanges();
 
         // assert that object id got fixed
         ObjectId id = obj.getObjectId();
-        assertEquals(new Integer(2000), id.getIdSnapshot().get("PK_ATTRIBUTE"));
+        assertEquals(2000, id.getIdSnapshot().get("PK_ATTRIBUTE"));
     }
 
     @Test
-    public void testToManyRelationshipWithMeaningfulPK1() throws Exception {
-        MeaningfulPKTest1 obj = (MeaningfulPKTest1) context
-                .newObject("MeaningfulPKTest1");
-        obj.setPkAttribute(new Integer(1000));
+    public void testToManyRelationshipWithMeaningfulPK1() {
+        MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
+        obj.setPkAttribute(1000);
         obj.setDescr("aaa-aaa");
         context.commitChanges();
 
         // must be able to resolve to-many relationship
         ObjectContext context = runtime.newContext();
-        List objects = context.performQuery(new SelectQuery(MeaningfulPKTest1.class));
+        List<MeaningfulPKTest1> objects = ObjectSelect.query(MeaningfulPKTest1.class).select(context);
         assertEquals(1, objects.size());
-        obj = (MeaningfulPKTest1) objects.get(0);
+        obj = objects.get(0);
         assertEquals(0, obj.getMeaningfulPKDepArray().size());
     }
 
     @Test
-    public void testToManyRelationshipWithMeaningfulPK2() throws Exception {
-        MeaningfulPKTest1 obj = (MeaningfulPKTest1) context
-                .newObject("MeaningfulPKTest1");
-        obj.setPkAttribute(new Integer(1000));
+    public void testToManyRelationshipWithMeaningfulPK2() {
+        MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
+        obj.setPkAttribute(1000);
         obj.setDescr("aaa-aaa");
         context.commitChanges();
 
         // must be able to set reverse relationship
-        MeaningfulPKDep dep = (MeaningfulPKDep) context.newObject("MeaningfulPKDep");
+        MeaningfulPKDep dep = context.newObject(MeaningfulPKDep.class);
         dep.setToMeaningfulPK(obj);
         context.commitChanges();
     }
 
+    @Test
+    public void testGeneratedIntegerPK(){
+        MeaningfulPkTest2 obj1 = context.newObject(MeaningfulPkTest2.class);
+        obj1.setIntegerAttribute(10);
+        MeaningfulPkTest2 obj2 = context.newObject(MeaningfulPkTest2.class);
+        obj2.setIntegerAttribute(20);
+        context.commitChanges();
+
+        ObjectContext context = runtime.newContext();
+        List<MeaningfulPkTest2> objects = ObjectSelect.query(MeaningfulPkTest2.class).select(context);
+        assertEquals(2, objects.size());
+        assertNotEquals(Integer.valueOf(0), obj1.getPkAttribute());
+        assertNotEquals(Integer.valueOf(0), obj2.getPkAttribute());
+        assertNotEquals(obj1.getPkAttribute(), obj2.getPkAttribute());
+    }
+
+    @Test
+    public void testMeaningfulIntegerPK(){
+        MeaningfulPkTest2 obj1 = context.newObject(MeaningfulPkTest2.class);
+        obj1.setIntegerAttribute(10);
+        obj1.setPkAttribute(1);
+        MeaningfulPkTest2 obj2 = context.newObject(MeaningfulPkTest2.class);
+        obj2.setIntegerAttribute(20);
+        obj2.setPkAttribute(2);
+        context.commitChanges();
+
+        ObjectContext context = runtime.newContext();
+        List<MeaningfulPkTest2> objects = ObjectSelect.query(MeaningfulPkTest2.class).select(context);
+        assertEquals(2, objects.size());
+        assertEquals(Integer.valueOf(1), obj1.getPkAttribute());
+        assertEquals(Integer.valueOf(2), obj2.getPkAttribute());
+    }
+
+    @Test
+    public void testGeneratedIntPK(){
+        MeaningfulPKTest1 obj1 = context.newObject(MeaningfulPKTest1.class);
+        obj1.setIntAttribute(10);
+        MeaningfulPKTest1 obj2 = context.newObject(MeaningfulPKTest1.class);
+        obj2.setIntAttribute(20);
+        context.commitChanges();
+
+        ObjectContext context = runtime.newContext();
+        List<MeaningfulPKTest1> objects = ObjectSelect.query(MeaningfulPKTest1.class).select(context);
+        assertEquals(2, objects.size());
+        assertNotEquals(0, obj1.getPkAttribute());
+        assertNotEquals(0, obj2.getPkAttribute());
+        assertNotEquals(obj1.getPkAttribute(), obj2.getPkAttribute());
+    }
+
+    @Test
+    public void testMeaningfulIntPK(){
+        MeaningfulPKTest1 obj1 = context.newObject(MeaningfulPKTest1.class);
+        obj1.setIntAttribute(10);
+        obj1.setPkAttribute(1);
+        MeaningfulPKTest1 obj2 = context.newObject(MeaningfulPKTest1.class);
+        obj2.setIntAttribute(20);
+        obj2.setPkAttribute(2);
+        context.commitChanges();
+
+        ObjectContext context = runtime.newContext();
+        List<MeaningfulPKTest1> objects = ObjectSelect.query(MeaningfulPKTest1.class).select(context);
+        assertEquals(2, objects.size());
+        assertEquals(1, obj1.getPkAttribute());
+        assertEquals(2, obj2.getPkAttribute());
+    }
 }

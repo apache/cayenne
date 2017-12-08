@@ -22,11 +22,15 @@ public abstract class _MeaningfulPKTest1 extends BaseDataObject {
     public static final String PK_ATTRIBUTE_PK_COLUMN = "PK_ATTRIBUTE";
 
     public static final Property<String> DESCR = Property.create("descr", String.class);
+    public static final Property<Integer> INT_ATTRIBUTE = Property.create("intAttribute", Integer.class);
+    public static final Property<Integer> INT_NULLABLE_ATTRIBUTE = Property.create("intNullableAttribute", Integer.class);
     public static final Property<Integer> PK_ATTRIBUTE = Property.create("pkAttribute", Integer.class);
     public static final Property<List<MeaningfulPKDep>> MEANINGFUL_PKDEP_ARRAY = Property.create("meaningfulPKDepArray", List.class);
 
     protected String descr;
-    protected Integer pkAttribute;
+    protected int intAttribute;
+    protected Integer intNullableAttribute;
+    protected int pkAttribute;
 
     protected Object meaningfulPKDepArray;
 
@@ -40,12 +44,35 @@ public abstract class _MeaningfulPKTest1 extends BaseDataObject {
         return this.descr;
     }
 
-    public void setPkAttribute(Integer pkAttribute) {
+    public void setIntAttribute(int intAttribute) {
+        beforePropertyWrite("intAttribute", this.intAttribute, intAttribute);
+        this.intAttribute = intAttribute;
+    }
+
+    public int getIntAttribute() {
+        beforePropertyRead("intAttribute");
+        return this.intAttribute;
+    }
+
+    public void setIntNullableAttribute(int intNullableAttribute) {
+        beforePropertyWrite("intNullableAttribute", this.intNullableAttribute, intNullableAttribute);
+        this.intNullableAttribute = intNullableAttribute;
+    }
+
+    public int getIntNullableAttribute() {
+        beforePropertyRead("intNullableAttribute");
+        if(this.intNullableAttribute == null) {
+            return 0;
+        }
+        return this.intNullableAttribute;
+    }
+
+    public void setPkAttribute(int pkAttribute) {
         beforePropertyWrite("pkAttribute", this.pkAttribute, pkAttribute);
         this.pkAttribute = pkAttribute;
     }
 
-    public Integer getPkAttribute() {
+    public int getPkAttribute() {
         beforePropertyRead("pkAttribute");
         return this.pkAttribute;
     }
@@ -72,6 +99,10 @@ public abstract class _MeaningfulPKTest1 extends BaseDataObject {
         switch(propName) {
             case "descr":
                 return this.descr;
+            case "intAttribute":
+                return this.intAttribute;
+            case "intNullableAttribute":
+                return this.intNullableAttribute;
             case "pkAttribute":
                 return this.pkAttribute;
             case "meaningfulPKDepArray":
@@ -91,8 +122,14 @@ public abstract class _MeaningfulPKTest1 extends BaseDataObject {
             case "descr":
                 this.descr = (String)val;
                 break;
+            case "intAttribute":
+                this.intAttribute = val == null ? 0 : (int)val;
+                break;
+            case "intNullableAttribute":
+                this.intNullableAttribute = (Integer)val;
+                break;
             case "pkAttribute":
-                this.pkAttribute = (Integer)val;
+                this.pkAttribute = val == null ? 0 : (int)val;
                 break;
             case "meaningfulPKDepArray":
                 this.meaningfulPKDepArray = val;
@@ -114,7 +151,9 @@ public abstract class _MeaningfulPKTest1 extends BaseDataObject {
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
         out.writeObject(this.descr);
-        out.writeObject(this.pkAttribute);
+        out.writeInt(this.intAttribute);
+        out.writeObject(this.intNullableAttribute);
+        out.writeInt(this.pkAttribute);
         out.writeObject(this.meaningfulPKDepArray);
     }
 
@@ -122,7 +161,9 @@ public abstract class _MeaningfulPKTest1 extends BaseDataObject {
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
         this.descr = (String)in.readObject();
-        this.pkAttribute = (Integer)in.readObject();
+        this.intAttribute = in.readInt();
+        this.intNullableAttribute = (Integer)in.readObject();
+        this.pkAttribute = in.readInt();
         this.meaningfulPKDepArray = in.readObject();
     }
 
