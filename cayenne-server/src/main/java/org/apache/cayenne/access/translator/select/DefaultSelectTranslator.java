@@ -143,7 +143,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		StringBuilder whereQualifierBuffer = qualifierTranslator.appendPart(new StringBuilder());
 
 		// build having qualifier
-		Expression havingQualifier = ((SelectQuery)query).getHavingQualifier();
+		Expression havingQualifier = getSelectQuery().getHavingQualifier();
 		StringBuilder havingQualifierBuffer = null;
 		if(havingQualifier != null) {
 			haveAggregate = true;
@@ -839,7 +839,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 
 	@Override
 	public String getAliasForExpression(Expression exp) {
-		Collection<Property<?>> columns = ((SelectQuery<?>)query).getColumns();
+		Collection<Property<?>> columns = getSelectQuery().getColumns();
 		if(columns == null) {
 			return null;
 		}
