@@ -80,9 +80,9 @@ public class CayenneContextMapRelationshipIT extends ClientCase {
 
         assertNotNull(targets);
         assertEquals(3, targets.size());
-        assertNotNull(targets.get(new Integer(1)));
-        assertNotNull(targets.get(new Integer(2)));
-        assertNotNull(targets.get(new Integer(3)));
+        assertNotNull(targets.get(1));
+        assertNotNull(targets.get(2));
+        assertNotNull(targets.get(3));
     }
 
     @Test
@@ -111,7 +111,7 @@ public class CayenneContextMapRelationshipIT extends ClientCase {
         assertEquals(4, o1.getTargets().size());
 
         int newId = Cayenne.intPKForObject(newTarget);
-        assertSame(newTarget, o1.getTargets().get(new Integer(newId)));
+        assertSame(newTarget, o1.getTargets().get(newId));
 
         assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
         assertEquals(PersistenceState.COMMITTED, newTarget.getPersistenceState());

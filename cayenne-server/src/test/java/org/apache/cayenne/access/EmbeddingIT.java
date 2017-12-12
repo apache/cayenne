@@ -71,7 +71,7 @@ public class EmbeddingIT extends ServerCase {
     public void testSelect() throws Exception {
         createSelectDataSet();
 
-        SelectQuery query = new SelectQuery(EmbedEntity1.class);
+        SelectQuery query = new SelectQuery<>(EmbedEntity1.class);
         query.addOrdering(EmbedEntity1.NAME.asc());
 
         List<?> results = context.performQuery(query);
@@ -139,7 +139,7 @@ public class EmbeddingIT extends ServerCase {
     public void testUpdateEmbeddedProperties() throws Exception {
         createUpdateDataSet();
 
-        SelectQuery query = new SelectQuery(EmbedEntity1.class);
+        SelectQuery query = new SelectQuery<>(EmbedEntity1.class);
         query.addOrdering(EmbedEntity1.NAME.asc());
 
         List<?> results = context.performQuery(query);
@@ -151,8 +151,7 @@ public class EmbeddingIT extends ServerCase {
         assertEquals(PersistenceState.MODIFIED, o1.getPersistenceState());
 
         context.commitChanges();
-        SelectQuery query1 = new SelectQuery(EmbedEntity1.class);
-        query1.setFetchingDataRows(true);
+        SelectQuery<DataRow> query1 = SelectQuery.dataRowQuery(EmbedEntity1.class);
         DataRow row = (DataRow) Cayenne.objectForQuery(context, query1);
         assertNotNull(row);
         assertEquals("x1", row.get("EMBEDDED10"));
@@ -162,7 +161,7 @@ public class EmbeddingIT extends ServerCase {
     public void testUpdateEmbedded() throws Exception {
         createUpdateDataSet();
 
-        SelectQuery query = new SelectQuery(EmbedEntity1.class);
+        SelectQuery query = new SelectQuery<>(EmbedEntity1.class);
         query.addOrdering(EmbedEntity1.NAME.asc());
 
         List<?> results = context.performQuery(query);

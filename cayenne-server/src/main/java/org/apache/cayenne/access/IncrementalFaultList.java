@@ -118,7 +118,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 		// create an internal query, it is a partial replica of
 		// the original query and will serve as a value holder for
 		// various parameters
-		this.internalQuery = new SelectQuery<Object>(rootEntity);
+		this.internalQuery = new SelectQuery<>(rootEntity);
 		this.internalQuery.setFetchingDataRows(metadata.isFetchingDataRows());
 		this.internalQuery.setPrefetchTree(metadata.getPrefetchTree());
 
@@ -265,8 +265,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	}
 
 	SelectQuery<Object> createSelectQuery(List<Expression> expressions) {
-		SelectQuery<Object> query = new SelectQuery<>(rootEntity,
-				ExpressionFactory.joinExp(Expression.OR, expressions));
+		SelectQuery<Object> query = new SelectQuery<>(rootEntity, ExpressionFactory.joinExp(Expression.OR, expressions));
 
 		query.setFetchingDataRows(internalQuery.isFetchingDataRows());
 		if (!query.isFetchingDataRows()) {

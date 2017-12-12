@@ -863,7 +863,7 @@ public class DataContext extends BaseContext {
             Transaction tx = getTransactionFactory().createTransaction();
             BaseTransaction.bindThreadTransaction(tx);
 
-            ResultIterator result;
+            ResultIterator<?> result;
             try {
                 result = internalPerformIteratedQuery(query);
             } catch (Exception e) {
@@ -889,7 +889,7 @@ public class DataContext extends BaseContext {
                 }
             }
 
-            return new TransactionResultIteratorDecorator(result, tx);
+            return new TransactionResultIteratorDecorator<>(result, tx);
         }
     }
 

@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
@@ -33,7 +34,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -61,7 +61,7 @@ public class DataContextNoPkIT extends ServerCase {
     @Test
     public void testNoPkFetchObjects() throws Exception {
         try {
-            List objects = context.performQuery(new SelectQuery(NoPkTestEntity.class));
+            List objects = context.performQuery(new SelectQuery<>(NoPkTestEntity.class));
             fail("Query for entity with no primary key must have failed, instead we got "
                     + objects.size()
                     + " rows.");
@@ -73,15 +73,14 @@ public class DataContextNoPkIT extends ServerCase {
 
     @Test
     public void testNoPkFetchDataRows() throws Exception {
-        SelectQuery query = new SelectQuery(NoPkTestEntity.class);
-        query.setFetchingDataRows(true);
+        SelectQuery<DataRow> query = SelectQuery.dataRowQuery(NoPkTestEntity.class);
 
-        List rows = context.performQuery(query);
+        List<DataRow> rows = query.select(context);
         assertNotNull(rows);
         assertEquals(2, rows.size());
 
-        Map row1 = (Map) rows.get(0);
-        Map row2 = (Map) rows.get(1);
+        DataRow row1 = rows.get(0);
+        DataRow row2 = rows.get(1);
 
         // assert that rows have different values
         // (there was a bug earlier that fetched distinct rows for

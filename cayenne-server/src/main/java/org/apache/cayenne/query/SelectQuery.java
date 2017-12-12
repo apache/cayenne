@@ -89,7 +89,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * @since 4.0
 	 */
 	public static <T> SelectQuery<T> query(Class<T> rootClass) {
-		return new SelectQuery<T>(rootClass);
+		return new SelectQuery<>(rootClass);
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * @since 4.0
 	 */
 	public static <T> SelectQuery<T> query(Class<T> rootClass, Expression qualifier) {
-		return new SelectQuery<T>(rootClass, qualifier);
+		return new SelectQuery<>(rootClass, qualifier);
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * @since 4.0
 	 */
 	public static <T> SelectQuery<T> query(Class<T> rootClass, Expression qualifier, List<? extends Ordering> orderings) {
-		return new SelectQuery<T>(rootClass, qualifier, orderings);
+		return new SelectQuery<>(rootClass, qualifier, orderings);
 	}
 
 	/**
@@ -129,7 +129,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 */
 	public static SelectQuery<DataRow> dataRowQuery(Class<?> rootClass) {
 		// create a query replica that would fetch DataRows
-		SelectQuery<DataRow> query = new SelectQuery<DataRow>();
+		SelectQuery<DataRow> query = new SelectQuery<>();
 
 		query.setRoot(rootClass);
 		query.metaData.setFetchingDataRows(true);
@@ -347,7 +347,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 
 	@Override
 	public void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
-		context.iterate((Select<T>) this, callback);
+		context.iterate(this, callback);
 	}
 
 	@Override
@@ -451,7 +451,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 */
 	public SelectQuery<T> queryWithParameters(Map<String, ?> parameters, boolean pruneMissing) {
 		// create a query replica
-		SelectQuery<T> query = new SelectQuery<T>();
+		SelectQuery<T> query = new SelectQuery<>();
 		query.setDistinct(distinct);
 
 		query.metaData.copyFromInfo(this.metaData);
@@ -522,7 +522,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * Returns a list of orderings used by this query.
 	 */
 	public List<Ordering> getOrderings() {
-		return (orderings != null) ? orderings : Collections.<Ordering> emptyList();
+		return (orderings != null) ? orderings : Collections.emptyList();
 	}
 
 	/**

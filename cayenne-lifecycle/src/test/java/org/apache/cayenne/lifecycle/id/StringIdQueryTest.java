@@ -38,20 +38,19 @@ import static org.junit.Assert.assertTrue;
 public class StringIdQueryTest {
 
     private ServerRuntime runtime;
-    private DBHelper dbHelper;
     private TableHelper e1Helper;
     private TableHelper e2Helper;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         runtime = ServerRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
-        dbHelper = new DBHelper(runtime.getDataSource("lifecycle-db"));
+        DBHelper dbHelper = new DBHelper(runtime.getDataSource("lifecycle-db"));
         e1Helper = new TableHelper(dbHelper, "E1", "ID");
         e2Helper = new TableHelper(dbHelper, "E2", "ID");
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         runtime.shutdown();
     }
 
@@ -83,7 +82,7 @@ public class StringIdQueryTest {
         assertEquals(1, response.size());
         assertEquals(2, response.firstList().size());
 
-        Set<Number> ids = new HashSet<Number>();
+        Set<Number> ids = new HashSet<>();
 
         DataRow r1 = (DataRow) response.firstList().get(0);
         ids.add((Number) r1.get("ID"));
@@ -91,8 +90,8 @@ public class StringIdQueryTest {
         DataRow r2 = (DataRow) response.firstList().get(1);
         ids.add((Number) r2.get("ID"));
 
-        assertTrue(ids.contains(3l));
-        assertTrue(ids.contains(4l));
+        assertTrue(ids.contains(3L));
+        assertTrue(ids.contains(4L));
     }
 
     @Test
@@ -107,9 +106,10 @@ public class StringIdQueryTest {
         QueryResponse response = runtime.newContext().performGenericQuery(query);
         assertEquals(2, response.size());
 
-        Set<String> ids = new HashSet<String>();
+        Set<String> ids = new HashSet<>();
 
         while (response.next()) {
+            @SuppressWarnings("unchecked")
             List<DataRow> list = (List<DataRow>) response.currentList();
             for (DataRow row : list) {
                 ids.add(row.getEntityName() + ":" + row.get("ID"));

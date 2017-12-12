@@ -48,6 +48,7 @@ class DefaultValueDecryptor implements ValueDecryptor {
     @Override
     public Object decrypt(BytesDecryptor bytesDecryptor, Object value) {
 
+        @SuppressWarnings("unchecked")
         byte[] bytes = preConverter.toBytes(value);
 
         // 'defaultKey' is likely to be ignored by the BytesDecryptor, as the

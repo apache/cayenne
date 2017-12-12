@@ -232,6 +232,7 @@ class IncrementalSelectQuery<T> extends SelectQuery<T> {
 		query.setDistinct(distinct);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void setFetchingDataRows(boolean flag) {
 		query.setFetchingDataRows(flag);

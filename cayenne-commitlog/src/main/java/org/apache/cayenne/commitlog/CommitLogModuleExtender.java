@@ -111,8 +111,6 @@ public class CommitLogModuleExtender {
 
             // types have to be added one-by-one
             for (Class<? extends CommitLogListener> type : listenerTypes) {
-                // TODO: temp hack - need to bind each type before adding to collection...
-                binder.bind(type).to((Class) type);
                 listeners.add(type);
             }
 

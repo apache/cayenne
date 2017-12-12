@@ -102,8 +102,7 @@ public class DataContextQueryCachingIT extends ServerCase {
 
     @Test
     public void testLocalCacheDataRowsRefresh() throws Exception {
-        SelectQuery<Artist> select = new SelectQuery<>(Artist.class);
-        select.setFetchingDataRows(true);
+        SelectQuery<DataRow> select = SelectQuery.dataRowQuery(Artist.class);
         select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         MockDataNode engine = MockDataNode.interceptNode(domain, getNode());
@@ -142,8 +141,7 @@ public class DataContextQueryCachingIT extends ServerCase {
     @Test
     public void testSharedCacheDataRowsRefresh() throws Exception {
 
-        SelectQuery<Artist> select = new SelectQuery<>(Artist.class);
-        select.setFetchingDataRows(true);
+        SelectQuery<DataRow> select = SelectQuery.dataRowQuery(Artist.class);
         select.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
         MockDataNode engine = MockDataNode.interceptNode(domain, getNode());
@@ -185,7 +183,6 @@ public class DataContextQueryCachingIT extends ServerCase {
     public void testLocalCacheDataObjectsRefresh() throws Exception {
 
         SelectQuery<Artist> select = new SelectQuery<>(Artist.class);
-        select.setFetchingDataRows(false);
         select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         MockDataNode engine = MockDataNode.interceptNode(domain, getNode());

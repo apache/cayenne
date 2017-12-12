@@ -102,7 +102,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
 				throw new IllegalArgumentException("Entity not mapped with Cayenne: " + id);
 			}
 
-			Persistent dataObject = null;
+			Persistent dataObject;
 			try {
 				dataObject = (Persistent) entity.getJavaClass().newInstance();
 			} catch (Exception ex) {

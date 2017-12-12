@@ -134,14 +134,9 @@ public class WebConfiguration {
                 Module module;
                 try {
                     module = (Module) Util.getJavaClass(moduleName).newInstance();
-                }
-                catch (Exception e) {
-                    String message = String
-                            .format(
-                                    "Error instantiating custom DI module '%s' by filter '%s': %s",
-                                    moduleName,
-                                    getClass().getName(),
-                                    e.getMessage());
+                } catch (Exception e) {
+                    String message = String.format("Error instantiating custom DI module '%s' by filter '%s': %s",
+                                    moduleName, getClass().getName(), e.getMessage());
                     throw new ServletException(message, e);
                 }
 
@@ -160,7 +155,7 @@ public class WebConfiguration {
         Enumeration<?> en = configuration.getInitParameterNames();
 
         if (!en.hasMoreElements()) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
 
         Map<String, String> parameters = new HashMap<>();

@@ -43,14 +43,15 @@ public class EOQueryTest {
         EOModelProcessor processor = new EOModelProcessor();
         DataMap map = processor.loadEOModel(url);
 
-        Map fspecMap = (Map) PropertyListSerialization.propertyListFromStream(getClass()
+        @SuppressWarnings("unchecked")
+        Map<String, ?> fspecMap = (Map<String, ?>) PropertyListSerialization.propertyListFromStream(getClass()
                 .getClassLoader()
                 .getResourceAsStream("wotests/fetchspec.eomodeld/Entity1.fspec"));
         assertNotNull(fspecMap);
         assertNotNull(fspecMap.get("E1FS1"));
 
-        EOQuery query = new EOQuery(map.getObjEntity("Entity1"), (Map) fspecMap
-                .get("E1FS1"));
+        @SuppressWarnings("unchecked")
+        EOQuery query = new EOQuery(map.getObjEntity("Entity1"), (Map<String, ?>) fspecMap.get("E1FS1"));
 
         assertNotNull(query.getQualifier());
         assertEquals(
