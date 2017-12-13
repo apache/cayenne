@@ -25,8 +25,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.exp.parser.ASTObjPath;
-import org.apache.cayenne.exp.parser.SimpleNode;
+import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -211,8 +210,8 @@ public class JoinStack {
 		}
 
 		public Object apply(Object input) {
-			if (input instanceof ASTObjPath) {
-				return new ASTDbPath(pathToRoot.toString() + ((SimpleNode) input).getOperand(0));
+			if (input instanceof ASTPath) {
+				return new ASTDbPath(pathToRoot.toString() + ((ASTPath) input).getPath());
 			}
 			return input;
 		}

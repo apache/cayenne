@@ -16,6 +16,19 @@
 		<db-attribute name="NAME" type="VARCHAR" length="200"/>
 		<db-attribute name="QUALIFIED1_ID" type="INTEGER"/>
 	</db-entity>
+	<db-entity name="TEST_QUALIFIED3">
+		<db-attribute name="DELETED" type="BOOLEAN"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+		<qualifier><![CDATA[DELETED = null]]></qualifier>
+	</db-entity>
+	<db-entity name="TEST_QUALIFIED4">
+		<db-attribute name="DELETED" type="BOOLEAN"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+		<db-attribute name="QUALIFIED3_ID" type="INTEGER"/>
+		<qualifier><![CDATA[DELETED = null]]></qualifier>
+	</db-entity>
 	<obj-entity name="Qualified1" className="org.apache.cayenne.testdo.qualified.Qualified1" dbEntityName="TEST_QUALIFIED1">
 		<qualifier><![CDATA[deleted = null]]></qualifier>
 		<obj-attribute name="deleted" type="java.lang.Boolean" db-attribute-path="DELETED"/>
@@ -26,12 +39,26 @@
 		<obj-attribute name="deleted" type="java.lang.Boolean" db-attribute-path="DELETED"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
+	<obj-entity name="Qualified3" className="org.apache.cayenne.testdo.qualified.Qualified3" dbEntityName="TEST_QUALIFIED3">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="Qualified4" className="org.apache.cayenne.testdo.qualified.Qualified4" dbEntityName="TEST_QUALIFIED4">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
 	<db-relationship name="qualified2s" source="TEST_QUALIFIED1" target="TEST_QUALIFIED2" toMany="true">
 		<db-attribute-pair source="ID" target="QUALIFIED1_ID"/>
 	</db-relationship>
 	<db-relationship name="qualified1" source="TEST_QUALIFIED2" target="TEST_QUALIFIED1">
 		<db-attribute-pair source="QUALIFIED1_ID" target="ID"/>
 	</db-relationship>
+	<db-relationship name="qualified4s" source="TEST_QUALIFIED3" target="TEST_QUALIFIED4" toMany="true">
+		<db-attribute-pair source="ID" target="QUALIFIED3_ID"/>
+	</db-relationship>
+	<db-relationship name="qualified3" source="TEST_QUALIFIED4" target="TEST_QUALIFIED3">
+		<db-attribute-pair source="QUALIFIED3_ID" target="ID"/>
+	</db-relationship>
 	<obj-relationship name="qualified2s" source="Qualified1" target="Qualified2" db-relationship-path="qualified2s"/>
 	<obj-relationship name="qualified1" source="Qualified2" target="Qualified1" db-relationship-path="qualified1"/>
+	<obj-relationship name="qualified4s" source="Qualified3" target="Qualified4" deleteRule="Deny" db-relationship-path="qualified4s"/>
+	<obj-relationship name="qualified3" source="Qualified4" target="Qualified3" deleteRule="Nullify" db-relationship-path="qualified3"/>
 </data-map>

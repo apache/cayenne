@@ -24,6 +24,7 @@ CAY-2381 cgen: meaningful PK with boxed type ends up with primitive type in gene
 CAY-2382 Lack of synchronization in DataContext serialization
 CAY-2387 Can't select byte[] property with ColumnSelect
 CAY-2388 Modeler: Visualization issues with undo/redo actions for attributes and relationships
+CAY-2389 DbEntity qualifier with DbPath expression translates into wrong SQL
 
 ----------------------------------
 Release: 4.1.M1
