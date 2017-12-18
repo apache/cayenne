@@ -21,12 +21,18 @@ package org.apache.cayenne;
 import java.sql.Types;
 import java.util.List;
 
+import com.sun.org.apache.bcel.internal.generic.Select;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.qualified.Qualified1;
 import org.apache.cayenne.testdo.qualified.Qualified2;
+import org.apache.cayenne.testdo.qualified.Qualified3;
+import org.apache.cayenne.testdo.qualified.Qualified4;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -45,6 +51,8 @@ public class CDOQualifiedEntitiesTest extends ServerCase {
 
     private TableHelper tQualified1;
     private TableHelper tQualified2;
+    private TableHelper tQualified3;
+    private TableHelper tQualified4;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -53,18 +61,21 @@ public class CDOQualifiedEntitiesTest extends ServerCase {
 
         int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
 
-        tQualified1 = new TableHelper(dbHelper, "TEST_QUALIFIED1");
-        tQualified1.setColumns("ID", "NAME", "DELETED").setColumnTypes(
-                Types.INTEGER,
-                Types.VARCHAR,
-                bool);
+        tQualified1 = new TableHelper(dbHelper, "TEST_QUALIFIED1")
+                .setColumns("ID", "NAME", "DELETED")
+                .setColumnTypes(Types.INTEGER, Types.VARCHAR, bool);
 
-        tQualified2 = new TableHelper(dbHelper, "TEST_QUALIFIED2");
-        tQualified2.setColumns("ID", "NAME", "DELETED", "QUALIFIED1_ID").setColumnTypes(
-                Types.INTEGER,
-                Types.VARCHAR,
-                bool,
-                Types.INTEGER);
+        tQualified2 = new TableHelper(dbHelper, "TEST_QUALIFIED2")
+                .setColumns("ID", "NAME", "DELETED", "QUALIFIED1_ID")
+                .setColumnTypes(Types.INTEGER, Types.VARCHAR, bool, Types.INTEGER);
+
+        tQualified3 = new TableHelper(dbHelper, "TEST_QUALIFIED3")
+                .setColumns("ID", "NAME", "DELETED")
+                .setColumnTypes(Types.INTEGER, Types.VARCHAR, bool);
+
+        tQualified4 = new TableHelper(dbHelper, "TEST_QUALIFIED4")
+                .setColumns("ID", "NAME", "DELETED", "QUALIFIED3_ID")
+                .setColumnTypes(Types.INTEGER, Types.VARCHAR, bool, Types.INTEGER);
     }
 
     private void createReadToManyDataSet() throws Exception {
@@ -83,6 +94,17 @@ public class CDOQualifiedEntitiesTest extends ServerCase {
         tQualified1.insert(2, "OX2", accessStackAdapter.supportsBoolean() ? true : 1);
 
         tQualified2.insert(1, "OY1", null, 2);
+    }
+
+    private void createJoinDataSet() throws Exception {
+        tQualified3.deleteAll();
+        tQualified4.deleteAll();
+
+        tQualified3.insert(1, "O1", null);
+        tQualified3.insert(2, "O2", accessStackAdapter.supportsBoolean() ? true : 1);
+
+        tQualified4.insert(1, "SHOULD_SELECT", null, 1);
+        tQualified4.insert(2, "SHOULD_NOT_SELECT", null, 2);
     }
 
     public void testReadToMany() throws Exception {
@@ -121,6 +143,42 @@ public class CDOQualifiedEntitiesTest extends ServerCase {
 
             Qualified1 target = root.getQualified1();
             assertNull("" + target, target);
+        }
+    }
+
+    public void testJoinWithQualifier() throws Exception {
+        createJoinDataSet();
+
+        Expression qualifier = ExpressionFactory.likeExp(Qualified4.QUALIFIED3_PROPERTY + "."
+                + Qualified3.NAME_PROPERTY, "O%");
+        SelectQuery query = new SelectQuery(Qualified4.class, qualifier);
+        List<Qualified4> result = context.performQuery(query);
+
+        assertEquals(1, result.size());
+        assertEquals("SHOULD_SELECT", result.get(0).getName());
+    }
+
+    public void testJoinWithCustomDbQualifier() throws Exception {
+        createJoinDataSet();
+
+        DbEntity entity1 = context.getEntityResolver().getDbEntity("TEST_QUALIFIED3");
+        DbEntity entity2 = context.getEntityResolver().getDbEntity("TEST_QUALIFIED4");
+        Expression oldExpression1 = entity1.getQualifier();
+        Expression oldExpression2 = entity2.getQualifier();
+        try {
+            entity1.setQualifier(ExpressionFactory.matchDbExp("DELETED", null));
+            entity2.setQualifier(ExpressionFactory.matchDbExp("DELETED", null));
+
+            Expression qualifier = ExpressionFactory.likeExp(Qualified4.QUALIFIED3_PROPERTY + "."
+                    + Qualified3.NAME_PROPERTY, "O%");
+            SelectQuery query = new SelectQuery(Qualified4.class, qualifier);
+            List<Qualified4> result = context.performQuery(query);
+
+            assertEquals(1, result.size());
+            assertEquals("SHOULD_SELECT", result.get(0).getName());
+        } finally {
+            entity1.setQualifier(oldExpression1);
+            entity2.setQualifier(oldExpression2);
         }
     }
 }
