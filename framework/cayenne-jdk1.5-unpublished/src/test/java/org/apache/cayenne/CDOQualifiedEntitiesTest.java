@@ -97,8 +97,8 @@ public class CDOQualifiedEntitiesTest extends ServerCase {
     }
 
     private void createJoinDataSet() throws Exception {
-        tQualified3.deleteAll();
         tQualified4.deleteAll();
+        tQualified3.deleteAll();
 
         tQualified3.insert(1, "O1", null);
         tQualified3.insert(2, "O2", accessStackAdapter.supportsBoolean() ? true : 1);
