@@ -1,0 +1,61 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+=== CayenneModeler Application
+
+==== Working with Mapping Projects
+
+==== Reverse Engineering Database
+
+See chapter  xref:reverse[Reverse Engineering in Cayenne Modeler]
+
+==== Generating Database Schema
+
+With Cayenne Modeler you can create simple database schemas without any additional database tools. This is a good option for initial database setup if you completely created you model with the Modeler. You can start SQL schema generation by selecting menu *Tools > Generate Database Schema*
+
+You can select what database parts should be generated and what tables you want
+
+==== Migrations
+
+==== Generating Java Classes
+
+Before using Cayenne in you code you need to generate java source code for persistent objects. This can be done with Modeler GUI or via xref:cgen[cgen] maven/ant plugin.
+
+To generate classes in the modeler use *Tools > Generate Classes*
+
+There is three default types of code generation
+
+- *Standard Persistent Objects*
+
+Default type of generation suitable for almost all cases. Use this type unless you now what exactly you need to customize.
+
+- *Client Persistent Objects*
+
+- *Advanced*
+
+In advanced mode you can control almost all aspects of code generation including custom templates for java code. See default Cayenne templates on GitHub as an example.
+
+==== Modeling Inheritance
+
+==== Modeling Generic Persistent Classes
+
+Normally each ObjEntity is mapped to a specific Java class (such as Artist or Painting) that explicitly declare all entity properties as pairs of getters and setters. However Cayenne allows to map a completly generic class to any number of entities. The only expectation is that a generic class implements org.apache.cayenne.DataObject. So an ideal candidate for a generic class is CayenneDataObject, or some custom subclass of CayenneDataObject.
+
+If you don't enter anything for Java Class of an ObjEntity, Cayenne assumes generic mapping and uses the following implicit rules to determine a class of a generic object. If DataMap "Custom Superclass" is set, runtime uses this class to instantiate new objects. If not, `org.apache.cayenne.CayenneDataObject` is used.
+
+Class generation procedures (either done in the Modeler or with Ant or Maven) would skip entities that are mapped to CayenneDataObject explicitly or have no class mapping.
+
+==== Mapping ObjAttributes to Custom Classes
+
+==== Modeling Primary Key Generation Strategy

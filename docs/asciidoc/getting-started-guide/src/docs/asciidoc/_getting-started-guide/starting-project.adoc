@@ -1,0 +1,111 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+=== Starting a project
+
+The goal of this chapter is to create a new Java project in IntelliJ IDEA
+containing a basic Cayenne mapping. It presents an introduction to
+CayenneModeler GUI tool, showing how to create the initial mapping
+objects: `DataDomain`, `DataNode`, `DataMap`.
+
+==== Create a new Project in IntelliJ IDEA
+
+In IntelliJ IDEA select `File > New > Project..` and then
+select `Maven` and click `Next`.
+In the dialog shown on the screenshot below, fill the `Group Id`
+and `Artifact Id` fields and click `Next`.
+
+image::tutorial-idea-project.png[align="center"]
+
+On next dialog screen you can customize directory for your project and click `Finish`.
+Now you should have a new empty project.
+
+==== Download and Start CayenneModeler
+
+Although later in this tutorial we'll be using Maven to include Cayenne
+runtime jars in the project, you'll still need to download Cayenne to
+get access to the CayenneModeler tool.
+
+NOTE: If you are really into Maven, you can start CayenneModeler from Maven too.
+      We'll do it in a more traditional way here.
+
+Download the http://cayenne.apache.org/download.html[latest release]. Unpack the distribution
+somewhere in the file system and start CayenneModeler, following platform-specific instructions.
+On most platforms it is done simply by doubleclicking the Modeler icon.
+The welcome screen of the Modeler looks like this:
+
+image::modeler-started.png[align="center"]
+
+==== Create a New Mapping Project in CayenneModeler
+
+Click on the `New Project` button on Welcome screen. A new mapping project will appear
+that contains a single *DataDomain*. The meaning of a
+DataDomain is explained elsewhere in the User Guide. For now it is sufficient to
+understand that DataDomain is the root of your mapping project.
+
+==== Create a DataNode
+
+The next project object you will create is a *DataNode*.
+DataNode is a descriptor of a single database your application
+will connect to. Cayenne mapping project can use more than one database, but for now,
+we'll only use one. With "project" selected on the left, click on `Create DataNode` button image:icon-node.png[]
+on the toolbar (or select `Project > Create DataNode` from the menu).
+
+A new DataNode is displayed. Now you need to specify JDBC connection parameters. For
+an in-memory Derby database you can enter the following settings:
+
+- JDBC Driver: `org.apache.derby.jdbc.EmbeddedDriver`
+- DB URL: `jdbc:derby:memory:testdb;create=true`
+
+NOTE: We are creating an in-memory database here. So when
+      you stop your application, all the data will be lost. In most real-life
+      cases you'll be connecting to a database that actually persists its data on
+      disk, but an in-memory DB will do for the simple tutorial.
+
+Also you will need to change "Schema Update Strategy". Select
+`org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy` from the dropdown, so that
+Cayenne creates a new schema on Derby based on the ORM mapping when the application
+starts.
+
+image::base-datanode.png[align="center"]
+
+==== Create a DataMap
+
+Now you will create a *DataMap*. DataMap is an object
+that holds all the mapping information. To create it, click on "Create DataMap" button
+image:icon-datamap.png[] (or select a corresponding menu item).
+Note that the newly created DataMap is automatically linked to the DataNode that you created in
+the previous step. If there is more than one DataNode, you may need to link a DataMap
+to the correct node manually. In other words a DataMap within DataDomain must point
+to a database described by the map.
+
+You can leave all the DataMap defaults unchanged except for one - "Java Package".
+Enter `org.example.cayenne.persistent`. This name will later be used for all persistent
+classes.
+
+image::base-datamap.png[align="center"]
+
+==== Save the Project
+
+image::idea-xmlfiles.png[float="right"]
+
+Before you proceed with the actual mapping, let's save the project. Click on "Save"
+button in the toolbar and navigate to the `tutorial` IDEA project folder that was
+created earlier in this section and its `src/main/resources` subfolder and save the
+project there. Now go back to IDEA and you will see two Cayenne XML files.
+
+Note that the location of the XML files is not coincidental. Cayenne runtime looks for
+`cayenne-*.xml` file in the application `CLASSPATH` and `src/main/resources` folder should
+already be a "class folder" in IDEA for our project (and is also a standard location
+that Maven would copy to a jar file, if we were using Maven from command-line).
+

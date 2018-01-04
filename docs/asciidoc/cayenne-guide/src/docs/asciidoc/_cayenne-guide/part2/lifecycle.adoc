@@ -1,0 +1,273 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+=== Lifecycle Events
+
+An application might be interested in getting notified when a Persistent object moves through its lifecycle (i.e. fetched from DB, created, modified, committed). E.g. when a new object is created, the application may want to initialize its default properties (this can't be done in constructor, as constructor is also called when an object is fetched from DB). Before save, the application may perform validation and/or set some properties (e.g. "updatedTimestamp"). After save it may want to create an audit record for each saved object, etc., etc.
+
+All this can be achieved by declaring callback methods either in Persistent objects or in non-persistent listener classes defined by the application (further simply called "listeners"). There are eight types of lifecycle events supported by Cayenne, listed later in this chapter. When any such event occurs (e.g. an object is committed), Cayenne would invoke all appropriate callbacks. Persistent objects would receive their own events, while listeners would receive events from any objects.
+
+Cayenne allows to build rather powerful and complex "workflows" or "processors" tied to objects lifecycle, especially with listeners, as they have full access to the application evnironment outside Cayenne. This power comes from such features as filtering which entity events are sent to a given listener and the ability to create a common operation context for multiple callback invocations. All of these are discussed later in this chapter.
+
+==== Types of Lifecycle Events
+
+Cayenne defines the following 8 types of lifecycle events for which callbacks can be regsitered:
+
+[#lifecycleEvent.table.table-bordered]
+.Lifecycle Event Types
+[cols="1,4"]
+|===
+|Event |Occurs...
+
+.^|PostAdd
+.^|right after a new object is created inside `ObjectContext.newObject()`. When this event is fired the object is already registered with its ObjectContext and has its ObjectId and ObjectContext properties set.
+
+.^|PrePersist
+.^|right before a new object is committed, inside `ObjectContext.commitChanges()` and `ObjectContext.commitChangesToParent()` (and after `"validateForInsert()"`).
+
+.^|PreUpdate
+.^|right before a modified object is committed, inside `ObjectContext.commitChanges()` and `ObjectContext.commitChangesToParent()` (and after `"validateForUpdate()"`).
+
+.^|PreRemove
+.^|right before an object is deleted, inside `ObjectContext.deleteObjects()`. The event is also generated for each object indirectly deleted as a result of CASCADE delete rule.
+
+.^|PostPersist
+.^|right after a commit of a new object is done, inside `ObjectContext.commitChanges()`.
+
+.^|PostUpdate
+.^|right after a commit of a modified object is done, inside `ObjectContext.commitChanges()`.
+
+.^|PostRemove
+.^|right after a commit of a deleted object is done, inside `ObjectContext.commitChanges()`.
+
+.^|PostLoad
+a|
+- After an object is fetched inside ObjectContext.performQuery().
+- After an object is reverted inside ObjectContext.rollbackChanges().
+- Anytime a faulted object is resolved (i.e. if a relationship is fetched).
+|===
+
+==== Callbacks on Persistent Objects
+
+Callback methods on Persistent classes are mapped in CayenneModeler for each ObjEntity. Empty callback methods are automatically created as a part of class generation (either with Maven, Ant or the Modeler) and are later filled with appropriate logic by the programmer. E.g. assuming we mapped a 'post-add' callback called 'onNewOrder' in ObjEntity 'Order', the following code will be generated:
+
+[source, Java]
+----
+public abstract class _Order extends CayenneDataObject {
+    protected abstract void onNewOrder();
+}
+
+public class Order extends _Order {
+
+    @Override
+    protected void onNewOrder() {
+        //TODO: implement onNewOrder
+    }
+}
+----
+
+As `onNewOrder()` is already declared in the mapping, it does not need to be registered explicitly. Implementing the method in subclass to do something meaningful is all that is required at this point.
+
+As a rule callback methods do not have any knowledge of the outside application, and can only access the state of the object itself and possibly the state of other persistent objects via object's own ObjectContext.
+
+NOTE: Validation and callbacks: There is a clear overlap in functionality between object callbacks and `DataObject.validateForX()` methods. In the future validation may be completely superceeded by callbacks. It is a good idea to use "validateForX" strictly for validation (or not use it at all). Updating the state before commit should be done via callbacks.
+
+==== Callbacks on Non-Persistent Listeners
+
+A listener is simply some application class that has one or more annotated callback methods. A callback method signature should be `void someMethod(SomePersistentType object)`. It can be public, private, protected or use default access:
+
+[source, Java]
+----
+ public class OrderListener {
+
+   @PostAdd(Order.class)
+   public void setDefaultsForNewOrder(Order o) {
+      o.setCreatedOn(new Date());
+   }
+}
+----
+
+Notice that the example above contains an annotation on the callback method that defines the type of the event this method should be called for. Before we go into annotation details, we'll show how to create and register a listener with Cayenne. It is always a user responsibility to register desired application listeners, usually right after ServerRuntime is started. Here is an example:
+
+First let's define 2 simple listeners.
+
+[source, Java]
+----
+public class Listener1 {
+
+    @PostAdd(MyEntity.class)
+    void postAdd(Persistent object) {
+        // do something
+    }
+}
+
+public class Listener2 {
+
+    @PostRemove({ MyEntity1.class, MyEntity2.class })
+    void postRemove(Persistent object) {
+        // do something
+    }
+
+    @PostUpdate({ MyEntity1.class, MyEntity2.class })
+    void postUpdate(Persistent object) {
+        // do something
+    }
+}
+----
+
+Ignore the annotations for a minute. The important point here is that the listeners are arbitrary classes unmapped and unknown to Cayenne, that contain some callback methods. Now let's register them with runtime:
+
+[source, Java]
+----
+ServerRuntime runtime = ...
+
+runtime.getDataDomain().addListener(new Listener1());
+runtime.getDataDomain().addListener(new Listener2());
+----
+
+
+Listeners in this example are very simple. However they don't have to be. Unlike Persistent objects, normally listeners initialization is managed by the application code, not Cayenne, so listeners may have knowledge of various application services, operation transactional context, etc. Besides a single listener can apply to multiple entities. As a consequence their callbacks can do more than just access a single ObjectContext.
+
+Now let's discuss the annotations. There are eight annotations exactly matching the names of eight lifecycle events. A callback method in a listener should be annotated with at least one, but possibly with more than one of them. Annotation itself defines what event the callback should react to. Annotation parameters are essentially an entity filter, defining a subset of ObjEntities whose events we are interested in:
+
+[source, Java]
+----
+// this callback will be invoked on PostRemove event of any object
+// belonging to MyEntity1, MyEntity2 or their subclasses
+@PostRemove({ MyEntity1.class, MyEntity2.class })
+void postRemove(Persistent object) {
+    ...
+}
+----
+
+[source, Java]
+----
+// similar example with multipe annotations on a single method
+// each matching just one entity
+@PostPersist(MyEntity1.class)
+@PostRemove(MyEntity1.class)
+@PostUpdate(MyEntity1.class)
+void postCommit(MyEntity1 object) {
+    ...
+}
+----
+
+As shown above, "value" (the implicit annotation parameter) can contain one or more entity classes. Only these entities' events will result in callback invocation. There's also another way to match entities - via custom annotations. This allows to match any number of entities without even knowing what they are. Here is an example. We'll first define a custom annotation:
+
+[source, Java]
+----
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Tag {
+
+}
+----
+
+Now we can define a listener that will react to events from ObjEntities annotated with this annotation:
+
+[source, Java]
+----
+public class Listener3 {
+
+    @PostAdd(entityAnnotations = Tag.class)
+    void postAdd(Persistent object) {
+        // do something
+    }
+}
+----
+
+As you see we don't have any entities yet, still we can define a listener that does something useful. Now let's annotate some entities:
+
+[source, Java]
+----
+@Tag
+public class MyEntity1 extends _MyEntity1 {
+
+}
+
+@Tag
+public class MyEntity2 extends _MyEntity2 {
+
+}
+----
+
+
+==== Combining Listeners with DataChannelFilters
+
+A final touch in the listeners design is preserving the state of the listener within a single select or commit, so that events generated by multiple objects can be collected and processed all together. To do that you will need to implement a `DataChannelFilter`, and add some callback methods to it. They will store their state in a ThreadLocal variable of the filter. Here is an example filter that does something pretty meaningless - counts how many total objects were committed. However it demonstrates the important pattern of aggregating multiple events and presenting a combined result:
+
+[source, Java]
+----
+public class CommittedObjectCounter implements DataChannelFilter {
+
+    private ThreadLocal<int[]> counter;
+
+    @Override
+    public void init(DataChannel channel) {
+        counter = new ThreadLocal<int[]>();
+    }
+
+    @Override
+    public QueryResponse onQuery(ObjectContext originatingContext, Query query, DataChannelFilterChain filterChain) {
+        return filterChain.onQuery(originatingContext, query);
+    }
+
+    @Override
+    public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType,
+            DataChannelFilterChain filterChain) {
+
+        // init the counter for the current commit
+        counter.set(new int[1]);
+
+        try {
+            return filterChain.onSync(originatingContext, changes, syncType);
+        } finally {
+
+            // process aggregated result and release the counter
+            System.out.println("Committed " + counter.get()[0] + " object(s)");
+            counter.set(null);
+        }
+    }
+
+    @PostPersist(entityAnnotations = Tag.class)
+    @PostUpdate(entityAnnotations = Tag.class)
+    @PostRemove(entityAnnotations = Tag.class)
+    void afterCommit(Persistent object) {
+        counter.get()[0]++;
+    }
+}
+----
+
+Now since this is both a filter and a listener, it needs to be registered as such:
+
+[source, Java]
+----
+CommittedObjectCounter counter = new CommittedObjectCounter();
+
+ServerRuntime runtime = ...
+DataDomain domain = runtime.getDataDomain();
+
+// register filter
+// this will also add it as a listener (since 3.2)
+domain.addFilter(counter);
+----
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,114 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+include::../var.adoc[]
+
+=== Setup
+
+==== System Requirements
+
+- Java: Cayenne runtime framework and CayenneModeler GUI tool are written in 100% Java, and run on any Java-compatible platform. Minimal required JDK version depends on the version of Cayenne you are using, as shown in the following table:
+
+[#versionHistory.table.table-bordered]
+.Cayenne Version History
+[cols="2,3,2"]
+|===
+|Cayenne Version |Java Version |Status
+
+|4.1
+|Java 1.8 or newer
+|Development
+
+|4.0
+|Java 1.7 or newer
+|Beta
+
+|3.1
+|Java 1.5 or newer
+|Stable
+
+|3.0
+|Java 1.5
+|Aging
+
+|1.2 / 2.0
+|Java 1.4
+|Legacy
+
+|1.1
+|Java 1.3
+|Legacy
+|===
+
+
+- JDBC Driver: An appropriate DB-specific JDBC driver is needed to access the database. It can be included in the application or used in web container DataSource configuration.
+
+- Third-party Libraries: Cayenne runtime framework has a minimal set of required and a few more optional dependencies on third-party open source packages. See xref:include["Including Cayenne in a Project"]. chapter for details.
+
+[[runModeler]]
+==== Running CayenneModeler
+
+CayenneModeler GUI tool is intended to work with object relational mapping projects. While you can edit your XML by hand, it is rarely needed, as the Modeler is a pretty advanced tool included in Cayenne distribution. To obtain CayenneModeler, download Cayenne distribution archive from http://cayenne.apache.org/download.html matching the OS you are using. Of course Java needs to be installed on the machine where you are going to run the Modeler.
+
+- OS X distribution contains CayenneModeler.app at the root of the distribution disk image.
+- Windows distribution contains CayenneModeler.exe file in the bin directory.
+- Cross-platform distribution (targeting Linux, but as the name implies, compatible with any OS) contains a runnable CayenneModeler.jar in the bin directory. It can be executed either by double-clicking, or if the environment is not configured to execute jars, by running from command-line:
+
+[source]
+----
+$ java -jar CayenneModeler.jar
+----
+
+The Modeler can also be started from Maven. While it may look like an exotic way to start a GUI application, it has its benefits - no need to download Cayenne distribution, the version of the Modeler always matches the version of the framework, the plugin can find mapping files in the project automatically. So it is an attractive option to some developers. Maven option requires a declaration in the POM:
+[source,xml,subs="verbatim,attributes"]
+----
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.cayenne.plugins</groupId>
+            <artifactId>cayenne-modeler-maven-plugin</artifactId>
+            <version>{version}</version>
+        </plugin>
+    </plugins>
+</build>
+----
+
+And then can be run as
+
+[source]
+----
+$ mvn cayenne-modeler:run
+----
+
+[#pluginParameteres.table.table-bordered]
+.Modeler plugin parameters
+[cols="2,1,6"]
+|===
+|Name |Type|Description
+
+.^|modelFile
+.^|File
+a|Name of the model file to open. Here is some simple example:
+[source,xml]
+----
+<plugin>
+    <groupId>org.apache.cayenne.plugins</groupId>
+    <artifactId>cayenne-modeler-maven-plugin</artifactId>
+    <version>${cayenne.version}</version>
+    <configuration>
+        <modelFile>src/main/resources/cayenne.xml</modelFile>
+    </configuration>
+</plugin>
+----
+|===

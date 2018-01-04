@@ -1,0 +1,84 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+[[_getting_started_db_first_part4_java_classes]]
+=== Generating Java classes
+
+
+Now as we have our model ready let's generate Java code that actually will be used in application.
+In order to do that we'' use same maven plugin, but different goal, namely ``cgen``.
+It has many options to configure but default values will do for base case, so we can just call it: 
+----
+$ mvn cayenne:cgen
+----
+
+You should see output telling that everything is done, like this: 
+----
+[INFO] Generating superclass file: .../src/main/java/org/apache/cayenne/tutorial/persistent/auto/_Artist.java
+[INFO] Generating class file: .../src/main/java/org/apache/cayenne/tutorial/persistent/Artist.java
+[INFO] Generating superclass file: .../src/main/java/org/apache/cayenne/tutorial/persistent/auto/_Gallery.java
+[INFO] Generating class file: .../src/main/java/org/apache/cayenne/tutorial/persistent/Gallery.java
+[INFO] Generating superclass file: .../src/main/java/org/apache/cayenne/tutorial/persistent/auto/_Painting.java
+[INFO] Generating class file: .../src/main/java/org/apache/cayenne/tutorial/persistent/Painting.java
+[INFO] Generating superclass file: .../src/main/java/org/apache/cayenne/tutorial/persistent/auto/_PaintingInfo.java
+[INFO] Generating class file: .../src/main/java/org/apache/cayenne/tutorial/persistent/PaintingInfo.java
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+----
+
+In IDEA you should be able to see these newly generated classes:
+
+image:tutorial-java-classes.png[align="center"]
+
+Note that Cayenne code is unrecognized, that's because we need to include Cayenne as dependency, let's do this in `pom.xml` file: 
+[source,xml]
+----
+<project>
+    ...
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-server</artifactId>
+            <version>${cayenne.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-java8</artifactId>
+            <version>${cayenne.version}</version>
+        </dependency>
+    </dependencies>
+----
+
+[NOTE]
+====
+`cayenne-java8` module required to support Java 8 date/time types.
+====
+
+Additionally we need to tell `Maven compiler plugin` that our code uses Java 8: 
+[source,xml]
+----
+<build>
+    <plugins>
+    ...
+        <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+            </configuration>
+        </plugin>
+    ...
+----
+
+If all done right your code now shouldn't have any errors. 

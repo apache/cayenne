@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~   Licensed to the Apache Software Foundation (ASF) under one
+  ~  or more contributor license agreements.  See the NOTICE file
+  ~  distributed with this work for additional information
+  ~  regarding copyright ownership.  The ASF licenses this file
+  ~  to you under the Apache License, Version 2.0 (the
+  ~  "License"); you may not use this file except in compliance
+  ~  with the License.  You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <artifactId>cayenne-docs-parent</artifactId>
+        <groupId>org.apache.cayenne.docs</groupId>
+        <version>4.1.M2-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>cayenne-asciidoc-parent</artifactId>
+    <name>cayenne-asciidoc: Cayenne AsciiDoc Documentation parent</name>
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>cayenne-asciidoc-extension</module>
+        <module>cayenne-guide</module>
+        <module>getting-started-guide</module>
+        <module>getting-started-db-first</module>
+        <module>getting-started-rop</module>
+        <module>upgrade-guide</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <asciidoctorj.version>1.5.6</asciidoctorj.version>
+        <asciidoctor.maven.plugin.version>1.5.6</asciidoctor.maven.plugin.version>
+        <asciidoctorj.pdf.version>1.5.0-alpha.16</asciidoctorj.pdf.version>
+        <jruby.version>9.1.14.0</jruby.version>
+        <cayenne.major.version>4.1</cayenne.major.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj</artifactId>
+            <version>${asciidoctorj.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.asciidoctor</groupId>
+                    <artifactId>asciidoctor-maven-plugin</artifactId>
+                    <version>${asciidoctor.maven.plugin.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.asciidoctor</groupId>
+                            <artifactId>asciidoctorj-pdf</artifactId>
+                            <version>${asciidoctorj.pdf.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <configuration>
+                    <sourceDirectory>src/docs/asciidoc</sourceDirectory>
+                    <doctype>book</doctype>
+                    <!-- Attributes common to all output formats -->
+                    <attributes>
+                        <endpoint-url>http://cayenne.apache.org</endpoint-url>
+
+                        <basedir>${project.basedir}</basedir>
+                        <sourcedir>${project.build.sourceDirectory}</sourcedir>
+                        <project-version>${project.version}</project-version>
+                        <project-major-version>${cayenne.major.version}</project-major-version>
+
+                        <imagesdir>images</imagesdir>
+                        <icons>font</icons>
+
+                        <sectanchors>true</sectanchors>
+                        <idprefix/> <!-- set the idprefix to blank -->
+                        <idseparator>-</idseparator>
+                        <!--
+                        currently it is not possible to specify header location inside final document, so can't use
+                        asciidoc's *-docinfo.html as header, instead we use extension that deal with our header
+                         -->
+                        <!--<docinfo>private</docinfo1>-->
+                    </attributes>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jruby</groupId>
+                        <artifactId>jruby-complete</artifactId>
+                        <version>${jruby.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

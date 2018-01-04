@@ -21,9 +21,9 @@
 <%@ page language="java" contentType="text/html" %>
 <%@ page import="org.apache.cayenne.tutorial.persistent.*" %>
 <%@ page import="org.apache.cayenne.*" %>
-<%@ page import="java.text.*" %>
 <%@ page import="java.time.format.DateTimeFormatter"%>
 
+// tag::content[]
 <% 
     ObjectContext context = BaseContext.getThreadObjectContext();
     String id = request.getParameter("id");
@@ -86,3 +86,4 @@
         </form>
     </body>	
 </html>
+// end::content[]

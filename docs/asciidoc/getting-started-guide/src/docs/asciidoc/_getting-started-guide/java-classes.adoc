@@ -1,0 +1,110 @@
+//    Licensed to the Apache Software Foundation (ASF) under one or more
+//    contributor license agreements. See the NOTICE file distributed with
+//    this work for additional information regarding copyright ownership.
+//    The ASF licenses this file to you under the Apache License, Version
+//    2.0 (the "License"); you may not use this file except in compliance
+//    with the License. You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+//    applicable law or agreed to in writing, software distributed under the
+//    License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+//    CONDITIONS OF ANY KIND, either express or implied. See the License for
+//    the specific language governing permissions and limitations under the
+//    License.
+=== Creating Java Classes
+Here we'll generate the Java classes from the model that was created in the previous
+section. CayenneModeler can be used to also generate the database schema, but since we
+specified "`CreateIfNoSchemaStrategy`" earlier when we created a DataNode, we'll skip the
+database schema step. Still be aware that you can do it if you need to via "Tools >
+Create Database Schema".
+
+==== Creating Java Classes
+- Select "Tools > Generate Classes" menu.
+- For "Type" select "Standard Persistent Objects", if it is not already selected.
+- For the "Output Directory" select "`src/main/java`" folder under your IDEA
+project folder (this is a "peer" location to the `cayenne-*.xml` location we
+selected before).
+- Click on "Classes" tab and check the "Check All Classes" checkbox
+(unless it is already checked and reads "Uncheck all Classes").
+- Click "Generate"
+
+Now go back to IDEA - you
+should see pairs of classes generated for each mapped entity. You probably also see that
+there's a bunch of red squiggles next to the newly generated Java classes in IDEA.
+This is because our project does not include Cayenne as a Maven dependency yet. Let's
+fix it now by adding "cayenne-server" and "cayenne-java8" artifacts in the bottom of the `pom.xml` file.
+Also we should tell Maven compile plugin that our project needs Java 8.
+The resulting POM should look like this:
+
+[source,xml,subs="verbatim,attributes"]
+----
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.example.cayenne</groupId>
+    <artifactId>tutorial</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <cayenne.version>{project-version}</version> <!--1-->
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-server</artifactId>
+            <version>${cayenne.version}</version>
+        </dependency>
+        <!--  For java.time.* types you need to use this dependency-->
+        <dependency>
+            <groupId>org.apache.cayenne</groupId>
+            <artifactId>cayenne-java8</artifactId>
+            <version>${cayenne.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.25</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Tell maven to support Java 8 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+----
+<1> Here you can specify the version of Cayenne you are actually using
+
+Your computer must be connected to the internet. Once you edit the `pom.xml`, IDEA
+will download the needed Cayenne jar file and add it to the project build path. As a
+result, all the errors should disappear. In tutorial for console output we use slf4j-simple logger
+implementation. Due to use SLF4J logger in Apache Cayenne, you can use your custom logger (e.g. log4j
+or commons-logging) through bridges.
+        
+image::idea-generated-classes.png[align="center"]
+
+Now let's check the entity class pairs. Each one is made of a superclass (e.g. `\_Artist`)
+and a subclass (e.g. `Artist`). You *should not* modify the
+superclasses whose names start with "_" (underscore), as they will be replaced on
+subsequent generator runs. Instead all custom logic should be placed in the subclasses
+in `org.example.cayenne.persistent` package - those will never be overwritten by the
+class generator.
+
+[TIP]
+.Class Generation Hint
+====
+Often you'd start by generating classes from the
+Modeler, but at the later stages of the project the generation is usually
+automated either via Ant cgen task or Maven cgen mojo. All three methods are
+interchangeable, however Ant and Maven methods would ensure that you never
+forget to regenerate classes on mapping changes, as they are integrated into
+the build cycle.
+====

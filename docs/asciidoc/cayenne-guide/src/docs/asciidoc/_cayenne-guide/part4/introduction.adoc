@@ -1,0 +1,75 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+include::../var.adoc[]
+
+[[dbFirstFlow]]
+=== Introduction
+
+[[cImp]]
+==== "DB-first" Flow
+
+An ORM system consists of three parts: database, OR mapping and persistent Java classes. These parts always need to be kept in sync with each other for the application to work. "DB-first" flow is a common and practical approach to synchronization that assumes the database to be the master source of the metadata, with other two parts synchronized from the DB as the schema evolves. Cayenne provides a number of tools to automate and control it. Here is how "DB-first" flow is typically implemented:
+
+- A SQL migrations framework is used to bring a local DB to a certain version. This is outside of the scope of Cayenne and is done with a third-party tool, such as Liquibase or Flyway.
+
+- OR mapping model (Cayenne XML files) are synchronized with the state of the database using `"cdbimport"` tool provdied by Cayenne.
+
+- Object layer of the OR mapping model is customized to the developer liking, usually via CayenneModeler. Subsequent runs of `"cdbimport"` will not override any customizations that you make.
+
+- Java classes are generated using `"cgen"` tool provided by Cayenne.
+
+"cgen" and "cdbimport" tools can be invoked from Maven or Ant as discussed in the "Including Cayenne in a Project" chapter or run from CayenneModeler. This chapter will mostly focus on "cdbimport".
+
+Here is simple maven configuration to start with:
+
+==== Introduction to "cdbimport"
+
+Here is a simple Maven configuration of "cdbimport" (for details see xref:mavenCdbimort[cayenne-maven-plugin] documentation)
+
+[source, XML,subs="verbatim,attributes"]
+----
+<plugin>
+		<groupId>org.apache.cayenne.plugins</groupId>
+		<artifactId>cayenne-maven-plugin</artifactId>
+		<version>{version}</version>
+
+		<configuration>
+			<map>${project.basedir}/src/main/resources/datamap.map.xml</map>
+			<dataSource>
+				<url><!-- jdbc url --></url>
+				<driver><!-- jdbc driver class --></driver>
+				<username>username</username>
+				<password>password</password>
+			</dataSource>
+			<dbimport>
+				<defaultPackage>com.example.package</defaultPackage>
+			    <includeTable>.*</includeTable>
+			</dbimport>
+		</configuration>
+		<dependencies>
+			<!-- jdbc driver dependency -->
+		</dependencies>
+</plugin>
+----
+In the next chapters we will discuss various filtering and other reverse-engineering options.
+
+
+
+
+
+
+
+
+

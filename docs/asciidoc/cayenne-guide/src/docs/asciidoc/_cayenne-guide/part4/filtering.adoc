@@ -1,0 +1,367 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+=== Filtering
+
+The first thing you usually want to control during reverse engineering is what exactly should be loaded from database and what not. One of the most common cases is excluding system tables, as you usually don't want to map them.
+
+Briefly, you are able to include/exclude tables, columns and procedures and do it at several levels: default, catalog, schema. Although everything defined at the top level (default rules) will be applied for the nested elements, all rules from the most specific areas will override general rules (i.e. rules from schemas override rules from catalogs and even more override default rules).
+
+The following use-cases will provide you a better understanding of how filtering works and how you could use it.
+
+==== Process everything from schema/catalog
+
+The simplest example of reverse engineering is processing tables from one schema of catalog and there are several options to do this. Basic syntax is described below:
+
+[source, XML]
+----
+<dbimport>
+    <!-- Ant/Maven in case you only want to specify the schema to import -->
+    <schema>SCHEMA_NAME</schema>
+
+    <!-- Maven way in case you have nested elements in the schema  -->
+    <schema>
+        <name>SCHEMA_NAME</name>
+        ...
+    </schema>
+
+    <!-- Ant way in case you have nested elements in the schema -->
+    <schema name="SCHEMA_NAME">
+        ...
+    </schema>
+</dbimport>
+----
+
+The same options are available for catalogs:
+
+[source, XML]
+----
+<dbimport>
+    <!-- Ant/Maven in case you only want to specify the catalog to import -->
+    <catalog>CATALOG_NAME</catalog>
+
+    <!-- Maven way in case you have nested elements in the catalog -->
+    <catalog>
+        <name>CATALOG_NAME</name>
+        ...
+    </catalog>
+
+    <!-- Ant way in case you have nested elements in the catalog -->
+    <catalog name="CATALOG_NAME">
+        ...
+    </catalog>
+</dbimport>
+----
+
+NOTE: Current version of reverse engineering doesn't support catalog filtering for Postgres database.
+
+==== Combine Schema and Catalog filters
+
+Cayenne supports combination of different schemas and catalogs, and it filters data according to your requirements. You could achieve this by the following example of reverse engineering configuration:
+
+[source, XML]
+----
+<dbimport>
+
+    <catalog>
+        <name>shop_01</name>
+        <schema>schema-name-01</schema>
+        <schema>schema-name-02</schema>
+        <schema>schema-name-03</schema>
+    </catalog>
+
+    <catalog>
+        <name>shop_02</name>
+        <schema>schema-name-01</schema>
+    </catalog>
+
+    <catalog>
+        <name>shop_03</name>
+        <schema>schema-name-01</schema>
+        <schema>schema-name-02</schema>
+        <schema>schema-name-03</schema>
+    </catalog>
+
+</dbimport>
+----
+
+In the example above, Cayenne reverse engineering process contains three catalogs named as shop_01, shop_02 and shop_03, each of wich has their own schemas. Cayenne will load all data only from the declared catalogs and schemas.
+
+If you want to load everything from database, you could simply declare catalog specification alone.
+
+[source, XML]
+----
+<dbimport>
+
+    <catalog>shop_01</catalog>
+    <catalog>shop_02</catalog>
+    <catalog>shop_03</catalog>
+
+</dbimport>
+----
+
+If you want to do reverse engineering for specific schemas, just remove unwanted schemas from the catalog section. For example, if you want to process schema-name-01 and schema-name-03 schemas only, then you should change reverse engineering section like this.
+
+[source, XML]
+----
+<dbimport>
+
+    <catalog>
+        <name>shop_01</name>
+        <schema>schema-name-01</schema>
+        <schema>schema-name-03</schema>
+    </catalog>
+
+    <catalog>
+        <name>shop_02</name>
+        <schema>schema-name-01</schema>
+    </catalog>
+
+    <catalog>
+        <name>shop_03</name>
+        <schema>schema-name-01</schema>
+        <schema>schema-name-03</schema>
+    </catalog>
+
+</dbimport>
+----
+
+==== Including and Excluding tables, columns and procedures
+
+Cayenne reverse engineering let you fine tune table, columns and stored procedures names that you need to import to your model file. In every filter you can use regexp syntax. Here is some examples of configuration for common tasks.
+
+1)  Include tables with ‘CRM_’ prefix if you are working in that domain of application:
+
+[source, XML]
+----
+<includeTable>CRM_.*</includeTable>
+----
+
+2) Include tables with ‘_LOOKUP’ suffix
+
+[source, XML]
+----
+<includeTable>
+    <pattern>.*_LOOKUP</pattern>
+</includeTable>
+----
+
+3) Exclude tables with ‘CRM_’ prefix if you are not working only in that domain of application:
+
+[source, XML]
+----
+<excludeTable>CRM_.*</excludeTable>
+----
+
+4) Include only specific columns that follows specific naming convention:
+
+[source, XML]
+----
+<includeColumn>includeColumn01</includeColumn>
+<includeColumn>includeColumn03</includeColumn>
+----
+
+5) Exclude system or obsolete columns:
+
+[source, XML]
+----
+<excludeColumn>excludeColumn01</excludeColumn>
+<excludeColumn>excludeColumn03</excludeColumn>
+----
+
+6) Include/Exclude columns for particular table or group of tables:
+
+[source, XML]
+----
+<includeTable>
+    <pattern>table pattern</pattern>
+    <includeColumn>includeColumn01</includeColumn>
+    <excludeColumn>excludeColumn01</excludeColumn>
+</includeTable>
+----
+
+7) Include stored procedures:
+
+[source, XML]
+----
+<includeProcedure>includeProcedure01</includeProcedure>
+<includeProcedure>
+    <pattern>includeProcedure03</pattern>
+</includeProcedure>
+----
+
+8) Exclude stored procedures by pattern:
+
+[source, XML]
+----
+<excludeProcedure>excludeProcedure01</excludeProcedure>
+<excludeProcedure>
+    <pattern>excludeProcedure03</pattern>
+</excludeProcedure>
+----
+
+All filtering tags `<includeTable>`, `<excludeTable>`, `<includeColumn>`, `<excludeColumn>`, `<includeProcedure>` and `<excludeProcedure>` have 2 ways to pass filtering RegExp.
+
+1) text inside tag
+
+[source, XML]
+----
+ <includeTable>CRM_.*</includeTable>
+----
+
+2) pattern inner tag
+
+[source, XML]
+----
+  <includeTable>
+         <pattern>.*_LOOKUP</pattern>
+     </includeTable>
+----
+
+All filtering tags can be placed inside schema and catalog tags, but also inside `<dbimport>` tag. It means that filtering rules will be applied for all schemas and catalogs.
+
+==== Complete filtering example
+
+Initially, let’s make a small sample. Consider the following reverse engineering configuration.
+
+[source, XML]
+----
+<dbimport>
+    <catalog>shop-01</catalog>
+</dbimport>
+----
+
+In this case reverse engineering will not filter anything from the shop-01 catalog. If you really want to filter database columns, tables, stored procedures and relationships, you could do it in the following way.
+
+[source, XML]
+----
+<dbimport>
+    <catalog>shop-01</catalog>
+    <catalog>
+        <name>shop-02</name>
+        <includeTable>includeTable-01</includeTable>
+    </catalog>
+</dbimport>
+----
+
+Then Cayenne will do reverse engineering for both shop-01 and shop-02 catalogs. First catalog will not be processed for filtering, but the second catalog will be processed with “includeTable-01” filter.
+
+Let’s assume you have a lot of table prefixes with the same names. Cayenne allows you to mention a pattern as regular expression. Using regular expressions is easier way to handle a big amount of database entities than writing filter config for each use-case. They make your configuration more readable, understandable and straightforward. There is not complex. Let’s see how to use patterns in reverse engineering configuration with complete example.
+
+[source, XML]
+----
+<dbimport>
+
+    <catalog>shop-01</catalog>
+
+    <catalog>
+        <name>shop-02</name>
+    </catalog>
+
+    <catalog>
+        <name>shop-03</name>
+        <includeTable>includeTable-01</includeTable>
+
+        <includeTable>
+            <pattern>includeTable-02</pattern>
+        </includeTable>
+
+        <includeTable>
+            <pattern>includeTable-03</pattern>
+            <includeColumn>includeColumn-01</includeColumn>
+            <excludeColumn>excludeColumn-01</excludeColumn>
+        </includeTable>
+
+        <excludeTable>excludeTable-01</excludeTable>
+
+        <excludeTable>
+            <pattern>excludeTable-02</pattern>
+        </excludeTable>
+
+        <includeColumn>includeColumn-01</includeColumn>
+
+        <includeColumn>
+            <pattern>includeColumn-02</pattern>
+        </includeColumn>
+
+        <excludeColumn>excludeColumn-01</excludeColumn>
+
+        <excludeColumn>
+            <pattern>excludeColumn-02</pattern>
+        </excludeColumn>
+
+        <includeProcedure>includeProcedure-01</includeProcedure>
+
+        <includeProcedure>
+            <pattern>includeProcedure-02</pattern>
+        </includeProcedure>
+
+        <excludeProcedure>excludeProcedure-01</excludeProcedure>
+
+        <excludeProcedure>
+            <pattern>excludeProcedure-02</pattern>
+        </excludeProcedure>
+
+    </catalog>
+</dbimport>
+----
+
+The example above should provide you more idea about how to use filtering and patterns in Cayenne reverse engineering. You could notice that this example demonstrates you the "name" and "pattern" configurations. Yes, you could use these as separates xml element and xml attributes.
+
+The cdbimport will execute reverse engineering task for all entities from “shop-01” and “shop-02”, including tables, views, stored procedures and table columns. As “shop-03” has variety filter tags, entities from this catalog will be filtered by cdbimport.
+
+==== Ant configuration example
+
+Here is config sample for `Ant` task:
+
+[source, XML]
+----
+<!-- inside <cdbimport> tag -->
+<catalog>shop-01</catalog>
+
+<catalog name="shop-02"/>
+
+<catalog name="shop-03">
+
+    <includeTable>includeTable-01</includeTable>
+    <includeTable pattern="includeTable-02"/>
+
+    <includeTable pattern="includeTable-03">
+        <includeColumn>includeColumn-01</includeColumn>
+        <excludeColumn>excludeColumn-01</excludeColumn>
+    </includeTable>
+
+    <excludeTable>excludeTable-01</excludeTable>
+    <excludeTable pattern="excludeTable-02"/>
+
+    <includeColumn>includeColumn-01</includeColumn>
+    <includeColumn pattern="includeColumn-02"/>
+
+    <excludeColumn>excludeColumn-01</excludeColumn>
+    <excludeColumn pattern="excludeColumn-02"/>
+
+    <includeProcedure>includeProcedure-01</includeProcedure>
+    <includeProcedure pattern="includeProcedure-02"/>
+
+    <excludeProcedure>excludeProcedure-01</excludeProcedure>
+    <excludeProcedure pattern="excludeProcedure-02"/>
+
+</catalog>
+----
+
+NOTE: In Ant task configuration all filter tags located inside root tag `<cdbimport>` as there is no `<dbimport>` tag.
+
+
+
+

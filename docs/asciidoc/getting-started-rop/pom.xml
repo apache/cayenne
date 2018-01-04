@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>cayenne-asciidoc-parent</artifactId>
+        <groupId>org.apache.cayenne.docs</groupId>
+        <version>4.1.M2-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>getting-started-rop</artifactId>
+
+    <packaging>jar</packaging>
+    <name>${project.artifactId}: AsciiDoc - Getting Started with Cayenne ROP (Remote Object Persistence)</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.cayenne.docs</groupId>
+                        <artifactId>cayenne-asciidoc-extension</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+
+                <executions>
+                    <!-- generate "embeddable" html content with front matter and without header/footer/styles -->
+                    <execution>
+                        <id>asciidoctor-html-web</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <backend>html5</backend>
+                            <headerFooter>false</headerFooter> <!-- do not generate header and footer -->
+                            <outputDirectory>${project.build.directory}/tmp/</outputDirectory>
+                            <extensions>
+                                <extension>
+                                    <className>org.apache.cayenne.asciidoc.CayennePostProcessor</className>
+                                </extension>
+                            </extensions>
+                            <attributes>
+                                <toc>auto</toc>
+                            </attributes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Move images to proper path for site -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy docs for site</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/site/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/tmp/</directory>
+                                    <includes>
+                                        <include>${project.artifactId}.html</include>
+                                        <include>${project.artifactId}.toc.html</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>copy images for site</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/site/${project.artifactId}/images/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/tmp/images/</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>assembly</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctor-maven-plugin</artifactId>
+                        <executions>
+                            <!-- generate standalone html help -->
+                            <execution>
+                                <id>asciidoctor-html-standalone</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>process-asciidoc</goal>
+                                </goals>
+                                <configuration>
+                                    <backend>html5</backend>
+                                    <sourceHighlighter>coderay</sourceHighlighter>
+                                    <embedAssets>true</embedAssets>
+                                    <attributes>
+                                        <toc>left</toc>
+                                    </attributes>
+                                </configuration>
+                            </execution>
+
+                            <!-- generate PDF -->
+                            <execution>
+                                <id>generate-pdf-doc</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>process-asciidoc</goal>
+                                </goals>
+                                <configuration>
+                                    <backend>pdf</backend>
+                                    <sourceHighlighter>coderay</sourceHighlighter>
+                                    <attributes>
+                                        <pagenums/>
+                                        <toc/>
+                                    </attributes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

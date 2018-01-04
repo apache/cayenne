@@ -1,0 +1,56 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+[[_getting_started_db_first_part2_project_setup]]
+=== Creating project
+
+
+Now we also need to create project file, currently this should be done manually via Cayenne Modeler. 
+
+==== Setup Modeler Maven plugin
+
+
+To launch Modeler we'll use ``cayenne-modeler-maven-plugin``.
+To use it just include it in `pom.xml` like we did with ``cayenne-maven-plugin``: 
+[source,xml]
+----
+<plugin>
+    <groupId>org.apache.cayenne.plugins</groupId>
+    <artifactId>cayenne-modeler-maven-plugin</artifactId>
+    <version>${cayenne.version}</version>
+</plugin>
+----
+
+To launch it simple use console: 
+----
+$ mvn cayenne-modeler:run
+----
+
+==== Create project
+
+
+In Modeler start new project and select `File` > ``Import DataMap``.
+In File Select dialog select created `datamap.map.xml` file and click ``Select DataMap``.
+Now all we need is to save project, click `Save` and select same folder where `datamap.map.xml` file is (it should be selected by default). That's all, you should see now `cayenne-project.xml` file in IDEA: 
+
+image:tutorial-cayenne-project.png[align="center"]
+
+To use newly created project in Modeler later let's configure plugin to open it automatically: 
+[source,xml]
+----
+<plugin>
+    ...
+    <configuration>
+        <modelFile>${project.basedir}/src/main/resources/cayenne-project.xml</modelFile>
+    </configuration>
+----

@@ -1,0 +1,72 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+=== Deleting Objects
+This chapter explains how to model relationship delete rules and how to delete individual
+objects as well as sets of objects. Also demonstrated the use of Cayenne class to run a
+query.
+
+==== Setting Up Delete Rules
+Before we discuss the API for object deletion, lets go back to CayenneModeler and set
+up some delete rules. Doing this is optional but will simplify correct handling of the
+objects related to deleted objects.
+In the Modeler go to "Artist" ObjEntity, "Relationships" tab and select "Cascade" for
+the "paintings" relationship delete rule:
+
+image::modeler-deleterule.png[]
+        
+Repeat this step for other relationships:
+
+- For Gallery set "paintings" relationship to be "Nullify", as a painting can exist without being displayed in a gallery.
+- For Painting set both relationships rules to "Nullify".
+
+Now save the mapping.
+
+==== Deleting Objects
+While deleting objects is possible via SQL, qualifying a delete on one or more IDs, a
+more common way in Cayenne (or ORM in general) is to get a hold of the object first, and
+then delete it via the context. Let's use utility class Cayenne to find an
+artist:
+
+[source, java]
+----
+Artist picasso = ObjectSelect.query(Artist.class)
+            .where(Artist.NAME.eq("Pablo Picasso")).selectOne(context);
+----
+
+Now let's delete the artist:
+
+[source, java]
+----
+if (picasso != null) {
+    context.deleteObject(picasso);
+    context.commitChanges();
+}
+----
+Since we set up "Cascade" delete rule for the Artist.paintings relationships, Cayenne
+will automatically delete all paintings of this artist. So when your run the app you'll
+see this output:
+        
+    INFO: SELECT t0.DATE_OF_BIRTH, t0.NAME, t0.ID FROM ARTIST t0
+      WHERE t0.NAME = ? [bind: 1->NAME:'Pablo Picasso'] - prepared in 6 ms.
+    INFO: === returned 1 row. - took 18 ms.
+    INFO: +++ transaction committed.
+    INFO: --- transaction started.
+    INFO: DELETE FROM PAINTING WHERE ID = ?
+    INFO: [batch bind: 1->ID:200]
+    INFO: [batch bind: 1->ID:201]
+    INFO: === updated 2 rows.
+    INFO: DELETE FROM ARTIST WHERE ID = ?
+    INFO: [batch bind: 1->ID:200]
+    INFO: === updated 1 row.
+    INFO: +++ transaction committed.

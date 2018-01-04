@@ -1,0 +1,94 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+[[_getting_started_db_first_part3_updating_model]]
+=== Updating model
+
+
+We now have everything we need, let's try some more features of plugin. 
+
+==== Update DDL
+
+
+To show next feature let's imagine that over some time our database schema has evolved and we need to synchronize it with our model, no problem we can simply run `cdbimport` again and all changes will be loaded to model.
+We use following SQL script to alter our demo database: 
+[source,sql]
+----
+CREATE TABLE cayenne_demo.PAINTING_INFO (INFO VARCHAR(255) NULL, PAINTING_ID INT NOT NULL, PRIMARY KEY (PAINTING_ID)) ENGINE=InnoDB;
+ALTER TABLE cayenne_demo.GALLERY ADD COLUMN FOUNDED_DATE DATE;
+ALTER TABLE cayenne_demo.PAINTING_INFO ADD FOREIGN KEY (PAINTING_ID) REFERENCES cayenne_demo.PAINTING (ID);
+----
+
+==== Run cdbimport
+
+
+Now we can simply run again 
+----
+$ mvn cayenne:cdbimport
+----
+
+You should see output similar to this: 
+----
+...
+[INFO]   Table: cayenne_demo.ARTIST
+[INFO]   Table: cayenne_demo.GALLERY
+[INFO]   Table: cayenne_demo.PAINTING
+[INFO]   Table: cayenne_demo.PAINTING_INFO
+[INFO]     Db Relationship : toOne  (PAINTING_INFO.PAINTING_ID, PAINTING.ID)
+[INFO]     Db Relationship : toOne  (PAINTING.ID, PAINTING_INFO.PAINTING_ID)
+[INFO]     Db Relationship : toOne  (PAINTING.GALLERY_ID, GALLERY.ID)
+[INFO]     Db Relationship : toMany (GALLERY.ID, PAINTING.GALLERY_ID)
+[INFO]     Db Relationship : toOne  (PAINTING.ARTIST_ID, ARTIST.ID)
+[INFO]     Db Relationship : toMany (ARTIST.ID, PAINTING.ARTIST_ID)
+[INFO]
+[INFO] Detected changes:
+[INFO]     Create Table         PAINTING_INFO
+[INFO]     Add Column           GALLERY.FOUNDED_DATE
+[INFO]     Add Relationship     paintingInfo PAINTING->PAINTING_INFO.PAINTING_ID
+[INFO]
+[INFO] Migration Complete Successfully.
+----
+
+Let's run Modeler and check that all changes are present in our model: 
+----
+$ mvn cayenne-modeler:run
+----
+
+image:tutorial-update-model.png[align="center"]
+
+Great! New table and ObjEntity are in place, as well as a new field.
+
+==== Customizing Model
+
+
+There is often a need to customize model to better fit it to your application requirements, such customization can be simple removal of toMany part of a relationship between two objects.
+Let's do it, in a Modeler just select and remove relationship `paintings` in Artist object: 
+
+image:tutorial-drop-relationship.png[align="center"]
+
+Now if you run 
+----
+$ mvn cayenne:cdbimport
+----
+
+it still find nothing to do: 
+----
+...
+[INFO] Detected changes: No changes to import.
+----
+
+[NOTE]
+====
+`cdbimport` will skip only modifications in Object layer (e.g.
+ObjEntities, ObjAttributes and ObjRelationships), if you modify Db layer your changes will be overridden by next run of ``cdbimport``. 
+====

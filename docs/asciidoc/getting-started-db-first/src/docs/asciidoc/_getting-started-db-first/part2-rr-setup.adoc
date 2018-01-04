@@ -1,0 +1,115 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+[[_getting_started_db_first_part2_rr_setup]]
+=== Reverse engineering database
+
+
+Now we have everything ready and can proceed to importing Cayenne model from our Mysql database
+
+==== Configuring plugin
+
+
+To let Cayenne plugin to its job we must tell it what to import and where it should get data.
+So let's begin, here is sample settings for the data source: 
+[source,xml]
+----
+<plugin>
+    ...
+    <configuration>
+        <dataSource>
+            <driver>com.mysql.jdbc.Driver</driver>
+            <url>jdbc:mysql://127.0.0.1:3306/cayenne_demo</url>
+            <username>root</username>
+            <password>your-mysql-password</password>
+        </dataSource>
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>6.0.5</version>
+        </dependency>
+    </dependencies>
+----
+
+[NOTE]
+====
+Don't forget to set your actual MySQL login and password
+====
+
+We have told plugin where it should load data from, now let's set where it should store Cayenne model: 
+[source,xml]
+----
+<configuration>
+    ...
+    </dataSource>
+    <map>${project.basedir}/src/main/resources/datamap.map.xml</map>
+----
+
+And a last small step we need set default package where our model classes will be and catalog where our tables are: 
+[source,xml]
+----
+<configuration>
+    ...</map>
+    <dbImport>
+        <defaultPackage>org.apache.cayenne.tutorial.persistent</defaultPackage>
+        <catalog>cayenne_demo</catalog>
+    </dbImport>
+----
+
+==== Running plugin
+
+
+Finally we can run db import, it is as easy as just running this command in terminal: 
+----
+$ mvn cayenne:cdbimport
+----
+
+If everything was setup properly you should see output like this: 
+----
+...
+[INFO] +++ Connecting: SUCCESS.
+[INFO] Detected and installed adapter: org.apache.cayenne.dba.mysql.MySQLAdapter
+[INFO]   Table: cayenne_demo.ARTIST
+[INFO]   Table: cayenne_demo.GALLERY
+[INFO]   Table: cayenne_demo.PAINTING
+[INFO]     Db Relationship : toOne  (PAINTING.GALLERY_ID, GALLERY.ID)
+[INFO]     Db Relationship : toMany (GALLERY.ID, PAINTING.GALLERY_ID)
+[INFO]     Db Relationship : toOne  (PAINTING.ARTIST_ID, ARTIST.ID)
+[INFO]     Db Relationship : toMany (ARTIST.ID, PAINTING.ARTIST_ID)
+[INFO]
+[INFO] Map file does not exist. Loaded db model will be saved into '~/work/cayenne/db-first-tutorial/src/main/resources/datamap.map.xml'
+[INFO]
+[INFO] Detected changes:
+[INFO]     Create Table         ARTIST
+[INFO]     Create Table         PAINTING
+[INFO]     Create Table         GALLERY
+[INFO]
+[WARNING] Can't find ObjEntity for PAINTING
+[WARNING] Db Relationship (Db Relationship : toMany (ARTIST.ID, PAINTING.ARTIST_ID)) will have GUESSED Obj Relationship reflection.
+[WARNING] Can't find ObjEntity for GALLERY
+[WARNING] Db Relationship (Db Relationship : toOne  (PAINTING.GALLERY_ID, GALLERY.ID)) will have GUESSED Obj Relationship reflection.
+[INFO] Migration Complete Successfully.
+----
+
+You can open created `datamap.map.xml` file and check it's content in IDEA: 
+
+image:tutorial-new-datamap.png[align="center"]
+
+Great! We now have Cayenne DataMap file that describe model from our database.
+
+[NOTE]
+====
+If you have some problems with configuration you can always delete `datamap.map.xml` file and try again.
+====

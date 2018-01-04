@@ -1,0 +1,51 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+include::../var.adoc[]
+
+=== JCache integration
+
+==== Description
+
+This module allows to integrate any JCache (JSR 107) compatible caching provider with Cayenne.
+
+==== Including in a project
+
+===== Maven
+
+[source, XML,subs="verbatim,attributes"]
+----
+<dependency>
+    <groupId>org.apache.cayenne</groupId>
+    <artifactId>cayenne-jcache</artifactId>
+    <version>{version}</version>
+</dependency>
+----
+
+===== Gradle
+
+[source, Groovy,subs="verbatim,attributes"]
+----
+compile 'org.apache.cayenne:cayenne-jcache:{version}'
+----
+
+==== Usage
+
+To use JCache provider in your app you need to include this module and caching provider libs (e.g. Ehcache). You can provide own implementation of `org.apache.cayenne.jcache.JCacheConfigurationFactory` to customize cache configuration if required.
+
+For advanced configuration and management please use provider specific options and tools.
+
+NOTE: You can read about using cache in Cayenne in xref:caching[this] chapter.
+
+You may else be interested in xref:cacheInvalidation[cache invalidation] extension.

@@ -1,0 +1,65 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+[[_getting_started_db_first_part1_prerequisites]]
+=== Prerequisites
+
+
+You can start with this tutorial, or you can do "Getting Started with Cayenne" first and then continue with this tutorial.
+
+This chapter lists the recommended software used in the tutorial.
+
+[[_install_java]]
+==== Java
+
+
+Cayenne 4.0 requires JDK 1.7 or newer.
+
+[[_install_idea]]
+==== IntelliJ IDEA IDE
+
+
+Download and install the free IntelliJ IDEA Community Edition IDE.
+This tutorial uses version 2017.1, but any recent IntelliJ IDEA version and edition will do. 
+
+[[_install_maven]]
+==== Maven
+
+
+Two Maven plugins are used:
+
+* *cayenne-maven-plugin* - among other things, allows to reverse-engineer the Cayenne model from the database and to update the model after the database has been changed.
+* *cayenne-modeler-maven-plugin* - provides a convenient way of starting the Cayenne Modeler
+
+
+[[_install_mysql]]
+==== MySQL
+
+
+MySQL database server is used for demonstrating Cayenne's ability to read the DB schema and to build/update the Cayenne model from it.
+
+You can create test database with any tools you comfortable with, here is full DB schema that will be used in this tutorial: 
+[source,sql]
+----
+CREATE SCHEMA IF NOT EXISTS cayenne_demo; USE cayenne_demo;
+CREATE TABLE ARTIST (DATE_OF_BIRTH DATE NULL, ID INT NOT NULL AUTO_INCREMENT, NAME VARCHAR(200) NULL, PRIMARY KEY (ID)) ENGINE=InnoDB;
+CREATE TABLE GALLERY (ID INT NOT NULL AUTO_INCREMENT, NAME VARCHAR(200) NULL, PRIMARY KEY (ID)) ENGINE=InnoDB;
+CREATE TABLE PAINTING (ARTIST_ID INT NULL, GALLERY_ID INT NULL, ID INT NOT NULL AUTO_INCREMENT, NAME VARCHAR(200) NULL, PRIMARY KEY (ID)) ENGINE=InnoDB;
+ALTER TABLE PAINTING ADD FOREIGN KEY (ARTIST_ID) REFERENCES ARTIST (ID) ON DELETE CASCADE;
+ALTER TABLE PAINTING ADD FOREIGN KEY (GALLERY_ID) REFERENCES GALLERY (ID) ON DELETE CASCADE;
+----
+
+You can save it to `cayenne_demo.sql` file and import to your database with following command: 
+----
+$ mysql < cayenne_demo.sql
+----

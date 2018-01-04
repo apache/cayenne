@@ -1,0 +1,109 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+=== Getting started with Object Relational Mapping (ORM)
+The goal of this section is to learn how to create a simple Object-Relational model with
+CayenneModeler. We will create a complete ORM model for the following database
+schema:
+
+image::cayenne-tutorial-model.png[align="center"]
+
+NOTE: Very often you'd have an existing database already, and
+    it can be quickly imported in Cayenne via "Tools &gt; Reengineer Database
+    Schema". This will save you lots of time compared to manual mapping. However
+    understanding how to create the mapping by hand is important, so we are showing
+    the "manual" approach below.
+
+==== Mapping Database Tables and Columns
+Lets go back to CayenneModeler where we have the newly created project open and start
+by adding the ARTIST table. Database tables are called *DbEntities*
+in Cayenne mapping (those can be actual tables or database views).
+
+Select "datamap" on the left-hand side project tree and click "Create DbEntity" button image:icon-dbentity.png[]
+(or use "Project &gt; Create DbEntity" menu). A new DbEntity is created. In "DbEntity
+Name" field enter "ARTIST". Then click on "Create Attribute" button image:icon-attribute.png[]
+on the entity toolbar. This action changes the view to the "Attribute"
+tab and adds a new attribute (attribute means a "table column" in this case) called
+"untitledAttr". Let's rename it to ID, make it an `INTEGER` and make it a PK:
+
+image::modeler-artistid.png[align="center"]
+
+Similarly add NAME `VARCHAR(200)` and DATE_OF_BIRTH `DATE` attributes. After that repeat
+this procedure for PAINTING and GALLERY entities to match DB schema shown above.
+
+==== Mapping Database Relationships
+
+Now we need to specify relationships between ARTIST, PAINTING and GALLERY tables.
+Start by creating a one-to-many ARTIST/PAINTING relationship:
+
+- Select the ARTIST DbEntity on the left and click on the "Properties" tab.
+
+- Click on "Create Relationship" button on the entity toolbar image:icon-relationship.png[] - a relationship
+called "untitledRel" is created.
+
+- Choose the "Target" to be "Painting".
+
+- Click on the "Database Mapping" button image:icon-edit.png[] - relationship
+configuration dialog is presented. Here you can assign a name to the
+relationship and also its complimentary reverse relationship. This name can be
+anything (this is really a symbolic name of the database referential
+constraint), but it is recommended to use a valid Java identifier, as this will
+save some typing later. We'll call the relationship "paintings" and reverse
+relationship "artist".
+
+- Click on "Add" button on the right to add a join
+
+- Select "ID" column for the "Source" and "ARTIST_ID" column for the target.
+
+- Relationship information should now look like this:
+
+image::modeler-dbrelationship.png[align="center"]
+
+- Click "Done" to confirm the changes and close the dialog.
+
+- Two complimentary relationships have been created - from ARTIST to PAINTING
+and back. Still you may have noticed one thing is missing - "paintings"
+relationship should be to-many, but "To Many" checkbox is not checked. Let's
+change that - check the checkbox for "paintings" relationship, and then click on
+PAINTING DbEntity, and uncheck "artist" relationship "To Many" to make the
+reverse relationship "to-one" as it should be.
+
+- Repeat the steps above to create a many-to-one relationship from PAINTING to GALLERY, calling the relationships pair
+"gallery" and "paintings".
+
+==== Mapping Java Classes
+
+Now that the database schema mapping is complete, CayenneModeler can create mappings
+of Java classes (aka "ObjEntities") by deriving everything from DbEntities. At present
+there is no way to do it for the entire DataMap in one click, so we'll do it for each
+table individually.
+
+- Select "ARTIST" DbEntity and click on "Create ObjEntity" button image:icon-new_objentity.png[]
+either on the entity toolbar or on the main toolbar. An ObjEntity called
+"Artist" is created with a Java class field set to
+`org.example.cayenne.persistent.Artist`. The modeler transformed the database
+names to the Java-friendly names (e.g., if you click on the "Attributes" tab,
+you'll see that "DATE_OF_BIRTH" column was converted to "dateOfBirth" Java class
+attribute).
+
+- Select "GALLERY" DbEntity and click on "Create ObjEntity" button again - you'll see a "Gallery" ObjEntity created.
+- Finally, do the same thing for "PAINTING".
+
+Now you need to synchronize relationships. Artist and Gallery entities were created
+when there was no related "Painting" entity, so their relationships were not set.
+
+- Click on the "Artist" ObjEntity. Now click on "Sync ObjEntity with DbEntity" button on
+the toolbar image:icon-sync.png[] - you will see the "paintings" relationship appear.
+- Do the same for the "Gallery" entity.
+
+Unless you want to customize the Java class and property names (which you can do easily) the mapping is complete.

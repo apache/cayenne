@@ -48,29 +48,34 @@ public class Main {
     static void newObjectsTutorial(ObjectContext context) {
 
         // creating new Artist
+        // tag::new-artist[]
         Artist picasso = context.newObject(Artist.class);
         picasso.setName("Pablo Picasso");
         picasso.setDateOfBirthString("18811025");
+        // end::new-artist[]
 
         // Creating other objects
+        // tag::new-painting[]
         Gallery metropolitan = context.newObject(Gallery.class);
         metropolitan.setName("Metropolitan Museum of Art");
-
         Painting girl = context.newObject(Painting.class);
         girl.setName("Girl Reading at a Table");
-
         Painting stein = context.newObject(Painting.class);
         stein.setName("Gertrude Stein");
+        // end::new-painting[]
 
         // connecting objects together via relationships
+        // tag::link-objects[]
         picasso.addToPaintings(girl);
         picasso.addToPaintings(stein);
-
         girl.setGallery(metropolitan);
         stein.setGallery(metropolitan);
+        // end::link-objects[]
 
         // saving all the changes above
+        // tag::commit[]
         context.commitChanges();
+        // end::commit[]
     }
 
     static void selectTutorial(ObjectContext context) {

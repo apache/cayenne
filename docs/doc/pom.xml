@@ -157,6 +157,7 @@
 					<!-- this is relative to target/site/apidocs  -->
 					<destDir>doc/api</destDir>
 					<stylesheet>java</stylesheet>
+					<header><![CDATA[<a href="http://cayenne.apache.org" target="top">Apache Cayenne</a>]]></header>
                     <additionalDependencies>
                         <additionalDependency>
                             <groupId>net.sf.ehcache</groupId>

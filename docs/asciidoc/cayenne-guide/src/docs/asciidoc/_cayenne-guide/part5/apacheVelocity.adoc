@@ -1,0 +1,70 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+include::../var.adoc[]
+
+[[velocity]]
+=== Apache Velocity extension
+
+==== Description
+
+This module enables usage of full featured Apache Velocity templates in `org.apache.cayenne.query.SQLTemplate` queries.
+
+==== Including in a project
+
+===== Maven
+
+[source, XML,subs="verbatim,attributes"]
+----
+<dependency>
+    <groupId>org.apache.cayenne</groupId>
+    <artifactId>cayenne-velocity</artifactId>
+    <version>{version}</version>
+</dependency>
+----
+
+===== Gradle
+
+[source, Groovy, subs="verbatim,attributes"]
+----
+compile 'org.apache.cayenne:cayenne-velocity:{version}'
+----
+
+==== Usage
+
+This module doesn't require any additional setup.
+
+In addition of directives mentioned in xref:directives[this chapter], this module enables `#chain` and `#chunk` directives.
+
+`#chain` and `#chunk` directives are used for conditional inclusion of SQL code. They are used together with `#chain` wrapping multiple `#chunks`. A chunk evaluates its parameter expression and if it is NULL suppresses rendering of the enclosed SQL block. A chain renders its prefix and its chunks joined by the operator. If all the chunks are suppressed, the chain itself is suppressed. This allows to work with otherwise hard to script SQL semantics. E.g. a WHERE clause can contain multiple conditions joined with AND or OR. Application code would like to exclude a condition if its right-hand parameter is not present (similar to Expression pruning discussed above). If all conditions are excluded, the entire WHERE clause should be excluded. chain/chunk allows to do that.
+
+Semantics:
+
+[source]
+----
+#chain(operator) ... #end
+#chain(operator prefix) ... #end
+#chunk() ... #end
+#chunk(param) ... #end
+----
+
+Full example:
+
+[source]
+----
+#chain('OR' 'WHERE')
+    #chunk($name) NAME LIKE #bind($name) #end
+    #chunk($id) ARTIST_ID > #bind($id) #end
+#end"
+----

@@ -1,44 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  ~   Licensed to the Apache Software Foundation (ASF) under one
-  ~  or more contributor license agreements.  See the NOTICE file
-  ~  distributed with this work for additional information
-  ~  regarding copyright ownership.  The ASF licenses this file
-  ~  to you under the Apache License, Version 2.0 (the
-  ~  "License"); you may not use this file except in compliance
-  ~  with the License.  You may obtain a copy of the License at
-  ~
-  ~    http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~  Unless required by applicable law or agreed to in writing,
-  ~  software distributed under the License is distributed on an
-  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  ~  KIND, either express or implied.  See the License for the
-  ~  specific language governing permissions and limitations
-  ~  under the License.
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<section xmlns="http://docbook.org/ns/docbook" xml:id="mappedqueries">
-    <title>MappedSelect and MappedExec</title>
-    <para>
-        <code>MappedSelect</code> and <code>MappedExec</code> is a queries that are just a reference to another queries stored in the DataMap.
-        The actual stored query can be SelectQuery, SQLTemplate, EJBQLQuery, etc.
-        Difference between <code>MappedSelect</code> and <code>MappedExec</code> is (as reflected in their names)
-        whether underlying query intended to select data or just to perform some generic SQL code.
-        <note>
-            <para>These queries are "fluent" versions of deprecated <code>NamedQuery</code> class.</para>
-        </note>
-    </para>
-    <para>
-        Here is example of how to use <code>MappedSelect</code>:
-        <programlisting language="java"><![CDATA[List<Artist> results = MappedSelect.query("artistsByName", Artist.class) 
-    .param("name", "Picasso") 
-    .select(context);]]></programlisting>
-    </para>
-    <para>
-        And here is example of <code>MappedExec</code>:
-        <programlisting language="java"><![CDATA[QueryResult result = MappedExec.query("updateQuery") 
-    .param("var", "value") 
-    .execute(context);
-System.out.println("Rows updated: " + result.firstUpdateCount());]]></programlisting>
-    </para>
-</section>

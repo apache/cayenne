@@ -1,0 +1,83 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+include::../var.adoc[]
+
+=== Commit log extension
+
+==== Description
+
+The goal of this module is to capture commit changes and present them to interested parties in an easy-to-process format.
+
+==== Including in a project
+
+===== Maven
+
+[source, XML,subs="verbatim,attributes"]
+----
+<dependency>
+    <groupId>org.apache.cayenne</groupId>
+    <artifactId>cayenne-commitlog</artifactId>
+    <version>{version}</version>
+</dependency>
+----
+
+===== Gradle
+
+[source, Groovy,subs="verbatim,attributes"]
+----
+compile 'org.apache.cayenne:cayenne-commitlog:{version}'
+----
+
+==== Usage
+
+In order to use `commitlog` module you need to perform three steps:
+
+1) Mark all entities which changes you are interested in with `@org.apache.cayenne.commitlog.CommitLog` annotation
+
+[source, Java]
+----
+@CommitLog(ignoredProperties = {"somePrivatePropertyToSkip"})
+public class MyEntity extends _MyEntity {
+    // ...
+}
+----
+
+2) Implement `CommitLogListener` interface.
+
+[source, java]
+----
+ CommitLogListener {
+    @Override
+    public void onPostCommit(ObjectContext originatingContext, ChangeMap changes) {
+        // ChangeMap will contain all information about changes happened in performed commit
+        // this particular example will print IDs of all inserted objects
+        changes.getUniqueChanges().stream()
+            .filter(change -> change.getType() == ObjectChangeType.INSERT)
+            .map(ObjectChange::getPostCommitId)
+            .forEach(id -> System.out.println("Inserted new entity with id: " + id));
+    }
+}
+----
+
+3) Inject your listener into `ServerRuntime`
+
+[source, java]
+----
+ServerRuntime.builder()
+        .addModule(CommitLogModule.extend()
+                .addListener(MyCommitLogListener.class)
+                .module())
+----
+

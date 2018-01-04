@@ -1,0 +1,22 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+[[_getting_started_db_first_part5]]
+== What's next
+
+That's all for this tutorial! Now you know how to setup and use ``cayenne-maven-plugin``. 
+
+Next step will be creating your first application with Cayenne.
+If you not passed yet, you can try out http://cayenne.apache.org/docs/4.0/tutorial/index.html[getting-started] tutorial. 
+
+You can find detailed information about configuring this plugin in http://cayenne.apache.org/docs/4.0/cayenne-guide/including-cayenne-in-project.html#maven-projects[documentation] available on Cayenne site. 

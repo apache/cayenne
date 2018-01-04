@@ -1,0 +1,123 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+== Appendix A. Configuration Properties
+
+Note that the property names below are defined as constants in `org.apache.cayenne.configuration.Constants` interface.
+
+[#configProperties]
+* `cayenne.jdbc.driver[.domain_name.node_name]`
+   defines a JDBC driver class to use when creating a DataSource. If domain name and optionally - node name are specified,
+   the setting overrides DataSource info just for this domain/node. Otherwise the override is applied to all domains/nodes in the system.
+    ** Default value: none, project DataNode configuration is used
+
+* `cayenne.jdbc.url[.domain_name.node_name]`
+    defines a DB URL to use when creating a DataSource. If domain name and optionally - node name are specified,
+    the setting overrides DataSource info just for this domain/node. Otherwise the override is applied to all domains/nodes in the system.
+    ** Default value: none, project DataNode configuration is used
+
+* `cayenne.jdbc.username[.domain_name.node_name]`
+   defines a DB user name to use when creating a DataSource. If domain name and optionally - node name are specified,
+   the setting overrides DataSource info just for this domain/node. Otherwise the override is applied to all domains/nodes in the system.
+    ** Possible values: any
+    ** Default value: none, project DataNode configuration is used
+
+* `cayenne.jdbc.password[.domain_name.node_name]`
+   defines a DB password to use when creating a DataSource. If domain name and optionally - node name are specified,
+   the setting overrides DataSource info just for this domain/node. Otherwise the override is applied to all domains/nodes in the system
+    ** Default value: none, project DataNode configuration is used
+
+* `cayenne.jdbc.min_connections[.domain_name.node_name]`
+   defines the DB connection pool minimal size. If domain name and optionally - node name are specified, the setting
+   overrides DataSource info just for this domain/node. Otherwise the override is applied to all domains/nodes in the system
+    ** Default value: none, project DataNode configuration is used
+
+* `cayenne.jdbc.max_connections[.domain_name.node_name]`
+   defines the DB connection pool maximum size. If domain name and optionally - node name are specified, the setting
+   overrides DataSource info just for this domain/node. Otherwise the override is applied to all domains/nodes in the system
+    ** Default value: none, project DataNode configuration is used
+
+* `cayenne.querycache.size`
+   An integer defining the maximum number of entries in the query cache. Note that not all QueryCache providers may respect this property.
+   MapQueryCache uses it, but the rest would use alternative configuration methods.
+    ** Possible values: any positive int value
+    ** Default value: 2000
+
+* `cayenne.server.contexts_sync_strategy`
+   defines whether peer ObjectContexts should receive snapshot events after commits from other contexts. If true (_default_),
+   the contexts would automatically synchronize their state with peers.
+    ** Possible values: true, false
+    ** Default value: true
+
+* `cayenne.server.object_retain_strategy`
+   defines fetched objects retain strategy for ObjectContexts. When weak or soft strategy is used, objects retained by ObjectContext
+   that have no local changes can potentially get garbage collected when JVM feels like doing it.
+    ** Possible values: weak, soft, hard
+    ** Default value: weak
+
+* `cayenne.server.max_id_qualifier_size`
+   defines a maximum number of ID qualifiers in the WHERE clause of queries that are generated for paginated queries and for DISJOINT_BY_ID prefetch processing.
+   This is needed to avoid hitting WHERE clause size limitations and memory usage efficiency.
+    ** Possible values: any positive int
+    ** Default value: 10000
+
+* `cayenne.server.external_tx`
+   defines whether runtime should use external transactions.
+    ** Possible values: true, false
+    ** Default value: false
+
+* `cayenne.rop.service_url`
+   defines the URL of the ROP server
+    ** Default value: none
+
+* `cayenne.rop.service_username`
+   defines the user name for an ROP client to login to an ROP server.
+    ** Default value: none
+
+* `cayenne.rop.service_password`
+   defines the password for an ROP client to login to an ROP server.
+    ** Default value: none
+
+* `cayenne.rop.shared_session_name`
+   defines the name of the shared session that an ROP client wants to join on an ROP server. If omitted, a dedicated session is created.
+    ** Default value: none
+
+* `cayenne.rop.service.timeout`
+   a value in milliseconds for the ROP client-server connection read operation timeout
+    ** Possible values: any positive long value
+    ** Default value: none
+
+* `cayenne.rop.channel_events`
+   defines whether client-side DataChannel should dispatch events to child ObjectContexts.
+   If set to true, ObjectContexts will receive commit events and merge changes committed by peer contexts that passed through the common client DataChannel.
+    ** Possible values: true, false
+    ** Default value: false
+
+* `cayenne.rop.context_change_events`
+   defines whether object property changes in the client context result in firing events. Client UI components can listen to these events and update the UI. Disabled by default.
+    ** Possible values: true, false
+    ** Default value: false
+
+* `cayenne.rop.context_lifecycle_events`
+   defines whether object commit and rollback operations in the client context result in firing events.
+   Client UI components can listen to these events and update the UI. Disabled by default.
+    ** Possible values: true,false
+    ** Default value: false
+
+* `cayenne.server.rop_event_bridge_factory`
+   defines the name of the `org.apache.cayenne.event.EventBridgeFactory` that is passed from the ROP server to the client.
+   I.e. server DI would provide a name of the factory, passing this name to the client via the wire.
+   The client would instantiate it to receive events from the server. Note that this property is stored
+   in `cayenne.server.rop_event_bridge_properties` map, not in the main `cayenne.properties`.
+   ** Default value: false

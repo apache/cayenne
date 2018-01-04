@@ -16,6 +16,8 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+// This code used in docs too, so it should be formatted
+// to 80 char line to fit in PDF.
 package org.apache.cayenne.tutorial.persistent;
 
 import java.time.LocalDate;
@@ -24,27 +26,31 @@ import java.time.format.DateTimeParseException;
 
 import org.apache.cayenne.tutorial.persistent.auto._Artist;
 
+// tag::content[]
 public class Artist extends _Artist {
 
-	static final String DEFAULT_DATE_FORMAT = "yyyyMMdd";
+    static final String DEFAULT_DATE_FORMAT = "yyyyMMdd";
 
-	/**
-	 * Sets date of birth using a string in format yyyyMMdd.
-	 */
-	public void setDateOfBirthString(String yearMonthDay) {
-		if (yearMonthDay == null) {
-			setDateOfBirth(null);
-		} else {
+    /**
+     * Sets date of birth using a string in format yyyyMMdd.
+     */
+    public void setDateOfBirthString(String yearMonthDay) {
+        if (yearMonthDay == null) {
+            setDateOfBirth(null);
+            return;
+        }
 
-			LocalDate date;
-			try {
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT);
-				date = LocalDate.parse(yearMonthDay, formatter);
-			} catch (DateTimeParseException e) {
-				throw new IllegalArgumentException("A date argument must be in format '"
-						+ DEFAULT_DATE_FORMAT + "': " + yearMonthDay);
-			}
-			setDateOfBirth(date);
-		}
-	}
+        LocalDate date;
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter
+                    .ofPattern(DEFAULT_DATE_FORMAT);
+            date = LocalDate.parse(yearMonthDay, formatter);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException(
+                    "A date argument must be in format '"
+                            + DEFAULT_DATE_FORMAT + "': " + yearMonthDay);
+        }
+        setDateOfBirth(date);
+    }
 }
+// end::content[]
