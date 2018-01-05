@@ -24,6 +24,7 @@ import java.util.Date;
 
 import org.apache.cayenne.tutorial.persistent.auto._Artist;
 
+// tag::content[]
 public class Artist extends _Artist {
 
 	static final String DEFAULT_DATE_FORMAT = "yyyyMMdd";
@@ -50,3 +51,4 @@ public class Artist extends _Artist {
 		}
 	}
 }
+// end::content[]

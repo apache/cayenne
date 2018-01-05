@@ -1,0 +1,47 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+=== Cayenne Configuration
+
+NOTE: The new DI-based bootstrap and configuration approach is not API-compatible with earlier versions of Cayenne. Make sure you read the `UPGRADE.txt` file for instructions how to upgrade the existing projects.
+
+==== Dependency Injection Container
+
+Cayenne 3.1 runtime stack is built around the ideas of Dependency Injection (DI), making it extremely flexible and easy to extend. It bundles a small, flexible annotations-based DI container to configure its services. The container provides DI services and exposes Cayenne extension points, but does not interfere with other DI containers that may be present in the application. I.e. it is invisible to the users who do not care about advanced Cayenne customization.
+
+==== Bootstrapping Cayenne in Various Environments
+
+Here is a simple example of starting a server-side Cayenne stack:
+
+[source, java]
+----
+ServerRuntime runtime = new ServerRuntime("cayenne-UntitledDomain.xml");
+----
+
+For more detailed examples check the tutorials and other documentation.
+
+==== Configuring Local DataSources, Removal of JNDI Hack
+
+Cayenne 3.1 provides a property-based mechanism to override Modeler DataSource definitions, regardless of whether they are driver configurations, JNDI, DBCP, etc. A quick configuration example is shown below:
+
+[source]
+----
+-Dcayenne.jdbc.driver=com.mysql.jdbc.Driver -Dcayenne.jdbc.url=jdbc:mysql://localhost/mydb \
+-Dcayenne.jdbc.username=user -Dcayenne.jdbc.password=password
+----
+
+For more details and configuration options see javadocs of `org.apache.cayenne.configuration.server.PropertyDataSourceFactory`.
+
+This feature supersedes what was formerly known as "JNDI hack", i.e. JNDI DataSource failover load strategy based on CayenneModeler preferences database. The problem with JNDI hack was unstable and frequently corrupted preferences database, and the need to include hsqldb and cayenne-modeler jars in the runtime.
+

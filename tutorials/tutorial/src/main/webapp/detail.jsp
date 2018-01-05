@@ -24,6 +24,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import="java.text.*" %>
 
+// tag::content[]
 <% 
     ObjectContext context = BaseContext.getThreadObjectContext();
     String id = request.getParameter("id");
@@ -85,3 +86,4 @@
         </form>
     </body>	
 </html>
+// end::content[]

@@ -1,0 +1,129 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+=== Adding BASIC Authentication
+
+You probably don't want everybody in the world to connect to your service and access (and update!) arbitrary data in the database. The first step in securing Cayenne service is implementing client authentication. The easiest way to do it is to delegate the authentication task to the web container that is running the service. HessianConnection used in the previous chapter supports BASIC authentication on the client side, so we'll demonstrate how to set it up here.
+
+==== Securing ROP Server Application
+
+Open web.xml file in the server project and setup security constraints with BASIC authentication for the ROP service:
+
+[source, XML]
+----
+<security-constraint>
+    <web-resource-collection>
+        <web-resource-name>CayenneService</web-resource-name>
+        <url-pattern>/cayenne-service</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+        <role-name>cayenne-service-user</role-name>
+    </auth-constraint>
+</security-constraint>
+
+<login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>Cayenne Realm</realm-name>
+</login-config>
+
+<security-role>
+    <role-name>cayenne-service-user</role-name>
+</security-role>
+----
+
+==== Configuring Jetty for BASIC Authentication
+
+NOTE: These instructions are specific to Jetty 6. Other containers (and versions of Jetty) will have different mechansims to achieve the same thing.
+
+Open pom.xml in the server project and configure a "userRealm" for the Jetty plugin:
+
+[source, XML]
+----
+<plugin>
+    <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-plugin</artifactId>
+        <version>6.1.22</version>
+        <!-- adding configuration below: -->
+        <configuration>
+            <userRealms>
+                <userRealm implementation="org.mortbay.jetty.security.HashUserRealm">
+                    <!-- this name must match the realm-name in web.xml -->
+                    <name>Cayenne Realm</name>
+                    <config>realm.properties</config>
+                </userRealm>
+            </userRealms>
+        </configuration>
+    </plugin>
+</plugins>
+----
+
+Now create a new file called {["realm.properties"}} at the root of the server project and put user login/password in there:
+
+[source]
+----
+cayenne-user: secret,cayenne-service-user
+----
+
+Now let's stop the server and start it again. Everything should start as before, but if you go to http://localhost:8080/tutorial/cayenne-service, your browser should pop up authentication dialog. Enter "cayenne-user/secret" for user name / password, and you should see "Hessian Requires POST" message. So the server is now secured.
+
+==== Running Client with Basic Authentication
+
+If you run the client without any changes, you'll get the following error:
+
+[source]
+----
+org.apache.cayenne.remote.hessian.HessianConnection connect
+INFO: Connecting to [http://localhost:8080/tutorial/cayenne-service] - dedicated session.
+org.apache.cayenne.remote.hessian.HessianConnection connect
+INFO: Error establishing remote session. URL - http://localhost:8080/tutorial/cayenne-service;
+      CAUSE - cannot retry due to server authentication, in streaming mode
+java.net.HttpRetryException: cannot retry due to server authentication, in streaming mode
+    at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1257)
+    at java.net.HttpURLConnection.getResponseCode(HttpURLConnection.java:379)
+    at com.caucho.hessian.client.HessianProxy.invoke(HessianProxy.java:168)
+    at $Proxy0.establishSession(Unknown Source)
+    at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:210)
+    at org.apache.cayenne.remote.hessian.HessianConnection.getServerEventBridge(HessianConnection.java:114)
+    at org.apache.cayenne.remote.ClientChannel.setupRemoteChannelListener(ClientChannel.java:337)
+    at org.apache.cayenne.remote.ClientChannel.<init>(ClientChannel.java:108)
+    at org.example.cayenne.Main.main(Main.java:25)
+Exception in thread "main" org.apache.cayenne.CayenneRuntimeException: [v.3.1M3 Sep 19 2011 07:12:41]
+Error establishing remote session. URL - http://localhost:8080/tutorial/cayenne-service;
+CAUSE - cannot retry due to server authentication, in streaming mode
+    at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:229)
+    at org.apache.cayenne.remote.hessian.HessianConnection.getServerEventBridge(HessianConnection.java:114)
+    at org.apache.cayenne.remote.ClientChannel.setupRemoteChannelListener(ClientChannel.java:337)
+    at org.apache.cayenne.remote.ClientChannel.<init>(ClientChannel.java:108)
+    at org.example.cayenne.Main.main(Main.java:25)
+Caused by: java.net.HttpRetryException: cannot retry due to server authentication, in streaming mode
+    at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1257)
+    at java.net.HttpURLConnection.getResponseCode(HttpURLConnection.java:379)
+    at com.caucho.hessian.client.HessianProxy.invoke(HessianProxy.java:168)
+    at $Proxy0.establishSession(Unknown Source)
+    at org.apache.cayenne.remote.hessian.HessianConnection.connect(HessianConnection.java:210)
+    ... 4 more
+----
+
+Which is exactly what you'd expect, as the client is not authenticating itself. So change the line in Main.java where we obtained an ROP connection to this:
+
+[source, java]
+----
+ClientConnection connection = new HessianConnection(
+        "http://localhost:8080/tutorial/cayenne-service",
+        "cayenne-user", "secret", null);
+----
+
+Try running again, and everything should work as before. Obviously in production environment, in addition to authentication you'll need to use HTTPS to access the server to prevent third-party eavesdropping on your password and data.
+
+Congratulations, you are done with the ROP tutorial!

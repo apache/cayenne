@@ -25,6 +25,7 @@
 <%@ page import="org.apache.cayenne.exp.*" %>
 <%@ page import="java.util.*" %>
 
+// tag::content[]
 <% 
     SelectQuery query = new SelectQuery(Artist.class);
     query.addOrdering(Artist.NAME_PROPERTY, SortOrder.ASCENDING);
@@ -52,3 +53,4 @@
         <p><a href="detail.jsp">Create new artist...</a></p>
     </body>	
 </html>
+// end::content[]

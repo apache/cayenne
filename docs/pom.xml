@@ -35,7 +35,7 @@
 
 	<modules>
 		<module>doc</module>
-		<module>docbook</module>
+		<module>asciidoc</module>
 	</modules>
 
 	<build>

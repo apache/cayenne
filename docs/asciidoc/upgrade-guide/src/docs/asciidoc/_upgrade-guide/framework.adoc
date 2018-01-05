@@ -1,0 +1,75 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+=== Framework API
+
+See UPGRADE.txt for the full list of changes
+
+==== Lifecycle Listener Annotations
+
+Cayenne 3.1 features support for annotations on lifecycle listeners (but not yet on entity callback methods) that simplifies registering listeners via API. Our experience with Cayenne 3.0 shows that mapping listeners in the Modeler doesn't scale well to complex applications, and 3.0 API for mapping the listeners is hard to use. In 3.1 you can annotate listener methods and register multiple callback methods with a single call.
+
+[source, java]
+----
+// declare a listener with annotated methods
+class MyListener {
+    @PostLoad(Entity1.class)
+    @PostPersist(Entity1.class)
+    void postLoad(Object object) {
+        ....
+    }
+}
+
+// register a listener
+ServerRuntime runtime = ..
+MyListener listener = new MyListener();
+runtime.getChannel().getEntityResolver().getCallbackRegistry().addListener(listener);
+----
+
+Moreover, unlike JPA annotations, Cayenne allows to attach a listener to a set of entities not known to the listener upfront, but that are all annotated with some custom annotation:
+
+[source,java]
+----
+class MyListener {
+    @PostLoad(entityAnnotations = CustomAnnotation.class)
+    void postLoad(Object object) {
+        ....
+    }
+}
+----
+
+==== DataChannelFilter for Intercepting DataDomain Operations
+
+Cayenne now features a DataChannelFilter interface that allows to intercept and alter all DataChannel traffic (i.e. selects and commits between a DataContext and DataDomain). It provides a chain of command API very similar to servlet filters. Filters are widely used by "cayenne-lifecyle" extensions and allow to build powerful custom object lifecycle-aware code. To install a filter, the following API is used:
+
+[source, java]
+----
+class MyFilter implement DataChannelFilter { .. }
+
+MyFilter filter = new MyFilter();
+ServerRuntime runtime = ..
+runtime.getDataDomain().addFilter(filter);
+----
+
+Very often filters mark some of their own methods with lifecycle annotations so that certain operations can be triggered by Cayenne inside the scope of filter's onQuery() or onSync() methods. To ensure annotated methods are invoked, filter registration should be combined with listener registration:
+
+[source, java]
+----
+MyFilter filter = new MyFilter();
+ServerRuntime runtime = ..
+runtime.getDataDomain().addFilter(filter);
+runtime.getDataDomain().getEntityResolver().getCallbackRegistry().addListener(filter);
+// noticed that by default runtime.getDataDomain() is equivalent to runtime.getChannel()
+----
+

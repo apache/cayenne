@@ -1,0 +1,31 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+== Setting up the environment
+
+The goal of this chapter of the tutorial is to install (or check that you already have
+installed) a minimally needed set of software to build a Cayenne application.
+
+=== Install Java
+
+Obviously, JDK has to be installed. Cayenne 3.1 requires JDK 1.5 or newer.
+
+=== Install Eclipse IDE and the Maven Plugin
+
+Download Eclipse. This tutorial is based on the Galileo package (Eclipse 3.5), JEE edition, still it should work with any recent vanilla Eclipse distribution.
+
+After downloading Eclipse, unpack it somewhere in the filesystem, and start it. The only plugin that you need for the tutorial is m2eclipse. To install it, in Eclipse go to "Help > Install New Software", then click on "Add.." to add a new download site, and enter "Maven" in the "Name" field, and "http://m2eclipse.sonatype.org/sites/m2e" in the "Location" field. You may install any of the optional components that you think you need, but for this tutorial we only select a few basic components as shown on the following screenshot:
+
+image::maven-plugin-install.png[align="center"]
+
+From here follow the Eclipse dialog instructions to finish the installation.
