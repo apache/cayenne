@@ -17,7 +17,7 @@
 :sectnums:
 :sectnumlevels: 2
 // use custom header
-:cayenne-header: _getting-started/header.html
+:cayenne-header: _getting-started-guide/header.html
 :cayenne-header-position: body
 // customize final layout
 //:linkcss:

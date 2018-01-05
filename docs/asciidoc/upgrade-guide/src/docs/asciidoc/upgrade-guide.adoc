@@ -17,7 +17,7 @@
 :sectnums:
 :sectnumlevels: 2
 // use custom header
-:cayenne-header: _upgrade_guide/header.html
+:cayenne-header: _upgrade-guide/header.html
 :cayenne-header-position: body
 // customize final layout
 //:linkcss:
