@@ -11,4 +11,10 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-NOTE: TODO
+== Java Version
+
+Minimum required JDK version is 1.8 or newer. Cayenne 4.1 is fully tested with Java 1.8 and 9.
+
+== New Features
+
+// TODO: new features

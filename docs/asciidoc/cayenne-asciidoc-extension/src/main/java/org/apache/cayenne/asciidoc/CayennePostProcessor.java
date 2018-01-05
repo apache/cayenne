@@ -33,7 +33,6 @@ import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.DocumentRuby;
 import org.asciidoctor.extension.Postprocessor;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
 
 /**
  * <p>
@@ -66,13 +65,13 @@ public class CayennePostProcessor extends Postprocessor {
 
     public String process(Document document, String output) {
         output = extractTableOfContents(document, output);
-        output = fixupTableClasses(document, output);
+        output = fixupDom(document, output);
         output = processHeader(document, output);
         output = processFooter(document, output);
         return output;
     }
 
-    private String fixupTableClasses(Document document, String output) {
+    private String fixupDom(Document document, String output) {
         org.jsoup.nodes.Document jsoupDoc = Jsoup.parseBodyFragment(output);
 
         jsoupDoc.select(".icon-note")
@@ -91,6 +90,8 @@ public class CayennePostProcessor extends Postprocessor {
                 el.addClass(codeClass);
             }
         });
+
+        jsoupDoc.select("div#preamble").remove();
 
         return jsoupDoc.body().html();
     }
