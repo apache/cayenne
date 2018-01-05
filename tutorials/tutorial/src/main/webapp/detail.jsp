@@ -24,6 +24,7 @@
 <%@ page import="java.text.*" %>
 <%@ page import="java.time.format.DateTimeFormatter"%>
 
+// tag::content[]
 <% 
     ObjectContext context = BaseContext.getThreadObjectContext();
     String id = request.getParameter("id");
@@ -86,3 +87,4 @@
         </form>
     </body>	
 </html>
+// end::content[]

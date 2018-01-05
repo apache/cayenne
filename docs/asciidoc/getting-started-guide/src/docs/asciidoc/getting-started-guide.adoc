@@ -1,0 +1,48 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+= Getting Started with Cayenne
+:revnumber: {project-major-version} ({project-version})
+// enable section numbering, limiting depth to 2
+:sectnums:
+:sectnumlevels: 2
+// use custom header
+:cayenne-header: _getting-started-guide/header.html
+:cayenne-header-position: body
+// customize final layout
+//:linkcss:
+// base path to java code include
+:cayenne-root: {basedir}/../../..
+:java-include-dir: {cayenne-root}/tutorials/tutorial/src/main/java/org/apache/cayenne/tutorial
+:web-include-dir: {cayenne-root}/tutorials/tutorial/src/main/java/org/apache/cayenne/tutorial
+
+[small]#Copyright © 2011-2017 Apache Software Foundation and individual authors#
+
+.License
+[small]#_Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
+See the NOTICE file distributed with this work for additional information regarding copyright ownership.
+The ASF licenses this file to you under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License. You may obtain
+a copy of the License at http://www.apache.org/licenses/LICENSE-2.0_#
+
+[small]#_Unless required by applicable law or agreed to in writing, software distributed under the License
+is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and limitations under the License._#
+
+include::_getting-started-guide/setup.adoc[]
+
+include::_getting-started-guide/part2.adoc[]
+
+include::_getting-started-guide/part3.adoc[]
+
+include::_getting-started-guide/webapp.adoc[]

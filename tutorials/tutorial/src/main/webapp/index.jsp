@@ -25,6 +25,7 @@
 <%@ page import="org.apache.cayenne.exp.*" %>
 <%@ page import="java.util.*" %>
 
+// tag::content[]
 <%
     ObjectContext context = BaseContext.getThreadObjectContext();
     List<Artist> artists = ObjectSelect.query(Artist.class)
@@ -51,3 +52,4 @@
         <p><a href="detail.jsp">Create new artist...</a></p>
     </body>	
 </html>
+// end::content[]

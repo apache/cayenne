@@ -1,0 +1,89 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+=== Getting started with ObjectContext
+In this section we'll write a simple main class to run our application, and get a brief
+introduction to Cayenne ObjectContext.
+
+==== Creating the Main Class
+
+- In IDEA create a new class called "`Main`" in the "`org.example.cayenne`" package.
+- Create a standard "main" method to make it a runnable class:
+
+[source,java]
+----
+package org.example.cayenne;
+
+public class Main {
+
+    public static void main(String[] args) {
+    }
+}
+----
+- The first thing you need to be able to access the database is to create a
+`ServerRuntime` object (which is essentially a wrapper around Cayenne stack) and
+use it to obtain an instance of an
+`ObjectContext`.
+
+[source,java]
+----
+package org.example.cayenne;
+
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+
+public class Main {
+
+    public static void main(String[] args) {
+        ServerRuntime cayenneRuntime = ServerRuntime.builder()
+                        .addConfig("cayenne-project.xml")
+                        .build();
+        ObjectContext context = cayenneRuntime.newContext();
+    }
+}
+----
+`ObjectContext` is an isolated "session" in Cayenne that provides all needed API
+to work with data. ObjectContext has methods to execute queries and manage
+persistent objects. We'll discuss them in the following sections. When the first
+ObjectContext is created in the application, Cayenne loads XML mapping files and
+creates a shared access stack that is later reused by other ObjectContexts.
+
+==== Running Application
+Let's check what happens when you run the application. But before we do that we need
+to add another dependency to the `pom.xml` - Apache Derby, our embedded database engine.
+The following piece of XML needs to be added to the
+`<dependencies>...</dependencies>` section, where we already have Cayenne
+jars:
+[source,xml]
+----
+<dependency>
+   <groupId>org.apache.derby</groupId>
+   <artifactId>derby</artifactId>
+   <version>10.13.1.1</version>
+</dependency>
+----
+Now we are ready to run. Right click the "Main" class in IDEA and select "Run 'Main.main()'".
+        
+image::idea-file-run-menu.png[align="center"]
+        
+In the console you'll see output similar to this, indicating that Cayenne stack has been started:
+
+    INFO: Loading XML configuration resource from file:/.../cayenne-project.xml
+    INFO: Loading XML DataMap resource from file:/.../datamap.map.xml
+    INFO: loading user name and password.
+    INFO: Connecting to 'jdbc:derby:memory:testdb;create=true' as 'null'
+    INFO: +++ Connecting: SUCCESS.
+    INFO: setting DataNode 'datanode' as default, used by all unlinked DataMaps</screen>
+            
+==== How to Configure Cayenne Logging
+Follow the instructions in the logging chapter to tweak verbosity of the logging output.

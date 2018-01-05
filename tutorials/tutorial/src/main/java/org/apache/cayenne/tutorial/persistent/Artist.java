@@ -24,6 +24,7 @@ import java.time.format.DateTimeParseException;
 
 import org.apache.cayenne.tutorial.persistent.auto._Artist;
 
+// tag::content[]
 public class Artist extends _Artist {
 
 	static final String DEFAULT_DATE_FORMAT = "yyyyMMdd";
@@ -38,13 +39,16 @@ public class Artist extends _Artist {
 
 			LocalDate date;
 			try {
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT);
+				DateTimeFormatter formatter = DateTimeFormatter
+						.ofPattern(DEFAULT_DATE_FORMAT);
 				date = LocalDate.parse(yearMonthDay, formatter);
 			} catch (DateTimeParseException e) {
-				throw new IllegalArgumentException("A date argument must be in format '"
-						+ DEFAULT_DATE_FORMAT + "': " + yearMonthDay);
+				throw new IllegalArgumentException(
+						"A date argument must be in format '"
+								+ DEFAULT_DATE_FORMAT + "': " + yearMonthDay);
 			}
 			setDateOfBirth(date);
 		}
 	}
 }
+// end::content[]

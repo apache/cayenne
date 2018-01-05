@@ -1,0 +1,64 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+=== Other Settings
+
+In databases relations are defined via foreign keys and there are a lot of different politics according to the level of relationships and ways how those relationships could be modeled in database. Anyway, cdbimport is able to recognize basic patterns of relationships, such as OneToMany, OneToOne and ManyToMany.
+
+==== Skip Relationships Loading
+
+You are able to skip relationships loading by the `<skipRelationshipsLoading>` element.
+
+[source, XML]
+----
+<dbimport>
+        <skipRelationshipsLoading>true</skipRelationshipsLoading>
+</dbimport>
+----
+
+==== Skip Primary Keys Loading
+
+Another useful Cayenne reverse engineering property is `<skipPrimaryKeyLoading>`. If you decide to support all relationships at the application layer and avoid their management in database, you’ll find useful to turn off primary keys synchronization at all.
+
+[source, XML]
+----
+ <dbimport>
+        <skipPrimaryKeyLoading>true</skipPrimaryKeyLoading>
+ </dbimport>
+----
+
+==== Table Types
+
+By default, cdbimport imports tables and views. Some databases may support other table-like objects, e.g. `SYSTEM TABLE, GLOBAL TEMPORARY, LOCAL TEMPORARY, ALIAS, SYNONYM`, etc. To control which types should be included `<tableType></tableType>` element is used. Some examples:
+
+Import tables only (skip views and others and other types):
+
+[source, XML]
+----
+<dbimport>
+        <tableType>TABLE</tableType>
+</dbimport>
+----
+
+Tables and views (the default option):
+
+[source, XML]
+----
+ <dbimport>
+        <tableType>TABLE</tableType>
+        <tableType>VIEWS</tableType>
+</dbimport>
+----
+
+
