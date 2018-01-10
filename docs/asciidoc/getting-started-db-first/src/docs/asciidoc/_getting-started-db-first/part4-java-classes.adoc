@@ -11,13 +11,11 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-[[_getting_started_db_first_part4_java_classes]]
 === Generating Java classes
 
-
 Now as we have our model ready let's generate Java code that actually will be used in application.
-In order to do that we'' use same maven plugin, but different goal, namely ``cgen``.
-It has many options to configure but default values will do for base case, so we can just call it: 
+In order to do that we'll use same maven plugin, but different goal, namely ``cgen``.
+It has many options to configure but default values will do for our case, so we can just call it:
 ----
 $ mvn cayenne:cgen
 ----
@@ -60,10 +58,7 @@ Note that Cayenne code is unrecognized, that's because we need to include Cayenn
     </dependencies>
 ----
 
-[NOTE]
-====
-`cayenne-java8` module required to support Java 8 date/time types.
-====
+NOTE: `cayenne-java8` module required to support Java 8 date/time types.
 
 Additionally we need to tell `Maven compiler plugin` that our code uses Java 8: 
 [source,xml]
@@ -81,4 +76,8 @@ Additionally we need to tell `Maven compiler plugin` that our code uses Java 8:
     ...
 ----
 
-If all done right your code now shouldn't have any errors. 
+If all done right your code now shouldn't have any errors. To be sure you can build it:
+
+----
+$ mvn compile
+----

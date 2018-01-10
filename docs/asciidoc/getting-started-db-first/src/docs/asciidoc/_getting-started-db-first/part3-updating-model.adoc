@@ -11,16 +11,14 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-[[_getting_started_db_first_part3_updating_model]]
 === Updating model
-
 
 We now have everything we need, let's try some more features of plugin. 
 
 ==== Update DDL
 
-
-To show next feature let's imagine that over some time our database schema has evolved and we need to synchronize it with our model, no problem we can simply run `cdbimport` again and all changes will be loaded to model.
+To show next feature let's imagine that over some time our database schema has evolved and we need to synchronize it with our model,
+no problem we can simply run `cdbimport` again and all changes will be loaded to model.
 We use following SQL script to alter our demo database: 
 [source,sql]
 ----
@@ -30,7 +28,6 @@ ALTER TABLE cayenne_demo.PAINTING_INFO ADD FOREIGN KEY (PAINTING_ID) REFERENCES 
 ----
 
 ==== Run cdbimport
-
 
 Now we can simply run again 
 ----
@@ -70,7 +67,6 @@ Great! New table and ObjEntity are in place, as well as a new field.
 
 ==== Customizing Model
 
-
 There is often a need to customize model to better fit it to your application requirements, such customization can be simple removal of toMany part of a relationship between two objects.
 Let's do it, in a Modeler just select and remove relationship `paintings` in Artist object: 
 
@@ -87,8 +83,4 @@ it still find nothing to do:
 [INFO] Detected changes: No changes to import.
 ----
 
-[NOTE]
-====
-`cdbimport` will skip only modifications in Object layer (e.g.
-ObjEntities, ObjAttributes and ObjRelationships), if you modify Db layer your changes will be overridden by next run of ``cdbimport``. 
-====
+NOTE: `cdbimport` will skip only modifications in Object layer (e.g. ObjEntities, ObjAttributes and ObjRelationships), if you modify Db layer your changes will be overridden by next run of ``cdbimport``.

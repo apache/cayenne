@@ -11,13 +11,10 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-[[_getting_started_db_first_part1_maven_project]]
 === Maven Project
-
 
 The goal of this chapter is to create a new Java project in IntelliJ IDEA and to setup Maven Cayenne plugin
 
-[[_new_maven_project]]
 ==== Create a new Project in IntelliJ IDEA
 
 In IntelliJ IDEA select menu:File[New > Project...] and then select "Maven" and click "Next".
@@ -28,7 +25,6 @@ image:tutorial-idea-project.png[align="center"]
 On next dialog screen you can customize directory for your project and click "Finish".
 Now you should have a new empty project.
 
-[[_maven_plugin]]
 ==== Plugin setup
 
 Next step is setting up Cayenne plugin in `pom.xml` file.

@@ -11,17 +11,14 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-[[_getting_started_db_first_part4_java_code]]
 === Getting started with ObjectContext
 
+In this section we'll write a simple main class to run our application, and get a brief introduction to Cayenne `ObjectContext`.
 
-In this section we'll write a simple main class to run our application, and get a brief introduction to Cayenne ObjectContext.
-
-[[_creating_main_class]]
 ==== Creating the Main Class
 
-* In IDEA create a new class called "``Main``" in the "``org.apache.cayenne.tutorial``" package.
-* Create a standard "main" method to make it a runnable class:
+* In IDEA create a new class called `Main` in the `org.apache.cayenne.tutorial` package.
+* Create a standard `main()` method to make it a runnable class:
 +
 [source,java]
 ----
@@ -34,7 +31,8 @@ public class Main {
     }
 }
 ----
-* The first thing you need to be able to access the database is to create a `ServerRuntime` object (which is essentially a wrapper around Cayenne stack) and use it to obtain an instance of an ``ObjectContext``.
+* The first thing you need to be able to access the database is to create a `ServerRuntime` object
+(which is essentially a wrapper around Cayenne stack) and use it to obtain an instance of an `ObjectContext`.
 +
 [source,java]
 ----
@@ -59,11 +57,11 @@ public class Main {
 }
 ----
 + 
-``
-ObjectContext`` is an isolated "session" in Cayenne that provides all needed API to work with data.
-ObjectContext has methods to execute queries and manage persistent objects.
+`ObjectContext` is an isolated "session" in Cayenne that provides all needed API to work with data.
+`ObjectContext` has methods to execute queries and manage persistent objects.
 We'll discuss them in the following sections.
-When the first ObjectContext is created in the application, Cayenne loads XML mapping files and creates a shared access stack that is later reused by other ObjectContexts. 
+When the first ObjectContext is created in the application,
+Cayenne loads XML mapping files and creates a shared access stack that is later reused by other ObjectContexts.
 * Let's now add some code that will create persistent object: 
 +
 [source,java]
@@ -73,14 +71,12 @@ artist.setName("Picasso");
 context.commitChanges();
 ----
 
-
-[[_runnning_app]]
 ==== Running Application
-
 
 Let's check what happens when you run the application.
 But before we do that we need to add another dependencies to the `pom.xml` - MySQL Jdbc driver and simple logger.
 The following piece of XML needs to be added to the `<dependencies>...</dependencies>` section, where we already have Cayenne jars:
+
 [source,xml]
 ----
 <dependency>
@@ -94,6 +90,7 @@ The following piece of XML needs to be added to the `<dependencies>...</dependen
     <version>1.7.25</version>
 </dependency>
 ----
+NOTE: Cayenne uses Slf4j logging API, here we will use simple backend that prints everything to console
 
 Now we are ready to run.
 Right click the "Main" class in IDEA and select "Run 'Main.main()'". 

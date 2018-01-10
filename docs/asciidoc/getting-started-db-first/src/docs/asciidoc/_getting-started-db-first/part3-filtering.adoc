@@ -11,14 +11,11 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-[[_getting_started_db_first_part3_filtering]]
 === Advanced filtering
 
-
-Final part of our tutorial is about fine-tuning what you load from DB into your model. 
+Final part of our tutorial is about fine-tuning what you load from DB into your model.
 
 ==== Update schema
-
 
 Let's add some information to our database, that we don't need in our model: 
 [source,sql]
@@ -31,8 +28,7 @@ ALTER TABLE cayenne_demo.PAINTING ADD COLUMN __service_column INT;
 
 ==== Configure filtering
 
-
-Now we need to tell `cdbimport` what we don't need in our model, for that we'll just can add following into ``<configuration>``: 
+Now we need to tell `cdbimport` what we don't need in our model, for that we'll just add following into ``<configuration>`` section:
 [source,xml]
 ----
 <excludeTable>LEGACY_PAINTING_INFO</excludeTable>

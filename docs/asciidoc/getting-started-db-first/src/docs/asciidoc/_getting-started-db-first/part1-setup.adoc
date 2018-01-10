@@ -11,40 +11,29 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-[[_getting_started_db_first_part1_prerequisites]]
 === Prerequisites
-
 
 You can start with this tutorial, or you can do "Getting Started with Cayenne" first and then continue with this tutorial.
 
 This chapter lists the recommended software used in the tutorial.
 
-[[_install_java]]
 ==== Java
-
 
 Cayenne 4.0 requires JDK 1.7 or newer.
 
-[[_install_idea]]
 ==== IntelliJ IDEA IDE
-
 
 Download and install the free IntelliJ IDEA Community Edition IDE.
 This tutorial uses version 2017.1, but any recent IntelliJ IDEA version and edition will do. 
 
-[[_install_maven]]
 ==== Maven
-
 
 Two Maven plugins are used:
 
 * *cayenne-maven-plugin* - among other things, allows to reverse-engineer the Cayenne model from the database and to update the model after the database has been changed.
 * *cayenne-modeler-maven-plugin* - provides a convenient way of starting the Cayenne Modeler
 
-
-[[_install_mysql]]
 ==== MySQL
-
 
 MySQL database server is used for demonstrating Cayenne's ability to read the DB schema and to build/update the Cayenne model from it.
 

@@ -11,14 +11,11 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-[[_getting_started_db_first_part2_project_setup]]
 === Creating project
-
 
 Now we also need to create project file, currently this should be done manually via Cayenne Modeler. 
 
 ==== Setup Modeler Maven plugin
-
 
 To launch Modeler we'll use ``cayenne-modeler-maven-plugin``.
 To use it just include it in `pom.xml` like we did with ``cayenne-maven-plugin``: 
@@ -37,7 +34,6 @@ $ mvn cayenne-modeler:run
 ----
 
 ==== Create project
-
 
 In Modeler start new project and select `File` > ``Import DataMap``.
 In File Select dialog select created `datamap.map.xml` file and click ``Select DataMap``.
