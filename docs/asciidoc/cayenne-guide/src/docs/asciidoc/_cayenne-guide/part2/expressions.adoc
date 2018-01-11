@@ -11,7 +11,7 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-[[expressions]]
+
 === Expressions
 
 ==== Expressions Overview
@@ -177,7 +177,7 @@ Expression qualifier1 = template.params(p1);
 
 Null handling. Handling of Java nulls as operands is no different from normal values. Instead of using special conditional operators, like SQL does (IS NULL, IS NOT NULL), "=" and "!=" expressions are used directly with null values. It is up to Cayenne to translate expressions with nulls to the valid SQL.
 
-NOTE: A formal definition of the expression grammar is provided in Appendix C
+NOTE: A formal definition of the expression grammar is provided in <<appendixC, Appendix C>>
 
 ==== Creating Expressions via API
 
@@ -191,7 +191,7 @@ Expression e2 = ExpressionFactory.lessExp("price", 1000);
 Expression finalExp = e1.andExp(e2);
 ----
 
-NOTE: The last line in the example above shows how to create a new expression by "chaining" two other epxressions. A common error when chaining expressions is to assume that "andExp" and "orExp" append another expression to the current expression. In fact a new expression is created. I.e. Expression API treats existing expressions as immutable.
+NOTE: The last line in the example above shows how to create a new expression by "chaining" two other expressions. A common error when chaining expressions is to assume that "andExp" and "orExp" append another expression to the current expression. In fact a new expression is created. I.e. Expression API treats existing expressions as immutable.
 
 As discussed earlier, Cayenne supports aliases in path Expressions, allowing to control how SQL joins are generated if the same path is encountered more than once in the same Expression. Two ExpressionFactory methods allow to implicitly generate aliases to "split" match paths into individual joins if needed:
 

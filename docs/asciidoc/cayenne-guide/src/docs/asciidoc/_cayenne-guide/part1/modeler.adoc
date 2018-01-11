@@ -18,7 +18,7 @@
 
 ==== Reverse Engineering Database
 
-See chapter  xref:reverse[Reverse Engineering in Cayenne Modeler]
+See chapter <<Reverse Engineering in Cayenne Modeler>>
 
 ==== Generating Database Schema
 
@@ -30,7 +30,7 @@ You can select what database parts should be generated and what tables you want
 
 ==== Generating Java Classes
 
-Before using Cayenne in you code you need to generate java source code for persistent objects. This can be done with Modeler GUI or via xref:cgen[cgen] maven/ant plugin.
+Before using Cayenne in you code you need to generate java source code for persistent objects. This can be done with Modeler GUI or via <<cgen>> maven/ant plugin.
 
 To generate classes in the modeler use *Tools > Generate Classes*
 

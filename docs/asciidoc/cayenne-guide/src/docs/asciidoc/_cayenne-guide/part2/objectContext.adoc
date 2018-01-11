@@ -12,6 +12,7 @@
 // the specific language governing permissions and limitations under the
 // License.
 
+[[persistent-objects-objectcontext]]
 === Persistent Objects and ObjectContext
 
 ==== ObjectContext

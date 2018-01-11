@@ -12,7 +12,6 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-[[customize]]
 === Customizing Cayenne Runtime
 
 ==== Dependency Injection Container

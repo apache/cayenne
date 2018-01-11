@@ -14,10 +14,9 @@
 
 include::../var.adoc[]
 
-[[dbFirstFlow]]
+[[re-introduction]]
 === Introduction
 
-[[cImp]]
 ==== "DB-first" Flow
 
 An ORM system consists of three parts: database, OR mapping and persistent Java classes. These parts always need to be kept in sync with each other for the application to work. "DB-first" flow is a common and practical approach to synchronization that assumes the database to be the master source of the metadata, with other two parts synchronized from the DB as the schema evolves. Cayenne provides a number of tools to automate and control it. Here is how "DB-first" flow is typically implemented:

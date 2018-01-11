@@ -244,7 +244,7 @@ Artist artistWithId1 = SelectById.query(Artist.class, 1)
 
 ===== SQLSelect and SQLExec
 
-`SQLSelect` and `SQLExec` are essentially a "fluent" versions of older `SQLTemplate` query. `SQLSelect` can be used (as name suggests) to select custom data in form of entities, separate columns or collection of `DataRow. SQLExec` is designed to just execute any raw SQL code (e.g. updates, deletes, DDLs, etc.) This queries support all directives described in xref:sqltemplate[SQLTemplate] section.
+`SQLSelect` and `SQLExec` are essentially a "fluent" versions of older `SQLTemplate` query. `SQLSelect` can be used (as name suggests) to select custom data in form of entities, separate columns or collection of `DataRow`. `SQLExec` is designed to just execute any raw SQL code (e.g. updates, deletes, DDLs, etc.) This queries support all directives described in xref:sqltemplate[SQLTemplate] section.
 
 Here is example of how to use SQLSelect:
 
@@ -638,7 +638,7 @@ Arguments:
 
 - `column` - the name of the column to render in SQL SELECT clause.
 
-- `javaType` - a fully-qualified Java class name for a given result column. For simplicity most common Java types used in JDBC can be specified without a package. These include all numeric types, primitives, String, SQL dates, BigDecimal and BigInteger. So "_#result('A' 'String')_", "_#result('B' 'java.lang.String')_" and "_#result('C' 'int')_" are all valid
+- `javaType` - a fully-qualified Java class name for a given result column. For simplicity most common Java types used in JDBC can be specified without a package. These include all numeric types, primitives, String, SQL dates, BigDecimal and BigInteger. So `"#result('A' 'String')"`, `"#result('B' 'java.lang.String')"` and `"#result('C' 'int')"` are all valid
 
 - `alias` - specifies both the SQL alias of the column and the value key in the DataRow. If omitted, "column" value is used.
 

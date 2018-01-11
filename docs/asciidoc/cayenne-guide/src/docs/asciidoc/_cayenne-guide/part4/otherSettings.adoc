@@ -12,6 +12,7 @@
 // the specific language governing permissions and limitations under the
 // License.
 
+[[re-relationships-loading-control]]
 === Other Settings
 
 In databases relations are defined via foreign keys and there are a lot of different politics according to the level of relationships and ways how those relationships could be modeled in database. Anyway, cdbimport is able to recognize basic patterns of relationships, such as OneToMany, OneToOne and ManyToMany.
