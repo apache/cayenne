@@ -4,5 +4,4 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/domain http://cayenne.apache.org/schema/10/domain.xsd"
 	 project-version="10">
 	<map name="meaningful-pk"/>
-	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="meaningful-pk.graph.xml"/>
 </domain>

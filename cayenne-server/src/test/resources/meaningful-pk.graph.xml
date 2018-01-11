@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<graphs xmlns="http://cayenne.apache.org/schema/10/graph">
-	<graph type="ER" scale="1.0">
-		<entity name="MEANINGFUL_PK" x="318.0" y="139.0" width="115.0" height="50.0"/>
-		<entity name="MEANINGFUL_PK_TEST2" x="770.24" y="594.87" width="200.0" height="82.0"/>
-		<entity name="MEANINGFUL_PK_TEST1" x="0.0" y="155.19" width="169.0" height="98.0"/>
-		<entity name="MEANINGFUL_PK_DEP" x="276.25" y="0.0" width="148.0" height="82.0"/>
-	</graph>
-</graphs>
