@@ -28,12 +28,10 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
@@ -41,7 +39,6 @@ import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -53,9 +50,6 @@ public class ObjectSelect_RunIT extends ServerCase {
 
 	@Inject
 	private DataContext context;
-
-	@Inject
-	ServerRuntime runtime;
 
 	@Inject
 	private DBHelper dbHelper;
@@ -128,30 +122,6 @@ public class ObjectSelect_RunIT extends ServerCase {
 			for (List<Artist> artistList : it) {
 				count++;
 				assertEquals(5, artistList.size());
-			}
-
-			assertEquals(4, count);
-		}
-	}
-
-	@Test
-	public void testBatchIteratorWithNullExpression() throws Exception {
-
-		ObjectContext insertContext = runtime.newContext();
-
-		List<Ordering> orderings = Artist.ARTIST_NAME.ascInsensitives();
-		try (ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class, null, orderings).batchIterator(context, 5);) {
-			int count = 0;
-
-			for (List<Artist> artistList : it) {
-				count++;
-				for(Artist artist : artistList) {
-					Painting painting = insertContext.newObject(Painting.class);
-					painting.setPaintingTitle("painting " + count);
-					painting.setPaintingDescription("artist " + artist.getArtistName());
-				}
-				assertEquals(5, artistList.size());
-				insertContext.commitChanges();
 			}
 
 			assertEquals(4, count);
