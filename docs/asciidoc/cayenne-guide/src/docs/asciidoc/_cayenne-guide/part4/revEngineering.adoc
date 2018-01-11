@@ -12,10 +12,10 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-[[reverse]]
+[[re-modeler]]
 === Reverse Engineering in Cayenne Modeler
 
-Alternative aproach to using xref:cImp[cdbimport] is doing reverse engineering from xref:runModeler[Cayenne Modeler]. Currently modeler GUI doesn't support all features of ant/maven tasks but it suffice for general DB import. Especially it's a good place to quickly start working on your data model.
+Alternative aproach to using <<cdbimport>> is doing reverse engineering from <<CayenneModeler Application, CayenneModeler>>. Currently modeler GUI doesn't support all features of ant/maven tasks but it suffice for general DB import. Especially it's a good place to quickly start working on your data model.
 
 You can find reverse engineering tool in main modeler menu *Tools > Reengineer Database Schema*
 
@@ -45,7 +45,7 @@ NOTE: You can only select one catalog. If you need to import multiple catalogs y
 
 - *Procedure Name Pattern*: RegExp to filter procedures. Default pattern .* includes all stored procedures.
 
-- *Naming Strategy*: Currently there is only one naming strategy available. See ant/maven tools xref:reverse[documentation] for details about naming strategy.
+- *Naming Strategy*: Currently there is only one naming strategy available. See ant/maven tools <<namingStrategy, documentation>> for details about naming strategy.
 
 - *Tables with Meaningful PK Pattern*: Comma separated list of RegExp's for tables that you want to have meaningful primary keys. By default no meaningful PKs are created.
 

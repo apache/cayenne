@@ -54,7 +54,7 @@ include::../var.adoc[]
 
 - JDBC Driver: An appropriate DB-specific JDBC driver is needed to access the database. It can be included in the application or used in web container DataSource configuration.
 
-- Third-party Libraries: Cayenne runtime framework has a minimal set of required and a few more optional dependencies on third-party open source packages. See xref:include["Including Cayenne in a Project"]. chapter for details.
+- Third-party Libraries: Cayenne runtime framework has a minimal set of required and a few more optional dependencies on third-party open source packages. See <<Including Cayenne in a Project>> chapter for details.
 
 [[runModeler]]
 ==== Running CayenneModeler

@@ -14,7 +14,7 @@
 
 include::../var.adoc[]
 
-[[cacheInvalidation]]
+[[ext-cache-invalidation]]
 === Cache invalidation extension
 
 ==== Description

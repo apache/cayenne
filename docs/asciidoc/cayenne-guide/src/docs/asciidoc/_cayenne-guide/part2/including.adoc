@@ -14,7 +14,7 @@
 
 include::../var.adoc[]
 
-[[include]]
+[[including-cayenne-in-project]]
 === Including Cayenne in a Project
 
 ==== Jar Files
@@ -25,7 +25,7 @@ This is an overview of Cayenne jars that is agnostic of the build tool used. The
 
 - `cayenne-server-{version}.jar` - contains main Cayenne runtime (adapters, DB access classes, etc.). Most applications will require this file.
 
-- `cayenne-client-{version}.jar` - a client-side runtime for xref:rop[ROP applications].
+- `cayenne-client-{version}.jar` - a client-side runtime for <<introduction-to-rop, ROP applications>>
 
 - Other cayenne-* jars - various Cayenne tools extensions.
 
@@ -280,7 +280,7 @@ Example - creating a DB schema on a local HSQLDB database:
 [[mavenCdbimort]]
 ===== cdbimport
 
-`cdbimport` is a `cayenne-maven-plugin` goal that generates a DataMap based on an existing database schema. By default, it is bound to the generate-sources phase. This allows you to generate your DataMap prior to building your project, possibly followed by "cgen" execution to generate the classes. CDBImport plugin described in details in chapter xref:dbFirstFlow["DB-First Flow"]
+`cdbimport` is a `cayenne-maven-plugin` goal that generates a DataMap based on an existing database schema. By default, it is bound to the generate-sources phase. This allows you to generate your DataMap prior to building your project, possibly followed by "cgen" execution to generate the classes. CDBImport plugin described in details in chapter <<DB-First Flow>>
 [#cdbimportTable.table.table-bordered]
 .cdbimport parameters
 [cols="2,1,2,5"]
@@ -305,7 +305,7 @@ Example - creating a DB schema on a local HSQLDB database:
 .^|dbimport
 .^|XML
 .^|No
-.^|An object that contains detailed reverse engineering rules about what DB objects should be processed. For full information about this parameter see xref:dbFirstFlow["DB-First Flow"] chapter.
+.^|An object that contains detailed reverse engineering rules about what DB objects should be processed. For full information about this parameter see <<DB-First Flow>> chapter.
 |===
 
 [#cdbimportDataSource.table.table-bordered]
@@ -357,7 +357,7 @@ Example - creating a DB schema on a local HSQLDB database:
 .^|String
 .^|A comma-separated list of Perl5 patterns that defines which imported tables should have their primary key columns mapped as ObjAttributes. "*" would indicate all tables.
 
-.^|namingStrategy
+.^|[[namingStrategy]]namingStrategy
 .^|String
 .^|The naming strategy used for mapping database names to object entity names. Default is `o.a.c.dbsync.naming.DefaultObjectNameGenerator`.
 
@@ -394,7 +394,7 @@ a|Regex that matches the part of the table name that needs to be stripped off wh
 
 .^|filters configuration
 .^|XML
-a|Detailed reverse engineering rules about what DB objects should be processed. For full information about this parameter see  xref:dbFirstFlow["DB-First Flow"] chapter. Here is some simple example:
+a|Detailed reverse engineering rules about what DB objects should be processed. For full information about this parameter see <<DB-First Flow>> chapter. Here is some simple example:
 [source,XML]
 ----
 <dbimport>

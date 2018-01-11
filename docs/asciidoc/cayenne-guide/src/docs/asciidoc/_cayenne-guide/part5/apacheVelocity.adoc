@@ -14,7 +14,7 @@
 
 include::../var.adoc[]
 
-[[velocity]]
+[[ext-velocity]]
 === Apache Velocity extension
 
 ==== Description

@@ -112,7 +112,7 @@ and more data processing that needs to be done on the Cayenne side.
 
 ===== Similar Behaviours Using EJBQL
 
-It is possible to achieve similar behaviours with xref:ejbql[EJBQLQuery] queries by employing the "FETCH" keyword.
+It is possible to achieve similar behaviours with <<EJBQLQuery>> queries by employing the "FETCH" keyword.
 
 [source, SQL]
 ----
@@ -164,7 +164,7 @@ for(DataRow row : rows) {
 
 ==== Specific Attributes and Relationships with EJBQL
 
-It is possible to fetch specific attributes and relationships from a model using xref:ejbqlquery[EJBQLQuery].
+It is possible to fetch specific attributes and relationships from a model using <<EJBQLQuery>>.
 The following example would return a java.util.List of String objects;
 
 [source, SQL]

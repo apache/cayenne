@@ -27,7 +27,7 @@ ServerRuntime runtime = ServerRuntime.builder()
 
 The parameter you pass to the builder is a location of the main project file. Location is a '/'-separated path (same path separator is used on UNIX and Windows) that is resolved relative to the application classpath. The project file can be placed in the root package or in a subpackage (e.g. in the code above it is in "com/example" subpackage).
 
-ServerRuntime encapsulates a single Cayenne stack. Most applications will just have one ServerRuntime using it to create as many ObjectContexts as needed, access the Dependency Injection (DI) container and work with other Cayenne features. Internally ServerRuntime is just a thin wrapper around the DI container. Detailed features of the container are discussed in xref:customize["Customizing Cayenne Runtime"] chapter. Here we'll just show an example of how an application might turn on external transactions:
+ServerRuntime encapsulates a single Cayenne stack. Most applications will just have one ServerRuntime using it to create as many ObjectContexts as needed, access the Dependency Injection (DI) container and work with other Cayenne features. Internally ServerRuntime is just a thin wrapper around the DI container. Detailed features of the container are discussed in <<Customizing Cayenne Runtime>> chapter. Here we'll just show an example of how an application might turn on external transactions:
 
 [source, java]
 ----

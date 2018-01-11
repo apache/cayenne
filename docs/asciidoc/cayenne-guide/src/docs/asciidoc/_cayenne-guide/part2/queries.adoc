@@ -665,7 +665,7 @@ Full example:
 SELECT #result('ID' 'int'), #result('NAME' 'String'), #result('DATE_OF_BIRTH' 'java.util.Date') FROM ARTIST
 ----
 
-NOTE: For advanced features you may look at the xref:velocity[Apache Velocity extension]
+NOTE: For advanced features you may look at the <<Apache Velocity extension>>
 
 ====== Mapping SQLTemplate Results
 
