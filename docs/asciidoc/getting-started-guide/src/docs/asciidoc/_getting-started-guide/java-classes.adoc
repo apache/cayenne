@@ -47,7 +47,9 @@ The resulting POM should look like this:
     <groupId>org.example.cayenne</groupId>
     <artifactId>tutorial</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <cayenne.version>{project-version}</version> <!--1-->
+    <properties>
+        <cayenne.version>{project-version}</cayenne.version> <!--1-->
+    </properties>
 
     <dependencies>
         <dependency>
