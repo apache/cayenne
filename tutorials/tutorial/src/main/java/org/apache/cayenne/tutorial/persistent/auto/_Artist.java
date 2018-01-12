@@ -1,9 +1,12 @@
 package org.apache.cayenne.tutorial.persistent.auto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.tutorial.persistent.Painting;
 
@@ -13,7 +16,7 @@ import org.apache.cayenne.tutorial.persistent.Painting;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Artist extends CayenneDataObject {
+public abstract class _Artist extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -23,30 +26,105 @@ public abstract class _Artist extends CayenneDataObject {
     public static final Property<String> NAME = Property.create("name", String.class);
     public static final Property<List<Painting>> PAINTINGS = Property.create("paintings", List.class);
 
+    protected LocalDate dateOfBirth;
+    protected String name;
+
+    protected Object paintings;
+
     public void setDateOfBirth(LocalDate dateOfBirth) {
-        writeProperty("dateOfBirth", dateOfBirth);
+        beforePropertyWrite("dateOfBirth", this.dateOfBirth, dateOfBirth);
+        this.dateOfBirth = dateOfBirth;
     }
+
     public LocalDate getDateOfBirth() {
-        return (LocalDate)readProperty("dateOfBirth");
+        beforePropertyRead("dateOfBirth");
+        return this.dateOfBirth;
     }
 
     public void setName(String name) {
-        writeProperty("name", name);
+        beforePropertyWrite("name", this.name, name);
+        this.name = name;
     }
+
     public String getName() {
-        return (String)readProperty("name");
+        beforePropertyRead("name");
+        return this.name;
     }
 
     public void addToPaintings(Painting obj) {
         addToManyTarget("paintings", obj, true);
     }
+
     public void removeFromPaintings(Painting obj) {
         removeToManyTarget("paintings", obj, true);
     }
+
     @SuppressWarnings("unchecked")
     public List<Painting> getPaintings() {
         return (List<Painting>)readProperty("paintings");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "dateOfBirth":
+                return this.dateOfBirth;
+            case "name":
+                return this.name;
+            case "paintings":
+                return this.paintings;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "dateOfBirth":
+                this.dateOfBirth = (LocalDate)val;
+                break;
+            case "name":
+                this.name = (String)val;
+                break;
+            case "paintings":
+                this.paintings = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.dateOfBirth);
+        out.writeObject(this.name);
+        out.writeObject(this.paintings);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.dateOfBirth = (LocalDate)in.readObject();
+        this.name = (String)in.readObject();
+        this.paintings = in.readObject();
+    }
 
 }

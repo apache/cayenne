@@ -32,7 +32,7 @@ Now go back to IDEA - you
 should see pairs of classes generated for each mapped entity. You probably also see that
 there's a bunch of red squiggles next to the newly generated Java classes in IDEA.
 This is because our project does not include Cayenne as a Maven dependency yet. Let's
-fix it now by adding "cayenne-server" and "cayenne-java8" artifacts in the bottom of the `pom.xml` file.
+fix it now by adding "cayenne-server" artifact in the bottom of the `pom.xml` file.
 Also we should tell Maven compile plugin that our project needs Java 8.
 The resulting POM should look like this:
 
@@ -44,18 +44,14 @@ The resulting POM should look like this:
     <groupId>org.example.cayenne</groupId>
     <artifactId>tutorial</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <cayenne.version>{project-version}</version> <!--1-->
+    <properties>
+        <cayenne.version>{project-version}</cayenne.version> <!--1-->
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.cayenne</groupId>
             <artifactId>cayenne-server</artifactId>
-            <version>${cayenne.version}</version>
-        </dependency>
-        <!--  For java.time.* types you need to use this dependency-->
-        <dependency>
-            <groupId>org.apache.cayenne</groupId>
-            <artifactId>cayenne-java8</artifactId>
             <version>${cayenne.version}</version>
         </dependency>
         <dependency>
