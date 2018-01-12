@@ -46,20 +46,20 @@ The resulting POM should look like this:
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.example.cayenne</groupId>
     <artifactId>tutorial</artifactId>
-    <version>0.0.1-SNAPSHOT</version><!--1-->
+    <version>0.0.1-SNAPSHOT</version>
+    <cayenne.version>{project-version}</version> <!--1-->
 
     <dependencies>
         <dependency>
             <groupId>org.apache.cayenne</groupId>
             <artifactId>cayenne-server</artifactId>
-            <!-- Here specify the version of Cayenne you are actually using -->
-            <version>{version}</version>
+            <version>${cayenne.version}</version>
         </dependency>
         <!--  For java.time.* types you need to use this dependency-->
         <dependency>
             <groupId>org.apache.cayenne</groupId>
             <artifactId>cayenne-java8</artifactId>
-            <version>{version}</version>
+            <version>${cayenne.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
