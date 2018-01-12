@@ -16,6 +16,8 @@ UPGRADING TO 4.1.M2
     - cayenne-osgi module contains OSGi related functionality.
     - cayenne-rop-server ROP server part.
 
+* Per CAY-2391 added new excludeRelationship option in dbImport.
+
 UPGRADING TO 4.1.M1
 
 * Per CAY-2351 Minimum supported Java version is now Java 8. There is no options to use Cayenne 4.1 with earlier

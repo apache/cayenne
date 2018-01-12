@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -37,17 +38,19 @@ import org.apache.cayenne.map.DbRelationship;
 public class DbRelationshipMerger extends AbstractMerger<DbEntity, DbRelationship> {
 
     private final boolean skipRelationshipsTokens;
+    private final FiltersConfig filtersConfig;
 
-    DbRelationshipMerger(MergerTokenFactory tokenFactory, boolean skipRelationshipsTokens) {
+    DbRelationshipMerger(MergerTokenFactory tokenFactory, boolean skipRelationshipsTokens, FiltersConfig filtersConfig) {
         super(tokenFactory);
         this.skipRelationshipsTokens = skipRelationshipsTokens;
+        this.filtersConfig = filtersConfig;
     }
 
     @Override
     MergerDictionaryDiff<DbRelationship> createDiff(DbEntity original, DbEntity imported) {
         return new MergerDictionaryDiff.Builder<DbRelationship>()
-                .originalDictionary(new DbRelationshipDictionary(original))
-                .importedDictionary(new DbRelationshipDictionary(imported))
+                .originalDictionary(new DbRelationshipDictionary(original, filtersConfig))
+                .importedDictionary(new DbRelationshipDictionary(imported, filtersConfig))
                 .build();
     }
 

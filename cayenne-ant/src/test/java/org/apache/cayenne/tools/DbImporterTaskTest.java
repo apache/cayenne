@@ -39,16 +39,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
 import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils.*;
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 // TODO: we are only testing on Derby. We may need to dynamically switch between DBs 
 // based on "cayenneTestConnection", like we do in cayenne-server, etc.
@@ -104,6 +99,11 @@ public class DbImporterTaskTest {
         test("build-include-table.xml");
     }
 
+    @Test
+    public void testExcludeRelationshipFirst() throws Exception {
+        test("testExcludeRelationshipFirst.xml");
+    }
+
     private DbImporterTask getCdbImport(String buildFile) {
         Project project = new Project();
 
@@ -144,32 +144,9 @@ public class DbImporterTaskTest {
         try {
             cdbImport.execute();
             verifyResult(mapFile, mapFileCopy);
-        } finally {
-            cleanDb(cdbImport.toParameters());
         }
-    }
-
-    private void cleanDb(DbImportConfiguration dbImportConfiguration) throws ClassNotFoundException,
-            IllegalAccessException, InstantiationException, SQLException {
-        Class.forName(dbImportConfiguration.getDriver()).newInstance();
-        // Get a connection
-        Connection connection = DriverManager.getConnection(dbImportConfiguration.getUrl());
-        Statement stmt = connection.createStatement();
-
-        ResultSet tables = connection.getMetaData().getTables(null, null, null, new String[]{"TABLE"});
-        while (tables.next()) {
-            String schema = tables.getString("TABLE_SCHEM");
-            System.out.println("DROP TABLE " + (isBlank(schema) ? "" : schema + ".") + tables.getString("TABLE_NAME"));
-            stmt.execute("DROP TABLE " + (isBlank(schema) ? "" : schema + ".") + tables.getString("TABLE_NAME"));
-        }
-
-        ResultSet schemas = connection.getMetaData().getSchemas();
-        while (schemas.next()) {
-            String schem = schemas.getString("TABLE_SCHEM");
-            if (schem.startsWith("SCHEMA")) {
-                System.out.println("DROP SCHEMA " + schem);
-                stmt.execute("DROP SCHEMA " + schem + " RESTRICT");
-            }
+        catch (Exception ex){
+            fail();
         }
     }
 

@@ -41,6 +41,8 @@ public abstract class FilterContainer {
 
     private final Collection<ExcludeProcedure> excludeProcedureCollection = new LinkedList<>();
 
+    private final Collection<ExcludeRelationship> excludeRelationshipCollection = new LinkedList<>();
+
     public Collection<IncludeTable> getIncludeTables() {
         return includeTableCollection;
     }
@@ -63,6 +65,13 @@ public abstract class FilterContainer {
 
     public Collection<ExcludeProcedure> getExcludeProcedures() {
         return excludeProcedureCollection;
+    }
+
+    /**
+     * @since 4.1
+     */
+    public Collection<ExcludeRelationship> getExcludeRelationship() {
+        return excludeRelationshipCollection;
     }
 
     public void addIncludeColumn(IncludeColumn includeColumn) {
@@ -89,6 +98,13 @@ public abstract class FilterContainer {
         this.excludeProcedureCollection.add(excludeProcedure);
     }
 
+    /**
+     * @since 4.1
+     */
+    public void addExcludeRelationship(ExcludeRelationship excludeRelationship) {
+        this.excludeRelationshipCollection.add(excludeRelationship);
+    }
+
     public void clearIncludeTables() {
         includeTableCollection.clear();
     }
@@ -111,6 +127,13 @@ public abstract class FilterContainer {
 
     public void clearExcludeColumns() {
         excludeColumnCollection.clear();
+    }
+
+    /**
+     * @since 4.1
+     */
+    public void clearExcludeRelationship() {
+        excludeRelationshipCollection.clear();
     }
 
     public String getName() {
@@ -139,7 +162,7 @@ public abstract class FilterContainer {
     public boolean isEmptyContainer() {
         return includeColumnCollection.isEmpty()    && excludeColumnCollection.isEmpty()
             && includeTableCollection.isEmpty()     && excludeTableCollection.isEmpty()
-            && includeProcedureCollection.isEmpty() && excludeProcedureCollection.isEmpty();
+            && includeProcedureCollection.isEmpty() && excludeProcedureCollection.isEmpty() && excludeRelationshipCollection.isEmpty();
     }
 
     static boolean isBlank(Collection<?> collection) {
@@ -158,6 +181,7 @@ public abstract class FilterContainer {
         appendCollection(res, prefix, excludeColumnCollection);
         appendCollection(res, prefix, includeProcedureCollection);
         appendCollection(res, prefix, excludeProcedureCollection);
+        appendCollection(res, prefix, excludeRelationshipCollection);
 
         return res;
     }

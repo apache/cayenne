@@ -20,8 +20,12 @@
 package org.apache.cayenne.dbsync.merge;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.TreeSet;
 
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
+import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
+import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -30,8 +34,11 @@ class DbRelationshipDictionary extends MergerDictionary<DbRelationship> {
 
     private final DbEntity container;
 
-    DbRelationshipDictionary(DbEntity container) {
+    private final FiltersConfig filtersConfig;
+
+    DbRelationshipDictionary(DbEntity container, FiltersConfig filtersConfig) {
         this.container = container;
+        this.filtersConfig = filtersConfig;
     }
 
     @Override
@@ -41,9 +48,29 @@ class DbRelationshipDictionary extends MergerDictionary<DbRelationship> {
 
     @Override
     Collection<DbRelationship> getAll() {
-        return container.getRelationships();
+        return filter();
     }
 
+    /**
+     * @since 4.1
+     */
+    private Collection<DbRelationship> filter() {
+        if(filtersConfig == null) {
+            return container.getRelationships();
+        }
+
+        Collection<DbRelationship> existingFiltered = new LinkedList<>();
+        TableFilter tableFilter = filtersConfig.tableFilter(container.getCatalog(), container.getSchema());
+        if(tableFilter != null && tableFilter.isIncludeTable(container.getName())){
+            PatternFilter patternFilter = tableFilter.getIncludeTableColumnFilter(container.getName());
+            for(DbRelationship rel : container.getRelationships()){
+                if(patternFilter.isIncluded(rel.getName())){
+                    existingFiltered.add(rel);
+                }
+            }
+        }
+        return existingFiltered;
+    }
     /**
      * Signature of DbRelationship is sorted strings generated from its DbJoins
      */

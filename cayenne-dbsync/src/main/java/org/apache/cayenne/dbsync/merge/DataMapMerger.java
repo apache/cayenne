@@ -96,7 +96,7 @@ public class DataMapMerger implements Merger<DataMap> {
     private void createRelationshipMerger() {
         ChainMerger<DbEntity, DbRelationship> dbRelationshipMerger = new ChainMerger<>(
                 tokenFactory,
-                new DbRelationshipMerger(tokenFactory, skipRelationshipsTokens),
+                new DbRelationshipMerger(tokenFactory, skipRelationshipsTokens, filters),
                 dbEntityMerger
         );
         mergerList.add(dbRelationshipMerger);

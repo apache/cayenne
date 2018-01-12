@@ -22,6 +22,7 @@ package org.apache.cayenne.tools.model;
 import java.util.Collection;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeRelationship;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.junit.Test;
 
@@ -78,6 +79,17 @@ public class IncludeTableTest {
         assertNotNull(columns);
         assertEquals(3, columns.size());
         assertEquals("column1", columns.iterator().next().getPattern());
+    }
+
+    @Test
+    public void excludeRelationship() throws Exception {
+        IncludeTable table = new IncludeTable("name");
+        table.excludeRelationship("rel1");
+
+        Collection<ExcludeRelationship> rel = table.toIncludeTable().getExcludeRelationship();
+        assertNotNull(rel);
+        assertEquals(1, rel.size());
+        assertEquals("rel1", rel.iterator().next().getPattern());
     }
 
     @Test

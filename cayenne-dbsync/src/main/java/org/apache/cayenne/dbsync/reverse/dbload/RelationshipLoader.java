@@ -108,22 +108,29 @@ public class RelationshipLoader extends AbstractLoader {
 
             // set relationship names only after their joins are ready ...
             // generator logic is based on relationship state...
-            forwardRelationship.setName(NameBuilder
-                    .builder(forwardRelationship, pkEntity)
-                    .baseName(nameGenerator.relationshipName(forwardRelationship))
-                    .name());
 
-            reverseRelationship.setName(NameBuilder
-                    .builder(reverseRelationship, fkEntity)
-                    .baseName(nameGenerator.relationshipName(reverseRelationship))
-                    .name());
+            setRelationshipName(pkEntity, forwardRelationship);
+            setRelationshipName(fkEntity, reverseRelationship);
 
-            if (delegate.dbRelationshipLoaded(fkEntity, reverseRelationship)) {
-                fkEntity.addRelationship(reverseRelationship);
-            }
-            if (delegate.dbRelationshipLoaded(pkEntity, forwardRelationship)) {
-                pkEntity.addRelationship(forwardRelationship);
-            }
+            checkAndAddRelationship(pkEntity, forwardRelationship);
+            checkAndAddRelationship(fkEntity, reverseRelationship);
+        }
+    }
+
+    private void setRelationshipName(DbEntity entity, DbRelationship relationship) {
+        relationship.setName(NameBuilder
+                .builder(relationship, entity)
+                .baseName(nameGenerator.relationshipName(relationship))
+                .name());
+    }
+
+    private void checkAndAddRelationship(DbEntity entity, DbRelationship relationship){
+        boolean isIncluded = config.getFiltersConfig()
+                .tableFilter(entity.getCatalog(), entity.getSchema())
+                .getIncludeTableColumnFilter(entity.getName())
+                .isIncluded(relationship.getName());
+        if (isIncluded && delegate.dbRelationshipLoaded(entity, relationship)) {
+            entity.addRelationship(relationship);
         }
     }
 
