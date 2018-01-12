@@ -21,8 +21,12 @@ package org.apache.cayenne.asciidoc;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
@@ -33,6 +37,7 @@ import org.asciidoctor.ast.Document;
 import org.asciidoctor.ast.DocumentRuby;
 import org.asciidoctor.extension.Postprocessor;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 
 /**
  * <p>
@@ -84,12 +89,12 @@ public class CayennePostProcessor extends Postprocessor {
                 .addClass("fa-lightbulb-o")
                 .addClass("fa-2x");
 
-        jsoupDoc.select("code").forEach(el -> {
+        for(Element el : jsoupDoc.select("code")) {
             String codeClass = el.attr("data-lang");
             if(!codeClass.isEmpty()) {
                 el.addClass(codeClass);
             }
-        });
+        }
 
         jsoupDoc.select("div#preamble").remove();
 
@@ -122,7 +127,7 @@ public class CayennePostProcessor extends Postprocessor {
         Object docname = ((Map)document.getOptions().get(Options.ATTRIBUTES)).get("docname");
 
         Path path = FileSystems.getDefault().getPath((String) destDir, docname + ".toc.html");
-        try(BufferedWriter br = Files.newBufferedWriter(path, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
+        try(BufferedWriter br = newBufferedWriter(path, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
             br.write(toc, 0, toc.length());
             br.flush();
         } catch (IOException ex) {
@@ -134,6 +139,12 @@ public class CayennePostProcessor extends Postprocessor {
         }
 
         return output.substring(0, start) + output.substring(end);
+    }
+
+    static BufferedWriter newBufferedWriter(Path path, OpenOption... options) throws IOException {
+        CharsetEncoder encoder = StandardCharsets.UTF_8.newEncoder();
+        Writer writer = new OutputStreamWriter(path.getFileSystem().provider().newOutputStream(path, options), encoder);
+        return new BufferedWriter(writer);
     }
 
     protected String processHeader(Document document, String output) {
