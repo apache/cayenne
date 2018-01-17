@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.util;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;

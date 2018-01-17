@@ -45,7 +45,7 @@ import java.sql.Statement;
 import java.util.List;
 
 import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils.*;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.cayenne.util.Util.isBlank;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -225,5 +225,7 @@ public class DbImporterTaskTest {
             }
         }
     }
+
+
 
 }

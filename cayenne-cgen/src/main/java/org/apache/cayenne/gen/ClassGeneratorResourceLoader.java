@@ -19,11 +19,12 @@
 
 package org.apache.cayenne.gen;
 
-import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.resource.loader.FileResourceLoader;
@@ -43,10 +44,10 @@ public class ClassGeneratorResourceLoader extends FileResourceLoader {
      * wasn't found, it attempts to load it from current directory or as an absolute path.
      */
     @Override
-    public synchronized InputStream getResourceStream(String name)
+    public synchronized Reader getResourceReader(String name, String charset)
             throws ResourceNotFoundException {
 
-        InputStream stream = loadFromRelativePath(name);
+        Reader stream = loadFromRelativePath(name, charset);
         if (stream != null) {
             return stream;
         }
@@ -71,19 +72,19 @@ public class ClassGeneratorResourceLoader extends FileResourceLoader {
                 + "'. Searched filesystem path and classpath");
     }
 
-    protected InputStream loadFromRelativePath(String name) {
+    protected Reader loadFromRelativePath(String name, String charset) {
         try {
-            return super.getResourceStream(name);
+            return super.getResourceReader(name, charset);
         }
         catch (ResourceNotFoundException rnfex) {
             return null;
         }
     }
 
-    protected InputStream loadFromAbsPath(String name) {
+    protected Reader loadFromAbsPath(String name) {
         try {
             File file = new File(name);
-            return (file.canRead()) ? new BufferedInputStream(new FileInputStream(file
+            return (file.canRead()) ? new BufferedReader(new FileReader(file
                     .getAbsolutePath())) : null;
 
         }
@@ -92,11 +93,11 @@ public class ClassGeneratorResourceLoader extends FileResourceLoader {
         }
     }
 
-    protected InputStream loadFromThreadClassLoader(String name) {
-        return Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
+    protected Reader loadFromThreadClassLoader(String name) {
+        return new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(name));
     }
 
-    protected InputStream loadFromThisClassLoader(String name) {
-        return getClass().getClassLoader().getResourceAsStream(name);
+    protected Reader loadFromThisClassLoader(String name) {
+        return new InputStreamReader(getClass().getClassLoader().getResourceAsStream(name));
     }
 }

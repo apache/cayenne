@@ -15,6 +15,7 @@ Changes/New Features:
 
 CAY-2372 Extract new modules from cayenne-server
 CAY-2377 Cleanup deprecated code.
+CAY-2394 Upgrade to Apache Velocity 2.0
 
 Bug Fixes:
 

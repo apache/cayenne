@@ -27,7 +27,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.editor.ObjAttributeTableModel;
 import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;

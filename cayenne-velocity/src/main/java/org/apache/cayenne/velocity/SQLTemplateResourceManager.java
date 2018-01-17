@@ -19,12 +19,7 @@
 
 package org.apache.cayenne.velocity;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Map;
-
 import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
-import org.apache.commons.collections.ExtendedProperties;
 import org.apache.velocity.Template;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
@@ -32,14 +27,24 @@ import org.apache.velocity.runtime.RuntimeServices;
 import org.apache.velocity.runtime.resource.Resource;
 import org.apache.velocity.runtime.resource.ResourceManager;
 import org.apache.velocity.runtime.resource.loader.ResourceLoader;
+import org.apache.velocity.util.ExtProperties;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Map;
 
 /**
  * An implementation of the Velocity ResourceManager and ResourceLoader that
  * creates templates from in-memory Strings.
- * 
+ *
  * @since 1.1
  */
-// class must be public since it is instantiated by Velocity via reflection.
+
+/**
+ * @deprecated since 4.1 is unused
+ */
+@Deprecated
 public class SQLTemplateResourceManager
     extends ResourceLoader
     implements ResourceManager {
@@ -89,13 +94,13 @@ public class SQLTemplateResourceManager
     }
 
     @Override
-    public InputStream getResourceStream(String source)
+    public Reader getResourceReader(String source, String charset)
         throws ResourceNotFoundException {
-        return new ByteArrayInputStream(source.getBytes());
+        return new InputStreamReader(new ByteArrayInputStream(source.getBytes()));
     }
 
     @Override
-    public void init(ExtendedProperties configuration) {
+    public void init(ExtProperties configuration) {
 
     }
 
