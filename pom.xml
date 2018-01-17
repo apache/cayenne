@@ -841,7 +841,7 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.21.0</version>
+                    <version>0.23.0</version>
                 </plugin>
             </plugins>
 		</pluginManagement>
@@ -1505,6 +1505,69 @@
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
+		</profile>
+		<profile>
+			<id>sqlserver-docker</id>
+			<activation>
+				<property>
+					<name>cayenneTestConnection</name>
+					<value>sqlserver-docker</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.microsoft.sqlserver</groupId>
+					<artifactId>mssql-jdbc</artifactId>
+					<version>6.1.0.jre7</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<configuration>
+							<systemPropertyVariables>
+								<!-- ${db.host} and ${db.port} are dynamically set by docker-maven-plugin below -->
+								<cayenneAdapter>org.apache.cayenne.dba.sqlserver.SQLServerAdapter</cayenneAdapter>
+								<cayenneJdbcUsername>sa</cayenneJdbcUsername>
+								<cayenneJdbcPassword>Cayenne#123</cayenneJdbcPassword>
+								<cayenneJdbcUrl>jdbc:sqlserver://${sqlserver.host}:${sqlserver.port};</cayenneJdbcUrl>
+								<cayenneJdbcDriver>com.microsoft.sqlserver.jdbc.SQLServerDriver</cayenneJdbcDriver>
+								<cayenne.runtime.db.collation.assume.ci>true</cayenne.runtime.db.collation.assume.ci>
+							</systemPropertyVariables>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<configuration>
+							<verbose>true</verbose>
+							<images>
+								<image>
+									<alias>sqlserver</alias>
+									<name>microsoft/mssql-server-linux:2017-latest</name>
+									<run>
+										<ports>
+											<port>${sqlserver.host}:${sqlserver.port}:1433</port>
+										</ports>
+										<env>
+											<ACCEPT_EULA>Y</ACCEPT_EULA>
+											<SA_PASSWORD>Cayenne#123</SA_PASSWORD>
+										</env>
+										<wait>
+											<log>SQL Server is now ready for client connections.</log>
+											<time>60000</time>
+										</wait>
+										<cmd>/opt/mssql/bin/sqlservr</cmd>
+									</run>
+								</image>
+							</images>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 		<profile>
 			<id>ingres</id>
