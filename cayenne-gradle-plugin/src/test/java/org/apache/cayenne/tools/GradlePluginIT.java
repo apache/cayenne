@@ -26,6 +26,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class GradlePluginIT extends BaseTaskIT {
@@ -50,7 +51,15 @@ public class GradlePluginIT extends BaseTaskIT {
 
     @Test
     public void testGradleVersionsCompatibility() throws Exception {
-        String[] versions = {"3.5", "3.3", "3.0", "2.12", "2.8"};
+        String[] versions;
+
+        // Old gradle versions will fail on Java 9.0.1 and later
+        if (getJavaMajorVersion(System.getProperty("java.version")) < 9) {
+            versions = new String[]{"4.3", "4.0", "3.5", "3.3", "3.0", "2.12", "2.8"};
+        } else {
+            versions = new String[]{"4.3.1", "4.3"};
+        }
+
         List<String> failedVersions = new ArrayList<>();
         for(String version : versions) {
             try {
@@ -66,5 +75,38 @@ public class GradlePluginIT extends BaseTaskIT {
             versionString.append(" ").append(version);
         }
         assertTrue(versionString.toString(), failedVersions.isEmpty());
+    }
+
+    @Test
+    public void testVersion() {
+        assertEquals(7, getJavaMajorVersion("1.7.0_25-b15"));
+        assertEquals(7, getJavaMajorVersion("1.7.2+123"));
+        assertEquals(8, getJavaMajorVersion("1.8.145"));
+        assertEquals(9, getJavaMajorVersion("9-ea+19"));
+        assertEquals(9, getJavaMajorVersion("9+100"));
+        assertEquals(9, getJavaMajorVersion("9"));
+        assertEquals(9, getJavaMajorVersion("9.0.1"));
+        assertEquals(10, getJavaMajorVersion("10-ea+38"));
+    }
+
+    // will fail on Java 1.1 or earlier :)
+    private static int getJavaMajorVersion(String versionString) {
+        int index = 0, prevIndex = 0, version = 0;
+        if((index = versionString.indexOf("-")) >= 0) {
+            versionString = versionString.substring(0, index);
+        }
+        if((index = versionString.indexOf("+")) >= 0) {
+            versionString = versionString.substring(0, index);
+        }
+
+        while(version < 2) {
+            index = versionString.indexOf(".", prevIndex);
+            if(index == -1) {
+                index = versionString.length();
+            }
+            version = Integer.parseInt(versionString.substring(prevIndex, index));
+            prevIndex = index + 1;
+        }
+        return version;
     }
 }
