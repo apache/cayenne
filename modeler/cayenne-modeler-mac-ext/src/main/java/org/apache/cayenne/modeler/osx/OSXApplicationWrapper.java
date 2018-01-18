@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see OSXQuitResponseWrapper
  *
- * @since 4.1
+ * @since 4.0
  */
 public class OSXApplicationWrapper {
 

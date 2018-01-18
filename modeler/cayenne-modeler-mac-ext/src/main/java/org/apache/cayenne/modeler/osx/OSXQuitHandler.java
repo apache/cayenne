@@ -20,7 +20,7 @@
 package org.apache.cayenne.modeler.osx;
 
 /**
- * @since 4.1
+ * @since 4.0
  */
 public interface OSXQuitHandler {
 

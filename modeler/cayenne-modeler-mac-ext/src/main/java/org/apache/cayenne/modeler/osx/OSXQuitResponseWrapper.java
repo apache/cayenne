@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * com.apple.eawt.QuitResponse in JDK 8 and java.awt.desktop.QuitResponse in JDK 9.
  * Luckily it has same signature so we can dynamically resolve it's methods.
  *
- * @since 4.1
+ * @since 4.0
  */
 public class OSXQuitResponseWrapper {
 
