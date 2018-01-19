@@ -238,6 +238,7 @@ public class Util {
 	}
 
 	/**
+	 * Returns true, if string not empty and contains non-whitespace characters.
 	 * @since 4.1
 	 */
 	public static boolean isBlank(CharSequence cs) {
@@ -262,9 +263,7 @@ public class Util {
 		if (isEmptyString(cs)) {
 			return false;
 		} else {
-			int sz = cs.length();
-
-			for(int i = 0; i < sz; ++i) {
+			for(int i = 0; i < cs.length(); ++i) {
 				if (!Character.isDigit(cs.charAt(i))) {
 					return false;
 				}
@@ -272,6 +271,22 @@ public class Util {
 
 			return true;
 		}
+	}
+
+	/**
+	 * Returns how many times the sub appears in the str.
+	 * @since 4.1
+	 */
+	public static int countMatches(final String str, final String sub) {
+		if (isEmptyString(str) || isEmptyString(sub)) {
+			return 0;
+		}
+		int count = 0, idx = 0;
+		while ((idx = str.indexOf(sub, idx)) != -1) {
+			count++;
+			idx += sub.length();
+		}
+		return count;
 	}
 
 	/**

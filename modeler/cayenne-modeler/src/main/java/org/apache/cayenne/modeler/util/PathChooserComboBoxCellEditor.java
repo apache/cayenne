@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.util;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.cayenne.util.Util;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
@@ -98,8 +98,7 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
     }
 
     private void setComboModelAccordingToPath(String pathString) {
-        List<String> currentNodeChildren = new ArrayList<>();
-        currentNodeChildren.addAll(getChildren(getCurrentNode(pathString), pathString));
+        List<String> currentNodeChildren = new ArrayList<>(getChildren(getCurrentNode(pathString), pathString));
         comboBoxPathChooser.setModel(new DefaultComboBoxModel<>(currentNodeChildren.toArray(new String[0])));
         comboBoxPathChooser.setSelectedItem(pathString);
         if(!pathString.isEmpty()) {
@@ -118,19 +117,18 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
 
         if (lastEnteredCharacter == '.') {
             processDotEntered();
-            previousEmbeddedLevel = StringUtils.countMatches(pathString, ".");
+            previousEmbeddedLevel = Util.countMatches(pathString, ".");
             return;
         }
 
-        int currentEmbeddedLevel = StringUtils.countMatches(pathString, ".");
+        int currentEmbeddedLevel = Util.countMatches(pathString, ".");
         if (previousEmbeddedLevel != currentEmbeddedLevel) {
             previousEmbeddedLevel = currentEmbeddedLevel;
             String[] pathStrings = pathString.split(Pattern.quote("."));
             String lastStringInPath = pathStrings[pathStrings.length - 1];
             String saveDbAttributePath = pathString;
             pathString = pathString.replaceAll(lastStringInPath + "$", "");
-            List<String> currentNodeChildren = new ArrayList<>();
-            currentNodeChildren.addAll(getChildren(getCurrentNode(pathString), pathString));
+            List<String> currentNodeChildren = new ArrayList<>(getChildren(getCurrentNode(pathString), pathString));
             comboBoxPathChooser.setModel(new DefaultComboBoxModel<>(currentNodeChildren.toArray(new String[0])));
             comboBoxPathChooser.setSelectedItem(saveDbAttributePath);
         }

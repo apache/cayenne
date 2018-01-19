@@ -27,7 +27,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.editor.ObjAttributeTableModel;
 import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.cayenne.util.Util;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
@@ -58,7 +58,7 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
         initializeCombo(model, row, table);
 
         String dbAttributePath = ((JTextComponent) (comboBoxPathChooser).getEditor().getEditorComponent()).getText();
-        previousEmbeddedLevel = StringUtils.countMatches(dbAttributePath, ".");
+        previousEmbeddedLevel = Util.countMatches(dbAttributePath, ".");
         return comboBoxPathChooser;
     }
 
@@ -117,12 +117,11 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
 
             if (dbAttributePath.charAt(dbAttributePath.length()-1) != '.') {
                 dbAttributePath = dbAttributePath + '.';
-                previousEmbeddedLevel =  StringUtils.countMatches(dbAttributePath,".");
+                previousEmbeddedLevel =  Util.countMatches(dbAttributePath,".");
                 ((JTextComponent) (comboBoxPathChooser).
                         getEditor().getEditorComponent()).setText(dbAttributePath);
             }
-            List<String> currentNodeChildren = new ArrayList<>();
-            currentNodeChildren.addAll(getChildren(getCurrentNode(dbAttributePath), dbAttributePath));
+            List<String> currentNodeChildren = new ArrayList<>(getChildren(getCurrentNode(dbAttributePath), dbAttributePath));
             comboBoxPathChooser.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
             comboBoxPathChooser.setSelectedItem(dbAttributePath);
             comboBoxPathChooser.showPopup();
