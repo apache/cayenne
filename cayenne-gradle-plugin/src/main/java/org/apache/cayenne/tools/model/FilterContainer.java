@@ -37,6 +37,7 @@ public class FilterContainer {
     private Collection<PatternParam> excludeColumns = new LinkedList<>();
     private Collection<PatternParam> includeProcedures = new LinkedList<>();
     private Collection<PatternParam> excludeProcedures = new LinkedList<>();
+    private Collection<PatternParam> excludeRelationships = new LinkedList<>();
 
     FilterContainer() {
     }
@@ -97,6 +98,22 @@ public class FilterContainer {
         }
     }
 
+    /**
+     * @since 4.1
+     */
+    public void excludeRelationship(String pattern) {
+        addToCollection(excludeRelationships, pattern);
+    }
+
+    /**
+     * @since 4.1
+     */
+    public void excludeRelationships(String... patterns) {
+        for(String pattern : patterns) {
+            excludeRelationship(pattern);
+        }
+    }
+
     public void includeProcedure(String pattern) {
         addToCollection(includeProcedures, pattern);
     }
@@ -142,6 +159,9 @@ public class FilterContainer {
         }
         for(PatternParam procedure : excludeProcedures) {
             container.addExcludeProcedure(procedure.toExcludeProcedure());
+        }
+        for(PatternParam rel : excludeRelationships) {
+            container.addExcludeRelationship(rel.toExcludeRelationship());
         }
         return container;
     }

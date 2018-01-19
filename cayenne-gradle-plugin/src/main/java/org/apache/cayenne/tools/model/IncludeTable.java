@@ -29,6 +29,7 @@ public class IncludeTable extends PatternParam {
 
     private Collection<PatternParam> includeColumns = new LinkedList<>();
     private Collection<PatternParam> excludeColumns = new LinkedList<>();
+    private Collection<PatternParam> excludeRelationships = new LinkedList<>();
 
     IncludeTable() {
     }
@@ -65,6 +66,22 @@ public class IncludeTable extends PatternParam {
         }
     }
 
+    /**
+     * @since 4.1
+     */
+    public void excludeRelationship(String pattern){
+        excludeRelationships.add(new PatternParam(pattern));
+    }
+
+    /**
+     * @since 4.1
+     */
+    public void excludeRelationships(String... patterns){
+        for(String pattern : patterns) {
+            excludeRelationship(pattern);
+        }
+    }
+
     org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable toIncludeTable() {
         org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable table
                 = new org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable();
@@ -75,6 +92,10 @@ public class IncludeTable extends PatternParam {
         }
         for(PatternParam excludeColumn : excludeColumns) {
             table.addExcludeColumn(excludeColumn.toExcludeColumn());
+        }
+
+        for(PatternParam excludeRelationship : excludeRelationships){
+            table.addExcludeRelationship(excludeRelationship.toExcludeRelationship());
         }
 
         return table;

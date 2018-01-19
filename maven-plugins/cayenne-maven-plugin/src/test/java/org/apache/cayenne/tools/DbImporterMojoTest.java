@@ -163,6 +163,16 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         test("testOneToOne");
     }
 
+    @Test
+    public void testExcludeRelationship() throws Exception {
+        test("testExcludeRelationship");
+    }
+
+    @Test
+    public void testExcludeRelationshipFirst() throws Exception {
+        test("testExcludeRelationshipFirst");
+    }
+
     /**
      * Q: what happens if an attribute or relationship is unmapped in the object layer, but then the underlying table
      * changes.

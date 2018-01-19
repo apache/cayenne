@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Licensed to the Apache Software Foundation (ASF) under one
+	or more contributor license agreements.  See the NOTICE file
+	distributed with this work for additional information
+	regarding copyright ownership.  The ASF licenses this file
+	to you under the Apache License, Version 2.0 (the
+	"License"); you may not use this file except in compliance
+	with the License.  You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing,
+	software distributed under the License is distributed on an
+	"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+	KIND, either express or implied.  See the License for the
+	specific language governing permissions and limitations
+	under the License.
+-->
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+          project-version="10">
+    <property name="defaultSchema" value="SCHEMA_01"/>
+    <db-entity name="TEST1" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+    </db-entity>
+    <db-entity name="TEST2" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+        <db-attribute name="TEST1_ID" type="INTEGER"/>
+    </db-entity>
+
+    <db-entity name="TEST3" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+    </db-entity>
+    <db-entity name="TEST4" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+        <db-attribute name="TEST3_ID" type="INTEGER"/>
+    </db-entity>
+
+    <db-entity name="TEST5" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+    </db-entity>
+    <db-entity name="TEST6" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+        <db-attribute name="TEST5_ID" type="INTEGER"/>
+    </db-entity>
+
+    <db-entity name="TEST7" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+    </db-entity>
+    <db-entity name="TEST8" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+        <db-attribute name="TEST7_ID" type="INTEGER"/>
+    </db-entity>
+
+    <db-entity name="TEST9" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+    </db-entity>
+    <db-entity name="TEST10" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+        <db-attribute name="TEST9_ID" type="INTEGER"/>
+    </db-entity>
+
+    <db-entity name="TEST11" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+    </db-entity>
+    <db-entity name="TEST12" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+        <db-attribute name="TEST11_ID" type="INTEGER"/>
+    </db-entity>
+
+    <obj-entity name="Test1" className="Test1" dbEntityName="TEST1">
+    </obj-entity>
+    <obj-entity name="Test2" className="Test2" dbEntityName="TEST2">
+    </obj-entity>
+
+    <obj-entity name="Test3" className="Test3" dbEntityName="TEST3">
+    </obj-entity>
+    <obj-entity name="Test4" className="Test4" dbEntityName="TEST4">
+    </obj-entity>
+
+    <obj-entity name="Test5" className="Test5" dbEntityName="TEST5">
+    </obj-entity>
+    <obj-entity name="Test6" className="Test6" dbEntityName="TEST6">
+    </obj-entity>
+
+    <obj-entity name="Test7" className="Test7" dbEntityName="TEST7">
+    </obj-entity>
+    <obj-entity name="Test8" className="Test8" dbEntityName="TEST8">
+    </obj-entity>
+
+    <obj-entity name="Test9" className="Test9" dbEntityName="TEST9">
+    </obj-entity>
+    <obj-entity name="Test10" className="Test10" dbEntityName="TEST10">
+    </obj-entity>
+
+    <obj-entity name="Test11" className="Test11" dbEntityName="TEST11">
+    </obj-entity>
+    <obj-entity name="Test12" className="Test12" dbEntityName="TEST12">
+    </obj-entity>
+
+    <db-relationship name="TEST1_TO_TEST2" source="TEST1" target="TEST2" toMany="true">
+        <db-attribute-pair source="ID" target="TEST1_ID"/>
+    </db-relationship>
+    <db-relationship name="TEST2_TO_TEST1" source="TEST2" target="TEST1">
+        <db-attribute-pair source="TEST1_ID" target="ID"/>
+    </db-relationship>
+    <obj-relationship name="test1ToTest2" source="Test1" target="Test2" deleteRule="Deny" db-relationship-path="TEST1_TO_TEST2"/>
+    <obj-relationship name="test2ToTest1" source="Test2" target="Test1" deleteRule="Nullify" db-relationship-path="TEST2_TO_TEST1"/>
+
+    <db-relationship name="test4s" source="TEST3" target="TEST4" toMany="true">
+         <db-attribute-pair source="ID" target="TEST3_ID"/>
+    </db-relationship>
+    <db-relationship name="test3" source="TEST4" target="TEST3">
+         <db-attribute-pair source="TEST3_ID" target="ID"/>
+    </db-relationship>
+    <obj-relationship name="test4s" source="Test3" target="Test4" deleteRule="Deny" db-relationship-path="test4s"/>
+    <obj-relationship name="test3" source="Test4" target="Test3" deleteRule="Nullify" db-relationship-path="test3"/>
+
+    <db-relationship name="test8s" source="TEST7" target="TEST8" toMany="true">
+        <db-attribute-pair source="ID" target="TEST7_ID"/>
+    </db-relationship>
+    <db-relationship name="test7" source="TEST8" target="TEST7">
+        <db-attribute-pair source="TEST7_ID" target="ID"/>
+    </db-relationship>
+    <obj-relationship name="test8s" source="Test7" target="Test8" deleteRule="Deny" db-relationship-path="test8s"/>
+    <obj-relationship name="test7" source="Test8" target="Test7" deleteRule="Nullify" db-relationship-path="test7"/>
+
+    <db-relationship name="test12s" source="TEST11" target="TEST12" toMany="true">
+        <db-attribute-pair source="ID" target="TEST11_ID"/>
+    </db-relationship>
+    <db-relationship name="test11" source="TEST12" target="TEST11">
+        <db-attribute-pair source="TEST11_ID" target="ID"/>
+    </db-relationship>
+    <obj-relationship name="test12s" source="Test11" target="Test12" deleteRule="Deny" db-relationship-path="test12s"/>
+    <obj-relationship name="test1" source="Test12" target="Test11" deleteRule="Nullify" db-relationship-path="test11"/>
+</data-map>

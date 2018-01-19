@@ -94,6 +94,26 @@ public class DbImportIT extends BaseTaskIT {
         assertTrue(result.getOutput().contains("Migration Complete Successfully."));
     }
 
+    @Test
+    public void excludeRelDbTaskSuccess() throws Exception {
+        String dbUrl = prepareDerbyDatabase("exclude_Table");
+        File dataMap = new File(projectDir.getAbsolutePath() + "/datamap.map.xml");
+        assertFalse(dataMap.exists());
+
+        GradleRunner runner = createRunner("dbimport_excludeRel", "cdbimport", "--info", "-PdbUrl=" + dbUrl);
+
+        BuildResult result = runner.build();
+
+        assertNotNull(result.task(":cdbimport"));
+        assertEquals(TaskOutcome.SUCCESS, result.task(":cdbimport").getOutcome());
+
+        assertTrue(dataMap.exists());
+
+        // Check few lines from reverse engineering output
+        assertTrue(result.getOutput().contains("Table: SCHEMA_01.TEST1"));
+        assertTrue(result.getOutput().contains("Table: SCHEMA_01.TEST2"));
+    }
+
     private String prepareDerbyDatabase(String sqlFile) throws Exception {
         URL sqlUrl = Objects.requireNonNull(ResourceUtil.getResource(getClass(), sqlFile + ".sql"));
         String dbUrl = "jdbc:derby:" + projectDir.getAbsolutePath() + "/build/" + sqlFile;

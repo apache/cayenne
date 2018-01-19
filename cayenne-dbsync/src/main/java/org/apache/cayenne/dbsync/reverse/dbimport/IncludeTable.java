@@ -31,6 +31,8 @@ public class IncludeTable extends PatternParam {
 
     private final Collection<ExcludeColumn> excludeColumns = new LinkedList<>();
 
+    private final Collection<ExcludeRelationship> excludeRelationship = new LinkedList<>();
+
     public IncludeTable() {
     }
 
@@ -54,12 +56,33 @@ public class IncludeTable extends PatternParam {
         this.excludeColumns.addAll(excludeColumns);
     }
 
+    /**
+     * @since 4.1
+     */
+    public Collection<ExcludeRelationship> getExcludeRelationship() {
+        return excludeRelationship;
+    }
+
+    /**
+     * @since 4.1
+     */
+    public void setExcludeRelationship (Collection<ExcludeRelationship> excludeRelationship) {
+        this.excludeRelationship.addAll(excludeRelationship);
+    }
+
     public void addIncludeColumn(IncludeColumn includeColumn) {
         this.includeColumns.add(includeColumn);
     }
 
     public void addExcludeColumn(ExcludeColumn excludeColumn) {
         this.excludeColumns.add(excludeColumn);
+    }
+
+    /**
+     * @since 4.1
+     */
+    public void addExcludeRelationship(ExcludeRelationship excludeRelationship){
+        this.excludeRelationship.add(excludeRelationship);
     }
 
     @Override
@@ -76,6 +99,12 @@ public class IncludeTable extends PatternParam {
         if (excludeColumns != null && !excludeColumns.isEmpty()) {
             for (ExcludeColumn excludeColumn : excludeColumns) {
                 excludeColumn.toString(res, prefix);
+            }
+        }
+
+        if(excludeRelationship != null && !excludeColumns.isEmpty()) {
+            for(ExcludeRelationship excludeRelationship : excludeRelationship) {
+                excludeRelationship.toString(res, prefix);
             }
         }
 

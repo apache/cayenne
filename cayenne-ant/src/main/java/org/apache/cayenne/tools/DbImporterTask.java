@@ -24,11 +24,12 @@ import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
-import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfigurationValidator;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfigurationValidator;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportModule;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeRelationship;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
@@ -75,6 +76,13 @@ public class DbImporterTask extends Task {
 
     public void addExcludeTable(ExcludeTable excludeTable) {
         reverseEngineering.addExcludeTable(excludeTable);
+    }
+
+    /**
+     * @since 4.1
+     */
+    public void addExcludeRelationship(ExcludeRelationship excludeRelationship){
+        reverseEngineering.addExcludeRelationship(excludeRelationship);
     }
 
     public void addIncludeProcedure(IncludeProcedure includeProcedure) {

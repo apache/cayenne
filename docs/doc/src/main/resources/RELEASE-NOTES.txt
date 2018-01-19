@@ -15,6 +15,7 @@ Changes/New Features:
 
 CAY-2372 Extract new modules from cayenne-server
 CAY-2377 Cleanup deprecated code.
+CAY-2391 Add excludeRelationship in dbImport
 CAY-2393 Add sqlserver-docker profile to automate tests on SQLServer
 
 Bug Fixes:
