@@ -39,9 +39,6 @@ import java.util.Map;
  * creates templates from in-memory Strings.
  *
  * @since 1.1
- */
-
-/**
  * @deprecated since 4.1 is unused
  */
 @Deprecated
