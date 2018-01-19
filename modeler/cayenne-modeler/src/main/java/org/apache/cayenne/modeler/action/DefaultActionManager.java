@@ -169,7 +169,8 @@ public class DefaultActionManager implements ActionManager {
 
         DATA_NODE_ACTIONS = new HashSet<String>(DOMAIN_ACTIONS);
         DATA_NODE_ACTIONS.addAll(Arrays.asList(
-                LinkDataMapsAction.class.getName()));
+                LinkDataMapsAction.class.getName(),
+                RemoveAction.class.getName()));
 
         DATA_MAP_ACTIONS = new HashSet<String>(DOMAIN_ACTIONS);
         DATA_MAP_ACTIONS.addAll(Arrays.asList(
