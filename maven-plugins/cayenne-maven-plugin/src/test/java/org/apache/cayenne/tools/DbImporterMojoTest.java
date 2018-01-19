@@ -49,7 +49,7 @@ import java.sql.Statement;
 import java.util.Iterator;
 import java.util.Objects;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.cayenne.util.Util.isBlank;
 import static org.mockito.Mockito.mock;
 
 

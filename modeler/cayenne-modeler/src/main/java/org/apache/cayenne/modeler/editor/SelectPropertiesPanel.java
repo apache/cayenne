@@ -43,9 +43,11 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
-import org.apache.commons.lang.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.apache.cayenne.util.Util.isNumeric;
 
 /**
  * A panel that supports editing the properties of a GenericSelectQuery.
@@ -162,7 +164,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
         if (string.length() == 0) {
             setQueryProperty(QueryMetadata.FETCH_OFFSET_PROPERTY, ZERO.toString());
         } else {
-            if (StringUtils.isNumeric(string)) {
+            if (isNumeric(string)) {
                 setQueryProperty(QueryMetadata.FETCH_OFFSET_PROPERTY, string);
             } else {
                 throw new ValidationException("Fetch offset must be an integer: %s", string);
@@ -175,7 +177,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
         if (string.length() == 0) {
             setQueryProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, ZERO.toString());
         } else {
-            if (StringUtils.isNumeric(string)) {
+            if (isNumeric(string)) {
                 setQueryProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, string);
             } else {
                 throw new ValidationException("Fetch limit must be an integer: %s", string);
@@ -188,7 +190,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
         if (string.length() == 0) {
             setQueryProperty(QueryMetadata.PAGE_SIZE_PROPERTY, ZERO.toString());
         } else {
-            if (StringUtils.isNumeric(string)) {
+            if (isNumeric(string)) {
                 setQueryProperty(QueryMetadata.PAGE_SIZE_PROPERTY, string);
             } else {
                 throw new ValidationException("Page size must be an integer: %s", string);

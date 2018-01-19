@@ -26,11 +26,10 @@ import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.template.SQLTemplateRenderingUtils;
+import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.context.InternalContextAdapterImpl;
-import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.RuntimeInstance;
-import org.apache.velocity.runtime.log.NullLogChute;
 import org.apache.velocity.runtime.parser.ParseException;
 import org.apache.velocity.runtime.parser.node.ASTReference;
 import org.apache.velocity.runtime.parser.node.SimpleNode;
@@ -101,11 +100,6 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 		this.renderingUtils = new SQLTemplateRenderingUtils();
 		this.velocityRuntime = new RuntimeInstance();
 
-		// set null logger
-		velocityRuntime.addProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM, new NullLogChute());
-
-		velocityRuntime
-				.addProperty(RuntimeConstants.RESOURCE_MANAGER_CLASS, SQLTemplateResourceManager.class.getName());
 		velocityRuntime.addProperty("userdirective", BindDirective.class.getName());
 		velocityRuntime.addProperty("userdirective", BindEqualDirective.class.getName());
 		velocityRuntime.addProperty("userdirective", BindNotEqualDirective.class.getName());
@@ -195,7 +189,7 @@ public class VelocitySQLTemplateProcessor implements SQLTemplateProcessor {
 
 		SimpleNode nodeTree;
 		try {
-			nodeTree = velocityRuntime.parse(new StringReader(template), template);
+			nodeTree = velocityRuntime.parse(new StringReader(template), new Template());
 		} catch (ParseException pex) {
 			throw new CayenneRuntimeException("Error parsing template '%s' : %s", template, pex.getMessage());
 		}

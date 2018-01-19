@@ -233,8 +233,45 @@ public class Util {
 	/**
 	 * Returns true, if the String is null or an empty string.
 	 */
-	public static boolean isEmptyString(String string) {
+	public static boolean isEmptyString(CharSequence string) {
 		return string == null || string.length() == 0;
+	}
+
+	/**
+	 * @since 4.1
+	 */
+	public static boolean isBlank(CharSequence cs) {
+		int strLen;
+		if (cs != null && (strLen = cs.length()) != 0) {
+			for(int i = 0; i < strLen; ++i) {
+				if (!Character.isWhitespace(cs.charAt(i))) {
+					return false;
+				}
+			}
+
+			return true;
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * @since 4.1
+	 */
+	public static boolean isNumeric(CharSequence cs) {
+		if (isEmptyString(cs)) {
+			return false;
+		} else {
+			int sz = cs.length();
+
+			for(int i = 0; i < sz; ++i) {
+				if (!Character.isDigit(cs.charAt(i))) {
+					return false;
+				}
+			}
+
+			return true;
+		}
 	}
 
 	/**
