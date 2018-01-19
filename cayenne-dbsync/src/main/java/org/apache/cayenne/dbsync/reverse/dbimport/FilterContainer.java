@@ -132,7 +132,7 @@ public abstract class FilterContainer {
     /**
      * @since 4.1
      */
-    public void clearExcludeRelationship() {
+    public void clearExcludeRelationships() {
         excludeRelationshipCollection.clear();
     }
 

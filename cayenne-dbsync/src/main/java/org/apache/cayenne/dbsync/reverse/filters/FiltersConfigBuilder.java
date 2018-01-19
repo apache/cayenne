@@ -343,12 +343,12 @@ public final class FiltersConfigBuilder {
             catalog.clearExcludeProcedures();
             catalog.clearIncludeColumns();
             catalog.clearExcludeColumns();
-            catalog.clearExcludeRelationship();
+            catalog.clearExcludeRelationships();
 
             for (Schema schema : catalog.getSchemas()) {
                 schema.clearIncludeColumns();
                 schema.clearExcludeColumns();
-                schema.clearExcludeRelationship();
+                schema.clearExcludeRelationships();
             }
         }
 
@@ -358,7 +358,7 @@ public final class FiltersConfigBuilder {
         engineering.clearExcludeProcedures();
         engineering.clearIncludeColumns();
         engineering.clearExcludeColumns();
-        engineering.clearExcludeRelationship();
+        engineering.clearExcludeRelationships();
 
         engineering.getSchemas().clear();
     }
