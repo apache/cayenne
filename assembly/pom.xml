@@ -236,6 +236,28 @@
 							<tarLongFileMode>gnu</tarLongFileMode>
 						</configuration>
 					</plugin>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>process-resources</phase>
+								<configuration>
+									<tasks>
+										<copy todir="${project.build.directory}/doc-staging">
+											<fileset dir="${basedir}/../docs/asciidoc">
+												<include name="**/target/**/*.pdf"/>
+												<include name="**/target/**/*.html"/>
+											</fileset>
+											<flattenmapper/>
+										</copy>
+									</tasks>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
