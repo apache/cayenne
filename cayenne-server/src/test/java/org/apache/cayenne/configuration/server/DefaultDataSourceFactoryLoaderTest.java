@@ -32,14 +32,17 @@ import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.resource.mock.MockResourceLocator;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -91,6 +94,52 @@ public class DefaultDataSourceFactoryLoaderTest {
         assertTrue(factory instanceof MockDataSourceFactory1);
         assertSame("Injection on the factory hasn't been performed", injector,
                 ((MockDataSourceFactory1) factory).getInjector());
+    }
+
+    @Test
+    public void testGetDataSourceFactory_UnusedProperties() throws Exception {
+        final RuntimeProperties properties = mock(RuntimeProperties.class);
+        when(properties.get(Constants.JDBC_DRIVER_PROPERTY)).thenReturn("x");
+        when(properties.get(Constants.JDBC_URL_PROPERTY)).thenReturn(null);
+        when(properties.get(Constants.JDBC_USERNAME_PROPERTY)).thenReturn("username");
+        when(properties.get(Constants.JDBC_PASSWORD_PROPERTY)).thenReturn("12345");
+
+        DataChannelDescriptor channelDescriptor = new DataChannelDescriptor();
+        channelDescriptor.setName("X");
+        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+        nodeDescriptor.setName("node1");
+        nodeDescriptor.setDataSourceFactoryType(MockDataSourceFactory1.class.getName());
+        nodeDescriptor.setDataChannelDescriptor(channelDescriptor);
+
+        Module testModule = binder -> {
+            binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            binder.bind(ResourceLocator.class).to(MockResourceLocator.class);
+            binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(MockResourceLocator.class);
+            binder.bind(RuntimeProperties.class).toInstance(properties);
+            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+        };
+
+        Injector injector = DIBootstrap.createInjector(testModule);
+
+        DelegatingDataSourceFactory factoryLoader = new DelegatingDataSourceFactory();
+        injector.injectMembers(factoryLoader);
+        DataSourceFactory factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
+        assertNotNull(factory);
+        assertFalse(factory instanceof PropertyDataSourceFactory);
+
+        nodeDescriptor.setName("node2");
+        when(properties.get(Constants.JDBC_MIN_CONNECTIONS_PROPERTY + ".X.node2")).thenReturn("3");
+        when(properties.get(Constants.JDBC_PASSWORD_PROPERTY + ".X.node2")).thenReturn("123456");
+        factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
+        assertNotNull(factory);
+        assertFalse(factory instanceof PropertyDataSourceFactory);
+
+        nodeDescriptor.setName("node3");
+        when(properties.get(Constants.JDBC_URL_PROPERTY + ".X.node3")).thenReturn("url");
+        factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
+        assertNotNull(factory);
+        assertTrue(factory instanceof PropertyDataSourceFactory);
     }
 
     @Test
