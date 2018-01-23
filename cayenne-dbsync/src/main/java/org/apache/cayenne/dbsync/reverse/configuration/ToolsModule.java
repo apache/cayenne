@@ -24,6 +24,7 @@ import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -34,6 +35,7 @@ import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
+import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
@@ -117,6 +119,7 @@ public class ToolsModule implements Module {
         binder.bind(DataSourceFactory.class).to(DriverDataSourceFactory.class);
 
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+        binder.bind(DataChannelDescriptorLoader.class).to(XMLDataChannelDescriptorLoader.class);
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
         binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(true)).withoutScope();

@@ -19,11 +19,11 @@
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
@@ -60,6 +60,8 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.io.File;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -132,7 +134,7 @@ public class DefaultDbImportActionTest {
         };
 
         final boolean[] haveWeTriedToSave = {false};
-        DefaultDbImportAction action = buildDbImportAction(new FileProjectSaver(Collections.<ProjectExtension>emptyList()) {
+        DefaultDbImportAction action = buildDbImportAction(new FileProjectSaver(Collections.emptyList()) {
             @Override
             public void save(Project project) {
                 haveWeTriedToSave[0] = true;
@@ -299,7 +301,9 @@ public class DefaultDbImportActionTest {
         MergerTokenFactoryProvider mergerTokenFactoryProvider = mock(MergerTokenFactoryProvider.class);
         when(mergerTokenFactoryProvider.get((DbAdapter)any())).thenReturn(new DefaultMergerTokenFactory());
 
-        return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider) {
+        DataChannelDescriptorLoader dataChannelDescriptorLoader = mock(DataChannelDescriptorLoader.class);
+
+        return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader) {
 
             protected DbLoader createDbLoader(DbAdapter adapter,
                                                Connection connection,
@@ -309,31 +313,176 @@ public class DefaultDbImportActionTest {
         };
     }
 
-    @Test
-    public void testSaveLoaded() throws Exception {
-        Logger log = mock(Logger.class);
-        Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
-
-        DefaultDbImportAction action = (DefaultDbImportAction) i.getInstance(DbImportAction.class);
-
+    private URL getPackageURL() {
         String packagePath = getClass().getPackage().getName().replace('.', '/');
         URL packageUrl = getClass().getClassLoader().getResource(packagePath);
         assertNotNull(packageUrl);
-        URL outUrl = new URL(packageUrl, "dbimport/testSaveLoaded1.map.xml");
+        return packageUrl;
+    }
+
+    @Test
+    public void testSaveLoadedNoProject() throws Exception {
+        Logger log = mock(Logger.class);
+        Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
+        DbImportConfiguration params = mock(DbImportConfiguration.class);
+        when(params.getCayenneProject()).thenReturn(null);
+
+        URL outUrl = new URL(getPackageURL(), "dbimport/testSaveLoaded1.map.xml");
+
+        DefaultDbImportAction action = (DefaultDbImportAction) i.getInstance(DbImportAction.class);
 
         File out = new File(outUrl.toURI());
         out.delete();
-        assertFalse(out.isFile());
+        assertFalse(out.exists());
 
         DataMap map = new DataMap("testSaveLoaded1");
         map.setConfigurationSource(new URLResource(outUrl));
 
-        action.saveLoaded(map);
+        action.saveLoaded(map, params);
 
         assertTrue(out.isFile());
 
         String contents = Util.stringFromFile(out);
         assertTrue("Has no project version saved", contents.contains("project-version=\""));
+    }
+
+    @Test
+    public void testSaveLoadedWithEmptyProject() throws Exception {
+        Logger log = mock(Logger.class);
+        Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
+        DbImportConfiguration params = mock(DbImportConfiguration.class);
+
+        URL projectURL = new URL(getPackageURL(), "dbimport/cayenne-testProject2.map.xml");
+        File projectFile = new File(projectURL.toURI());
+        projectFile.delete();
+        assertFalse(projectFile.exists());
+        when(params.getCayenneProject()).thenReturn(projectFile);
+
+        DefaultDbImportAction action = (DefaultDbImportAction) i.getInstance(DbImportAction.class);
+
+        URL dataMapURL = new URL(getPackageURL(), "dbimport/testSaveLoaded2.map.xml");
+
+        File dataMapFile = new File(dataMapURL.toURI());
+        dataMapFile.delete();
+        assertFalse(dataMapFile.exists());
+
+        DataMap map = new DataMap("testSaveLoaded2");
+        map.setConfigurationSource(new URLResource(dataMapURL));
+
+        action.saveLoaded(map, params);
+
+        assertTrue(dataMapFile.isFile());
+        assertTrue(projectFile.isFile());
+
+        String dataMapContents = Util.stringFromFile(dataMapFile);
+        assertTrue("Has no project version saved", dataMapContents.contains("project-version=\""));
+
+        String projectContents = Util.stringFromFile(projectFile);
+        assertTrue("Has no project version saved", projectContents.contains("project-version=\""));
+        assertTrue("Has no datamap in project", projectContents.contains("<map name=\"testSaveLoaded2\"/>"));
+    }
+
+    @Test
+    public void testSaveLoadedWithNonEmptyProject() throws Exception {
+        Logger log = mock(Logger.class);
+        Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
+        DbImportConfiguration params = mock(DbImportConfiguration.class);
+
+        URL projectURL = new URL(getPackageURL(), "dbimport/cayenne-testProject3.map.xml");
+        File projectFile = new File(projectURL.toURI());
+        projectFile.delete();
+        assertFalse(projectFile.exists());
+
+        Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<domain xmlns=\"http://cayenne.apache.org/schema/10/domain\"\n" +
+                "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/10/domain http://cayenne.apache.org/schema/10/domain.xsd\"\n" +
+                "\t project-version=\"10\">\n" +
+                "</domain>").getBytes(Charset.forName("UTF-8")));
+        assertTrue(projectFile.isFile());
+
+        when(params.getCayenneProject()).thenReturn(projectFile);
+
+        DefaultDbImportAction action = (DefaultDbImportAction) i.getInstance(DbImportAction.class);
+
+        URL dataMapURL = new URL(getPackageURL(), "dbimport/testSaveLoaded3.map.xml");
+
+        File dataMapFile = new File(dataMapURL.toURI());
+        dataMapFile.delete();
+        assertFalse(dataMapFile.exists());
+
+        DataMap map = new DataMap("testSaveLoaded3");
+        map.setConfigurationSource(new URLResource(dataMapURL));
+
+        action.saveLoaded(map, params);
+
+        assertTrue(dataMapFile.isFile());
+        assertTrue(projectFile.isFile());
+
+        String dataMapContents = Util.stringFromFile(dataMapFile);
+        assertTrue("Has no project version saved", dataMapContents.contains("project-version=\""));
+
+        String projectContents = Util.stringFromFile(projectFile);
+        assertTrue("Has no project version saved", projectContents.contains("project-version=\""));
+        assertTrue("Has no datamap in project", projectContents.contains("<map name=\"testSaveLoaded3\"/>"));
+    }
+
+    @Test
+    public void testSaveLoadedWithNonEmptyProjectAndNonEmptyDataMap() throws Exception {
+        Logger log = mock(Logger.class);
+        Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
+        DbImportConfiguration params = mock(DbImportConfiguration.class);
+
+        URL projectURL = new URL(getPackageURL(), "dbimport/cayenne-testProject4.map.xml");
+        File projectFile = new File(projectURL.toURI());
+        projectFile.delete();
+        assertFalse(projectFile.exists());
+
+        Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<domain xmlns=\"http://cayenne.apache.org/schema/10/domain\"\n" +
+                "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/10/domain http://cayenne.apache.org/schema/10/domain.xsd\"\n" +
+                "\t project-version=\"10\">\n" +
+                "\t<map name=\"testSaveLoaded4\"/>\n" +
+                "</domain>").getBytes(Charset.forName("UTF-8")));
+        assertTrue(projectFile.isFile());
+
+        when(params.getCayenneProject()).thenReturn(projectFile);
+
+        DefaultDbImportAction action = (DefaultDbImportAction) i.getInstance(DbImportAction.class);
+
+        URL dataMapURL = new URL(getPackageURL(), "dbimport/testSaveLoaded4.map.xml");
+
+        File dataMapFile = new File(dataMapURL.toURI());
+        dataMapFile.delete();
+        assertFalse(dataMapFile.exists());
+
+        Files.write(dataMapFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<data-map xmlns=\"http://cayenne.apache.org/schema/10/modelMap\"\n" +
+                "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd\"\n" +
+                "\t project-version=\"10\">\n" +
+                "\t<db-entity name=\"test\">\n" +
+                "\t\t<db-attribute name=\"test\" type=\"INT\"/>\n" +
+                "\t</db-entity>\n" +
+                "</data-map>").getBytes(Charset.forName("UTF-8")));
+        assertTrue(dataMapFile.isFile());
+
+        DataMap map = new DataMap("testSaveLoaded4");
+        map.setConfigurationSource(new URLResource(dataMapURL));
+
+        action.saveLoaded(map, params);
+
+        assertTrue(dataMapFile.isFile());
+        assertTrue(projectFile.isFile());
+
+        String dataMapContents = Util.stringFromFile(dataMapFile);
+        assertTrue("Has no project version saved", dataMapContents.contains("project-version=\""));
+        assertFalse(dataMapContents.contains("<db-entity"));
+
+        String projectContents = Util.stringFromFile(projectFile);
+        assertTrue("Has no project version saved", projectContents.contains("project-version=\""));
+        assertEquals("Has no or too many datamaps in project", 1, Util.countMatches(projectContents, "<map name=\"testSaveLoaded4\"/>"));
     }
 
     @Test

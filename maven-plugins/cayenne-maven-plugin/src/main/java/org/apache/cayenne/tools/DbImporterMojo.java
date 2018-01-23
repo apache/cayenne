@@ -71,6 +71,14 @@ public class DbImporterMojo extends AbstractMojo {
     private File map;
 
     /**
+     * Project XML file to use. If set cayenneProject will be created or updated after DB importing.
+     * This is optional parameter.
+     * @since 4.1
+     */
+    @Parameter
+    private File cayenneProject;
+
+    /**
      * An object that contains reverse engineering rules.
      */
     @Parameter(name = "dbimport", property = "dbimport", alias = "dbImport")
@@ -129,6 +137,7 @@ public class DbImporterMojo extends AbstractMojo {
         config.setStripFromTableNames(dbImportConfig.getStripFromTableNames());
         config.setTableTypes(dbImportConfig.getTableTypes());
         config.setTargetDataMap(map);
+        config.setCayenneProject(cayenneProject);
         config.setUrl(dataSource.getUrl());
         config.setUsername(dataSource.getUsername());
         config.setUsePrimitives(dbImportConfig.isUsePrimitives());

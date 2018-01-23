@@ -61,6 +61,7 @@ public class DbImportConfiguration {
     private String stripFromTableNames;
     private boolean forceDataMapCatalog;
     private boolean forceDataMapSchema;
+    private File cayenneProject;
 
     public DbImportConfiguration() {
         this.dataSourceInfo = new DataSourceInfo();
@@ -152,6 +153,14 @@ public class DbImportConfiguration {
 
     public void setUseJava7Types(boolean useJava7Types) {
         this.useJava7Types = useJava7Types;
+    }
+
+    public File getCayenneProject() {
+        return cayenneProject;
+    }
+
+    public void setCayenneProject(File cayenneProject) {
+        this.cayenneProject = cayenneProject;
     }
 
     public NameFilter createMeaningfulPKFilter() {

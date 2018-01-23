@@ -62,6 +62,9 @@ public class DbImportTask extends BaseCayenneTask {
     @Internal
     private ReverseEngineering reverseEngineering;
 
+    @Internal
+    private File cayenneProject;
+
     public DbImportTask() {
         // this task should be executed every invocation, so it is never up to date.
         getOutputs().upToDateWhen(new Spec<Task>() {
@@ -127,6 +130,7 @@ public class DbImportTask extends BaseCayenneTask {
         config.setUsername(dataSource.getUsername());
         config.setUsePrimitives(reverseEngineering.isUsePrimitives());
         config.setUseJava7Types(reverseEngineering.isUseJava7Types());
+        config.setCayenneProject(cayenneProject);
 
         return config;
     }
@@ -166,5 +170,23 @@ public class DbImportTask extends BaseCayenneTask {
 
     public void adapter(String adapter) {
         setAdapter(adapter);
+    }
+
+    @OutputFile
+    @Optional
+    public File getCayenneProject() {
+        return cayenneProject;
+    }
+
+    public void setCayenneProject(File cayenneProject) {
+        this.cayenneProject = cayenneProject;
+    }
+
+    public void cayenneProject(File cayenneProject) {
+        this.cayenneProject = cayenneProject;
+    }
+
+    public void cayenneProject(String cayenneProjectFileName) {
+        this.cayenneProject = getProject().file(cayenneProjectFileName);
     }
 }

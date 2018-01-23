@@ -224,6 +224,9 @@ public class DbImporterTask extends Task {
         config.setUsePrimitives(flag);
     }
 
+    /**
+     * @since 4.0
+     */
     public void setUseJava7Types(boolean flag) {
         config.setUseJava7Types(flag);
     }
@@ -246,6 +249,20 @@ public class DbImporterTask extends Task {
 
     public void setMap(File map) {
         config.setTargetDataMap(map);
+    }
+
+    /**
+     * @since 4.1
+     */
+    public File getCayenneProject() {
+        return config.getCayenneProject();
+    }
+
+    /**
+     * @since 4.1
+     */
+    public void setCayenneProject(File cayenneProject) {
+        config.setCayenneProject(cayenneProject);
     }
 
     public DbImportConfiguration toParameters() {

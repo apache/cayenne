@@ -95,6 +95,11 @@ public class DbImporterTaskTest {
     }
 
     @Test
+    public void testBuildWithProject() throws Exception {
+        assertNotNull(getCdbImport("build-with-project.xml").getCayenneProject());
+    }
+
+    @Test
     public void testIncludeTable() throws Exception {
         test("build-include-table.xml");
     }

@@ -18,6 +18,7 @@ CAY-2377 Cleanup deprecated code.
 CAY-2391 cdbimport: add option to skip user-defined relationships
 CAY-2393 Add sqlserver-docker profile to automate tests on SQLServer
 CAY-2394 Upgrade to Apache Velocity 2.0
+CAY-2395 cdbimport: add option to create project file
 CAY-2396 Upgrade maven-assembly-plugin to 3.1.0
 
 Bug Fixes:

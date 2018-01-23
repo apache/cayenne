@@ -18,7 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationTree;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
@@ -55,8 +59,8 @@ import org.slf4j.Logger;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.Collections;
@@ -77,19 +81,22 @@ public class DefaultDbImportAction implements DbImportAction {
     private final DbAdapterFactory adapterFactory;
     private final DataMapLoader mapLoader;
     private final MergerTokenFactoryProvider mergerTokenFactoryProvider;
+    private final DataChannelDescriptorLoader dataChannelDescriptorLoader;
 
     public DefaultDbImportAction(@Inject Logger logger,
                                  @Inject ProjectSaver projectSaver,
                                  @Inject DataSourceFactory dataSourceFactory,
                                  @Inject DbAdapterFactory adapterFactory,
                                  @Inject DataMapLoader mapLoader,
-                                 @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider) {
+                                 @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
+                                 @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader) {
         this.logger = logger;
         this.projectSaver = projectSaver;
         this.dataSourceFactory = dataSourceFactory;
         this.adapterFactory = adapterFactory;
         this.mapLoader = mapLoader;
         this.mergerTokenFactoryProvider = mergerTokenFactoryProvider;
+        this.dataChannelDescriptorLoader = dataChannelDescriptorLoader;
     }
 
     protected static List<MergerToken> sort(List<MergerToken> reverse) {
@@ -172,7 +179,7 @@ public class DefaultDbImportAction implements DbImportAction {
         hasChanges |= syncProcedures(targetDataMap, sourceDataMap, loaderConfig.getFiltersConfig());
 
         if (hasChanges) {
-            saveLoaded(targetDataMap);
+            saveLoaded(targetDataMap, config);
         }
     }
 
@@ -383,10 +390,58 @@ public class DefaultDbImportAction implements DbImportAction {
         return hasChanges;
     }
 
-    protected void saveLoaded(DataMap dataMap) throws FileNotFoundException {
-        ConfigurationTree<DataMap> projectRoot = new ConfigurationTree<>(dataMap);
+    /**
+     * Save imported data.
+     * This can create DataMap and/or Project files.
+     */
+    protected void saveLoaded(DataMap dataMap, DbImportConfiguration config) throws MalformedURLException {
+        ConfigurationTree<ConfigurationNode> projectRoot;
+        if(config.getCayenneProject() == null) {
+            // Old version of cdbimport, no Cayenne project, need to save only DataMap
+            projectRoot = new ConfigurationTree<>(dataMap);
+        } else {
+            // Cayenne project is present
+            DataChannelDescriptor dataChannelDescriptor;
+            if(config.getCayenneProject().exists()) {
+                // Cayenne project file exists, need to read it and push DataMap inside
+                URLResource configurationResource = new URLResource(config.getCayenneProject().toURI().toURL());
+                ConfigurationTree<DataChannelDescriptor> configurationTree = dataChannelDescriptorLoader.load(configurationResource);
+                if(!configurationTree.getLoadFailures().isEmpty()) {
+                    throw new CayenneRuntimeException("Unable to load cayenne project %s, %s", config.getCayenneProject(),
+                            configurationTree.getLoadFailures().iterator().next().getDescription());
+                }
+                dataChannelDescriptor = configurationTree.getRootNode();
+                // remove old copy of DataMap if it's there
+                DataMap oldDataMap = dataChannelDescriptor.getDataMap(dataMap.getName());
+                if(oldDataMap != null) {
+                    dataChannelDescriptor.getDataMaps().remove(oldDataMap);
+                }
+            } else {
+                // No project file yet, can simply create empty project with resulting DataMap
+                dataChannelDescriptor = new DataChannelDescriptor();
+                dataChannelDescriptor.setName(getProjectNameFromFileName(config.getCayenneProject().getName()));
+                dataChannelDescriptor.setConfigurationSource(new URLResource(config.getCayenneProject().toURI().toURL()));
+                logger.info("Project file does not exist. New project will be saved into '" + config.getCayenneProject().getAbsolutePath());
+            }
+
+            dataChannelDescriptor.getDataMaps().add(dataMap);
+            projectRoot = new ConfigurationTree<>(dataChannelDescriptor);
+        }
+
         Project project = new Project(projectRoot);
         projectSaver.save(project);
+
+        logger.info("");
+        logger.info("All changes saved.");
+    }
+
+    protected String getProjectNameFromFileName(String fileName) {
+        int xmlExtPosition = fileName.lastIndexOf(".xml");
+        String name = fileName.substring(0, xmlExtPosition == -1 ? fileName.length() : xmlExtPosition);
+        if(fileName.startsWith("cayenne-")) {
+            name = name.substring("cayenne-".length());
+        }
+        return name;
     }
 
     protected DataMap load(DbImportConfiguration config, DbAdapter adapter, Connection connection) throws Exception {
