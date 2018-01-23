@@ -245,8 +245,8 @@
 									<tasks>
 										<copy todir="${project.build.directory}/doc-staging">
 											<fileset dir="${basedir}/../docs/asciidoc">
-												<include name="**/target/**/*.pdf"/>
-												<include name="**/target/**/*.html"/>
+												<include name="**/target/generated-docs/*.pdf"/>
+												<include name="**/target/generated-docs/*.html"/>
 											</fileset>
 											<flattenmapper/>
 										</copy>

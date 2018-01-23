@@ -16,31 +16,93 @@
    specific language governing permissions and limitations
    under the License.
 -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!doctype html>
 <html>
 <head>
-        <title>Cayenne ${project.version}</title>
+	<title>Cayenne ${project.version}</title>
+	<style>
+		body {
+			font-family: sans-serif;
+		}
+
+		h1, h2 {
+			font-weight: 300;
+			line-height: 1.2;
+			color: #444;
+		}
+
+		h1 {
+			text-align: left;
+		}
+
+		h1 > span {
+			vertical-align: middle;
+		}
+
+		ul {
+			display: block;
+			list-style-type: disc;
+			margin-top: 0;
+			margin-bottom: 1rem;
+			padding: 0 0 0 2.5em;
+		}
+
+		li {
+			position: relative;
+			margin-bottom: .5em;
+			font-weight: 400;
+			color: #666;
+		}
+
+		a {
+			color: #dc5656;
+			text-decoration: none;
+			outline: 0 !important;
+			-webkit-transition: all .1s linear;
+			transition: all .1s linear;
+			-ms-touch-action: manipulation;
+			touch-action: manipulation;
+		}
+
+		a:hover {
+			color: #be2727;
+			text-decoration: none;
+		}
+
+		.small {
+			font-size: 87.5%;
+			font-weight: 400;
+			color: #777;
+		}
+
+		.icon {
+			alignment: center;
+			vertical-align: middle;
+			border: 0;
+		}
+	</style>
 </head>
-
 <body>
-<h1><img src="images/logo.gif" align="absmiddle" border="0"> Cayenne ${project.version}</h1>
-<i>Built on ${project.build.datetime} by ${user.name}</i>
+<h1><img src="data:image/png;base64,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" class="icon" alt="Apache Cayenne Icon"/>
+	<span>Cayenne ${project.version}</span></h1>
+<i class="small">Built on ${project.build.datetime} by ${user.name}</i>
 
-<h2>Included HTML Documentation:</h2>
+<h2>Offline Documentation:</h2>
 <ul>
+	<li>Cayenne Tutorial: <a href="getting-started-guide.pdf">PDF</a>, <a href="getting-started-guide.html">HTML</a></li>
+	<li>Cayenne Guide: <a href="cayenne-guide.pdf">PDF</a>, <a href="cayenne-guide.html">HTML</a> </li>
+	<li>Upgrade Guide: <a href="upgrade-guide.pdf">PDF</a>, <a href="upgrade-guide.html">HTML</a></li>
+	<li>Cayenne Tutorial - Db-First Flow: <a href="getting-started-db-first.pdf">PDF</a>, <a href="getting-started-db-first.html">HTML</a></li>
+	<li>Cayenne Tutorial - Remote Object Persistence: <a href="getting-started-rop.pdf">PDF</a>, <a href="getting-started-rop.html">HTML</a></li>
 	<li><a href="api/index.html">JavaDocs</a></li>
-	<li><a href="cayenne-guide.pdf">Cayenne Guide (PDF)</a></li>
-	<li><a href="getting-started.pdf">Cayenne Tutorial (PDF)</a></li>
-	<li><a href="getting-started-rop.pdf">Cayenne Tutorial - Remote Object Persistence (PDF)</a></li>
-	<li><a href="upgrade-guide.pdf">Upgrade Guide (PDF)</a></li>
 </ul>
 
 <h2>Online Resources:</h2>
 <ul>
 	<li><a href="http://cayenne.apache.org">Cayenne Home</a></li>
 	<li><a href="http://cayenne.apache.org/download.html">Downloads</a></li>
+	<li><a href="http://cayenne.apache.org/support.html">Support</a></li>
 	<li><a href="http://issues.apache.org/jira/browse/CAY">Report Bugs</a></li>
-	<li><a href="http://cayenne.apache.org/commercial-support.html">Commercial Support</a></li>
 </ul>
 </body>
 </html>
