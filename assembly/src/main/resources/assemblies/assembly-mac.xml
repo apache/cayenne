@@ -21,16 +21,16 @@
 		<format>dir</format>
 	</formats>
 
-	<includeBaseDirectory>true</includeBaseDirectory>
+	<includeBaseDirectory>false</includeBaseDirectory>
 
 	<fileSets>
 		<fileSet>
 			<directory>target/legal/META-INF/cayenne</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>cayenne-${project.version}-macosx/</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../tutorials/</directory>
-			<outputDirectory>tutorials</outputDirectory>
+			<outputDirectory>cayenne-${project.version}-macosx/tutorials/</outputDirectory>
 			<includes>
 				<include>tutorial/**</include>
 				<include>tutorial-rop-server/**</include>
@@ -46,41 +46,41 @@
 		</fileSet>
 		<fileSet>
 			<directory>../cayenne-cgen/src/main/resources/templates/v4_1</directory>
-			<outputDirectory>templates</outputDirectory>
+			<outputDirectory>cayenne-${project.version}-macosx/templates/</outputDirectory>
 		</fileSet>
 	</fileSets>
 
 	<files>
 		<file>
 			<source>../docs/asciidoc/getting-started-guide/target/generated-docs/getting-started-guide.pdf</source>
-			<outputDirectory>doc</outputDirectory>
+			<outputDirectory>cayenne-${project.version}-macosx/doc/</outputDirectory>
 			<destName>getting-started.pdf</destName>
 		</file>
 		<file>
 			<source>../docs/asciidoc/getting-started-db-first/target/generated-docs/getting-started-db-first.pdf</source>
-			<outputDirectory>doc</outputDirectory>
+			<outputDirectory>cayenne-${project.version}-macosx/doc/</outputDirectory>
 			<destName>getting-started-db-first.pdf</destName>
 		</file>
 		<file>
 			<source>../docs/asciidoc/getting-started-rop/target/generated-docs/getting-started-rop.pdf</source>
-			<outputDirectory>doc</outputDirectory>
+			<outputDirectory>cayenne-${project.version}-macosx/doc/</outputDirectory>
 			<destName>getting-started-rop.pdf</destName>
 		</file>
 		<file>
 			<source>../docs/asciidoc/cayenne-guide/target/generated-docs/cayenne-guide.pdf</source>
-			<outputDirectory>doc</outputDirectory>
+			<outputDirectory>cayenne-${project.version}-macosx/doc/</outputDirectory>
 			<destName>cayenne-guide.pdf</destName>
 		</file>
 		<file>
 			<source>../docs/asciidoc/upgrade-guide/target/generated-docs/upgrade-guide.pdf</source>
-			<outputDirectory>doc</outputDirectory>
+			<outputDirectory>cayenne-${project.version}-macosx/doc/</outputDirectory>
 			<destName>upgrade-guide.pdf</destName>
 		</file>
 	</files>
 
 	<dependencySets>
 		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
+			<outputDirectory>cayenne-${project.version}-macosx/lib/</outputDirectory>
 			<includes>
 				<include>org.apache.cayenne:cayenne-client</include>
 				<include>org.apache.cayenne:cayenne-crypto</include>
@@ -107,14 +107,14 @@
 			</includes>
 		</dependencySet>
 		<dependencySet>
-			<outputDirectory>lib/third-party</outputDirectory>
+			<outputDirectory>cayenne-${project.version}-macosx/lib/third-party/</outputDirectory>
 			<!-- Include only a minimal set of dependencies to run cayenne-server and ant tasks -->
 			<includes>
 				<include>org.slf4j:slf4j-api</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>cayenne-${project.version}-macosx/</outputDirectory>
 			<includes>
 				<include>org.apache.cayenne.docs:cayenne-doc</include>
 			</includes>
@@ -126,7 +126,7 @@
 			</unpackOptions>
 		</dependencySet>
 		<dependencySet>
-			<outputDirectory>../../</outputDirectory>
+			<outputDirectory>/</outputDirectory>
 			<includes>
 				<include>org.apache.cayenne.modeler:cayenne-modeler-mac</include>
 			</includes>
