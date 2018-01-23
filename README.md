@@ -36,7 +36,7 @@ Quick Start
 
 ![Modeler](https://cayenne.apache.org/docs/4.0/getting-started-guide/images/modeler-deleterule.png)
 
-See tutorial https://cayenne.apache.org/docs/4.1/getting-started-guide/ 
+See tutorial https://cayenne.apache.org/docs/4.0/getting-started-guide/ 
 
 #### Include Cayenne into project
 
