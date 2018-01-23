@@ -125,12 +125,15 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
     }
 
     private void findUnusedProperties(DataNodeDescriptor nodeDescriptor) {
+        if(!logger.isInfoEnabled() || nodeDescriptor.getDataChannelDescriptor() == null) {
+            return;
+        }
         boolean found = false;
         StringBuilder logResult = new StringBuilder();
         String nodeName = nodeDescriptor.getDataChannelDescriptor().getName()
                 + "."
                 + nodeDescriptor.getName();
-        logResult.append("Found unused runtime properties for '").append(nodeName).append("': ");
+        logResult.append("Following runtime properties were ignored for node '").append(nodeName).append("': ");
         String[] verifiableProperties = new String[] {
                 Constants.JDBC_USERNAME_PROPERTY, Constants.JDBC_PASSWORD_PROPERTY,
                 Constants.JDBC_MAX_CONNECTIONS_PROPERTY, Constants.JDBC_MIN_CONNECTIONS_PROPERTY,
@@ -149,9 +152,9 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
             }
         }
         if (found) {
-            logResult.delete(logResult.length() - 2, logResult.length());
-            logResult.append(". This runtime properties was ignored. Configuration were taken from project DataSource. ");
-            logResult.append("For using configuration from runtime properties, move driver and url configuration to properties.");
+            logResult.delete(logResult.length() - 2, logResult.length())
+                    .append(". Will use project DataSource configuration. ")
+                    .append("Set driver and url properties to enable DataSource configuration override. ");
             logger.info(logResult.toString());
         }
     }
@@ -170,9 +173,7 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
         }
 
         if (driver == null) {
-            if ((channelName != null) && (logger.isInfoEnabled())) {
-                findUnusedProperties(nodeDescriptor);
-            }
+            findUnusedProperties(nodeDescriptor);
             return false;
         }
 
@@ -183,9 +184,7 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
         }
 
         if (url == null) {
-            if ((channelName != null) && (logger.isInfoEnabled())) {
-                findUnusedProperties(nodeDescriptor);
-            }
+            findUnusedProperties(nodeDescriptor);
             return false;
         }
 
