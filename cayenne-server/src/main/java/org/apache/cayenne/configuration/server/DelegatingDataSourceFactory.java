@@ -43,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * (or <em>cayenne.jdbc.url</em>) and <em>cayenne.jdbc.driver.domain_name.node_name</em>
  * (or <em>cayenne.jdbc.driver</em>), any DataSourceFactory configured in the
  * DataNodeDescriptor is ignored, and the {@link PropertyDataSourceFactory} is used.
- * 
+ *
  * @since 3.1
  */
 public class DelegatingDataSourceFactory implements DataSourceFactory {
@@ -60,7 +60,7 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
     protected Map<DataSource, ScopeEventListener> managedDataSources;
 
     public DelegatingDataSourceFactory() {
-        managedDataSources = new ConcurrentHashMap<DataSource, ScopeEventListener>();
+        managedDataSources = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -94,7 +94,7 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
     }
 
     protected DataSourceFactory getDataSourceFactory(DataNodeDescriptor nodeDescriptor) {
-        String typeName = null;
+        String typeName;
 
         if (shouldConfigureDataSourceFromProperties(nodeDescriptor)) {
             typeName = PropertyDataSourceFactory.class.getName();
@@ -116,6 +116,46 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
         return objectFactory.newInstance(DataSourceFactory.class, typeName);
     }
 
+    private String getDataNodePropertyName(DataNodeDescriptor nodeDescriptor, String propertyConstant) {
+        return propertyConstant
+                + "."
+                + nodeDescriptor.getDataChannelDescriptor().getName()
+                + "."
+                + nodeDescriptor.getName();
+    }
+
+    private void findUnusedProperties(DataNodeDescriptor nodeDescriptor) {
+        boolean found = false;
+        StringBuilder logResult = new StringBuilder();
+        String nodeName = nodeDescriptor.getDataChannelDescriptor().getName()
+                + "."
+                + nodeDescriptor.getName();
+        logResult.append("Found unused runtime properties for '").append(nodeName).append("': ");
+        String[] verifiableProperties = new String[] {
+                Constants.JDBC_USERNAME_PROPERTY, Constants.JDBC_PASSWORD_PROPERTY,
+                Constants.JDBC_MAX_CONNECTIONS_PROPERTY, Constants.JDBC_MIN_CONNECTIONS_PROPERTY,
+                Constants.JDBC_MAX_QUEUE_WAIT_TIME, Constants.JDBC_VALIDATION_QUERY_PROPERTY
+        };
+        for (String propertyConstant : verifiableProperties) {
+            String property = properties.get(getDataNodePropertyName(nodeDescriptor, propertyConstant));
+            if (property != null) {
+                logResult.append(getDataNodePropertyName(nodeDescriptor, propertyConstant)).append(", ");
+                found = true;
+            }
+            property = properties.get(propertyConstant);
+            if (property != null) {
+                logResult.append(propertyConstant).append(", ");
+                found = true;
+            }
+        }
+        if (found) {
+            logResult.delete(logResult.length() - 2, logResult.length());
+            logResult.append(". This runtime properties was ignored. Configuration were taken from project DataSource. ");
+            logResult.append("For using configuration from runtime properties, move driver and url configuration to properties.");
+            logger.info(logResult.toString());
+        }
+    }
+
     protected boolean shouldConfigureDataSourceFromProperties(
             DataNodeDescriptor nodeDescriptor) {
 
@@ -126,28 +166,26 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
         String driver = properties.get(Constants.JDBC_DRIVER_PROPERTY);
 
         if (driver == null && channelName != null) {
-            driver = properties.get(Constants.JDBC_DRIVER_PROPERTY
-                    + "."
-                    + nodeDescriptor.getDataChannelDescriptor().getName()
-                    + "."
-                    + nodeDescriptor.getName());
+            driver = properties.get(getDataNodePropertyName(nodeDescriptor, Constants.JDBC_DRIVER_PROPERTY));
         }
 
         if (driver == null) {
+            if ((channelName != null) && (logger.isInfoEnabled())) {
+                findUnusedProperties(nodeDescriptor);
+            }
             return false;
         }
 
         String url = properties.get(Constants.JDBC_URL_PROPERTY);
 
         if (url == null && channelName != null) {
-            url = properties.get(Constants.JDBC_URL_PROPERTY
-                    + "."
-                    + nodeDescriptor.getDataChannelDescriptor().getName()
-                    + "."
-                    + nodeDescriptor.getName());
+            url = properties.get(getDataNodePropertyName(nodeDescriptor, Constants.JDBC_URL_PROPERTY));
         }
 
         if (url == null) {
+            if ((channelName != null) && (logger.isInfoEnabled())) {
+                findUnusedProperties(nodeDescriptor);
+            }
             return false;
         }
 
