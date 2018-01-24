@@ -28,11 +28,13 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.enum_test.Enum1;
 import org.apache.cayenne.testdo.enum_test.EnumEntity;
+import org.apache.cayenne.testdo.enum_test.EnumEntity2;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
@@ -84,5 +86,13 @@ public class EnumIT extends ServerCase {
         EnumEntity e = (EnumEntity) Cayenne.objectForQuery(context, q);
         assertNotNull(e);
         assertSame(Enum1.one, e.getEnumAttribute());
+    }
+
+    @Test
+    public void createObjectWithEnumQualifier() {
+        EnumEntity2 test = context.newObject(EnumEntity2.class);
+        context.commitChanges();
+
+        assertEquals(Enum1.two, test.getEnumAttribute());
     }
 }

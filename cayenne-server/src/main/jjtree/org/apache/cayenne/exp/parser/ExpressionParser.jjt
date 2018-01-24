@@ -579,7 +579,7 @@ void pathExpression() : {
    |
      "db:"   t = <PROPERTY_PATH> { jjtThis.setPath(t.image); } #DbPath(0)
    |
-     "enum:" t = <PROPERTY_PATH> { jjtThis.setValue(ParserUtil.makeEnum(t.image)); } #Scalar(0)
+     "enum:" t = <PROPERTY_PATH> { jjtThis.setEnumValue(t.image); } #Enum(0)
    )
 }
 

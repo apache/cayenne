@@ -52,8 +52,7 @@ public class ExpressionConvertor {
 
         try {
             return ExpressionFactory.exp(string);
-        }
-        catch (ExpressionException eex) {
+        } catch (ExpressionException eex) {
             // this is likely a parse exception... show detailed message
             Throwable cause = Util.unwindException(eex);
             String message =

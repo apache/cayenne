@@ -2511,13 +2511,13 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case 67:
       jj_consume_token(67);
       t = jj_consume_token(PROPERTY_PATH);
-                                   ASTScalar jjtn004 = new ASTScalar(JJTSCALAR);
+                                   ASTEnum jjtn004 = new ASTEnum(JJTENUM);
                                    boolean jjtc004 = true;
                                    jjtree.openNodeScope(jjtn004);
       try {
                                    jjtree.closeNodeScope(jjtn004,  0);
                                    jjtc004 = false;
-                                   jjtn004.setValue(ParserUtil.makeEnum(t.image));
+                                   jjtn004.setEnumValue(t.image);
       } finally {
                                    if (jjtc004) {
                                      jjtree.closeNodeScope(jjtn004,  0);

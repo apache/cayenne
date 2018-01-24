@@ -31,6 +31,7 @@ CAY-2387 Can't select byte[] property with ColumnSelect
 CAY-2388 Modeler: Visualization issues with undo/redo actions for attributes and relationships
 CAY-2389 DbEntity qualifier with DbPath expression translates into wrong SQL
 CAY-2392 Modeler: Unable to remove DataNode
+CAY-2397 Modeler: Unable to set enum:value as Entity qualifier
 
 ----------------------------------
 Release: 4.1.M1

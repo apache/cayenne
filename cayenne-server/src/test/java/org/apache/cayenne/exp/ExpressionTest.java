@@ -33,26 +33,26 @@ import org.junit.Test;
 public class ExpressionTest {
 
 	@Test
-	public void testToEJBQL_numericType_integer() throws IOException {
-		Expression e = ExpressionFactory.matchExp("consignment.parts", new Integer(123));
+	public void testToEJBQL_numericType_integer() {
+		Expression e = ExpressionFactory.matchExp("consignment.parts", 123);
 		assertEquals("x.consignment.parts = 123", e.toEJBQL("x"));
 	}
 
 	@Test
-	public void testToEJBQL_numericType_long() throws IOException {
-		Expression e = ExpressionFactory.matchExp("consignment.parts", new Long(1418342400));
+	public void testToEJBQL_numericType_long() {
+		Expression e = ExpressionFactory.matchExp("consignment.parts", 1418342400L);
 		assertEquals("x.consignment.parts = 1418342400", e.toEJBQL("x"));
 	}
 
 	@Test
-	public void testToEJBQL_numericType_float() throws IOException {
-		Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", new Float("3.145"));
+	public void testToEJBQL_numericType_float() {
+		Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", Float.valueOf("3.145"));
 		assertEquals("x.consignment.parts >= 3.145", e.toEJBQL("x"));
 	}
 
 	@Test
-	public void testToEJBQL_numericType_double() throws IOException {
-		Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", new Double(3.14));
+	public void testToEJBQL_numericType_double()  {
+		Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", 3.14);
 		assertEquals("x.consignment.parts >= 3.14", e.toEJBQL("x"));
 	}
 
@@ -63,7 +63,7 @@ public class ExpressionTest {
 		Expression e = ExpressionFactory.greaterOrEqualExp("dateOfBirth", now);
 
 		StringBuilder buffer = new StringBuilder();
-		List<Object> parametersAccumulator = new ArrayList<Object>();
+		List<Object> parametersAccumulator = new ArrayList<>();
 
 		e.appendAsEJBQL(parametersAccumulator, buffer, "x");
 
@@ -81,7 +81,7 @@ public class ExpressionTest {
 		Expression e = ExpressionFactory.inExp("artistName", "a", "b", "c");
 
 		StringBuilder buffer = new StringBuilder();
-		List<Object> parametersAccumulator = new ArrayList<Object>();
+		List<Object> parametersAccumulator = new ArrayList<>();
 
 		e.appendAsEJBQL(parametersAccumulator, buffer, "x");
 
@@ -196,7 +196,7 @@ public class ExpressionTest {
 
 		assertEquals(Expression.BITWISE_NOT, exp.getType());
 		assertEquals(1, ((SimpleNode) exp).jjtGetNumChildren());
-		assertEquals(new Long(-8), exp.evaluate(new Object())); // ~7 = -8 in
+		assertEquals(-8L, exp.evaluate(new Object())); // ~7 = -8 in
 																// digital world
 	}
 
@@ -206,7 +206,7 @@ public class ExpressionTest {
 
 		assertEquals(Expression.BITWISE_AND, exp.getType());
 		assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
-		assertEquals(new Long(0), exp.evaluate(new Object()));
+		assertEquals(0L, exp.evaluate(new Object()));
 	}
 
 	@Test
@@ -215,7 +215,7 @@ public class ExpressionTest {
 
 		assertEquals(Expression.BITWISE_OR, exp.getType());
 		assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
-		assertEquals(new Long(1), exp.evaluate(new Object()));
+		assertEquals(1L, exp.evaluate(new Object()));
 	}
 
 	@Test
@@ -224,7 +224,7 @@ public class ExpressionTest {
 
 		assertEquals(Expression.BITWISE_XOR, exp.getType());
 		assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
-		assertEquals(new Long(1), exp.evaluate(new Object()));
+		assertEquals(1L, exp.evaluate(new Object()));
 	}
 
 	@Test
@@ -233,7 +233,7 @@ public class ExpressionTest {
 
 		assertEquals(Expression.BITWISE_LEFT_SHIFT, exp.getType());
 		assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
-		assertEquals(new Long(28), exp.evaluate(new Object()));
+		assertEquals(28L, exp.evaluate(new Object()));
 	}
 
 	@Test
@@ -243,7 +243,7 @@ public class ExpressionTest {
 		assertEquals(Expression.BITWISE_RIGHT_SHIFT, exp.getType());
 		assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
 
-		assertEquals(new Long(1), exp.evaluate(new Object()));
+		assertEquals(1L, exp.evaluate(new Object()));
 	}
 
 	/**
@@ -302,7 +302,7 @@ public class ExpressionTest {
 		Expression e1 = ExpressionFactory.exp("5555 | ~5555");
 		Expression e2 = ExpressionFactory.exp("9999 & ~9999");
 
-		assertEquals(new Long(-1), e1.evaluate(new Object())); // ~0 = -1 that
+		assertEquals(-1L, e1.evaluate(new Object())); // ~0 = -1 that
 																// is the way
 																// how
 																// robots kill
@@ -316,7 +316,7 @@ public class ExpressionTest {
 																// bitwise
 																// operations
 																// logics
-		assertEquals(new Long(0), e2.evaluate(new Object()));
+		assertEquals(0L, e2.evaluate(new Object()));
 	}
 
 	/**
@@ -328,7 +328,7 @@ public class ExpressionTest {
 	public void testBitwiseHuntingtonEquation() {
 		Expression theHuntingEquation = ExpressionFactory.exp("~(~3748 | 4095) | ~(~3748 | ~4095)");
 
-		assertEquals(new Long(3748), theHuntingEquation.evaluate(new Object()));
+		assertEquals(3748L, theHuntingEquation.evaluate(new Object()));
 	}
 
 	/**
@@ -341,7 +341,7 @@ public class ExpressionTest {
 	public void testBitwiseRobbinsEquation() {
 		Expression theRobbinsEquation = ExpressionFactory.exp("~(~(5111 | 4095) | ~(5111 | ~4095))");
 
-		assertEquals(new Long(5111), theRobbinsEquation.evaluate(new Object()));
+		assertEquals(5111L, theRobbinsEquation.evaluate(new Object()));
 	}
 
 	/**
@@ -374,11 +374,11 @@ public class ExpressionTest {
 		Expression e5 = ExpressionFactory.exp("6 / 2 & 3"); // (6 / 2) & 3 = 3 &
 															// 3 = 3
 
-		assertEquals(new Long(2), e1.evaluate(new Object()));
-		assertEquals(new Long(0), e2.evaluate(new Object()));
-		assertEquals(new Long(7), e3.evaluate(new Object()));
-		assertEquals(new Long(6), e4.evaluate(new Object()));
-		assertEquals(new Long(3), e5.evaluate(new Object()));
+		assertEquals(2L, e1.evaluate(new Object()));
+		assertEquals(0L, e2.evaluate(new Object()));
+		assertEquals(7L, e3.evaluate(new Object()));
+		assertEquals(6L, e4.evaluate(new Object()));
+		assertEquals(3L, e5.evaluate(new Object()));
 	}
 
 	@Test
@@ -386,7 +386,7 @@ public class ExpressionTest {
 		Expression e = ExpressionFactory.exp("artistName != 'bla'");
 
 		StringBuilder buffer = new StringBuilder();
-		List<Object> parametersAccumulator = new ArrayList<Object>();
+		List<Object> parametersAccumulator = new ArrayList<>();
 		e.appendAsEJBQL(parametersAccumulator, buffer, "x");
 		String ejbql = buffer.toString();
 
