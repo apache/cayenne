@@ -88,7 +88,7 @@ public class FileProjectSaver implements ProjectSaver {
 	@Override
 	public void saveAs(Project project, Resource baseDirectory) {
 		if (baseDirectory == null) {
-			throw new NullPointerException("Null 'baseDirectory'");
+			throw new IllegalArgumentException("Null 'baseDirectory'");
 		}
 		save(project, baseDirectory, false);
 	}

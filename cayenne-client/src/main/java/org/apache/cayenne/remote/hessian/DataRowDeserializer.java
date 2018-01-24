@@ -61,7 +61,7 @@ class DataRowDeserializer extends AbstractMapDeserializer {
         int size = in.readInt();
         DataRow row = new DataRow(size);
         try {
-            versionField.set(row, new Long(in.readLong()));
+            versionField.set(row, Long.valueOf(in.readLong()));
         }
         catch (Exception e) {
             throw new IOException("Error reading 'version' field");

@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
@@ -84,7 +85,15 @@ public class RemoteSession implements Serializable {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(71, 5).append(sessionId).toHashCode();
+        return Objects.hash(sessionId);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RemoteSession that = (RemoteSession) o;
+        return Objects.equals(sessionId, that.sessionId);
     }
 
     /**

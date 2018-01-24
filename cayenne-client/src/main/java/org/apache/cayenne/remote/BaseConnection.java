@@ -48,7 +48,7 @@ public abstract class BaseConnection implements ClientConnection {
      */
     public Object sendMessage(ClientMessage message) throws CayenneRuntimeException {
         if (message == null) {
-            throw new NullPointerException("Null message");
+            throw new IllegalArgumentException("Null message");
         }
 
         beforeSendMessage(message);

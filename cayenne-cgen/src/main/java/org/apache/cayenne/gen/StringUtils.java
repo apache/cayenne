@@ -65,13 +65,15 @@ public class StringUtils {
      * @since 1.2
      */
     public String stripClass(String aString) {
-        if (aString == null || aString.length() == 0)
+        if (aString == null || aString.length() == 0) {
             return aString;
+        }
 
         int lastDot = aString.lastIndexOf('.');
 
-        if (-1 == lastDot)
+        if (-1 == lastDot) {
             return "";
+        }
 
         return aString.substring(0, lastDot);
     }
@@ -100,8 +102,9 @@ public class StringUtils {
      * @since 1.1
      */
     public String capitalizedAsConstant(String name) {
-        if (name == null || name.length() == 0)
+        if (name == null || name.length() == 0) {
             return name;
+        }
 
         // clear of non-java chars. While the method name implies that a passed identifier
         // is pure Java, it is used to build pk columns names and such, so extra safety

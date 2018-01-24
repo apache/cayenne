@@ -187,15 +187,11 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
             target = context.createFault((ObjectId) targetNodeId);
         }
 
-        try {
-            if (p instanceof ToManyProperty) {
-                ((ToManyProperty) p).addTargetDirectly(source, target);
-            }
-            else {
-                p.writePropertyDirectly(source, null, target);
-            }
+        if (p instanceof ToManyProperty) {
+            ((ToManyProperty) p).addTargetDirectly(source, target);
         }
-        finally {
+        else {
+            p.writePropertyDirectly(source, null, target);
         }
     }
 
@@ -221,16 +217,12 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
             target = context.createFault((ObjectId) targetNodeId);
         }
 
-        try {
             if (p instanceof ToManyProperty) {
                 ((ToManyProperty) p).removeTargetDirectly(source, target);
             }
             else {
                 p.writePropertyDirectly(source, target, null);
             }
-        }
-        finally {
-        }
     }
 
     private PropertyDescriptor propertyForId(Object nodeId, String propertyName) {

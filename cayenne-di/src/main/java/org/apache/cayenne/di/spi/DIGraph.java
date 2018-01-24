@@ -85,8 +85,9 @@ class DIGraph<V> {
 	 *             if either vertex doesn't exist.
 	 */
 	public void remove(V from, V to) {
-		if (!(this.contains(from) && this.contains(to)))
+		if (!(this.contains(from) && this.contains(to))) {
 			throw new IllegalArgumentException("Nonexistent vertex");
+		}
 
 		neighbors.get(from).remove(to);
 	}

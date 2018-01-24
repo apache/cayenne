@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
+import static org.apache.cayenne.util.Util.isBlank;
+
 /**
  * @since 4.0.
  */
@@ -57,7 +59,7 @@ public class PatternParam {
      * Used by Ant task
      */
     public void addText(String pattern) {
-        if (pattern.trim().isEmpty()) {
+        if (isBlank(pattern.trim())) {
             return;
         }
 

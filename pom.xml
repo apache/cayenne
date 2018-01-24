@@ -41,9 +41,9 @@
 		<slf4j.version>1.7.25</slf4j.version>
 		<ant.version>1.9.9</ant.version>
 
-        <pmd.skip>true</pmd.skip>
-        <checkstyle.skip>true</checkstyle.skip>
-        <findbugs.skip>true</findbugs.skip>
+        <pmd.skip>false</pmd.skip>
+        <checkstyle.skip>false</checkstyle.skip>
+        <findbugs.skip>false</findbugs.skip>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -962,11 +962,6 @@
         <profile>
             <id>code-quality</id>
 
-            <activation>
-                <property>
-                    <name>!fast-and-dirty</name>
-                </property>
-            </activation>
             <build>
                 <pluginManagement>
                     <plugins>
@@ -976,7 +971,7 @@
                             <version>2.17</version>
                             <configuration>
                                 <skip>${checkstyle.skip}</skip>
-                                <consoleOutput>true</consoleOutput>
+                                <consoleOutput>false</consoleOutput>
                                 <enableRulesSummary>false</enableRulesSummary>
                                 <failOnViolation>false</failOnViolation>
                                 <!-- TODO make it 'true' when we will be ready -->
@@ -1006,7 +1001,7 @@
                             <configuration>
                                 <skip>${pmd.skip}</skip>
                                 <sourceEncoding>utf-8</sourceEncoding>
-                                <targetJdk>1.7</targetJdk>
+                                <targetJdk>1.8</targetJdk>
                                 <verbose>true</verbose>
                                 <failOnViolation>false</failOnViolation>
                                 <!-- TODO make it 'true' when we will be ready -->
@@ -1031,25 +1026,6 @@
                                     <version>${project.version}</version>
                                 </dependency>
                             </dependencies>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>findbugs-maven-plugin</artifactId>
-                            <version>3.0.4</version>
-                            <configuration>
-                                <effort>Max</effort>
-                                <!-- do max effort at CI Server -->
-                                <threshold>Low</threshold>
-                                <!-- make it 'low' at CI Server -->
-                            </configuration>
-                            <executions>
-                                <execution>
-                                    <phase>process-classes</phase>
-                                    <goals>
-                                        <goal>check</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
                         </plugin>
                         <plugin>
                             <groupId>org.codehaus.mojo</groupId>

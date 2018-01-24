@@ -63,6 +63,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.apache.cayenne.util.Util.isBlank;
+
 /**
  * A default implementation of {@link DbImportAction} that can load DB schema and merge it to a new or an existing
  * DataMap.
@@ -194,7 +196,7 @@ public class DefaultDbImportAction implements DbImportAction {
 
     private boolean syncDataMapProperties(DataMap targetDataMap, DbImportConfiguration config) {
         String defaultPackage = config.getDefaultPackage();
-        if (defaultPackage == null || defaultPackage.trim().length() == 0) {
+        if (defaultPackage == null || isBlank(defaultPackage.trim())) {
             return false;
         }
 

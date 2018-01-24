@@ -240,7 +240,7 @@ public class CayenneContext extends BaseContext {
     @Override
     public <T> T newObject(Class<T> persistentClass) {
         if (persistentClass == null) {
-            throw new NullPointerException("Persistent class can't be null.");
+            throw new IllegalArgumentException("Persistent class can't be null.");
         }
 
         ObjEntity entity = getEntityResolver().getObjEntity(persistentClass);
@@ -262,7 +262,7 @@ public class CayenneContext extends BaseContext {
     @Override
     public void registerNewObject(Object object) {
         if (object == null) {
-            throw new NullPointerException("An attempt to register null object.");
+            throw new IllegalArgumentException("An attempt to register null object.");
         }
 
         ObjEntity entity = getEntityResolver().getObjEntity(object.getClass());
@@ -352,16 +352,7 @@ public class CayenneContext extends BaseContext {
         boolean childContext = this != originatingContext && changes != null;
 
         if (childContext) {
-
-            // PropertyChangeProcessingStrategy oldStrategy =
-            // getPropertyChangeProcessingStrategy();
-            // setPropertyChangeProcessingStrategy(PropertyChangeProcessingStrategy.RECORD);
-            try {
-                changes.apply(new CayenneContextChildDiffLoader(this));
-            } finally {
-                // setPropertyChangeProcessingStrategy(oldStrategy);
-            }
-
+            changes.apply(new CayenneContextChildDiffLoader(this));
             fireDataChannelChanged(originatingContext, changes);
         }
 

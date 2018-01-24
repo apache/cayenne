@@ -69,11 +69,6 @@
         <profile>
             <id>code-quality</id>
 
-            <activation>
-                <property>
-                    <name>!fast-and-dirty</name>
-                </property>
-            </activation>
             <build>
                 <plugins>
                     <plugin>

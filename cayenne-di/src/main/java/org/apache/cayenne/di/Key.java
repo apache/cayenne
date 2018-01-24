@@ -81,7 +81,7 @@ public class Key<T> {
 
     protected Key(TypeLiteral<T> type, String bindingName) {
         if (type == null) {
-            throw new NullPointerException("Null key type");
+            throw new IllegalArgumentException("Null key type");
         }
 
         this.typeLiteral = type;

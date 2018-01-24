@@ -19,8 +19,11 @@
 
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
+import org.apache.cayenne.util.Util;
+
 import java.util.Collection;
 import java.util.LinkedList;
+
 
 /**
  * @since 4.0.
@@ -153,7 +156,7 @@ public abstract class FilterContainer {
     }
 
     public void addText(String name) {
-        if (name.trim().isEmpty()) {
+        if (Util.isBlank(name.trim())) {
             return;
         }
         setName(name);

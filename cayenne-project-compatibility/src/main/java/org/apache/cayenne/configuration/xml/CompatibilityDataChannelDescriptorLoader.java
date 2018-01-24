@@ -52,7 +52,7 @@ import org.xml.sax.XMLReader;
  */
 public class CompatibilityDataChannelDescriptorLoader extends XMLDataChannelDescriptorLoader {
 
-    private static Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
     @Inject
     Provider<UpgradeService> upgradeServiceProvider;
@@ -63,7 +63,7 @@ public class CompatibilityDataChannelDescriptorLoader extends XMLDataChannelDesc
     @Override
     public ConfigurationTree<DataChannelDescriptor> load(Resource configurationResource) throws ConfigurationException {
         if (configurationResource == null) {
-            throw new NullPointerException("Null configurationResource");
+            throw new IllegalArgumentException("Null configurationResource");
         }
 
         if(!(upgradeServiceProvider.get() instanceof CompatibilityUpgradeService)) {

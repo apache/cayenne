@@ -21,7 +21,7 @@
   <rule ref="rulesets/optimizations.xml/AvoidArrayLoops">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/BooleanInstantiation">
+  <rule ref="rulesets/empty.xml/BooleanInstantiation">
     <priority>1</priority>
   </rule>
   <rule ref="rulesets/logging-java.xml/LoggerIsNotStaticFinal">
@@ -48,13 +48,13 @@
   <rule ref="rulesets/controversial.xml/DoNotCallGarbageCollectionExplicitly">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptyCatchBlock">
+  <rule ref="rulesets/empty.xml/EmptyCatchBlock">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptyFinallyBlock">
+  <rule ref="rulesets/empty.xml/EmptyFinallyBlock">
     <priority>1</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptyIfStmt">
+  <rule ref="rulesets/empty.xml/EmptyIfStmt">
     <priority>3</priority>
   </rule>
   <rule ref="rulesets/codesize.xml/ExcessiveClassLength">
@@ -75,16 +75,12 @@
   <rule ref="rulesets/strictexception.xml/AvoidCatchingThrowable">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/AvoidDecimalLiteralsInBigDecimalConstructor">
-    <priority>3</priority>
-  </rule>
-  <rule ref="rulesets/basic.xml/AvoidUsingHardCodedIP">
-    <priority>3</priority>
-  </rule>
-  <rule ref="rulesets/basic.xml/BrokenNullCheck">
+
+
+  <rule ref="rulesets/empty.xml/BrokenNullCheck">
     <priority>1</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/ClassCastExceptionWithToArray">
+  <rule ref="rulesets/empty.xml/ClassCastExceptionWithToArray">
     <priority>3</priority>
   </rule>
   <rule ref="rulesets/j2ee.xml/DoNotCallSystemExit">
@@ -135,7 +131,7 @@
   <rule ref="rulesets/design.xml/AvoidInstanceofChecksInCatchClause">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/AvoidMultipleUnaryOperators">
+  <rule ref="rulesets/empty.xml/AvoidMultipleUnaryOperators">
     <priority>3</priority>
   </rule>
   <rule ref="rulesets/braces.xml/ForLoopsMustUseBraces">
@@ -412,28 +408,28 @@
       </property>
     </properties>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptySynchronizedBlock">
+  <rule ref="rulesets/empty.xml/EmptySynchronizedBlock">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptyWhileStmt">
+  <rule ref="rulesets/empty.xml/EmptyWhileStmt">
     <priority>3</priority>
   </rule>
   <rule ref="rulesets/design.xml/EqualsNull">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/MisplacedNullCheck">
+  <rule ref="rulesets/empty.xml/MisplacedNullCheck">
     <priority>1</priority>
   </rule>
   <rule ref="rulesets/design.xml/MissingBreakInSwitch">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/UnconditionalIfStatement">
+  <rule ref="rulesets/empty.xml/UnconditionalIfStatement">
     <priority>1</priority>
   </rule>
   <rule ref="rulesets/j2ee.xml/UseProperClassLoader">
     <priority>1</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/UselessOperationOnImmutable">
+  <rule ref="rulesets/empty.xml/UselessOperationOnImmutable">
     <priority>1</priority>
   </rule>
   <rule class="net.sourceforge.pmd.rules.XPathRule" message="Prevent of declaration @Transactional annotation on java intefaces and classes." name="EIS coding rules-TransactionalAllowedOnlyOnMethod">
@@ -453,7 +449,7 @@
   <rule ref="rulesets/design.xml/AssignmentToNonFinalStatic">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/design.xml/AvoidConstantsInterface">
+  <rule ref="rulesets/design.xml/ConstantsInInterface">
     <priority>3</priority>
   </rule>
   <rule ref="rulesets/logging-java.xml/AvoidPrintStackTrace">
@@ -534,7 +530,7 @@
   <rule ref="rulesets/clone.xml/ProperCloneImplementation">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/AvoidThreadGroup">
+  <rule ref="rulesets/empty.xml/AvoidThreadGroup">
     <priority>3</priority>
   </rule>
   <rule ref="rulesets/strictexception.xml/AvoidCatchingGenericException">
@@ -546,19 +542,19 @@
   <rule ref="rulesets/design.xml/BadComparison">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptyInitializer">
+  <rule ref="rulesets/empty.xml/EmptyInitializer">
     <priority>3</priority>
   </rule>
   <rule ref="rulesets/design.xml/CompareObjectsWithEquals">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptyStatementNotInLoop">
+  <rule ref="rulesets/empty.xml/EmptyStatementNotInLoop">
     <priority>3</priority>
   </rule>
   <rule ref="rulesets/design.xml/EmptyMethodInAbstractClassShouldBeAbstract">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptyTryBlock">
+  <rule ref="rulesets/empty.xml/EmptyTryBlock">
     <priority>3</priority>
   </rule>
   <rule ref="rulesets/strings.xml/StringToString">
@@ -625,10 +621,10 @@
   <rule ref="rulesets/design.xml/DefaultLabelNotLastInSwitchStmt">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptySwitchStatements">
+  <rule ref="rulesets/empty.xml/EmptySwitchStatements">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptyStaticInitializer">
+  <rule ref="rulesets/empty.xml/EmptyStaticInitializer">
     <priority>3</priority>
   </rule>
   <rule ref="rulesets/finalizers.xml/EmptyFinalizer">
@@ -652,7 +648,7 @@
   <rule ref="rulesets/strings.xml/InefficientEmptyStringCheck">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/ReturnFromFinallyBlock">
+  <rule ref="rulesets/empty.xml/ReturnFromFinallyBlock">
     <priority>3</priority>
   </rule>
   <rule ref="rulesets/strictexception.xml/AvoidThrowingNewInstanceOfSameException">

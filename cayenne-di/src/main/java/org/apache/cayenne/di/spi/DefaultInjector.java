@@ -80,7 +80,7 @@ public class DefaultInjector implements Injector {
 	<T> Binding<T> getBinding(Key<T> key) throws DIRuntimeException {
 
         if (key == null) {
-            throw new NullPointerException("Null key");
+            throw new IllegalArgumentException("Null key");
         }
 
         // may return null - this is intentionally allowed in this non-public method
@@ -148,7 +148,7 @@ public class DefaultInjector implements Injector {
     public <T> Provider<T> getProvider(Key<T> key) throws DIRuntimeException {
 
         if (key == null) {
-            throw new NullPointerException("Null key");
+            throw new IllegalArgumentException("Null key");
         }
 
         @SuppressWarnings("unchecked")

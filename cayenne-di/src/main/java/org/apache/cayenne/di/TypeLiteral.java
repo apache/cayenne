@@ -69,12 +69,16 @@ class TypeLiteral<T> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         TypeLiteral<?> that = (TypeLiteral<?>) o;
 
-        if (!typeName.equals(that.typeName)) return false;
+        if (!typeName.equals(that.typeName)){
+            return false;
+        }
         return Arrays.equals(argumentsType, that.argumentsType);
     }
 

@@ -34,7 +34,7 @@ public class OsgiModuleBuilder {
     public static OsgiModuleBuilder forProject(Class<?> typeFromProjectBundle) {
 
         if (typeFromProjectBundle == null) {
-            throw new NullPointerException("Null 'typeFromProjectBundle'");
+            throw new IllegalArgumentException("Null 'typeFromProjectBundle'");
         }
 
         return new OsgiModuleBuilder(typeFromProjectBundle);

@@ -30,7 +30,7 @@ import org.w3c.dom.Document;
  */
 public class DefaultDocumentProvider implements DocumentProvider {
 
-    Map<String, Document> documentMap = new HashMap<>();
+    private Map<String, Document> documentMap = new HashMap<>();
 
     @Override
     public Document getDocument(URL url) {

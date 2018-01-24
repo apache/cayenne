@@ -43,7 +43,7 @@ import java.net.URI;
  */
 public class JettyHttpClientConnectionProvider implements Provider<ClientConnection> {
 
-    private static Logger logger = LoggerFactory.getLogger(JettyHttpROPConnector.class);
+    private static final Logger logger = LoggerFactory.getLogger(JettyHttpROPConnector.class);
 
     @Inject
     protected RuntimeProperties runtimeProperties;
