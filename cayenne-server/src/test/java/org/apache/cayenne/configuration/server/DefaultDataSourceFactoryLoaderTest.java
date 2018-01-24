@@ -102,6 +102,55 @@ public class DefaultDataSourceFactoryLoaderTest {
     }
 
     @Test
+    public void testGetDataSourceFactory_UnusedProperties() throws Exception {
+        final RuntimeProperties properties = mock(RuntimeProperties.class);
+        when(properties.get(Constants.JDBC_DRIVER_PROPERTY)).thenReturn("x");
+        when(properties.get(Constants.JDBC_URL_PROPERTY)).thenReturn(null);
+        when(properties.get(Constants.JDBC_USERNAME_PROPERTY)).thenReturn("username");
+        when(properties.get(Constants.JDBC_PASSWORD_PROPERTY)).thenReturn("12345");
+
+        DataChannelDescriptor channelDescriptor = new DataChannelDescriptor();
+        channelDescriptor.setName("X");
+        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+        nodeDescriptor.setName("node1");
+        nodeDescriptor.setDataSourceFactoryType(MockDataSourceFactory1.class.getName());
+        nodeDescriptor.setDataChannelDescriptor(channelDescriptor);
+
+        Module testModule = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+                binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+                binder.bind(ResourceLocator.class).to(MockResourceLocator.class);
+                binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(MockResourceLocator.class);
+                binder.bind(RuntimeProperties.class).toInstance(properties);
+                binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            }
+        };
+
+        Injector injector = DIBootstrap.createInjector(testModule);
+
+        DelegatingDataSourceFactory factoryLoader = new DelegatingDataSourceFactory();
+        injector.injectMembers(factoryLoader);
+        DataSourceFactory factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
+        assertNotNull(factory);
+        assertFalse(factory instanceof PropertyDataSourceFactory);
+
+        nodeDescriptor.setName("node2");
+        when(properties.get(Constants.JDBC_MIN_CONNECTIONS_PROPERTY + ".X.node2")).thenReturn("3");
+        when(properties.get(Constants.JDBC_PASSWORD_PROPERTY + ".X.node2")).thenReturn("123456");
+        factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
+        assertNotNull(factory);
+        assertFalse(factory instanceof PropertyDataSourceFactory);
+
+        nodeDescriptor.setName("node3");
+        when(properties.get(Constants.JDBC_URL_PROPERTY + ".X.node3")).thenReturn("url");
+        factory = factoryLoader.getDataSourceFactory(nodeDescriptor);
+        assertNotNull(factory);
+        assertTrue(factory instanceof PropertyDataSourceFactory);
+    }
+
+    @Test
     public void testGetDataSourceFactory_Property() throws Exception {
 
         final RuntimeProperties properties = mock(RuntimeProperties.class);

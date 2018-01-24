@@ -60,7 +60,7 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
     protected Map<DataSource, ScopeEventListener> managedDataSources;
 
     public DelegatingDataSourceFactory() {
-        managedDataSources = new ConcurrentHashMap<DataSource, ScopeEventListener>();
+        managedDataSources = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -94,7 +94,7 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
     }
 
     protected DataSourceFactory getDataSourceFactory(DataNodeDescriptor nodeDescriptor) {
-        String typeName = null;
+        String typeName;
 
         if (shouldConfigureDataSourceFromProperties(nodeDescriptor)) {
             typeName = PropertyDataSourceFactory.class.getName();
@@ -116,6 +116,49 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
         return objectFactory.newInstance(DataSourceFactory.class, typeName);
     }
 
+    private String getDataNodePropertyName(DataNodeDescriptor nodeDescriptor, String propertyConstant) {
+        return propertyConstant
+                + "."
+                + nodeDescriptor.getDataChannelDescriptor().getName()
+                + "."
+                + nodeDescriptor.getName();
+    }
+
+    private void findUnusedProperties(DataNodeDescriptor nodeDescriptor) {
+        if(!logger.isInfoEnabled() || nodeDescriptor.getDataChannelDescriptor() == null) {
+            return;
+        }
+        boolean found = false;
+        StringBuilder logResult = new StringBuilder();
+        String nodeName = nodeDescriptor.getDataChannelDescriptor().getName()
+                + "."
+                + nodeDescriptor.getName();
+        logResult.append("Following runtime properties were ignored for node '").append(nodeName).append("': ");
+        String[] verifiableProperties = new String[] {
+                Constants.JDBC_USERNAME_PROPERTY, Constants.JDBC_PASSWORD_PROPERTY,
+                Constants.JDBC_MAX_CONNECTIONS_PROPERTY, Constants.JDBC_MIN_CONNECTIONS_PROPERTY,
+                Constants.JDBC_MAX_QUEUE_WAIT_TIME, Constants.JDBC_VALIDATION_QUERY_PROPERTY
+        };
+        for (String propertyConstant : verifiableProperties) {
+            String property = properties.get(getDataNodePropertyName(nodeDescriptor, propertyConstant));
+            if (property != null) {
+                logResult.append(getDataNodePropertyName(nodeDescriptor, propertyConstant)).append(", ");
+                found = true;
+            }
+            property = properties.get(propertyConstant);
+            if (property != null) {
+                logResult.append(propertyConstant).append(", ");
+                found = true;
+            }
+        }
+        if (found) {
+            logResult.delete(logResult.length() - 2, logResult.length())
+                    .append(". Will use project DataSource configuration. ")
+                    .append("Set driver and url properties to enable DataSource configuration override. ");
+            logger.info(logResult.toString());
+        }
+    }
+
     protected boolean shouldConfigureDataSourceFromProperties(
             DataNodeDescriptor nodeDescriptor) {
 
@@ -126,28 +169,22 @@ public class DelegatingDataSourceFactory implements DataSourceFactory {
         String driver = properties.get(Constants.JDBC_DRIVER_PROPERTY);
 
         if (driver == null && channelName != null) {
-            driver = properties.get(Constants.JDBC_DRIVER_PROPERTY
-                    + "."
-                    + nodeDescriptor.getDataChannelDescriptor().getName()
-                    + "."
-                    + nodeDescriptor.getName());
+            driver = properties.get(getDataNodePropertyName(nodeDescriptor, Constants.JDBC_DRIVER_PROPERTY));
         }
 
         if (driver == null) {
+            findUnusedProperties(nodeDescriptor);
             return false;
         }
 
         String url = properties.get(Constants.JDBC_URL_PROPERTY);
 
         if (url == null && channelName != null) {
-            url = properties.get(Constants.JDBC_URL_PROPERTY
-                    + "."
-                    + nodeDescriptor.getDataChannelDescriptor().getName()
-                    + "."
-                    + nodeDescriptor.getName());
+            url = properties.get(getDataNodePropertyName(nodeDescriptor, Constants.JDBC_URL_PROPERTY));
         }
 
         if (url == null) {
+            findUnusedProperties(nodeDescriptor);
             return false;
         }
 
