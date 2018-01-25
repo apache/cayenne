@@ -101,14 +101,14 @@
 					<resource>
 						<directory>src/main/resources</directory>
 						<excludes>
-							<exclude>doc/index.html</exclude>
+							<exclude>README.html</exclude>
 						</excludes>
 					</resource>
 					<resource>
 						<directory>src/main/resources</directory>
 						<filtering>true</filtering>
 						<includes>
-							<include>doc/index.html</include>
+							<include>README.html</include>
 						</includes>
 					</resource>
 				</resources>

@@ -1,21 +1,21 @@
-<!--
-   Licensed to the Apache Software Foundation (ASF) under one
-   or more contributor license agreements.  See the NOTICE file
-   distributed with this work for additional information
-   regarding copyright ownership.  The ASF licenses this file
-   to you under the Apache License, Version 2.0 (the
-   "License"); you may not use this file except in compliance
-   with the License.  You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing,
-   software distributed under the License is distributed on an
-   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-   KIND, either express or implied.  See the License for the
-   specific language governing permissions and limitations
-   under the License.
--->
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~   Licensed to the Apache Software Foundation (ASF) under one
+  ~  or more contributor license agreements.  See the NOTICE file
+  ~  distributed with this work for additional information
+  ~  regarding copyright ownership.  The ASF licenses this file
+  ~  to you under the Apache License, Version 2.0 (the
+  ~  "License"); you may not use this file except in compliance
+  ~  with the License.  You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <!doctype html>
 <html>
 <head>
@@ -29,6 +29,11 @@
 			font-weight: 300;
 			line-height: 1.2;
 			color: #444;
+		}
+
+		p {
+			color: #666;
+			font-weight: 400;
 		}
 
 		h1 {
@@ -80,6 +85,15 @@
 			vertical-align: middle;
 			border: 0;
 		}
+
+		code {
+			font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+			padding: .2rem .4rem;
+			font-size: 90%;
+			color: #bd4147;
+			background-color: #f8f9fa;
+			border-radius: .25rem
+		}
 	</style>
 </head>
 <body>
@@ -89,13 +103,23 @@
 
 <h2>Offline Documentation:</h2>
 <ul>
-	<li>Cayenne Tutorial: <a href="getting-started-guide.pdf">PDF</a>, <a href="getting-started-guide.html">HTML</a></li>
-	<li>Cayenne Guide: <a href="cayenne-guide.pdf">PDF</a>, <a href="cayenne-guide.html">HTML</a> </li>
-	<li>Upgrade Guide: <a href="upgrade-guide.pdf">PDF</a>, <a href="upgrade-guide.html">HTML</a></li>
-	<li>Cayenne Tutorial - Db-First Flow: <a href="getting-started-db-first.pdf">PDF</a>, <a href="getting-started-db-first.html">HTML</a></li>
-	<li>Cayenne Tutorial - Remote Object Persistence: <a href="getting-started-rop.pdf">PDF</a>, <a href="getting-started-rop.html">HTML</a></li>
-	<li><a href="api/index.html">JavaDocs</a></li>
+	<li>New Features Guide: <a href="doc/upgrade-guide.pdf">PDF</a>, <a href="doc/upgrade-guide.html">HTML</a></li>
+	<li>Cayenne Tutorial: <a href="doc/getting-started-guide.pdf">PDF</a>, <a href="doc/getting-started-guide.html">HTML</a></li>
+	<li>Cayenne Guide: <a href="doc/cayenne-guide.pdf">PDF</a>, <a href="doc/cayenne-guide.html">HTML</a> </li>
+	<li>Cayenne Tutorial - Db-First Flow: <a href="doc/getting-started-db-first.pdf">PDF</a>, <a href="doc/getting-started-db-first.html">HTML</a></li>
+	<li>Cayenne Tutorial - Remote Object Persistence: <a href="doc/getting-started-rop.pdf">PDF</a>, <a href="doc/getting-started-rop.html">HTML</a></li>
+	<li><a href="UPGRADE.txt">Upgrade Notes</a></li>
+	<li><a href="RELEASE-NOTES.txt">Release Notes</a></li>
+	<li><a href="doc/api/index.html">JavaDocs</a></li>
 </ul>
+
+<h2>Content:</h2>
+<uL>
+	<li><code>/doc</code> folder contains all documentation mentioned above.</li>
+	<li><code>/lib</code> folder contains built Cayenne modules and minimum required third-party libs.</li>
+	<li><code>/templates</code> folder contains default <code>cgen</code> templates as a base for writing your own.</li>
+	<li><code>/tutorials</code> folder contains source codes for all Cayenne tutorials.</li>
+</uL>
 
 <h2>Online Resources:</h2>
 <ul>
@@ -104,6 +128,45 @@
 	<li><a href="http://cayenne.apache.org/support.html">Support</a></li>
 	<li><a href="http://issues.apache.org/jira/browse/CAY">Report Bugs</a></li>
 </ul>
+
+<h2>Licensing</h2>
+<p>
+This software is licensed under the terms you may find in the file<br/>
+named <a href="LICENSE.txt">"LICENSE"</a> in this directory.
+</p>
+<p>
+This distribution includes cryptographic software.  The country in<br/>
+which you currently reside may have restrictions on the import,<br/>
+possession, use, and/or re-export to another country, of<br/>
+encryption software.  BEFORE using any encryption software, please<br/>
+check your country's laws, regulations and policies concerning the<br/>
+import, possession, or use, and re-export of encryption software, to<br/>
+see if this is permitted.  See <a href="http://www.wassenaar.org/">http://www.wassenaar.org/</a> for more<br/>
+information.
+</p>
+<p>
+The U.S. Government Department of Commerce, Bureau of Industry and<br/>
+Security (BIS), has classified this software as Export Commodity<br/>
+Control Number (ECCN) 5D002.C.1, which includes information security<br/>
+software using or performing cryptographic functions with asymmetric<br/>
+algorithms.  The form and manner of this Apache Software Foundation<br/>
+distribution makes it eligible for export under the License Exception<br/>
+ENC Technology Software Unrestricted (TSU) exception (see the BIS<br/>
+Export Administration Regulations, Section 740.13) for both object<br/>
+code and source code.
+</p>
+<p>
+The following provides more details on the included cryptographic<br/>
+software:
+</p>
+<p>
+<code>cayenne-crypto</code> module requires Java Cryptography extensions<br/>
+<a href="http://java.sun.com/javase/technologies/security/">http://java.sun.com/javase/technologies/security/</a>. Apache Cayenne <br/>
+does not include these libraries itself, but is designed to use them.
+</p>
+<p>
+Thanks for using Cayenne!
+</p>
 </body>
 </html>
 

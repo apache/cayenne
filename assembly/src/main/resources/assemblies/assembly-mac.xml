@@ -26,11 +26,11 @@
 	<fileSets>
 		<fileSet>
 			<directory>target/legal/META-INF/cayenne</directory>
-			<outputDirectory>cayenne-${project.version}-macosx/</outputDirectory>
+			<outputDirectory>${content.dir}/</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../tutorials/</directory>
-			<outputDirectory>cayenne-${project.version}-macosx/tutorials/</outputDirectory>
+			<outputDirectory>${content.dir}/tutorials/</outputDirectory>
 			<includes>
 				<include>tutorial/**</include>
 				<include>tutorial-rop-server/**</include>
@@ -46,15 +46,15 @@
 		</fileSet>
 		<fileSet>
 			<directory>../cayenne-cgen/src/main/resources/templates/v4_1</directory>
-			<outputDirectory>cayenne-${project.version}-macosx/templates/</outputDirectory>
+			<outputDirectory>${content.dir}/templates/</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>target/doc-staging</directory>
-			<outputDirectory>cayenne-${project.version}-macosx/doc</outputDirectory>
+			<outputDirectory>${content.dir}/doc</outputDirectory>
 		</fileSet>
 		<fileSet>
 			<directory>../</directory>
-			<outputDirectory>cayenne-${project.version}-macosx/</outputDirectory>
+			<outputDirectory>${content.dir}/</outputDirectory>
 			<includes>
 				<include>RELEASE-NOTES.txt</include>
 				<include>UPGRADE.txt</include>
@@ -65,7 +65,7 @@
 
 	<dependencySets>
 		<dependencySet>
-			<outputDirectory>cayenne-${project.version}-macosx/lib/</outputDirectory>
+			<outputDirectory>${content.dir}/lib/</outputDirectory>
 			<includes>
 				<include>org.apache.cayenne:cayenne-ant</include>
 				<include>org.apache.cayenne:cayenne-cache-invalidation</include>
@@ -94,14 +94,14 @@
 			</includes>
 		</dependencySet>
 		<dependencySet>
-			<outputDirectory>cayenne-${project.version}-macosx/lib/third-party/</outputDirectory>
+			<outputDirectory>${content.dir}/lib/third-party/</outputDirectory>
 			<!-- Include only a minimal set of dependencies to run cayenne-server and ant tasks -->
 			<includes>
 				<include>org.slf4j:slf4j-api</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>
-			<outputDirectory>cayenne-${project.version}-macosx/</outputDirectory>
+			<outputDirectory>${content.dir}/</outputDirectory>
 			<includes>
 				<include>org.apache.cayenne.docs:cayenne-doc</include>
 			</includes>
