@@ -80,7 +80,7 @@ public class BeanValidationFailure extends SimpleValidationFailure {
 
     public static ValidationFailure validateMandatory(Object bean, String attribute) {
         if (bean == null) {
-            throw new NullPointerException("Null bean.");
+            throw new IllegalArgumentException("Null bean.");
         }
 
         try {

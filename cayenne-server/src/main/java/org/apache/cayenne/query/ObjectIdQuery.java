@@ -69,7 +69,7 @@ public class ObjectIdQuery extends IndirectQuery {
      */
     public ObjectIdQuery(ObjectId objectId, boolean fetchingDataRows, int cachePolicy) {
         if (objectId == null) {
-            throw new NullPointerException("Null objectID");
+            throw new IllegalArgumentException("Null objectID");
         }
 
         this.objectId = objectId;

@@ -57,7 +57,7 @@ import java.util.List;
  */
 public class DataDomainProvider implements Provider<DataDomain> {
 
-	private static Logger logger = LoggerFactory.getLogger(DataDomainProvider.class);
+	private static final Logger logger = LoggerFactory.getLogger(DataDomainProvider.class);
 
 	@Inject
 	protected ResourceLocator resourceLocator;

@@ -70,8 +70,9 @@ public class FormattedSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
         for (int pos = 0; pos < sql.length(); pos++) {
             if (sql.charAt(pos) == '\'') {
                 apixCount++;
-                if (pos > 0 && sql.charAt(pos - 1) == '\'')
+                if (pos > 0 && sql.charAt(pos - 1) == '\'') {
                     apixCount = apixCount - 2;
+                }
             }
             if (apixCount % 2 != 0) {
                 continue;

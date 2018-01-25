@@ -167,7 +167,7 @@ public class LifecycleCallbackRegistry {
 	 */
 	public void addListener(Object listener) {
 		if (listener == null) {
-			throw new NullPointerException("Null listener");
+			throw new IllegalArgumentException("Null listener");
 		}
 
 		Class<?> listenerType = listener.getClass();

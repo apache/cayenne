@@ -306,7 +306,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 	 */
 	public void merge(PrefetchTreeNode node) {
 		if (node == null) {
-			throw new NullPointerException("Null node");
+			throw new IllegalArgumentException("Null node");
 		}
 
 		PrefetchTreeNode start = node.getName() != null ? addPath(node.getName()) : this;

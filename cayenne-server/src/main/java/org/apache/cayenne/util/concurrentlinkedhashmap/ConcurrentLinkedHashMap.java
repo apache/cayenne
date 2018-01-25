@@ -258,7 +258,7 @@ public class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V> implements
     /** Asserts that the object is not null. */
     static void checkNotNull(Object o) {
         if (o == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         }
     }
 

@@ -524,7 +524,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 */
 	public void traverse(TraversalHandler visitor) {
 		if (visitor == null) {
-			throw new NullPointerException("Null Visitor.");
+			throw new IllegalArgumentException("Null Visitor.");
 		}
 
 		traverse(null, visitor);

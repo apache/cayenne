@@ -54,7 +54,7 @@ public class DeleteBatchQuery extends BatchQuery {
         super(dbEntity, qualifierAttributes, batchCapacity);
 
         if (nullQualifierNames == null) {
-            throw new NullPointerException("Null 'nullQualifierNames'");
+            throw new IllegalArgumentException("Null 'nullQualifierNames'");
         }
 
         this.nullQualifierNames = nullQualifierNames;

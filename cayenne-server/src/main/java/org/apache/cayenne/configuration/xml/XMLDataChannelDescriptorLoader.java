@@ -47,7 +47,7 @@ import java.net.URL;
  */
 public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoader {
 
-	private static Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+	private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
 	static final String CURRENT_PROJECT_VERSION = "10";
 
@@ -117,7 +117,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 	public ConfigurationTree<DataChannelDescriptor> load(Resource configurationResource) throws ConfigurationException {
 
 		if (configurationResource == null) {
-			throw new NullPointerException("Null configurationResource");
+			throw new IllegalArgumentException("Null configurationResource");
 		}
 
 		URL configurationURL = configurationResource.getURL();

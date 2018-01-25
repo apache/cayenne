@@ -56,7 +56,7 @@ class ObjectContextStateLog implements GraphChangeHandler {
         /*
          * Array for deleted ids, to avoid concurrent modification
          */
-        List<Object> deletedIds = new Vector<>();
+        List<Object> deletedIds = new ArrayList<>();
         
         for (Object id : dirtyIds) {
             Object node = graphManager.getNode(id);

@@ -66,7 +66,7 @@ public class FilesystemResourceLocator implements ResourceLocator {
      */
     public FilesystemResourceLocator(Collection<File> roots) {
         if (roots == null) {
-            throw new NullPointerException("Null roots");
+            throw new IllegalArgumentException("Null roots");
         }
 
         init(roots.toArray(new File[roots.size()]));

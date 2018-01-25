@@ -46,11 +46,11 @@ public abstract class RelationshipFault {
 
     public RelationshipFault(Persistent relationshipOwner, String relationshipName) {
         if (relationshipOwner == null) {
-            throw new NullPointerException("'relationshipOwner' can't be null.");
+            throw new IllegalArgumentException("'relationshipOwner' can't be null.");
         }
 
         if (relationshipName == null) {
-            throw new NullPointerException("'relationshipName' can't be null.");
+            throw new IllegalArgumentException("'relationshipName' can't be null.");
         }
 
         this.relationshipOwner = relationshipOwner;

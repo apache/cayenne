@@ -46,7 +46,7 @@ class ValueHolderMapProperty extends ValueHolderToManyProperty implements
     public void addTarget(Object source, Object target, boolean setReverse) {
 
         if (target == null) {
-            throw new NullPointerException("Attempt to add null object.");
+            throw new IllegalArgumentException("Attempt to add null object.");
         }
 
         // Now do the rest of the normal handling (regardless of whether it was

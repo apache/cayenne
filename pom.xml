@@ -41,10 +41,6 @@
 		<slf4j.version>1.7.25</slf4j.version>
 		<ant.version>1.9.9</ant.version>
 
-        <pmd.skip>false</pmd.skip>
-        <checkstyle.skip>false</checkstyle.skip>
-        <findbugs.skip>false</findbugs.skip>
-
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -970,7 +966,7 @@
                             <artifactId>maven-checkstyle-plugin</artifactId>
                             <version>2.17</version>
                             <configuration>
-                                <skip>${checkstyle.skip}</skip>
+                                <skip>true</skip>
                                 <consoleOutput>false</consoleOutput>
                                 <enableRulesSummary>false</enableRulesSummary>
                                 <failOnViolation>false</failOnViolation>
@@ -999,7 +995,7 @@
                             <artifactId>maven-pmd-plugin</artifactId>
                             <version>3.8</version>
                             <configuration>
-                                <skip>${pmd.skip}</skip>
+                                <skip>true</skip>
                                 <sourceEncoding>utf-8</sourceEncoding>
                                 <targetJdk>1.8</targetJdk>
                                 <verbose>true</verbose>

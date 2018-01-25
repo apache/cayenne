@@ -58,7 +58,7 @@ import java.util.Map;
  */
 public class DbGenerator {
 
-	private Logger logObj = LoggerFactory.getLogger(DbGenerator.class);
+	private static final Logger logObj = LoggerFactory.getLogger(DbGenerator.class);
 
 	protected DbAdapter adapter;
 	protected DataMap map;

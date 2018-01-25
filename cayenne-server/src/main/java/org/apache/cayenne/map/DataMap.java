@@ -455,11 +455,11 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 */
 	public void addQueryDescriptor(QueryDescriptor queryDescriptor) {
 		if (queryDescriptor == null) {
-			throw new NullPointerException("Can't add null query.");
+			throw new IllegalArgumentException("Can't add null query.");
 		}
 
 		if (queryDescriptor.getName() == null) {
-			throw new NullPointerException("Query name can't be null.");
+			throw new IllegalArgumentException("Query name can't be null.");
 		}
 
 		// TODO: change method signature to return replaced procedure and make
@@ -553,11 +553,11 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 */
 	public void addEmbeddable(Embeddable embeddable) {
 		if (embeddable == null) {
-			throw new NullPointerException("Null embeddable");
+			throw new IllegalArgumentException("Null embeddable");
 		}
 
 		if (embeddable.getClassName() == null) {
-			throw new NullPointerException("Attempt to add Embeddable with no class name.");
+			throw new IllegalArgumentException("Attempt to add Embeddable with no class name.");
 		}
 
 		// TODO: change method signature to return replaced entity and make sure
@@ -583,11 +583,11 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 */
 	public void addResult(SQLResult result) {
 		if (result == null) {
-			throw new NullPointerException("Null result");
+			throw new IllegalArgumentException("Null result");
 		}
 
 		if (result.getName() == null) {
-			throw new NullPointerException("Attempt to add resultSetMapping with no name.");
+			throw new IllegalArgumentException("Attempt to add resultSetMapping with no name.");
 		}
 
 		Object existing = results.get(result.getName());
@@ -607,7 +607,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 */
 	public void addObjEntity(ObjEntity entity) {
 		if (entity.getName() == null) {
-			throw new NullPointerException("Attempt to add ObjEntity with no name.");
+			throw new IllegalArgumentException("Attempt to add ObjEntity with no name.");
 		}
 
 		// TODO: change method signature to return replaced entity and make sure
@@ -631,7 +631,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 */
 	public void addDbEntity(DbEntity entity) {
 		if (entity.getName() == null) {
-			throw new NullPointerException("Attempt to add DbEntity with no name.");
+			throw new IllegalArgumentException("Attempt to add DbEntity with no name.");
 		}
 
 		// TODO: change method signature to return replaced entity and make sure
@@ -922,7 +922,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 */
 	public void addProcedure(Procedure procedure) {
 		if (procedure.getName() == null) {
-			throw new NullPointerException("Attempt to add procedure with no name.");
+			throw new IllegalArgumentException("Attempt to add procedure with no name.");
 		}
 
 		// TODO: change method signature to return replaced procedure and make

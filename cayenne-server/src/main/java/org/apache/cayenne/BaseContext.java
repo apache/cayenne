@@ -170,7 +170,7 @@ public abstract class BaseContext implements ObjectContext {
 	 */
 	protected void attachToChannel(DataChannel channel) {
 		if (channel == null) {
-			throw new NullPointerException("Null channel");
+			throw new IllegalArgumentException("Null channel");
 		}
 
 		setChannel(channel);
@@ -246,7 +246,7 @@ public abstract class BaseContext implements ObjectContext {
 	public <T extends Persistent> T localObject(T objectFromAnotherContext) {
 
 		if (objectFromAnotherContext == null) {
-			throw new NullPointerException("Null object argument");
+			throw new IllegalArgumentException("Null object argument");
 		}
 
 		ObjectId id = objectFromAnotherContext.getObjectId();
@@ -553,7 +553,7 @@ public abstract class BaseContext implements ObjectContext {
 
 		// don't allow null collections as a matter of coding discipline
 		if (objects == null) {
-			throw new NullPointerException("Null collection of objects to invalidate");
+			throw new IllegalArgumentException("Null collection of objects to invalidate");
 		}
 
 		if (!objects.isEmpty()) {

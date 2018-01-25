@@ -84,11 +84,13 @@ public class FilterArcIterator<E, V> implements ArcIterator<E, V> {
         this.acceptDestination = acceptDestination;
         this.acceptArc = acceptArc;
         nextOrigin = iterator.getOrigin();
-        if (!acceptOrigin.test(nextOrigin))
+        if (!acceptOrigin.test(nextOrigin)) {
             nextOrigin = null;
+        }
         nextDst = iterator.getDestination();
-        if (!acceptDestination.test(nextDst))
+        if (!acceptDestination.test(nextDst)) {
             nextDst = null;
+        }
     }
 
     public E getOrigin() {

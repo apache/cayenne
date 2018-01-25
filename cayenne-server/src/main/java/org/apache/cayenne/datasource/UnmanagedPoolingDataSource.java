@@ -88,7 +88,7 @@ public class UnmanagedPoolingDataSource implements PoolingDataSource {
 	 */
 	public static final int MAX_QUEUE_WAIT_DEFAULT = 20000;
 
-	private static Logger LOGGER = LoggerFactory.getLogger(UnmanagedPoolingDataSource.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UnmanagedPoolingDataSource.class);
 
 	private DataSource nonPoolingDataSource;
 	private long maxQueueWaitTime;

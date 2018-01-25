@@ -100,8 +100,9 @@ public class DepthFirstStampSearch<E> extends DepthFirstSearch<E> {
 			stack.push(factory.outgoingIterator(dst));
 			// grow depth
 			stamp = GROW_DEPTH_STAMP;
-			if (i.hasNext())
+			if (i.hasNext()) {
 				i.next();
+			}
 		} else {
 			if (i.hasNext()) {
 				i.next();

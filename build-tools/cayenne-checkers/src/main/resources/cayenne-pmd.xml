@@ -18,11 +18,11 @@
   under the License.
   -->
 <ruleset>
-<!--
+
   <rule ref="rulesets/java/optimizations.xml/AvoidArrayLoops">
     <priority>3</priority>
   </rule>
--->
+
   <rule ref="rulesets/java/basic.xml/BooleanInstantiation">
     <priority>1</priority>
   </rule>
@@ -44,7 +44,7 @@
   <rule ref="rulesets/java/codesize.xml/CyclomaticComplexity">
     <priority>2</priority>
     <properties>
-      <property name="reportLevel" value="15" />
+      <property name="reportLevel" value="30" />
     </properties>
   </rule>
   <rule ref="rulesets/java/controversial.xml/DoNotCallGarbageCollectionExplicitly">
@@ -56,9 +56,9 @@
   <rule ref="rulesets/java/empty.xml/EmptyFinallyBlock">
     <priority>1</priority>
   </rule>
-  <rule ref="rulesets/java/empty.xml/EmptyIfStmt">
-    <priority>3</priority>
-  </rule>
+  <!--<rule ref="rulesets/java/empty.xml/EmptyIfStmt">-->
+    <!--<priority>3</priority>-->
+  <!--</rule>-->
   <rule ref="rulesets/java/codesize.xml/ExcessiveClassLength">
     <priority>3</priority>
   </rule>
@@ -71,9 +71,9 @@
   <rule ref="rulesets/java/strictexception.xml/AvoidCatchingNPE">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/java/strictexception.xml/AvoidCatchingThrowable">
-    <priority>3</priority>
-  </rule>
+  <!--<rule ref="rulesets/java/strictexception.xml/AvoidCatchingThrowable">-->
+    <!--<priority>3</priority>-->
+  <!--</rule>-->
   <rule ref="rulesets/java/basic.xml/AvoidDecimalLiteralsInBigDecimalConstructor">
     <priority>3</priority>
   </rule>
@@ -156,15 +156,15 @@
   <rule ref="rulesets/java/empty.xml/EmptyWhileStmt">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/java/design.xml/EqualsNull">
-    <priority>3</priority>
-  </rule>
+  <!--<rule ref="rulesets/java/design.xml/EqualsNull">-->
+    <!--<priority>3</priority>-->
+  <!--</rule>-->
   <rule ref="rulesets/java/basic.xml/MisplacedNullCheck">
     <priority>1</priority>
   </rule>
-  <rule ref="rulesets/java/design.xml/MissingBreakInSwitch">
-    <priority>3</priority>
-  </rule>
+  <!--<rule ref="rulesets/java/design.xml/MissingBreakInSwitch">-->
+    <!--<priority>3</priority>-->
+  <!--</rule>-->
   <rule ref="rulesets/java/basic.xml/UnconditionalIfStatement">
     <priority>1</priority>
   </rule>
@@ -180,18 +180,15 @@
   <rule ref="rulesets/java/design.xml/AssignmentToNonFinalStatic">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/java/design.xml/ConstantsInInterface">
-    <priority>3</priority>
-  </rule>
   <rule ref="rulesets/java/logging-java.xml/AvoidPrintStackTrace">
     <priority>1</priority>
   </rule>
   <rule ref="rulesets/java/strictexception.xml/AvoidRethrowingException">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/java/design.xml/PreserveStackTrace">
-    <priority>1</priority>
-  </rule>
+  <!--<rule ref="rulesets/java/design.xml/PreserveStackTrace">-->
+    <!--<priority>1</priority>-->
+  <!--</rule>-->
   <rule ref="rulesets/java/logging-java.xml/SystemPrintln">
     <priority>1</priority>
   </rule>
@@ -228,9 +225,9 @@
   <rule ref="rulesets/java/empty.xml/EmptyInitializer">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/java/design.xml/CompareObjectsWithEquals">
-    <priority>3</priority>
-  </rule>
+  <!--<rule ref="rulesets/java/design.xml/CompareObjectsWithEquals">-->
+    <!--<priority>3</priority>-->
+  <!--</rule>-->
   <rule ref="rulesets/java/empty.xml/EmptyStatementNotInLoop">
     <priority>3</priority>
   </rule>

@@ -82,7 +82,7 @@ abstract class DataDomainSyncBucket {
     void checkReadOnly(ObjEntity entity) throws CayenneRuntimeException {
 
         if (entity == null) {
-            throw new NullPointerException("Entity must not be null.");
+            throw new IllegalArgumentException("Entity must not be null.");
         }
 
         if (entity.isReadOnly()) {

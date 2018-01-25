@@ -462,7 +462,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     @SuppressWarnings("unchecked")
     public ColumnSelect<Object[]> columns(Collection<Property<?>> properties) {
         if (properties == null){
-            throw new NullPointerException("properties is null");
+            throw new IllegalArgumentException("properties is null");
         }
         if (properties.isEmpty()) {
             throw new IllegalArgumentException("properties must contain at least one element");

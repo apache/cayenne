@@ -75,8 +75,9 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 	}
 
 	private boolean isInserting(String query) {
-		if (query == null || query.length() == 0)
+		if (query == null || query.length() == 0) {
 			return false;
+		}
 
 		char firstCharacter = query.charAt(0);
 

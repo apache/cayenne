@@ -69,7 +69,7 @@ public class UpdateBatchQuery extends BatchQuery {
         super(dbEntity, toDbAttributes(qualifierAttributes, updatedAttributes), batchCapacity);
 
         if (nullQualifierNames == null) {
-            throw new NullPointerException("Null 'nullQualifierNames'");
+            throw new IllegalArgumentException("Null 'nullQualifierNames'");
         }
 
         this.updatedAttributes = updatedAttributes;

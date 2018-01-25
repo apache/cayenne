@@ -35,7 +35,7 @@ import org.xml.sax.Attributes;
  */
 class DataSourceChildrenHandler extends NamespaceAwareNestedTagHandler {
 
-    private static Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
     static final String DRIVER_TAG = "driver";
     static final String LOGIN_TAG = "login";

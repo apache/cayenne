@@ -248,7 +248,7 @@ public abstract class BaseDataObject extends PersistentObject implements DataObj
     @Override
     public void addToManyTarget(String relName, DataObject value, boolean setReverse) {
         if (value == null) {
-            throw new NullPointerException("Attempt to add null target DataObject.");
+            throw new IllegalArgumentException("Attempt to add null target DataObject.");
         }
 
         willConnect(relName, value);

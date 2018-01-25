@@ -22,13 +22,12 @@ package org.apache.cayenne.jcache;
 /**
  * @since 4.0
  */
-public final class JCacheConstants {
+public interface JCacheConstants {
 
-    private JCacheConstants() {}
     /**
      * Default JCache cache name. This will be the cache used for queries with no explicit cache groups.
      */
-    public static final String DEFAULT_CACHE_NAME = "cayenne.default.cache";
+    String DEFAULT_CACHE_NAME = "cayenne.default.cache";
 
-    public static final String JCACHE_PROVIDER_CONFIG = "cayenne.jcache.provider_config";
+    String JCACHE_PROVIDER_CONFIG = "cayenne.jcache.provider_config";
 }

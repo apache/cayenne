@@ -34,7 +34,7 @@ import org.xml.sax.ContentHandler;
  */
 final class DataChannelChildrenHandler extends NamespaceAwareNestedTagHandler {
 
-    private static Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
     static final String OLD_MAP_TAG = "map";
     static final String NODE_TAG = "node";

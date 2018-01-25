@@ -28,7 +28,7 @@ import org.xml.sax.Attributes;
  */
 public class DefaultHandlerFactory implements HandlerFactory {
 
-    private static Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
     @Override
     public NamespaceAwareNestedTagHandler createHandler(String namespace, String localName, NamespaceAwareNestedTagHandler parent) {

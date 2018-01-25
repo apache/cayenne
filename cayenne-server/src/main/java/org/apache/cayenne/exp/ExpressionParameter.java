@@ -22,6 +22,7 @@ package org.apache.cayenne.exp;
 import org.apache.cayenne.util.Util;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Named parameter for parameterized expressions.
@@ -59,5 +60,10 @@ public class ExpressionParameter implements Serializable {
 
 		ExpressionParameter parameter = (ExpressionParameter) o;
 		return Util.nullSafeEquals(name, parameter.name);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(name);
 	}
 }

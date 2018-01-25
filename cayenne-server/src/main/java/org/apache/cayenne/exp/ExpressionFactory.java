@@ -107,17 +107,21 @@ public class ExpressionFactory {
 		int min = 0;
 		int allLen = allTypes.length;
 		for (int i = 0; i < allLen; i++) {
-			if (allTypes[i] > max)
+			if (allTypes[i] > max) {
 				max = allTypes[i];
-			else if (allTypes[i] < min)
+			}
+			else if (allTypes[i] < min) {
 				min = allTypes[i];
+			}
 		}
 
 		// sanity check....
-		if (max > 500)
+		if (max > 500) {
 			throw new RuntimeException("Types values are too big: " + max);
-		if (min < 0)
+		}
+		if (min < 0) {
 			throw new RuntimeException("Types values are too small: " + min);
+		}
 
 		// now we know that if types are used as indexes,
 		// they will fit in array "max + 1" long (though gaps are possible)
@@ -285,7 +289,7 @@ public class ExpressionFactory {
 	public static Expression matchAllExp(String path, Collection<?> values) {
 
 		if (values == null) {
-			throw new NullPointerException("Null values collection");
+			throw new IllegalArgumentException("Null values collection");
 		}
 
 		if (values.size() == 0) {
@@ -301,7 +305,7 @@ public class ExpressionFactory {
 	public static Expression matchAllExp(String path, Object... values) {
 
 		if (values == null) {
-			throw new NullPointerException("Null values collection");
+			throw new IllegalArgumentException("Null values collection");
 		}
 
 		if (values.length == 0) {
@@ -1321,7 +1325,7 @@ public class ExpressionFactory {
 	private static Expression fromString(String expressionString) {
 
 		if (expressionString == null) {
-			throw new NullPointerException("Null expression string.");
+			throw new IllegalArgumentException("Null expression string.");
 		}
 
 		// optimizing parser buffers per CAY-1667...

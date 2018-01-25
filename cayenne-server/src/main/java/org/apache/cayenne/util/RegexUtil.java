@@ -75,7 +75,7 @@ class RegexUtil {
      */
     static String sqlPatternToRegex(String pattern) {
         if (pattern == null) {
-            throw new NullPointerException("Null pattern.");
+            throw new IllegalArgumentException("Null pattern.");
         }
 
         if (pattern.length() == 0) {

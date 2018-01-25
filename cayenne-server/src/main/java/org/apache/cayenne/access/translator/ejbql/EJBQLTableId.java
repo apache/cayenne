@@ -62,7 +62,7 @@ class EJBQLTableId {
     EJBQLTableId(String entityId, String dbPath) {
 
         if (entityId == null) {
-            throw new NullPointerException("Null entityId");
+            throw new IllegalArgumentException("Null entityId");
         }
 
         this.entityId = entityId;

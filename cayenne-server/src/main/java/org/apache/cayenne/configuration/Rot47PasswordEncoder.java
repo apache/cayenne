@@ -76,8 +76,9 @@ public class Rot47PasswordEncoder implements PasswordEncoding {
                 // therefore the value that needs to be subtracted from the
                 // non-printable character to put it into the correct printable
                 // range.
-                if (c > '~')
+                if (c > '~') {
                     c -= 94;
+                }
             }
 
             result.append(c);

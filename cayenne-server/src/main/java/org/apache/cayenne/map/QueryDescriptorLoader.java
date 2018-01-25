@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.cayenne.util.Util.isBlank;
+
 /**
  * A builder that constructs Cayenne queries from abstract configuration information
  * defined in cayenne-data-map*.dtd. This abstract builder supports values declared in the
@@ -189,7 +191,7 @@ public class QueryDescriptorLoader {
     }
 
     public void setQualifier(String qualifier) {
-        if (qualifier == null || qualifier.trim().length() == 0) {
+        if (qualifier == null || isBlank(qualifier.trim())) {
             this.qualifier = null;
         }
         else {
@@ -210,7 +212,7 @@ public class QueryDescriptorLoader {
             orderings = new ArrayList<>();
         }
 
-        if (path != null && path.trim().length() == 0) {
+        if (path != null && isBlank(path.trim())) {
             path = null;
         }
         boolean isDescending = "true".equalsIgnoreCase(descending);
@@ -233,7 +235,7 @@ public class QueryDescriptorLoader {
     }
 
     public void addPrefetch(String path) {
-        if (path == null || (path != null && path.trim().length() == 0)) {
+        if (path == null || (path != null && isBlank(path.trim()))) {
             // throw??
             return;
         }

@@ -463,7 +463,7 @@ public class DataContext extends BaseContext {
     @Override
     public <T> T newObject(Class<T> persistentClass) {
         if (persistentClass == null) {
-            throw new NullPointerException("Null 'persistentClass'");
+            throw new IllegalArgumentException("Null 'persistentClass'");
         }
 
         ObjEntity entity = getEntityResolver().getObjEntity(persistentClass);
@@ -527,7 +527,7 @@ public class DataContext extends BaseContext {
     @Override
     public void registerNewObject(Object object) {
         if (object == null) {
-            throw new NullPointerException("Can't register null object.");
+            throw new IllegalArgumentException("Can't register null object.");
         }
 
         ObjEntity entity = getEntityResolver().getObjEntity((Persistent) object);

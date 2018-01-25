@@ -94,7 +94,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
 		try {
 			ObjectId id = (ObjectId) nodeId;
 			if (id.getEntityName() == null) {
-				throw new NullPointerException("Null entity name in id " + id);
+				throw new IllegalArgumentException("Null entity name in id " + id);
 			}
 
 			ObjEntity entity = context.getEntityResolver().getObjEntity(id.getEntityName());
