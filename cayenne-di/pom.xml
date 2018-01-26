@@ -65,23 +65,4 @@
         </plugins>
 	</build>
 
-    <profiles>
-        <profile>
-            <id>code-quality</id>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-checkstyle-plugin</artifactId>
-                        <!--<configuration>
-                            <suppressionsLocation>${project.basedir}/cayenne-checkstyle-suppression.xml</suppressionsLocation>
-                        </configuration>-->
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-pmd-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
