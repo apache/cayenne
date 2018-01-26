@@ -63,7 +63,7 @@ public class IdCoder {
     public String getStringId(Persistent object) {
 
         if (object == null) {
-            throw new IllegalArgumentException("Null object");
+            throw new NullPointerException("Null object");
         }
 
         ObjectId id = object.getObjectId();

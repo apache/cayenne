@@ -216,7 +216,7 @@ public class EntityIdCoder {
     private Converter create(Class<?> type) {
 
         if (type == null) {
-            throw new IllegalArgumentException("Null type");
+            throw new NullPointerException("Null type");
         }
 
         if (Long.class.isAssignableFrom(type)) {

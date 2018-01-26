@@ -77,7 +77,8 @@
 		<module>tutorials</module>
 		<module>docs</module>
 		<module>assembly</module>
-    </modules>
+		<module>cayenne-module-parent</module>
+	</modules>
 	<issueManagement>
 		<system>jira</system>
 		<url>https://issues.apache.org/jira/browse/CAY</url>
@@ -741,6 +742,10 @@
 					<version>3.8</version>
 				</plugin>
 				<plugin>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>3.0.0</version>
+				</plugin>
+				<plugin>
 					<artifactId>maven-enforcer-plugin</artifactId>
 					<version>1.4.1</version>
 				</plugin>
@@ -959,6 +964,7 @@
             <id>code-quality</id>
 
             <build>
+				<pluginManagement>
                     <plugins>
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
@@ -1037,6 +1043,7 @@
                             <version>2.0</version>
                         </plugin>
                     </plugins>
+				</pluginManagement>
             </build>
 
             <reporting>

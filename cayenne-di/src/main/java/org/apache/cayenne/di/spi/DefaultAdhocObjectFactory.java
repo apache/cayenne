@@ -50,11 +50,11 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
     public <T> T newInstance(Class<? super T> superType, String className) {
 
         if (superType == null) {
-            throw new IllegalArgumentException("Null superType");
+            throw new NullPointerException("Null superType");
         }
 
         if (className == null) {
-            throw new IllegalArgumentException("Null className");
+            throw new NullPointerException("Null className");
         }
 
         Class<T> type = (Class<T>) getJavaClass(className);
@@ -82,7 +82,7 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
         // is there a better way to get array class from string name?
 
         if (className == null) {
-            throw new IllegalArgumentException("Null class name");
+            throw new NullPointerException("Null class name");
         }
 
         ClassLoader classLoader = classLoaderManager.getClassLoader(className.replace('.', '/'));

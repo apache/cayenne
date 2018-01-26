@@ -62,7 +62,7 @@ public class StringIdQuery implements Query {
     private static Collection<String> toCollection(String... stringIds) {
 
         if (stringIds == null) {
-            throw new IllegalArgumentException("Null stringIds");
+            throw new NullPointerException("Null stringIds");
         }
 
         return Arrays.asList(stringIds);
@@ -88,7 +88,7 @@ public class StringIdQuery implements Query {
 
     public void addStringIds(String... ids) {
         if (ids == null) {
-            throw new IllegalArgumentException("Null ids");
+            throw new NullPointerException("Null ids");
         }
 
         boolean changed = false;

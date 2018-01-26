@@ -63,7 +63,7 @@ public class CompatibilityDataChannelDescriptorLoader extends XMLDataChannelDesc
     @Override
     public ConfigurationTree<DataChannelDescriptor> load(Resource configurationResource) throws ConfigurationException {
         if (configurationResource == null) {
-            throw new IllegalArgumentException("Null configurationResource");
+            throw new NullPointerException("Null configurationResource");
         }
 
         if(!(upgradeServiceProvider.get() instanceof CompatibilityUpgradeService)) {
