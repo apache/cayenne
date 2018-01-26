@@ -26,7 +26,9 @@ import java.util.Collections;
 
 /**
  * @since 4.0
+ * @deprecated since 4.1
  */
+@Deprecated
 public class JodaServerModuleProvider implements CayenneServerModuleProvider {
 
     @Override

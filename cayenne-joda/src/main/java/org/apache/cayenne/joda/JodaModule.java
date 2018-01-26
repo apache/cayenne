@@ -25,16 +25,24 @@ import org.apache.cayenne.joda.access.types.DateTimeType;
 import org.apache.cayenne.joda.access.types.LocalDateTimeType;
 import org.apache.cayenne.joda.access.types.LocalDateType;
 import org.apache.cayenne.joda.access.types.LocalTimeType;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
 
 /**
  * Auto-loadable Cayenne module that adds support for Joda {@link org.apache.cayenne.access.types.ExtendedType} types.
  *
  * @since 4.0
+ * @deprecated since 4.1
  */
+@Deprecated
 public class JodaModule implements Module {
+
+    private static final Logger logger = LoggerFactory.getLogger(JodaModule.class);
 
     @Override
     public void configure(Binder binder) {
+        logger.warn("Since 4.1 Cayenne-Joda module was deprecated.");
         ServerModule.contributeDefaultTypes(binder)
                 .add(new DateTimeType())
                 .add(new LocalDateType())
