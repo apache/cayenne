@@ -79,7 +79,7 @@ public class ToolsModule implements Module {
     public ToolsModule(Logger logger) {
 
         if (logger == null) {
-            throw new IllegalArgumentException("Null logger");
+            throw new NullPointerException("Null logger");
         }
 
         this.logger = logger;
