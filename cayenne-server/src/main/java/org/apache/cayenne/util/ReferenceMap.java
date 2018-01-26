@@ -146,7 +146,7 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
     @Override
     public V put(K key, V value) {
         if(value == null) {
-            throw new IllegalArgumentException("ReferenceMap can't contain null values");
+            throw new NullPointerException("ReferenceMap can't contain null values");
         }
         checkReferenceQueue();
         R refValue = newReference(value);
@@ -172,7 +172,7 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
         checkReferenceQueue();
         for(Map.Entry<? extends K, ? extends V> entry : m.entrySet()) {
             if(entry.getValue() == null) {
-                throw new IllegalArgumentException("ReferenceMap can't contain null values");
+                throw new NullPointerException("ReferenceMap can't contain null values");
             }
             R value = newReference(entry.getValue());
             map.put(entry.getKey(), value);

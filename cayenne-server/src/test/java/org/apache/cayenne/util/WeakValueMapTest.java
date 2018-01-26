@@ -205,13 +205,13 @@ public class WeakValueMapTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testPutNullValue() {
         Map<Object, Object> map = new WeakValueMap<>();
         map.put("1", null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testPutAllNullValue() {
 
         Map<Object, Object> values = new HashMap<>();

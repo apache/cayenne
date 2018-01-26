@@ -114,7 +114,7 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
     @Override
     public QueryEngine engineForDataMap(DataMap map) {
         if (map == null) {
-            throw new IllegalArgumentException("Null DataMap, can't determine DataNode.");
+            throw new NullPointerException("Null DataMap, can't determine DataNode.");
         }
 
         QueryEngine node = domain.lookupDataNode(map);

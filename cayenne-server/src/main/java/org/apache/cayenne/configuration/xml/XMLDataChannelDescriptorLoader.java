@@ -117,7 +117,7 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 	public ConfigurationTree<DataChannelDescriptor> load(Resource configurationResource) throws ConfigurationException {
 
 		if (configurationResource == null) {
-			throw new IllegalArgumentException("Null configurationResource");
+			throw new NullPointerException("Null configurationResource");
 		}
 
 		URL configurationURL = configurationResource.getURL();

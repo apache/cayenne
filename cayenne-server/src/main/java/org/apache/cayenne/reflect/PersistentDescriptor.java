@@ -309,7 +309,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 	 */
 	public Object createObject() {
 		if (objectClass == null) {
-			throw new IllegalArgumentException("Null objectClass. Descriptor wasn't initialized properly.");
+			throw new NullPointerException("Null objectClass. Descriptor wasn't initialized properly.");
 		}
 
 		try {

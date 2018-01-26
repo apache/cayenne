@@ -369,11 +369,11 @@ public class AshwoodEntitySorter implements EntitySorter {
 				ComponentRecord rec2 = components.get(t2);
 
 				if(rec1 == null) {
-					throw new IllegalArgumentException("No record for DbEntity: " + t1);
+					throw new NullPointerException("No record for DbEntity: " + t1);
 				}
 
 				if(rec2 == null) {
-					throw new IllegalArgumentException("No record for DbEntity: " + t2);
+					throw new NullPointerException("No record for DbEntity: " + t2);
 				}
 
 				int index1 = rec1.index;

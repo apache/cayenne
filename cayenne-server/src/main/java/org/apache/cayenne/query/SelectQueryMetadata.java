@@ -194,7 +194,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 	 */
 	public void addPathSplitAliases(String path, String... aliases) {
 		if (aliases == null) {
-			throw new IllegalArgumentException("Null aliases");
+			throw new NullPointerException("Null aliases");
 		}
 
 		if (aliases.length == 0) {

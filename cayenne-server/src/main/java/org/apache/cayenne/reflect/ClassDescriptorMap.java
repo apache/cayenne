@@ -91,7 +91,7 @@ public class ClassDescriptorMap {
 
     public ClassDescriptor getDescriptor(String entityName) {
         if (entityName == null) {
-            throw new IllegalArgumentException("Null 'entityName'");
+            throw new NullPointerException("Null 'entityName'");
         }
 
         ClassDescriptor cached = descriptors.get(entityName);

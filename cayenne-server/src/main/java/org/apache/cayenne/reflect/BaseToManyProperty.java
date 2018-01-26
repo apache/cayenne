@@ -62,7 +62,7 @@ public abstract class BaseToManyProperty extends BaseArcProperty implements
 
     public void addTarget(Object source, Object target, boolean setReverse) {
         if (target == null) {
-            throw new IllegalArgumentException("Attempt to add null object.");
+            throw new NullPointerException("Attempt to add null object.");
         }
 
         // TODO, Andrus, 2/9/2006 - CayenneDataObject differences:

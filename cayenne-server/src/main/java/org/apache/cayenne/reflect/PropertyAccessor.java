@@ -29,7 +29,7 @@ public class PropertyAccessor implements Accessor {
 
     public PropertyAccessor(PropertyDescriptor property) {
         if (property == null) {
-            throw new IllegalArgumentException("Null property");
+            throw new NullPointerException("Null property");
         }
         this.property = property;
     }

@@ -59,11 +59,11 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
      */
     public DistinctResultIterator(ResultIterator<T> delegate, DbEntity defaultEntity, boolean compareFullRows) {
         if (delegate == null) {
-            throw new IllegalArgumentException("Null wrapped iterator.");
+            throw new NullPointerException("Null wrapped iterator.");
         }
 
         if (defaultEntity == null) {
-            throw new IllegalArgumentException("Null defaultEntity.");
+            throw new NullPointerException("Null defaultEntity.");
         }
 
         this.delegate = delegate;

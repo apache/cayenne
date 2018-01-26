@@ -58,7 +58,7 @@ public class DriverDataSource implements DataSource {
 	public DriverDataSource(Driver driver, String connectionUrl, String userName, String password) {
 
 		if (connectionUrl == null) {
-			throw new IllegalArgumentException("Null 'connectionUrl'");
+			throw new NullPointerException("Null 'connectionUrl'");
 		}
 
 		this.driver = driver;

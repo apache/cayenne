@@ -92,7 +92,7 @@ public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
 
 	protected String getDataChannelName(String name) {
 		if (name == null) {
-			throw new IllegalArgumentException("Null DataChannelDescriptor name");
+			throw new NullPointerException("Null DataChannelDescriptor name");
 		}
 
 		return CAYENNE_PREFIX + name + CAYENNE_SUFFIX;
@@ -100,7 +100,7 @@ public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
 
 	protected String getDataMapName(String name) {
 		if (name == null) {
-			throw new IllegalArgumentException("Null DataMap name");
+			throw new NullPointerException("Null DataMap name");
 		}
 
 		return name + DATA_MAP_SUFFIX;

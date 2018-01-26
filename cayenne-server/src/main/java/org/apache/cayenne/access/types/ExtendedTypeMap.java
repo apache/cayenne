@@ -189,7 +189,7 @@ public class ExtendedTypeMap {
 	ExtendedType getExplictlyRegisteredType(String className) {
 
 		if (className == null) {
-			throw new IllegalArgumentException("Null className");
+			throw new NullPointerException("Null className");
 		}
 		return typeMap.get(className);
 	}

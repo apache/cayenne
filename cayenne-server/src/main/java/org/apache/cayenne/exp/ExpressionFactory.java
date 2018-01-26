@@ -289,7 +289,7 @@ public class ExpressionFactory {
 	public static Expression matchAllExp(String path, Collection<?> values) {
 
 		if (values == null) {
-			throw new IllegalArgumentException("Null values collection");
+			throw new NullPointerException("Null values collection");
 		}
 
 		if (values.size() == 0) {
@@ -305,7 +305,7 @@ public class ExpressionFactory {
 	public static Expression matchAllExp(String path, Object... values) {
 
 		if (values == null) {
-			throw new IllegalArgumentException("Null values collection");
+			throw new NullPointerException("Null values collection");
 		}
 
 		if (values.length == 0) {
@@ -1325,7 +1325,7 @@ public class ExpressionFactory {
 	private static Expression fromString(String expressionString) {
 
 		if (expressionString == null) {
-			throw new IllegalArgumentException("Null expression string.");
+			throw new NullPointerException("Null expression string.");
 		}
 
 		// optimizing parser buffers per CAY-1667...

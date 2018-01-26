@@ -44,7 +44,7 @@ public class LimitResultIterator<T> implements ResultIterator<T> {
     public LimitResultIterator(ResultIterator<T> delegate, int offset, int fetchLimit) {
 
         if (delegate == null) {
-            throw new IllegalArgumentException("Null delegate iterator.");
+            throw new NullPointerException("Null delegate iterator.");
         }
         this.delegate = delegate;
         this.offset = offset;
