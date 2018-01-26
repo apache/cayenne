@@ -20,6 +20,7 @@ CAY-2393 Add sqlserver-docker profile to automate tests on SQLServer
 CAY-2394 Upgrade to Apache Velocity 2.0
 CAY-2395 cdbimport: add option to create project file
 CAY-2396 Upgrade maven-assembly-plugin to 3.1.0
+CAY-2400 Cayenne-DBCP2 was deprecated
 
 Bug Fixes:
 
