@@ -429,6 +429,23 @@ public class EntityMergeSupport {
         for(int i=0; i<collection1.size(); i++) {
             DbAttribute attr1 = iterator1.next();
             DbAttribute attr2 = iterator2.next();
+            // attribute can be null, see DbJoin.getSource() and DbJoin.getTarget()
+            if(attr1 == null) {
+                if(attr2 != null) {
+                    return false;
+                }
+                continue;
+            }
+            if(attr2 == null) {
+                return false;
+            }
+            // name is unlikely to be null, but we don't want NPE anyway
+            if(attr1.getName() == null) {
+                if(attr2.getName() != null) {
+                    return false;
+                }
+                continue;
+            }
             if(!attr1.getName().equals(attr2.getName())) {
                 return false;
             }
