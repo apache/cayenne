@@ -367,7 +367,7 @@
 									<executable>/bin/chmod</executable>
 									<arguments>
 										<argument>755</argument>
-										<argument>target/cayenne-${project.version}-macosx/CayenneModeler.app/Contents/MacOS/JavaAppLauncher</argument>
+										<argument>target/cayenne-${project.version}-macosx/CayenneModeler.app/Contents/MacOS/CayenneModeler</argument>
 									</arguments>
 								</configuration>
 							</execution>

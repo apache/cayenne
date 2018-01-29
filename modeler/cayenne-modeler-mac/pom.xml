@@ -103,8 +103,8 @@
 							<mainClass>org.apache.cayenne.modeler.osx.OSXMain</mainClass>
 							<icon>src/japplication/resources/CayenneModeler.icns</icon>
 							<os>mac</os>
-							<jvm>1.7+</jvm>
-							<jvmOptions>-Xmx500m -Dapple.laf.useScreenMenuBar=true -Xdock:name=CayenneModeler</jvmOptions>
+							<jvm>1.8+</jvm>
+							<jvmOptions>-Xmx500m -Dapple.laf.useScreenMenuBar=true</jvmOptions>
 						</configuration>
 						<executions>
 							<execution>

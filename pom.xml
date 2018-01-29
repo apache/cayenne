@@ -822,7 +822,7 @@
 				<plugin>
 					<groupId>org.objectstyle.japp</groupId>
 					<artifactId>japp-maven-plugin</artifactId>
-					<version>3.0</version>
+					<version>3.1</version>
 				</plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
