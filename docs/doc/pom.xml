@@ -83,11 +83,6 @@
 			<artifactId>servlet-api</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>opensymphony</groupId>
-			<artifactId>oscache</artifactId>
-		</dependency>
-
 	</dependencies>
 
 	<profiles>
