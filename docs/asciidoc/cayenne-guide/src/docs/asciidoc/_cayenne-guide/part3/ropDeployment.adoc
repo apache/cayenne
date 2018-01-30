@@ -14,9 +14,17 @@
 
 === ROP Deployment
 
-==== Deploying ROP Server
+==== Server Security Note
 
-NOTE: Recent versions of Tomcat and Jetty containers (e.g. Tomcat 6 and 7, Jetty 8) contain code addressing a security concern related to "session fixation problem" by resetting the existing session ID of any request that requires BASIC authentcaition. If ROP service is protected with declarative security (see the ROP tutorial and the following chapters on security), this feature prevents the ROP client from attaching to its session, resulting in MissingSessionExceptions. To solve that you will need to either switch to an alternative security mechanism, or disable "session fixation problem" protections of the container. E.g. the later can be achieved in Tomcat 7 by adding the following context.xml file to the webapp's META-INF/ directory:
+Recent versions of Tomcat and Jetty containers (e.g. Tomcat 6 and 7, Jetty 8) contain code
+addressing a security concern related to "session fixation problem" by resetting the existing session ID of any request
+that requires BASIC authentication. If ROP service is protected with declarative security
+(see the ROP tutorial and the following chapters on security), this feature prevents the ROP client
+from attaching to its session, resulting in `MissingSessionExceptions`.
+
+To solve that you will need to either switch to an alternative security mechanism,
+or disable "session fixation problem" protections of the container.
+E.g. the later can be achieved in Tomcat 7 by adding the following `context.xml` file to the webapp's `META-INF/` directory:
 
 [source, XML]
 ----
@@ -26,9 +34,9 @@ NOTE: Recent versions of Tomcat and Jetty containers (e.g. Tomcat 6 and 7, Jetty
 </Context>
 ----
 
-(The <Valve> tag can also be placed within the <Context> in any other locations used by Tomcat to load context configurations)
+(The `<Valve>` tag can also be placed within the `<Context>` in any other locations used by Tomcat to load context configurations)
 
-==== Deploying ROP Client
+//==== Deploying ROP Client
 
-==== Security
+//==== Security
 
