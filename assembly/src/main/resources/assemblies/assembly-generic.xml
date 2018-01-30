@@ -50,30 +50,20 @@
 			<directory>../cayenne-cgen/src/main/resources/templates/v1_2</directory>
 			<outputDirectory>templates</outputDirectory>
 		</fileSet>
+		<fileSet>
+			<directory>target/doc-staging</directory>
+			<outputDirectory>doc</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>RELEASE-NOTES.txt</include>
+				<include>UPGRADE.txt</include>
+				<include>KEYS</include>
+			</includes>
+		</fileSet>
 	</fileSets>
-
-	<files>
-		<file>
-			<source>../docs/asciidoc/getting-started-guide/target/generated-docs/getting-started-guide.pdf</source>
-			<outputDirectory>doc</outputDirectory>
-			<destName>getting-started.pdf</destName>
-		</file>
-		<file>
-			<source>../docs/asciidoc/getting-started-rop/target/generated-docs/getting-started-rop.pdf</source>
-			<outputDirectory>doc</outputDirectory>
-			<destName>getting-started-rop.pdf</destName>
-		</file>
-		<file>
-			<source>../docs/asciidoc/cayenne-guide/target/generated-docs/cayenne-guide.pdf</source>
-			<outputDirectory>doc</outputDirectory>
-			<destName>cayenne-guide.pdf</destName>
-		</file>
-		<file>
-			<source>../docs/asciidoc/upgrade-guide/target/generated-docs/upgrade-guide.pdf</source>
-			<outputDirectory>doc</outputDirectory>
-			<destName>upgrade-guide.pdf</destName>
-		</file>
-	</files>
 	
 	<dependencySets>
 		<dependencySet>
