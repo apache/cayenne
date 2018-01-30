@@ -250,25 +250,29 @@ public class MyDbAdapterDetector implements DbAdapterDetector {
 
 [source, Java]
 ----
-// since build-in list for this key is a singleton, repeated
-// calls to 'bindList' will return the same instance
-binder.bindList(DefaultDbAdapterFactory.DETECTORS_LIST)
-       .add(MyDbAdapterDetector.class);
+ServerModule.contributeAdapterDetectors(binder)
+    .add(MyDbAdapterDetector.class);
 ----
-
-Maps are customized using a similar `"bindMap"` method.
 
 The names of built-in collections are listed in "Appendix B".
 
 ===== Alternative Service Implementations
 
-As mentioned above, custom modules are loaded by ServerRuntime after the built-in modules. So it is easy to redefine a built-in service in Cayenne by rebinding desired implementations or providers. To do that, first we need to know what those services to redefine are. While we describe some of them in the following sections, the best way to get a full list is to check the source code of the Cayenne version you are using and namely look in `org.apache.cayenne.configuration.server.ServerModule` - the main built-in module in Cayenne.
+As mentioned above, custom modules are loaded by ServerRuntime after the built-in modules.
+So it is easy to redefine a built-in service in Cayenne by rebinding desired implementations or providers.
+To do that, first we need to know what those services to redefine are.
+While we describe some of them in the following sections, the best way to get a full list
+is to check the source code of the Cayenne version you are using and
+namely look in `org.apache.cayenne.configuration.server.ServerModule` - the main built-in module in Cayenne.
 
-Now an example of overriding `QueryCache` service. The default implementation of this service is provided by `MapQueryCacheProvider`. But if we want to use `EhCacheQueryCache` (a Cayenne wrapper for the EhCache framework), we can define it like this:
+Now an example of overriding `JdbcEventLogger` service. The default implementation of this service
+is provided by `Slf4jJdbcEventLogger`. But if we want to use `FormattedSlf4jJdbcEventLogger`
+(a logger with basic SQL formatting), we can define it like this:
 
 [source, Java]
 ----
-binder.bind(QueryCache.class).to(EhCacheQueryCache.class);
+binder.bind(JdbcEventLogger.class)
+    .to(FormattedSlf4jJdbcEventLogger.class);
 ----
 
 ==== Using custom data types
@@ -335,11 +339,14 @@ Last step is to register this new type in `ServerRuntime`:
 ----
 ServerRuntime runtime = ServerRuntime.builder()
     .addConfig("cayenne-project.xml")
-    .addModule(binder -> ServerModule.contributeValueObjectTypes(binder).add(MoneyValueObjectType.class))
+    .addModule(binder ->
+        ServerModule.contributeValueObjectTypes(binder)
+            .add(MoneyValueObjectType.class))
     .build();
 ----
 
-More examples of implementation you can find in https://github.com/apache/cayenne/tree/master/cayenne-joda[cayenne-joda module].
+More examples of implementation you can find in
+https://github.com/apache/cayenne/blob/master/cayenne-server/src/main/java/org/apache/cayenne/access/types/LocalDateValueType.java[cayenne-server].
 
 ===== Extended Types
 
@@ -419,29 +426,14 @@ public class DoubleArrayType implements ExtendedType {
 }
 ----
 
-//For Java7
-//
-//[source, Java]
-//----
-// add DoubleArrayType to list of user types
-//ServerRuntime runtime = ServerRuntime.builder()
-//                .addConfig("cayenne-project.xml")
-//                .addModule(new Module() {
-//                    @Override
-//                    public void configure(Binder binder) {
-//                        ServerModule.contributeUserTypes(binder).add(new DoubleArrayType());
-//                    }
-//                })
-//                .build();
-//----
-
-
 [source, Java]
 ----
 // add DoubleArrayType to list of user types
 ServerRuntime runtime = ServerRuntime.builder()
                 .addConfig("cayenne-project.xml")
-                .addModule(binder -> ServerModule.contributeUserTypes(binder).add(new DoubleArrayType()))
+                .addModule(binder ->
+                    ServerModule.contributeUserTypes(binder)
+                        .add(new DoubleArrayType()))
                 .build();
 ----
 

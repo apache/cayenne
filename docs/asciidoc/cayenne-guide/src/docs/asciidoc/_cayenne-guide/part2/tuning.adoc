@@ -291,39 +291,9 @@ Those are arbitrary names that allow to categorize queries for the purpose of se
 
 The above API is enough for the caching to work, but by default your cache is an unmanaged LRU map. You can't control its size,
 expiration policies, etc. For the managed cache, you will need to explicitly use one of the more advanced cache providers.
-One such provider available in Cayenne is a provider for http://www.ehcache.org[EhCache].
-It can be enabled on ServerRuntime startup in a custom Module:
+Use can use <<ext-cayenne-jcache,JCache integration module>> to enable any of JCache API compatible caching providers.
 
-[source, Java]
-----
-ServerRuntimeBuilder
-  .builder()
-  .addModule((binder) ->
-     binder.bind(QueryCache.class).to(EhCacheQueryCache.class)
-  )
-  .build();
-----
-
-By default EhCache reads a file called "ehcache.xml" located on classpath. You can put your cache configuration in that file. E.g.:
-
-[source, XML]
-----
-<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="false"
-	monitoring="off" dynamicConfig="false">
-
-	<defaultCache maxEntriesLocalHeap="1000" eternal="false"
-		overflowToDisk="false" timeToIdleSeconds="3600" timeToLiveSeconds="3600">
-	</defaultCache>
-
-	<cache name="artists" timeToLiveSeconds="20" maxEntriesLocalHeap="100" />
-</ehcache>
-----
-
-The example shows how to configure default cache settings ("defaultCache") as well as settings for a named cache group ("artists").
-For many other things you can put in "ehcache.xml" refer to EhCache docs.
-
-Often "passive" cache expiration policies similar to shown above are not sufficient, and the users want real-time cache invalidation when the data changes.
+Often "passive" cache expiration policies used by caching providers are not sufficient, and the users want real-time cache invalidation when the data changes.
 So in addition to those policies, the app can invalidate individual cache groups explicitly with `RefreshQuery`:
 
 [source, Java]
@@ -332,30 +302,9 @@ RefreshQuery refresh = new RefreshQuery("artist");
 context.performGenericQuery(refresh);
 ----
 
-The above can be used e.g. to build UI for manual cache invalidation. It is also possible to automate cache refresh when certain entities are committed.
-This requires including `cayenne-lifecycle.jar` deoendency. From that library you will need two things: `@CacheGroups` annotation
-to mark entities that generate cache invalidation events and  `CacheInvalidationFilter` that catches the updates to the annotated objects and generates appropriate invalidation events:
-
-[source, Java]
-----
-// configure filter on startup
-ServerRuntimeBuilder
-  .builder()
-  .addModule((binder) ->
-     binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST).add(CacheInvalidationFilter.class)
-  )
-  .build();
-----
-
-
-Now you can associate entities with cache groups, so that commits to those entities would atomatically invalidate the groups:
-
-[source, Java]
-----
-@CacheGroups("artists")
-public class Artist extends _Artist {
-}
-----
+The above can be used e.g. to build UI for manual cache invalidation.
+It is also possible to automate cache refresh when certain entities are committed.
+This can be done with the help of <<ext-cache-invalidation,Cache invalidation extension>>.
 
 Finally you may cluster cache group events. They are very small and can be efficiently sent over the wire to other JVMs running Cayenne.
 An example of Cayenne setup with event clustering is https://github.com/andrus/wowodc13/tree/master/services/src/main/java/demo/services/cayenne[available on GitHub].
@@ -397,7 +346,8 @@ public class MyModule implements Module {
 
     @Override
     public void configure(Binder binder) {
-        binder.bindMap(Constants.PROPERTIES_MAP).put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, "false");
+        ServerModule.contributeProperties(binder)
+            .put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, "false");
     }
 }
 ----

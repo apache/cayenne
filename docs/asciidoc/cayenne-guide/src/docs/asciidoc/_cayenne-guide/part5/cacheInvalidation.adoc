@@ -80,7 +80,7 @@ Now we'll set up it's usage by `ServerRuntime`:
 ----
 ServerRuntime.builder()
         .addModule(CacheInvalidationModule.extend()
-                // this will disable default handler based on @CacheGroups, and this is optional
+                // optionally you can disable @CacheGroups annotation processing
                 .noCacheGroupsHandler()
                 .addHandler(CustomInvalidationHandler.class)
                 .module())

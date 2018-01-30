@@ -130,10 +130,15 @@ Ignore the annotations for a minute. The important point here is that the listen
 
 [source, Java]
 ----
-ServerRuntime runtime = ...
-
-runtime.getDataDomain().addListener(new Listener1());
-runtime.getDataDomain().addListener(new Listener2());
+ServerRuntime runtime = ServerRuntime.builder()
+       // ..
+       .addModule(binder ->
+            ServerModule.contributeDomainListeners()
+                .add(new Listener1())
+                .add(new Listener2())
+       )
+       // ..
+       .build();
 ----
 
 
@@ -253,14 +258,15 @@ Now since this is both a filter and a listener, it needs to be registered as suc
 
 [source, Java]
 ----
-CommittedObjectCounter counter = new CommittedObjectCounter();
-
-ServerRuntime runtime = ...
-DataDomain domain = runtime.getDataDomain();
-
-// register filter
-// this will also add it as a listener (since 3.2)
-domain.addFilter(counter);
+// this will also add filter as a listener
+ServerRuntime runtime = ServerRuntime.builder()
+        // ..
+        .addModule(b ->
+                ServerModule.contributeDomainFilters(b)
+                        .add(CommittedObjectCounter.class)
+        )
+        // ..
+        .build();
 ----
 
 

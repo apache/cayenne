@@ -15,14 +15,11 @@
 == Cayenne Framework - Remote Object Persistence
 
 include::part3/rop.adoc[]
-
-include::part3/ropSetup.adoc[]
-
-include::part3/serverImpl.adoc[]
-
-include::part3/clientImpl.adoc[]
-
 include::part3/ropDeployment.adoc[]
 
-include::part3/limitations.adoc[]
+// TODO: add content to these files:
+//include::part3/ropSetup.adoc[]
+//include::part3/serverImpl.adoc[]
+//include::part3/clientImpl.adoc[]
+//include::part3/limitations.adoc[]
 
