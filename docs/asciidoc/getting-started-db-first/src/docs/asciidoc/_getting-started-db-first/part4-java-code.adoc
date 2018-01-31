@@ -95,7 +95,7 @@ NOTE: Cayenne uses Slf4j logging API, here we will use simple backend that print
 Now we are ready to run.
 Right click the "Main" class in IDEA and select "Run 'Main.main()'". 
 
-image:idea-file-run-menu.png[align="center"]
+image::idea-file-run-menu.png[align="center"]
 
 In the console you'll see output similar to this, indicating that Cayenne stack has been started: 
 ----

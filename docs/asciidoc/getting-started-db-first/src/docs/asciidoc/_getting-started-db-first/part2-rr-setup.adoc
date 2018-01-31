@@ -99,7 +99,7 @@ If everything was setup properly you should see output like this:
 
 You can open created `datamap.map.xml` file and check it's content in IDEA: 
 
-image:tutorial-new-datamap.png[align="center"]
+image::tutorial-new-datamap.png[align="center"]
 
 Great! We now have Cayenne DataMap file that describe model from our database.
 

@@ -17,10 +17,10 @@ The goal of this chapter is to create a new Java project in IntelliJ IDEA and to
 
 ==== Create a new Project in IntelliJ IDEA
 
-In IntelliJ IDEA select menu:File[New > Project...] and then select "Maven" and click "Next".
+In IntelliJ IDEA select `File > New > Project...` and then select "Maven" and click "Next".
 In the dialog shown on the screenshot below, fill the "Group Id" and "Artifact Id" fields and click "Next".
 
-image:tutorial-idea-project.png[align="center"]
+image::tutorial-idea-project.png[align="center"]
 
 On next dialog screen you can customize directory for your project and click "Finish".
 Now you should have a new empty project.

@@ -182,11 +182,17 @@ So let's convert the tutorial that we created to a web application:
 ----
 
 ==== Running Web Application
-We need to provide javax servlet-api for our application.
+
+We need to add cayenne-web module and javax servlet-api for our application.
 
 .pom.xml
 [source,xml]
 ----
+<dependency>
+    <groupId>org.apache.cayenne</groupId>
+    <artifactId>cayenne-web</artifactId>
+    <version>${cayenne.version}</version>
+</dependency>
 <dependency>
     <groupId>javax.servlet</groupId>
     <artifactId>javax.servlet-api</artifactId>

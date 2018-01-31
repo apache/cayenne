@@ -44,8 +44,11 @@ The resulting POM should look like this:
     <groupId>org.example.cayenne</groupId>
     <artifactId>tutorial</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+
     <properties>
         <cayenne.version>{project-version}</cayenne.version> <!--1-->
+        <maven.compiler.source>1.8</maven.compiler.source> <!--2-->
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -60,24 +63,10 @@ The resulting POM should look like this:
             <version>1.7.25</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <!-- Tell maven to support Java 8 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
 ----
 <1> Here you can specify the version of Cayenne you are actually using
+<2> Tell Maven to support Java 8
 
 Your computer must be connected to the internet. Once you edit the `pom.xml`, IDEA
 will download the needed Cayenne jar file and add it to the project build path. As a

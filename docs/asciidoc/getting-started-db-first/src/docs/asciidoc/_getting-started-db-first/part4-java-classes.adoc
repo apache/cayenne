@@ -37,7 +37,7 @@ You should see output telling that everything is done, like this:
 
 In IDEA you should be able to see these newly generated classes:
 
-image:tutorial-java-classes.png[align="center"]
+image::tutorial-java-classes.png[align="center"]
 
 Note that Cayenne code is unrecognized, that's because we need to include Cayenne as dependency, let's do this in `pom.xml` file: 
 [source,xml]

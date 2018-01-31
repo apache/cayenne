@@ -61,7 +61,7 @@ Let's run Modeler and check that all changes are present in our model:
 $ mvn cayenne-modeler:run
 ----
 
-image:tutorial-update-model.png[align="center"]
+image::tutorial-update-model.png[align="center"]
 
 Great! New table and ObjEntity are in place, as well as a new field.
 
@@ -70,7 +70,7 @@ Great! New table and ObjEntity are in place, as well as a new field.
 There is often a need to customize model to better fit it to your application requirements, such customization can be simple removal of toMany part of a relationship between two objects.
 Let's do it, in a Modeler just select and remove relationship `paintings` in Artist object: 
 
-image:tutorial-drop-relationship.png[align="center"]
+image::tutorial-drop-relationship.png[align="center"]
 
 Now if you run 
 ----
