@@ -14,4 +14,5 @@
 == Java code
 
 include::part4-java-classes.adoc[]
+
 include::part4-java-code.adoc[]
