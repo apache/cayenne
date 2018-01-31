@@ -70,51 +70,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- Move images to proper path for site -->
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy docs for site</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/site/</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.build.directory}/tmp/</directory>
-                                    <includes>
-                                        <include>${project.artifactId}.html</include>
-                                        <include>${project.artifactId}.toc.html</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>copy images for site</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/site/${project.artifactId}/images/</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.build.directory}/tmp/images/</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 

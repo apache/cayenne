@@ -19,8 +19,6 @@
 // use custom header
 :cayenne-header: _getting-started-guide/header.html
 :cayenne-header-position: body
-// customize final layout
-//:linkcss:
 // base path to java code include
 :cayenne-root: {basedir}/../../..
 :java-include-dir: {cayenne-root}/tutorials/tutorial/src/main/java/org/apache/cayenne/tutorial
