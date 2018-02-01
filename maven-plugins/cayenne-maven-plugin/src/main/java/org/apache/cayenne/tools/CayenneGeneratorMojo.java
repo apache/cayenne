@@ -36,7 +36,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FilenameFilter;
 
 /**
  * Maven mojo to perform class generation from data map. This class is an Maven
@@ -185,6 +184,15 @@ public class CayenneGeneratorMojo extends AbstractMojo {
     @Parameter(defaultValue = "false")
     private boolean createPropertyNames;
 
+	/**
+	 * If set to <code>true</code>, will skip file modification time validation and regenerate all.
+	 * Default is <code>false</code>.
+	 *
+	 * @since 4.1
+	 */
+	@Parameter(defaultValue = "false", property = "force")
+	private boolean force;
+
     private transient Injector injector;
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -212,14 +220,14 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 
 			ClassGenerationAction generator = createGenerator();
 			generator.setLogger(logger);
+			if(force) {
+				// will (re-)generate all files
+				generator.setForce(true);
+			}
 			generator.setTimestamp(map.lastModified());
 			generator.setDataMap(dataMap);
 			generator.addEntities(filterAction.getFilteredEntities(dataMap));
-			// ksenia khailenko 15.10.2010
-			// TODO add the "includeEmbeddables" and "excludeEmbeddables"
-			// attributes
 			generator.addEmbeddables(dataMap.getEmbeddables());
-			// TODO add the "includeQueries" and "excludeQueries" attributes
 			generator.addQueries(dataMap.getQueryDescriptors());
 			generator.execute();
 		} catch (Exception e) {
@@ -237,18 +245,12 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		}
 
 		if (!additionalMaps.isDirectory()) {
-			throw new MojoFailureException(
-					"'additionalMaps' must be a directory.");
+			throw new MojoFailureException("'additionalMaps' must be a directory.");
 		}
 
-        FilenameFilter mapFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name != null &&
-                       name.toLowerCase().endsWith(".map.xml");
-            }
-        };
-        return additionalMaps.listFiles(mapFilter);
+        return additionalMaps.listFiles(
+        		(dir, name) -> name != null && name.toLowerCase().endsWith(".map.xml")
+		);
 	}
 
 	/**

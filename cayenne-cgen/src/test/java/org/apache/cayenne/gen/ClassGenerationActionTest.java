@@ -29,6 +29,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -36,8 +37,11 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ClassGenerationActionTest {
 
@@ -250,5 +254,43 @@ public class ClassGenerationActionTest {
 			strings.add(writer.toString());
 		}
 		return strings;
+	}
+
+	@Test
+	public void testIsOld() {
+		File file = mock(File.class);
+		when(file.lastModified()).thenReturn(1000L);
+
+		action.setTimestamp(0);
+		assertTrue(action.isOld(file));
+
+		action.setTimestamp(2000L);
+		assertFalse(action.isOld(file));
+	}
+
+	@Test
+	public void testFileNeedUpdate() {
+		File file = mock(File.class);
+		when(file.lastModified()).thenReturn(1000L);
+
+		action.setTimestamp(0);
+		action.setForce(false);
+
+		assertFalse(action.fileNeedUpdate(file, null));
+
+		action.setTimestamp(2000L);
+		action.setForce(false);
+
+		assertTrue(action.fileNeedUpdate(file, null));
+
+		action.setTimestamp(0);
+		action.setForce(true);
+
+		assertTrue(action.fileNeedUpdate(file, null));
+
+		action.setTimestamp(2000L);
+		action.setForce(true);
+
+		assertTrue(action.fileNeedUpdate(file, null));
 	}
 }

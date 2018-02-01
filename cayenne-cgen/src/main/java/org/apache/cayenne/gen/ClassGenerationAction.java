@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
@@ -81,6 +80,7 @@ public class ClassGenerationAction {
 	protected String outputPattern;
 	protected String encoding;
 	protected boolean createPropertyNames;
+	protected boolean force; // force run generator
 
 	// runtime ivars
 	protected VelocityContext context;
@@ -88,7 +88,7 @@ public class ClassGenerationAction {
 
 	public ClassGenerationAction() {
 		this.outputPattern = "*.java";
-		this.timestamp = System.currentTimeMillis();
+		this.timestamp = 0L;
 		this.usePkgPath = true;
 		this.makePairs = true;
 		this.context = new VelocityContext();
@@ -240,18 +240,16 @@ public class ClassGenerationAction {
 		}
 	}
 
-	protected Template getTemplate(TemplateType type) throws Exception {
+	protected Template getTemplate(TemplateType type) {
 
 		String templateName = customTemplateName(type);
 		if (templateName == null) {
 			templateName = defaultTemplateName(type);
 		}
 
-		// Velocity < 1.5 has some memory problems, so we will create a
-		// VelocityEngine
-		// every time, and store templates in an internal cache, to avoid
-		// uncontrolled
-		// memory leaks... Presumably 1.5 fixes it.
+		// Velocity < 1.5 has some memory problems, so we will create a VelocityEngine every time,
+		// and store templates in an internal cache, to avoid uncontrolled memory leaks...
+		// Presumably 1.5 fixes it.
 
 		Template template = templateCache.get(templateName);
 
@@ -274,9 +272,9 @@ public class ClassGenerationAction {
 	}
 
 	/**
-	 * Validates the state of this class generator. Throws
-	 * CayenneRuntimeException if it is in an inconsistent state. Called
-	 * internally from "execute".
+	 * Validates the state of this class generator.
+	 * Throws CayenneRuntimeException if it is in an inconsistent state.
+	 * Called internally from "execute".
 	 */
 	protected void validateAttributes() {
 		if (destDir == null) {
@@ -393,19 +391,8 @@ public class ClassGenerationAction {
 		String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, outputPattern, className);
 		File dest = new File(mkpath(destDir, packageName), filename);
 
-		// Ignore if the destination is newer than the map
-		// (internal timestamp), i.e. has been generated after the map was
-		// last saved AND the template is older than the destination file
-		if (dest.exists() && !isOld(dest)) {
-
-			if (superTemplate == null) {
-				return null;
-			}
-
-			File superTemplateFile = new File(superTemplate);
-			if (superTemplateFile.lastModified() < dest.lastModified()) {
-				return null;
-			}
+		if (dest.exists() && !fileNeedUpdate(dest, superTemplate)) {
+			return null;
 		}
 
 		return dest;
@@ -434,19 +421,8 @@ public class ClassGenerationAction {
 				return null;
 			}
 
-			// Ignore if the destination is newer than the map
-			// (internal timestamp), i.e. has been generated after the map was
-			// last saved AND the template is older than the destination file
-			if (!isOld(dest)) {
-
-				if (template == null) {
-					return null;
-				}
-
-				File templateFile = new File(template);
-				if (templateFile.lastModified() < dest.lastModified()) {
-					return null;
-				}
+			if (!fileNeedUpdate(dest, template)) {
+				return null;
 			}
 		}
 
@@ -454,11 +430,31 @@ public class ClassGenerationAction {
 	}
 
 	/**
-	 * Returns true if <code>file</code> parameter is older than internal
-	 * timestamp of this class generator.
+	 * Ignore if the destination is newer than the map
+	 * (internal timestamp), i.e. has been generated after the map was
+	 * last saved AND the template is older than the destination file
+	 */
+	protected boolean fileNeedUpdate(File dest, String templateFileName) {
+		if(force) {
+			return true;
+		}
+
+		if (isOld(dest)) {
+            if (templateFileName == null) {
+				return false;
+            }
+
+            File templateFile = new File(templateFileName);
+			return templateFile.lastModified() >= dest.lastModified();
+        }
+		return true;
+	}
+
+	/**
+	 * Is file modified after internal timestamp (usually equal to mtime of datamap file)
 	 */
 	protected boolean isOld(File file) {
-		return file.lastModified() <= timestamp;
+		return file.lastModified() > timestamp;
 	}
 
 	/**
@@ -500,8 +496,7 @@ public class ClassGenerationAction {
 	}
 
 	/**
-	 * @param dataMap
-	 *            The dataMap to set.
+	 * @param dataMap The dataMap to set.
 	 */
 	public void setDataMap(DataMap dataMap) {
 		this.dataMap = dataMap;
@@ -509,16 +504,11 @@ public class ClassGenerationAction {
 
 	/**
 	 * Adds entities to the internal entity list.
-	 */
-
-	/**
-	 *
-	 * @param entities
-	 * @throws CayenneException
+	 * @param entities collection
 	 *
 	 * @since 4.0 throws exception
 	 */
-	public void addEntities(Collection<ObjEntity> entities) throws CayenneRuntimeException {
+	public void addEntities(Collection<ObjEntity> entities) {
 		if (artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
 				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
 			if (entities != null) {
@@ -544,9 +534,8 @@ public class ClassGenerationAction {
 		if (artifactsGenerationMode == ArtifactsGenerationMode.DATAMAP
 				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
 
-			// TODO: andrus 10.12.2010 - why not also check for empty query
-			// list?? Or
-			// create a better API for enabling DataMapArtifact
+			// TODO: andrus 10.12.2010 - why not also check for empty query list??
+			// Or create a better API for enabling DataMapArtifact
 			if (queries != null) {
 				artifacts.add(new DataMapArtifact(dataMap, queries));
 			}
@@ -585,5 +574,13 @@ public class ClassGenerationAction {
 		} else {
 			this.artifactsGenerationMode = ArtifactsGenerationMode.ALL;
 		}
+	}
+
+	public boolean isForce() {
+		return force;
+	}
+
+	public void setForce(boolean force) {
+		this.force = force;
 	}
 }

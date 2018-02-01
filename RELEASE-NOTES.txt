@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-2334 cgen: option to force run from maven/gradle
 CAY-2372 Extract new modules from cayenne-server
 CAY-2377 Cleanup deprecated code.
 CAY-2391 cdbimport: add option to skip user-defined relationships

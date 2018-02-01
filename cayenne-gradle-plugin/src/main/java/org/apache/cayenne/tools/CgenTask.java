@@ -20,7 +20,6 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.Set;
 
 import groovy.lang.Reference;
@@ -108,6 +107,13 @@ public class CgenTask extends BaseCayenneTask {
     @Input
     private boolean createPropertyNames;
 
+    /**
+     * Force run (skip check for files modification time)
+     * @since 4.1
+     */
+    @Input
+    private boolean force;
+
     private String destDirName;
 
     @TaskAction
@@ -130,6 +136,10 @@ public class CgenTask extends BaseCayenneTask {
             DataMap dataMap = loaderAction.getMainDataMap();
 
             generator.setLogger(getLogger());
+
+            if(this.force || (getProject().findProperty("force") != null)) {
+                generator.setForce(true);
+            }
             generator.setTimestamp(dataMapFile.lastModified());
             generator.setDataMap(dataMap);
             generator.addEntities(filterAction.getFilteredEntities(dataMap));
@@ -150,13 +160,9 @@ public class CgenTask extends BaseCayenneTask {
             throw new GradleException("'additionalMaps' must be a directory.");
         }
 
-        FilenameFilter mapFilter = new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name != null && name.toLowerCase().endsWith(".map.xml");
-            }
-
-        };
-        return additionalMaps.listFiles(mapFilter);
+        return additionalMaps.listFiles(
+                (dir, name) -> name != null && name.toLowerCase().endsWith(".map.xml")
+        );
     }
 
     ClassGenerationAction newGeneratorInstance() {
@@ -445,6 +451,18 @@ public class CgenTask extends BaseCayenneTask {
 
     public void createPropertyNames(boolean createPropertyNames) {
         setCreatePropertyNames(createPropertyNames);
+    }
+
+    public boolean isForce() {
+        return force;
+    }
+
+    public void setForce(boolean force) {
+        this.force = force;
+    }
+
+    public void force(boolean force) {
+        setForce(force);
     }
 
 }
