@@ -60,7 +60,7 @@ import org.apache.cayenne.validation.ValidationException;
 public class MainDataNodeEditor extends CayenneController {
 
 	protected static final String NO_LOCAL_DATA_SOURCE = "Select DataSource for Local Work...";
-	private static final String DBCP_DATA_SOURCE_FACTORY = "org.apache.cayenne.configuration.server.DBCPDataSourceFactory";
+	public static final String DBCP_DATA_SOURCE_FACTORY = "org.apache.cayenne.configuration.server.DBCPDataSourceFactory";
 
 	final static String[] standardDataSourceFactories = new String[] { XMLPoolingDataSourceFactory.class.getName(),
 			JNDIDataSourceFactory.class.getName(), DBCP_DATA_SOURCE_FACTORY };
@@ -270,6 +270,7 @@ public class MainDataNodeEditor extends CayenneController {
 	 * Selects a subview for a currently selected DataSource factory.
 	 */
 	protected void showDataSourceSubview(String factoryName) {
+
 		DataSourceEditor c = (DataSourceEditor) datasourceEditors.get(factoryName);
 
 		// create subview dynamically...
