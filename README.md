@@ -24,7 +24,7 @@ Apache Cayenne
 <!-- [![Build Status](https://builds.apache.org/job/cayenne-master/badge/icon)](https://builds.apache.org/view/All/job/cayenne-master/) -->
 
 <p align="center">
-    <a href="https://cayenne.apache.org"><img src="https://cayenne.apache.org/img/cayenne_illustr3-30e8b8fa06.png" alt="Apache Cayenne Logo"/></a>
+    <a href="https://cayenne.apache.org"><img src="https://cayenne.apache.org/img/cayenne_illustr3-30e8b8fa06.png" width="261" height="166" alt="Apache Cayenne Logo"/></a>
 </p>
 
 [Apache Cayenne](https://cayenne.apache.org) is an open source persistence framework licensed under the Apache License, providing object-relational mapping (ORM) and remoting services. 
@@ -34,7 +34,10 @@ Quick Start
 
 #### Modeler GUI application
 
-![Modeler](https://cayenne.apache.org/docs/4.0/getting-started-guide/images/modeler-deleterule.png)
+To create Cayenne project you will need Cayenne Modeler.
+You can download it from https://cayenne.apache.org/download/
+
+[![Modeler](https://cayenne.apache.org/docs/4.0/getting-started-guide/images/modeler-deleterule.png)](https://cayenne.apache.org/download/)
 
 See tutorial https://cayenne.apache.org/docs/4.0/getting-started-guide/ 
 
