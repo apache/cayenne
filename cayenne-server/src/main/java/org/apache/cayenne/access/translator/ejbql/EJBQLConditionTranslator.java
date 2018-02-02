@@ -693,7 +693,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             Long longValue;
 
             try {
-                longValue = new Long(text);
+                longValue = Long.valueOf(text);
             } catch (NumberFormatException nfex) {
                 throw new EJBQLException("Invalid integer: " + expression.getText());
             }

@@ -295,8 +295,9 @@ public class Util {
 	 * @since 4.1
 	 */
 	public static String capitalized(String name) {
-		if (name == null || name.length() == 0)
+		if (name == null || name.length() == 0) {
 			return name;
+		}
 
 		char c = Character.toUpperCase(name.charAt(0));
 		return (name.length() == 1) ? Character.toString(c) : c + name.substring(1);
@@ -308,8 +309,9 @@ public class Util {
 	 * @since 4.2
 	 */
 	public static String uncapitalized(String aString) {
-		if (aString == null || aString.length() == 0)
+		if (aString == null || aString.length() == 0) {
 			return aString;
+		}
 
 		char c = Character.toLowerCase(aString.charAt(0));
 		return (aString.length() == 1) ? Character.toString(c) : c + aString.substring(1);
@@ -393,13 +395,15 @@ public class Util {
 	 * @since 3.0
 	 */
 	public static String stripPackageName(String className) {
-		if (className == null || className.length() == 0)
+		if (className == null || className.length() == 0) {
 			return className;
+		}
 
 		int lastDot = className.lastIndexOf('.');
 
-		if ((-1 == lastDot) || ((className.length() - 1) == lastDot))
+		if ((-1 == lastDot) || ((className.length() - 1) == lastDot)) {
 			return className;
+		}
 
 		return className.substring(lastDot + 1);
 	}

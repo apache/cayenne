@@ -61,10 +61,11 @@ public class ConverterFactory {
                 if (object instanceof Boolean) {
                     return (Boolean)object;
                 } else if (object instanceof Integer || object instanceof Long || object instanceof Short || object instanceof Byte) {
-                	if (((Number)object).longValue() == 0)
-                		return Boolean.FALSE;
-                	else if (((Number)object).longValue() == 1)
-                		return Boolean.TRUE;
+                	if (((Number)object).longValue() == 0) {
+                        return Boolean.FALSE;
+                    } else if (((Number)object).longValue() == 1) {
+                        return Boolean.TRUE;
+                    }
                 }
 
                 return "true".equalsIgnoreCase(object.toString())
@@ -85,7 +86,7 @@ public class ConverterFactory {
                     return (Long)object;
                 }
 
-                return new Long(object.toString());
+                return Long.valueOf(object.toString());
             }
         };
         
@@ -94,14 +95,14 @@ public class ConverterFactory {
             @Override
             protected Integer convert(Object object, Class<Integer> type) {
                 if (object == null) {
-                    return type.isPrimitive() ? Integer.valueOf(0) : null;
+                    return type.isPrimitive() ? 0 : null;
                 }
 
                 if (object instanceof Integer) {
                     return (Integer)object;
                 }
 
-                return new Integer(object.toString());
+                return Integer.valueOf(object.toString());
             }
         };
 
@@ -110,14 +111,14 @@ public class ConverterFactory {
             @Override
             protected Byte convert(Object object, Class<Byte> type) {
                 if (object == null) {
-                    return type.isPrimitive() ? Byte.valueOf((byte) 0) : null;
+                    return type.isPrimitive() ? (byte) 0 : null;
                 }
 
                 if (object instanceof Byte) {
                     return (Byte)object;
                 }
 
-                return new Byte(object.toString());
+                return Byte.valueOf(object.toString());
             }
         };
 
@@ -126,14 +127,14 @@ public class ConverterFactory {
             @Override
             protected Short convert(Object object, Class<Short> type) {
                 if (object == null) {
-                    return type.isPrimitive() ? Short.valueOf((short) 0) : null;
+                    return type.isPrimitive() ? (short) 0 : null;
                 }
 
                 if (object instanceof Short) {
                     return (Short)object;
                 }
 
-                return new Short(object.toString());
+                return Short.valueOf(object.toString());
             }
         };
 
@@ -142,7 +143,7 @@ public class ConverterFactory {
             @Override
             protected Character convert(Object object, Class<Character> type) {
                 if (object == null) {
-                    return type.isPrimitive() ? Character.valueOf((char) 0) : null;
+                    return type.isPrimitive() ? (char) 0 : null;
                 }
 
                 if (object instanceof Character) {
@@ -159,14 +160,14 @@ public class ConverterFactory {
             @Override
             protected Double convert(Object object, Class<Double> type) {
                 if (object == null) {
-                    return type.isPrimitive() ? new Double(0.0d) : null;
+                    return type.isPrimitive() ? 0.0d : null;
                 }
 
                 if (object instanceof Double) {
                     return (Double)object;
                 }
 
-                return new Double(object.toString());
+                return Double.valueOf(object.toString());
             }
         };
 
@@ -175,14 +176,14 @@ public class ConverterFactory {
             @Override
             protected Float convert(Object object, Class<Float> type) {
                 if (object == null) {
-                    return type.isPrimitive() ? new Float(0.0f) : null;
+                    return type.isPrimitive() ? 0.0f : null;
                 }
 
                 if (object instanceof Float) {
                     return (Float)object;
                 }
 
-                return new Float(object.toString());
+                return Float.valueOf(object.toString());
             }
         };
 
@@ -221,9 +222,15 @@ public class ConverterFactory {
 		Converter<Date> toDateConverter = new Converter<Date>() {
 			@Override
 			protected Date convert(Object value, Class<Date> type) {
-				if (value == null) return null;
-				if (value instanceof Date) return (Date) value;
-				if (value instanceof Number) return new Date(((Number)value).longValue());
+				if (value == null) {
+                    return null;
+                }
+				if (value instanceof Date) {
+                    return (Date) value;
+                }
+				if (value instanceof Number){
+				    return new Date(((Number)value).longValue());
+                }
 				return new Date(value.toString());
 			}
 		};
@@ -231,9 +238,15 @@ public class ConverterFactory {
 		Converter<Timestamp> toTimestampConverter = new Converter<Timestamp>() {
 			@Override
 			protected Timestamp convert(Object value, Class<Timestamp> type) {
-				if (value == null) return null;
-				if (value instanceof Timestamp) return (Timestamp) value;
-				if (value instanceof Number) return new Timestamp(((Number)value).longValue());
+				if (value == null) {
+                    return null;
+                }
+				if (value instanceof Timestamp) {
+                    return (Timestamp) value;
+                }
+				if (value instanceof Number){
+				    return new Timestamp(((Number)value).longValue());
+                }
 				return new Timestamp(Date.parse(value.toString()));
 			}
 		};

@@ -140,8 +140,9 @@ public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 				for (ArcIterator<E, V> k = digraph.outgoingIterator(member); k.hasNext();) {
 					V arc = k.next();
 					E dst = k.getDestination();
-					if (origin.contains(dst))
+					if (origin.contains(dst)) {
 						continue;
+					}
 					Collection<E> destination = memberToComponent.get(dst);
 
 					Collection<V> contractedArc = contractedDigraph.getArc(origin, destination);
@@ -172,12 +173,14 @@ public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 		dfsStack.clear();
 		reverseDFSFilter.seenVertices.clear();
 		E root = nextDFSRoot();
-		if (root == null)
+		if (root == null) {
 			return false;
-		if (directDfs == null)
+		}
+		if (directDfs == null) {
 			directDfs = new DepthFirstStampSearch<>(filteredDigraph, root);
-		else
+		} else {
 			directDfs.reset(root);
+		}
 		int stamp;
 		E vertex;
 		while (directDfs.hasNext()) {
@@ -198,10 +201,11 @@ public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 		E root = (E) dfsStack.pop();
 		Collection<E> component = Collections.singletonList(root);
 		boolean singleton = true;
-		if (reverseDfs == null)
+		if (reverseDfs == null) {
 			reverseDfs = new DepthFirstSearch<>(reverseDigraph, root);
-		else
+		} else {
 			reverseDfs.reset(root);
+		}
 		while (reverseDfs.hasNext()) {
 			E vertex = reverseDfs.next();
 			if (vertex != root) {

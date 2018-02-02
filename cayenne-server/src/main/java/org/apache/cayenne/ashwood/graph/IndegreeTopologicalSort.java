@@ -94,8 +94,9 @@ public class IndegreeTopologicalSort<E> implements Iterator<E> {
         boolean progress = true;
         while (hasNext()) {
             if (!current.hasNext()) {
-                if (!progress)
+                if (!progress) {
                     break;
+                }
                 progress = false;
                 current = vertices.listIterator();
             }

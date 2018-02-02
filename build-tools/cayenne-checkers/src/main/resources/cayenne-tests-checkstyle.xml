@@ -30,9 +30,6 @@
             <property name="severity" value="warning"/>
             <property name="max" value="200"/>
         </module>
-        <module name="DoubleCheckedLocking">
-            <property name="severity" value="warning"/>
-        </module>
         <module name="FallThrough">
             <property name="severity" value="warning"/>
         </module>

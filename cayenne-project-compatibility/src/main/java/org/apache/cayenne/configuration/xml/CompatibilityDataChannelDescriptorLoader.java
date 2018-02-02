@@ -52,7 +52,7 @@ import org.xml.sax.XMLReader;
  */
 public class CompatibilityDataChannelDescriptorLoader extends XMLDataChannelDescriptorLoader {
 
-    private static Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
     @Inject
     Provider<UpgradeService> upgradeServiceProvider;

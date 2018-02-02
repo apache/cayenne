@@ -90,11 +90,11 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 String collectionType = relationship.getCollectionType();
                 if (collectionType == null || ObjRelationship.DEFAULT_COLLECTION_TYPE.equals(collectionType)) {
                     createToManyListProperty(descriptor, relationship);
-                } else if (collectionType.equals("java.util.Map")) {
+                } else if ("java.util.Map".equals(collectionType)) {
                     createToManyMapProperty(descriptor, relationship);
-                } else if (collectionType.equals("java.util.Set")) {
+                } else if ("java.util.Set".equals(collectionType)) {
                     createToManySetProperty(descriptor, relationship);
-                } else if (collectionType.equals("java.util.Collection")) {
+                } else if ("java.util.Collection".equals(collectionType)) {
                     createToManyCollectionProperty(descriptor, relationship);
                 } else {
                     throw new IllegalArgumentException("Unsupported to-many collection type: " + collectionType);

@@ -103,8 +103,9 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
                         if (!first) {
                             buf.append(", ");
                             refBuf.append(", ");
-                        } else
+                        } else {
                             first = false;
+                        }
 
                         buf.append(context.quotedSourceName(join));
                         refBuf.append(context.quotedTargetName(join));

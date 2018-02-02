@@ -37,7 +37,7 @@ import java.util.Map;
 
 public class HttpROPConnector implements ROPConnector {
 
-    private static Logger logger = LoggerFactory.getLogger(HttpROPConnector.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpROPConnector.class);
 
     public static final String SESSION_COOKIE_NAME = "JSESSIONID";
 

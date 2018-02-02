@@ -149,18 +149,19 @@ public class CalendarType<T extends Calendar> implements ExtendedType<Calendar> 
     }
 
     protected Object convertToJdbcObject(Calendar value, int type) throws Exception {
-        if (type == Types.DATE)
+        if (type == Types.DATE) {
             return new java.sql.Date(value.getTimeInMillis());
-        else if (type == Types.TIME)
+        } else if (type == Types.TIME) {
             return new java.sql.Time(value.getTimeInMillis());
-        else if (type == Types.TIMESTAMP)
+        } else if (type == Types.TIMESTAMP) {
             return new java.sql.Timestamp(value.getTimeInMillis());
-        else
+        } else {
             throw new IllegalArgumentException(
                     "Only DATE, TIME or TIMESTAMP can be mapped as '"
                             + getClassName()
                             + "', got "
                             + TypesMapping.getSqlNameByType(type));
+        }
     }
 
     @Override

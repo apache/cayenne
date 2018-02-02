@@ -130,10 +130,11 @@ public class MapDigraph<E, V> implements Digraph<E, V> {
 	@Override
 	public boolean removeVertex(E vertex) {
 		Map<E, V> destination = graph.remove(vertex);
-		if (destination != null)
+		if (destination != null) {
 			size -= destination.size();
-		else
+		} else {
 			return false;
+		}
 
 		removeIncoming(vertex);
 		return true;
@@ -158,8 +159,9 @@ public class MapDigraph<E, V> implements Digraph<E, V> {
 		}
 
 		V arc = destinations.remove(destination);
-		if (arc != null)
+		if (arc != null) {
 			size--;
+		}
 
 		return arc;
 	}
@@ -170,8 +172,9 @@ public class MapDigraph<E, V> implements Digraph<E, V> {
 
 		for (Map<E, V> destinations : graph.values()) {
 			Object arc = destinations.remove(vertex);
-			if (arc != null)
+			if (arc != null) {
 				size--;
+			}
 			modified |= (arc != null);
 		}
 
@@ -182,10 +185,11 @@ public class MapDigraph<E, V> implements Digraph<E, V> {
 	public boolean removeOutgoing(E vertex) {
 
 		Map<E, V> destinations = graph.remove(vertex);
-		if (destinations != null)
+		if (destinations != null) {
 			size -= destinations.size();
-		else
+		} else {
 			return false;
+		}
 		boolean modified = !destinations.isEmpty();
 		destinations.clear();
 		return modified;
@@ -232,17 +236,19 @@ public class MapDigraph<E, V> implements Digraph<E, V> {
 	@Override
 	public int outgoingSize(E vertex) {
 		Map<E, V> destinations = graph.get(vertex);
-		if (destinations == null)
+		if (destinations == null) {
 			return 0;
-		else
+		} else {
 			return destinations.size();
+		}
 	}
 
 	@Override
 	public int incomingSize(E vertex) {
 		int count = 0;
-		if (!graph.containsKey(vertex))
+		if (!graph.containsKey(vertex)) {
 			return 0;
+		}
 
 		for (Map<E, V> destinations : graph.values()) {
 			count += (destinations.containsKey(vertex) ? 1 : 0);
@@ -264,8 +270,9 @@ public class MapDigraph<E, V> implements Digraph<E, V> {
 	@Override
 	public boolean hasArc(E origin, E destination) {
 		Map<E, V> destinations = graph.get(origin);
-		if (destinations == null)
+		if (destinations == null) {
 			return false;
+		}
 		return destinations.containsKey(destination);
 	}
 
@@ -366,8 +373,9 @@ public class MapDigraph<E, V> implements Digraph<E, V> {
 
 		@Override
 		public E getDestination() {
-			if (entry == null)
+			if (entry == null) {
 				return null;
+			}
 			return entry.getKey();
 		}
 

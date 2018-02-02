@@ -197,28 +197,6 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>code-quality</id>
-
-            <activation>
-                <property>
-                    <name>!fast-and-dirty</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-checkstyle-plugin</artifactId>
-                        <!--<configuration>
-                            <suppressionsLocation>${project.basedir}/cayenne-checkstyle-suppression.xml</suppressionsLocation>
-                        </configuration>-->
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-pmd-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
     </profiles>
 
 </project>

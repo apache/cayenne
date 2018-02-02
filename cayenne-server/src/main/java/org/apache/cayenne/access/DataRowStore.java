@@ -52,7 +52,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class DataRowStore implements Serializable {
 
-    private static Logger logger = LoggerFactory.getLogger(DataRowStore.class);
+    private static final Logger logger = LoggerFactory.getLogger(DataRowStore.class);
 
     // default property values
 

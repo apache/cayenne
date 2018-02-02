@@ -120,10 +120,7 @@ class CayenneContextChildDiffLoader extends ChildDiffLoader {
                             .readProperty(source));
                 }
 
-                if (target[0] == null) {
-                    // ignore?
-                }
-                else {
+                if (target[0] != null) {
                     property.removeTargetDirectly(source, target[0]);
                 }
 

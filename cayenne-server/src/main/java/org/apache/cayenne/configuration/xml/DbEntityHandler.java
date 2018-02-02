@@ -28,6 +28,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
+import static org.apache.cayenne.util.Util.isBlank;
+
 /**
  * @since 4.1
  */
@@ -126,7 +128,7 @@ public class DbEntityHandler extends NamespaceAwareNestedTagHandler {
     }
 
     private void createQualifier(String qualifier) {
-        if (qualifier.trim().length() == 0) {
+        if (isBlank(qualifier)) {
             return;
         }
 

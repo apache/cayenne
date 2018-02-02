@@ -352,16 +352,7 @@ public class CayenneContext extends BaseContext {
         boolean childContext = this != originatingContext && changes != null;
 
         if (childContext) {
-
-            // PropertyChangeProcessingStrategy oldStrategy =
-            // getPropertyChangeProcessingStrategy();
-            // setPropertyChangeProcessingStrategy(PropertyChangeProcessingStrategy.RECORD);
-            try {
-                changes.apply(new CayenneContextChildDiffLoader(this));
-            } finally {
-                // setPropertyChangeProcessingStrategy(oldStrategy);
-            }
-
+            changes.apply(new CayenneContextChildDiffLoader(this));
             fireDataChannelChanged(originatingContext, changes);
         }
 

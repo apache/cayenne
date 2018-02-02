@@ -268,10 +268,11 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 * @since 3.0
 	 */
 	public void setAscending() {
-		if (sortOrder == null || sortOrder == SortOrder.DESCENDING)
+		if (sortOrder == null || sortOrder == SortOrder.DESCENDING) {
 			setSortOrder(SortOrder.ASCENDING);
-		else if (sortOrder == SortOrder.DESCENDING_INSENSITIVE)
+		} else if (sortOrder == SortOrder.DESCENDING_INSENSITIVE) {
 			setSortOrder(SortOrder.ASCENDING_INSENSITIVE);
+		}
 	}
 
 	/**
@@ -281,10 +282,11 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 * @since 3.0
 	 */
 	public void setDescending() {
-		if (sortOrder == null || sortOrder == SortOrder.ASCENDING)
+		if (sortOrder == null || sortOrder == SortOrder.ASCENDING) {
 			setSortOrder(SortOrder.DESCENDING);
-		else if (sortOrder == SortOrder.ASCENDING_INSENSITIVE)
+		} else if (sortOrder == SortOrder.ASCENDING_INSENSITIVE) {
 			setSortOrder(SortOrder.DESCENDING_INSENSITIVE);
+		}
 	}
 
 	/** Returns true if the sorting is case insensitive */
@@ -308,10 +310,11 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 * @since 3.0
 	 */
 	public void setCaseInsensitive() {
-		if (sortOrder == null || sortOrder == SortOrder.ASCENDING)
+		if (sortOrder == null || sortOrder == SortOrder.ASCENDING) {
 			setSortOrder(SortOrder.ASCENDING_INSENSITIVE);
-		else if (sortOrder == SortOrder.DESCENDING)
+		} else if (sortOrder == SortOrder.DESCENDING) {
 			setSortOrder(SortOrder.DESCENDING_INSENSITIVE);
+		}
 	}
 
 	/**
@@ -321,10 +324,11 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	 * @since 3.0
 	 */
 	public void setCaseSensitive() {
-		if (sortOrder == null || sortOrder == SortOrder.ASCENDING_INSENSITIVE)
+		if (sortOrder == null || sortOrder == SortOrder.ASCENDING_INSENSITIVE) {
 			setSortOrder(SortOrder.ASCENDING);
-		else if (sortOrder == SortOrder.DESCENDING_INSENSITIVE)
+		} else if (sortOrder == SortOrder.DESCENDING_INSENSITIVE) {
 			setSortOrder(SortOrder.DESCENDING);
+		}
 	}
 
 	/**

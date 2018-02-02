@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultDataChannelDescriptorMerger implements DataChannelDescriptorMerger {
 
-    private static Logger logger = LoggerFactory
+    private static final Logger logger = LoggerFactory
             .getLogger(DefaultDataChannelDescriptorMerger.class);
 
     public DataChannelDescriptor merge(DataChannelDescriptor... descriptors) {

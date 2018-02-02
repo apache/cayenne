@@ -48,6 +48,8 @@ import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -56,6 +58,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
+
+import static org.apache.cayenne.util.Util.isBlank;
 
 /**
  *
@@ -80,6 +84,8 @@ import org.xml.sax.helpers.DefaultHandler;
  * @since 4.1
  */
 public class DefaultUpgradeService implements UpgradeService {
+
+    private static final Logger logger = LoggerFactory.getLogger(DefaultUpgradeService.class);
 
     public static final String UNKNOWN_VERSION = "0";
     public static final String MIN_SUPPORTED_VERSION = "6";
@@ -221,7 +227,7 @@ public class DefaultUpgradeService implements UpgradeService {
                 resources.add(mapResource);
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.warn("Can't get additional dataMap resources: ", ex);
         }
         return resources;
     }
@@ -234,7 +240,7 @@ public class DefaultUpgradeService implements UpgradeService {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.transform(input, output);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.warn("Can't save the document: ", ex);
         }
     }
 
@@ -261,7 +267,7 @@ public class DefaultUpgradeService implements UpgradeService {
     }
 
     protected static double decodeVersion(String version) {
-        if (version == null || version.trim().length() == 0) {
+        if (version == null || isBlank(version)) {
             return 0;
         }
 

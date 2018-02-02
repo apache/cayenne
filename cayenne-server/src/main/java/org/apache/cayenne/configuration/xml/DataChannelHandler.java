@@ -30,7 +30,7 @@ import org.xml.sax.ContentHandler;
  */
 final class DataChannelHandler extends VersionAwareHandler {
 
-    private static Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
     static final String DOMAIN_TAG = "domain";
 

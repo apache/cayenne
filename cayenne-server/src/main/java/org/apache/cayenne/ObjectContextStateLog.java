@@ -41,12 +41,12 @@ class ObjectContextStateLog implements GraphChangeHandler {
     GraphManager graphManager;
 
     ObjectContextStateLog(GraphManager graphManager) {
-        this.dirtyIds = new HashSet<Object>();
+        this.dirtyIds = new HashSet<>();
         this.graphManager = graphManager;
     }
 
     void clear() {
-        dirtyIds = new HashSet<Object>();
+        dirtyIds = new HashSet<>();
     }
 
     /**
@@ -56,7 +56,7 @@ class ObjectContextStateLog implements GraphChangeHandler {
         /*
          * Array for deleted ids, to avoid concurrent modification
          */
-        List<Object> deletedIds = new Vector<>();
+        List<Object> deletedIds = new ArrayList<>();
         
         for (Object id : dirtyIds) {
             Object node = graphManager.getNode(id);

@@ -343,8 +343,9 @@ public class RemoteIncrementalFaultList implements List {
             }
 
             public Object next() {
-                if (listIndex >= elements.size())
+                if (listIndex >= elements.size()) {
                     throw new NoSuchElementException("no more elements");
+                }
 
                 return get(listIndex++);
             }
@@ -636,8 +637,9 @@ public class RemoteIncrementalFaultList implements List {
         }
 
         public Object next() {
-            if (listIndex >= elements.size())
+            if (listIndex >= elements.size()) {
                 throw new NoSuchElementException("at the end of the list");
+            }
 
             return get(listIndex++);
         }
@@ -647,8 +649,9 @@ public class RemoteIncrementalFaultList implements List {
         }
 
         public Object previous() {
-            if (listIndex < 1)
+            if (listIndex < 1) {
                 throw new NoSuchElementException("at the beginning of the list");
+            }
 
             return get(--listIndex);
         }

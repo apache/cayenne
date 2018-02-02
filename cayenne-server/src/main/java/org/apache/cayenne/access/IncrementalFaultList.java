@@ -422,8 +422,9 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 			}
 
 			public E next() {
-				if (listIndex >= elements.size())
+				if (listIndex >= elements.size()) {
 					throw new NoSuchElementException("no more elements");
+				}
 
 				return get(listIndex++);
 			}
@@ -807,8 +808,9 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 		}
 
 		public E next() {
-			if (listIndex >= elements.size())
+			if (listIndex >= elements.size()) {
 				throw new NoSuchElementException("at the end of the list");
+			}
 
 			return get(listIndex++);
 		}
@@ -818,8 +820,9 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 		}
 
 		public E previous() {
-			if (listIndex < 1)
+			if (listIndex < 1) {
 				throw new NoSuchElementException("at the beginning of the list");
+			}
 
 			return get(--listIndex);
 		}

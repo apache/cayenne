@@ -47,7 +47,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class JettyHttpROPConnector implements ROPConnector {
 
-    private static Logger logger = LoggerFactory.getLogger(JettyHttpROPConnector.class);
+    private static final Logger logger = LoggerFactory.getLogger(JettyHttpROPConnector.class);
 
     public static final String SESSION_COOKIE_NAME = "JSESSIONID";
 
@@ -60,9 +60,10 @@ public class JettyHttpROPConnector implements ROPConnector {
     protected Long readTimeout = 5l;
 
     public JettyHttpROPConnector(HttpClient httpClient, String url, String username) {
-        if (httpClient == null)
+        if (httpClient == null) {
             throw new IllegalArgumentException("org.eclipse.jetty.client.HttpClient should be provided " +
                     "for this ROPConnector implementation.");
+        }
 
         this.httpClient = httpClient;
         this.url = url;

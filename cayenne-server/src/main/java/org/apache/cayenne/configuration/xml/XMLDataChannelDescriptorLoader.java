@@ -47,7 +47,7 @@ import java.net.URL;
  */
 public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoader {
 
-	private static Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
+	private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
 	static final String CURRENT_PROJECT_VERSION = "10";
 

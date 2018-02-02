@@ -33,9 +33,7 @@
         <module name="IllegalCatch">
             <property name="severity" value="warning"/>
         </module>
-        <module name="DoubleCheckedLocking">
-            <property name="severity" value="warning"/>
-        </module>
+
         <module name="FallThrough">
             <property name="severity" value="warning"/>
         </module>
@@ -51,9 +49,6 @@
         <module name="CovariantEquals">
             <property name="severity" value="warning"/>
         </module>
-        <module name="VisibilityModifier">
-            <property name="severity" value="info"/>
-        </module>
         <module name="ConstantName">
             <property name="severity" value="info"/>
             <property name="format" value="^([A-Z][A-Z0-9]*(_[A-Z0-9]+)*|logger|log)$"/>
@@ -64,18 +59,9 @@
         <module name="ArrayTypeStyle">
             <property name="severity" value="info"/>
         </module>
-        <module name="LeftCurly">
-            <property name="severity" value="info"/>
-        </module>
-        <module name="AnonInnerLength">
-            <property name="severity" value="warning"/>
-        </module>
         <module name="EqualsAvoidNull">
             <property name="severity" value="warning"/>
             <property name="ignoreEqualsIgnoreCase" value="false"/>
-        </module>
-        <module name="DeclarationOrder">
-            <property name="severity" value="info"/>
         </module>
         <module name="AvoidNestedBlocks">
             <property name="severity" value="warning"/>

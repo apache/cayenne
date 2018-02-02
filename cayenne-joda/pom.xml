@@ -120,17 +120,8 @@
 				<configuration>
 					<map>${project.basedir}/src/test/resources/joda.map.xml</map>
 					<destDir>${project.basedir}/src/test/java</destDir>
-					<defaultPackage>org.apache.cayenne.joda.db</defaultPackage>
 					<superPkg>org.apache.cayenne.joda.db.auto</superPkg>
 				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<!--<configuration> <suppressionsLocation>${project.basedir}/cayenne-checkstyle-suppression.xml</suppressionsLocation> 
-					</configuration> -->
-			</plugin>
-			<plugin>
-				<artifactId>maven-pmd-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

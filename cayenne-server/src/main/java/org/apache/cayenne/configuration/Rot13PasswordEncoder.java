@@ -66,10 +66,11 @@ public class Rot13PasswordEncoder implements PasswordEncoding {
             char c = value.charAt(i);
 
             // If c is a letter, rotate it by 13. Numbers/symbols are untouched.
-            if ((c >= 'a' && c <= 'm') || (c >= 'A' && c <= 'M'))
+            if ((c >= 'a' && c <= 'm') || (c >= 'A' && c <= 'M')) {
                 c += 13; // The first half of the alphabet goes forward 13 letters
-            else if ((c >= 'n' && c <= 'z') || (c >= 'N' && c <= 'Z'))
+            } else if ((c >= 'n' && c <= 'z') || (c >= 'N' && c <= 'Z')) {
                 c -= 13; // The last half of the alphabet goes backward 13 letters
+            }
 
             result.append(c);
         }

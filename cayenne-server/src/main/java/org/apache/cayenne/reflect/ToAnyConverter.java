@@ -29,8 +29,12 @@ import org.apache.cayenne.CayenneRuntimeException;
 public class ToAnyConverter<T> extends Converter<T> {
 	@Override
 	protected T convert(Object value, Class<T> type) {
-		if (value == null) return null;
-		if (type.isAssignableFrom(value.getClass())) return (T) value; // no conversion needed
+		if (value == null) {
+            return null;
+        }
+		if (type.isAssignableFrom(value.getClass())) {
+            return (T) value; // no conversion needed
+        }
 		
         try {
             Constructor<?> constructor;

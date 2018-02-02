@@ -64,13 +64,14 @@ class PathComponentIterator implements Iterator<PathComponent<Attribute, Relatio
         Attribute attr = currentEntity.getAttribute(pathComp);
         if (attr != null) {
             // do a sanity check...
-            if (toks.hasMoreTokens())
+            if (toks.hasMoreTokens()) {
                 throw new ExpressionException(
                         "Attribute must be the last component of the path: '"
                                 + pathComp
                                 + "'.",
                         path,
                         null);
+            }
 
             return new AttributePathComponent<Attribute, Relationship>(attr);
         }

@@ -27,6 +27,8 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
 import org.apache.cayenne.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -35,6 +37,8 @@ import org.w3c.dom.Node;
  * @since 4.1
  */
 public class UpgradeHandler_V9 implements UpgradeHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(UpgradeHandler_V9.class);
 
     @Override
     public String getVersion() {
@@ -71,7 +75,7 @@ public class UpgradeHandler_V9 implements UpgradeHandler {
                 dataMap.removeChild(reNode);
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.warn("Can't process dataMap DOM: ", ex);
         }
     }
 

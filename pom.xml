@@ -41,10 +41,6 @@
 		<slf4j.version>1.7.25</slf4j.version>
 		<ant.version>1.9.9</ant.version>
 
-        <pmd.skip>true</pmd.skip>
-        <checkstyle.skip>true</checkstyle.skip>
-        <findbugs.skip>true</findbugs.skip>
-
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -81,7 +77,7 @@
 		<module>tutorials</module>
 		<module>docs</module>
 		<module>assembly</module>
-    </modules>
+	</modules>
 	<issueManagement>
 		<system>jira</system>
 		<url>https://issues.apache.org/jira/browse/CAY</url>
@@ -739,6 +735,10 @@
 					<version>3.8</version>
 				</plugin>
 				<plugin>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>3.0.0</version>
+				</plugin>
+				<plugin>
 					<artifactId>maven-enforcer-plugin</artifactId>
 					<version>1.4.1</version>
 				</plugin>
@@ -957,222 +957,210 @@
 	</distributionManagement>
 
 	<profiles>
-        <profile>
-            <id>code-quality</id>
+		<profile>
+			<id>code-quality</id>
 
-            <activation>
-                <property>
-                    <name>!fast-and-dirty</name>
-                </property>
-            </activation>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-checkstyle-plugin</artifactId>
-                            <version>2.17</version>
-                            <configuration>
-                                <skip>${checkstyle.skip}</skip>
-                                <consoleOutput>true</consoleOutput>
-                                <enableRulesSummary>false</enableRulesSummary>
-                                <failOnViolation>false</failOnViolation>
-                                <!-- TODO make it 'true' when we will be ready -->
-                                <violationSeverity>warning</violationSeverity>
-                                <configLocation>/cayenne-checkstyle.xml</configLocation>
-                            </configuration>
-                            <executions>
-                                <execution>
-                                    <phase>process-sources</phase>
-                                    <goals>
-                                        <goal>check</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                            <dependencies>
-                                <dependency>
-                                    <groupId>org.apache.cayenne.build-tools</groupId>
-                                    <artifactId>cayenne-checkers</artifactId>
-                                    <version>${project.version}</version>
-                                </dependency>
-                            </dependencies>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-pmd-plugin</artifactId>
-                            <version>3.8</version>
-                            <configuration>
-                                <skip>${pmd.skip}</skip>
-                                <sourceEncoding>utf-8</sourceEncoding>
-                                <targetJdk>1.7</targetJdk>
-                                <verbose>true</verbose>
-                                <failOnViolation>false</failOnViolation>
-                                <!-- TODO make it 'true' when we will be ready -->
-                                <failurePriority>2</failurePriority>
-                                <rulesets>
-                                    <!-- go back on one dir to parent project -->
-                                    <ruleset>/cayenne-pmd.xml</ruleset>
-                                </rulesets>
-                            </configuration>
-                            <executions>
-                                <execution>
-                                    <phase>process-sources</phase>
-                                    <goals>
-                                        <goal>check</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                            <dependencies>
-                                <dependency>
-                                    <groupId>org.apache.cayenne.build-tools</groupId>
-                                    <artifactId>cayenne-checkers</artifactId>
-                                    <version>${project.version}</version>
-                                </dependency>
-                            </dependencies>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>findbugs-maven-plugin</artifactId>
-                            <version>3.0.4</version>
-                            <configuration>
-                                <effort>Max</effort>
-                                <!-- do max effort at CI Server -->
-                                <threshold>Low</threshold>
-                                <!-- make it 'low' at CI Server -->
-                            </configuration>
-                            <executions>
-                                <execution>
-                                    <phase>process-classes</phase>
-                                    <goals>
-                                        <goal>check</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>clirr-maven-plugin</artifactId>
-                            <version>2.8</version>
-                            <configuration>
-                                <comparisonVersion>3.1RC1</comparisonVersion>
-                                <minSeverity>info</minSeverity>
-                                <logResults>true</logResults>
-                            </configuration>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>jdepend-maven-plugin</artifactId>
-                            <version>2.0</version>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-checkstyle-plugin</artifactId>
+						<configuration>
 
-            <reporting>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-checkstyle-plugin</artifactId>
-                        <inherited>true</inherited>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-pmd-plugin</artifactId>
-                        <inherited>true</inherited>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>findbugs-maven-plugin</artifactId>
-                        <configuration>
-                            <effort>Max</effort>
-                            <threshold>Low</threshold>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>jdepend-maven-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>clirr-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </reporting>
-        </profile>
-        <profile>
-            <id>tests-development</id>
-            <activation>
-                <property>
-                    <name>tests-development</name>
-                </property>
-            </activation>
+							<skip>false</skip>
+							<consoleOutput>false</consoleOutput>
+							<enableRulesSummary>false</enableRulesSummary>
+							<failOnViolation>false</failOnViolation>
+							<!-- TODO make it 'true' when we will be ready -->
+							<violationSeverity>warning</violationSeverity>
+							<configLocation>/cayenne-checkstyle.xml</configLocation>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>process-sources</phase>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>org.apache.cayenne.build-tools</groupId>
+								<artifactId>cayenne-checkers</artifactId>
+								<version>${project.version}</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-pmd-plugin</artifactId>
+						<configuration>
+							<skip>false</skip>
+							<sourceEncoding>utf-8</sourceEncoding>
+							<targetJdk>1.8</targetJdk>
+							<verbose>true</verbose>
+							<failOnViolation>false</failOnViolation>
+							<!-- TODO make it 'true' when we will be ready -->
+							<failurePriority>2</failurePriority>
+							<rulesets>
+								<!-- go back on one dir to parent project -->
+								<ruleset>/cayenne-pmd.xml</ruleset>
+							</rulesets>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>process-sources</phase>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>org.apache.cayenne.build-tools</groupId>
+								<artifactId>cayenne-checkers</artifactId>
+								<version>${project.version}</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>clirr-maven-plugin</artifactId>
+						<version>2.8</version>
+						<configuration>
+							<comparisonVersion>3.1RC1</comparisonVersion>
+							<minSeverity>info</minSeverity>
+							<logResults>true</logResults>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>jdepend-maven-plugin</artifactId>
+						<version>2.0</version>
+					</plugin>
+				</plugins>
+			</build>
 
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <argLine>
-                                -DcayenneTestConnection=${cayenneTestConnection} -Djava.net.preferIPv4Stack=true -Dcayenne.runtime.db.collation.assume.ci=${collationCi} ${surefireArgLine}
-                            </argLine>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-report-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>report-only</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>${jacoco.version}</version>
-                        <executions>
-                            <!--
-                                Prepares the property pointing to the JaCoCo runtime agent which
-                                is passed as VM argument when Maven the Surefire plugin is executed.
-                            -->
-                            <execution>
-                                <id>pre-unit-test</id>
-                                <goals>
-                                    <goal>prepare-agent</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- Sets the path to the file which contains the execution data. -->
-                                    <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
-                                    <!--
-                                        Sets the name of the property containing the settings
-                                        for JaCoCo runtime agent.
-                                    -->
-                                    <propertyName>surefireArgLine</propertyName>
-                                </configuration>
-                            </execution>
-                            <!--
-                                Ensures that the code coverage report for unit tests is created after
-                                unit tests have been run.
-                            -->
-                            <execution>
-                                <id>post-unit-test</id>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>report</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- Sets the path to the file which contains the execution data. -->
-                                    <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
-                                    <!-- Sets the output directory for the code coverage report. -->
-                                    <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+			<reporting>
+				<plugins>
+					<plugin>
+						<artifactId>maven-checkstyle-plugin</artifactId>
+						<inherited>true</inherited>
+					</plugin>
+					<plugin>
+						<artifactId>maven-pmd-plugin</artifactId>
+						<inherited>true</inherited>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>findbugs-maven-plugin</artifactId>
+						<configuration>
+							<effort>Max</effort>
+							<threshold>Low</threshold>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>jdepend-maven-plugin</artifactId>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>clirr-maven-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</reporting>
+		</profile>
+
+
+		<profile>
+			<id>code-coverage</id>
+			<properties>
+				<jacoco.it.execution.data.file>${project.build.directory}/coverage-reports/jacoco-it.exec</jacoco.it.execution.data.file>
+				<jacoco.ut.execution.data.file>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco.ut.execution.data.file>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>0.8.0</version>
+						<executions>
+							<execution>
+								<id>pre-unit-test</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+								<configuration>
+									<destFile>${jacoco.ut.execution.data.file}</destFile>
+									<propertyName>surefireArgLine</propertyName>
+								</configuration>
+							</execution>
+							<execution>
+								<id>post-unit-test</id>
+								<phase>test</phase>
+								<goals>
+									<goal>report</goal>
+								</goals>
+								<configuration>
+									<dataFile>${jacoco.ut.execution.data.file}</dataFile>
+									<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+								</configuration>
+							</execution>
+
+							<execution>
+								<id>pre-integration-test</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+								<configuration>
+									<destFile>${jacoco.it.execution.data.file}</destFile>
+									<propertyName>failsafeArgLine</propertyName>
+								</configuration>
+							</execution>
+
+							<execution>
+								<id>post-integration-test</id>
+								<phase>post-integration-test</phase>
+								<goals>
+									<goal>report</goal>
+								</goals>
+								<configuration>
+									<dataFile>${jacoco.it.execution.data.file}</dataFile>
+									<outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<argLine>${surefireArgLine}</argLine>
+						</configuration>
+					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>integration-tests</id>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+								<configuration>
+									<argLine>${failsafeArgLine}</argLine>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
 
 		<!-- Optional profile used to sign artifacts -->
 		<profile>

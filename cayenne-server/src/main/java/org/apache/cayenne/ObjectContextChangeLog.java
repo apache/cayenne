@@ -162,8 +162,9 @@ class ObjectContextChangeLog {
         private int size;
 
         SubList(List<GraphDiff> list, int fromIndex, int toIndex) {
-            if (fromIndex < 0)
+            if (fromIndex < 0) {
                 throw new IndexOutOfBoundsException("fromIndex = " + fromIndex);
+            }
             if (toIndex > list.size()) {
                 throw new IndexOutOfBoundsException("toIndex = " + toIndex);
             }

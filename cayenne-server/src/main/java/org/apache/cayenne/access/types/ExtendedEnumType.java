@@ -49,8 +49,9 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType<T> {
     private Map<Object, Enum<T>> enumerationMappings = new HashMap<>();
 
     public ExtendedEnumType(Class<T> enumerationClass) {
-        if (enumerationClass == null)
+        if (enumerationClass == null) {
             throw new IllegalArgumentException("Null ExtendedEnumType class");
+        }
 
         this.enumerationClass = enumerationClass;
 
@@ -117,8 +118,9 @@ public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType<T> {
     private void register(Enum<T> enumeration, Object databaseValue) {
         // Check for duplicates.
         if (enumerationMappings.containsKey(databaseValue)
-                || enumerationMappings.containsValue(enumeration))
+                || enumerationMappings.containsValue(enumeration)) {
             throw new CayenneRuntimeException("Enumerations/values may not be duplicated.");
+        }
 
         // Store by database value/enum because we have to lookup by db value later.
         enumerationMappings.put(databaseValue, enumeration);

@@ -109,8 +109,9 @@ public class DbKeyGenerator implements CayenneMapEntry, XMLSerializable, Seriali
         if (this.generatorType != null) {
             this.generatorType = this.generatorType.trim().toUpperCase();
             if (!(ORACLE_TYPE.equals(this.generatorType)
-                    || NAMED_SEQUENCE_TABLE_TYPE.equals(this.generatorType)))
+                    || NAMED_SEQUENCE_TABLE_TYPE.equals(this.generatorType))) {
                 this.generatorType = null;
+            }
         }
     }
 
@@ -133,8 +134,9 @@ public class DbKeyGenerator implements CayenneMapEntry, XMLSerializable, Seriali
         this.generatorName = generatorName;
         if (this.generatorName != null) {
             this.generatorName = this.generatorName.trim();
-            if (this.generatorName.length() == 0)
+            if (this.generatorName.length() == 0) {
                 this.generatorName = null;
+            }
         }
     }
 

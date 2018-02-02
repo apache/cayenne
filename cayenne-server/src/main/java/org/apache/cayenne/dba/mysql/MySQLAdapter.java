@@ -197,8 +197,8 @@ public class MySQLAdapter extends JdbcAdapter {
 		else if (typeName != null && typeName.endsWith(" unsigned")) {
 			// per
 			// http://dev.mysql.com/doc/refman/5.0/en/connector-j-reference-type-conversions.html
-			if (typeName.equals("int unsigned") || typeName.equals("integer unsigned")
-					|| typeName.equals("mediumint unsigned")) {
+			if ("int unsigned".equals(typeName) || "integer unsigned".equals(typeName)
+					|| "mediumint unsigned".equals(typeName)) {
 				type = Types.BIGINT;
 			}
 			// BIGINT UNSIGNED maps to BigInteger according to MySQL docs, but
@@ -288,10 +288,11 @@ public class MySQLAdapter extends JdbcAdapter {
             sqlBuffer.append(", PRIMARY KEY (");
             boolean firstPk = true;
             while (pkit.hasNext()) {
-                if (firstPk)
-                    firstPk = false;
-                else
-                    sqlBuffer.append(", ");
+                if (firstPk) {
+					firstPk = false;
+				} else {
+					sqlBuffer.append(", ");
+				}
 
                 DbAttribute at = pkit.next();
                 sqlBuffer.append(quotingStrategy.quotedName(at));

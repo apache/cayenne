@@ -20,6 +20,7 @@
 package org.apache.cayenne.conn;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.PasswordEncoding;
@@ -38,7 +39,7 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 
 	private static final long serialVersionUID = 3748394113864532902L;
 
-	private static Logger logger = LoggerFactory.getLogger(DataSourceInfo.class);
+	private static final Logger logger = LoggerFactory.getLogger(DataSourceInfo.class);
 
 	public static final String PASSWORD_LOCATION_CLASSPATH = "classpath";
 	public static final String PASSWORD_LOCATION_EXECUTABLE = "executable";
@@ -130,6 +131,15 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 		}
 
 		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(userName, password, jdbcDriver,
+				dataSourceUrl, adapterClassName, minConnections,
+				maxConnections, passwordEncoderClass, passwordEncoderKey,
+				passwordLocation, passwordSourceFilename, passwordSourceModel,
+				passwordSourceUrl);
 	}
 
 	/**
@@ -268,10 +278,11 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 	 *            the passwordEncoderClass to set
 	 */
 	public void setPasswordEncoderClass(String passwordEncoderClass) {
-		if (passwordEncoderClass == null)
+		if (passwordEncoderClass == null) {
 			this.passwordEncoderClass = PasswordEncoding.standardEncoders[0];
-		else
+		} else {
 			this.passwordEncoderClass = passwordEncoderClass;
+		}
 	}
 
 	/**
@@ -342,26 +353,28 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 	}
 
 	public String getPasswordSource() {
-		if (getPasswordLocation().equals(PASSWORD_LOCATION_CLASSPATH))
+		if (getPasswordLocation().equals(PASSWORD_LOCATION_CLASSPATH)) {
 			return getPasswordSourceFilename();
-		else if (getPasswordLocation().equals(PASSWORD_LOCATION_EXECUTABLE))
+		} else if (getPasswordLocation().equals(PASSWORD_LOCATION_EXECUTABLE)) {
 			return getPasswordSourceExecutable();
-		else if (getPasswordLocation().equals(PASSWORD_LOCATION_MODEL))
+		} else if (getPasswordLocation().equals(PASSWORD_LOCATION_MODEL)) {
 			return getPasswordSourceModel();
-		else if (getPasswordLocation().equals(PASSWORD_LOCATION_URL))
+		} else if (getPasswordLocation().equals(PASSWORD_LOCATION_URL)) {
 			return getPasswordSourceUrl();
+		}
 
 		throw new RuntimeException("Invalid password source detected");
 	}
 
 	public void setPasswordSource(String passwordSource) {
 		// The location for the model is omitted since it cannot change
-		if (getPasswordLocation().equals(PASSWORD_LOCATION_CLASSPATH))
+		if (getPasswordLocation().equals(PASSWORD_LOCATION_CLASSPATH)) {
 			setPasswordSourceFilename(passwordSource);
-		else if (getPasswordLocation().equals(PASSWORD_LOCATION_EXECUTABLE))
+		} else if (getPasswordLocation().equals(PASSWORD_LOCATION_EXECUTABLE)) {
 			setPasswordSourceExecutable(passwordSource);
-		else if (getPasswordLocation().equals(PASSWORD_LOCATION_URL))
+		} else if (getPasswordLocation().equals(PASSWORD_LOCATION_URL)) {
 			setPasswordSourceUrl(passwordSource);
+		}
 	}
 
 	/**
@@ -376,10 +389,11 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 	 *            the passwordLocation to set
 	 */
 	public void setPasswordLocation(String passwordLocation) {
-		if (passwordLocation == null)
+		if (passwordLocation == null) {
 			this.passwordLocation = DataSourceInfo.PASSWORD_LOCATION_MODEL;
-		else
+		} else {
 			this.passwordLocation = passwordLocation;
+		}
 	}
 
 	@Override

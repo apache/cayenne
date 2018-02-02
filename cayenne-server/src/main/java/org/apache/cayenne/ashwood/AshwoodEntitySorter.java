@@ -265,9 +265,10 @@ public class AshwoodEntitySorter implements EntitySorter {
 
 		while (sorter.hasNext()) {
 			Persistent o = sorter.next();
-			if (o == null)
+			if (o == null) {
 				throw new CayenneRuntimeException("Sorting objects for %s failed. Cycles found."
 						, objEntity.getClassName());
+			}
 			sorted.add(o);
 		}
 
@@ -340,8 +341,9 @@ public class AshwoodEntitySorter implements EntitySorter {
 
 		@Override
 		public int compare(ObjEntity o1, ObjEntity o2) {
-			if (o1 == o2)
+			if (o1 == o2) {
 				return 0;
+			}
 			DbEntity t1 = o1.getDbEntity();
 			DbEntity t2 = o2.getDbEntity();
 			return dbEntityComparator.compare(t1, t2);
@@ -353,12 +355,14 @@ public class AshwoodEntitySorter implements EntitySorter {
 		@Override
 		public int compare(DbEntity t1, DbEntity t2) {
 
-			if (t1 == t2)
+			if (t1 == t2) {
 				return 0;
-			if (t1 == null)
+			}
+			if (t1 == null) {
 				return -1;
-			else if (t2 == null)
+			} else if (t2 == null) {
 				return 1;
+			}
 			else {
 				ComponentRecord rec1 = components.get(t1);
 				ComponentRecord rec2 = components.get(t2);
