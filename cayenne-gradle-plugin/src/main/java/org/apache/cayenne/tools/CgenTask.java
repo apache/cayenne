@@ -137,7 +137,7 @@ public class CgenTask extends BaseCayenneTask {
 
             generator.setLogger(getLogger());
 
-            if(this.force || (getProject().findProperty("force") != null)) {
+            if(this.force || getProject().hasProperty("force")) {
                 generator.setForce(true);
             }
             generator.setTimestamp(dataMapFile.lastModified());
