@@ -109,8 +109,7 @@ public class ExpressionFactory {
 		for (int i = 0; i < allLen; i++) {
 			if (allTypes[i] > max) {
 				max = allTypes[i];
-			}
-			else if (allTypes[i] < min) {
+			} else if (allTypes[i] < min) {
 				min = allTypes[i];
 			}
 		}

@@ -280,8 +280,7 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 	public void setPasswordEncoderClass(String passwordEncoderClass) {
 		if (passwordEncoderClass == null) {
 			this.passwordEncoderClass = PasswordEncoding.standardEncoders[0];
-		}
-		else {
+		} else {
 			this.passwordEncoderClass = passwordEncoderClass;
 		}
 	}
@@ -356,14 +355,11 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 	public String getPasswordSource() {
 		if (getPasswordLocation().equals(PASSWORD_LOCATION_CLASSPATH)) {
 			return getPasswordSourceFilename();
-		}
-		else if (getPasswordLocation().equals(PASSWORD_LOCATION_EXECUTABLE)) {
+		} else if (getPasswordLocation().equals(PASSWORD_LOCATION_EXECUTABLE)) {
 			return getPasswordSourceExecutable();
-		}
-		else if (getPasswordLocation().equals(PASSWORD_LOCATION_MODEL)) {
+		} else if (getPasswordLocation().equals(PASSWORD_LOCATION_MODEL)) {
 			return getPasswordSourceModel();
-		}
-		else if (getPasswordLocation().equals(PASSWORD_LOCATION_URL)) {
+		} else if (getPasswordLocation().equals(PASSWORD_LOCATION_URL)) {
 			return getPasswordSourceUrl();
 		}
 
@@ -374,11 +370,9 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 		// The location for the model is omitted since it cannot change
 		if (getPasswordLocation().equals(PASSWORD_LOCATION_CLASSPATH)) {
 			setPasswordSourceFilename(passwordSource);
-		}
-		else if (getPasswordLocation().equals(PASSWORD_LOCATION_EXECUTABLE)) {
+		} else if (getPasswordLocation().equals(PASSWORD_LOCATION_EXECUTABLE)) {
 			setPasswordSourceExecutable(passwordSource);
-		}
-		else if (getPasswordLocation().equals(PASSWORD_LOCATION_URL)) {
+		} else if (getPasswordLocation().equals(PASSWORD_LOCATION_URL)) {
 			setPasswordSourceUrl(passwordSource);
 		}
 	}
@@ -397,8 +391,7 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 	public void setPasswordLocation(String passwordLocation) {
 		if (passwordLocation == null) {
 			this.passwordLocation = DataSourceInfo.PASSWORD_LOCATION_MODEL;
-		}
-		else {
+		} else {
 			this.passwordLocation = passwordLocation;
 		}
 	}

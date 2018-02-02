@@ -316,16 +316,14 @@ public class QualifierTranslator extends QueryAssemblerHelper implements Travers
 			case Expression.BETWEEN:
 				if (childIndex == 0) {
 					out.append(" BETWEEN ");
-				}
-				else if (childIndex == 1) {
+				} else if (childIndex == 1) {
 					out.append(" AND ");
 				}
 				break;
 			case Expression.NOT_BETWEEN:
 				if (childIndex == 0) {
 					out.append(" NOT BETWEEN ");
-				}
-				else if (childIndex == 1) {
+				} else if (childIndex == 1) {
 					out.append(" AND ");
 				}
 				break;

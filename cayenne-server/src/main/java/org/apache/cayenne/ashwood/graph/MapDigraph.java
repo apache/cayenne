@@ -132,8 +132,7 @@ public class MapDigraph<E, V> implements Digraph<E, V> {
 		Map<E, V> destination = graph.remove(vertex);
 		if (destination != null) {
 			size -= destination.size();
-		}
-		else {
+		} else {
 			return false;
 		}
 
@@ -188,8 +187,7 @@ public class MapDigraph<E, V> implements Digraph<E, V> {
 		Map<E, V> destinations = graph.remove(vertex);
 		if (destinations != null) {
 			size -= destinations.size();
-		}
-		else {
+		} else {
 			return false;
 		}
 		boolean modified = !destinations.isEmpty();
@@ -240,8 +238,7 @@ public class MapDigraph<E, V> implements Digraph<E, V> {
 		Map<E, V> destinations = graph.get(vertex);
 		if (destinations == null) {
 			return 0;
-		}
-		else {
+		} else {
 			return destinations.size();
 		}
 	}

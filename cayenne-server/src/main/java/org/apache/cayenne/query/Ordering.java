@@ -270,8 +270,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	public void setAscending() {
 		if (sortOrder == null || sortOrder == SortOrder.DESCENDING) {
 			setSortOrder(SortOrder.ASCENDING);
-		}
-		else if (sortOrder == SortOrder.DESCENDING_INSENSITIVE) {
+		} else if (sortOrder == SortOrder.DESCENDING_INSENSITIVE) {
 			setSortOrder(SortOrder.ASCENDING_INSENSITIVE);
 		}
 	}
@@ -285,8 +284,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	public void setDescending() {
 		if (sortOrder == null || sortOrder == SortOrder.ASCENDING) {
 			setSortOrder(SortOrder.DESCENDING);
-		}
-		else if (sortOrder == SortOrder.ASCENDING_INSENSITIVE) {
+		} else if (sortOrder == SortOrder.ASCENDING_INSENSITIVE) {
 			setSortOrder(SortOrder.DESCENDING_INSENSITIVE);
 		}
 	}
@@ -314,8 +312,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	public void setCaseInsensitive() {
 		if (sortOrder == null || sortOrder == SortOrder.ASCENDING) {
 			setSortOrder(SortOrder.ASCENDING_INSENSITIVE);
-		}
-		else if (sortOrder == SortOrder.DESCENDING) {
+		} else if (sortOrder == SortOrder.DESCENDING) {
 			setSortOrder(SortOrder.DESCENDING_INSENSITIVE);
 		}
 	}
@@ -329,8 +326,7 @@ public class Ordering implements Comparator<Object>, Serializable, XMLSerializab
 	public void setCaseSensitive() {
 		if (sortOrder == null || sortOrder == SortOrder.ASCENDING_INSENSITIVE) {
 			setSortOrder(SortOrder.ASCENDING);
-		}
-		else if (sortOrder == SortOrder.DESCENDING_INSENSITIVE) {
+		} else if (sortOrder == SortOrder.DESCENDING_INSENSITIVE) {
 			setSortOrder(SortOrder.DESCENDING);
 		}
 	}

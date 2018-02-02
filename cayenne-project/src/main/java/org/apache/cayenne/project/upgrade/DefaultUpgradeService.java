@@ -227,7 +227,7 @@ public class DefaultUpgradeService implements UpgradeService {
                 resources.add(mapResource);
             }
         } catch (Exception ex) {
-            logger.warn("Message: ", ex);
+            logger.warn("Can't get additional dataMap resources: ", ex);
         }
         return resources;
     }
@@ -240,7 +240,7 @@ public class DefaultUpgradeService implements UpgradeService {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.transform(input, output);
         } catch (Exception ex) {
-            logger.warn("Message: ", ex);
+            logger.warn("Can't save the document: ", ex);
         }
     }
 
@@ -267,7 +267,7 @@ public class DefaultUpgradeService implements UpgradeService {
     }
 
     protected static double decodeVersion(String version) {
-        if (version == null || isBlank(version.trim())) {
+        if (version == null || isBlank(version)) {
             return 0;
         }
 

@@ -196,7 +196,7 @@ public class DefaultDbImportAction implements DbImportAction {
 
     private boolean syncDataMapProperties(DataMap targetDataMap, DbImportConfiguration config) {
         String defaultPackage = config.getDefaultPackage();
-        if (defaultPackage == null || isBlank(defaultPackage.trim())) {
+        if (defaultPackage == null || isBlank(defaultPackage)) {
             return false;
         }
 

@@ -75,7 +75,7 @@ public class UpgradeHandler_V9 implements UpgradeHandler {
                 dataMap.removeChild(reNode);
             }
         } catch (Exception ex) {
-            logger.warn("Message: ", ex);
+            logger.warn("Can't process dataMap DOM: ", ex);
         }
     }
 

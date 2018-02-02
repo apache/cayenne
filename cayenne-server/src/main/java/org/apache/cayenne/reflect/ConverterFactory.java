@@ -63,8 +63,7 @@ public class ConverterFactory {
                 } else if (object instanceof Integer || object instanceof Long || object instanceof Short || object instanceof Byte) {
                 	if (((Number)object).longValue() == 0) {
                         return Boolean.FALSE;
-                    }
-                	else if (((Number)object).longValue() == 1) {
+                    } else if (((Number)object).longValue() == 1) {
                         return Boolean.TRUE;
                     }
                 }

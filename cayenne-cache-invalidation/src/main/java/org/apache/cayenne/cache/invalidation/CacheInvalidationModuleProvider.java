@@ -41,7 +41,6 @@ public class CacheInvalidationModuleProvider implements CayenneServerModuleProvi
         return CacheInvalidationModule.class;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Collection<Class<? extends Module>> overrides() {
         return Collections.singletonList(ServerModule.class);

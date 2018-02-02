@@ -178,8 +178,7 @@ public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 		}
 		if (directDfs == null) {
 			directDfs = new DepthFirstStampSearch<>(filteredDigraph, root);
-		}
-		else {
+		} else {
 			directDfs.reset(root);
 		}
 		int stamp;
@@ -204,8 +203,7 @@ public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 		boolean singleton = true;
 		if (reverseDfs == null) {
 			reverseDfs = new DepthFirstSearch<>(reverseDigraph, root);
-		}
-		else {
+		} else {
 			reverseDfs.reset(root);
 		}
 		while (reverseDfs.hasNext()) {

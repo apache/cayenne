@@ -360,8 +360,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 			}
 			if (t1 == null) {
 				return -1;
-			}
-			else if (t2 == null) {
+			} else if (t2 == null) {
 				return 1;
 			}
 			else {

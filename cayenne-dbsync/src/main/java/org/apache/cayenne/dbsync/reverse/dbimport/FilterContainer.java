@@ -156,7 +156,7 @@ public abstract class FilterContainer {
     }
 
     public void addText(String name) {
-        if (Util.isBlank(name.trim())) {
+        if (Util.isBlank(name)) {
             return;
         }
         setName(name);

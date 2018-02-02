@@ -193,7 +193,7 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
     }
 
     private void createQualifier(String qualifier) {
-        if (isBlank(qualifier.trim())) {
+        if (isBlank(qualifier)) {
             return;
         }
 

@@ -191,10 +191,9 @@ public class QueryDescriptorLoader {
     }
 
     public void setQualifier(String qualifier) {
-        if (qualifier == null || isBlank(qualifier.trim())) {
+        if (qualifier == null || isBlank(qualifier)) {
             this.qualifier = null;
-        }
-        else {
+        } else {
             this.qualifier = ExpressionFactory.exp(qualifier.trim());
         }
     }
@@ -212,7 +211,7 @@ public class QueryDescriptorLoader {
             orderings = new ArrayList<>();
         }
 
-        if (path != null && isBlank(path.trim())) {
+        if (path != null && isBlank(path)) {
             path = null;
         }
         boolean isDescending = "true".equalsIgnoreCase(descending);
@@ -235,7 +234,7 @@ public class QueryDescriptorLoader {
     }
 
     public void addPrefetch(String path) {
-        if (path == null || (path != null && isBlank(path.trim()))) {
+        if (path == null || (path != null && isBlank(path))) {
             // throw??
             return;
         }

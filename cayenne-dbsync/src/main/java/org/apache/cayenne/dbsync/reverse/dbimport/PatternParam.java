@@ -59,7 +59,7 @@ public class PatternParam {
      * Used by Ant task
      */
     public void addText(String pattern) {
-        if (isBlank(pattern.trim())) {
+        if (isBlank(pattern)) {
             return;
         }
 

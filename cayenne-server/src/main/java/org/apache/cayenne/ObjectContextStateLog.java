@@ -41,12 +41,12 @@ class ObjectContextStateLog implements GraphChangeHandler {
     GraphManager graphManager;
 
     ObjectContextStateLog(GraphManager graphManager) {
-        this.dirtyIds = new HashSet<Object>();
+        this.dirtyIds = new HashSet<>();
         this.graphManager = graphManager;
     }
 
     void clear() {
-        dirtyIds = new HashSet<Object>();
+        dirtyIds = new HashSet<>();
     }
 
     /**

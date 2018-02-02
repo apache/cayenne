@@ -290,8 +290,7 @@ public class MySQLAdapter extends JdbcAdapter {
             while (pkit.hasNext()) {
                 if (firstPk) {
 					firstPk = false;
-				}
-                else {
+				} else {
 					sqlBuffer.append(", ");
 				}
 

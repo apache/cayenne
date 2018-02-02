@@ -189,8 +189,7 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
 
         if (p instanceof ToManyProperty) {
             ((ToManyProperty) p).addTargetDirectly(source, target);
-        }
-        else {
+        } else {
             p.writePropertyDirectly(source, null, target);
         }
     }

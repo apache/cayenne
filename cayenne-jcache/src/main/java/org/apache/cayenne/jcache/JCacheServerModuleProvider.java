@@ -41,7 +41,6 @@ public class JCacheServerModuleProvider implements CayenneServerModuleProvider {
         return JCacheModule.class;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Collection<Class<? extends Module>> overrides() {
         return Collections.singletonList(ServerModule.class);
