@@ -38,7 +38,7 @@ import static org.apache.cayenne.util.Util.isBlank;
  */
 public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
 
-    private static Logger logger = LoggerFactory.getLogger(ObjEntityHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ObjEntityHandler.class);
 
     private static final String OBJ_ENTITY_TAG = "obj-entity";
     private static final String OBJ_ATTRIBUTE_TAG = "obj-attribute";

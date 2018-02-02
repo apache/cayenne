@@ -143,8 +143,7 @@ public class ROPUtil {
             return (char) (d + '0' - 52);
         } else if (d == 62) {
             return '+';
-        }
-        else {
+        } else {
             return '/';
         }
     }
