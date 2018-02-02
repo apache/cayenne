@@ -26,17 +26,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>cayenne-eventbridges-parent</artifactId>
-    <name>cayenne-eventbridges-parent: Event bridges implementations parent</name>
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>cayenne-jgroups</module>
-        <module>cayenne-jms</module>
-        <module>cayenne-xmpp</module>
-    </modules>
+    <artifactId>cayenne-jgroups</artifactId>
+    <name>cayenne-jgroups: Cayenne JGroups Event bridge</name>
+    <packaging>jar</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>jgroups</groupId>
+            <artifactId>jgroups-all</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.cayenne</groupId>
             <artifactId>cayenne-server</artifactId>
