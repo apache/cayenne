@@ -127,7 +127,12 @@ public class CayennePostProcessor extends Postprocessor {
         Object docname = ((Map)document.getOptions().get(Options.ATTRIBUTES)).get("docname");
 
         Path path = FileSystems.getDefault().getPath((String) destDir, docname + ".toc.html");
-        try(BufferedWriter br = newBufferedWriter(path, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
+        StandardOpenOption[] options = {
+                StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.WRITE
+        };
+        try(BufferedWriter br = newBufferedWriter(path, options)) {
             br.write(toc, 0, toc.length());
             br.flush();
         } catch (IOException ex) {
