@@ -94,9 +94,20 @@ context.commitChanges();
 #### Select Objects
 
 ```java
+// Single object select with order
+Artist artist = ObjectSelect.query(Artist.class)
+        .orderBy(Artist.NAME.asc())
+        .selectFirst(context);
+
+// Select with join
 List<Painting> paintings = ObjectSelect.query(Painting.class)
         .where(Painting.ARTIST.dot(Artist.DATE_OF_BIRTH).lt(LocalDate.of(1900, 1, 1)))
         .select(context);
+
+// Select count
+long count = ObjectSelect.query(Painting)
+        .where(Painting.ESTINATED_PRICE.gt(10000))
+        .selectCount(context);
 ```
 
 Documentation
