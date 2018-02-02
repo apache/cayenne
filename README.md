@@ -105,8 +105,8 @@ List<Painting> paintings = ObjectSelect.query(Painting.class)
         .select(context);
 
 // Select count
-long count = ObjectSelect.query(Painting)
-        .where(Painting.ESTINATED_PRICE.gt(10000))
+long count = ObjectSelect.query(Painting.class)
+        .where(Painting.ESTIMATED_PRICE.gt(10000))
         .selectCount(context);
 ```
 
