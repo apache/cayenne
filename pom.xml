@@ -70,7 +70,9 @@
 		<module>cayenne-web</module>
 		<module>cayenne-osgi</module>
 		<module>cayenne-rop-server</module>
-		<module>eventbridges</module>
+		<module>cayenne-jgroups</module>
+		<module>cayenne-jms</module>
+		<module>cayenne-xmpp</module>
 		<module>itests</module>
 		<module>maven-plugins</module>
 		<module>modeler</module>
