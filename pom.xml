@@ -75,7 +75,6 @@
 		<module>cayenne-osgi</module>
 		<module>cayenne-rop-server</module>
 		<module>eventbridges</module>
-		<module>itests</module>
 		<module>maven-plugins</module>
 		<module>modeler</module>
 		<module>tutorials</module>

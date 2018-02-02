@@ -18,11 +18,11 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.apache.cayenne.itests</groupId>
-		<artifactId>cayenne-itests-parent</artifactId>
-		<version>4.1.M2-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <artifactId>cayenne-maven-plugins-parent</artifactId>
+        <groupId>org.apache.cayenne.plugins</groupId>
+        <version>4.1.M2-SNAPSHOT</version>
+    </parent>
 
 	<description>Integration Tests - Cayenne Tools</description>
 	<artifactId>cayenne-tools-itest</artifactId>
