@@ -73,7 +73,6 @@
 		<module>cayenne-jgroups</module>
 		<module>cayenne-jms</module>
 		<module>cayenne-xmpp</module>
-		<module>itests</module>
 		<module>maven-plugins</module>
 		<module>modeler</module>
 		<module>tutorials</module>

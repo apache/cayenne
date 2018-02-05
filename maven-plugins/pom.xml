@@ -25,6 +25,7 @@
 		<module>cayenne-maven-plugin</module>
 		<module>maven-cayenne-plugin</module>
 		<module>cayenne-modeler-maven-plugin</module>
+		<module>cayenne-tools-itest</module>
 	</modules>
 
 	<dependencyManagement>
@@ -110,6 +111,13 @@
 						<phase>process-classes</phase>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
