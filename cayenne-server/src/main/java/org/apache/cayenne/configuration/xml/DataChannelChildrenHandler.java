@@ -40,6 +40,7 @@ final class DataChannelChildrenHandler extends NamespaceAwareNestedTagHandler {
     static final String NODE_TAG = "node";
     static final String PROPERTY_TAG = "property";
     static final String DATA_MAP_TAG = "data-map";
+    static final String DOMAIN_TAG = "domain";
 
 
     private XMLDataChannelDescriptorLoader xmlDataChannelDescriptorLoader;
@@ -66,6 +67,9 @@ final class DataChannelChildrenHandler extends NamespaceAwareNestedTagHandler {
 
             case NODE_TAG:
                 addNode(attributes);
+                return true;
+
+            case DOMAIN_TAG:
                 return true;
         }
 
