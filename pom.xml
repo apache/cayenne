@@ -967,14 +967,14 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-checkstyle-plugin</artifactId>
 						<configuration>
-
 							<skip>false</skip>
 							<consoleOutput>false</consoleOutput>
 							<enableRulesSummary>false</enableRulesSummary>
 							<failOnViolation>false</failOnViolation>
 							<!-- TODO make it 'true' when we will be ready -->
 							<violationSeverity>warning</violationSeverity>
-							<configLocation>/cayenne-checkstyle.xml</configLocation>
+							<configLocation>build-tools/cayenne-checkers/src/main/resources/cayenne-checkstyle.xml</configLocation>
+							<suppressionsLocation>build-tools/cayenne-checkers/src/main/resources/cayenne-checkstyle-suppression.xml</suppressionsLocation>
 						</configuration>
 						<executions>
 							<execution>
@@ -984,13 +984,6 @@
 								</goals>
 							</execution>
 						</executions>
-						<dependencies>
-							<dependency>
-								<groupId>org.apache.cayenne.build-tools</groupId>
-								<artifactId>cayenne-checkers</artifactId>
-								<version>${project.version}</version>
-							</dependency>
-						</dependencies>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -1007,6 +1000,20 @@
 								<!-- go back on one dir to parent project -->
 								<ruleset>/cayenne-pmd.xml</ruleset>
 							</rulesets>
+							<excludes>
+								<exclude>**/ParseException.java</exclude>
+								<exclude>**/Token.java</exclude>
+								<exclude>**/TokenMgrError.java</exclude>
+								<exclude>**/ParseException.java</exclude>
+								<exclude>**/Parser.java.java</exclude>
+								<exclude>**/ParserConstants.java</exclude>
+								<exclude>**/ParserTokenManager.java</exclude>
+								<exclude>**/SimpleCharStream.java</exclude>
+								<exclude>**/TokenMgrError.java</exclude>
+								<exclude>org/apache/cayenne/ejbql/parser/*</exclude>
+								<exclude>org/apache/cayenne/exp/parser/*</exclude>
+								<exclude>org/apache/cayenne/template/parser/*</exclude>
+							</excludes>
 						</configuration>
 						<executions>
 							<execution>
