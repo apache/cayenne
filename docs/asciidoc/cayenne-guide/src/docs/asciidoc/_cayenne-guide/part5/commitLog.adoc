@@ -45,8 +45,8 @@ compile 'org.apache.cayenne:cayenne-commitlog:{version}'
 
 In order to use `commitlog` module you need to perform three steps:
 
-1) Mark all entities which changes you are interested in with `@org.apache.cayenne.commitlog.CommitLog` annotation
-
+. Mark all entities which changes you are interested in with `@org.apache.cayenne.commitlog.CommitLog` annotation
++
 [source, Java]
 ----
 @CommitLog(ignoredProperties = {"somePrivatePropertyToSkip"})
@@ -55,11 +55,11 @@ public class MyEntity extends _MyEntity {
 }
 ----
 
-2) Implement `CommitLogListener` interface.
-
+. Implement `CommitLogListener` interface.
++
 [source, java]
 ----
- CommitLogListener {
+public class MyCommitLogListener implements CommitLogListener {
     @Override
     public void onPostCommit(ObjectContext originatingContext, ChangeMap changes) {
         // ChangeMap will contain all information about changes happened in performed commit
@@ -72,8 +72,8 @@ public class MyEntity extends _MyEntity {
 }
 ----
 
-3) Inject your listener into `ServerRuntime`
-
+. Register your listener implementation.
++
 [source, java]
 ----
 ServerRuntime.builder()
@@ -81,4 +81,6 @@ ServerRuntime.builder()
                 .addListener(MyCommitLogListener.class)
                 .module())
 ----
++
+NOTE: You can use several listeners, but they all will get same changes.
 
