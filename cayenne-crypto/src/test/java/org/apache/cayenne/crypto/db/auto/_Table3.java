@@ -31,7 +31,7 @@ public abstract class _Table3 extends BaseDataObject {
 
     public String getCryptoString() {
         beforePropertyRead("cryptoString");
-        return cryptoString;
+        return this.cryptoString;
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class _Table3 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(cryptoString);
+        out.writeObject(this.cryptoString);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        cryptoString = (String)in.readObject();
+        this.cryptoString = (String)in.readObject();
     }
 
 }

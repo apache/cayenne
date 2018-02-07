@@ -89,7 +89,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
     public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = Property.create("${rel.Name}", ${stringUtils.stripGeneric($type)}.class);
 #end
 #else
-    #set( $type = "$importUtils.formatJavaType(${rel.TargetEntity.ClassName})" )
+    #set( $type = "$importUtils.formatJavaType(${rel.TargetEntity.ClientClassName})" )
     public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = Property.create("${rel.Name}", ${stringUtils.stripGeneric($type)}.class);
 #end
 #end
@@ -112,44 +112,43 @@ public abstract class ${superClassName} extends ${baseClassName} {
 
 ## Create attribute set/get methods
 #foreach( $attr in ${object.DeclaredAttributes} )
+#set( $attrName = $stringUtils.formatVariableName(${attr.Name}))
 #if ( $importUtils.isBoolean(${attr.Type}) )
     public boolean is${stringUtils.capitalized($attr.Name)}() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${attr.Name}", false);
         }
 
-        return ${attr.Name};
+        return $attrName;
     }
+
 #else 
     public $importUtils.formatJavaType(${attr.Type}) get${stringUtils.capitalized($attr.Name)}() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${attr.Name}", false);
         }
 
-        return ${attr.Name};
+        return $attrName;
     }
+
 #end
 #if ("true" != "${object.isReadOnly()}")
-    public void set${stringUtils.capitalized($attr.Name)}($importUtils.formatJavaType(${attr.Type}) $stringUtils.formatVariableName(${attr.Name})) {
+    public void set${stringUtils.capitalized($attr.Name)}($importUtils.formatJavaType(${attr.Type}) $attrName) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${attr.Name}", false);
+            objectContext.propertyChanged(this, "${attr.Name}", this.$attrName, $attrName);
         }
 
-        Object oldValue = this.${stringUtils.formatVariableName($attr.Name)};
-        // notify objectContext about simple property change
-        if(objectContext != null) {
-            objectContext.propertyChanged(this, "${attr.Name}", oldValue, $stringUtils.formatVariableName(${attr.Name}));
-        }
-        
-        this.${stringUtils.formatVariableName($attr.Name)} = ${stringUtils.formatVariableName($attr.Name)};
+        this.$attrName = $attrName;
     }
-#end
 
+#end
 #end
 ##
 ##
 ## Create list add/remove/get methods
 #foreach( $rel in ${object.DeclaredRelationships} )
+#set( $relName = $stringUtils.formatVariableName(${rel.Name}))
 #if( $rel.ToMany )
 #if ( ${rel.CollectionType} == "java.util.Map")
     public $importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($entityUtils.getMapKeyType($rel)), $importUtils.formatJavaType($rel.TargetEntity.ClientClassName)> get${stringUtils.capitalized($rel.Name)}() {
@@ -158,87 +157,87 @@ public abstract class ${superClassName} extends ${baseClassName} {
 #end
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
-        } else if (this.$rel.Name == null) {
+        } else if (this.$relName == null) {
 #if ( ${rel.CollectionType} == "java.util.Map")
         	throw new RuntimeException("Map relationships cannot be accessed for transient objects");
 #else
-        	this.$rel.Name = new PersistentObjectList(this, "${rel.Name}");
+        	this.$relName = new PersistentObjectList(this, "${rel.Name}");
 #end
 		}
 
-        return ${rel.Name};
+        return $relName;
     }
+
 #if ( ! $rel.ReadOnly )
 #if ( ${rel.CollectionType} == "java.util.Map")
 	public void addTo${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
-        } else if (this.$rel.Name == null) {
+        } else if (this.$relName == null) {
         	throw new RuntimeException("Map relationships cannot be accessed for transient objects");        
         }
 
-        this.${rel.Name}.put(getMapKey("${rel.Name}", object), object);
+        this.${relName}.put(getMapKey("${rel.Name}", object), object);
     }
+
     public void removeFrom${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
-        } else if (this.$rel.Name == null) {
+        } else if (this.$relName == null) {
         	throw new RuntimeException("Map relationships cannot be accessed for transient objects");        
         }
 
-        this.${rel.Name}.remove(getMapKey("${rel.Name}", object));
+        this.${relName}.remove(getMapKey("${rel.Name}", object));
     }
+
 #else
     public void addTo${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
-        } else if (this.$rel.Name == null) {
-        	this.$rel.Name = new PersistentObjectList(this, "${rel.Name}");
+        } else if (this.$relName == null) {
+        	this.$relName = new PersistentObjectList(this, "${rel.Name}");
 		}
 
-        this.${rel.Name}.add(object);
+        this.${relName}.add(object);
     }
+
     public void removeFrom${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
-        } else if (this.$rel.Name == null) {
-        	this.$rel.Name = new PersistentObjectList(this, "${rel.Name}");
+        } else if (this.$relName == null) {
+        	this.$relName = new PersistentObjectList(this, "${rel.Name}");
 		}
 
-        this.${rel.Name}.remove(object);
+        this.${relName}.remove(object);
     }
+
 #end
 #end
 #else
     public $importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) get${stringUtils.capitalized($rel.Name)}() {
         if(objectContext != null) {
-            objectContext.prepareForAccess(this, "${rel.Name}", true);
-        } else if (this.$rel.Name == null) {
-        	this.$rel.Name = new PersistentObjectHolder(this, "$rel.Name");
+            objectContext.prepareForAccess(this, "$rel.Name", true);
+        } else if (this.$relName == null) {
+        	this.$relName = new PersistentObjectHolder(this, "$rel.Name");
 		}
 
-        return ($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName})) ${rel.Name}.getValue();
+        return ($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName})) ${relName}.getValue();
     }
+
 #if ( !${object.isReadOnly()} && !$rel.ReadOnly )
-    public void set${stringUtils.capitalized($rel.Name)}(${importUtils.formatJavaType($rel.TargetEntity.ClientClassName)} $stringUtils.formatVariableName(${rel.Name})) {
+    public void set${stringUtils.capitalized($rel.Name)}(${importUtils.formatJavaType($rel.TargetEntity.ClientClassName)} $relName) {
         if(objectContext != null) {
-            objectContext.prepareForAccess(this, "${rel.Name}", true);
-        } else if (this.$rel.Name == null) {
-        	this.$rel.Name = new PersistentObjectHolder(this, "$rel.Name");
+            objectContext.prepareForAccess(this, "$rel.Name", true);
+            objectContext.propertyChanged(this, "$rel.Name", this.${relName}.getValueDirectly(), $relName);
+        } else if (this.$relName == null) {
+        	this.$relName = new PersistentObjectHolder(this, "$rel.Name");
 		}
 
-        // note how we notify ObjectContext of change BEFORE the object is actually
-        // changed... this is needed to take a valid current snapshot
-        Object oldValue = this.${rel.Name}.getValueDirectly();
-        if (objectContext != null) {
-        	objectContext.propertyChanged(this, "$rel.Name", oldValue, $stringUtils.formatVariableName(${rel.Name}));
-        }
-        
-        this.${stringUtils.formatVariableName($rel.Name)}.setValue(${stringUtils.formatVariableName($rel.Name)});
+        this.${relName}.setValue($relName);
     }
-#end
-#end
 
+#end
+#end
 #end
 ##callback methods
 #foreach( $cbname in ${entityUtils.callbackNames})

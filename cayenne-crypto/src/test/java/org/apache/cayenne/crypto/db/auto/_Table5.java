@@ -23,9 +23,9 @@ public abstract class _Table5 extends BaseDataObject {
     public static final Property<Integer> CRYPTO_INT3 = Property.create("cryptoInt3", Integer.class);
     public static final Property<Integer> CRYPTO_INT4 = Property.create("cryptoInt4", Integer.class);
 
-    protected int cryptoInt1;
-    protected int cryptoInt3;
-    protected int cryptoInt4;
+    protected Integer cryptoInt1;
+    protected Integer cryptoInt3;
+    protected Integer cryptoInt4;
 
 
     public void setCryptoInt1(int cryptoInt1) {
@@ -35,7 +35,10 @@ public abstract class _Table5 extends BaseDataObject {
 
     public int getCryptoInt1() {
         beforePropertyRead("cryptoInt1");
-        return cryptoInt1;
+        if(this.cryptoInt1 == null) {
+            return 0;
+        }
+        return this.cryptoInt1;
     }
 
     public void setCryptoInt3(int cryptoInt3) {
@@ -45,7 +48,10 @@ public abstract class _Table5 extends BaseDataObject {
 
     public int getCryptoInt3() {
         beforePropertyRead("cryptoInt3");
-        return cryptoInt3;
+        if(this.cryptoInt3 == null) {
+            return 0;
+        }
+        return this.cryptoInt3;
     }
 
     public void setCryptoInt4(int cryptoInt4) {
@@ -55,7 +61,10 @@ public abstract class _Table5 extends BaseDataObject {
 
     public int getCryptoInt4() {
         beforePropertyRead("cryptoInt4");
-        return cryptoInt4;
+        if(this.cryptoInt4 == null) {
+            return 0;
+        }
+        return this.cryptoInt4;
     }
 
     @Override
@@ -84,13 +93,13 @@ public abstract class _Table5 extends BaseDataObject {
 
         switch (propName) {
             case "cryptoInt1":
-                this.cryptoInt1 = val == null ? 0 : (Integer)val;
+                this.cryptoInt1 = (Integer)val;
                 break;
             case "cryptoInt3":
-                this.cryptoInt3 = val == null ? 0 : (Integer)val;
+                this.cryptoInt3 = (Integer)val;
                 break;
             case "cryptoInt4":
-                this.cryptoInt4 = val == null ? 0 : (Integer)val;
+                this.cryptoInt4 = (Integer)val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);
@@ -108,17 +117,17 @@ public abstract class _Table5 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeInt(cryptoInt1);
-        out.writeInt(cryptoInt3);
-        out.writeInt(cryptoInt4);
+        out.writeObject(this.cryptoInt1);
+        out.writeObject(this.cryptoInt3);
+        out.writeObject(this.cryptoInt4);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        cryptoInt1 = in.readInt();
-        cryptoInt3 = in.readInt();
-        cryptoInt4 = in.readInt();
+        this.cryptoInt1 = (Integer)in.readObject();
+        this.cryptoInt3 = (Integer)in.readObject();
+        this.cryptoInt4 = (Integer)in.readObject();
     }
 
 }

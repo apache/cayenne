@@ -88,6 +88,7 @@
 					<map>${project.basedir}/src/test/resources/datamap.map.xml</map>
 					<destDir>${project.basedir}/src/test/java</destDir>
 					<superPkg>org.apache.cayenne.crypto.db.auto</superPkg>
+					<force>true</force>
 				</configuration>
 				<executions>
 					<execution>

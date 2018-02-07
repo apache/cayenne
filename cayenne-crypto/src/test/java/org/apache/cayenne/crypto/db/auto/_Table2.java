@@ -33,7 +33,7 @@ public abstract class _Table2 extends BaseDataObject {
 
     public byte[] getCryptoBytes() {
         beforePropertyRead("cryptoBytes");
-        return cryptoBytes;
+        return this.cryptoBytes;
     }
 
     public void setPlainBytes(byte[] plainBytes) {
@@ -43,7 +43,7 @@ public abstract class _Table2 extends BaseDataObject {
 
     public byte[] getPlainBytes() {
         beforePropertyRead("plainBytes");
-        return plainBytes;
+        return this.plainBytes;
     }
 
     @Override
@@ -91,15 +91,15 @@ public abstract class _Table2 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(cryptoBytes);
-        out.writeObject(plainBytes);
+        out.writeObject(this.cryptoBytes);
+        out.writeObject(this.plainBytes);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        cryptoBytes = (byte[])in.readObject();
-        plainBytes = (byte[])in.readObject();
+        this.cryptoBytes = (byte[])in.readObject();
+        this.plainBytes = (byte[])in.readObject();
     }
 
 }

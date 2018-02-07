@@ -47,7 +47,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
             objectContext.prepareForAccess(this, "dateAttribute", false);
             objectContext.propertyChanged(this, "dateAttribute", this.dateAttribute, dateAttribute);
         }
-        
+
         this.dateAttribute = dateAttribute;
     }
 
@@ -64,7 +64,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
             objectContext.prepareForAccess(this, "globalAttribute", false);
             objectContext.propertyChanged(this, "globalAttribute", this.globalAttribute, globalAttribute);
         }
-        
+
         this.globalAttribute = globalAttribute;
     }
 
@@ -81,7 +81,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
             objectContext.prepareForAccess(this, "oldDateAttribute", false);
             objectContext.propertyChanged(this, "oldDateAttribute", this.oldDateAttribute, oldDateAttribute);
         }
-        
+
         this.oldDateAttribute = oldDateAttribute;
     }
 
@@ -98,7 +98,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
             objectContext.prepareForAccess(this, "serverAttribute", false);
             objectContext.propertyChanged(this, "serverAttribute", this.serverAttribute, serverAttribute);
         }
-        
+
         this.serverAttribute = serverAttribute;
     }
 
@@ -115,7 +115,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
             objectContext.prepareForAccess(this, "timeAttribute", false);
             objectContext.propertyChanged(this, "timeAttribute", this.timeAttribute, timeAttribute);
         }
-        
+
         this.timeAttribute = timeAttribute;
     }
 
@@ -132,7 +132,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
             objectContext.prepareForAccess(this, "timestampAttribute", false);
             objectContext.propertyChanged(this, "timestampAttribute", this.timestampAttribute, timestampAttribute);
         }
-        
+
         this.timestampAttribute = timestampAttribute;
     }
 
@@ -165,4 +165,5 @@ public abstract class _ClientMtTable1 extends PersistentObject {
 
         this.table2Array.remove(object);
     }
+
 }

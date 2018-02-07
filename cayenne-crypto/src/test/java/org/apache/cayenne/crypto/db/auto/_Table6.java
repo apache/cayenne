@@ -22,8 +22,8 @@ public abstract class _Table6 extends BaseDataObject {
     public static final Property<Long> CRYPTO_INT1 = Property.create("cryptoInt1", Long.class);
     public static final Property<Integer> CRYPTO_INT4 = Property.create("cryptoInt4", Integer.class);
 
-    protected long cryptoInt1;
-    protected int cryptoInt4;
+    protected Long cryptoInt1;
+    protected Integer cryptoInt4;
 
 
     public void setCryptoInt1(long cryptoInt1) {
@@ -33,7 +33,10 @@ public abstract class _Table6 extends BaseDataObject {
 
     public long getCryptoInt1() {
         beforePropertyRead("cryptoInt1");
-        return cryptoInt1;
+        if(this.cryptoInt1 == null) {
+            return 0;
+        }
+        return this.cryptoInt1;
     }
 
     public void setCryptoInt4(int cryptoInt4) {
@@ -43,7 +46,10 @@ public abstract class _Table6 extends BaseDataObject {
 
     public int getCryptoInt4() {
         beforePropertyRead("cryptoInt4");
-        return cryptoInt4;
+        if(this.cryptoInt4 == null) {
+            return 0;
+        }
+        return this.cryptoInt4;
     }
 
     @Override
@@ -70,10 +76,10 @@ public abstract class _Table6 extends BaseDataObject {
 
         switch (propName) {
             case "cryptoInt1":
-                this.cryptoInt1 = val == null ? 0 : (Long)val;
+                this.cryptoInt1 = (Long)val;
                 break;
             case "cryptoInt4":
-                this.cryptoInt4 = val == null ? 0 : (Integer)val;
+                this.cryptoInt4 = (Integer)val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);
@@ -91,15 +97,15 @@ public abstract class _Table6 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeLong(cryptoInt1);
-        out.writeInt(cryptoInt4);
+        out.writeObject(this.cryptoInt1);
+        out.writeObject(this.cryptoInt4);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        cryptoInt1 = in.readLong();
-        cryptoInt4 = in.readInt();
+        this.cryptoInt1 = (Long)in.readObject();
+        this.cryptoInt4 = (Integer)in.readObject();
     }
 
 }

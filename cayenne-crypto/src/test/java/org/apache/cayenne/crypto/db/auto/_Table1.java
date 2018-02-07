@@ -24,9 +24,9 @@ public abstract class _Table1 extends BaseDataObject {
     public static final Property<Integer> PLAIN_INT = Property.create("plainInt", Integer.class);
     public static final Property<String> PLAIN_STRING = Property.create("plainString", String.class);
 
-    protected int cryptoInt;
+    protected Integer cryptoInt;
     protected String cryptoString;
-    protected int plainInt;
+    protected Integer plainInt;
     protected String plainString;
 
 
@@ -37,7 +37,10 @@ public abstract class _Table1 extends BaseDataObject {
 
     public int getCryptoInt() {
         beforePropertyRead("cryptoInt");
-        return cryptoInt;
+        if(this.cryptoInt == null) {
+            return 0;
+        }
+        return this.cryptoInt;
     }
 
     public void setCryptoString(String cryptoString) {
@@ -47,7 +50,7 @@ public abstract class _Table1 extends BaseDataObject {
 
     public String getCryptoString() {
         beforePropertyRead("cryptoString");
-        return cryptoString;
+        return this.cryptoString;
     }
 
     public void setPlainInt(int plainInt) {
@@ -57,7 +60,10 @@ public abstract class _Table1 extends BaseDataObject {
 
     public int getPlainInt() {
         beforePropertyRead("plainInt");
-        return plainInt;
+        if(this.plainInt == null) {
+            return 0;
+        }
+        return this.plainInt;
     }
 
     public void setPlainString(String plainString) {
@@ -67,7 +73,7 @@ public abstract class _Table1 extends BaseDataObject {
 
     public String getPlainString() {
         beforePropertyRead("plainString");
-        return plainString;
+        return this.plainString;
     }
 
     @Override
@@ -98,13 +104,13 @@ public abstract class _Table1 extends BaseDataObject {
 
         switch (propName) {
             case "cryptoInt":
-                this.cryptoInt = val == null ? 0 : (Integer)val;
+                this.cryptoInt = (Integer)val;
                 break;
             case "cryptoString":
                 this.cryptoString = (String)val;
                 break;
             case "plainInt":
-                this.plainInt = val == null ? 0 : (Integer)val;
+                this.plainInt = (Integer)val;
                 break;
             case "plainString":
                 this.plainString = (String)val;
@@ -125,19 +131,19 @@ public abstract class _Table1 extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeInt(cryptoInt);
-        out.writeObject(cryptoString);
-        out.writeInt(plainInt);
-        out.writeObject(plainString);
+        out.writeObject(this.cryptoInt);
+        out.writeObject(this.cryptoString);
+        out.writeObject(this.plainInt);
+        out.writeObject(this.plainString);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        cryptoInt = in.readInt();
-        cryptoString = (String)in.readObject();
-        plainInt = in.readInt();
-        plainString = (String)in.readObject();
+        this.cryptoInt = (Integer)in.readObject();
+        this.cryptoString = (String)in.readObject();
+        this.plainInt = (Integer)in.readObject();
+        this.plainString = (String)in.readObject();
     }
 
 }

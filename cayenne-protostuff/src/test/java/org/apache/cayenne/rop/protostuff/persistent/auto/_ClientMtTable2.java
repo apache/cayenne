@@ -32,7 +32,7 @@ public abstract class _ClientMtTable2 extends PersistentObject {
             objectContext.prepareForAccess(this, "globalAttribute", false);
             objectContext.propertyChanged(this, "globalAttribute", this.globalAttribute, globalAttribute);
         }
-        
+
         this.globalAttribute = globalAttribute;
     }
 
@@ -53,7 +53,8 @@ public abstract class _ClientMtTable2 extends PersistentObject {
         } else if (this.table1 == null) {
         	this.table1 = new PersistentObjectHolder(this, "table1");
 		}
-        
+
         this.table1.setValue(table1);
     }
+
 }
