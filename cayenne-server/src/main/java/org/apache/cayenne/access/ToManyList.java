@@ -33,7 +33,7 @@ import org.apache.cayenne.util.PersistentObjectList;
  * resolving the list from DB, are not synchronized. The safest way to implement custom
  * synchronization is to synchronize on parent ObjectStore.
  */
-public class ToManyList extends PersistentObjectList implements Serializable {
+public class ToManyList<E> extends PersistentObjectList<E> implements Serializable {
 
     /**
      * Creates ToManyList.
@@ -45,7 +45,7 @@ public class ToManyList extends PersistentObjectList implements Serializable {
 
         // if source is new, set object list right away
         if (isTransientParent()) {
-            objectList = new LinkedList();
+            objectList = new LinkedList<>();
         }
     }
 
@@ -82,27 +82,27 @@ public class ToManyList extends PersistentObjectList implements Serializable {
     }
 
     @Override
-    protected void postprocessAdd(Collection collection) {
+    protected void postprocessAdd(Collection<? extends E> collection) {
         // no need for this operation for DataObjects...
     }
 
     @Override
-    protected void postprocessRemove(Collection collection) {
+    protected void postprocessRemove(Collection<? extends E> collection) {
         // no need for this operation for DataObjects...
     }
 
     @Override
-    protected void postprocessAdd(Object addedObject) {
+    protected void postprocessAdd(E addedObject) {
         // no need for this operation for DataObjects...
     }
 
     @Override
-    protected void postprocessRemove(Object removedObject) {
+    protected void postprocessRemove(E removedObject) {
         // no need for this operation for DataObjects...
     }
 
     @Override
-    protected void updateReverse(List resolved) {
+    protected void updateReverse(List<E> resolved) {
         // no need for this operation for DataObjects...
     }
 }

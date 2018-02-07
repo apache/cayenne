@@ -32,10 +32,10 @@ import org.apache.cayenne.ValueHolder;
  * 
  * @since 1.2
  */
-public class PersistentObjectHolder extends RelationshipFault implements ValueHolder {
+public class PersistentObjectHolder<E> extends RelationshipFault<E> implements ValueHolder<E> {
 
     protected boolean fault;
-    protected Object value;
+    protected E value;
 
     // exists for the benefit of manual serialization schemes such as the one in Hessian.
     @SuppressWarnings("unused")
@@ -63,7 +63,7 @@ public class PersistentObjectHolder extends RelationshipFault implements ValueHo
     /**
      * Returns a value resolving it via a query on the first call to this method.
      */
-    public Object getValue() throws CayenneRuntimeException {
+    public E getValue() throws CayenneRuntimeException {
 
         if (fault) {
             resolve();
@@ -72,20 +72,20 @@ public class PersistentObjectHolder extends RelationshipFault implements ValueHo
         return value;
     }
     
-    public Object getValueDirectly() throws CayenneRuntimeException {
+    public E getValueDirectly() throws CayenneRuntimeException {
         return value;
     }
 
     /**
      * Sets an object value, marking this ValueHolder as resolved.
      */
-    public synchronized Object setValue(Object value) throws CayenneRuntimeException {
+    public synchronized E setValue(E value) throws CayenneRuntimeException {
 
         if (fault) {
             resolve();
         }
 
-        Object oldValue = setValueDirectly(value);
+        E oldValue = setValueDirectly(value);
         if (oldValue != value && relationshipOwner.getObjectContext() != null) {
             relationshipOwner.getObjectContext().propertyChanged(relationshipOwner, relationshipName, oldValue, value);
     
@@ -99,14 +99,14 @@ public class PersistentObjectHolder extends RelationshipFault implements ValueHo
         return oldValue;
     }
 
-    public Object setValueDirectly(Object value) throws CayenneRuntimeException {
+    public E setValueDirectly(E value) throws CayenneRuntimeException {
 
         // must obtain the value from the local context
         if (value instanceof Persistent) {
-            value = connect((Persistent) value);
+            connect((Persistent) value);
         }
 
-        Object oldValue = this.value;
+        E oldValue = this.value;
 
         this.value = value;
         this.fault = false;
@@ -118,18 +118,16 @@ public class PersistentObjectHolder extends RelationshipFault implements ValueHo
      * Returns an object that should be stored as a value in this ValueHolder, ensuring
      * that it is registered with the same context.
      */
-    protected Object connect(Persistent persistent) {
+    protected void connect(Persistent persistent) {
 
         if (persistent == null) {
-            return null;
+            return;
         }
 
         if (relationshipOwner.getObjectContext() != persistent.getObjectContext()) {
             throw new CayenneRuntimeException("Cannot set object as destination of relationship %s " +
                             "because it is in a different ObjectContext", relationshipName);
         }
-
-        return persistent;
     }
 
     /**
@@ -143,7 +141,7 @@ public class PersistentObjectHolder extends RelationshipFault implements ValueHo
         // TODO: should build a HOLLOW object instead of running a query if relationship
         // is required and thus expected to be not null.
 
-        List objects = resolveFromDB();
+        List<E> objects = resolveFromDB();
 
         if (objects.size() == 0) {
             this.value = null;
@@ -154,8 +152,7 @@ public class PersistentObjectHolder extends RelationshipFault implements ValueHo
         else {
             throw new FaultFailureException(
                     "Expected either no objects or a single object, instead fault query resolved to "
-                            + objects.size()
-                            + " objects.");
+                            + objects.size() + " objects.");
         }
 
         fault = false;

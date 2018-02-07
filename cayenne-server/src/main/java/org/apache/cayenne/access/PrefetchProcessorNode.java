@@ -143,11 +143,12 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
 
     private void connect(Persistent object, List<Persistent> related) {
         if (incoming.getRelationship().isToMany()) {
-            ValueHolder toManyList = (ValueHolder) incoming.readProperty(object);
+            @SuppressWarnings("unchecked")
+            ValueHolder<List<?>> toManyList = (ValueHolder<List<?>>) incoming.readProperty(object);
 
             // TODO, Andrus 11/15/2005 - if list is modified, shouldn't we attempt to
             // merge the changes instead of overwriting?
-            toManyList.setValueDirectly(related != null ? related : new ArrayList(1));
+            toManyList.setValueDirectly(related != null ? related : new ArrayList<>(1));
         } else {
             // this should've been handled elsewhere
             throw new CayenneRuntimeException("To-one relationship wasn't handled properly: %s", incoming.getName());

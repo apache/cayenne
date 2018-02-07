@@ -17,7 +17,7 @@ public abstract class _ClientMtTable2 extends PersistentObject {
     public static final Property<ClientMtTable1> TABLE1 = Property.create("table1", ClientMtTable1.class);
 
     protected String globalAttribute;
-    protected ValueHolder table1;
+    protected ValueHolder<ClientMtTable1> table1;
 
     public String getGlobalAttribute() {
         if(objectContext != null) {
@@ -40,10 +40,10 @@ public abstract class _ClientMtTable2 extends PersistentObject {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "table1", true);
         } else if (this.table1 == null) {
-        	this.table1 = new PersistentObjectHolder(this, "table1");
+        	this.table1 = new PersistentObjectHolder<>(this, "table1");
 		}
 
-        return (ClientMtTable1) table1.getValue();
+        return table1.getValue();
     }
 
     public void setTable1(ClientMtTable1 table1) {
@@ -51,7 +51,7 @@ public abstract class _ClientMtTable2 extends PersistentObject {
             objectContext.prepareForAccess(this, "table1", true);
             objectContext.propertyChanged(this, "table1", this.table1.getValueDirectly(), table1);
         } else if (this.table1 == null) {
-        	this.table1 = new PersistentObjectHolder(this, "table1");
+        	this.table1 = new PersistentObjectHolder<>(this, "table1");
 		}
 
         this.table1.setValue(table1);

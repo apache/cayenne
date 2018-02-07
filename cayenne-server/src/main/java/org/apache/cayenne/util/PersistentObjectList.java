@@ -35,15 +35,14 @@ import org.apache.cayenne.ValueHolder;
  * 
  * @since 1.2
  */
-public class PersistentObjectList extends RelationshipFault implements List, ValueHolder,
-        PersistentObjectCollection {
+public class PersistentObjectList<E> extends RelationshipFault<E> implements List<E>, ValueHolder<List<E>>, PersistentObjectCollection<E> {
 
     // wrapped objects list
-    protected List objectList;
+    protected List<E> objectList;
 
     // track additions/removals in unresolved...
-    protected LinkedList<Object> addedToUnresolved;
-    protected LinkedList<Object> removedFromUnresolved;
+    protected LinkedList<E> addedToUnresolved;
+    protected LinkedList<E> removedFromUnresolved;
 
     // exists for the benefit of custom serialization schemes such as the one in Hessian.
     @SuppressWarnings("unused")
@@ -65,6 +64,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
     /**
      * Returns whether this list is not yet resolved and requires a fetch.
      */
+    @Override
     public boolean isFault() {
 
         if (objectList != null) {
@@ -74,7 +74,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         // object may be in an inconsistent state during construction time
         // synchronize??
         else if (isTransientParent()) {
-            objectList = new LinkedList();
+            objectList = new LinkedList<>();
             return false;
         }
         else {
@@ -85,34 +85,36 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
     /**
      * Turns itself into a fault, thus forcing a refresh on the next access.
      */
+    @Override
     public void invalidate() {
         setObjectList(null);
     }
 
-    public Object setValueDirectly(Object value) throws CayenneRuntimeException {
-        if (value == null || value instanceof List) {
-            Object old = this.objectList;
-            setObjectList((List) value);
-            return old;
-        } else {
-            throw new CayenneRuntimeException("Value must be a list, got: %s", value.getClass().getName());
-        }
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<E> setValueDirectly(List<E> value) throws CayenneRuntimeException {
+        List<E> old = this.objectList;
+        setObjectList(value);
+        return old;
     }
 
-    public Object getValue() throws CayenneRuntimeException {
+    @Override
+    public List<E> getValue() throws CayenneRuntimeException {
         return resolvedObjectList();
     }
 
-    public Object getValueDirectly() throws CayenneRuntimeException {
+    @Override
+    public List<E> getValueDirectly() throws CayenneRuntimeException {
         return objectList;
     }
 
-    public Object setValue(Object value) throws CayenneRuntimeException {
+    @Override
+    public List<E> setValue(List<E> value) throws CayenneRuntimeException {
         resolvedObjectList();
         return setValueDirectly(value);
     }
 
-    public void setObjectList(List objectList) {
+    public void setObjectList(List<E> objectList) {
         this.objectList = objectList;
     }
 
@@ -120,7 +122,8 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
     // Standard List Methods.
     // ====================================================
 
-    public boolean add(Object o) {
+    @Override
+    public boolean add(E o) {
         if ((isFault()) ? addLocal(o) : objectList.add(o)) {
             postprocessAdd(o);
             return true;
@@ -129,12 +132,14 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         return false;
     }
 
-    public void add(int index, Object o) {
+    @Override
+    public void add(int index, E o) {
         resolvedObjectList().add(index, o);
         postprocessAdd(o);
     }
 
-    public boolean addAll(Collection c) {
+    @Override
+    public boolean addAll(Collection<? extends E> c) {
         if (resolvedObjectList().addAll(c)) {
             // TODO: here we assume that all objects were added, while addAll may
             // technically return true and add only some objects... need a smarter
@@ -147,7 +152,8 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         return false;
     }
 
-    public boolean addAll(int index, Collection c) {
+    @Override
+    public boolean addAll(int index, Collection<? extends E> c) {
         if (resolvedObjectList().addAll(index, c)) {
             // TODO: here we assume that all objects were added, while addAll may
             // technically return true and add only some objects... need a smarter
@@ -160,16 +166,19 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         return false;
     }
 
+    @Override
     public void clear() {
         List resolved = resolvedObjectList();
         postprocessRemove(resolved);
         resolved.clear();
     }
 
+    @Override
     public boolean contains(Object o) {
         return resolvedObjectList().contains(o);
     }
 
+    @Override
     public boolean containsAll(Collection c) {
         return resolvedObjectList().containsAll(c);
     }
@@ -184,8 +193,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
             return false;
         }
 
-        return resolvedObjectList().equals(
-                ((PersistentObjectList) o).resolvedObjectList());
+        return resolvedObjectList().equals(((PersistentObjectList) o).resolvedObjectList());
     }
 
     @Override
@@ -193,68 +201,82 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         return 37 + resolvedObjectList().hashCode();
     }
 
-    public Object get(int index) {
+    @Override
+    public E get(int index) {
         return resolvedObjectList().get(index);
     }
 
+    @Override
     public int indexOf(Object o) {
         return resolvedObjectList().indexOf(o);
     }
 
+    @Override
     public boolean isEmpty() {
         return resolvedObjectList().isEmpty();
     }
 
-    public Iterator iterator() {
+    @Override
+    public Iterator<E> iterator() {
         return resolvedObjectList().iterator();
     }
 
+    @Override
     public int lastIndexOf(Object o) {
         return resolvedObjectList().lastIndexOf(o);
     }
 
-    public ListIterator listIterator() {
+    @Override
+    public ListIterator<E> listIterator() {
         return resolvedObjectList().listIterator();
     }
 
-    public ListIterator listIterator(int index) {
+    @Override
+    public ListIterator<E> listIterator(int index) {
         return resolvedObjectList().listIterator(index);
     }
 
-    public Object remove(int index) {
-        Object removed = resolvedObjectList().remove(index);
+    @Override
+    public E remove(int index) {
+        E removed = resolvedObjectList().remove(index);
         postprocessRemove(removed);
         return removed;
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
     public boolean remove(Object o) {
-        if ((isFault()) ? removeLocal(o) : objectList.remove(o)) {
-            postprocessRemove(o);
+        if ((isFault()) ? removeLocal((E)o) : objectList.remove(o)) {
+            postprocessRemove((E)o);
             return true;
         }
 
         return false;
     }
 
-    public boolean removeAll(Collection c) {
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean removeAll(Collection<?> c) {
         if (resolvedObjectList().removeAll(c)) {
-            // TODO: here we assume that all objects were removed, while removeAll may
-            // technically return true and remove only some objects... need a smarter
-            // approach
-            postprocessRemove(c);
+            // TODO: here we assume that all objects were removed,
+            // while removeAll may technically return true and remove only some objects...
+            // need a smarter approach
+            postprocessRemove((E)c);
             return true;
         }
 
         return false;
     }
 
+    @Override
     public boolean retainAll(Collection c) {
         // TODO: handle object graoh change notifications on object removals...
         return resolvedObjectList().retainAll(c);
     }
 
-    public Object set(int index, Object o) {
-        Object oldValue = resolvedObjectList().set(index, o);
+    @Override
+    public E set(int index, E o) {
+        E oldValue = resolvedObjectList().set(index, o);
 
         postprocessAdd(o);
         postprocessRemove(oldValue);
@@ -262,21 +284,25 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         return oldValue;
     }
 
+    @Override
     public int size() {
         return resolvedObjectList().size();
     }
 
-    public List subList(int fromIndex, int toIndex) {
+    @Override
+    public List<E> subList(int fromIndex, int toIndex) {
         // TODO: should we wrap a sublist into a list that does notifications on
         // additions/removals?
         return resolvedObjectList().subList(fromIndex, toIndex);
     }
 
+    @Override
     public Object[] toArray() {
         return resolvedObjectList().toArray();
     }
 
-    public Object[] toArray(Object[] a) {
+    @Override
+    public <T> T[] toArray(T[] a) {
         return resolvedObjectList().toArray(a);
     }
 
@@ -288,7 +314,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
     /**
      * Returns internal objects list resolving it if needed.
      */
-    protected List resolvedObjectList() {
+    protected List<E> resolvedObjectList() {
         if (isFault()) {
 
             synchronized (this) {
@@ -309,7 +335,8 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         removedFromUnresolved = null;
     }
 
-    protected void mergeLocalChanges(List fetchedList) {
+    @Override
+    protected void mergeLocalChanges(List<E> fetchedList) {
 
         // only merge if an object is in an uncommitted state
         // any other state means that our local tracking
@@ -323,10 +350,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
             // add only those that are not already on the list
             // do not include transient objects...
             if (addedToUnresolved != null && !addedToUnresolved.isEmpty()) {
-                Iterator it = addedToUnresolved.iterator();
-                while (it.hasNext()) {
-                    Object next = it.next();
-
+                for (E next : addedToUnresolved) {
                     if (next instanceof Persistent) {
                         Persistent dataObject = (Persistent) next;
                         if (dataObject.getPersistenceState() == PersistenceState.TRANSIENT) {
@@ -345,14 +369,14 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         clearLocalChanges();
     }
 
-    protected boolean addLocal(Object object) {
+    protected boolean addLocal(E object) {
 
         if (removedFromUnresolved != null) {
             removedFromUnresolved.remove(object);
         }
 
         if (addedToUnresolved == null) {
-            addedToUnresolved = new LinkedList();
+            addedToUnresolved = new LinkedList<>();
         }
 
         addedToUnresolved.addLast(object);
@@ -362,13 +386,13 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         return true;
     }
 
-    protected boolean removeLocal(Object object) {
+    protected boolean removeLocal(E object) {
         if (addedToUnresolved != null) {
             addedToUnresolved.remove(object);
         }
 
         if (removedFromUnresolved == null) {
-            removedFromUnresolved = new LinkedList<Object>();
+            removedFromUnresolved = new LinkedList<>();
         }
 
         if (shouldAddToRemovedFromUnresolvedList(object)) {
@@ -388,19 +412,19 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         return true;
     }
 
-    protected void postprocessAdd(Collection<?> collection) {
-        for (Object next : collection) {
+    protected void postprocessAdd(Collection<? extends E> collection) {
+        for (E next : collection) {
             postprocessAdd(next);
         }
     }
 
-    protected void postprocessRemove(Collection<?> collection) {
-        for (Object next : collection) {
+    protected void postprocessRemove(Collection<? extends E> collection) {
+        for (E next : collection) {
             postprocessRemove(next);
         }
     }
 
-    protected void postprocessAdd(Object addedObject) {
+    protected void postprocessAdd(E addedObject) {
 
         // notify ObjectContext
         if (relationshipOwner.getObjectContext() != null) {
@@ -418,7 +442,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         }
     }
 
-    protected void postprocessRemove(Object removedObject) {
+    protected void postprocessRemove(E removedObject) {
 
         // notify ObjectContext
         if (relationshipOwner.getObjectContext() != null) {
@@ -441,7 +465,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         return (objectList != null) ? objectList.toString() : "[<unresolved>]";
     }
 
-    public void addDirectly(Object target) {
+    public void addDirectly(E target) {
         if (isFault()) {
             addLocal(target);
         }
@@ -450,7 +474,7 @@ public class PersistentObjectList extends RelationshipFault implements List, Val
         }
     }
 
-    public void removeDirectly(Object target) {
+    public void removeDirectly(E target) {
         if (isFault()) {
             removeLocal(target);
         }

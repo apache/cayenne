@@ -106,7 +106,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
     protected $importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($rel.TargetEntity.ClientClassName)> ${rel.Name};
 #end
 #else
-    protected ValueHolder ${rel.Name};
+    protected ValueHolder<$importUtils.formatJavaType($rel.TargetEntity.ClientClassName)> ${rel.Name};
 #end
 #end
 
@@ -161,7 +161,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
 #if ( ${rel.CollectionType} == "java.util.Map")
         	throw new RuntimeException("Map relationships cannot be accessed for transient objects");
 #else
-        	this.$relName = new PersistentObjectList(this, "${rel.Name}");
+        	this.$relName = new PersistentObjectList<>(this, "${rel.Name}");
 #end
 		}
 
@@ -195,7 +195,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
         } else if (this.$relName == null) {
-        	this.$relName = new PersistentObjectList(this, "${rel.Name}");
+        	this.$relName = new PersistentObjectList<>(this, "${rel.Name}");
 		}
 
         this.${relName}.add(object);
@@ -205,7 +205,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${rel.Name}", true);
         } else if (this.$relName == null) {
-        	this.$relName = new PersistentObjectList(this, "${rel.Name}");
+        	this.$relName = new PersistentObjectList<>(this, "${rel.Name}");
 		}
 
         this.${relName}.remove(object);
@@ -218,10 +218,10 @@ public abstract class ${superClassName} extends ${baseClassName} {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "$rel.Name", true);
         } else if (this.$relName == null) {
-        	this.$relName = new PersistentObjectHolder(this, "$rel.Name");
+        	this.$relName = new PersistentObjectHolder<>(this, "$rel.Name");
 		}
 
-        return ($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName})) ${relName}.getValue();
+        return ${relName}.getValue();
     }
 
 #if ( !${object.isReadOnly()} && !$rel.ReadOnly )
@@ -230,7 +230,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
             objectContext.prepareForAccess(this, "$rel.Name", true);
             objectContext.propertyChanged(this, "$rel.Name", this.${relName}.getValueDirectly(), $relName);
         } else if (this.$relName == null) {
-        	this.$relName = new PersistentObjectHolder(this, "$rel.Name");
+        	this.$relName = new PersistentObjectHolder<>(this, "$rel.Name");
 		}
 
         this.${relName}.setValue($relName);

@@ -43,17 +43,17 @@ import java.io.Serializable;
  * 
  * @since 1.2
  */
-public interface ValueHolder extends Serializable {
+public interface ValueHolder<E> extends Serializable {
 
     /**
      * Returns an object stored by this ValueHolder.
      */
-    Object getValue() throws CayenneRuntimeException;
+    E getValue() throws CayenneRuntimeException;
 
     /**
      * Retrieves ValueHolder value without triggering fault resolution.
      */
-    Object getValueDirectly() throws CayenneRuntimeException;
+    E getValueDirectly() throws CayenneRuntimeException;
 
     /**
      * Sets an object stored by this ValueHolder.
@@ -61,12 +61,12 @@ public interface ValueHolder extends Serializable {
      * @param value a new value of the ValueHolder.
      * @return a previous value saved in the ValueHolder.
      */
-    Object setValue(Object value) throws CayenneRuntimeException;
+    E setValue(E value) throws CayenneRuntimeException;
 
     /**
      * Sets ValueHolder vaue without triggering fault resolution.
      */
-    Object setValueDirectly(Object value) throws CayenneRuntimeException;
+    E setValueDirectly(E value) throws CayenneRuntimeException;
 
     /**
      * Returns true if the internal value is not yet resolved.

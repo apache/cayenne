@@ -35,7 +35,7 @@ import org.apache.cayenne.reflect.PropertyDescriptor;
  * 
  * @since 1.2
  */
-public abstract class RelationshipFault {
+public abstract class RelationshipFault<E> {
 
     protected Persistent relationshipOwner;
     protected String relationshipName;
@@ -75,27 +75,27 @@ public abstract class RelationshipFault {
         return state == PersistenceState.MODIFIED || state == PersistenceState.DELETED;
     }
 
-    protected abstract void mergeLocalChanges(List resolved);
+    protected abstract void mergeLocalChanges(List<E> resolved);
 
     /**
      * Executes a query that returns related objects. Subclasses would invoke
      * this method whenever they need to resolve a fault.
      */
-    protected List resolveFromDB() {
+    protected List<E> resolveFromDB() {
         // non-persistent objects shouldn't trigger a fetch
         if (isTransientParent()) {
-            return new ArrayList();
+            return new ArrayList<>();
         }
 
-        List resolved = relationshipOwner.getObjectContext().performQuery(
+        List<E> resolved = relationshipOwner.getObjectContext().performQuery(
                 new RelationshipQuery(relationshipOwner.getObjectId(), relationshipName, false));
 
-        /**
+        /*
          * Duplicating the list (see CAY-1194). Doing that only for
          * RelationshipFault query results, so only for nested DataContexts
          */
         if (resolved instanceof RelationshipFault) {
-            resolved = new ArrayList(resolved);
+            resolved = new ArrayList<>(resolved);
         }
 
         // merge local before updating reverse to ensure we update reverse rels
@@ -113,7 +113,7 @@ public abstract class RelationshipFault {
 
     // see if reverse relationship is to-one and we can connect source to
     // results....
-    protected void updateReverse(List resolved) {
+    protected void updateReverse(List<E> resolved) {
         EntityResolver resolver = relationshipOwner.getObjectContext().getEntityResolver();
         ObjEntity sourceEntity = resolver.getObjEntity(relationshipOwner.getObjectId().getEntityName());
 

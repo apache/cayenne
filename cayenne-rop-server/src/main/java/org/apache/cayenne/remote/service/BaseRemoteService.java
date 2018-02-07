@@ -74,8 +74,9 @@ public abstract class BaseRemoteService implements RemoteService {
 	}
 
 	public Map<String, String> getEventBridgeParameters() {
-		return eventBridgeParameters != null ? Collections.unmodifiableMap(eventBridgeParameters)
-				: Collections.EMPTY_MAP;
+		return eventBridgeParameters != null
+				? Collections.unmodifiableMap(eventBridgeParameters)
+				: Collections.emptyMap();
 	}
 
 	/**
@@ -120,7 +121,7 @@ public abstract class BaseRemoteService implements RemoteService {
 	}
 
 	@Override
-	public Object processMessage(ClientMessage message) throws Throwable {
+	public Object processMessage(ClientMessage message) {
 
 		if (message == null) {
 			throw new IllegalArgumentException("Null client message.");
@@ -139,11 +140,8 @@ public abstract class BaseRemoteService implements RemoteService {
 			return DispatchHelper.dispatch(handler.getChannel(), message);
 		} catch (Throwable th) {
 
-			StringBuilder wrapperMessage = new StringBuilder();
-			wrapperMessage.append("Exception processing message ").append(message.getClass().getName())
-					.append(" of type ").append(message);
-
-			String wrapperMessageString = wrapperMessage.toString();
+			String wrapperMessageString = "Exception processing message "
+					+ message.getClass().getName() + " of type " + message;
 			logger.info(wrapperMessageString, th);
 
 			// This exception will probably be propagated to the client.

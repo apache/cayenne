@@ -464,7 +464,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 			return new LinkedList<>(); // returning Collections.emptyList() could cause random client exceptions if they try to mutate the resulting list
 		}
 
-		return (List<T>) filter(objects, new LinkedList<T>());
+		return (List<T>) filter(objects, new LinkedList<>());
 	}
 
 	/**

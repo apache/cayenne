@@ -140,7 +140,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "table2Array", true);
         } else if (this.table2Array == null) {
-        	this.table2Array = new PersistentObjectList(this, "table2Array");
+        	this.table2Array = new PersistentObjectList<>(this, "table2Array");
 		}
 
         return table2Array;
@@ -150,7 +150,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "table2Array", true);
         } else if (this.table2Array == null) {
-        	this.table2Array = new PersistentObjectList(this, "table2Array");
+        	this.table2Array = new PersistentObjectList<>(this, "table2Array");
 		}
 
         this.table2Array.add(object);
@@ -160,7 +160,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "table2Array", true);
         } else if (this.table2Array == null) {
-        	this.table2Array = new PersistentObjectList(this, "table2Array");
+        	this.table2Array = new PersistentObjectList<>(this, "table2Array");
 		}
 
         this.table2Array.remove(object);

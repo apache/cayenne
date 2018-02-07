@@ -26,14 +26,14 @@ import java.util.Collection;
  * @see org.apache.cayenne.reflect.ToManyMapProperty
  * @since 3.1
  */
-public interface PersistentObjectCollection extends Collection {
+public interface PersistentObjectCollection<E> extends Collection<E> {
     /**
      * Adds an object without triggering an event 
      */
-    public void addDirectly(Object target);
+    void addDirectly(E target);
     
     /**
      * Removes an object without triggering an event 
      */
-    public void removeDirectly(Object target);
+    void removeDirectly(E target);
 }
