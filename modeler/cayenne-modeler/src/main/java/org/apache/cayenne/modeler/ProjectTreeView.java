@@ -148,7 +148,44 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     }
 
     private void initController() {
-        treeSelectionListener = new TreeSelectionListener() {
+    		initTreeSelectionListener();
+
+        treeWillExpandListener = new TreeWillExpandListener() {
+            @Override
+            public void treeWillExpand(TreeExpansionEvent e) throws ExpandVetoException {
+                TreePath path = e.getPath();
+                if (!isPathSelected(path) && !isSelectionEmpty()) {
+                    setSelectionPath(path);
+                }
+            }
+
+            @Override
+            public void treeWillCollapse(TreeExpansionEvent e) throws ExpandVetoException {
+                TreePath path = e.getPath();
+                if (!isPathSelected(path) && !isSelectionEmpty()) {
+                    setSelectionPath(path);
+                }
+            }
+        };
+
+        addTreeSelectionListener(treeSelectionListener);
+        addTreeWillExpandListener(treeWillExpandListener);
+
+        addMouseListener(new MouseClickHandler());
+
+        setupMediator();
+        mediator.addQueryListener(this);
+        mediator.addQueryDisplayListener(this);
+        mediator.addMultipleObjectsDisplayListener(this);
+
+        mediator.getApplication().getActionManager().setupCutCopyPaste(
+                this,
+                CutAction.class,
+                CopyAction.class);
+    }
+
+	private void initTreeSelectionListener() {
+		treeSelectionListener = new TreeSelectionListener() {
 
             public void valueChanged(TreeSelectionEvent e) {
                 TreePath[] paths = getSelectionPaths();
@@ -193,31 +230,10 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                 return projectPath;
             }
         };
+	}
 
-        treeWillExpandListener = new TreeWillExpandListener() {
-            @Override
-            public void treeWillExpand(TreeExpansionEvent e) throws ExpandVetoException {
-                TreePath path = e.getPath();
-                if (!isPathSelected(path) && !isSelectionEmpty()) {
-                    setSelectionPath(path);
-                }
-            }
-
-            @Override
-            public void treeWillCollapse(TreeExpansionEvent e) throws ExpandVetoException {
-                TreePath path = e.getPath();
-                if (!isPathSelected(path) && !isSelectionEmpty()) {
-                    setSelectionPath(path);
-                }
-            }
-        };
-
-        addTreeSelectionListener(treeSelectionListener);
-        addTreeWillExpandListener(treeWillExpandListener);
-
-        addMouseListener(new MouseClickHandler());
-
-        mediator.addDomainListener(this);
+	private void setupMediator() {
+		mediator.addDomainListener(this);
         mediator.addDomainDisplayListener(this);
         mediator.addDataNodeListener(this);
         mediator.addDataNodeDisplayListener(this);
@@ -231,15 +247,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         mediator.addEmbeddableListener(this);
         mediator.addProcedureListener(this);
         mediator.addProcedureDisplayListener(this);
-        mediator.addQueryListener(this);
-        mediator.addQueryDisplayListener(this);
-        mediator.addMultipleObjectsDisplayListener(this);
-
-        mediator.getApplication().getActionManager().setupCutCopyPaste(
-                this,
-                CutAction.class,
-                CopyAction.class);
-    }
+	}
 
     private void initFromModel(Project project) {
 

@@ -131,31 +131,9 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         GraphLayoutCache view = new GraphLayoutCache(model, new DefaultCellViewFactory());
         graph.setGraphLayoutCache(view);
 
-        graph.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if (e.isPopupTrigger()) {
-                    Object selected = graph.getSelectionCell();
-                    if (selected != null && selected instanceof DefaultGraphCell) {
-                        Object userObject = ((DefaultGraphCell) selected).getUserObject();
-                        if (userObject instanceof EntityCellMetadata) {
-                            showPopup(e.getPoint(), ((EntityCellMetadata) userObject).fetchEntity());
-                        }
-                    }
-                }
-            }
-        });
+        
 
-        graph.addMouseWheelListener(new MouseWheelListener() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                // limit scale
-                double scale = graph.getScale() / Math.pow(ZOOM_FACTOR, e.getWheelRotation());
-                scale = Math.max(scale, 0.1);
-                scale = Math.min(scale, 3);
-                graph.setScale(scale);
-            }
-        });
+        addMouseListeners();
 
         entityCells = new HashMap<>();
         createdObjects = new ArrayList<>();
@@ -198,7 +176,24 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         }
         view.insert(createdObjects.toArray());
 
-        if (doLayout) {
+        setLayout(doLayout);
+
+        /*
+         * Adding isolated objects
+         * 
+         * We're placing them so that they will take maximum space in left top
+         * corner. The sample order is below:
+         * 
+         * 1 2 6 7... 3 5 8 ... 4 9... 10 ...
+         */
+        addIsolatedObjetcs(isolatedObjects);
+
+        view.insert(isolatedObjects.toArray());
+        graph.getModel().addUndoableEditListener(this);
+    }
+
+	private void setLayout(boolean doLayout) {
+		if (doLayout) {
             JGraphFacade facade = new JGraphFacade(graph);
 
             JGraphOrganicLayout layout = new JGraphOrganicLayout();
@@ -221,16 +216,38 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
             // Apply the results to the actual graph
             edit(nested);
         }
+	}
 
-        /*
-         * Adding isolated objects
-         * 
-         * We're placing them so that they will take maximum space in left top
-         * corner. The sample order is below:
-         * 
-         * 1 2 6 7... 3 5 8 ... 4 9... 10 ...
-         */
-        if (isolatedObjects.size() > 0) {
+	private void addMouseListeners() {
+		graph.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    Object selected = graph.getSelectionCell();
+                    if (selected != null && selected instanceof DefaultGraphCell) {
+                        Object userObject = ((DefaultGraphCell) selected).getUserObject();
+                        if (userObject instanceof EntityCellMetadata) {
+                            showPopup(e.getPoint(), ((EntityCellMetadata) userObject).fetchEntity());
+                        }
+                    }
+                }
+            }
+        });
+		
+		graph.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                // limit scale
+                double scale = graph.getScale() / Math.pow(ZOOM_FACTOR, e.getWheelRotation());
+                scale = Math.max(scale, 0.1);
+                scale = Math.min(scale, 3);
+                graph.setScale(scale);
+            }
+        });
+	}
+
+	private void addIsolatedObjetcs(List<DefaultGraphCell> isolatedObjects) {
+		if (isolatedObjects.size() > 0) {
             int n = isolatedObjects.size() / 2; // number of isolated entities
             int x = (int) Math.ceil((Math.sqrt(1 + 8 * n) - 1) / 2); // side of
                                                                      // triangle
@@ -256,10 +273,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
                 row++;
             }
         }
-
-        view.insert(isolatedObjects.toArray());
-        graph.getModel().addUndoableEditListener(this);
-    }
+	}
 
     protected DefaultGraphCell createEntityCell(Entity entity) {
         DefaultGraphCell cell = new DefaultGraphCell(getCellMetadata(entity));
