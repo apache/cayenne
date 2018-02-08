@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.dbsync.reverse.configuration;
 
+import java.util.Objects;
+
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
@@ -79,12 +81,7 @@ public class ToolsModule implements Module {
     private Logger logger;
 
     public ToolsModule(Logger logger) {
-
-        if (logger == null) {
-            throw new NullPointerException("Null logger");
-        }
-
-        this.logger = logger;
+        this.logger = Objects.requireNonNull(logger);
     }
 
     public void configure(Binder binder) {

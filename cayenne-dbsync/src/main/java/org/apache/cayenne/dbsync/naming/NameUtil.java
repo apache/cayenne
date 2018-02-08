@@ -18,14 +18,15 @@
  */
 package org.apache.cayenne.dbsync.naming;
 
+import org.apache.cayenne.util.Util;
+
 /**
  * @since 4.0
  */
 final class NameUtil {
 
     private static String prepare(String string, boolean capitalize){
-        int len;
-        if (string == null || (len = string.length()) == 0) {
+        if (Util.isEmptyString(string)) {
             return string;
         }
 
@@ -36,6 +37,7 @@ final class NameUtil {
             return string;
         }
 
+        int len = string.length();
         char[] newChars = new char[len];
         newChars[0] = newChar;
         string.getChars(1, len, newChars, 1);

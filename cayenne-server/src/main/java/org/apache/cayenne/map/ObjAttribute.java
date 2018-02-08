@@ -294,7 +294,7 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
      */
     public boolean isMandatory() {
         DbAttribute dbAttribute = getDbAttribute();
-        return dbAttribute == null ? false : dbAttribute.isMandatory();
+        return dbAttribute != null && dbAttribute.isMandatory();
     }
 
     /**
