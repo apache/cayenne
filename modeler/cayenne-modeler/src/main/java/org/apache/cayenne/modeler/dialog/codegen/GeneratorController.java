@@ -160,12 +160,7 @@ public abstract class GeneratorController extends CayenneController {
 
         // remove generic entities...
         Collection<ObjEntity> selectedEntities = new ArrayList<>(getParentController().getSelectedEntities());
-        Iterator<ObjEntity> it = selectedEntities.iterator();
-        while (it.hasNext()) {
-            if (it.next().isGeneric()) {
-                it.remove();
-            }
-        }
+        selectedEntities.removeIf(ObjEntity::isGeneric);
 
         Collection<ClassGenerationAction> generators = new ArrayList<>();
         Collection<StandardPanelComponent> dataMapLines = ((GeneratorControllerPanel) getView()).getDataMapLines();
@@ -194,6 +189,7 @@ public abstract class GeneratorController extends CayenneController {
 
                 generator.setDestDir(outputDir);
                 generator.setMakePairs(true);
+                generator.setForce(true);
 
                 for (StandardPanelComponent dataMapLine : dataMapLines) {
                     if (dataMapLine.getDataMap() == map && !Util.isEmptyString(dataMapLine.getSuperclassPackage().getText())) {
