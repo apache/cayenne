@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.inheritance_with_enum"/>
+	<db-entity name="iwe_dependent">
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="name" type="VARCHAR" length="200"/>
+		<db-attribute name="root_id" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="iwe_root">
+		<db-attribute name="enum" type="INTEGER"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="name" type="VARCHAR" length="255"/>
+		<db-attribute name="type" type="SMALLINT" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="Dependent" className="org.apache.cayenne.testdo.inheritance_with_enum.Dependent" dbEntityName="iwe_dependent">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
+	<obj-entity name="Root" className="org.apache.cayenne.testdo.inheritance_with_enum.Root" dbEntityName="iwe_root">
+		<qualifier><![CDATA[type = 0]]></qualifier>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+		<obj-attribute name="type" type="short" db-attribute-path="type"/>
+	</obj-entity>
+	<obj-entity name="Sub" superEntityName="Root" className="org.apache.cayenne.testdo.inheritance_with_enum.Sub">
+		<qualifier><![CDATA[type = 1]]></qualifier>
+		<obj-attribute name="enum" type="org.apache.cayenne.testdo.inheritance_with_enum.Type" db-attribute-path="enum"/>
+	</obj-entity>
+	<db-relationship name="root" source="iwe_dependent" target="iwe_root">
+		<db-attribute-pair source="root_id" target="id"/>
+	</db-relationship>
+	<db-relationship name="dependents" source="iwe_root" target="iwe_dependent" toMany="true">
+		<db-attribute-pair source="id" target="root_id"/>
+	</db-relationship>
+	<obj-relationship name="root" source="Dependent" target="Root" deleteRule="Nullify" db-relationship-path="root"/>
+	<obj-relationship name="dependents" source="Root" target="Dependent" deleteRule="Deny" db-relationship-path="dependents"/>
+</data-map>

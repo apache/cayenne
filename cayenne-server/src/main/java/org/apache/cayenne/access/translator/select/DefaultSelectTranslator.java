@@ -687,8 +687,8 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 
 				resetJoinStack();
 				DbRelationship r = null;
-				for (PathComponent<DbAttribute, DbRelationship> component : table.resolvePath(dbPrefetch,
-						getPathAliases())) {
+				for (PathComponent<DbAttribute, DbRelationship> component :
+						table.resolvePath(dbPrefetch, getPathAliases())) {
 					r = component.getRelationship();
 					dbRelationshipAdded(r, JoinType.LEFT_OUTER, null);
 				}
@@ -698,35 +698,48 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 							, prefetch, oe.getName());
 				}
 
-				// add columns from the target entity, including those that are
-				// matched
-				// against the FK of the source entity. This is needed to
-				// determine
-				// whether optional relationships are null
+				// add columns from the target entity, including those that are matched
+				// against the FK of the source entity.
+				// This is needed to determine whether optional relationships are null
 
-				// go via target OE to make sure that Java types are mapped
-				// correctly...
+				// go via target OE to make sure that Java types are mapped correctly...
 				ObjRelationship targetRel = (ObjRelationship) prefetchExp.evaluate(oe);
 				ObjEntity targetEntity = targetRel.getTargetEntity();
 
 				String labelPrefix = dbPrefetch.getPath();
-				for (ObjAttribute oa : targetEntity.getAttributes()) {
-					Iterator<CayenneMapEntry> dbPathIterator = oa.getDbPathIterator();
-					while (dbPathIterator.hasNext()) {
-						Object pathPart = dbPathIterator.next();
 
-						if (pathPart == null) {
-							throw new CayenneRuntimeException("ObjAttribute has no component: %s", oa.getName());
-						} else if (pathPart instanceof DbRelationship) {
-							DbRelationship rel = (DbRelationship) pathPart;
-							dbRelationshipAdded(rel, JoinType.INNER, null);
-						} else if (pathPart instanceof DbAttribute) {
-							DbAttribute attribute = (DbAttribute) pathPart;
+				PropertyVisitor prefetchVisitor = new PropertyVisitor() {
+					public boolean visitAttribute(AttributeProperty property) {
+						ObjAttribute oa = property.getAttribute();
+						Iterator<CayenneMapEntry> dbPathIterator = oa.getDbPathIterator();
+						while (dbPathIterator.hasNext()) {
+							Object pathPart = dbPathIterator.next();
 
-							appendColumn(columns, oa, attribute, attributes, labelPrefix + '.' + attribute.getName());
+							if (pathPart == null) {
+								throw new CayenneRuntimeException("ObjAttribute has no component: %s", oa.getName());
+							} else if (pathPart instanceof DbRelationship) {
+								DbRelationship rel = (DbRelationship) pathPart;
+								dbRelationshipAdded(rel, JoinType.INNER, null);
+							} else if (pathPart instanceof DbAttribute) {
+								DbAttribute dbAttr = (DbAttribute) pathPart;
+
+								appendColumn(columns, oa, dbAttr, attributes, labelPrefix + '.' + dbAttr.getName());
+							}
 						}
+						return true;
 					}
-				}
+
+					public boolean visitToMany(ToManyProperty property) {
+						return true;
+					}
+
+					public boolean visitToOne(ToOneProperty property) {
+						return true;
+					}
+				};
+
+				ClassDescriptor prefetchClassDescriptor = entityResolver.getClassDescriptor(targetEntity.getName());
+				prefetchClassDescriptor.visitAllProperties(prefetchVisitor);
 
 				// append remaining target attributes such as keys
 				DbEntity targetDbEntity = r.getTargetEntity();
