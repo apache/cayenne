@@ -78,8 +78,6 @@ class DataSourceChildrenHandler extends NamespaceAwareNestedTagHandler {
     }
 
     void configureCredentials(Attributes attributes) {
-        logger.info("loading user name and password.");
-
         String encoderClass = attributes.getValue("encoderClass");
 
         String encoderKey = attributes.getValue("encoderKey");
