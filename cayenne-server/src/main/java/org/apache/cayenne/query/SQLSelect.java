@@ -19,7 +19,6 @@
 package org.apache.cayenne.query;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -101,6 +100,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	protected int offset;
 	protected int pageSize;
 	protected int statementFetchSize;
+	protected PrefetchTreeNode prefetches;
 
 	public SQLSelect(String sql) {
 		this(null, sql);
@@ -240,7 +240,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	@Override
-	protected Query createReplacementQuery(EntityResolver resolver) {
+	public Query createReplacementQuery(EntityResolver resolver) {
 
 		Object root;
 
@@ -263,6 +263,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		template.setDefaultTemplate(getSql());
 		template.setCacheGroup(cacheGroup);
 		template.setCacheStrategy(cacheStrategy);
+		template.addPrefetch(prefetches);
 
 		if (positionalParams != null) {
 			template.setParamsList(positionalParams);
@@ -467,5 +468,40 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 */
 	public int getStatementFetchSize() {
 		return statementFetchSize;
+	}
+
+	/**
+	 * Merges a prefetch path with specified semantics into the query prefetch tree.
+	 * @param path Path expression
+	 * @param semantics Defines a strategy to prefetch relationships. See {@link PrefetchTreeNode}
+	 * @return this object
+	 * @since 4.1
+	 */
+	public SQLSelect<T> addPrefetch(String path, int semantics) {
+		if (path == null) {
+			return this;
+		}
+		if (prefetches == null) {
+			prefetches = new PrefetchTreeNode();
+		}
+		prefetches.addPath(path).setSemantics(semantics);
+		return this;
+	}
+
+	/**
+	 * Merges a prefetch into the query prefetch tree.
+	 * @param node Prefetch which will added to query prefetch tree
+	 * @return this object
+	 * @since 4.1
+	 */
+	public SQLSelect<T> addPrefetch(PrefetchTreeNode node) {
+		if (node == null) {
+			return this;
+		}
+		if (prefetches == null) {
+			prefetches = new PrefetchTreeNode();
+		}
+		prefetches.merge(node);
+		return this;
 	}
 }

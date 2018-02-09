@@ -20,16 +20,11 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.access.QueryEngine;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLResult;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
