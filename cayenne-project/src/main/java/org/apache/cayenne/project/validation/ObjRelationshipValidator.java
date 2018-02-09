@@ -36,17 +36,14 @@ class ObjRelationshipValidator extends ConfigurationNodeValidator {
 
         if (Util.isEmptyString(relationship.getName())) {
             addFailure(validationResult, relationship, "Unnamed ObjRelationship");
-        }
-
-        // check if there are attributes having the same name
-        else if (relationship.getSourceEntity().getAttribute(relationship.getName()) != null) {
+        } else if (relationship.getSourceEntity().getAttribute(relationship.getName()) != null) {
+            // check if there are attributes having the same name
             addFailure(
                     validationResult,
                     relationship,
                     "ObjRelationship '%s' has the same name as one of ObjAttributes",
                     toString(relationship));
-        }
-        else {
+        } else {
             NameValidationHelper helper = NameValidationHelper.getInstance();
             String invalidChars = helper.invalidCharsInObjPathComponent(relationship
                     .getName());
@@ -58,8 +55,7 @@ class ObjRelationshipValidator extends ConfigurationNodeValidator {
                         "ObjRelationship name '%s' contains invalid characters: %s",
                         toString(relationship),
                         invalidChars);
-            }
-            else if (helper.invalidDataObjectProperty(relationship.getName())) {
+            } else if (helper.invalidDataObjectProperty(relationship.getName())) {
                 addFailure(
                         validationResult,
                         relationship,
@@ -74,8 +70,7 @@ class ObjRelationshipValidator extends ConfigurationNodeValidator {
                     relationship,
                     "ObjRelationship '%s' has no target entity",
                     toString(relationship));
-        }
-        else {
+        } else {
 
             // check for missing DbRelationship mappings
             List<DbRelationship> dbRels = relationship.getDbRelationships();
@@ -85,12 +80,9 @@ class ObjRelationshipValidator extends ConfigurationNodeValidator {
                         relationship,
                         "ObjRelationship '%s' has no DbRelationship mapping",
                         toString(relationship));
-            }
-            else {
-                DbEntity expectedSrc = ((ObjEntity) relationship.getSourceEntity())
-                        .getDbEntity();
-                DbEntity expectedTarget = ((ObjEntity) relationship.getTargetEntity())
-                        .getDbEntity();
+            } else {
+                DbEntity expectedSrc = relationship.getSourceEntity().getDbEntity();
+                DbEntity expectedTarget = relationship.getTargetEntity().getDbEntity();
 
                 if ((dbRels.get(0)).getSourceEntity() != expectedSrc
                         || (dbRels.get(dbRels.size() - 1)).getTargetEntity() != expectedTarget) {
@@ -135,7 +127,7 @@ class ObjRelationshipValidator extends ConfigurationNodeValidator {
         }
 
         // check for relationships with same source and target entities
-        ObjEntity entity = (ObjEntity) relationship.getSourceEntity();
+        ObjEntity entity = relationship.getSourceEntity();
         for (ObjRelationship rel : entity.getRelationships()) {
             if (relationship.getDbRelationshipPath() != null && relationship.getDbRelationshipPath().equals(rel.getDbRelationshipPath())) {
                 if (relationship != rel &&
@@ -171,8 +163,7 @@ class ObjRelationshipValidator extends ConfigurationNodeValidator {
      * Per CAY-1813, make sure two (or more) ObjRelationships do not map to the
      * same database path.
      */
-    private void checkForDuplicates(ObjRelationship  relationship,
-                                    ValidationResult validationResult) {
+    private void checkForDuplicates(ObjRelationship  relationship, ValidationResult validationResult) {
         if (relationship                       != null &&
             relationship.getName()             != null &&
             relationship.getTargetEntityName() != null) {
@@ -182,25 +173,23 @@ class ObjRelationshipValidator extends ConfigurationNodeValidator {
                        "." +
                        relationship.getDbRelationshipPath();
 
-            if (dbRelationshipPath != null) {
-                ObjEntity entity = (ObjEntity) relationship.getSourceEntity();
+            ObjEntity entity = relationship.getSourceEntity();
 
-                for (ObjRelationship comparisonRelationship : entity.getRelationships()) {
-                    if (relationship != comparisonRelationship) {
-                        String comparisonDbRelationshipPath =
-                                   comparisonRelationship.getTargetEntityName() +
-                                   "." +
-                                   comparisonRelationship.getDbRelationshipPath();
+            for (ObjRelationship comparisonRelationship : entity.getRelationships()) {
+                if (relationship != comparisonRelationship) {
+                    String comparisonDbRelationshipPath =
+                               comparisonRelationship.getTargetEntityName() +
+                               "." +
+                               comparisonRelationship.getDbRelationshipPath();
 
-                        if (dbRelationshipPath.equals(comparisonDbRelationshipPath)) {
-                            addFailure(validationResult,
-                                       relationship,
-                                       "ObjEntity '%s' contains a duplicate ObjRelationship mapping ('%s' -> '%s')",
-                                       entity.getName(),
-                                       relationship.getName(),
-                                       dbRelationshipPath);
-                            return; // Duplicate found, stop.
-                        }
+                    if (dbRelationshipPath.equals(comparisonDbRelationshipPath)) {
+                        addFailure(validationResult,
+                                   relationship,
+                                   "ObjEntity '%s' contains a duplicate ObjRelationship mapping ('%s' -> '%s')",
+                                   entity.getName(),
+                                   relationship.getName(),
+                                   dbRelationshipPath);
+                        return; // Duplicate found, stop.
                     }
                 }
             }

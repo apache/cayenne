@@ -153,9 +153,8 @@ public class NameValidationHelper {
     }
 
     private String validateJavaIdentifier(String id, String invalidChars) {
-        // TODO: Java spec seems to allow "$" char in identifiers... Cayenne expressions
-        // do
-        // not, so we should probably check for this char presence...
+        // TODO: Java spec seems to allow "$" char in identifiers...
+        // Cayenne expressions do not, so we should probably check for this char presence...
 
         int len = (id != null) ? id.length() : 0;
         if (len == 0) {

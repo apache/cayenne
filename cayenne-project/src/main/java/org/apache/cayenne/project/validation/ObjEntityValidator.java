@@ -61,16 +61,14 @@ class ObjEntityValidator extends ConfigurationNodeValidator {
                     entity.getName(),
                     className,
                     invalidChars);
-        }
-        else if (helper.invalidDataObjectClass(className)) {
+        } else if (helper.invalidDataObjectClass(className)) {
             addFailure(
                     validationResult,
                     entity,
                     "Java class '%s' of ObjEntity '%s' is a reserved word",
                     className,
                     entity.getName());
-        }
-        else if (className.indexOf('.') < 0) {
+        } else if (className.indexOf('.') < 0) {
             addFailure(
                     validationResult,
                     entity,
@@ -98,8 +96,7 @@ class ObjEntityValidator extends ConfigurationNodeValidator {
                     entity.getName(),
                     superClassName,
                     invalidChars);
-        }
-        else if (helper.invalidDataObjectClass(superClassName)) {
+        } else if (helper.invalidDataObjectClass(superClassName)) {
             addFailure(
                     validationResult,
                     entity,
@@ -115,11 +112,6 @@ class ObjEntityValidator extends ConfigurationNodeValidator {
                     "Sub ObjEntity '%s' has database table declaration different from super ObjEntity '%s'",
                     entity.getName(),
                     entity.getSuperEntityName());
-        }
-
-        DataMap map = entity.getDataMap();
-        if (map == null) {
-            return;
         }
     }
 

@@ -30,8 +30,7 @@ class DbAttributeValidator extends ConfigurationNodeValidator {
         // Must have name
         if (Util.isEmptyString(attribute.getName())) {
             addFailure(validationResult, attribute, "Unnamed DbAttribute");
-        }
-        else {
+        } else {
             NameValidationHelper helper = NameValidationHelper.getInstance();
             String invalidChars = helper.invalidCharsInDbPathComponent(attribute
                     .getName());
@@ -49,14 +48,12 @@ class DbAttributeValidator extends ConfigurationNodeValidator {
         // all attributes must have type
         if (attribute.getType() == TypesMapping.NOT_DEFINED) {
             addFailure(validationResult, attribute, "DbAttribute has no type");
-        }
-
-        // VARCHAR and CHAR attributes must have max length
-        else if (attribute.getMaxLength() < 0
+        } else if (attribute.getMaxLength() < 0
                 && (attribute.getType() == java.sql.Types.VARCHAR
                     || attribute.getType() == java.sql.Types.NVARCHAR
                     || attribute.getType() == java.sql.Types.CHAR
                     || attribute.getType() == java.sql.Types.NCHAR)) {
+            // VARCHAR and CHAR attributes must have max length
 
             addFailure(
                     validationResult,

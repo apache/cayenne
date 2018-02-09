@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
-import java.util.Iterator;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
