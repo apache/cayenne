@@ -263,7 +263,9 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		template.setDefaultTemplate(getSql());
 		template.setCacheGroup(cacheGroup);
 		template.setCacheStrategy(cacheStrategy);
-		template.addPrefetch(prefetches);
+		if (prefetches != null) {
+			template.addPrefetch(prefetches);
+		}
 
 		if (positionalParams != null) {
 			template.setParamsList(positionalParams);
