@@ -86,7 +86,7 @@ public class DefaultQuotingStrategy implements QuotingStrategy {
             }
 
             if (buffer.length() > 0) {
-                buffer.append(".");
+                buffer.append('.');
             }
 
             buffer.append(startQuote).append(part).append(endQuote);

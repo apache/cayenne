@@ -32,6 +32,5 @@ public interface DbAdapterFactory {
      * Returns an instance of DbAdapter if the factory detects that it knows how to handle
      * the database.
      */
-    DbAdapter createAdapter(DataNodeDescriptor nodeDescriptor, DataSource dataSource)
-            throws Exception;
+    DbAdapter createAdapter(DataNodeDescriptor nodeDescriptor, DataSource dataSource) throws Exception;
 }
