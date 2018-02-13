@@ -23,6 +23,7 @@
 
 	<artifactId>tutorial</artifactId>
 	<name>tutorial: Cayenne Tutorial</name>
+	<packaging>war</packaging>
 
 	<dependencies>
 		<dependency>

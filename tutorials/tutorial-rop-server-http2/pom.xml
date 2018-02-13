@@ -45,6 +45,11 @@
             <artifactId>derby</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>compile</scope>
+        </dependency>
 
         <!-- Jetty's dependencies-->
         <dependency>
@@ -62,6 +67,7 @@
             <artifactId>jetty-servlets</artifactId>
             <version>${jetty.version}</version>
         </dependency>
+
     </dependencies>
 
 </project>

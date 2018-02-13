@@ -69,7 +69,6 @@ public class Http2Client {
         ClientRuntime runtime = ClientRuntime.builder()
                             .properties(properties)
                             .addModule(new ClientJettyHttp2Module())
-                            .addModule(new ProtostuffModule())
                             .build();
 
         ObjectContext context = runtime.newContext();
