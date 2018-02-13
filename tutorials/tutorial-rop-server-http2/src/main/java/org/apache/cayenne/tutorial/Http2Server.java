@@ -21,10 +21,7 @@ package org.apache.cayenne.tutorial;
 
 import org.eclipse.jetty.http2.HTTP2Cipher;
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
-import org.eclipse.jetty.security.ConstraintMapping;
-import org.eclipse.jetty.security.ConstraintSecurityHandler;
-import org.eclipse.jetty.security.HashLoginService;
-import org.eclipse.jetty.security.SecurityHandler;
+import org.eclipse.jetty.security.*;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -84,7 +81,9 @@ public class Http2Server {
 
     private static SecurityHandler basicAuth(String username, String password, String realm) {
         HashLoginService loginService = new HashLoginService();
-        loginService.putUser(username, Credential.getCredential(password), new String[]{"cayenne-service-user"});
+        UserStore userStore = new UserStore();
+        userStore.addUser(username, Credential.getCredential(password), new String[]{"cayenne-service-user"});
+        loginService.setUserStore(userStore);
         loginService.setName(realm);
 
         Constraint constraint = new Constraint();

@@ -39,7 +39,7 @@
 	</modules>
 
 	<properties>
-		<jetty.version>9.3.19.v20170502</jetty.version>
+		<jetty.version>9.4.8.v20171121</jetty.version>
 	</properties>
 
 	<build>
