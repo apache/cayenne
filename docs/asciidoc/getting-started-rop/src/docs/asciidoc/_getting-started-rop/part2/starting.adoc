@@ -58,7 +58,7 @@ image::../images/datamap-enableclient.png[align="center"]
 
 Now go back to Eclipse, right click on "tutorial-rop-client" project and select "Refresh" - you should see pairs
 of classes generated for each mapped entity, same as on the server. And again, we see a bunch of errors in those classes.
-Let's fix it now by adding two dependencies, "cayenne-client" and "resin-hessian", in the bottom of the pom.xml file.
+Let's fix it now by adding two dependencies, "cayenne-client" and "hessian", in the bottom of the pom.xml file.
 We also need to add Caucho M2 repository to pull Hessian jar files. The resulting POM should look like this:
 
 [source, XML,subs="verbatim,attributes"]
@@ -73,7 +73,7 @@ We also need to add Caucho M2 repository to pull Hessian jar files. The resultin
     <dependencies>
         <dependency>
             <groupId>org.apache.cayenne</groupId>
-            <artifactId>cayenne-client</artifactId>
+            <artifactId>cayenne-client-jetty</artifactId>
             <!-- Here specify the version of Cayenne you are actually using -->
             <version>{version}</version>
         </dependency>

@@ -56,13 +56,13 @@ Open pom.xml in the server project and configure a "userRealm" for the Jetty plu
 [source, XML]
 ----
 <plugin>
-    <groupId>org.mortbay.jetty</groupId>
+    <groupId>org.eclipse.jetty</groupId>
         <artifactId>maven-jetty-plugin</artifactId>
-        <version>6.1.22</version>
+        <version>9.4.8.v20171121</version>
         <!-- adding configuration below: -->
         <configuration>
             <userRealms>
-                <userRealm implementation="org.mortbay.jetty.security.HashUserRealm">
+                <userRealm implementation="org.eclipse.jetty.security.HashLoginService">
                     <!-- this name must match the realm-name in web.xml -->
                     <name>Cayenne Realm</name>
                     <config>realm.properties</config>
@@ -121,11 +121,15 @@ So change the line in Main.java where we obtained an ROP connection to this:
 [source, java]
 ----
 Map<String,String> properties = new HashMap<>();
-properties.put(Constants.ROP_SERVICE_URL_PROPERTY, "http://localhost:8080/tutorial/cayenne-service");
-properties.put(Constants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
-properties.put(Constants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
+properties.put(ClientConstants.ROP_SERVICE_URL_PROPERTY, "http://localhost:8080/cayenne-service");
+properties.put(ClientConstants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
+properties.put(ClientConstants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
+properties.put(ClientConstants.ROP_SERVICE_REALM_PROPERTY, "Cayenne Realm");
 
-ClientRuntime runtime = new ClientRuntime(properties);
+ClientRuntime runtime = ClientRuntime.builder()
+                        .properties(properties)
+                        .addModule(new ClientJettyHttpModule())
+                        .build();
 ----
 
 Try running again, and everything should work as before. Obviously in production environment,
