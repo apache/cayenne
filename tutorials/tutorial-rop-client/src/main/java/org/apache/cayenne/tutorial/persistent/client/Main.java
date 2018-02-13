@@ -35,7 +35,6 @@ public class Main {
 
         Map<String, String> properties = new HashMap<>();
         properties.put(ClientConstants.ROP_SERVICE_URL_PROPERTY, "http://localhost:8080/cayenne-service");
-        properties.put(ClientConstants.ROP_SERVICE_USE_ALPN_PROPERTY, "false");
         properties.put(ClientConstants.ROP_SERVICE_USERNAME_PROPERTY, "cayenne-user");
         properties.put(ClientConstants.ROP_SERVICE_PASSWORD_PROPERTY, "secret");
         properties.put(ClientConstants.ROP_SERVICE_REALM_PROPERTY, "Cayenne Realm");
