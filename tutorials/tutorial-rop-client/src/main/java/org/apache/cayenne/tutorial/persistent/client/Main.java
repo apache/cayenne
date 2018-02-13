@@ -41,7 +41,6 @@ public class Main {
 
         ClientRuntime runtime = ClientRuntime.builder()
                                 .properties(properties)
-                                .addModule(new ClientJettyHttpModule())
                                 .build();
 
         ObjectContext context = runtime.newContext();
