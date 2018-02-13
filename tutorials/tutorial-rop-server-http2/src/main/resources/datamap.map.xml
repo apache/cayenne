@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
-	 project-version="9">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.tutorial.persistent"/>
 	<property name="clientSupported" value="true"/>
 	<property name="defaultClientPackage" value="org.apache.cayenne.tutorial.persistent.client"/>
@@ -37,10 +37,10 @@
 	<db-relationship name="paintings" source="GALLERY" target="PAINTING" toMany="true">
 		<db-attribute-pair source="ID" target="GALLERY_ID"/>
 	</db-relationship>
-	<db-relationship name="artist" source="PAINTING" target="ARTIST" toMany="false">
+	<db-relationship name="artist" source="PAINTING" target="ARTIST">
 		<db-attribute-pair source="ARTIST_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="gallery" source="PAINTING" target="GALLERY" toMany="false">
+	<db-relationship name="gallery" source="PAINTING" target="GALLERY">
 		<db-attribute-pair source="GALLERY_ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="paintings" source="Artist" target="Painting" deleteRule="Cascade" db-relationship-path="paintings"/>

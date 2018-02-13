@@ -25,8 +25,13 @@ import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.SecurityHandler;
+import org.eclipse.jetty.security.UserStore;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
-import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
@@ -84,7 +89,9 @@ public class Http2Server {
 
     private static SecurityHandler basicAuth(String username, String password, String realm) {
         HashLoginService loginService = new HashLoginService();
-        loginService.putUser(username, Credential.getCredential(password), new String[]{"cayenne-service-user"});
+        UserStore userStore = new UserStore();
+        userStore.addUser(username, Credential.getCredential(password), new String[]{"cayenne-service-user"});
+        loginService.setUserStore(userStore);
         loginService.setName(realm);
 
         Constraint constraint = new Constraint();
