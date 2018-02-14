@@ -19,17 +19,13 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.QueryEngine;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLResult;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +35,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -507,7 +502,22 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	 * @since 4.0
 	 */
 	public void addPrefetch(PrefetchTreeNode prefetchElement) {
+		if (hasDisjointNode(prefetchElement)) {
+			throw new CayenneRuntimeException("This query supports only 'joint' and 'disjointById' prefetching semantics.");
+		}
 		metaData.mergePrefetch(prefetchElement);
+	}
+
+	private boolean hasDisjointNode(PrefetchTreeNode prefetchElement) {
+		if (prefetchElement.isDisjointPrefetch()) {
+			return true;
+		}
+		for (PrefetchTreeNode child : prefetchElement.getChildren()) {
+			if (hasDisjointNode(child)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

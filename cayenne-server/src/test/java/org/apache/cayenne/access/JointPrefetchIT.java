@@ -29,6 +29,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
@@ -399,6 +400,53 @@ public class JointPrefetchIT extends ServerCase {
                     new ObjectId("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33002));
             assertNotNull(g2);
             assertEquals(PersistenceState.COMMITTED, g2.getPersistenceState());
+        });
+    }
+
+    @Test
+    public void testJointPrefetchSQLSelectToMany() throws Exception {
+        createJointPrefetchDataSet();
+
+        @SuppressWarnings("unchecked")
+        final List<Artist> objects = SQLSelect.query(Artist.class, "SELECT "
+                + "#result('PAINTING_ID' 'int' '' 'paintingArray.PAINTING_ID'), "
+                + "#result('ARTIST_NAME' 'String'), "
+                + "#result('DATE_OF_BIRTH' 'java.util.Date'), "
+                + "#result('t0.ARTIST_ID' 'int' '' 'ARTIST_ID') "
+                + "FROM ARTIST t0, PAINTING t1 "
+                + "WHERE t0.ARTIST_ID = t1.ARTIST_ID")
+                .addPrefetch(Artist.PAINTING_ARRAY.joint())
+                .select(context);
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            assertNotNull(objects);
+            assertEquals(2, objects.size());
+
+            for (Artist artist : objects) {
+                List<Painting> paintings = artist.getPaintingArray();
+                assertTrue(paintings.size() > 0);
+                for (Painting painting : paintings) {
+                    assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
+                }
+            }
+        });
+    }
+
+    @Test
+    public void testJointPrefetchSQLSelectNestedJoint() throws Exception {
+        createJointPrefetchDataSet();
+        SQLSelect.query(Artist.class, "SELECT "
+                + "#result('GALLERY_ID' 'int' '' 'paintingArray.toGallery.GALLERY_ID'),"
+                + "#result('GALLERY_NAME' 'String' '' 'paintingArray.toGallery.GALLERY_NAME'),"
+                + "#result('t0.ARTIST_ID' 'int' '' 'ARTIST_ID') "
+                + "FROM ARTIST t0, GALLERY t2 ")
+                .addPrefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).joint())
+                .select(context);
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            DataObject g1 = (DataObject) context.getGraphManager().getNode(
+                    new ObjectId("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001)
+            );
+            assertNotNull(g1);
+            assertEquals("G1", g1.readProperty("galleryName"));
         });
     }
 }
