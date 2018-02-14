@@ -240,7 +240,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	@Override
-	public Query createReplacementQuery(EntityResolver resolver) {
+	protected Query createReplacementQuery(EntityResolver resolver) {
 
 		Object root;
 

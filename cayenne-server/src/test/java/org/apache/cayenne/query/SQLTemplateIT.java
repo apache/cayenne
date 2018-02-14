@@ -21,6 +21,7 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
@@ -28,15 +29,14 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.math.BigInteger;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -53,13 +53,20 @@ public class SQLTemplateIT extends ServerCase {
 	@Inject
 	private DBHelper dbHelper;
 
+	@Inject
+	protected DataChannelInterceptor queryInterceptor;
+
 	private TableHelper tPainting;
+
+	private TableHelper tArtist;
 
 	@Before
 	public void setUp() throws Exception {
+		tArtist = new TableHelper(dbHelper, "ARTIST");
+		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
 		tPainting = new TableHelper(dbHelper, "PAINTING");
-		tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE").setColumnTypes(
-				Types.INTEGER, Types.BIGINT, Types.VARCHAR, Types.DECIMAL);
+		tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE");
 	}
 
 	@Test
@@ -183,5 +190,35 @@ public class SQLTemplateIT extends ServerCase {
 
 		// this should fail as result can't be converted to Gallery class
 		context.performQuery(q1);
+	}
+
+	@Test
+	public void testSQLTemplateWithDisjointByIdPrefetch() throws Exception {
+		tArtist.insert(1, "artist1");
+		tArtist.insert(2, "artist2");
+
+		tPainting.insert(1, 1, "p1", 10);
+		tPainting.insert(2, 2, "p2", 20);
+
+		String sql = "SELECT p.* FROM PAINTING p";
+		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
+		q1.addPrefetch(Painting.TO_ARTIST.disjointById());
+		q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
+
+		@SuppressWarnings("unchecked")
+		List<Painting> paintings = context.performQuery(q1);
+
+		queryInterceptor.runWithQueriesBlocked(() -> {
+			for(Painting painting : paintings) {
+				assertEquals(PersistenceState.COMMITTED, painting.getToArtist().getPersistenceState());
+			}
+		});
+	}
+
+	@Test(expected = CayenneRuntimeException.class)
+	public void testSQLTemplateWithDisjointPrefetch() throws Exception {
+		String sql = "SELECT p.* FROM PAINTING p";
+		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
+		q1.addPrefetch(Painting.TO_ARTIST.disjoint());
 	}
 }

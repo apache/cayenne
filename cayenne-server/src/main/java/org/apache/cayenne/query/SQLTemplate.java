@@ -109,7 +109,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	public void setRoot(Object value) {
 		// allow null root...
 		if (value == null) {
-			this.root = value;
+			this.root = null;
 		} else {
 			super.setRoot(value);
 		}
@@ -431,7 +431,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	 * Returns a collection of configured template keys.
 	 */
 	public synchronized Collection<String> getTemplateKeys() {
-		return (templates != null) ? templates.keySet() : Collections.<String> emptyList();
+		return (templates != null) ? templates.keySet() : Collections.emptyList();
 	}
 
 	/**
@@ -441,7 +441,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	 */
 	public Map<String, ?> getParams() {
 		Map<String, ?> map = (parameters != null && parameters.length > 0) ? parameters[0] : null;
-		return (map != null) ? map : Collections.<String, Object> emptyMap();
+		return (map != null) ? map : Collections.emptyMap();
 	}
 
 	/**
@@ -474,7 +474,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 			// are not serializable with Hessian...
 			this.parameters = new Map[parameters.length];
 			for (int i = 0; i < parameters.length; i++) {
-				this.parameters[i] = parameters[i] != null ? new HashMap<>(parameters[i]) : new HashMap<String, Object>();
+				this.parameters[i] = parameters[i] != null ? new HashMap<>(parameters[i]) : new HashMap<>();
 			}
 		}
 	}
@@ -502,22 +502,21 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	 * @since 4.0
 	 */
 	public void addPrefetch(PrefetchTreeNode prefetchElement) {
-		if (hasDisjointNode(prefetchElement)) {
-			throw new CayenneRuntimeException("This query supports only 'joint' and 'disjointById' prefetching semantics.");
-		}
+		checkForDisjointNode(prefetchElement);
 		metaData.mergePrefetch(prefetchElement);
 	}
 
-	private boolean hasDisjointNode(PrefetchTreeNode prefetchElement) {
+	/**
+	 * Check for disjoint element and throw if it's found.
+	 * @param prefetchElement to check
+	 */
+	private void checkForDisjointNode(PrefetchTreeNode prefetchElement) {
 		if (prefetchElement.isDisjointPrefetch()) {
-			return true;
+			throw new CayenneRuntimeException("This query supports only 'joint' and 'disjointById' prefetching semantics.");
 		}
 		for (PrefetchTreeNode child : prefetchElement.getChildren()) {
-			if (hasDisjointNode(child)) {
-				return true;
-			}
+			checkForDisjointNode(child);
 		}
-		return false;
 	}
 
 	/**
