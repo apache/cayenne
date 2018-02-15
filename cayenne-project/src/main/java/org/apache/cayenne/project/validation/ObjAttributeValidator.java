@@ -60,6 +60,13 @@ class ObjAttributeValidator extends ConfigurationNodeValidator {
             return;
         }
 
+        // Must contain character
+        if(!attribute.getName().matches(".*[a-z].*")){
+            addFailure(validationResult, attribute, "ObjAttribute name '%s' must contain at least one character.",
+                        attribute.getName());
+            return;
+        }
+
         NameValidationHelper helper = NameValidationHelper.getInstance();
         String invalidChars = helper.invalidCharsInObjPathComponent(attribute.getName());
 

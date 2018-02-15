@@ -39,9 +39,10 @@ public class StringUtils {
 
     /**
      * Prepends underscore to variable name if necessary to remove conflict with reserved
-     * keywords.
+     * keywords and variable name begins with digit.
      */
     public String formatVariableName(String variableName) {
+        variableName = addUnderscoreIfDigitFirst(variableName);
         if (NameValidationHelper.getInstance().isReservedJavaKeyword(variableName)) {
             return "_" + variableName;
         }
@@ -50,6 +51,19 @@ public class StringUtils {
         }
     }
 
+    /**
+     * Add underscore to variable name if first letter
+     * is digit.
+     *
+     * @since 4.1
+     */
+    public String addUnderscoreIfDigitFirst(String variableName) {
+        if(Character.isDigit(variableName.charAt(0))){
+            return "_" + variableName;
+        } else {
+            return variableName;
+        }
+    }
     /**
      * Removes package name, leaving base name.
      * 
@@ -109,12 +123,13 @@ public class StringUtils {
         // clear of non-java chars. While the method name implies that a passed identifier
         // is pure Java, it is used to build pk columns names and such, so extra safety
         // check is a good idea
-        name = Util.specialCharsToJava(name);
+        name = addUnderscoreIfDigitFirst(Util.specialCharsToJava(name));
 
         char charArray[] = name.toCharArray();
         StringBuilder buffer = new StringBuilder();
 
         for (int i = 0; i < charArray.length; i++) {
+
             if ((Character.isUpperCase(charArray[i])) && (i != 0)) {
 
                 char prevChar = charArray[i - 1];
@@ -125,7 +140,6 @@ public class StringUtils {
 
             buffer.append(Character.toUpperCase(charArray[i]));
         }
-
         return buffer.toString();
     }
 

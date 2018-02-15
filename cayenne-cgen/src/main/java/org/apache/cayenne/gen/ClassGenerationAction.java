@@ -161,13 +161,13 @@ public class ClassGenerationAction {
 
 		String qualifiedClassName = artifact.getQualifiedClassName();
 		String packageName = stringUtils.stripClass(qualifiedClassName);
-		String className = stringUtils.stripPackageName(qualifiedClassName);
+		String className = stringUtils.addUnderscoreIfDigitFirst(stringUtils.stripPackageName(qualifiedClassName));
 
 		String qualifiedBaseClassName = artifact.getQualifiedBaseClassName();
 		String basePackageName = stringUtils.stripClass(qualifiedBaseClassName);
 		String baseClassName = stringUtils.stripPackageName(qualifiedBaseClassName);
 
-		String superClassName = getSuperclassPrefix() + stringUtils.stripPackageName(qualifiedClassName);
+		String superClassName = getSuperclassPrefix() + className;
 
 		String superPackageName = this.superPkg;
 		if (superPackageName == null) {
