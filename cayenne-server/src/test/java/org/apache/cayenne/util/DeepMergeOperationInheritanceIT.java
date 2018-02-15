@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.sql.SQLException;
-
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
@@ -34,9 +27,11 @@ import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.PeopleProjectCase;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
 
@@ -55,8 +50,7 @@ public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
         final Department d1 = context.newObject(Department.class);
         d1.setName("D1");
 
-        // need to do double commit as Ashwood sorter blows on Employees/Departments
-        // ordering...
+        // need to do double commit as Ashwood sorter blows on Employees/Departments ordering...
         context.commitChanges();
 
         Employee e1 = context.newObject(Employee.class);
@@ -71,43 +65,24 @@ public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
 
         context.commitChanges();
 
-        // need to make sure source relationship is resolved as a result of some Ashwood
-        // strangeness...
+        // need to make sure source relationship is resolved as a result of some Ashwood strangeness...
         d1.getEmployees().size();
 
         // resolve Employees
-        context1.performQuery(new SelectQuery(Employee.class));
+        context1.performQuery(new SelectQuery<>(Employee.class));
 
         final DeepMergeOperation op = new DeepMergeOperation(context1);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                Department d2 = (Department) op.merge(d1);
-                assertNotNull(d2);
-                assertEquals(PersistenceState.COMMITTED, d2.getPersistenceState());
-
-                for (Employee ex : d2.getEmployees()) {
-                    if ("E2".equals(ex.getName())) {
-                        assertTrue(ex instanceof Manager);
-                    }
-                    else {
-                        assertFalse(ex instanceof Manager);
-                    }
-                }
-            }
-        });
-
+        assertMergeResult(d1, op);
     }
 
     @Test
-    public void testDeepMergeNonExistentSubclass() throws SQLException {
+    public void testDeepMergeNonExistentSubclass() {
 
         final Department d1 = context.newObject(Department.class);
         d1.setName("D1");
 
-        // need to do double commit as Ashwood sorter blows on Employees/Departments
-        // ordering...
+        // need to do double commit as Ashwood sorter blows on Employees/Departments ordering...
         context.commitChanges();
 
         Employee e1 = context.newObject(Employee.class);
@@ -122,25 +97,24 @@ public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
 
         context.commitChanges();
 
-        // need to make sure source relationship is resolved as a result of some Ashwood
-        // strangeness...
+        // need to make sure source relationship is resolved as a result of some Ashwood strangeness...
         d1.getEmployees().size();
         final DeepMergeOperation op = new DeepMergeOperation(context1);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        assertMergeResult(d1, op);
+    }
 
-            public void execute() {
-                Department d2 = (Department) op.merge(d1);
-                assertNotNull(d2);
-                assertEquals(PersistenceState.COMMITTED, d2.getPersistenceState());
+    private void assertMergeResult(Department d1, DeepMergeOperation op) {
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            Department d2 = op.merge(d1);
+            assertNotNull(d2);
+            assertEquals(PersistenceState.COMMITTED, d2.getPersistenceState());
 
-                for (Employee ex : d2.getEmployees()) {
-                    if ("E2".equals(ex.getName())) {
-                        assertTrue(ex instanceof Manager);
-                    }
-                    else {
-                        assertFalse(ex instanceof Manager);
-                    }
+            for (Employee ex : d2.getEmployees()) {
+                if ("E2".equals(ex.getName())) {
+                    assertThat(ex, is(instanceOf(Manager.class)));
+                } else {
+                    assertThat(ex, is(not(instanceOf(Manager.class))));
                 }
             }
         });

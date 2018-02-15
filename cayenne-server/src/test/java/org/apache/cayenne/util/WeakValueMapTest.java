@@ -46,7 +46,7 @@ public class WeakValueMapTest {
         assertFalse(map.containsKey("nonexistent_key1"));
         assertFalse(map.containsValue(42));
         assertNull(map.get("nonexistent_key2"));
-        assertEquals(new Integer(42), map.getOrDefault("nonexistent_key2", 42));
+        assertEquals(Integer.valueOf(42), map.getOrDefault("nonexistent_key2", 42));
 
         assertEquals(0, map.values().size());
         assertEquals(0, map.keySet().size());
@@ -62,7 +62,7 @@ public class WeakValueMapTest {
         assertFalse(map.containsKey("nonexistent_key1"));
         assertFalse(map.containsValue(42));
         assertNull(map.get("nonexistent_key2"));
-        assertEquals(new Integer(42), map.getOrDefault("nonexistent_key2", 42));
+        assertEquals(Integer.valueOf(42), map.getOrDefault("nonexistent_key2", 42));
 
         assertEquals(0, map.values().size());
         assertEquals(0, map.keySet().size());
@@ -86,7 +86,7 @@ public class WeakValueMapTest {
         assertTrue(map.containsValue(42));
         assertNull(map.get("nonexistent_key2"));
         assertEquals(Integer.valueOf(543), map.get("key_3"));
-        assertEquals(new Integer(123), map.getOrDefault("key_1", 42));
+        assertEquals(Integer.valueOf(123), map.getOrDefault("key_1", 42));
 
         assertEquals(data.size(), map.values().size());
         assertEquals(data.size(), map.keySet().size());
@@ -107,7 +107,7 @@ public class WeakValueMapTest {
         Map<String, Integer> map = new WeakValueMap<>(data);
 
         map.put("key_4", 44);
-        assertEquals(new Integer(44), map.get("key_4"));
+        assertEquals(Integer.valueOf(44), map.get("key_4"));
         assertEquals(4, map.size());
         assertTrue(map.containsKey("key_4"));
         assertTrue(map.containsValue(44));
@@ -137,7 +137,7 @@ public class WeakValueMapTest {
         }
 
         assertEquals(3, counter);
-        assertEquals(new Integer(24), map.get("key_2"));
+        assertEquals(Integer.valueOf(24), map.get("key_2"));
     }
 
     @Test
