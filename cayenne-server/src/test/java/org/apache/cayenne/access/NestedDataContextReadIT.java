@@ -330,7 +330,7 @@ public class NestedDataContextReadIT extends ServerCase {
             assertSame(child, o1.getObjectContext());
 
             List<Painting> children1 = o1.getPaintingArray();
-            assertEquals(ArrayList.class, children1.getClass());
+            assertEquals(ToManyList.class, children1.getClass());
             assertEquals(2, children1.size());
 
             for (Painting o : children1) {
