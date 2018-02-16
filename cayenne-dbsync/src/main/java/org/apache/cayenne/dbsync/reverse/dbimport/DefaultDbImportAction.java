@@ -28,10 +28,12 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.merge.token.model.AbstractToModelToken;
 import org.apache.cayenne.dbsync.merge.DataMapMerger;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.dbsync.reverse.dbload.ModelMergeDelegate;
 import org.apache.cayenne.dbsync.reverse.dbload.ProxyModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
@@ -42,7 +44,9 @@ import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
+import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -50,7 +54,9 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.ProjectSaver;
+import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
@@ -84,6 +90,7 @@ public class DefaultDbImportAction implements DbImportAction {
     private final DataMapLoader mapLoader;
     private final MergerTokenFactoryProvider mergerTokenFactoryProvider;
     private final DataChannelDescriptorLoader dataChannelDescriptorLoader;
+    private final ProjectValidator projectValidator;
 
     public DefaultDbImportAction(@Inject Logger logger,
                                  @Inject ProjectSaver projectSaver,
@@ -91,7 +98,8 @@ public class DefaultDbImportAction implements DbImportAction {
                                  @Inject DbAdapterFactory adapterFactory,
                                  @Inject DataMapLoader mapLoader,
                                  @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
-                                 @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader) {
+                                 @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader,
+                                 @Inject ProjectValidator projectValidator) {
         this.logger = logger;
         this.projectSaver = projectSaver;
         this.dataSourceFactory = dataSourceFactory;
@@ -99,6 +107,7 @@ public class DefaultDbImportAction implements DbImportAction {
         this.mapLoader = mapLoader;
         this.mergerTokenFactoryProvider = mergerTokenFactoryProvider;
         this.dataChannelDescriptorLoader = dataChannelDescriptorLoader;
+        this.projectValidator = projectValidator;
     }
 
     protected static List<MergerToken> sort(List<MergerToken> reverse) {
@@ -180,8 +189,20 @@ public class DefaultDbImportAction implements DbImportAction {
         hasChanges |= applyTokens(targetDataMap, tokens, config);
         hasChanges |= syncProcedures(targetDataMap, sourceDataMap, loaderConfig.getFiltersConfig());
 
+        validateDataMap(targetDataMap);
+
         if (hasChanges) {
             saveLoaded(targetDataMap, config);
+        }
+    }
+
+    protected void validateDataMap(DataMap targetDataMap){
+        ValidationResult validationResult = projectValidator.validate(targetDataMap);
+
+        if(validationResult.hasFailures()){
+            for(ValidationFailure validationFailure : validationResult.getFailures()) {
+                logger.warn(validationFailure.getDescription());
+            }
         }
     }
 

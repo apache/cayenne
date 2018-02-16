@@ -28,6 +28,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
+import org.apache.cayenne.project.validation.ProjectValidator;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -43,8 +44,9 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
                                  @Inject DbAdapterFactory adapterFactory,
                                  @Inject DataMapLoader mapLoader,
                                  @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
-                                 @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader) {
-        super(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader);
+                                 @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader,
+                                 @Inject ProjectValidator projectValidator) {
+        super(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader, projectValidator);
     }
 
     @Override

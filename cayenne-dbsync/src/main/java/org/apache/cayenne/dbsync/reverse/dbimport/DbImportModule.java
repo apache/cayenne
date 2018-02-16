@@ -33,6 +33,8 @@ import org.apache.cayenne.project.FileProjectSaver;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
+import org.apache.cayenne.project.validation.DefaultProjectValidator;
+import org.apache.cayenne.project.validation.ProjectValidator;
 
 /**
  * A DI module that bootstraps {@link DbImportAction}.
@@ -46,6 +48,7 @@ public class DbImportModule implements Module {
     public void configure(Binder binder) {
         binder.bind(DbImportAction.class).to(DefaultDbImportAction.class);
         binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
+        binder.bind(ProjectValidator.class).to(DefaultProjectValidator.class);
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
         binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);

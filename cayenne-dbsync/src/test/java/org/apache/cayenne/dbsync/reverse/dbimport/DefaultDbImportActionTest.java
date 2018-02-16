@@ -50,9 +50,11 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.project.FileProjectSaver;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.extension.ProjectExtension;
+import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.validation.ValidationResult;
 import org.slf4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
@@ -303,7 +305,11 @@ public class DefaultDbImportActionTest {
 
         DataChannelDescriptorLoader dataChannelDescriptorLoader = mock(DataChannelDescriptorLoader.class);
 
-        return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader) {
+        ProjectValidator projectValidator = mock(ProjectValidator.class);
+
+        when(projectValidator.validate((DataMap)any())).thenReturn(new ValidationResult());
+
+        return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader, projectValidator) {
 
             protected DbLoader createDbLoader(DbAdapter adapter,
                                                Connection connection,
