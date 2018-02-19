@@ -37,6 +37,7 @@ public class SQLTemplateTabbedView extends JTabbedPane {
     protected ProjectController mediator;
     protected SQLTemplateMainTab mainTab;
     protected SQLTemplateScriptsTab scriptsTab;
+    protected SQLTemplatePrefetchTab prefetchTab;
     protected int lastSelectionIndex;
 
     public SQLTemplateTabbedView(ProjectController mediator) {
@@ -54,6 +55,9 @@ public class SQLTemplateTabbedView extends JTabbedPane {
 
         this.scriptsTab = new SQLTemplateScriptsTab(mediator);
         addTab("SQL Scripts", scriptsTab);
+
+        this.prefetchTab = new SQLTemplatePrefetchTab(mediator);
+        addTab("Prefetches", prefetchTab);
     }
 
     private void initController() {
@@ -103,6 +107,9 @@ public class SQLTemplateTabbedView extends JTabbedPane {
                 break;
             case 1:
                 scriptsTab.initFromModel();
+                break;
+            case 2:
+                prefetchTab.initFromModel();
                 break;
         }
     }
