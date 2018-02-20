@@ -491,6 +491,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 		return metaData.getPrefetchTree();
 	}
 
+
 	/**
 	 * Adds a prefetch.
 	 * 

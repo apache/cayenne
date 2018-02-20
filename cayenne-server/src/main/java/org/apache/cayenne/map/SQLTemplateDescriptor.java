@@ -19,10 +19,15 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.XMLEncoder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
 
 /**
  * @since 4.0
@@ -102,15 +107,16 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
             template.setRoot(root);
         }
 
-        template.initWithProperties(this.getProperties());
+
 
         List<String> prefetches = this.getPrefetches();
-
         if (prefetches != null && !prefetches.isEmpty()) {
             for (String prefetch : prefetches) {
-                template.addPrefetch(prefetch);
+                template.addPrefetch(PrefetchTreeNode.withPath(prefetch, PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS));
             }
         }
+
+        template.initWithProperties(this.getProperties());
 
         // init SQL
         template.setDefaultTemplate(this.getSql());
@@ -187,6 +193,16 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
                 }
             }
         }
+
+        PrefetchTreeNode prefetchTree = new PrefetchTreeNode();
+
+        for (String prefetchPath : prefetches) {
+            PrefetchTreeNode node = prefetchTree.addPath(prefetchPath);
+            node.setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+            node.setPhantom(false);
+        }
+
+        encoder.nested(prefetchTree, delegate);
 
         delegate.visitQuery(this);
         encoder.end();
