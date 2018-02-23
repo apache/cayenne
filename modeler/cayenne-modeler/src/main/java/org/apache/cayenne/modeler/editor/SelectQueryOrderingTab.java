@@ -19,32 +19,6 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.prefs.Preferences;
-
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JToolBar;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.tree.TreeModel;
-
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.QueryDescriptor;
@@ -61,11 +35,35 @@ import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.swing.components.image.FilteredIconFactory;
 import org.apache.cayenne.util.CayenneMapEntry;
 
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JToolBar;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.tree.TreeModel;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.prefs.Preferences;
+
 /**
  * A panel for picking SelectQuery orderings.
  * 
  */
 public class SelectQueryOrderingTab extends JPanel implements PropertyChangeListener {
+
 
     // property for split pane divider size
     private static final String SPLIT_DIVIDER_LOCATION_PROPERTY = "query.orderings.divider.location";
@@ -124,12 +122,9 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
     protected void initController() {
 
         // scroll to selected row whenever a selection even occurs
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    UIUtil.scrollToSelectedRow(table);
-                }
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                UIUtil.scrollToSelectedRow(table);
             }
         });
     }
@@ -205,13 +200,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
         Icon addIcon = ModelerUtil.buildIcon("icon-plus.png");
         add.setIcon(addIcon);
         add.setDisabledIcon(FilteredIconFactory.createDisabledIcon(addIcon));
-        add.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                addOrdering();
-            }
-
-        });
+        add.addActionListener(e -> addOrdering());
 
         JButton remove = new CayenneAction.CayenneToolbarButton(null, 3);
         remove.setText("Remove Ordering");

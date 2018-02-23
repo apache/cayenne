@@ -26,6 +26,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -38,7 +39,7 @@ public class SelectQueryDescriptor extends QueryDescriptor {
 	protected Expression qualifier;
 
     protected List<Ordering> orderings = new ArrayList<>();
-    protected List<String> prefetches = new ArrayList<>();
+    protected HashMap<String, Integer> prefetchesMap = new HashMap<>();
 
     public SelectQueryDescriptor() {
         super(SELECT_QUERY);
@@ -97,31 +98,69 @@ public class SelectQueryDescriptor extends QueryDescriptor {
     }
 
     /**
-     * Returns list of prefetch paths for this query.
+     * Returns map of prefetch paths with semantics for this query.
+     *
+     * @since 4.1
      */
+    public HashMap<String, Integer> getPrefetchesMap() {
+        return prefetchesMap;
+    }
+
+    /**
+     * Returns list of prefetch paths for this query.
+     *
+     * @deprecated since 4.1 use {@link #getPrefetchesMap()}.
+     */
+    @Deprecated
     public List<String> getPrefetches() {
-        return prefetches;
+        return new ArrayList<>(prefetchesMap.keySet());
+    }
+
+    /**
+     * Sets map of prefetch paths with semantics for this query.
+     *
+     * @since 4.1
+     */
+    public void setPrefetchesMap(HashMap<String, Integer> prefetchesMap){
+        this.prefetchesMap = prefetchesMap;
     }
 
     /**
      * Sets list of prefetch paths for this query.
+     *
+     * @deprecated since 4.1 use {@link #setPrefetchesMap(HashMap)}.
      */
+    @Deprecated
     public void setPrefetches(List<String> prefetches) {
-        this.prefetches = prefetches;
+        for(String prefetch : prefetches){
+            this.prefetchesMap.put(prefetch, PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        }
+    }
+
+    /**
+     * Adds prefetch path with semantics to this query.
+     *
+     * @since 4.1
+     */
+    public void addPrefetch(String prefetchPath, int semantics){
+        this.prefetchesMap.put(prefetchPath, semantics);
     }
 
     /**
      * Adds single prefetch path to this query.
+     *
+     * @deprecated since 4.1 use {@link #addPrefetch(String, int)}
      */
+    @Deprecated
     public void addPrefetch(String prefetchPath) {
-        this.prefetches.add(prefetchPath);
+        this.prefetchesMap.put(prefetchPath, PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
     }
 
     /**
      * Removes single prefetch path from this query.
      */
     public void removePrefetch(String prefetchPath) {
-        this.prefetches.remove(prefetchPath);
+        this.prefetchesMap.remove(prefetchPath);
     }
 
     @Override
@@ -136,11 +175,10 @@ public class SelectQueryDescriptor extends QueryDescriptor {
             selectQuery.addOrderings(orderings);
         }
 
-        List<String> prefetches = this.getPrefetches();
-
-        if (prefetches != null && !prefetches.isEmpty()) {
-            for (String prefetch : prefetches) {
-                selectQuery.addPrefetch(prefetch);
+        HashMap<String, Integer> prefetchesMap = this.getPrefetchesMap();
+        if(prefetchesMap != null && !prefetchesMap.isEmpty()) {
+            for(String prefetch : prefetchesMap.keySet()) {
+                selectQuery.addPrefetch(PrefetchTreeNode.withPath(prefetch, prefetchesMap.get(prefetch)));
             }
         }
 
@@ -193,9 +231,9 @@ public class SelectQueryDescriptor extends QueryDescriptor {
 
         PrefetchTreeNode prefetchTree = new PrefetchTreeNode();
 
-        for (String prefetchPath : prefetches) {
+        for (String prefetchPath : prefetchesMap.keySet()) {
             PrefetchTreeNode node = prefetchTree.addPath(prefetchPath);
-            node.setSemantics(PrefetchTreeNode.UNDEFINED_SEMANTICS);
+            node.setSemantics(prefetchesMap.get(prefetchPath));
             node.setPhantom(false);
         }
 

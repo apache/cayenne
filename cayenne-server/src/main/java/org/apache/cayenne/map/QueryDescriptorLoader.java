@@ -52,7 +52,7 @@ public class QueryDescriptorLoader {
     protected String resultEntity;
 
     protected List<Ordering> orderings = new ArrayList<>();
-    protected List<String> prefetches = new ArrayList<>();
+    protected HashMap<String, Integer> prefetchesMap = new HashMap<>();
     protected Map<String, String> adapterSql = new HashMap<>();
     protected Map<String, String> properties = new HashMap<>();
 
@@ -71,11 +71,11 @@ public class QueryDescriptorLoader {
             case QueryDescriptor.SELECT_QUERY:
                 ((SelectQueryDescriptor) descriptor).setQualifier(qualifier);
                 ((SelectQueryDescriptor) descriptor).setOrderings(orderings);
-                ((SelectQueryDescriptor) descriptor).setPrefetches(prefetches);
+                ((SelectQueryDescriptor) descriptor).setPrefetchesMap(prefetchesMap);
                 break;
             case QueryDescriptor.SQL_TEMPLATE:
                 ((SQLTemplateDescriptor) descriptor).setSql(sql);
-                ((SQLTemplateDescriptor) descriptor).setPrefetches(prefetches);
+                ((SQLTemplateDescriptor) descriptor).setPrefetchesMap(prefetchesMap);
                 ((SQLTemplateDescriptor) descriptor).setAdapterSql(adapterSql);
                 break;
             case QueryDescriptor.EJBQL_QUERY:
@@ -234,15 +234,16 @@ public class QueryDescriptorLoader {
         orderings.add(new Ordering(path, order));
     }
 
-    public void addPrefetch(String path) {
+    public void addPrefetch(String path, int semantics) {
         if (path == null || (path != null && isBlank(path))) {
             // throw??
             return;
         }
 
-        if (prefetches == null) {
-            prefetches = new ArrayList<>();
+        if (prefetchesMap == null) {
+            prefetchesMap = new HashMap<>();
         }
-        prefetches.add(path.trim());
+
+        prefetchesMap.put(path.trim(), semantics);
     }
 }

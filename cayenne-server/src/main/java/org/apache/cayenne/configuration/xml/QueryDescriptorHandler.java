@@ -52,6 +52,8 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
     private String descending;
     private String ignoreCase;
 
+    private int semantics;
+
     public QueryDescriptorHandler(NamespaceAwareNestedTagHandler parentHandler, DataMap map) {
         super(parentHandler);
         this.map = map;
@@ -80,6 +82,7 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
             case QUERY_EJBQL_TAG:
             case QUERY_QUALIFIER_TAG:
             case QUERY_PREFETCH_TAG:
+                createPrefetchSemantics(attributes);
                 return true;
         }
 
@@ -106,7 +109,7 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
                 break;
 
             case QUERY_PREFETCH_TAG:
-                queryBuilder.addPrefetch(data);
+                addPrefetchWithSemantics(data);
                 break;
         }
     }
@@ -180,6 +183,14 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
         changed = true;
     }
 
+    private void createPrefetchSemantics(Attributes attributes) {
+        semantics = convertPrefetchType(attributes.getValue("type"));
+    }
+
+    private void addPrefetchWithSemantics(String path) {
+        queryBuilder.addPrefetch(path, semantics);
+    }
+
     public QueryDescriptor getQueryDescriptor() {
         if(queryBuilder == null) {
             return null;
@@ -189,5 +200,21 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
             changed = false;
         }
         return descriptor;
+    }
+
+    private int convertPrefetchType(String type) {
+        if (type != null) {
+            switch (type) {
+                case "joint":
+                    return 1;
+                case "disjoint":
+                    return 2;
+                case "disjointById":
+                    return 3;
+                default:
+                    return 0;
+            }
+        }
+        return 0;
     }
 }

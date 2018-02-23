@@ -23,9 +23,7 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.XMLEncoder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -35,7 +33,7 @@ import java.util.TreeSet;
 public class SQLTemplateDescriptor extends QueryDescriptor {
 
     protected String sql;
-    protected List<String> prefetches = new ArrayList<>();
+    protected HashMap<String, Integer> prefetchesMap = new HashMap<>();
 
     protected Map<String, String> adapterSql = new HashMap<>();
 
@@ -72,31 +70,33 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
     }
 
     /**
-     * Returns list of prefetch paths for this query.
+     * Returns map of prefetch paths with semantics for this query.
+     * @since 4.1
      */
-    public List<String> getPrefetches() {
-        return prefetches;
+    public HashMap<String, Integer> getPrefetchesMap() { return prefetchesMap; }
+
+    /**
+     * Sets map of prefetch paths with semantics for this query.
+     * @since 4.1
+     */
+    public void setPrefetchesMap(HashMap<String, Integer> prefetchesMap) {
+        this.prefetchesMap = prefetchesMap;
     }
 
     /**
-     * Sets list of prefetch paths for this query.
+     * Adds single prefetch path with semantics to this query.
+     * @since 4.1
      */
-    public void setPrefetches(List<String> prefetches) {
-        this.prefetches = prefetches;
-    }
-
-    /**
-     * Adds single prefetch path to this query.
-     */
-    public void addPrefetch(String prefetchPath) {
-        this.prefetches.add(prefetchPath);
+    public void addPrefetch(String prefetchPath, int semantics){
+        this.prefetchesMap.put(prefetchPath, semantics);
     }
 
     /**
      * Removes single prefetch path from this query.
+     * @since 4.1
      */
     public void removePrefetch(String prefetchPath) {
-        this.prefetches.remove(prefetchPath);
+        this.prefetchesMap.remove(prefetchPath);
     }
 
     @Override
@@ -109,10 +109,10 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
 
 
 
-        List<String> prefetches = this.getPrefetches();
+        HashMap<String, Integer> prefetches = this.getPrefetchesMap();
         if (prefetches != null && !prefetches.isEmpty()) {
-            for (String prefetch : prefetches) {
-                template.addPrefetch(PrefetchTreeNode.withPath(prefetch, PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS));
+            for (String prefetch : prefetches.keySet()) {
+                template.addPrefetch(PrefetchTreeNode.withPath(prefetch, prefetchesMap.get(prefetch)));
             }
         }
 
@@ -196,9 +196,9 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
 
         PrefetchTreeNode prefetchTree = new PrefetchTreeNode();
 
-        for (String prefetchPath : prefetches) {
+        for (String prefetchPath : prefetchesMap.keySet()) {
             PrefetchTreeNode node = prefetchTree.addPath(prefetchPath);
-            node.setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+            node.setSemantics(prefetchesMap.get(prefetchPath));
             node.setPhantom(false);
         }
 

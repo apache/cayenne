@@ -49,8 +49,8 @@ class SelectQueryValidator extends BaseQueryValidator {
                 validateOrdering(query, root, ordering, validationResult);
             }
 
-            if (query.getPrefetches() != null) {
-                for (String prefetchPath : query.getPrefetches()) {
+            if (query.getPrefetchesMap() != null) {
+                for (String prefetchPath : query.getPrefetchesMap().keySet()) {
                     validatePrefetch(root, prefetchPath, validationResult);
                 }
             }

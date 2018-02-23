@@ -185,7 +185,7 @@
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:ejbql"/>
 				<xs:element name="qualifier" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:ordering"/>
-				<xs:element name="prefetch" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:prefetch"/>
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="type" use="required" type="xs:string"/>
@@ -202,6 +202,16 @@
 				<xs:extension base="xs:string">
 					<xs:attribute name="descending" type="xs:boolean"/>
 					<xs:attribute name="ignore-case" type="xs:boolean"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="prefetch">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="type" type="xs:string"/>
 				</xs:extension>
 			</xs:simpleContent>
 		</xs:complexType>
