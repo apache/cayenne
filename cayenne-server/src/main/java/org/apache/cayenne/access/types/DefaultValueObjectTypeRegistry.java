@@ -52,53 +52,8 @@ public class DefaultValueObjectTypeRegistry implements ValueObjectTypeRegistry {
     public <T> ValueObjectType<T, ?> getValueType(Class<? extends T> valueClass) {
         ValueObjectType type = typeCache.get(valueClass.getName());
         if(type == null) {
-            type = findBySuperclasses(valueClass);
-        } else if(type == NULL_DUMMY) {
             return null;
         }
         return type;
     }
-
-    protected ValueObjectType<?, ?> findBySuperclasses(final Class<?> baseClass) {
-        ValueObjectType<?,?> type = null;
-        Class<?> searchClass = baseClass.getSuperclass();
-
-        while(searchClass != null && !searchClass.equals(Object.class)) {
-            type = typeCache.get(searchClass.getName());
-            if(type != null) {
-                // cache it for faster search later
-                typeCache.put(baseClass.getName(), type);
-                break;
-            }
-            searchClass = searchClass.getSuperclass();
-        }
-        // as well cache null result
-        if(type == null) {
-            typeCache.put(baseClass.getName(), NULL_DUMMY);
-        }
-        return type;
-    }
-
-    private static final ValueObjectType<?, ?> NULL_DUMMY = new ValueObjectType() {
-        @Override
-        public Class<?> getTargetType() {
-            return null;
-        }
-        @Override
-        public Class<?> getValueType() {
-            return null;
-        }
-        @Override
-        public Object toJavaObject(Object value) {
-            return null;
-        }
-        @Override
-        public Object fromJavaObject(Object object) {
-            return null;
-        }
-        @Override
-        public String toCacheKey(Object object) {
-            return null;
-        }
-    };
 }

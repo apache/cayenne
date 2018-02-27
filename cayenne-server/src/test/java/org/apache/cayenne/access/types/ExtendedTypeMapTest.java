@@ -55,7 +55,7 @@ public class ExtendedTypeMapTest {
         // List
         map.registerType(tstType1);
         assertSame(tstType1, map.getRegisteredType(List.class));
-        assertSame(tstType1, map.getRegisteredType(ArrayList.class));
+        assertNotSame(tstType1, map.getRegisteredType(ArrayList.class));
         
         map = new ExtendedTypeMap();
         

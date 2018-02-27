@@ -25,6 +25,9 @@ import org.apache.cayenne.util.Util;
  * of the className in the {@link ExtendedType}.
  * 
  * @since 3.0
+ * @deprecated since 4.1 it is unused, as this factory is faulty assuming that
+ *              we can freely interchange base class and it's subclasses.
+ *
  */
 class SubclassTypeFactory implements ExtendedTypeFactory {
 

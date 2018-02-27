@@ -128,9 +128,6 @@ public class ExtendedTypeMap {
 	 */
 	public void registerType(ExtendedType type) {
 		typeMap.put(type.getClassName(), type);
-
-		// factory to handle subclasses of type.className
-		addFactory(new SubclassTypeFactory(type));
 	}
 
 	/**
