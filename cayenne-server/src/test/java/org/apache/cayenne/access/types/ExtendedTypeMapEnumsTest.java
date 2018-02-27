@@ -90,17 +90,16 @@ public class ExtendedTypeMapEnumsTest {
 
 		ExtendedType byType = map.getRegisteredType(InnerEnum.class);
 
-		// this and subsequent tests verify that no memory leak occurs per
-		// CAY-2066
-		assertEquals(1, map.extendedTypeFactories.size());
+		// this and subsequent tests verify that no memory leak occurs per CAY-2066
+		assertEquals(0, map.extendedTypeFactories.size());
 
 		assertSame(byType, map.getRegisteredType(InnerEnum.class));
-		assertEquals(1, map.extendedTypeFactories.size());
+		assertEquals(0, map.extendedTypeFactories.size());
 
 		assertSame(byType, map.getRegisteredType(InnerEnumHolder.class.getName() + "$InnerEnum"));
-		assertEquals(1, map.extendedTypeFactories.size());
+		assertEquals(0, map.extendedTypeFactories.size());
 
 		assertSame(byType, map.getRegisteredType(InnerEnumHolder.class.getName() + ".InnerEnum"));
-		assertEquals(1, map.extendedTypeFactories.size());
+		assertEquals(0, map.extendedTypeFactories.size());
 	}
 }

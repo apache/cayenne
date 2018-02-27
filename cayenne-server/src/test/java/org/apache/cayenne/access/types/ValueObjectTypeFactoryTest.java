@@ -21,18 +21,21 @@ package org.apache.cayenne.access.types;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ValueObjectTypeFactoryTest {
 
-    ExtendedType tstType1, tstType2, tstType3, tstType4;
+    ExtendedType tstType1, tstType2, tstType3, tstType4, tstType5;
 
     ValueObjectTypeFactory factory;
 
@@ -43,6 +46,7 @@ public class ValueObjectTypeFactoryTest {
         list.add(createMockValueType(String.class, String.class));
         list.add(createMockValueType(int.class, int.class));
         list.add(createMockValueType(String[].class, String[].class));
+        list.add(createMockValueType(TestClass.class, BigDecimal.class));
 
         DefaultValueObjectTypeRegistry registry = new DefaultValueObjectTypeRegistry(list);
 
@@ -61,6 +65,9 @@ public class ValueObjectTypeFactoryTest {
         tstType4 = mock(ExtendedType.class);
         when(tstType4.getClassName()).thenReturn(String[].class.getCanonicalName());
         extendedTypeMap.registerType(tstType4);
+
+        tstType5 = new MockExtendedType(BigDecimal.class);
+        extendedTypeMap.registerType(tstType5);
 
         factory = new ValueObjectTypeFactory(extendedTypeMap,registry);
     }
@@ -98,5 +105,51 @@ public class ValueObjectTypeFactoryTest {
         ValueObjectTypeFactory.ExtendedTypeConverter converter4 = (ValueObjectTypeFactory.ExtendedTypeConverter) factory.getType(String[].class);
         assertNotNull(converter4);
         assertSame(tstType4, converter4.extendedType);
+    }
+
+    @Test
+    public void testInheritantType() {
+        ValueObjectTypeFactory.ExtendedTypeConverter converter5 = (ValueObjectTypeFactory.ExtendedTypeConverter) factory.getType(TestClass.class);
+        assertNotNull(converter5);
+        assertSame(tstType5, converter5.extendedType);
+    }
+
+    /**
+     * Test case for CAY-2411
+     */
+    @Test
+    public void testInheritantValueTypeOverExtendedType() {
+        // setup
+        ExtendedTypeMap map;
+        BigDecimalType bigDecimalType = new BigDecimalType();
+        ValueObjectType valueObjectType;
+        {
+            map = new ExtendedTypeMap();
+            map.registerType(bigDecimalType);
+
+            List<ValueObjectType<?, ?>> list = new ArrayList<>();
+            valueObjectType = mock(ValueObjectType.class);
+            when(valueObjectType.getValueType()).thenReturn(TestClass.class);
+            when(valueObjectType.getTargetType()).thenReturn(BigDecimal.class);
+            list.add(valueObjectType);
+
+            DefaultValueObjectTypeRegistry registry = new DefaultValueObjectTypeRegistry(list);
+            map.addFactory(new ValueObjectTypeFactory(map, registry));
+        }
+
+        // test
+        ExtendedType type1 = map.getRegisteredType(BigDecimal.class);
+        assertSame(bigDecimalType, type1);
+
+        ExtendedType type2 = map.getRegisteredType(TestClass.class);
+        assertThat(type2, instanceOf(ValueObjectTypeFactory.ExtendedTypeConverter.class));
+        assertSame(valueObjectType, ((ValueObjectTypeFactory.ExtendedTypeConverter)type2).valueObjectType);
+    }
+
+    private class TestClass extends BigDecimal {
+
+        public TestClass(long val) {
+            super(val);
+        }
     }
 }

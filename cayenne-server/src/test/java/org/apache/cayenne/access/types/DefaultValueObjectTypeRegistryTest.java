@@ -69,14 +69,14 @@ public class DefaultValueObjectTypeRegistryTest {
         assertSame(valueObjectType1, valueObjectType);
 
         valueObjectType = registry.getValueType(Float.class);
-        assertSame(valueObjectType2, valueObjectType);
+        assertNull(valueObjectType);
 
         valueObjectType = registry.getValueType(String.class);
         assertNull(valueObjectType);
 
-        assertEquals(4, registry.typeCache.size());
-        assertTrue(registry.typeCache.containsKey(String.class.getName()));
-        assertTrue(registry.typeCache.containsKey(Float.class.getName()));
+        assertEquals(2, registry.typeCache.size());
+        assertFalse(registry.typeCache.containsKey(String.class.getName()));
+        assertFalse(registry.typeCache.containsKey(Float.class.getName()));
     }
 
 }

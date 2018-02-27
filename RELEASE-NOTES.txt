@@ -38,6 +38,7 @@ CAY-2392 Modeler: Unable to remove DataNode
 CAY-2397 Modeler: Unable to set enum:value as Entity qualifier
 CAY-2401 Modeler: NPE in ObjEntity sync action
 CAY-2405 Broken prefetch of entity with inheritance and attribute with custom java type
+CAY-2411 Wrong resolution of ExtendedType with ValueObjectType for inherited class
 
 ----------------------------------
 Release: 4.1.M1
