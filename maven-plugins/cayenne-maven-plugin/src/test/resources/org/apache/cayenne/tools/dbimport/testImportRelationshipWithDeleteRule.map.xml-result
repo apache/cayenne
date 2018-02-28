@@ -43,6 +43,6 @@
      <db-relationship name="table1" source="TABLE2" target="TABLE1">
         <db-attribute-pair source="TABLE1_ID" target="ID"/>
      </db-relationship>
-     <obj-relationship name="table2s" source="Table1" target="Table2" db-relationship-path="table2s"/>
+     <obj-relationship name="table2s" source="Table1" target="Table2" deleteRule="Cascade" db-relationship-path="table2s"/>
      <obj-relationship name="table1" source="Table2" target="Table1" deleteRule="Nullify" db-relationship-path="table1"/>
 </data-map>

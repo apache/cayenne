@@ -59,8 +59,8 @@ public class DbEntitySyncUndoableEdit extends CompoundEdit {
             this.entity = entity;
         }
 
-        public void objRelationshipAdded(ObjRelationship rel) {
-            addEdit(new CreateRelationshipUndoableEdit(entity, new ObjRelationship[] {rel}));
+        public void objRelationshipAdded(ObjRelationship relationship) {
+            addEdit(new CreateRelationshipUndoableEdit(entity, new ObjRelationship[] {relationship}));
         }
 
         public void objAttributeAdded(ObjAttribute attr) {

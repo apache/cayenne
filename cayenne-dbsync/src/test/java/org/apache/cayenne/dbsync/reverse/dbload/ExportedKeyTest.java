@@ -1,21 +1,21 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- *    or more contributor license agreements.  See the NOTICE file
- *    distributed with this work for additional information
- *    regarding copyright ownership.  The ASF licenses this file
- *    to you under the Apache License, Version 2.0 (the
- *    "License"); you may not use this file except in compliance
- *    with the License.  You may obtain a copy of the License at
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Unless required by applicable law or agreed to in writing,
- *    software distributed under the License is distributed on an
- *    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- *    KIND, either express or implied.  See the License for the
- *    specific language governing permissions and limitations
- *    under the License.
- */
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
@@ -61,6 +61,7 @@ public class ExportedKeyTest {
         when(rs1.getString("FK_NAME")).thenReturn("FKName");
 
         when(rs1.getShort("KEY_SEQ")).thenReturn((short) 1);
+        when(rs1.getString("DELETE_RULE")).thenReturn("3");
 
         ExportedKey keyData1 = new ExportedKey(rs1);
 
@@ -78,6 +79,7 @@ public class ExportedKeyTest {
         when(rs2.getString("FK_NAME")).thenReturn("FKName");
 
         when(rs2.getShort("KEY_SEQ")).thenReturn((short)1);
+        when(rs2.getString("DELETE_RULE")).thenReturn("3");
 
         ExportedKey keyData2 = new ExportedKey(rs2);
 

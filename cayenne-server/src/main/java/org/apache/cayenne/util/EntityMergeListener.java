@@ -30,10 +30,10 @@ public interface EntityMergeListener {
     /**
      * Invoked when a missing attribute in ObjEntity is completed from DbEntity
      */
-    public void objAttributeAdded(ObjAttribute attr);
+    void objAttributeAdded(ObjAttribute attr);
     
     /**
      * Invoked when a missing relationship in ObjEntity is completed from DbEntity
      */
-    public void objRelationshipAdded(ObjRelationship rel);
+    void objRelationshipAdded(ObjRelationship relationship);
 }

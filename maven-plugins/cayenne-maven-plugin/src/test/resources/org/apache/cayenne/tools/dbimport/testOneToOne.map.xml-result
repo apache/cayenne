@@ -52,7 +52,7 @@
 		<db-attribute-pair source="PLAYER_ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="selectedPlayer" source="PickSchedule" target="Player" deleteRule="Nullify" db-relationship-path="selectedPlayer"/>
-	<obj-relationship name="pickSchedules" source="Player" target="PickSchedule" deleteRule="Deny" db-relationship-path="pickSchedules"/>
+	<obj-relationship name="pickSchedules" source="Player" target="PickSchedule" db-relationship-path="pickSchedules"/>
 	<obj-relationship name="playerInfo" source="Player" target="PlayerInfo" deleteRule="Nullify" db-relationship-path="playerInfo"/>
 	<obj-relationship name="player" source="PlayerInfo" target="Player" deleteRule="Nullify" db-relationship-path="player"/>
 </data-map>

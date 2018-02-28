@@ -106,7 +106,7 @@
     <db-relationship name="TEST2_TO_TEST1" source="TEST2" target="TEST1">
         <db-attribute-pair source="TEST1_ID" target="ID"/>
     </db-relationship>
-    <obj-relationship name="test1ToTest2" source="Test1" target="Test2" deleteRule="Deny" db-relationship-path="TEST1_TO_TEST2"/>
+    <obj-relationship name="test1ToTest2" source="Test1" target="Test2" db-relationship-path="TEST1_TO_TEST2"/>
     <obj-relationship name="test2ToTest1" source="Test2" target="Test1" deleteRule="Nullify" db-relationship-path="TEST2_TO_TEST1"/>
 
     <db-relationship name="test4s" source="TEST3" target="TEST4" toMany="true">
@@ -115,7 +115,7 @@
     <db-relationship name="test3" source="TEST4" target="TEST3">
          <db-attribute-pair source="TEST3_ID" target="ID"/>
     </db-relationship>
-    <obj-relationship name="test4s" source="Test3" target="Test4" deleteRule="Deny" db-relationship-path="test4s"/>
+    <obj-relationship name="test4s" source="Test3" target="Test4" db-relationship-path="test4s"/>
     <obj-relationship name="test3" source="Test4" target="Test3" deleteRule="Nullify" db-relationship-path="test3"/>
 
     <db-relationship name="test8s" source="TEST7" target="TEST8" toMany="true">
@@ -124,7 +124,7 @@
     <db-relationship name="test7" source="TEST8" target="TEST7">
         <db-attribute-pair source="TEST7_ID" target="ID"/>
     </db-relationship>
-    <obj-relationship name="test8s" source="Test7" target="Test8" deleteRule="Deny" db-relationship-path="test8s"/>
+    <obj-relationship name="test8s" source="Test7" target="Test8" db-relationship-path="test8s"/>
     <obj-relationship name="test7" source="Test8" target="Test7" deleteRule="Nullify" db-relationship-path="test7"/>
 
     <db-relationship name="test12s" source="TEST11" target="TEST12" toMany="true">
@@ -133,6 +133,6 @@
     <db-relationship name="test11" source="TEST12" target="TEST11">
         <db-attribute-pair source="TEST11_ID" target="ID"/>
     </db-relationship>
-    <obj-relationship name="test12s" source="Test11" target="Test12" deleteRule="Deny" db-relationship-path="test12s"/>
+    <obj-relationship name="test12s" source="Test11" target="Test12" db-relationship-path="test12s"/>
     <obj-relationship name="test1" source="Test12" target="Test11" deleteRule="Nullify" db-relationship-path="test11"/>
 </data-map>

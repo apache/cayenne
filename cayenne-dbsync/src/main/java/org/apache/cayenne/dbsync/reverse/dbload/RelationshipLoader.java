@@ -86,9 +86,10 @@ public class RelationshipLoader extends AbstractLoader {
 
             // forwardRelationship is a reference from table with primary key
             // it is what exactly we load from db
-            DbRelationship forwardRelationship = new DbRelationship();
+            DbRelationshipDetected forwardRelationship = new DbRelationshipDetected();
             forwardRelationship.setSourceEntity(pkEntity);
             forwardRelationship.setTargetEntityName(fkEntity);
+            forwardRelationship.setDeleteRule(key.getDeleteRule());
 
             // TODO: dirty and non-transparent... using DbRelationshipDetected for the benefit of the merge package.
             // This info is available from joins....
@@ -97,6 +98,7 @@ public class RelationshipLoader extends AbstractLoader {
             reverseRelationship.setSourceEntity(fkEntity);
             reverseRelationship.setTargetEntityName(pkEntity);
             reverseRelationship.setToMany(false);
+            reverseRelationship.setDeleteRule(key.getDeleteRule());
 
             createAndAppendJoins(exportedKeys, pkEntity, fkEntity, forwardRelationship, reverseRelationship);
 

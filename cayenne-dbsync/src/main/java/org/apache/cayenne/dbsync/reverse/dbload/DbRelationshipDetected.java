@@ -29,6 +29,7 @@ import org.apache.cayenne.map.DbRelationship;
 public class DbRelationshipDetected extends DbRelationship {
 
     private String fkName;
+    private int deleteRule;
 
     public DbRelationshipDetected(String uniqueRelName) {
         super(uniqueRelName);
@@ -51,4 +52,11 @@ public class DbRelationshipDetected extends DbRelationship {
         this.fkName = fkName;
     }
 
+    public int getDeleteRule() {
+        return deleteRule;
+    }
+
+    public void setDeleteRule(int deleteRule) {
+        this.deleteRule = deleteRule;
+    }
 }
