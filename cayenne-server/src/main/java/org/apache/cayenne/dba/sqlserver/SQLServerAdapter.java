@@ -30,6 +30,7 @@ import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
@@ -119,4 +120,8 @@ public class SQLServerAdapter extends SybaseAdapter {
 		return translator;
 	}
 
+	@Override
+	protected PkGenerator createPkGenerator() {
+		return new SQLServerPkGenerator(this);
+	}
 }
