@@ -196,9 +196,9 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
 
         PrefetchTreeNode prefetchTree = new PrefetchTreeNode();
 
-        for (String prefetchPath : prefetchesMap.keySet()) {
-            PrefetchTreeNode node = prefetchTree.addPath(prefetchPath);
-            node.setSemantics(prefetchesMap.get(prefetchPath));
+        for (Map.Entry<String, Integer> entry : prefetchesMap.entrySet()) {
+            PrefetchTreeNode node = prefetchTree.addPath(entry.getKey());
+            node.setSemantics(entry.getValue());
             node.setPhantom(false);
         }
 
